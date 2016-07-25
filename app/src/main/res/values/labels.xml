@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="main_menu">Main Menu</string>
+
+  <!-- Main Menu labels -->
+  <string name="manage_character_data">Manage Player Character Data</string>
+  <string name="manage_creature_data">Manage Creature Data</string>
+  <string name="manage_global_data">Manage Global Data</string>
+  <string name="play">Play</string>
+  <string name="about_rmu">About RMU</string>
+
+  <!-- About fragment labels -->
+  <string name="copyright">&#169; 2015 MadInnovations. All rights reserved</string>
+
+  <!-- PC menu labels -->
+  <string name="manage_character">Manage Characters</string>
+  <string name="manage_race">Manage Races</string>
+  <string name="manage_culture">Manage Cultures</string>
+  <string name="manage_profession">Manage Professions</string>
+
+  <!-- Creature menu labels -->
+  <string name="manage_archetypes">Manage Archetypes</string>
+  <string name="manage_categories">Manage Categories</string>
+  <string name="manage_types">Manage Types</string>
+  <string name="manage_varieties">Manage Varieties</string>
+  <string name="manage_critical_codes">Manage Critical Codes</string>
+
+  <!-- Global Data menu labels -->
+  <string name="manage_talent_categories">Manage Talent/Flaw Categories</string>
+  <string name="manage_talents">Manage Talents/Flaws</string>
+  <string name="manage_sizes">Manage Sizes</string>
+  <string name="manage_skill_categories">Manage Skill Categories</string>
+  <string name="manage_skills">Manage Skills</string>
+
+  <!-- Play Menu labels -->
+  <string name="generate_encounter">Generate Encounter</string>
+  <string name="generate_loot">Generate Loot</string>
+  <string name="attempt_maneuver">Attempt Maneuver</string>
+  <string name="start_combat">Start Combat</string>
+  <string name="advance_time">Advance Time</string>
+</resources>
