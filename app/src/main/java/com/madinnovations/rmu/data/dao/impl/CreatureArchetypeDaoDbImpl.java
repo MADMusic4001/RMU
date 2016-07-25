@@ -18,46 +18,38 @@ package com.madinnovations.rmu.data.dao.impl;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.madinnovations.rmu.data.dao.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.DbContentProvider;
-import com.madinnovations.rmu.data.dao.RaceDao;
-import com.madinnovations.rmu.data.entities.Race;
+import com.madinnovations.rmu.data.entities.CreatureArchetype;
 
 import java.util.List;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/24/2016.
+ * Methods for managing {@link CreatureArchetype} objects in a SQLite database.
  */
-public class RaceDaoImpl extends DbContentProvider implements RaceDao {
-
+public class CreatureArchetypeDaoDbImpl extends DbContentProvider
+		implements CreatureArchetypeDao {
 	/**
-	 * Creates a new instance of RaceDaoImpl
+	 * Creates a new instance of CreatureArchetypeDaoImpl
 	 *
 	 * @param db  an SQLiteDatabase instance
 	 */
-	public RaceDaoImpl(SQLiteDatabase db) {
+	public CreatureArchetypeDaoDbImpl(SQLiteDatabase db) {
 		super(db);
 	}
 
 	@Override
-	protected <T> T cursorToEntity(Cursor cursor) {
+	public CreatureArchetype getById(int id) {
 		return null;
 	}
 
 	@Override
-	public Race getById(int id) {
+	public List<CreatureArchetype> getAll() {
 		return null;
 	}
 
 	@Override
-	public List<Race> getAll() {
-		return null;
-	}
-
-	@Override
-	public boolean save(Race instance) {
+	public boolean save(CreatureArchetype instance) {
 		return false;
 	}
 
@@ -69,5 +61,10 @@ public class RaceDaoImpl extends DbContentProvider implements RaceDao {
 	@Override
 	public boolean deleteAll() {
 		return false;
+	}
+
+	@Override
+	protected <T> T cursorToEntity(Cursor cursor) {
+		return null;
 	}
 }

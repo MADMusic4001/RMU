@@ -26,13 +26,15 @@ import com.madinnovations.rmu.data.entities.CreatureCategory;
 import java.util.List;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/25/2016.
+ * Methods for managing {@link CreatureCategory} objects in a SQLite database.
  */
 public class CreatureCategoryDaoDbImpl extends DbContentProvider
 		implements CreatureCategoryDao, CreatureCategorySchema {
+	/**
+	 * Creates a new instance of CreatureCategoryDaoDbImpl
+	 *
+	 * @param db  an SQLiteDatabase instance
+	 */
 	public CreatureCategoryDaoDbImpl(SQLiteDatabase db) {
 		super(db);
 	}

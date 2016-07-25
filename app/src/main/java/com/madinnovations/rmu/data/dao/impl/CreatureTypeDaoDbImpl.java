@@ -26,12 +26,14 @@ import com.madinnovations.rmu.data.entities.CreatureType;
 import java.util.List;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/25/2016.
+ * Methods for managing {@link CreatureType} objects in a SQLite database.
  */
 public class CreatureTypeDaoDbImpl extends DbContentProvider implements CreatureTypeDao, CreatureTypeSchema {
+	/**
+	 * Creates a new instance of CreatureTypeDaoDbImpl
+	 *
+	 * @param db  an SQLiteDatabase instance
+	 */
 	public CreatureTypeDaoDbImpl(SQLiteDatabase db) {
 		super(db);
 	}

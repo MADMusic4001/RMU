@@ -30,15 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/24/2016.
+ * Methods for managing {@link Character} objects in a SQLite database.
  */
-public class CharacterDaoImpl extends DbContentProvider implements CharacterDao, CharacterSchema {
+public class CharacterDaoDbImpl extends DbContentProvider implements CharacterDao, CharacterSchema {
 	private ContentValues initialValues;
-
-	public CharacterDaoImpl(SQLiteDatabase db) {
+	/**
+	 * Creates a new instance of CharacterDaoImpl
+	 *
+	 * @param db  an SQLiteDatabase instance
+	 */
+	public CharacterDaoDbImpl(SQLiteDatabase db) {
 		super(db);
 	}
 
@@ -103,7 +104,7 @@ public class CharacterDaoImpl extends DbContentProvider implements CharacterDao,
 
 	@Override
 	protected Character cursorToEntity(Cursor cursor) {
-		Character user = new Character();
+		Character character = new Character();
 
 		int idIndex;
 		int nameIndex;
@@ -113,17 +114,17 @@ public class CharacterDaoImpl extends DbContentProvider implements CharacterDao,
 		if (cursor != null) {
 			if (cursor.getColumnIndex(COLUMN_ID) != -1) {
 				idIndex = cursor.getColumnIndexOrThrow(COLUMN_ID);
-				user.setId(cursor.getInt(idIndex));
+				character.setId(cursor.getInt(idIndex));
 			}
 			if (cursor.getColumnIndex(COLUMN_NAME) != -1) {
 				nameIndex = cursor.getColumnIndexOrThrow(
 						COLUMN_NAME);
-				user.setName(cursor.getString(nameIndex));
+				character.setName(cursor.getString(nameIndex));
 			}
 			if (cursor.getColumnIndex(COLUMN_DESCRIPTION) != -1) {
 				descriptionIndex = cursor.getColumnIndexOrThrow(
 						COLUMN_DESCRIPTION);
-				user.setDescription(cursor.getString(descriptionIndex));
+				character.setDescription(cursor.getString(descriptionIndex));
 			}
 			if (cursor.getColumnIndex(COLUMN_RACE_ID) != -1) {
 				raceIdIndex = cursor.getColumnIndexOrThrow(COLUMN_RACE_ID);
@@ -132,7 +133,7 @@ public class CharacterDaoImpl extends DbContentProvider implements CharacterDao,
 			}
 
 		}
-		return user;
+		return character;
 	}
 
 	private void setContentValue(Character character) {

@@ -26,12 +26,14 @@ import com.madinnovations.rmu.data.entities.CriticalCode;
 import java.util.List;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/25/2016.
+ * Methods for managing {@link CriticalCode} objects in a SQLite database.
  */
 public class CriticalCodeDaoDbImpl extends DbContentProvider implements CriticalCodeDao, CriticalCodeSchema {
+	/**
+	 * Creates a new instance of CriticalCodeDaoDbImpl
+	 *
+	 * @param db  an SQLiteDatabase instance
+	 */
 	public CriticalCodeDaoDbImpl(SQLiteDatabase db) {
 		super(db);
 	}

@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.data.dao.schemas;
 
 /**
- * Database schema data for the archetype_skill table
+ * Database schema data for the archetype_skills table
  */
 public interface ArchetypeSkillsSchema {
 	public static final String TABLE_NAME = "archetype_skills";
