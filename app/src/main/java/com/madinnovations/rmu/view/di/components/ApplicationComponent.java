@@ -18,6 +18,8 @@ package com.madinnovations.rmu.view.di.components;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 import com.madinnovations.rmu.view.di.modules.ApplicationModule;
 import com.madinnovations.rmu.view.di.modules.CharacterDaoSqlModule;
+import com.madinnovations.rmu.view.di.modules.CommonDaoSqlModule;
+import com.madinnovations.rmu.view.di.modules.CommonRxHandlerModule;
 
 import javax.inject.Singleton;
 
@@ -27,7 +29,7 @@ import dagger.Component;
  * The ApplicationComponent dependency injection interface
  */
 @Singleton
-@Component(modules = {ApplicationModule.class, CharacterDaoSqlModule.class})
+@Component(modules = {ApplicationModule.class, CharacterDaoSqlModule.class, CommonDaoSqlModule.class, CommonRxHandlerModule.class})
 public interface ApplicationComponent {
 	ActivityComponent newActivityComponent(ActivityModule activityModule);
 }

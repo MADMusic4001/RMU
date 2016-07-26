@@ -24,20 +24,28 @@ import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.view.di.PerActivity;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/25/2016.
+ * Populates a ListView with TalentCategory information
  */
+@PerActivity
 public class TalentCategoryListAdapter extends ArrayAdapter<TalentCategory> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;
 	private LayoutInflater layoutInflater;
 
+	/**
+	 * Creates a new TalentCategoryListAdapter instance.
+	 *
+	 * @param context the view {@link Context} the adapter will be attached to.
+	 */
+	@Inject
 	public TalentCategoryListAdapter(Context context) {
-		super(context, android.R.layout.simple_list_item_2);
+		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -47,9 +55,9 @@ public class TalentCategoryListAdapter extends ArrayAdapter<TalentCategory> {
 		ViewHolder holder;
 
 		if (convertView == null) {
-			rowView = layoutInflater.inflate(android.R.layout.simple_list_item_2, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(android.R.id.text1),
-									(TextView) rowView.findViewById(android.R.id.text2));
+			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.nameView),
+									(TextView) rowView.findViewById(R.id.descriptionView));
 			rowView.setTag(holder);
 		}
 		else {

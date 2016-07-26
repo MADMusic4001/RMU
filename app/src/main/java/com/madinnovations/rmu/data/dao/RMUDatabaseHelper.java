@@ -44,6 +44,7 @@ import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -59,6 +60,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
      *
      * @param context  the Android context to be used by the helper
      */
+    @Inject
     public RMUDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
