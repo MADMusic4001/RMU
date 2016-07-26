@@ -11,15 +11,20 @@ import com.madinnovations.rmu.data.entities.character.Profession;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Methods for managing {@link Profession} objects in a SQLite database.
  */
+@Singleton
 public class ProfessionDaoDbImpl extends BaseDaoDbImpl implements ProfessionDao, ProfessionSchema {
     /**
      * Creates a new instance of ProfessionDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
+    @Inject
     public ProfessionDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
     }
@@ -50,7 +55,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl implements ProfessionDao,
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

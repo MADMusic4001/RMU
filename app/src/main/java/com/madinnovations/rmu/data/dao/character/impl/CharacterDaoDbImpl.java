@@ -22,8 +22,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillsSchema;
@@ -152,8 +152,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 	}
 
 	@Override
-	public boolean deleteAll() {
-		return false;
+	public int deleteAll() {
+		return 0;
 	}
 
 	@Override

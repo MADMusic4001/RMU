@@ -54,7 +54,7 @@ public class SkillCostDaoDbImpl extends BaseDaoDbImpl implements SkillCostDao {
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

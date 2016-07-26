@@ -38,12 +38,6 @@ public abstract class BaseDaoDbImpl {
 		this.helper = helper;
 	}
 
-	public int delete(String tableName, String selection,
-					  String[] selectionArgs) {
-		SQLiteDatabase db = helper.getWritableDatabase();
-		return db.delete(tableName, selection, selectionArgs);
-	}
-
 	public long insert(String tableName, ContentValues values) {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		return db.insert(tableName, null, values);

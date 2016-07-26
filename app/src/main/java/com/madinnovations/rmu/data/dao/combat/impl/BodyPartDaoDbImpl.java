@@ -12,10 +12,12 @@ import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Methods for managing {@link BodyPart} objects in a SQLite database.
  */
+@Singleton
 public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, BodyPartSchema {
     /**
      * Creates a new instance of BodyPartDaoDbImpl
@@ -48,8 +50,8 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

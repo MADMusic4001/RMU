@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.di.components;
+package com.madinnovations.rmu.view.di.modules;
 
-import com.madinnovations.rmu.view.di.modules.ActivityModule;
-import com.madinnovations.rmu.view.di.modules.ApplicationModule;
-import com.madinnovations.rmu.view.di.modules.CharacterDaoSqlModule;
-
-import javax.inject.Singleton;
-
-import dagger.Component;
+import dagger.Module;
 
 /**
- * The ApplicationComponent dependency injection interface
+ * Provides instances of item package DAO SQL implementation classes for dependency injection.
  */
-@Singleton
-@Component(modules = {ApplicationModule.class, CharacterDaoSqlModule.class})
-public interface ApplicationComponent {
-	ActivityComponent newActivityComponent(ActivityModule activityModule);
+@Module(includes = ApplicationModule.class)
+public class ObjectDaoSqlModule {
 }

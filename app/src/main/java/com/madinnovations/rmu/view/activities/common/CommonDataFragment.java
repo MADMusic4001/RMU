@@ -13,49 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.activities.campaign;
+package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.TalentCategoryListAdapter;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 /**
- * Fragment class for interacting with the Menu section of the campaign activity.
+ * ${CLASS_DESCRIPTION}
+ *
+ * @author Mark
+ * Created 7/25/2016.
  */
-public class MainMenuFragment extends Fragment {
+public class CommonDataFragment extends Fragment {
+	private TalentCategoryListAdapter listAdapter = new TalentCategoryListAdapter(getActivity());
+
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newFragmentComponent(new FragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.campaign_main_menu_fragment, container, false);
+		View layout = inflater.inflate(R.layout.common_data_fragment, container, false);
 
-		Button commonDataButton = (Button)layout.findViewById(R.id.manage_global_data_button);
-		commonDataButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.e("MainMenuFragment", "Calling showCommonData()");
-				((CampaignActivity)getActivity()).showCommonData();
-			}
-		});
+		ListView list = (ListView)layout.findViewById(R.id.listView);
+		list.setAdapter(listAdapter);
 
-		Button aboutButton = (Button)layout.findViewById(R.id.about_rmu_button);
-		aboutButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.e("MainMenuFragment", "Calling showAbout()");
-				((CampaignActivity)getActivity()).showAbout();
-			}
-		});
+
 		return layout;
 	}
 }

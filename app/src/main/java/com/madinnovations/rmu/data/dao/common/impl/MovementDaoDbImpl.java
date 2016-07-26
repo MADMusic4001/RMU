@@ -105,8 +105,8 @@ public class MovementDaoDbImpl extends BaseDaoDbImpl implements MovementDao, Mov
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

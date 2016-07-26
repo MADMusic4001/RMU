@@ -65,8 +65,8 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl implements CreatureDao, Cre
 	}
 
 	@Override
-	public boolean deleteAll() {
-		return false;
+	public int deleteAll() {
+		return 0;
 	}
 
 	@Override

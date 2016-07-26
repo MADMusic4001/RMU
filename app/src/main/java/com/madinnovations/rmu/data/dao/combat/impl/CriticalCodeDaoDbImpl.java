@@ -26,15 +26,20 @@ import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Methods for managing {@link CriticalCode} objects in a SQLite database.
  */
+@Singleton
 public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl implements CriticalCodeDao, CriticalCodeSchema {
 	/**
 	 * Creates a new instance of CriticalCodeDaoDbImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
+	@Inject
 	public CriticalCodeDaoDbImpl(SQLiteOpenHelper helper) {
 		super(helper);
 	}
@@ -60,8 +65,8 @@ public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl implements CriticalCode
 	}
 
 	@Override
-	public boolean deleteAll() {
-		return false;
+	public int deleteAll() {
+		return 0;
 	}
 
 	@Override

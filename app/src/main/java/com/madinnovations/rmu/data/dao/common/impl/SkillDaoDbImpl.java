@@ -55,7 +55,7 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl implements SkillDao, SkillSche
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

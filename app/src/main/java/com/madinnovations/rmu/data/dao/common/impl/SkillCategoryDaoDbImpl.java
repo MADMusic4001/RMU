@@ -55,7 +55,7 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl implements SkillCatego
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

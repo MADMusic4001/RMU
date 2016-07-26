@@ -18,7 +18,6 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceMovementSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
@@ -42,8 +41,8 @@ import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureStatsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
-import com.madinnovations.rmu.data.dao.object.schemas.ItemSchema;
-import com.madinnovations.rmu.data.dao.object.schemas.WeaponSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 
 import javax.inject.Singleton;
 

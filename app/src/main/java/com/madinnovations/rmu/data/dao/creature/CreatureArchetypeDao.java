@@ -57,7 +57,7 @@ public interface CreatureArchetypeDao {
 	/**
 	 * Delete all CreatureArchetype objects from persistent storage.
 	 *
-	 * @return true if successful, otherwise false.
+	 * @return the number of instances that were deleted.
 	 */
-	public boolean deleteAll();
+	public int deleteAll();
 }

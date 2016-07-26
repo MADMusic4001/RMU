@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+  <ListView
+      android:layout_width="match_parent"
+      android:layout_height="258dp"
+      android:id="@+id/listView2"
+      android:layout_gravity="center_horizontal"/>
+
+  <EditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/nameEditText"
+      android:layout_gravity="center_horizontal"
+      android:text="@string/name_label"
+      android:hint="@string/name_hint"/>
+
+  <EditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/descriptionEditText"
+      android:layout_gravity="center_horizontal"
+      android:text="@string/description_label"
+      android:hint="@string/description_hint"/>
+</LinearLayout>

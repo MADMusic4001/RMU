@@ -12,10 +12,12 @@ import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Methods for managing {@link DamageTable} objects in a SQLite database.
  */
+@Singleton
 public class DamageTableDaoDbImpl extends BaseDaoDbImpl implements DamageTableDao, DamageTableSchema {
     /**
      * Creates a new instance of DamageTableDaoDbImpl
@@ -48,8 +50,8 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl implements DamageTableDa
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

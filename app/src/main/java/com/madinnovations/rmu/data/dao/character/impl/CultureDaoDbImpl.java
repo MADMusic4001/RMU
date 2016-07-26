@@ -11,15 +11,20 @@ import com.madinnovations.rmu.data.entities.character.Culture;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Methods for managing {@link Culture} objects in a SQLite database.
  */
+@Singleton
 public class CultureDaoDbImpl extends BaseDaoDbImpl implements CultureDao, CultureSchema {
     /**
      * Creates a new CultureDaoDbImpl instance
      *
      * @param helper  an SQLiteOpenHelper instance
      */
+    @Inject
     public CultureDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
     }
@@ -45,8 +50,8 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl implements CultureDao, Cultu
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

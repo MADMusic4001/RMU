@@ -12,10 +12,12 @@ import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Methods for managing {@link CriticalType} objects in a SQLite database.
  */
+@Singleton
 public class CriticalTypeDaoDbImpl extends BaseDaoDbImpl implements CriticalTypeDao, CriticalTypeSchema {
     /**
      * Creates a new instance of CriticalTypeDaoDbImpl
@@ -48,8 +50,8 @@ public class CriticalTypeDaoDbImpl extends BaseDaoDbImpl implements CriticalType
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

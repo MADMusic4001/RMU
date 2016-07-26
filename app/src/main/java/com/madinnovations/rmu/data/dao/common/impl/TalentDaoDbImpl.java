@@ -117,8 +117,8 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl implements TalentDao, TalentS
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

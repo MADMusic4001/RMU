@@ -118,8 +118,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

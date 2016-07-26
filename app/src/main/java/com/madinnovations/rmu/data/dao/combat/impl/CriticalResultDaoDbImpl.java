@@ -12,10 +12,12 @@ import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Methods for managing {@link CriticalResult} objects in a SQLite database.
  */
+@Singleton
 public class CriticalResultDaoDbImpl extends BaseDaoDbImpl implements CriticalResultDao, CriticalResultSchema {
     /**
      * Creates a new instance of CriticalResultDaoDbImpl
@@ -48,8 +50,8 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl implements CriticalRe
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override

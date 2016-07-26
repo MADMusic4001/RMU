@@ -55,7 +55,7 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl implements SizeDao, SizeSchema 
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

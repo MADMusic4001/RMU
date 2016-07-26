@@ -1,4 +1,4 @@
-package com.madinnovations.rmu.data.dao.object;
+package com.madinnovations.rmu.data.dao.item;
 
 import com.madinnovations.rmu.data.entities.object.Item;
 
@@ -42,7 +42,7 @@ public interface ItemDao {
     /**
      * Delete all Item objects from persistent storage.
      *
-     * @return true if successful, otherwise false.
+     * @return the number of instances that were deleted.
      */
-    public boolean deleteAll();
+    public int deleteAll();
 }

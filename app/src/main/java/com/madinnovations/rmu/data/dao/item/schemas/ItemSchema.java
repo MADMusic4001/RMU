@@ -1,4 +1,4 @@
-package com.madinnovations.rmu.data.dao.object.schemas;
+package com.madinnovations.rmu.data.dao.item.schemas;
 
 /**
  * Database schema data for the items table

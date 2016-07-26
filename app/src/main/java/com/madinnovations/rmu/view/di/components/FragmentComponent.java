@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
+import com.madinnovations.rmu.view.activities.common.CommonDataFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
@@ -31,4 +32,5 @@ public interface FragmentComponent {
 
 	public void injectInto(MainMenuFragment mainMenuFragment);
 	public void injectInto(AboutFragment aboutFragment);
+	public void injectInto(CommonDataFragment commonDataFragment);
 }

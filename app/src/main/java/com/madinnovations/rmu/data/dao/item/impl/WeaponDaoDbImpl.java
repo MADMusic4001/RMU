@@ -1,12 +1,11 @@
-package com.madinnovations.rmu.data.dao.object.impl;
+package com.madinnovations.rmu.data.dao.item.impl;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.object.WeaponDao;
-import com.madinnovations.rmu.data.dao.object.schemas.WeaponSchema;
+import com.madinnovations.rmu.data.dao.item.WeaponDao;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 
 import java.util.List;
@@ -55,7 +54,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl implements WeaponDao, WeaponS
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

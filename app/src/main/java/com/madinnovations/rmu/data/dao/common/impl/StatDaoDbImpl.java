@@ -55,7 +55,7 @@ public class StatDaoDbImpl extends BaseDaoDbImpl implements StatDao, StatSchema 
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 }

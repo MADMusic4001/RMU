@@ -50,8 +50,8 @@ public class ParameterDaoDbImpl extends BaseDaoDbImpl implements ParameterDao, P
     }
 
     @Override
-    public boolean deleteAll() {
-        return false;
+    public int deleteAll() {
+        return 0;
     }
 
     @Override
