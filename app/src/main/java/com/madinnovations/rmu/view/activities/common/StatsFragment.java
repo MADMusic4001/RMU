@@ -1,18 +1,3 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
@@ -36,10 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
-import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.TalentCategoryListAdapter;
+import com.madinnovations.rmu.view.adapters.StatListAdapter;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 import java.util.Collection;
@@ -51,20 +36,18 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/25/2016.
+ * Created by madanle on 7/27/16.
  */
-public class TalentCategoryFragment extends Fragment {
+public class StatsFragment extends Fragment {
 	@Inject
-	protected TalentCategoryRxHandler talentCategoryRxHandler;
+	protected StatRxHandler statRxHandler;
 	@Inject
-	protected TalentCategoryListAdapter listAdapter;
+	protected StatListAdapter listAdapter;
 	private ListView listView;
+	private EditText abbreviationEdit;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
-	private TalentCategory selectedInstance = null;
+	private Stat selectedInstance = null;
 	private boolean dirty = false;
 
 	@Nullable
@@ -73,18 +56,17 @@ public class TalentCategoryFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newFragmentComponent(new FragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.talent_categories_fragment, container, false);
+		View layout = inflater.inflate(R.layout.stats_fragment, container, false);
 
+		initAbbreviationEdit(layout);
 		initNameEdit(layout);
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
 		initDescriptionEdit(layout);
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
 
 		initListView(layout);
 
-		talentCategoryRxHandler.getAll()
+		statRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+				.subscribe(new Subscriber<Collection<Stat>>() {
 					@Override
 					public void onCompleted() {
 
@@ -92,18 +74,18 @@ public class TalentCategoryFragment extends Fragment {
 
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentCategoryFragment", "Exception occured loading talent categories", e);
+						Log.e("StatFragment", "Exception occured loading talent categories", e);
 					}
 
 					@Override
-					public void onNext(Collection<TalentCategory> talentCategories) {
+					public void onNext(Collection<Stat> talentCategories) {
 						String toastString;
 
 						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
 						listAdapter.clear();
 						listAdapter.addAll(talentCategories);
 						listAdapter.notifyDataSetChanged();
-						Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
 
@@ -113,22 +95,22 @@ public class TalentCategoryFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.e("TalentCategoryFragment", "Creating options menu");
+		Log.e("StatFragment", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.talent_category_action_bar, menu);
+		inflater.inflate(R.menu.stats_action_bar, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_new_talent_category) {
-			TalentCategory talentCategory = new TalentCategory();
-			talentCategory.setName(getString(R.string.default_talent_category_name));
-			talentCategory.setDescription(getString(R.string.default_talent_category_description));
-			talentCategoryRxHandler.save(talentCategory)
+		if(id == R.id.action_new_stat) {
+			Stat stat = new Stat();
+			stat.setName(getString(R.string.default_stat_name));
+			stat.setDescription(getString(R.string.default_stat_description));
+			statRxHandler.save(stat)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<TalentCategory>() {
+					.subscribe(new Subscriber<Stat>() {
 						@Override
 						public void onCompleted() {
 
@@ -140,11 +122,11 @@ public class TalentCategoryFragment extends Fragment {
 						}
 
 						@Override
-						public void onNext(TalentCategory talentCategory) {
-							listAdapter.add(talentCategory);
-							nameEdit.setText(talentCategory.getName());
-							descriptionEdit.setText(talentCategory.getDescription());
-							selectedInstance = talentCategory;
+						public void onNext(Stat stat) {
+							listAdapter.add(stat);
+							nameEdit.setText(stat.getName());
+							descriptionEdit.setText(stat.getDescription());
+							selectedInstance = stat;
 						}
 					});
 		}
@@ -154,21 +136,21 @@ public class TalentCategoryFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.talent_category_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.stats_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final TalentCategory talentCategory;
+		final Stat stat;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
-			case R.id.context_delete_talent_category:
-				talentCategory = (TalentCategory)listView.getItemAtPosition(info.position);
-				if(talentCategory != null) {
-					talentCategoryRxHandler.deleteById(talentCategory.getId())
+			case R.id.context_delete_stat:
+				stat = (Stat)listView.getItemAtPosition(info.position);
+				if(stat != null) {
+					statRxHandler.deleteById(stat.getId())
 							.observeOn(AndroidSchedulers.mainThread())
 							.subscribe(new Subscriber<Boolean>() {
 								@Override
@@ -178,8 +160,8 @@ public class TalentCategoryFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("TalentCategoryFragment", "Exception thrown when deleting: " + talentCategory, e);
-									String toastString = getString(R.string.toast_talent_category_delete_failed);
+									Log.e("StatFragment", "Exception thrown when deleting: " + stat, e);
+									String toastString = getString(R.string.toast_stat_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 
@@ -188,10 +170,10 @@ public class TalentCategoryFragment extends Fragment {
 									String toastString;
 
 									if(success) {
-										int position = listAdapter.getPosition(talentCategory);
-										listAdapter.remove(talentCategory);
+										int position = listAdapter.getPosition(stat);
+										listAdapter.remove(stat);
 										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_talent_category_deleted);
+										toastString = getString(R.string.toast_stat_deleted);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
 								}
@@ -204,6 +186,51 @@ public class TalentCategoryFragment extends Fragment {
 			default:
 				return super.onContextItemSelected(item);
 		}
+	}
+
+	private void initAbbreviationEdit(View layout) {
+		abbreviationEdit = (EditText)layout.findViewById(R.id.abbreviation_edit);
+		abbreviationEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void afterTextChanged(Editable editable) {
+				dirty = true;
+				if (editable.length() == 0) {
+					abbreviationEdit.setError(getString(R.string.validation_name_required));
+				}
+			}
+		});
+		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					final String newAbbreviation = nameEdit.getText().toString();
+					if (selectedInstance != null && !selectedInstance.getAbbreviation().equals(newAbbreviation)) {
+						selectedInstance.setAbbreviation(newAbbreviation);
+						statRxHandler.save(selectedInstance)
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<Stat>() {
+									@Override
+									public void onCompleted() {
+									}
+									@Override
+									public void onError(Throwable e) {
+										String toastString = getString(R.string.toast_stat_save_failed);
+										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+										Log.e("StatFragment", "Save failed for: " + selectedInstance, e);
+									}
+									@Override
+									public void onNext(Stat stat) {
+										onSaved(stat);
+									}
+								});
+					}
+				}
+			}
+		});
 	}
 
 	private void initNameEdit(View layout) {
@@ -228,23 +255,23 @@ public class TalentCategoryFragment extends Fragment {
 					final String newName = nameEdit.getText().toString();
 					if (selectedInstance != null && !selectedInstance.getName().equals(newName)) {
 						selectedInstance.setName(newName);
-						talentCategoryRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<TalentCategory>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									String toastString = getString(R.string.toast_talent_category_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									Log.e("TalentCategoryFragment", "Save failed for: " + selectedInstance, e);
-								}
-								@Override
-								public void onNext(TalentCategory talentCategory) {
-									onSaved(talentCategory);
-								}
-							});
+						statRxHandler.save(selectedInstance)
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<Stat>() {
+									@Override
+									public void onCompleted() {
+									}
+									@Override
+									public void onError(Throwable e) {
+										String toastString = getString(R.string.toast_stat_save_failed);
+										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+										Log.e("StatFragment", "Save failed for: " + selectedInstance, e);
+									}
+									@Override
+									public void onNext(Stat stat) {
+										onSaved(stat);
+									}
+								});
 					}
 				}
 			}
@@ -273,44 +300,48 @@ public class TalentCategoryFragment extends Fragment {
 					final String newDescription = descriptionEdit.getText().toString();
 					if (selectedInstance != null && !selectedInstance.getDescription().equals(newDescription)) {
 						selectedInstance.setDescription(newDescription);
-						talentCategoryRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<TalentCategory>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									String toastString = getString(R.string.toast_talent_category_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(TalentCategory talentCategory) {
-									onSaved(talentCategory);
-								}
-							});
+						statRxHandler.save(selectedInstance)
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<Stat>() {
+									@Override
+									public void onCompleted() {
+									}
+									@Override
+									public void onError(Throwable e) {
+										String toastString = getString(R.string.toast_stat_save_failed);
+										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+									}
+									@Override
+									public void onNext(Stat stat) {
+										onSaved(stat);
+									}
+								});
 					}
 				}
 			}
 		});
 	}
 
-	private void onSaved(TalentCategory talentCategory) {
+	private void onSaved(Stat stat) {
 		String toastString;
-		toastString = getString(R.string.toast_talent_category_saved);
+		toastString = getString(R.string.toast_stat_saved);
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
-		int position = listAdapter.getPosition(talentCategory);
+		int position = listAdapter.getPosition(stat);
 		// Add 1 for the header row
 		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition() + 1);
 		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.name_view);
+			TextView textView = (TextView) v.findViewById(R.id.abbreviation_view);
 			if (textView != null) {
-				textView.setText(talentCategory.getName());
+				textView.setText(stat.getAbbreviation());
+			}
+			textView = (TextView) v.findViewById(R.id.name_view);
+			if (textView != null) {
+				textView.setText(stat.getName());
 			}
 			textView = (TextView) v.findViewById(R.id.description_view);
 			if (textView != null) {
-				textView.setText(talentCategory.getDescription());
+				textView.setText(stat.getDescription());
 			}
 		}
 	}
@@ -321,7 +352,7 @@ public class TalentCategoryFragment extends Fragment {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 //		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		headerView = getActivity().getLayoutInflater().inflate(
-				R.layout.name_description_header, listView, false);
+				R.layout.stat_list_header, listView, false);
 		listView.addHeaderView(headerView);
 
 		listView.setAdapter(listAdapter);
@@ -331,27 +362,28 @@ public class TalentCategoryFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if(dirty) {
+					selectedInstance.setAbbreviation(abbreviationEdit.getText().toString());
 					selectedInstance.setName(nameEdit.getText().toString());
 					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					talentCategoryRxHandler.save(selectedInstance)
-						.observeOn(AndroidSchedulers.mainThread())
-						.subscribe(new Subscriber<TalentCategory>() {
-							@Override
-							public void onCompleted() {
-							}
-							@Override
-							public void onError(Throwable e) {
-								String toastString = getString(R.string.toast_talent_category_save_failed);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-							}
-							@Override
-							public void onNext(TalentCategory talentCategory) {
-								onSaved(talentCategory);
-							}
-						});
+					statRxHandler.save(selectedInstance)
+							.observeOn(AndroidSchedulers.mainThread())
+							.subscribe(new Subscriber<Stat>() {
+								@Override
+								public void onCompleted() {
+								}
+								@Override
+								public void onError(Throwable e) {
+									String toastString = getString(R.string.toast_stat_save_failed);
+									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								}
+								@Override
+								public void onNext(Stat stat) {
+									onSaved(stat);
+								}
+							});
 				}
 
-				selectedInstance = (TalentCategory) listView.getItemAtPosition(position);
+				selectedInstance = (Stat) listView.getItemAtPosition(position);
 				if (selectedInstance != null) {
 					nameEdit.setText(selectedInstance.getName());
 					descriptionEdit.setText(selectedInstance.getDescription());

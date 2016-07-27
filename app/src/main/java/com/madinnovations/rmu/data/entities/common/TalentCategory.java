@@ -23,6 +23,15 @@ public class TalentCategory {
 	private String name;
 	private String description;
 
+	@Override
+	public String toString() {
+		return "TalentCategory{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

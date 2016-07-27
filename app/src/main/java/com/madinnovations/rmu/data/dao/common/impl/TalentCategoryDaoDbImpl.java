@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
@@ -73,8 +74,7 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl implements TalentCate
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null,
-										null, COLUMN_ID);
+			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null, null, COLUMN_ID);
 
 			if (cursor != null) {
 				cursor.moveToFirst();
@@ -97,6 +97,7 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl implements TalentCate
 
 	@Override
 	public boolean save(TalentCategory instance) {
+		Log.d("TalentCategoryDaoDbImpl", "In save");
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
 		ContentValues contentValues = setContentValue(instance);

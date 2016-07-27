@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
+import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -29,30 +30,36 @@ import dagger.Provides;
  */
 @Module
 public class FragmentModule {
-	private MainMenuFragment   mainMenuFragment;
 	private AboutFragment      aboutFragment;
+	private MainMenuFragment   mainMenuFragment;
+	private StatsFragment statsFragment;
 	private TalentCategoryFragment talentCategoryFragment;
 
+	public FragmentModule(AboutFragment aboutFragment) {
+		this.aboutFragment = aboutFragment;
+	}
 	public FragmentModule(MainMenuFragment mainMenuFragment) {
 		this.mainMenuFragment = mainMenuFragment;
 	}
-	public FragmentModule(AboutFragment aboutFragment) {
-		this.aboutFragment = aboutFragment;
+	public FragmentModule(StatsFragment statsFragment) {
+		this.statsFragment = statsFragment;
 	}
 	public FragmentModule(TalentCategoryFragment talentCategoryFragment) {
 		this.talentCategoryFragment = talentCategoryFragment;
 	}
 
 	@Provides @PerFragment
-	public MainMenuFragment provideMenuFragmen() {
-		return this.mainMenuFragment;
-	}
-
-	@Provides @PerFragment
 	public AboutFragment provideAboutFragment() {
 		return this.aboutFragment;
 	}
-
+	@Provides @PerFragment
+	public MainMenuFragment provideMenuFragmen() {
+		return this.mainMenuFragment;
+	}
+	@Provides @PerFragment
+	public StatsFragment provideStatsFragment() {
+		return this.statsFragment;
+	}
 	@Provides @PerFragment
 	public TalentCategoryFragment provideCommonDataFragment() {
 		return this.talentCategoryFragment;

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
+import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
@@ -30,7 +31,8 @@ import dagger.Subcomponent;
 @Subcomponent(modules = FragmentModule.class)
 public interface FragmentComponent {
 
-	public void injectInto(MainMenuFragment mainMenuFragment);
 	public void injectInto(AboutFragment aboutFragment);
+	public void injectInto(MainMenuFragment mainMenuFragment);
+	public void injectInto(StatsFragment statsFragment);
 	public void injectInto(TalentCategoryFragment talentCategoryFragment);
 }

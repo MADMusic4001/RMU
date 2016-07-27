@@ -2,4 +2,7 @@
 <resources>
     <string name="default_talent_category_name">New Talent Category</string>
     <string name="default_talent_category_description">Talent Category description</string>
+    <string name="default_stat_abbreviation">AA</string>
+    <string name="default_stat_name">New Stat</string>
+    <string name="default_stat_description">Stat description</string>
 </resources>

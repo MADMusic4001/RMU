@@ -32,6 +32,8 @@
   <string name="manage_skill_categories">Manage Skill Categories</string>
   <string name="manage_skills">Manage Skills</string>
 
+  <string name="abbreviation_label">Abbreviation</string>
+  <string name="abbreviation_hint">New Abbreviation</string>
   <string name="name_label">Name</string>
   <string name="name_hint">New Name</string>
   <string name="description_label">Description</string>
@@ -47,10 +49,13 @@
   <!-- Field name labels -->
   <string name="label_name">Name</string>
   <string name="label_description">Description</string>
+  <string name="label_abbreviation">Abbreviation</string>
 
-  <!-- Action bar labels -->
+  <!-- Menu labels -->
   <string name="label_export">Export</string>
   <string name="label_import">Import</string>
   <string name="label_new_talent_category">New Talent Category</string>
   <string name="label_delete_talent_category">Delete Talent Category</string>
+  <string name="label_new_stat">New Stat</string>
+  <string name="label_delete_stat">Delete Stat</string>
 </resources>

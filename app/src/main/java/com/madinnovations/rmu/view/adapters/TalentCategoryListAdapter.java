@@ -26,8 +26,6 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.di.PerActivity;
 
-import java.util.Locale;
-
 import javax.inject.Inject;
 
 /**
@@ -56,8 +54,8 @@ public class TalentCategoryListAdapter extends ArrayAdapter<TalentCategory> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.nameView),
-									(TextView) rowView.findViewById(R.id.descriptionView));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view),
+									(TextView) rowView.findViewById(R.id.description_view));
 			rowView.setTag(holder);
 		}
 		else {
