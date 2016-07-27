@@ -20,10 +20,11 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
-import com.madinnovations.rmu.view.activities.common.CommonDataFragment;
+import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
@@ -34,7 +35,7 @@ public class CampaignActivity extends Activity {
 	private ActivityComponent activityComponent;
 	private MainMenuFragment mainMenuFragment;
 	private AboutFragment aboutFragment;
-	private CommonDataFragment commonDataFragment;
+	private TalentCategoryFragment talentCategoryFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +62,20 @@ public class CampaignActivity extends Activity {
 		}
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main_action_bar, menu);
+		return true;
+	}
+
 	public void showCommonData() {
 		Log.e("CampaignActivity", "Showing common data fragment");
-		if(commonDataFragment == null) {
-			commonDataFragment = new CommonDataFragment();
+		if(talentCategoryFragment == null) {
+			talentCategoryFragment = new TalentCategoryFragment();
 		}
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.details_container, commonDataFragment);
+		fragmentTransaction.replace(R.id.details_container, talentCategoryFragment);
 		fragmentTransaction.commit();
 		Log.e("CampaignActivity", "Common data fragment shown");
 	}

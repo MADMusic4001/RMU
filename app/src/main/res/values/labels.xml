@@ -10,7 +10,7 @@
   <string name="about_rmu">About RMU</string>
 
   <!-- About fragment labels -->
-  <string name="copyright">&#169; 2015 MadInnovations. All rights reserved</string>
+  <string name="copyright">&#169; 2016 MadInnovations. All rights reserved</string>
 
   <!-- PC menu labels -->
   <string name="manage_character">Manage Characters</string>
@@ -47,4 +47,10 @@
   <!-- Field name labels -->
   <string name="label_name">Name</string>
   <string name="label_description">Description</string>
+
+  <!-- Action bar labels -->
+  <string name="label_export">Export</string>
+  <string name="label_import">Import</string>
+  <string name="label_new_talent_category">New Talent Category</string>
+  <string name="label_delete_talent_category">Delete Talent Category</string>
 </resources>

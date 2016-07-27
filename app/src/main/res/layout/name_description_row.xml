@@ -12,7 +12,10 @@
         android:gravity="start"
         android:padding="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:hint="@string/label_name"/>
+        android:hint="@string/label_name"
+        android:theme="@style/AppThemeLight"
+        android:textColor="@android:color/primary_text_light"
+        android:background="@android:color/background_light"/>
 
     <TextView
         android:id="@+id/descriptionView"
@@ -23,5 +26,7 @@
         android:padding="10dp"
         android:selectAllOnFocus="true"
         android:hint="@string/label_description"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:background="@android:color/background_light"
+        android:textColor="@android:color/primary_text_light"/>
 </LinearLayout>

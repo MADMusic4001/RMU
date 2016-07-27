@@ -28,7 +28,7 @@ public interface CultureSkillWhiteListSchema {
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_CULTURE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_SKILL_ID + " INTEGER NOT NULL"
+			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
 			+ "PRIMARY KEY(" + COLUMN_CULTURE_ID + "," + COLUMN_SKILL_ID + ")"
 			+ ")";
 

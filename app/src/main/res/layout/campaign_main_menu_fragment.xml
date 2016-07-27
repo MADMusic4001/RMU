@@ -5,43 +5,43 @@
               android:layout_height="match_parent"
               android:id="@+id/main_menu_layout">
 
-  <Button
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="@string/manage_character_data"
-      android:id="@+id/manage_pc_data_button"
-      android:layout_gravity="center_horizontal"/>
+  <!--<Button-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:text="@string/manage_character_data"-->
+      <!--android:id="@+id/manage_pc_data_button"-->
+      <!--android:layout_gravity="center_horizontal"/>-->
 
-  <Button
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="@string/manage_creature_data"
-      android:id="@+id/manage_creature_data_button"
-      android:layout_gravity="center_horizontal"/>
+  <!--<Button-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:text="@string/manage_creature_data"-->
+      <!--android:id="@+id/manage_creature_data_button"-->
+      <!--android:layout_gravity="center_horizontal"/>-->
 
-  <Button
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="@string/manage_global_data"
-      android:id="@+id/manage_global_data_button"
-      android:layout_gravity="center_horizontal"/>
+  <!--<Button-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:text="@string/manage_global_data"-->
+      <!--android:id="@+id/manage_global_data_button"-->
+      <!--android:layout_gravity="center_horizontal"/>-->
 
-  <Button
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="@string/play"
-      android:id="@+id/play_button"
-      android:layout_gravity="center_horizontal"/>
+  <!--<Button-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:text="@string/play"-->
+      <!--android:id="@+id/play_button"-->
+      <!--android:layout_gravity="center_horizontal"/>-->
 
-  <Button
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="@string/about_rmu"
-      android:id="@+id/about_rmu_button"
-      android:layout_gravity="center_horizontal"/>
+  <!--<Button-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:text="@string/about_rmu"-->
+      <!--android:id="@+id/about_rmu_button"-->
+      <!--android:layout_gravity="center_horizontal"/>-->
 
   <ExpandableListView
-      android:layout_width="match_parent"
+      android:layout_width="300dp"
       android:layout_height="wrap_content"
       android:id="@+id/menu_list"
       android:layout_gravity="center_horizontal"/>

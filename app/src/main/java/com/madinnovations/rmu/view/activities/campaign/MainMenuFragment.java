@@ -52,30 +52,98 @@ public class MainMenuFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.campaign_main_menu_fragment, container, false);
 
-		Button commonDataButton = (Button)layout.findViewById(R.id.manage_global_data_button);
-		commonDataButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.e("MainMenuFragment", "Calling showCommonData()");
-				((CampaignActivity)getActivity()).showCommonData();
-			}
-		});
+//		Button commonDataButton = (Button)layout.findViewById(R.id.manage_global_data_button);
+//		commonDataButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//				Log.e("MainMenuFragment", "Calling showCommonData()");
+//				((CampaignActivity)getActivity()).showCommonData();
+//			}
+//		});
 
-		Button aboutButton = (Button)layout.findViewById(R.id.about_rmu_button);
-		aboutButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.e("MainMenuFragment", "Calling showAbout()");
-				((CampaignActivity)getActivity()).showAbout();
-			}
-		});
+//		Button aboutButton = (Button)layout.findViewById(R.id.about_rmu_button);
+//		aboutButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//				Log.e("MainMenuFragment", "Calling showAbout()");
+//				((CampaignActivity)getActivity()).showAbout();
+//			}
+//		});
 
 		listView = (ExpandableListView)layout.findViewById(R.id.menu_list);
+		initListView(listView);
+
+		return layout;
+	}
+
+	private void initListView(ExpandableListView listView) {
 		createMenuData();
 		adapter = new MainMenuListAdapter(this.getActivity(), groupNames, groupItems);
 		listView.setAdapter(adapter);
-
-		return layout;
+		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+				switch (groupPosition) {
+					case 0:
+						switch (childPosition) {
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 1:
+						switch (childPosition) {
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+							case 4:
+								break;
+						}
+						break;
+					case 2:
+						switch (childPosition) {
+							case 0:
+								((CampaignActivity)getActivity()).showCommonData();
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+							case 4:
+								break;
+						}
+						break;
+					case 3:
+						switch (childPosition) {
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 4:
+						((CampaignActivity)getActivity()).showAbout();
+						break;
+				}
+				return false;
+			}
+		});
 	}
 
 	private void createMenuData() {

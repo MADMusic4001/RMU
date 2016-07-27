@@ -28,7 +28,7 @@ public interface ArchetypeSpellsSchema {
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ARCHETYPE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_SPELL_ID + " INTEGER NOT NULL"
+			+ COLUMN_SPELL_ID + " INTEGER NOT NULL, "
 			+ "PRIMARY KEY(" + COLUMN_ARCHETYPE_ID + "," + COLUMN_SPELL_ID + ")"
 			+ ")";
 

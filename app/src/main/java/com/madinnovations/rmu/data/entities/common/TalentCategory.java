@@ -19,7 +19,7 @@ package com.madinnovations.rmu.data.entities.common;
  * Talent category attributes
  */
 public class TalentCategory {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 

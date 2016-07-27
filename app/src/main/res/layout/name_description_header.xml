@@ -13,9 +13,9 @@
         android:gravity="start"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/primary_text_dark"
         android:padding="10dp"
-        android:background="#336699"
+        android:background="@android:color/background_dark"
         android:text="@string/label_name"/>
     <TextView
         android:id="@+id/descriptionHeader"
@@ -25,8 +25,8 @@
         android:gravity="start"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/primary_text_dark"
         android:padding="10dp"
-        android:background="#336699"
+        android:background="@android:color/background_dark"
         android:text="@string/label_description"/>
 </LinearLayout>

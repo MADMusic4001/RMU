@@ -16,7 +16,7 @@ public interface CharacterStatsSchema {
             + " ("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL, "
             + COLUMN_STAT_ID + " INTEGER NOT NULL, "
-            + COLUMN_CURRENT_VALUE  + " INTEGER NOT NULL"
+            + COLUMN_CURRENT_VALUE  + " INTEGER NOT NULL, "
             + COLUMN_POTENTIAL_VALUE + " INTEGER NOT NULL, "
             + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_STAT_ID + ")"
             + ")";

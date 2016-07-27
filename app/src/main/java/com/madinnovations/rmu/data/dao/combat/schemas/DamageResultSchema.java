@@ -22,7 +22,7 @@ public interface DamageResultSchema {
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
             + COLUMN_DAMAGE_TABLE_ID  + " INTEGER NOT NULL, "
             + COLUMN_NAME  + " TEXT NOT NULL, "
-            + COLUMN_DESCRIPTION + " TEXT NOT NULL"
+            + COLUMN_DESCRIPTION + " TEXT NOT NULL, "
             + COLUMN_MIN_ROLL  + " INTEGER NOT NULL, "
             + COLUMN_MAX_ROLL  + " INTEGER NOT NULL, "
             + COLUMN_HITS  + " INTEGER NOT NULL, "
