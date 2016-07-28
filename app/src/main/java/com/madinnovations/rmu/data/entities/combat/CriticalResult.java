@@ -4,7 +4,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Critical result attributes
  */
 public class CriticalResult {
-    private int id;
+    private int id = -1;
     private String description;
     private int minRoll;
     private int maxRoll;

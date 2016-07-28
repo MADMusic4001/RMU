@@ -24,7 +24,7 @@ import java.util.Map;
  * Profession attributes
  */
 public class Profession {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private Map<SkillCategory, SkillCost> skillCostMap;

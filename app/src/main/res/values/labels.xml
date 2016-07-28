@@ -31,6 +31,7 @@
   <string name="manage_sizes">Manage Sizes</string>
   <string name="manage_skill_categories">Manage Skill Categories</string>
   <string name="manage_skills">Manage Skills</string>
+  <string name="manage_stats">Manage Stats</string>
 
   <string name="abbreviation_label">Abbreviation</string>
   <string name="abbreviation_hint">New Abbreviation</string>

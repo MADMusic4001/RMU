@@ -18,11 +18,9 @@ package com.madinnovations.rmu.view.activities.campaign;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
@@ -39,8 +37,6 @@ import java.util.Map;
  * Fragment class for interacting with the Menu section of the campaign activity.
  */
 public class MainMenuFragment extends Fragment {
-	private ExpandableListView listView;
-	private ExpandableListAdapter adapter;
 	private List<String> groupNames;
 	private Map<String, List<String>> groupItems;
 
@@ -52,25 +48,7 @@ public class MainMenuFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.campaign_main_menu_fragment, container, false);
 
-//		Button commonDataButton = (Button)layout.findViewById(R.id.manage_global_data_button);
-//		commonDataButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				Log.e("MainMenuFragment", "Calling showCommonData()");
-//				((CampaignActivity)getActivity()).showCommonData();
-//			}
-//		});
-
-//		Button aboutButton = (Button)layout.findViewById(R.id.about_rmu_button);
-//		aboutButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				Log.e("MainMenuFragment", "Calling showAbout()");
-//				((CampaignActivity)getActivity()).showAbout();
-//			}
-//		});
-
-		listView = (ExpandableListView)layout.findViewById(R.id.menu_list);
+		ExpandableListView listView = (ExpandableListView) layout.findViewById(R.id.menu_list);
 		initListView(listView);
 
 		return layout;
@@ -78,7 +56,7 @@ public class MainMenuFragment extends Fragment {
 
 	private void initListView(ExpandableListView listView) {
 		createMenuData();
-		adapter = new MainMenuListAdapter(this.getActivity(), groupNames, groupItems);
+		ExpandableListAdapter adapter = new MainMenuListAdapter(this.getActivity(), groupNames, groupItems);
 		listView.setAdapter(adapter);
 		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 			@Override
@@ -113,7 +91,7 @@ public class MainMenuFragment extends Fragment {
 					case 2:
 						switch (childPosition) {
 							case 0:
-								((CampaignActivity)getActivity()).showCommonData();
+								((CampaignActivity)getActivity()).showTalentCategories();
 								break;
 							case 1:
 								break;
@@ -122,6 +100,9 @@ public class MainMenuFragment extends Fragment {
 							case 3:
 								break;
 							case 4:
+								break;
+							case 5:
+								((CampaignActivity)getActivity()).showStats();
 								break;
 						}
 						break;
@@ -169,12 +150,13 @@ public class MainMenuFragment extends Fragment {
 		creatureItems.add(getString(R.string.manage_varieties));
 		creatureItems.add(getString(R.string.manage_critical_codes));
 
-		List<String> globalDataItems = new ArrayList<>(5);
+		List<String> globalDataItems = new ArrayList<>(6);
 		globalDataItems.add(getString(R.string.manage_talent_categories));
 		globalDataItems.add(getString(R.string.manage_talents));
 		globalDataItems.add(getString(R.string.manage_sizes));
 		globalDataItems.add(getString(R.string.manage_skill_categories));
 		globalDataItems.add(getString(R.string.manage_skills));
+		globalDataItems.add(getString(R.string.manage_stats));
 
 		List<String> playItems = new ArrayList<>(5);
 		playItems.add(getString(R.string.generate_encounter));

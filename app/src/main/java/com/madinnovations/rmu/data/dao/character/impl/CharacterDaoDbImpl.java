@@ -156,6 +156,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 		return 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Character cursorToEntity(Cursor cursor) {
 		Character instance = new Character();
@@ -185,18 +186,16 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 		Cursor cursor = super.query(CharacterSkillsSchema.TABLE_NAME, CharacterSkillsSchema.COLUMNS, selection,
 				selectionArgs, CharacterSkillsSchema.COLUMN_SKILL_ID);
 		Map<Skill, Short> map = new HashMap<>(cursor.getCount());
-		if (cursor != null) {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_SKILL_ID));
-				Skill instance = skillDao.getById(mappedId);
-				if(instance != null) {
-					map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_RANKS)));
-				}
-				cursor.moveToNext();
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_SKILL_ID));
+			Skill instance = skillDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_RANKS)));
 			}
-			cursor.close();
+			cursor.moveToNext();
 		}
+		cursor.close();
 
 		return map;
 	}
@@ -208,18 +207,16 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 		Cursor cursor = super.query(CharacterTalentsSchema.TABLE_NAME, CharacterTalentsSchema.COLUMNS, selection,
 				selectionArgs, CharacterTalentsSchema.COLUMN_TALENT_ID);
 		Map<Talent, Short> map = new HashMap<>(cursor.getCount());
-		if (cursor != null) {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TALENT_ID));
-				Talent instance = talentDao.getById(mappedId);
-				if(instance != null) {
-					map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TIERS)));
-				}
-				cursor.moveToNext();
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TALENT_ID));
+			Talent instance = talentDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TIERS)));
 			}
-			cursor.close();
+			cursor.moveToNext();
 		}
+		cursor.close();
 
 		return map;
 	}
@@ -232,25 +229,19 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 				selectionArgs, CharacterStatsSchema.COLUMN_STAT_ID);
 		Map<Stat, Short> tempsMap = new HashMap<>(cursor.getCount());
 		Map<Stat, Short> potentialsMap = new HashMap<>(cursor.getCount());
-		if (cursor != null) {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_STAT_ID));
-				Stat stat = statDao.getById(mappedId);
-				if(stat != null) {
-					tempsMap.put(stat, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_CURRENT_VALUE)));
-					potentialsMap.put(stat, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE)));
-				}
-				cursor.moveToNext();
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_STAT_ID));
+			Stat stat = statDao.getById(mappedId);
+			if(stat != null) {
+				tempsMap.put(stat, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_CURRENT_VALUE)));
+				potentialsMap.put(stat, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE)));
 			}
-			cursor.close();
+			cursor.moveToNext();
 		}
+		cursor.close();
 		character.setStatTemps(tempsMap);
 		character.setStatPotentials(potentialsMap);
-	}
-
-	private Map<Stat, Short> getStatPotentials(int id) {
-		return null;
 	}
 
 	private void setContentValue(Character character) {

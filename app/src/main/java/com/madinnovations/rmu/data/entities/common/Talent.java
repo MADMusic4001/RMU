@@ -21,7 +21,7 @@ import java.util.List;
  * Talent data
  */
 public class Talent {
-	private int id;
+	private int id = -1;
 	private TalentCategory category;
 	private String name;
 	private String description;

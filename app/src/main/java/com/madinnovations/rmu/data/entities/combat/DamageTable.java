@@ -6,7 +6,7 @@ import java.util.List;
  * Damage table attributes
  */
 public class DamageTable {
-    private int id;
+    private int id = -1;
     private String name;
     private List<DamageResult> results;
 

@@ -19,10 +19,20 @@ package com.madinnovations.rmu.data.entities.common;
  * Class representing a Rolemaster stat.
  */
 public class Stat {
-	private int id;
+	private int id = -1;
 	private String abbreviation;
 	private String name;
 	private String description;
+
+	@Override
+	public String toString() {
+		return "Stat{" +
+				"id=" + id +
+				", abbreviation='" + abbreviation + '\'' +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				'}';
+	}
 
 	// Getters and setters
 	public int getId() {

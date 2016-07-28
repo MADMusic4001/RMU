@@ -51,19 +51,16 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 7/25/2016.
+ * Handles interactions with the UI for talent categories.
  */
 public class TalentCategoryFragment extends Fragment {
 	@Inject
-	protected TalentCategoryRxHandler talentCategoryRxHandler;
+	protected TalentCategoryRxHandler   talentCategoryRxHandler;
 	@Inject
 	protected TalentCategoryListAdapter listAdapter;
-	private ListView listView;
-	private EditText nameEdit;
-	private EditText descriptionEdit;
+	private   ListView                  listView;
+	private   EditText                  nameEdit;
+	private   EditText                  descriptionEdit;
 	private TalentCategory selectedInstance = null;
 	private boolean dirty = false;
 
@@ -92,7 +89,10 @@ public class TalentCategoryFragment extends Fragment {
 
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentCategoryFragment", "Exception occured loading talent categories", e);
+						Log.e("TalentCategoryFragment", "Exception occurred loading talent categories", e);
+						Toast.makeText(TalentCategoryFragment.this.getActivity(),
+									   getString(R.string.toast_talent_categories_load_failed),
+									   Toast.LENGTH_SHORT).show();
 					}
 
 					@Override
@@ -188,7 +188,6 @@ public class TalentCategoryFragment extends Fragment {
 									String toastString;
 
 									if(success) {
-										int position = listAdapter.getPosition(talentCategory);
 										listAdapter.remove(talentCategory);
 										listAdapter.notifyDataSetChanged();
 										toastString = getString(R.string.toast_talent_category_deleted);
@@ -226,7 +225,7 @@ public class TalentCategoryFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
-					if (selectedInstance != null && !selectedInstance.getName().equals(newName)) {
+					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
 						selectedInstance.setName(newName);
 						talentCategoryRxHandler.save(selectedInstance)
 							.observeOn(AndroidSchedulers.mainThread())
@@ -271,7 +270,7 @@ public class TalentCategoryFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !selectedInstance.getDescription().equals(newDescription)) {
+					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
 						selectedInstance.setDescription(newDescription);
 						talentCategoryRxHandler.save(selectedInstance)
 							.observeOn(AndroidSchedulers.mainThread())
@@ -330,7 +329,7 @@ public class TalentCategoryFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty) {
+				if(dirty && selectedInstance != null) {
 					selectedInstance.setName(nameEdit.getText().toString());
 					selectedInstance.setDescription(descriptionEdit.getText().toString());
 					talentCategoryRxHandler.save(selectedInstance)

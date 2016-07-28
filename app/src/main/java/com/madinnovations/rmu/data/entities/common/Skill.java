@@ -19,7 +19,7 @@ package com.madinnovations.rmu.data.entities.common;
  * Class representing a Rolemaster Skill
  */
 public class Skill {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private SkillCategory category;

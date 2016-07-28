@@ -35,20 +35,19 @@ public class StatRxHandler {
 	 */
 	public Observable<Stat> getById(final int id) {
 		return Observable.create(
-				new Observable.OnSubscribe<Stat>() {
-					@Override
-					public void call(Subscriber<? super Stat> subscriber) {
-						try {
-							subscriber.onNext(dao.getById(id));
-							subscriber.onCompleted();
-						}
-						catch (Exception e) {
-							subscriber.onError(e);
-						}
+			new Observable.OnSubscribe<Stat>() {
+				@Override
+				public void call(Subscriber<? super Stat> subscriber) {
+					try {
+						subscriber.onNext(dao.getById(id));
+						subscriber.onCompleted();
+					}
+					catch (Exception e) {
+						subscriber.onError(e);
 					}
 				}
-		)
-				.subscribeOn(Schedulers.io());
+			}
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
@@ -59,45 +58,43 @@ public class StatRxHandler {
 	 */
 	public Observable<Collection<Stat>> getAll() {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<Stat>>() {
-					@Override
-					public void call(Subscriber<? super Collection<Stat>> subscriber) {
-						try {
-							subscriber.onNext(dao.getAll());
-							subscriber.onCompleted();
-						}
-						catch (Exception e) {
-							subscriber.onError(e);
-						}
+			new Observable.OnSubscribe<Collection<Stat>>() {
+				@Override
+				public void call(Subscriber<? super Collection<Stat>> subscriber) {
+					try {
+						subscriber.onNext(dao.getAll());
+						subscriber.onCompleted();
+					}
+					catch (Exception e) {
+						subscriber.onError(e);
 					}
 				}
-		)
-				.subscribeOn(Schedulers.io());
+			}
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Stat instance to persistent storage.
 	 *
-	 * @param world  the Stat instance to be saved
+	 * @param stat  the Stat instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Stat instance.
 	 */
-	public Observable<Stat> save(final Stat world) {
+	public Observable<Stat> save(final Stat stat) {
 		return Observable.create(
-				new Observable.OnSubscribe<Stat>() {
-					@Override
-					public void call(Subscriber<? super Stat> subscriber) {
-						try {
-							dao.save(world);
-							subscriber.onNext(world);
-							subscriber.onCompleted();
-						}
-						catch(Exception e) {
-							subscriber.onError(e);
-						}
+			new Observable.OnSubscribe<Stat>() {
+				@Override
+				public void call(Subscriber<? super Stat> subscriber) {
+					try {
+						dao.save(stat);
+						subscriber.onNext(stat);
+						subscriber.onCompleted();
+					}
+					catch(Exception e) {
+						subscriber.onError(e);
 					}
 				}
-		)
-				.subscribeOn(Schedulers.io());
+			}
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
@@ -107,20 +104,19 @@ public class StatRxHandler {
 	 */
 	public Observable<Boolean> deleteById(final int id) {
 		return Observable.create(
-				new Observable.OnSubscribe<Boolean>() {
-					@Override
-					public void call(Subscriber<? super Boolean> subscriber) {
-						try {
-							subscriber.onNext(dao.deleteById(id));
-							subscriber.onCompleted();
-						}
-						catch(Exception e) {
-							subscriber.onError(e);
-						}
+			new Observable.OnSubscribe<Boolean>() {
+				@Override
+				public void call(Subscriber<? super Boolean> subscriber) {
+					try {
+						subscriber.onNext(dao.deleteById(id));
+						subscriber.onCompleted();
+					}
+					catch(Exception e) {
+						subscriber.onError(e);
 					}
 				}
-		)
-				.subscribeOn(Schedulers.io());
+			}
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
@@ -130,21 +126,20 @@ public class StatRxHandler {
 	 */
 	public Observable<Collection<Stat>> deleteAll() {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<Stat>>() {
-					@Override
-					public void call(Subscriber<? super Collection<Stat>> subscriber) {
-						try {
-							Collection<Stat> worldsDeleted = dao.getAll();
-							dao.deleteAll();
-							subscriber.onNext(worldsDeleted);
-							subscriber.onCompleted();
-						}
-						catch(Exception e) {
-							subscriber.onError(e);
-						}
+			new Observable.OnSubscribe<Collection<Stat>>() {
+				@Override
+				public void call(Subscriber<? super Collection<Stat>> subscriber) {
+					try {
+						Collection<Stat> worldsDeleted = dao.getAll();
+						dao.deleteAll();
+						subscriber.onNext(worldsDeleted);
+						subscriber.onCompleted();
+					}
+					catch(Exception e) {
+						subscriber.onError(e);
 					}
 				}
-		)
-				.subscribeOn(Schedulers.io());
+			}
+		).subscribeOn(Schedulers.io());
 	}
 }

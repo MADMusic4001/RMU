@@ -36,7 +36,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by madanle on 7/27/16.
+ * Handles interactions with the UI for stats.
  */
 public class StatsFragment extends Fragment {
 	@Inject
@@ -74,16 +74,18 @@ public class StatsFragment extends Fragment {
 
 					@Override
 					public void onError(Throwable e) {
-						Log.e("StatFragment", "Exception occured loading talent categories", e);
+						Log.e("StatFragment", "Exception occurred loading stats", e);
+						Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
+									   Toast.LENGTH_SHORT).show();
 					}
 
 					@Override
-					public void onNext(Collection<Stat> talentCategories) {
+					public void onNext(Collection<Stat> stats) {
 						String toastString;
 
-						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
+						toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
 						listAdapter.clear();
-						listAdapter.addAll(talentCategories);
+						listAdapter.addAll(stats);
 						listAdapter.notifyDataSetChanged();
 						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -95,7 +97,6 @@ public class StatsFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.e("StatFragment", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.stats_action_bar, menu);
 	}
@@ -105,6 +106,7 @@ public class StatsFragment extends Fragment {
 		int id = item.getItemId();
 		if(id == R.id.action_new_stat) {
 			Stat stat = new Stat();
+			stat.setAbbreviation("NA");
 			stat.setName(getString(R.string.default_stat_name));
 			stat.setDescription(getString(R.string.default_stat_description));
 			statRxHandler.save(stat)
@@ -124,6 +126,7 @@ public class StatsFragment extends Fragment {
 						@Override
 						public void onNext(Stat stat) {
 							listAdapter.add(stat);
+							abbreviationEdit.setText(stat.getAbbreviation());
 							nameEdit.setText(stat.getName());
 							descriptionEdit.setText(stat.getDescription());
 							selectedInstance = stat;
@@ -170,7 +173,6 @@ public class StatsFragment extends Fragment {
 									String toastString;
 
 									if(success) {
-										int position = listAdapter.getPosition(stat);
 										listAdapter.remove(stat);
 										listAdapter.notifyDataSetChanged();
 										toastString = getString(R.string.toast_stat_deleted);
@@ -199,16 +201,16 @@ public class StatsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				dirty = true;
 				if (editable.length() == 0) {
-					abbreviationEdit.setError(getString(R.string.validation_name_required));
+					abbreviationEdit.setError(getString(R.string.validation_abbreviation_required));
 				}
 			}
 		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		abbreviationEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
-					final String newAbbreviation = nameEdit.getText().toString();
-					if (selectedInstance != null && !selectedInstance.getAbbreviation().equals(newAbbreviation)) {
+					final String newAbbreviation = abbreviationEdit.getText().toString();
+					if (selectedInstance != null && !newAbbreviation.equals(selectedInstance.getAbbreviation())) {
 						selectedInstance.setAbbreviation(newAbbreviation);
 						statRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
@@ -253,7 +255,7 @@ public class StatsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
-					if (selectedInstance != null && !selectedInstance.getName().equals(newName)) {
+					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
 						selectedInstance.setName(newName);
 						statRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
@@ -298,7 +300,7 @@ public class StatsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !selectedInstance.getDescription().equals(newDescription)) {
+					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
 						selectedInstance.setDescription(newDescription);
 						statRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
@@ -323,6 +325,9 @@ public class StatsFragment extends Fragment {
 	}
 
 	private void onSaved(Stat stat) {
+		if(getActivity() == null) {
+			return;
+		}
 		String toastString;
 		toastString = getString(R.string.toast_stat_saved);
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
@@ -361,7 +366,7 @@ public class StatsFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty) {
+				if(dirty && selectedInstance != null) {
 					selectedInstance.setAbbreviation(abbreviationEdit.getText().toString());
 					selectedInstance.setName(nameEdit.getText().toString());
 					selectedInstance.setDescription(descriptionEdit.getText().toString());
@@ -385,6 +390,7 @@ public class StatsFragment extends Fragment {
 
 				selectedInstance = (Stat) listView.getItemAtPosition(position);
 				if (selectedInstance != null) {
+					abbreviationEdit.setText(selectedInstance.getAbbreviation());
 					nameEdit.setText(selectedInstance.getName());
 					descriptionEdit.setText(selectedInstance.getDescription());
 				}

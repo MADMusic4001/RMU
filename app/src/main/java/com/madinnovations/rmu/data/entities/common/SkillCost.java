@@ -19,10 +19,17 @@ package com.madinnovations.rmu.data.entities.common;
  * Cost of improving a skill
  */
 public class SkillCost {
+	private int id = -1;
 	private short initialCost;
 	private short additionalCost;
 
 	// Getters and setters
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public short getInitialCost() {
 		return initialCost;
 	}

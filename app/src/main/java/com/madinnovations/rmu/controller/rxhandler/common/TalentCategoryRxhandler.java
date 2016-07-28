@@ -37,20 +37,19 @@ public class TalentCategoryRxHandler {
 	 */
 	public Observable<TalentCategory> getById(final int id) {
 		return Observable.create(
-				new Observable.OnSubscribe<TalentCategory>() {
-					@Override
-					public void call(Subscriber<? super TalentCategory> subscriber) {
-						try {
-							subscriber.onNext(dao.getById(id));
-							subscriber.onCompleted();
-						}
-						catch (Exception e) {
-							subscriber.onError(e);
-						}
+			new Observable.OnSubscribe<TalentCategory>() {
+				@Override
+				public void call(Subscriber<? super TalentCategory> subscriber) {
+					try {
+						subscriber.onNext(dao.getById(id));
+						subscriber.onCompleted();
+					}
+					catch (Exception e) {
+						subscriber.onError(e);
 					}
 				}
-		)
-		.subscribeOn(Schedulers.io());
+			}
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
@@ -60,7 +59,7 @@ public class TalentCategoryRxHandler {
 	 * instances.
 	 */
 	public Observable<Collection<TalentCategory>> getAll() {
-		Log.e("WorldHandler", "getting worlds");
+		Log.e("WorldHandler", "getting talentCategories");
 		return Observable.create(
 			new Observable.OnSubscribe<Collection<TalentCategory>>() {
 				@Override
@@ -74,24 +73,23 @@ public class TalentCategoryRxHandler {
 					}
 				}
 			}
-		)
-		.subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
 	 * Creates an Observable that, when subscribed to, will save a TalentCategory instance to persistent storage.
 	 *
-	 * @param world  the TalentCategory instance to be saved
+	 * @param talentCategory  the TalentCategory instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the TalentCategory instance.
 	 */
-	public Observable<TalentCategory> save(final TalentCategory world) {
+	public Observable<TalentCategory> save(final TalentCategory talentCategory) {
 		return Observable.create(
 			new Observable.OnSubscribe<TalentCategory>() {
 				@Override
 				public void call(Subscriber<? super TalentCategory> subscriber) {
 					try {
-						dao.save(world);
-						subscriber.onNext(world);
+						dao.save(talentCategory);
+						subscriber.onNext(talentCategory);
 						subscriber.onCompleted();
 					}
 					catch(Exception e) {
@@ -99,8 +97,7 @@ public class TalentCategoryRxHandler {
 					}
 				}
 			}
-		)
-		.subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
@@ -122,8 +119,7 @@ public class TalentCategoryRxHandler {
 					}
 				}
 			}
-		)
-		.subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io());
 	}
 
 	/**
@@ -137,9 +133,9 @@ public class TalentCategoryRxHandler {
 				@Override
 				public void call(Subscriber<? super Collection<TalentCategory>> subscriber) {
 					try {
-						Collection<TalentCategory> worldsDeleted = dao.getAll();
+						Collection<TalentCategory> talentCategoriesDeleted = dao.getAll();
 						dao.deleteAll();
-						subscriber.onNext(worldsDeleted);
+						subscriber.onNext(talentCategoriesDeleted);
 						subscriber.onCompleted();
 					}
 					catch(Exception e) {
@@ -147,7 +143,6 @@ public class TalentCategoryRxHandler {
 					}
 				}
 			}
-		)
-		.subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io());
 	}
 }

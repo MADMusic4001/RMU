@@ -4,7 +4,7 @@ package com.madinnovations.rmu.data.entities.object;
  * Item attributes
  */
 public class Item {
-    private int id;
+    private int id = -1;
     private String name;
     private String description;
     private int weight;

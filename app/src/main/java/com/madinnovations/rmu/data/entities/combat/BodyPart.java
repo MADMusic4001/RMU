@@ -4,7 +4,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Body part attributes
  */
 public class BodyPart {
-    private int id;
+    private int id = -1;
     private String name;
     private String description;
 

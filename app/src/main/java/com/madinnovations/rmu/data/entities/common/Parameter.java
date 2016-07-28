@@ -19,7 +19,7 @@ package com.madinnovations.rmu.data.entities.common;
  * Representation of talent effect parameters.
  */
 public class Parameter {
-	private int id;
+	private int id = -1;
 	private String name;
 	private short value;
 	private boolean perTier;

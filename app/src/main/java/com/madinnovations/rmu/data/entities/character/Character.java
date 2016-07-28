@@ -25,7 +25,7 @@ import java.util.Map;
  * Character attributes
  */
 public class Character {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private Race race;

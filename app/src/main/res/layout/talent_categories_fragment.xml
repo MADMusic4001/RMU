@@ -15,13 +15,12 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:id="@+id/name_edit"
-      android:hint="@string/name_hint"
-      android:textIsSelectable="true"/>
+      android:hint="@string/name_hint"/>
 
   <EditText
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:id="@+id/description_edit"
       android:hint="@string/description_hint"
-      android:textIsSelectable="true"/>
+      android:maxLines="1"/>
 </LinearLayout>

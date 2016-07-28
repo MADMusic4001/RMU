@@ -25,7 +25,7 @@ import java.util.Map;
  * Culture attributes
  */
 public class Culture {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private Map<SkillCategory, Short> skillRanks;

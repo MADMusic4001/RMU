@@ -5,7 +5,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Damage result attributes
  */
 public class DamageResult {
-    private int id;
+    private int id = -1;
     private int minRoll;
     private int maxRoll;
     private int hits;

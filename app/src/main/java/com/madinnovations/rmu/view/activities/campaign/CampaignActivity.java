@@ -19,11 +19,11 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
+import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
@@ -32,9 +32,9 @@ import com.madinnovations.rmu.view.di.modules.ActivityModule;
  * Activity class for managing the campaign UI.
  */
 public class CampaignActivity extends Activity {
-	private ActivityComponent activityComponent;
-	private MainMenuFragment mainMenuFragment;
-	private AboutFragment aboutFragment;
+	private ActivityComponent      activityComponent;
+	private AboutFragment          aboutFragment;
+	private StatsFragment          statsFragment;
 	private TalentCategoryFragment talentCategoryFragment;
 
 	@Override
@@ -53,7 +53,7 @@ public class CampaignActivity extends Activity {
 
 		}
 		else {
-			mainMenuFragment = new MainMenuFragment();
+			MainMenuFragment mainMenuFragment = new MainMenuFragment();
 			aboutFragment = new AboutFragment();
 			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 			fragmentTransaction.replace(R.id.menu_container, mainMenuFragment);
@@ -68,8 +68,7 @@ public class CampaignActivity extends Activity {
 		return true;
 	}
 
-	public void showCommonData() {
-		Log.e("CampaignActivity", "Showing common data fragment");
+	public void showTalentCategories() {
 		if(talentCategoryFragment == null) {
 			talentCategoryFragment = new TalentCategoryFragment();
 		}
@@ -77,11 +76,9 @@ public class CampaignActivity extends Activity {
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.details_container, talentCategoryFragment);
 		fragmentTransaction.commit();
-		Log.e("CampaignActivity", "Common data fragment shown");
 	}
 
 	public void showAbout() {
-		Log.e("CampaignActivity", "Showing about fragment");
 		if(aboutFragment == null) {
 			aboutFragment = new AboutFragment();
 		}
@@ -89,7 +86,16 @@ public class CampaignActivity extends Activity {
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.details_container, aboutFragment);
 		fragmentTransaction.commit();
-		Log.e("CampaignActivity", "About fragment shown");
+	}
+
+	public void showStats() {
+		if(statsFragment == null) {
+			statsFragment = new StatsFragment();
+		}
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.details_container, statsFragment);
+		fragmentTransaction.commit();
 	}
 
 	public ActivityComponent getActivityComponent() {

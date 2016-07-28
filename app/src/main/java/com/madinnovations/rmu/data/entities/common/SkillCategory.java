@@ -19,7 +19,7 @@ package com.madinnovations.rmu.data.entities.common;
  * Skill category attributes
  */
 public class SkillCategory {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private Stat stat1;

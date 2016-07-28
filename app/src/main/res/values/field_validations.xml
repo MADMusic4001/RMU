@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="validation_abbreviation_required">Please enter an abbreviation.</string>
     <string name="validation_name_required">Please enter a name.</string>
     <string name="validation_description_required">Please enter a description.</string>
 </resources>

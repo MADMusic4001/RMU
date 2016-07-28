@@ -25,7 +25,7 @@ import java.util.Map;
  * Racial attributes
  */
 public class Race {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private short bonusDevelopmentPoints;

@@ -6,7 +6,7 @@ import java.util.List;
  * Critical Type attributes
  */
 public class CriticalType {
-    private int id;
+    private int id = -1;
     private String name;
     private List<CriticalResult> results;
 

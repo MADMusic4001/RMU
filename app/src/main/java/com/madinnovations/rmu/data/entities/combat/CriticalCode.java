@@ -19,7 +19,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Critical code attributes
  */
 public class CriticalCode {
-	private int id;
+	private int id = -1;
 	private String code;
 	private String description;
 
