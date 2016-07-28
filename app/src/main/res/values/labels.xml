@@ -5,7 +5,9 @@
   <!-- Main Menu labels -->
   <string name="manage_character_data">Manage Player Character Data</string>
   <string name="manage_creature_data">Manage Creature Data</string>
-  <string name="manage_global_data">Manage Global Data</string>
+  <string name="manage_combat_data">Manage Combat Data</string>
+  <string name="manage_common_data">Manage Common Data</string>
+  <string name="manage_item_data">Manage Item Data</string>
   <string name="play">Play</string>
   <string name="about_rmu">About RMU</string>
 
@@ -14,31 +16,39 @@
 
   <!-- PC menu labels -->
   <string name="manage_character">Manage Characters</string>
-  <string name="manage_race">Manage Races</string>
   <string name="manage_culture">Manage Cultures</string>
   <string name="manage_profession">Manage Professions</string>
+  <string name="manage_race">Manage Races</string>
 
   <!-- Creature menu labels -->
   <string name="manage_archetypes">Manage Archetypes</string>
   <string name="manage_categories">Manage Categories</string>
+  <string name="manage_creatures">Manage Creatures</string>
   <string name="manage_types">Manage Types</string>
   <string name="manage_varieties">Manage Varieties</string>
-  <string name="manage_critical_codes">Manage Critical Codes</string>
 
-  <!-- Global Data menu labels -->
-  <string name="manage_talent_categories">Manage Talent/Flaw Categories</string>
-  <string name="manage_talents">Manage Talents/Flaws</string>
+  <!-- Combat menu labels -->
+  <string name="manage_body_parts">Manage Body Parts</string>
+  <string name="manage_critical_codes">Manage Critical Codes</string>
+  <string name="manage_critical_results">Manage Critical Results</string>
+  <string name="manage_critical_types">Manage Critical Types</string>
+  <string name="manage_damage_results">Manage Damage Results</string>
+  <string name="manage_damage_tables">Manage Damage Tables</string>
+
+  <!-- Common Data menu labels -->
+  <string name="manage_locomotion_types">Manage Locomotion Types</string>
+  <string name="manage_parameters">Manage Parameters</string>
   <string name="manage_sizes">Manage Sizes</string>
   <string name="manage_skill_categories">Manage Skill Categories</string>
+  <string name="manage_skill_costs">Manage Skill Costs</string>
   <string name="manage_skills">Manage Skills</string>
   <string name="manage_stats">Manage Stats</string>
+  <string name="manage_talent_categories">Manage Talent/Flaw Categories</string>
+  <string name="manage_talents">Manage Talents/Flaws</string>
 
-  <string name="abbreviation_label">Abbreviation</string>
-  <string name="abbreviation_hint">New Abbreviation</string>
-  <string name="name_label">Name</string>
-  <string name="name_hint">New Name</string>
-  <string name="description_label">Description</string>
-  <string name="description_hint">New Description</string>
+  <!-- Common Data menu labels -->
+  <string name="manage_items">Manage Items</string>
+  <string name="manage_weapons">Manage Weapons</string>
 
   <!-- Play Menu labels -->
   <string name="generate_encounter">Generate Encounter</string>
@@ -59,4 +69,19 @@
   <string name="label_delete_talent_category">Delete Talent Category</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
+  <string name="label_new_locomotion_type">New Locomotion Type</string>
+  <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
+  <string name="label_new_body_part">New Body Part</string>
+  <string name="label_delete_body_part">Delete Body Part</string>
+
+  <!-- ListView header labels -->
+  <string name="abbreviation_label">Abbreviation</string>
+  <string name="description_label">Description</string>
+  <string name="name_label">Name</string>
+
+  <!-- EditText hints -->
+  <string name="abbreviation_hint">New Abbreviation</string>
+  <string name="default_movement_rate_hint">Default movement rate</string>
+  <string name="description_hint">New Description</string>
+  <string name="name_hint">New Name</string>
 </resources>

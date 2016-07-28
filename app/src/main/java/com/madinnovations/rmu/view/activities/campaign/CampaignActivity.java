@@ -23,6 +23,8 @@ import android.view.Menu;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
+import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
+import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
@@ -34,6 +36,8 @@ import com.madinnovations.rmu.view.di.modules.ActivityModule;
 public class CampaignActivity extends Activity {
 	private ActivityComponent      activityComponent;
 	private AboutFragment          aboutFragment;
+	private BodyPartsFragment bodyPartsFragment;
+	private LocomotionTypesFragment locomotionTypesFragment;
 	private StatsFragment          statsFragment;
 	private TalentCategoryFragment talentCategoryFragment;
 
@@ -66,6 +70,26 @@ public class CampaignActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_action_bar, menu);
 		return true;
+	}
+
+	public void showBodyParts() {
+		if(bodyPartsFragment == null) {
+			bodyPartsFragment = new BodyPartsFragment();
+		}
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.details_container, bodyPartsFragment);
+		fragmentTransaction.commit();
+	}
+
+	public void showLocomotionTypes() {
+		if(locomotionTypesFragment == null) {
+			locomotionTypesFragment = new LocomotionTypesFragment();
+		}
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.details_container, locomotionTypesFragment);
+		fragmentTransaction.commit();
 	}
 
 	public void showTalentCategories() {

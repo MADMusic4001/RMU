@@ -24,7 +24,7 @@ import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalTypeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.MovementSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.ParameterSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
@@ -89,7 +89,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(CriticalTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(DamageResultSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(DamageTableSchema.TABLE_CREATE);
-            sqLiteDatabase.execSQL(MovementSchema.TABLE_CREATE);
+            sqLiteDatabase.execSQL(LocomotionTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(ParameterSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SizeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SkillCategorySchema.TABLE_CREATE);

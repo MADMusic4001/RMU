@@ -18,7 +18,7 @@ package com.madinnovations.rmu.data.entities.common;
 /**
  * Representation of a method of locomotion for creatures and characters.
  */
-public class Movement {
+public class LocomotionType {
 	private int id = -1;
 	private String name;
 	private String description;

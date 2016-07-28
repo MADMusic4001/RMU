@@ -1,4 +1,4 @@
-package com.madinnovations.rmu.view.activities.common;
+package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -21,10 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
+import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.StatListAdapter;
+import com.madinnovations.rmu.view.adapters.BodyPartListAdapter;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 import java.util.Collection;
@@ -36,18 +36,17 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Handles interactions with the UI for stats.
+ * Handles interactions with the UI for body parts.
  */
-public class StatsFragment extends Fragment {
+public class BodyPartsFragment extends Fragment {
 	@Inject
-	protected StatRxHandler statRxHandler;
+	protected BodyPartRxHandler talentCategoryRxHandler;
 	@Inject
-	protected StatListAdapter listAdapter;
+	protected BodyPartListAdapter listAdapter;
 	private ListView listView;
-	private EditText abbreviationEdit;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
-	private Stat selectedInstance = null;
+	private BodyPart selectedInstance = null;
 	private boolean dirty = false;
 
 	@Nullable
@@ -56,17 +55,18 @@ public class StatsFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newFragmentComponent(new FragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.stats_fragment, container, false);
+		View layout = inflater.inflate(R.layout.body_parts_fragment, container, false);
 
-		initAbbreviationEdit(layout);
 		initNameEdit(layout);
+		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
 		initDescriptionEdit(layout);
+		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
 
 		initListView(layout);
 
-		statRxHandler.getAll()
+		talentCategoryRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
+				.subscribe(new Subscriber<Collection<BodyPart>>() {
 					@Override
 					public void onCompleted() {
 
@@ -74,20 +74,21 @@ public class StatsFragment extends Fragment {
 
 					@Override
 					public void onError(Throwable e) {
-						Log.e("StatFragment", "Exception occurred loading stats", e);
-						Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
-									   Toast.LENGTH_SHORT).show();
+						Log.e("BodyPartsFragment", "Exception occurred loading talent categories", e);
+						Toast.makeText(BodyPartsFragment.this.getActivity(),
+								getString(R.string.toast_body_parts_load_failed),
+								Toast.LENGTH_SHORT).show();
 					}
 
 					@Override
-					public void onNext(Collection<Stat> stats) {
+					public void onNext(Collection<BodyPart> bodyParts) {
 						String toastString;
 
-						toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
+						toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
 						listAdapter.clear();
-						listAdapter.addAll(stats);
+						listAdapter.addAll(bodyParts);
 						listAdapter.notifyDataSetChanged();
-						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
 
@@ -97,22 +98,22 @@ public class StatsFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		Log.e("BodyPartFragment", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.stats_action_bar, menu);
+		inflater.inflate(R.menu.body_parts_action_bar, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_new_stat) {
-			Stat stat = new Stat();
-			stat.setAbbreviation("NA");
-			stat.setName(getString(R.string.default_stat_name));
-			stat.setDescription(getString(R.string.default_stat_description));
-			statRxHandler.save(stat)
+		if(id == R.id.action_new_body_part) {
+			BodyPart talentCategory = new BodyPart();
+			talentCategory.setName(getString(R.string.default_body_part_name));
+			talentCategory.setDescription(getString(R.string.default_body_part_description));
+			talentCategoryRxHandler.save(talentCategory)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Stat>() {
+					.subscribe(new Subscriber<BodyPart>() {
 						@Override
 						public void onCompleted() {
 
@@ -124,12 +125,11 @@ public class StatsFragment extends Fragment {
 						}
 
 						@Override
-						public void onNext(Stat stat) {
-							listAdapter.add(stat);
-							abbreviationEdit.setText(stat.getAbbreviation());
-							nameEdit.setText(stat.getName());
-							descriptionEdit.setText(stat.getDescription());
-							selectedInstance = stat;
+						public void onNext(BodyPart talentCategory) {
+							listAdapter.add(talentCategory);
+							nameEdit.setText(talentCategory.getName());
+							descriptionEdit.setText(talentCategory.getDescription());
+							selectedInstance = talentCategory;
 						}
 					});
 		}
@@ -139,21 +139,21 @@ public class StatsFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.stats_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.body_part_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final Stat stat;
+		final BodyPart talentCategory;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
-			case R.id.context_delete_stat:
-				stat = (Stat)listView.getItemAtPosition(info.position);
-				if(stat != null) {
-					statRxHandler.deleteById(stat.getId())
+			case R.id.context_delete_body_part:
+				talentCategory = (BodyPart)listView.getItemAtPosition(info.position);
+				if(talentCategory != null) {
+					talentCategoryRxHandler.deleteById(talentCategory.getId())
 							.observeOn(AndroidSchedulers.mainThread())
 							.subscribe(new Subscriber<Boolean>() {
 								@Override
@@ -163,8 +163,8 @@ public class StatsFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("StatFragment", "Exception thrown when deleting: " + stat, e);
-									String toastString = getString(R.string.toast_stat_delete_failed);
+									Log.e("BodyPartFragment", "Exception thrown when deleting: " + talentCategory, e);
+									String toastString = getString(R.string.toast_body_part_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 
@@ -173,9 +173,9 @@ public class StatsFragment extends Fragment {
 									String toastString;
 
 									if(success) {
-										listAdapter.remove(stat);
+										listAdapter.remove(talentCategory);
 										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_stat_deleted);
+										toastString = getString(R.string.toast_body_part_deleted);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
 								}
@@ -188,54 +188,6 @@ public class StatsFragment extends Fragment {
 			default:
 				return super.onContextItemSelected(item);
 		}
-	}
-
-	private void initAbbreviationEdit(View layout) {
-		abbreviationEdit = (EditText)layout.findViewById(R.id.abbreviation_edit);
-		abbreviationEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					abbreviationEdit.setError(getString(R.string.validation_abbreviation_required));
-				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getAbbreviation())) {
-					dirty = true;
-				}
-			}
-		});
-		abbreviationEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newAbbreviation = abbreviationEdit.getText().toString();
-					if (selectedInstance != null && !newAbbreviation.equals(selectedInstance.getAbbreviation())) {
-						dirty = true;
-						selectedInstance.setAbbreviation(newAbbreviation);
-						statRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Stat>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										String toastString = getString(R.string.toast_stat_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-										Log.e("StatFragment", "Save failed for: " + selectedInstance, e);
-									}
-									@Override
-									public void onNext(Stat stat) {
-										onSaved(stat);
-									}
-								});
-					}
-				}
-			}
-		});
 	}
 
 	private void initNameEdit(View layout) {
@@ -261,23 +213,22 @@ public class StatsFragment extends Fragment {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
 					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
-						dirty = true;
 						selectedInstance.setName(newName);
-						statRxHandler.save(selectedInstance)
+						talentCategoryRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Stat>() {
+								.subscribe(new Subscriber<BodyPart>() {
 									@Override
 									public void onCompleted() {
 									}
 									@Override
 									public void onError(Throwable e) {
-										String toastString = getString(R.string.toast_stat_save_failed);
+										String toastString = getString(R.string.toast_body_part_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-										Log.e("StatFragment", "Save failed for: " + selectedInstance, e);
+										Log.e("BodyPartFragment", "Save failed for: " + selectedInstance, e);
 									}
 									@Override
-									public void onNext(Stat stat) {
-										onSaved(stat);
+									public void onNext(BodyPart talentCategory) {
+										onSaved(talentCategory);
 									}
 								});
 					}
@@ -295,6 +246,7 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
+				dirty = true;
 				if (editable.length() == 0) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
@@ -309,22 +261,21 @@ public class StatsFragment extends Fragment {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
 					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
-						dirty = true;
 						selectedInstance.setDescription(newDescription);
-						statRxHandler.save(selectedInstance)
+						talentCategoryRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Stat>() {
+								.subscribe(new Subscriber<BodyPart>() {
 									@Override
 									public void onCompleted() {
 									}
 									@Override
 									public void onError(Throwable e) {
-										String toastString = getString(R.string.toast_stat_save_failed);
+										String toastString = getString(R.string.toast_body_part_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
 									@Override
-									public void onNext(Stat stat) {
-										onSaved(stat);
+									public void onNext(BodyPart talentCategory) {
+										onSaved(talentCategory);
 									}
 								});
 					}
@@ -333,29 +284,26 @@ public class StatsFragment extends Fragment {
 		});
 	}
 
-	private void onSaved(Stat stat) {
+	private void onSaved(BodyPart talentCategory) {
 		if(getActivity() == null) {
 			return;
 		}
+
 		String toastString;
-		toastString = getString(R.string.toast_stat_saved);
+		toastString = getString(R.string.toast_body_part_saved);
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
-		int position = listAdapter.getPosition(stat);
+		int position = listAdapter.getPosition(talentCategory);
 		// Add 1 for the header row
 		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition() + 1);
 		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.abbreviation_view);
+			TextView textView = (TextView) v.findViewById(R.id.name_view);
 			if (textView != null) {
-				textView.setText(stat.getAbbreviation());
-			}
-			textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(stat.getName());
+				textView.setText(talentCategory.getName());
 			}
 			textView = (TextView) v.findViewById(R.id.description_view);
 			if (textView != null) {
-				textView.setText(stat.getDescription());
+				textView.setText(talentCategory.getDescription());
 			}
 		}
 	}
@@ -365,7 +313,7 @@ public class StatsFragment extends Fragment {
 
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		headerView = getActivity().getLayoutInflater().inflate(
-				R.layout.stat_list_header, listView, false);
+				R.layout.name_description_header, listView, false);
 		listView.addHeaderView(headerView);
 
 		listView.setAdapter(listAdapter);
@@ -375,31 +323,28 @@ public class StatsFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if(dirty && selectedInstance != null) {
-					selectedInstance.setAbbreviation(abbreviationEdit.getText().toString());
 					selectedInstance.setName(nameEdit.getText().toString());
 					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					statRxHandler.save(selectedInstance)
+					talentCategoryRxHandler.save(selectedInstance)
 							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Stat>() {
+							.subscribe(new Subscriber<BodyPart>() {
 								@Override
 								public void onCompleted() {
 								}
 								@Override
 								public void onError(Throwable e) {
-									String toastString = getString(R.string.toast_stat_save_failed);
+									String toastString = getString(R.string.toast_body_part_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 								@Override
-								public void onNext(Stat stat) {
-									onSaved(stat);
+								public void onNext(BodyPart talentCategory) {
+									onSaved(talentCategory);
 								}
 							});
-					dirty = false;
 				}
 
-				selectedInstance = (Stat) listView.getItemAtPosition(position);
+				selectedInstance = (BodyPart) listView.getItemAtPosition(position);
 				if (selectedInstance != null) {
-					abbreviationEdit.setText(selectedInstance.getAbbreviation());
 					nameEdit.setText(selectedInstance.getName());
 					descriptionEdit.setText(selectedInstance.getDescription());
 				}

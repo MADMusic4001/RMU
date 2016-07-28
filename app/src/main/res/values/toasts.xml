@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="toast_talent_categories_load_failed">Failed to load Talent Categories</string>
-  <string name="toast_talent_categories_loaded">%1$d Talent Categories loaded.</string>
-  <string name="toast_talent_category_saved">Talent Category saved.</string>
-  <string name="toast_talent_category_save_failed">Talent Category save failed.</string>
-  <string name="toast_talent_category_deleted">Talent Category deleted.</string>
-  <string name="toast_talent_category_delete_failed">Talent Category deletion failed.</string>
+  <string name="toast_body_parts_load_failed">Failed to load Body Parts</string>
+  <string name="toast_body_parts_loaded">%1$d Body Parts loaded.</string>
+  <string name="toast_body_part_saved">Body Part saved.</string>
+  <string name="toast_body_part_save_failed">Body Part save failed.</string>
+  <string name="toast_body_part_deleted">Body Part deleted.</string>
+  <string name="toast_body_part_delete_failed">Body Part deletion failed.</string>
+  <string name="toast_locomotion_types_load_failed">Failed to load Locomotion Types</string>
+  <string name="toast_locomotion_types_loaded">%1$d Locomotion Types loaded.</string>
+  <string name="toast_locomotion_type_saved">Locomotion Type saved.</string>
+  <string name="toast_locomotion_type_save_failed">Locomotion Type save failed.</string>
+  <string name="toast_locomotion_type_deleted">Locomotion Type deleted.</string>
+  <string name="toast_locomotion_type_delete_failed">Locomotion Type deletion failed.</string>
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>
   <string name="toast_stat_save_failed">Stat save failed.</string>
   <string name="toast_stat_deleted">Stat deleted.</string>
   <string name="toast_stat_delete_failed">Stat deletion failed.</string>
+  <string name="toast_talent_categories_load_failed">Failed to load Talent Categories</string>
+  <string name="toast_talent_categories_loaded">%1$d Talent Categories loaded.</string>
+  <string name="toast_talent_category_saved">Talent Category saved.</string>
+  <string name="toast_talent_category_save_failed">Talent Category save failed.</string>
+  <string name="toast_talent_category_deleted">Talent Category deleted.</string>
+  <string name="toast_talent_category_delete_failed">Talent Category deletion failed.</string>
 </resources>

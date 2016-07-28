@@ -1,4 +1,4 @@
-package com.madinnovations.rmu.data.dao.combat.impl;
+package com.madinnovations.rmu.data.dao.common.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
-import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
+import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
+import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
+import com.madinnovations.rmu.data.entities.common.LocomotionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,25 +17,25 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Methods for managing {@link BodyPart} objects in a SQLite database.
+ * Methods for managing {@link LocomotionType} objects in a SQLite database.
  */
 @Singleton
-public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, BodyPartSchema {
+public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl implements LocomotionTypeDao, LocomotionTypeSchema {
     /**
-     * Creates a new instance of BodyPartDaoDbImpl
+     * Creates a new instance of LocomotionTypeDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public BodyPartDaoDbImpl(SQLiteOpenHelper helper) {
+    public LocomotionTypeDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
     }
 
     @Override
-    public BodyPart getById(int id) {
+    public LocomotionType getById(int id) {
         final String selectionArgs[] = { String.valueOf(id) };
         final String selection = COLUMN_ID + " = ?";
-        BodyPart instance = new BodyPart();
+        LocomotionType instance = new LocomotionType();
 
         SQLiteDatabase db = helper.getReadableDatabase();
         boolean newTransaction = !db.inTransaction();
@@ -64,8 +64,8 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
     }
 
     @Override
-    public List<BodyPart> getAll() {
-        List<BodyPart> list = new ArrayList<>();
+    public List<LocomotionType> getAll() {
+        List<LocomotionType> list = new ArrayList<>();
 
         SQLiteDatabase db = helper.getReadableDatabase();
         boolean newTransaction = !db.inTransaction();
@@ -73,12 +73,13 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
             db.beginTransaction();
         }
         try {
-            Cursor cursor = super.query(TABLE_NAME, COLUMNS, null, null, COLUMN_ID);
+            Cursor cursor = super.query(TABLE_NAME, COLUMNS, null,
+                    null, COLUMN_ID);
 
             if (cursor != null) {
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
-                    BodyPart instance = cursorToEntity(cursor);
+                    LocomotionType instance = cursorToEntity(cursor);
                     list.add(instance);
                     cursor.moveToNext();
                 }
@@ -95,7 +96,7 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
     }
 
     @Override
-    public boolean save(BodyPart instance) {
+    public boolean save(LocomotionType instance) {
         final String selectionArgs[] = { String.valueOf(instance.getId()) };
         final String selection = COLUMN_ID + " = ?";
         ContentValues contentValues = setContentValue(instance);
@@ -177,19 +178,23 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
     }
 
     @Override
-    protected BodyPart cursorToEntity(Cursor cursor) {
-        BodyPart instance = new BodyPart();
+    protected LocomotionType cursorToEntity(Cursor cursor) {
+        LocomotionType instance = null;
+        int columnIndex;
 
         if (cursor != null) {
+            instance = new LocomotionType();
             instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
             instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
             instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+            instance.setDefaultRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DEFAULT_RATE)));
         }
         return instance;
     }
 
-    private ContentValues setContentValue(BodyPart instance) {
+    protected ContentValues setContentValue(LocomotionType instance) {
         ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_DEFAULT_RATE, instance.getDefaultRate());
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         return initialValues;

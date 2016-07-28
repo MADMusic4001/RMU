@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="default_body_part_name">New Body Part</string>
+    <string name="default_body_part_description">Body Part description</string>
     <string name="default_talent_category_name">New Talent Category</string>
     <string name="default_talent_category_description">Talent Category description</string>
     <string name="default_stat_abbreviation">AA</string>
     <string name="default_stat_name">New Stat</string>
     <string name="default_stat_description">Stat description</string>
+    <string name="default_locomotion_type_name">New Movement</string>
+    <string name="default_locomotion_type_description">New movement description</string>
+    <string name="default_locomotion_type_default_rate">20</string>
 </resources>

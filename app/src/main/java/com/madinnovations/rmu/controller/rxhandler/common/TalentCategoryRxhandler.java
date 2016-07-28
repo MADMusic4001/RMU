@@ -1,7 +1,5 @@
 package com.madinnovations.rmu.controller.rxhandler.common;
 
-import android.util.Log;
-
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 
@@ -59,7 +57,6 @@ public class TalentCategoryRxHandler {
 	 * instances.
 	 */
 	public Observable<Collection<TalentCategory>> getAll() {
-		Log.e("WorldHandler", "getting talentCategories");
 		return Observable.create(
 			new Observable.OnSubscribe<Collection<TalentCategory>>() {
 				@Override

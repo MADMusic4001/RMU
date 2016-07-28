@@ -65,60 +65,119 @@ public class MainMenuFragment extends Fragment {
 					case 0:
 						switch (childPosition) {
 							case 0:
+//								((CampaignActivity)getActivity()).showCharacters();
 								break;
 							case 1:
+//								((CampaignActivity)getActivity()).showCultures();
 								break;
 							case 2:
+//								((CampaignActivity)getActivity()).showProfessions();
 								break;
 							case 3:
+//								((CampaignActivity)getActivity()).showRaces();
 								break;
 						}
 						break;
 					case 1:
 						switch (childPosition) {
 							case 0:
+//								((CampaignActivity)getActivity()).showCreatureArchetypes();
 								break;
 							case 1:
+//								((CampaignActivity)getActivity()).showCreatureCategories();
 								break;
 							case 2:
+//								((CampaignActivity)getActivity()).showCreatures();
 								break;
 							case 3:
+//								((CampaignActivity)getActivity()).showCreatureTypes();
 								break;
 							case 4:
+//								((CampaignActivity)getActivity()).showCreatureVatieties();
 								break;
 						}
 						break;
 					case 2:
 						switch (childPosition) {
 							case 0:
-								((CampaignActivity)getActivity()).showTalentCategories();
+								((CampaignActivity)getActivity()).showBodyParts();
 								break;
 							case 1:
+//								((CampaignActivity)getActivity()).showCriticalCodes();
 								break;
 							case 2:
+//								((CampaignActivity)getActivity()).showCriticalResults();
 								break;
 							case 3:
+//								((CampaignActivity)getActivity()).showCriticalTypes();
 								break;
 							case 4:
+//								((CampaignActivity)getActivity()).showDamageResults();
 								break;
 							case 5:
-								((CampaignActivity)getActivity()).showStats();
+//								((CampaignActivity)getActivity()).showDamageTables();
 								break;
 						}
-						break;
 					case 3:
 						switch (childPosition) {
 							case 0:
+								((CampaignActivity)getActivity()).showLocomotionTypes();
 								break;
 							case 1:
+//								((CampaignActivity)getActivity()).showSizes();
 								break;
 							case 2:
+//								((CampaignActivity)getActivity()).showParameters();
 								break;
 							case 3:
+//								((CampaignActivity)getActivity()).showSkillCategories();
+								break;
+							case 4:
+//								((CampaignActivity)getActivity()).showSkillCosts();
+								break;
+							case 5:
+//								((CampaignActivity)getActivity()).showSkills();
+								break;
+							case 6:
+								((CampaignActivity)getActivity()).showStats();
+								break;
+							case 7:
+								((CampaignActivity)getActivity()).showTalentCategories();
+								break;
+							case 8:
+//								((CampaignActivity)getActivity()).showTalents();
 								break;
 						}
 						break;
 					case 4:
+						switch (childPosition) {
+							case 0:
+//								((CampaignActivity)getActivity()).showItems();
+								break;
+							case 1:
+//								((CampaignActivity)getActivity()).showWeapons();
+								break;
+						}
+						break;
+					case 5:
+						switch (childPosition) {
+							case 0:
+//								((CampaignActivity)getActivity()).showGenerateEncounters();
+								break;
+							case 1:
+//								((CampaignActivity)getActivity()).showGenerateLoot();
+								break;
+							case 2:
+//								((CampaignActivity)getActivity()).showAttemptManeuver();
+								break;
+							case 3:
+//								((CampaignActivity)getActivity()).showResolveCombat();
+								break;
+							case 4:
+//								((CampaignActivity)getActivity()).showAdvanceTime();
+								break;
+						}
+					case 6:
 						((CampaignActivity)getActivity()).showAbout();
 						break;
 				}
@@ -128,35 +187,52 @@ public class MainMenuFragment extends Fragment {
 	}
 
 	private void createMenuData() {
-		groupNames = new ArrayList<>(5);
+		groupNames = new ArrayList<>(7);
 		groupItems = new HashMap<>(5);
 
 		groupNames.add(getString(R.string.manage_character_data));
 		groupNames.add(getString(R.string.manage_creature_data));
-		groupNames.add(getString(R.string.manage_global_data));
+		groupNames.add(getString(R.string.manage_combat_data));
+		groupNames.add(getString(R.string.manage_common_data));
+		groupNames.add(getString(R.string.manage_item_data));
 		groupNames.add(getString(R.string.play));
 		groupNames.add(getString(R.string.about_rmu));
 
 		List<String> characterItems = new ArrayList<>(4);
 		characterItems.add(getString(R.string.manage_character));
-		characterItems.add(getString(R.string.manage_race));
 		characterItems.add(getString(R.string.manage_culture));
 		characterItems.add(getString(R.string.manage_profession));
+		characterItems.add(getString(R.string.manage_race));
 
 		List<String> creatureItems = new ArrayList<>(5);
 		creatureItems.add(getString(R.string.manage_archetypes));
 		creatureItems.add(getString(R.string.manage_categories));
+		creatureItems.add(getString(R.string.manage_creatures));
 		creatureItems.add(getString(R.string.manage_types));
 		creatureItems.add(getString(R.string.manage_varieties));
-		creatureItems.add(getString(R.string.manage_critical_codes));
 
-		List<String> globalDataItems = new ArrayList<>(6);
-		globalDataItems.add(getString(R.string.manage_talent_categories));
-		globalDataItems.add(getString(R.string.manage_talents));
-		globalDataItems.add(getString(R.string.manage_sizes));
-		globalDataItems.add(getString(R.string.manage_skill_categories));
-		globalDataItems.add(getString(R.string.manage_skills));
-		globalDataItems.add(getString(R.string.manage_stats));
+		List<String> combatItems = new ArrayList<>(6);
+		combatItems.add(getString(R.string.manage_body_parts));
+		combatItems.add(getString(R.string.manage_critical_codes));
+		combatItems.add(getString(R.string.manage_critical_results));
+		combatItems.add(getString(R.string.manage_critical_types));
+		combatItems.add(getString(R.string.manage_damage_results));
+		combatItems.add(getString(R.string.manage_damage_tables));
+
+		List<String> commonDataItems = new ArrayList<>(9);
+		commonDataItems.add(getString(R.string.manage_locomotion_types));
+		commonDataItems.add(getString(R.string.manage_parameters));
+		commonDataItems.add(getString(R.string.manage_sizes));
+		commonDataItems.add(getString(R.string.manage_skill_categories));
+		commonDataItems.add(getString(R.string.manage_skill_costs));
+		commonDataItems.add(getString(R.string.manage_skills));
+		commonDataItems.add(getString(R.string.manage_stats));
+		commonDataItems.add(getString(R.string.manage_talent_categories));
+		commonDataItems.add(getString(R.string.manage_talents));
+
+		List<String> itemItems = new ArrayList<>(2);
+		itemItems.add(getString(R.string.manage_items));
+		itemItems.add(getString(R.string.manage_weapons));
 
 		List<String> playItems = new ArrayList<>(5);
 		playItems.add(getString(R.string.generate_encounter));
@@ -170,8 +246,10 @@ public class MainMenuFragment extends Fragment {
 
 		groupItems.put(groupNames.get(0), characterItems);
 		groupItems.put(groupNames.get(1), creatureItems);
-		groupItems.put(groupNames.get(2), globalDataItems);
-		groupItems.put(groupNames.get(3), playItems);
-		groupItems.put(groupNames.get(4), aboutItems);
+		groupItems.put(groupNames.get(2), combatItems);
+		groupItems.put(groupNames.get(3), commonDataItems);
+		groupItems.put(groupNames.get(4), itemItems);
+		groupItems.put(groupNames.get(5), playItems);
+		groupItems.put(groupNames.get(6), aboutItems);
 	}
 }

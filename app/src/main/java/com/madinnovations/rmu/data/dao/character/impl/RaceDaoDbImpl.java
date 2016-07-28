@@ -9,10 +9,10 @@ import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceMovementSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
-import com.madinnovations.rmu.data.dao.common.MovementDao;
+import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.Movement;
+import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema {
     TalentDao talentDao;
-    MovementDao movementDao;
+    LocomotionTypeDao locomotionTypeDao;
 
     /**
      * Creates a new instance of RaceDaoDbImpl
@@ -37,10 +37,10 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, MovementDao movementDao) {
+    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, LocomotionTypeDao locomotionTypeDao) {
         super(helper);
         this.talentDao = talentDao;
-        this.movementDao = movementDao;
+        this.locomotionTypeDao = locomotionTypeDao;
     }
 
     @Override
@@ -156,7 +156,7 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
             instance.setAverageWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_WEIGHT)));
             instance.setPoundsPerInch(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_POUNDS_PER_INCH)));
             instance.setTalentsAndFlaws(getTalentsAndFlaws(instance.getId()));
-            instance.setMovements(getMovements(instance.getId()));
+            instance.setLocomotionTypes(getMovements(instance.getId()));
         }
         return instance;
     }
@@ -184,26 +184,26 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
         return map;
     }
 
-    private List<Movement> getMovements(int id) {
+    private List<LocomotionType> getMovements(int id) {
         final String selectionArgs[] = { String.valueOf(id) };
         final String selection = RaceMovementSchema.COLUMN_RACE_ID + " = ?";
 
         Cursor cursor = super.query(RaceMovementSchema.TABLE_NAME, RaceMovementSchema.COLUMNS, selection,
                 selectionArgs, RaceMovementSchema.COLUMN_MOVEMENT_ID);
-        List<Movement> movementList = new ArrayList<>(cursor.getCount());
+        List<LocomotionType> locomotionTypeList = new ArrayList<>(cursor.getCount());
         if (cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 int movementId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceMovementSchema.COLUMN_MOVEMENT_ID));
-                Movement movement = movementDao.getById(movementId);
-                if(movement != null) {
-                    movementList.add(movement);
+                LocomotionType locomotionType = locomotionTypeDao.getById(movementId);
+                if(locomotionType != null) {
+                    locomotionTypeList.add(locomotionType);
                 }
                 cursor.moveToNext();
             }
             cursor.close();
         }
 
-        return movementList;
+        return locomotionTypeList;
     }
 }

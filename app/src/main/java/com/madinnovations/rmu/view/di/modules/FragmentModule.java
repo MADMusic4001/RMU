@@ -17,6 +17,8 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
+import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
+import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
@@ -31,15 +33,23 @@ import dagger.Provides;
 @Module
 public class FragmentModule {
 	private AboutFragment      aboutFragment;
+	private BodyPartsFragment bodyPartsFragment;
 	private MainMenuFragment   mainMenuFragment;
+	private LocomotionTypesFragment locomotionTypesFragment;
 	private StatsFragment statsFragment;
 	private TalentCategoryFragment talentCategoryFragment;
 
 	public FragmentModule(AboutFragment aboutFragment) {
 		this.aboutFragment = aboutFragment;
 	}
+	public FragmentModule(BodyPartsFragment bodyPartsFragment) {
+		this.bodyPartsFragment = bodyPartsFragment;
+	}
 	public FragmentModule(MainMenuFragment mainMenuFragment) {
 		this.mainMenuFragment = mainMenuFragment;
+	}
+	public FragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
+		this.locomotionTypesFragment = locomotionTypesFragment;
 	}
 	public FragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
@@ -53,8 +63,16 @@ public class FragmentModule {
 		return this.aboutFragment;
 	}
 	@Provides @PerFragment
-	public MainMenuFragment provideMenuFragmen() {
+	public BodyPartsFragment provideBodyPartsFragment() {
+		return this.bodyPartsFragment;
+	}
+	@Provides @PerFragment
+	public MainMenuFragment provideMainMenuFragment() {
 		return this.mainMenuFragment;
+	}
+	@Provides @PerFragment
+	public LocomotionTypesFragment provideLocomotionTypesFragment() {
+		return this.locomotionTypesFragment;
 	}
 	@Provides @PerFragment
 	public StatsFragment provideStatsFragment() {

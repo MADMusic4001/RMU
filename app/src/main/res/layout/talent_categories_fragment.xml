@@ -6,22 +6,29 @@
 
   <ListView
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="0dp"
+      android:layout_weight="4"
       android:id="@+id/list_view"
       android:layout_gravity="center_horizontal"
       android:choiceMode="singleChoice"/>
 
-  <EditText
+  <LinearLayout
+      android:orientation="vertical"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/name_edit"
-      android:hint="@string/name_hint"
-      android:maxLength="20"/>
+      android:layout_height="0dp"
+      android:layout_weight="1">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/name_edit"
+        android:hint="@string/name_hint"
+        android:maxLength="20"/>
 
-  <EditText
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/description_edit"
-      android:hint="@string/description_hint"
-      android:maxLines="1"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/description_edit"
+        android:hint="@string/description_hint"
+        android:maxLines="1"/>
+  </LinearLayout>
 </LinearLayout>

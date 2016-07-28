@@ -18,8 +18,8 @@ package com.madinnovations.rmu.data.dao.common.schemas;
 /**
  * Database schema data for the movements table
  */
-public interface MovementSchema {
-	public static final String TABLE_NAME = "movements";
+public interface LocomotionTypeSchema {
+	public static final String TABLE_NAME = "locomotion_types";
 
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_NAME = "name";

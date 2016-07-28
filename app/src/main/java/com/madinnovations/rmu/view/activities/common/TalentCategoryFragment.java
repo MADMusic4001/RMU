@@ -327,7 +327,6 @@ public class TalentCategoryFragment extends Fragment {
 		View headerView;
 
 		listView = (ListView) layout.findViewById(R.id.list_view);
-//		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		headerView = getActivity().getLayoutInflater().inflate(
 				R.layout.name_description_header, listView, false);
 		listView.addHeaderView(headerView);

@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import com.madinnovations.rmu.data.entities.common.Movement;
+import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class Race {
 	private float recoveryMultiplier;
 	private Map<Talent, Short> talentsAndFlaws;
 	private short sizeCategory;
-	private List<Movement> movements;
+	private List<LocomotionType> locomotionTypes;
 	private short strideModifier;
 	private short averageHeight;
 	private short averageWeight;
@@ -193,11 +193,11 @@ public class Race {
 	public void setSizeCategory(short sizeCategory) {
 		this.sizeCategory = sizeCategory;
 	}
-	public List<Movement> getMovements() {
-		return movements;
+	public List<LocomotionType> getLocomotionTypes() {
+		return locomotionTypes;
 	}
-	public void setMovements(List<Movement> movements) {
-		this.movements = movements;
+	public void setLocomotionTypes(List<LocomotionType> locomotionTypes) {
+		this.locomotionTypes = locomotionTypes;
 	}
 	public short getStrideModifier() {
 		return strideModifier;
