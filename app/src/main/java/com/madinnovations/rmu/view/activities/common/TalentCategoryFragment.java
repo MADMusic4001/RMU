@@ -214,9 +214,11 @@ public class TalentCategoryFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				dirty = true;
 				if (editable.length() == 0) {
 					nameEdit.setError(getString(R.string.validation_name_required));
+				}
+				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
+					dirty = true;
 				}
 			}
 		});
@@ -263,6 +265,9 @@ public class TalentCategoryFragment extends Fragment {
 				if (editable.length() == 0) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
+				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
+					dirty = true;
+				}
 			}
 		});
 		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -295,6 +300,10 @@ public class TalentCategoryFragment extends Fragment {
 	}
 
 	private void onSaved(TalentCategory talentCategory) {
+		if(getActivity() == null) {
+			return;
+		}
+
 		String toastString;
 		toastString = getString(R.string.toast_talent_category_saved);
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();

@@ -199,9 +199,11 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				dirty = true;
 				if (editable.length() == 0) {
 					abbreviationEdit.setError(getString(R.string.validation_abbreviation_required));
+				}
+				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getAbbreviation())) {
+					dirty = true;
 				}
 			}
 		});
@@ -211,6 +213,7 @@ public class StatsFragment extends Fragment {
 				if(!hasFocus) {
 					final String newAbbreviation = abbreviationEdit.getText().toString();
 					if (selectedInstance != null && !newAbbreviation.equals(selectedInstance.getAbbreviation())) {
+						dirty = true;
 						selectedInstance.setAbbreviation(newAbbreviation);
 						statRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
@@ -244,9 +247,11 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				dirty = true;
 				if (editable.length() == 0) {
 					nameEdit.setError(getString(R.string.validation_name_required));
+				}
+				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
+					dirty = true;
 				}
 			}
 		});
@@ -256,6 +261,7 @@ public class StatsFragment extends Fragment {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
 					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
+						dirty = true;
 						selectedInstance.setName(newName);
 						statRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
@@ -289,9 +295,11 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				dirty = true;
 				if (editable.length() == 0) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
+				}
+				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
+					dirty = true;
 				}
 			}
 		});
@@ -301,6 +309,7 @@ public class StatsFragment extends Fragment {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
 					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
+						dirty = true;
 						selectedInstance.setDescription(newDescription);
 						statRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
@@ -386,6 +395,7 @@ public class StatsFragment extends Fragment {
 									onSaved(stat);
 								}
 							});
+					dirty = false;
 				}
 
 				selectedInstance = (Stat) listView.getItemAtPosition(position);

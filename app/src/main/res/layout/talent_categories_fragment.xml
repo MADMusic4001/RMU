@@ -15,7 +15,8 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:id="@+id/name_edit"
-      android:hint="@string/name_hint"/>
+      android:hint="@string/name_hint"
+      android:maxLength="20"/>
 
   <EditText
       android:layout_width="match_parent"
