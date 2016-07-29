@@ -58,10 +58,12 @@
   <string name="advance_time">Advance Time</string>
 
   <!-- Field name labels -->
-  <string name="label_code">Code</string>
-  <string name="label_name">Name</string>
-  <string name="label_description">Description</string>
   <string name="label_abbreviation">Abbreviation</string>
+  <string name="label_code">Code</string>
+  <string name="label_description">Description</string>
+  <string name="label_name">Name</string>
+  <string name="label_per_tier">Per Tier</string>
+  <string name="label_value">Value</string>
 
   <!-- Menu labels -->
   <string name="label_export">Export</string>
@@ -72,6 +74,8 @@
   <string name="label_delete_critical_code">Delete Critical Code</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>
   <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
+  <string name="label_new_parameter">New Parameter</string>
+  <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent_category">New Talent Category</string>
@@ -89,4 +93,5 @@
   <string name="default_movement_rate_hint">Default movement rate</string>
   <string name="description_hint">New Description</string>
   <string name="name_hint">New Name</string>
+  <string name="value_hint">New Value</string>
 </resources>

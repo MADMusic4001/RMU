@@ -130,9 +130,9 @@ public class StatRxHandler {
 				@Override
 				public void call(Subscriber<? super Collection<Stat>> subscriber) {
 					try {
-						Collection<Stat> worldsDeleted = dao.getAll();
+						Collection<Stat> statsDeleted = dao.getAll();
 						dao.deleteAll();
-						subscriber.onNext(worldsDeleted);
+						subscriber.onNext(statsDeleted);
 						subscriber.onCompleted();
 					}
 					catch(Exception e) {

@@ -76,17 +76,17 @@ public class BodyPartRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a BodyPart instance to persistent storage.
 	 *
-	 * @param talentCategory  the BodyPart instance to be saved
+	 * @param bodyPart  the BodyPart instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the BodyPart instance.
 	 */
-	public Observable<BodyPart> save(final BodyPart talentCategory) {
+	public Observable<BodyPart> save(final BodyPart bodyPart) {
 		return Observable.create(
 				new Observable.OnSubscribe<BodyPart>() {
 					@Override
 					public void call(Subscriber<? super BodyPart> subscriber) {
 						try {
-							dao.save(talentCategory);
-							subscriber.onNext(talentCategory);
+							dao.save(bodyPart);
+							subscriber.onNext(bodyPart);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
@@ -130,9 +130,9 @@ public class BodyPartRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<BodyPart>> subscriber) {
 						try {
-							Collection<BodyPart> talentCategoriesDeleted = dao.getAll();
+							Collection<BodyPart> bodyPartsDeleted = dao.getAll();
 							dao.deleteAll();
-							subscriber.onNext(talentCategoriesDeleted);
+							subscriber.onNext(bodyPartsDeleted);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
