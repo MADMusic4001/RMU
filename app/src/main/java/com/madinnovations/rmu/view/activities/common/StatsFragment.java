@@ -1,6 +1,7 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -64,35 +65,39 @@ public class StatsFragment extends Fragment {
 
 		initListView(layout);
 
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("StatFragment", "Exception occurred loading stats", e);
-						Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<Stat> stats) {
-						String toastString;
-
-						toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
-						listAdapter.clear();
-						listAdapter.addAll(stats);
-						listAdapter.notifyDataSetChanged();
-						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		setHasOptionsMenu(true);
 		return layout;
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		statRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<Collection<Stat>>() {
+				@Override
+				public void onCompleted() {
+
+				}
+
+				@Override
+				public void onError(Throwable e) {
+					Log.e("StatsFragment", "Exception caught getting all Stat instances in onAttach", e);
+					Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
+								   Toast.LENGTH_SHORT).show();
+				}
+
+				@Override
+				public void onNext(Collection<Stat> stats) {
+					listAdapter.clear();
+					listAdapter.addAll(stats);
+					listAdapter.notifyDataSetChanged();
+					String toastString;
+					toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
+					Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
 	}
 
 	@Override
@@ -120,16 +125,16 @@ public class StatsFragment extends Fragment {
 
 						@Override
 						public void onError(Throwable e) {
-
+							Log.e("StatsFragment", "Exception saving new Stat in onOptionsItemSelected", e);
 						}
 
 						@Override
-						public void onNext(Stat stat) {
-							listAdapter.add(stat);
-							abbreviationEdit.setText(stat.getAbbreviation());
-							nameEdit.setText(stat.getName());
-							descriptionEdit.setText(stat.getDescription());
-							selectedInstance = stat;
+						public void onNext(Stat savedStat) {
+							listAdapter.add(savedStat);
+							abbreviationEdit.setText(savedStat.getAbbreviation());
+							nameEdit.setText(savedStat.getName());
+							descriptionEdit.setText(savedStat.getDescription());
+							selectedInstance = savedStat;
 						}
 					});
 		}
@@ -163,7 +168,7 @@ public class StatsFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("StatFragment", "Exception thrown when deleting: " + stat, e);
+									Log.e("StatFragment", "Exception when deleting: " + stat, e);
 									String toastString = getString(R.string.toast_stat_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -199,7 +204,7 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && abbreviationEdit != null) {
 					abbreviationEdit.setError(getString(R.string.validation_abbreviation_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getAbbreviation())) {
@@ -223,13 +228,13 @@ public class StatsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
+										Log.e("StatsFragment", "Exception saving new Stat in initAbbreviationEdit", e);
 										String toastString = getString(R.string.toast_stat_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-										Log.e("StatFragment", "Save failed for: " + selectedInstance, e);
 									}
 									@Override
-									public void onNext(Stat stat) {
-										onSaved(stat);
+									public void onNext(Stat savedStat) {
+										onSaved(savedStat);
 									}
 								});
 					}
@@ -247,7 +252,7 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
@@ -271,13 +276,13 @@ public class StatsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
+										Log.e("StatsFragment", "Exception saving new Stat in initNameEdit", e);
 										String toastString = getString(R.string.toast_stat_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-										Log.e("StatFragment", "Save failed for: " + selectedInstance, e);
 									}
 									@Override
-									public void onNext(Stat stat) {
-										onSaved(stat);
+									public void onNext(Stat savedStat) {
+										onSaved(savedStat);
 									}
 								});
 					}
@@ -295,7 +300,7 @@ public class StatsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
@@ -319,12 +324,13 @@ public class StatsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
+										Log.e("StatsFragment", "Exception saving new Stat in initDescriptionEdit", e);
 										String toastString = getString(R.string.toast_stat_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
 									@Override
-									public void onNext(Stat stat) {
-										onSaved(stat);
+									public void onNext(Stat savedStat) {
+										onSaved(savedStat);
 									}
 								});
 					}
@@ -386,12 +392,13 @@ public class StatsFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("StatsFragment", "Exception saving new Stat in initListView", e);
 									String toastString = getString(R.string.toast_stat_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 								@Override
-								public void onNext(Stat stat) {
-									onSaved(stat);
+								public void onNext(Stat savedStat) {
+									onSaved(savedStat);
 								}
 							});
 					dirty = false;

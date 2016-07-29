@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
-import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
@@ -33,7 +32,6 @@ import dagger.Provides;
 @Module
 public class FragmentModule {
 	private AboutFragment      aboutFragment;
-	private BodyPartsFragment bodyPartsFragment;
 	private MainMenuFragment   mainMenuFragment;
 	private LocomotionTypesFragment locomotionTypesFragment;
 	private StatsFragment statsFragment;
@@ -41,9 +39,6 @@ public class FragmentModule {
 
 	public FragmentModule(AboutFragment aboutFragment) {
 		this.aboutFragment = aboutFragment;
-	}
-	public FragmentModule(BodyPartsFragment bodyPartsFragment) {
-		this.bodyPartsFragment = bodyPartsFragment;
 	}
 	public FragmentModule(MainMenuFragment mainMenuFragment) {
 		this.mainMenuFragment = mainMenuFragment;
@@ -61,10 +56,6 @@ public class FragmentModule {
 	@Provides @PerFragment
 	public AboutFragment provideAboutFragment() {
 		return this.aboutFragment;
-	}
-	@Provides @PerFragment
-	public BodyPartsFragment provideBodyPartsFragment() {
-		return this.bodyPartsFragment;
 	}
 	@Provides @PerFragment
 	public MainMenuFragment provideMainMenuFragment() {

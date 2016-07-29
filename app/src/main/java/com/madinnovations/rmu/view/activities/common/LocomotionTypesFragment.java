@@ -1,6 +1,8 @@
 package com.madinnovations.rmu.view.activities.common;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -64,35 +66,40 @@ public class LocomotionTypesFragment extends Fragment {
 
 		initListView(layout);
 
-		locomotionTypeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<LocomotionType>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("LocomotionTypesFragment", "Exception occurred loading locomotion types", e);
-						Toast.makeText(LocomotionTypesFragment.this.getActivity(), getString(R.string.toast_locomotion_types_load_failed),
-								Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<LocomotionType> locomotionTypes) {
-						String toastString;
-
-						toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
-						listAdapter.clear();
-						listAdapter.addAll(locomotionTypes);
-						listAdapter.notifyDataSetChanged();
-						Toast.makeText(LocomotionTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		setHasOptionsMenu(true);
 		return layout;
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		locomotionTypeRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<Collection<LocomotionType>>() {
+				@Override
+				public void onCompleted() {
+
+				}
+
+				@Override
+				public void onError(Throwable e) {
+					Log.e("LocomotionTypesFragment", "Exception caught getting all CriticalCode instances in onAttach", e);
+					Toast.makeText(LocomotionTypesFragment.this.getActivity(),
+								   getString(R.string.toast_locomotion_types_load_failed),
+								   Toast.LENGTH_SHORT).show();
+				}
+
+				@Override
+				public void onNext(Collection<LocomotionType> locomotionTypes) {
+					listAdapter.clear();
+					listAdapter.addAll(locomotionTypes);
+					listAdapter.notifyDataSetChanged();
+					String toastString;
+					toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
+					Toast.makeText(LocomotionTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
 	}
 
 	@Override
@@ -120,15 +127,16 @@ public class LocomotionTypesFragment extends Fragment {
 
 						@Override
 						public void onError(Throwable e) {
-							Log.e("LocomotionTypesFragment", "Exception occurred saving new locomotion type", e);
+							Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in onOptionsItemSelected", e);
 							Toast.makeText(LocomotionTypesFragment.this.getActivity(),
 									getString(R.string.toast_locomotion_type_save_failed), Toast.LENGTH_SHORT).show();
 						}
 
+						@SuppressLint("SetTextI18n")
 						@Override
 						public void onNext(LocomotionType locomotionType) {
 							listAdapter.add(locomotionType);
-							defaultRateEdit.setText(new Short(locomotionType.getDefaultRate()).toString());
+							defaultRateEdit.setText(Short.toString(locomotionType.getDefaultRate()));
 							nameEdit.setText(locomotionType.getName());
 							descriptionEdit.setText(locomotionType.getDescription());
 							selectedInstance = locomotionType;
@@ -165,7 +173,7 @@ public class LocomotionTypesFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("LocomotionTypesFragment", "Exception thrown when deleting: " + locomotionType, e);
+									Log.e("LocomotionTypesFragment", "Exception when deleting: " + locomotionType, e);
 									String toastString = getString(R.string.toast_locomotion_type_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -201,7 +209,7 @@ public class LocomotionTypesFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && defaultRateEdit != null) {
 					defaultRateEdit.setError(getString(R.string.validation_default_rate_required));
 				}
 				else if (selectedInstance != null && Short.parseShort(editable.toString()) != selectedInstance.getDefaultRate()) {
@@ -225,9 +233,9 @@ public class LocomotionTypesFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in initDefaultRateEdit", e);
 									String toastString = getString(R.string.toast_locomotion_type_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									Log.e("LocomotionTypesFragment", "Save failed for: " + selectedInstance, e);
 								}
 								@Override
 								public void onNext(LocomotionType locomotionType) {
@@ -249,7 +257,7 @@ public class LocomotionTypesFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
@@ -273,9 +281,9 @@ public class LocomotionTypesFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in initNameEdit", e);
 									String toastString = getString(R.string.toast_locomotion_type_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									Log.e("LocomotionTypesFragment", "Save failed for: " + selectedInstance, e);
 								}
 								@Override
 								public void onNext(LocomotionType locomotionType) {
@@ -297,7 +305,7 @@ public class LocomotionTypesFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
@@ -321,6 +329,8 @@ public class LocomotionTypesFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("LocomotionTypesFragment",
+										  "Exception saving LocomotionType in initDescriptionEdit", e);
 									String toastString = getString(R.string.toast_locomotion_type_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -370,6 +380,7 @@ public class LocomotionTypesFragment extends Fragment {
 
 		// Clicking a row in the listView will send the user to the edit world activity
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@SuppressLint("SetTextI18n")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if(dirty && selectedInstance != null) {
@@ -384,6 +395,7 @@ public class LocomotionTypesFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in initListView", e);
 									String toastString = getString(R.string.toast_locomotion_type_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -397,7 +409,7 @@ public class LocomotionTypesFragment extends Fragment {
 
 				selectedInstance = (LocomotionType) listView.getItemAtPosition(position);
 				if (selectedInstance != null) {
-					defaultRateEdit.setText(new Short(selectedInstance.getDefaultRate()).toString());
+					defaultRateEdit.setText(Short.toString(selectedInstance.getDefaultRate()));
 					nameEdit.setText(selectedInstance.getName());
 					descriptionEdit.setText(selectedInstance.getDescription());
 				}

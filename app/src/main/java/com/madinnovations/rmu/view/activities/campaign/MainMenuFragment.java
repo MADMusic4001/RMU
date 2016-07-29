@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.activities.campaign;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import java.util.Map;
 public class MainMenuFragment extends Fragment {
 	private List<String> groupNames;
 	private Map<String, List<String>> groupItems;
+	private int currentGroup = -1;
 
 	@Nullable
 	@Override
@@ -54,13 +56,23 @@ public class MainMenuFragment extends Fragment {
 		return layout;
 	}
 
-	private void initListView(ExpandableListView listView) {
+	private void initListView(final ExpandableListView listView) {
 		createMenuData();
 		ExpandableListAdapter adapter = new MainMenuListAdapter(this.getActivity(), groupNames, groupItems);
 		listView.setAdapter(adapter);
+		listView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+			@Override
+			public void onGroupExpand(int i) {
+				if(currentGroup != -1) {
+					listView.collapseGroup(currentGroup);
+				}
+				currentGroup = i;
+			}
+		});
 		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+				Log.d("MainMenuFragment", "groupPosition: " + groupPosition + ", childPosition:" +childPosition);
 				switch (groupPosition) {
 					case 0:
 						switch (childPosition) {
@@ -103,7 +115,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showBodyParts();
 								break;
 							case 1:
-//								((CampaignActivity)getActivity()).showCriticalCodes();
+								((CampaignActivity)getActivity()).showCriticalCodes();
 								break;
 							case 2:
 //								((CampaignActivity)getActivity()).showCriticalResults();

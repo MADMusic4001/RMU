@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.di.components;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.PerActivity;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
+import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 import dagger.Subcomponent;
@@ -29,6 +30,7 @@ import dagger.Subcomponent;
 @Subcomponent(modules = ActivityModule.class)
 public interface ActivityComponent {
 	public FragmentComponent newFragmentComponent(FragmentModule fragmentModule);
+	public CombatFragmentComponent newCombatFragmentComponent(CombatFragmentModule fragmentModule);
 
 	public void injectInto(CampaignActivity campaignActivity);
 }

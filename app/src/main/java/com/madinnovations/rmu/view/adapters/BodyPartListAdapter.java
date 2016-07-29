@@ -13,7 +13,7 @@ import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with BodyPart information
+ * Populates a ListView with {@link BodyPart} information
  */
 public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;

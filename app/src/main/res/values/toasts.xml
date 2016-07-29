@@ -6,6 +6,12 @@
   <string name="toast_body_part_save_failed">Body Part save failed.</string>
   <string name="toast_body_part_deleted">Body Part deleted.</string>
   <string name="toast_body_part_delete_failed">Body Part deletion failed.</string>
+  <string name="toast_critical_codes_load_failed">Failed to load Critical Codes</string>
+  <string name="toast_critical_codes_loaded">%1$d Critical Codes loaded.</string>
+  <string name="toast_critical_code_saved">Critical Code saved.</string>
+  <string name="toast_critical_code_save_failed">Critical Code save failed.</string>
+  <string name="toast_critical_code_deleted">Critical Code deleted.</string>
+  <string name="toast_critical_code_delete_failed">Critical Code deletion failed.</string>
   <string name="toast_locomotion_types_load_failed">Failed to load Locomotion Types</string>
   <string name="toast_locomotion_types_loaded">%1$d Locomotion Types loaded.</string>
   <string name="toast_locomotion_type_saved">Locomotion Type saved.</string>

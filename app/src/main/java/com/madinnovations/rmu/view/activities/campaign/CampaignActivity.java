@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.activities.campaign;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
+import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
@@ -34,12 +36,13 @@ import com.madinnovations.rmu.view.di.modules.ActivityModule;
  * Activity class for managing the campaign UI.
  */
 public class CampaignActivity extends Activity {
-	private ActivityComponent      activityComponent;
-	private AboutFragment          aboutFragment;
-	private BodyPartsFragment bodyPartsFragment;
+	private ActivityComponent      	 activityComponent;
+	private AboutFragment          	aboutFragment;
+	private BodyPartsFragment 		bodyPartsFragment;
+	private CriticalCodesFragment 	criticalCodesFragment;
 	private LocomotionTypesFragment locomotionTypesFragment;
-	private StatsFragment          statsFragment;
-	private TalentCategoryFragment talentCategoryFragment;
+	private StatsFragment          	statsFragment;
+	private TalentCategoryFragment 	talentCategoryFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,53 +75,52 @@ public class CampaignActivity extends Activity {
 		return true;
 	}
 
+	public void showAbout() {
+		if(aboutFragment == null) {
+			aboutFragment = new AboutFragment();
+		}
+		replaceDetailFragment(aboutFragment);
+	}
+
 	public void showBodyParts() {
 		if(bodyPartsFragment == null) {
 			bodyPartsFragment = new BodyPartsFragment();
 		}
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.details_container, bodyPartsFragment);
-		fragmentTransaction.commit();
+		replaceDetailFragment(bodyPartsFragment);
+	}
+
+	public void showCriticalCodes() {
+		if(criticalCodesFragment == null) {
+			criticalCodesFragment = new CriticalCodesFragment();
+		}
+		replaceDetailFragment(criticalCodesFragment);
 	}
 
 	public void showLocomotionTypes() {
 		if(locomotionTypesFragment == null) {
 			locomotionTypesFragment = new LocomotionTypesFragment();
 		}
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.details_container, locomotionTypesFragment);
-		fragmentTransaction.commit();
-	}
-
-	public void showTalentCategories() {
-		if(talentCategoryFragment == null) {
-			talentCategoryFragment = new TalentCategoryFragment();
-		}
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.details_container, talentCategoryFragment);
-		fragmentTransaction.commit();
-	}
-
-	public void showAbout() {
-		if(aboutFragment == null) {
-			aboutFragment = new AboutFragment();
-		}
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.details_container, aboutFragment);
-		fragmentTransaction.commit();
+		replaceDetailFragment(locomotionTypesFragment);
 	}
 
 	public void showStats() {
 		if(statsFragment == null) {
 			statsFragment = new StatsFragment();
 		}
+		replaceDetailFragment(statsFragment);
+	}
+
+	public void showTalentCategories() {
+		if(talentCategoryFragment == null) {
+			talentCategoryFragment = new TalentCategoryFragment();
+		}
+		replaceDetailFragment(talentCategoryFragment);
+	}
+
+	private void replaceDetailFragment(Fragment fragment) {
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.details_container, statsFragment);
+		fragmentTransaction.replace(R.id.details_container, fragment);
 		fragmentTransaction.commit();
 	}
 

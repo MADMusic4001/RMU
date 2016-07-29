@@ -1,6 +1,7 @@
 package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -25,7 +26,7 @@ import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.BodyPartListAdapter;
-import com.madinnovations.rmu.view.di.modules.FragmentModule;
+import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
 
@@ -40,12 +41,12 @@ import rx.schedulers.Schedulers;
  */
 public class BodyPartsFragment extends Fragment {
 	@Inject
-	protected BodyPartRxHandler talentCategoryRxHandler;
+	protected BodyPartRxHandler   bodyPartRxHandler;
 	@Inject
 	protected BodyPartListAdapter listAdapter;
-	private ListView listView;
-	private EditText nameEdit;
-	private EditText descriptionEdit;
+	private ListView              listView;
+	private EditText              nameEdit;
+	private EditText              descriptionEdit;
 	private BodyPart selectedInstance = null;
 	private boolean dirty = false;
 
@@ -53,52 +54,53 @@ public class BodyPartsFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
-				newFragmentComponent(new FragmentModule(this)).injectInto(this);
+				newCombatFragmentComponent(new CombatFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.body_parts_fragment, container, false);
 
 		initNameEdit(layout);
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
 		initDescriptionEdit(layout);
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-
 		initListView(layout);
 
-		talentCategoryRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<BodyPart>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("BodyPartsFragment", "Exception occurred loading talent categories", e);
-						Toast.makeText(BodyPartsFragment.this.getActivity(),
-								getString(R.string.toast_body_parts_load_failed),
-								Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<BodyPart> bodyParts) {
-						String toastString;
-
-						toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
-						listAdapter.clear();
-						listAdapter.addAll(bodyParts);
-						listAdapter.notifyDataSetChanged();
-						Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		setHasOptionsMenu(true);
+
 		return layout;
 	}
 
 	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		bodyPartRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<Collection<BodyPart>>() {
+				@Override
+				public void onCompleted() {
+
+				}
+
+				@Override
+				public void onError(Throwable e) {
+					Log.e("BodyPartsFragment", "Exception caught getting all CriticalCode instances in onAttach", e);
+					Toast.makeText(BodyPartsFragment.this.getActivity(),
+								   getString(R.string.toast_body_parts_load_failed),
+								   Toast.LENGTH_SHORT).show();
+				}
+
+				@Override
+				public void onNext(Collection<BodyPart> bodyParts) {
+					listAdapter.clear();
+					listAdapter.addAll(bodyParts);
+					listAdapter.notifyDataSetChanged();
+					String toastString;
+					toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
+					Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.e("BodyPartFragment", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.body_parts_action_bar, menu);
 	}
@@ -107,10 +109,10 @@ public class BodyPartsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_body_part) {
-			BodyPart talentCategory = new BodyPart();
-			talentCategory.setName(getString(R.string.default_body_part_name));
-			talentCategory.setDescription(getString(R.string.default_body_part_description));
-			talentCategoryRxHandler.save(talentCategory)
+			BodyPart bodyPart = new BodyPart();
+			bodyPart.setName(getString(R.string.default_body_part_name));
+			bodyPart.setDescription(getString(R.string.default_body_part_description));
+			bodyPartRxHandler.save(bodyPart)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
 					.subscribe(new Subscriber<BodyPart>() {
@@ -121,15 +123,15 @@ public class BodyPartsFragment extends Fragment {
 
 						@Override
 						public void onError(Throwable e) {
-
+							Log.e("BodyPartsFragment", "Exception saving new BodyPart in onOptionsItemSelected", e);
 						}
 
 						@Override
-						public void onNext(BodyPart talentCategory) {
-							listAdapter.add(talentCategory);
-							nameEdit.setText(talentCategory.getName());
-							descriptionEdit.setText(talentCategory.getDescription());
-							selectedInstance = talentCategory;
+						public void onNext(BodyPart savedBodyPart) {
+							listAdapter.add(savedBodyPart);
+							nameEdit.setText(savedBodyPart.getName());
+							descriptionEdit.setText(savedBodyPart.getDescription());
+							selectedInstance = savedBodyPart;
 						}
 					});
 		}
@@ -144,16 +146,16 @@ public class BodyPartsFragment extends Fragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final BodyPart talentCategory;
+		final BodyPart bodyPart;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
 			case R.id.context_delete_body_part:
-				talentCategory = (BodyPart)listView.getItemAtPosition(info.position);
-				if(talentCategory != null) {
-					talentCategoryRxHandler.deleteById(talentCategory.getId())
+				bodyPart = (BodyPart)listView.getItemAtPosition(info.position);
+				if(bodyPart != null) {
+					bodyPartRxHandler.deleteById(bodyPart.getId())
 							.observeOn(AndroidSchedulers.mainThread())
 							.subscribe(new Subscriber<Boolean>() {
 								@Override
@@ -163,7 +165,7 @@ public class BodyPartsFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("BodyPartFragment", "Exception thrown when deleting: " + talentCategory, e);
+									Log.e("BodyPartFragment", "Exception when deleting: " + bodyPart, e);
 									String toastString = getString(R.string.toast_body_part_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -173,7 +175,7 @@ public class BodyPartsFragment extends Fragment {
 									String toastString;
 
 									if(success) {
-										listAdapter.remove(talentCategory);
+										listAdapter.remove(bodyPart);
 										listAdapter.notifyDataSetChanged();
 										toastString = getString(R.string.toast_body_part_deleted);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
@@ -199,7 +201,7 @@ public class BodyPartsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
@@ -214,7 +216,7 @@ public class BodyPartsFragment extends Fragment {
 					final String newName = nameEdit.getText().toString();
 					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
 						selectedInstance.setName(newName);
-						talentCategoryRxHandler.save(selectedInstance)
+						bodyPartRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
 								.subscribe(new Subscriber<BodyPart>() {
 									@Override
@@ -222,13 +224,13 @@ public class BodyPartsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
+										Log.e("BodyPartsFragment", "Exception saving new BodyPart in initNameEdit", e);
 										String toastString = getString(R.string.toast_body_part_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-										Log.e("BodyPartFragment", "Save failed for: " + selectedInstance, e);
 									}
 									@Override
-									public void onNext(BodyPart talentCategory) {
-										onSaved(talentCategory);
+									public void onNext(BodyPart savedBodyPart) {
+										onSaved(savedBodyPart);
 									}
 								});
 					}
@@ -247,7 +249,7 @@ public class BodyPartsFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				dirty = true;
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
@@ -262,7 +264,7 @@ public class BodyPartsFragment extends Fragment {
 					final String newDescription = descriptionEdit.getText().toString();
 					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
 						selectedInstance.setDescription(newDescription);
-						talentCategoryRxHandler.save(selectedInstance)
+						bodyPartRxHandler.save(selectedInstance)
 								.observeOn(AndroidSchedulers.mainThread())
 								.subscribe(new Subscriber<BodyPart>() {
 									@Override
@@ -270,12 +272,13 @@ public class BodyPartsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
+										Log.e("BodyPartsFragment", "Exception saving new BodyPart in initDescriptionEdit", e);
 										String toastString = getString(R.string.toast_body_part_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
 									@Override
-									public void onNext(BodyPart talentCategory) {
-										onSaved(talentCategory);
+									public void onNext(BodyPart savedBodyPart) {
+										onSaved(savedBodyPart);
 									}
 								});
 					}
@@ -284,7 +287,7 @@ public class BodyPartsFragment extends Fragment {
 		});
 	}
 
-	private void onSaved(BodyPart talentCategory) {
+	private void onSaved(BodyPart bodyPart) {
 		if(getActivity() == null) {
 			return;
 		}
@@ -293,17 +296,17 @@ public class BodyPartsFragment extends Fragment {
 		toastString = getString(R.string.toast_body_part_saved);
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
-		int position = listAdapter.getPosition(talentCategory);
+		int position = listAdapter.getPosition(bodyPart);
 		// Add 1 for the header row
 		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition() + 1);
 		if (v != null) {
 			TextView textView = (TextView) v.findViewById(R.id.name_view);
 			if (textView != null) {
-				textView.setText(talentCategory.getName());
+				textView.setText(bodyPart.getName());
 			}
 			textView = (TextView) v.findViewById(R.id.description_view);
 			if (textView != null) {
-				textView.setText(talentCategory.getDescription());
+				textView.setText(bodyPart.getDescription());
 			}
 		}
 	}
@@ -325,7 +328,7 @@ public class BodyPartsFragment extends Fragment {
 				if(dirty && selectedInstance != null) {
 					selectedInstance.setName(nameEdit.getText().toString());
 					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					talentCategoryRxHandler.save(selectedInstance)
+					bodyPartRxHandler.save(selectedInstance)
 							.observeOn(AndroidSchedulers.mainThread())
 							.subscribe(new Subscriber<BodyPart>() {
 								@Override
@@ -333,12 +336,13 @@ public class BodyPartsFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("BodyPartsFragment", "Exception saving new BodyPart in initListView", e);
 									String toastString = getString(R.string.toast_body_part_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 								@Override
-								public void onNext(BodyPart talentCategory) {
-									onSaved(talentCategory);
+								public void onNext(BodyPart savedBodyPart) {
+									onSaved(savedBodyPart);
 								}
 							});
 				}

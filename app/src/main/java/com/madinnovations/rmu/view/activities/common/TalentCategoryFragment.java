@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -73,42 +74,43 @@ public class TalentCategoryFragment extends Fragment {
 		View layout = inflater.inflate(R.layout.talent_categories_fragment, container, false);
 
 		initNameEdit(layout);
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
 		initDescriptionEdit(layout);
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-
 		initListView(layout);
-
-		talentCategoryRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<TalentCategory>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("TalentCategoryFragment", "Exception occurred loading talent categories", e);
-						Toast.makeText(TalentCategoryFragment.this.getActivity(),
-									   getString(R.string.toast_talent_categories_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<TalentCategory> talentCategories) {
-						String toastString;
-
-						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
-						listAdapter.clear();
-						listAdapter.addAll(talentCategories);
-						listAdapter.notifyDataSetChanged();
-						Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
 
 		setHasOptionsMenu(true);
 		return layout;
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		talentCategoryRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<Collection<TalentCategory>>() {
+				@Override
+				public void onCompleted() {
+
+				}
+
+				@Override
+				public void onError(Throwable e) {
+					Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances in onAttach", e);
+					Toast.makeText(TalentCategoryFragment.this.getActivity(),
+								   getString(R.string.toast_talent_categories_load_failed),
+								   Toast.LENGTH_SHORT).show();
+				}
+
+				@Override
+				public void onNext(Collection<TalentCategory> talentCategories) {
+					listAdapter.clear();
+					listAdapter.addAll(talentCategories);
+					listAdapter.notifyDataSetChanged();
+					String toastString;
+					toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
+					Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
 	}
 
 	@Override
@@ -136,15 +138,15 @@ public class TalentCategoryFragment extends Fragment {
 
 						@Override
 						public void onError(Throwable e) {
-
+							Log.e("TalentCategoryFragment", "Exception saving new TalentCategory in onOptionsItemSelected", e);
 						}
 
 						@Override
-						public void onNext(TalentCategory talentCategory) {
-							listAdapter.add(talentCategory);
-							nameEdit.setText(talentCategory.getName());
-							descriptionEdit.setText(talentCategory.getDescription());
-							selectedInstance = talentCategory;
+						public void onNext(TalentCategory savedTalentCategory) {
+							listAdapter.add(savedTalentCategory);
+							nameEdit.setText(savedTalentCategory.getName());
+							descriptionEdit.setText(savedTalentCategory.getDescription());
+							selectedInstance = savedTalentCategory;
 						}
 					});
 		}
@@ -178,7 +180,7 @@ public class TalentCategoryFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("TalentCategoryFragment", "Exception thrown when deleting: " + talentCategory, e);
+									Log.e("TalentCategoryFragment", "Exception when deleting: " + talentCategory, e);
 									String toastString = getString(R.string.toast_talent_category_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -214,7 +216,7 @@ public class TalentCategoryFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
@@ -237,13 +239,13 @@ public class TalentCategoryFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("TalentCategoryFragment", "Save failed for: " + selectedInstance, e);
 									String toastString = getString(R.string.toast_talent_category_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									Log.e("TalentCategoryFragment", "Save failed for: " + selectedInstance, e);
 								}
 								@Override
-								public void onNext(TalentCategory talentCategory) {
-									onSaved(talentCategory);
+								public void onNext(TalentCategory savedTalentCategory) {
+									onSaved(savedTalentCategory);
 								}
 							});
 					}
@@ -262,7 +264,7 @@ public class TalentCategoryFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				dirty = true;
-				if (editable.length() == 0) {
+				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
 				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
@@ -285,12 +287,13 @@ public class TalentCategoryFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
+									Log.e("TalentCategoryFragment", "Exception saving new TalentCategory in initDescriptionEdit", e);
 									String toastString = getString(R.string.toast_talent_category_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 								@Override
-								public void onNext(TalentCategory talentCategory) {
-									onSaved(talentCategory);
+								public void onNext(TalentCategory savedTalentCategory) {
+									onSaved(savedTalentCategory);
 								}
 							});
 					}
@@ -348,12 +351,13 @@ public class TalentCategoryFragment extends Fragment {
 							}
 							@Override
 							public void onError(Throwable e) {
+								Log.e("TalentCategoryFragment", "Exception saving new TalentCategory in initListView", e);
 								String toastString = getString(R.string.toast_talent_category_save_failed);
 								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 							}
 							@Override
-							public void onNext(TalentCategory talentCategory) {
-								onSaved(talentCategory);
+							public void onNext(TalentCategory savedTalentCategory) {
+								onSaved(savedTalentCategory);
 							}
 						});
 				}

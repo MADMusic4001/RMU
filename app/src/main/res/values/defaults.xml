@@ -2,6 +2,8 @@
 <resources>
     <string name="default_body_part_name">New Body Part</string>
     <string name="default_body_part_description">Body Part description</string>
+    <string name="default_critical_code_code">New Critical Code</string>
+    <string name="default_critical_code_description">Critical Code description</string>
     <string name="default_talent_category_name">New Talent Category</string>
     <string name="default_talent_category_description">Talent Category description</string>
     <string name="default_stat_abbreviation">AA</string>

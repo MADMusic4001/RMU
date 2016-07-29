@@ -20,7 +20,7 @@ package com.madinnovations.rmu.data.entities.combat;
  */
 public class CriticalCode {
 	private int id = -1;
-	private String code;
+ 	private String code;
 	private String description;
 
 	// Getters and setters
