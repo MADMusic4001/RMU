@@ -23,6 +23,7 @@ public interface ParameterSchema {
 
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_DESCRIPTION = "description";
 	public static final String COLUMN_VALUE = "value";
 	public static final String COLUMN_PER_TIER = "perTier";
 
@@ -31,10 +32,11 @@ public interface ParameterSchema {
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
+			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_VALUE + " INTEGER NOT NULL, "
 			+ COLUMN_PER_TIER + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID,
-			COLUMN_NAME, COLUMN_VALUE, COLUMN_PER_TIER};
+	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_VALUE,
+			COLUMN_PER_TIER};
 }

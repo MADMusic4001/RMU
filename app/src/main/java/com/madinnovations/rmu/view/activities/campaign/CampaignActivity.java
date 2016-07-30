@@ -27,6 +27,7 @@ import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
+import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
@@ -41,6 +42,7 @@ public class CampaignActivity extends Activity {
 	private BodyPartsFragment 		bodyPartsFragment;
 	private CriticalCodesFragment 	criticalCodesFragment;
 	private LocomotionTypesFragment locomotionTypesFragment;
+	private ParametersFragment      parametersFragment;
 	private StatsFragment          	statsFragment;
 	private TalentCategoryFragment 	talentCategoryFragment;
 
@@ -104,11 +106,12 @@ public class CampaignActivity extends Activity {
 	}
 
 	public void showParameters() {
-//		if(parametersFragment == null) {
-//			parametersFragment = new ParametersFragment();
-//		}
-//		replaceDetailFragment(parametersFragment);
+		if(parametersFragment == null) {
+			parametersFragment = new ParametersFragment();
+		}
+		replaceDetailFragment(parametersFragment);
 	}
+
 	public void showStats() {
 		if(statsFragment == null) {
 			statsFragment = new StatsFragment();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.adapters;
+package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,26 +23,26 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.view.di.PerActivity;
 
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with TalentCategory information
+ * Populates a ListView with {@link LocomotionType} information
  */
 @PerActivity
-public class TalentCategoryListAdapter extends ArrayAdapter<TalentCategory> {
+public class LocomotionTypeListAdapter extends ArrayAdapter<LocomotionType> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new TalentCategoryListAdapter instance.
+	 * Creates a new LocomotionTypeListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public TalentCategoryListAdapter(Context context) {
+	public LocomotionTypeListAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -63,19 +63,19 @@ public class TalentCategoryListAdapter extends ArrayAdapter<TalentCategory> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		TalentCategory talentCategory = getItem(position);
-		holder.displayName.setText(talentCategory.getName());
-		holder.displayDescription.setText(talentCategory.getDescription());
+		LocomotionType locomotionType = getItem(position);
+		holder.nameView.setText(locomotionType.getName());
+		holder.descriptionView.setText(locomotionType.getDescription());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView displayName;
-		private TextView displayDescription;
+		private TextView nameView;
+		private TextView descriptionView;
 
 		ViewHolder(TextView nameView, TextView descriptionView) {
-			this.displayName = nameView;
-			this.displayDescription = descriptionView;
+			this.nameView = nameView;
+			this.descriptionView = descriptionView;
 		}
 	}
 }

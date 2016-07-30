@@ -1,8 +1,6 @@
 package com.madinnovations.rmu.view.activities.combat;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -26,7 +24,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.BodyPartListAdapter;
+import com.madinnovations.rmu.view.adapters.combat.BodyPartListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;

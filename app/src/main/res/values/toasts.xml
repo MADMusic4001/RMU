@@ -18,6 +18,12 @@
   <string name="toast_locomotion_type_save_failed">Locomotion Type save failed.</string>
   <string name="toast_locomotion_type_deleted">Locomotion Type deleted.</string>
   <string name="toast_locomotion_type_delete_failed">Locomotion Type deletion failed.</string>
+  <string name="toast_parameters_load_failed">Failed to load Parameters</string>
+  <string name="toast_parameters_loaded">%1$d Parameters loaded.</string>
+  <string name="toast_parameter_saved">Parameter saved.</string>
+  <string name="toast_parameter_save_failed">Parameter save failed.</string>
+  <string name="toast_parameter_deleted">Parameter deleted.</string>
+  <string name="toast_parameter_delete_failed">Parameter deletion failed.</string>
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>

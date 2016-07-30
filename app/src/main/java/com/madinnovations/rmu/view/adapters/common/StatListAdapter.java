@@ -1,4 +1,4 @@
-package com.madinnovations.rmu.view.adapters;
+package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,7 +13,7 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import javax.inject.Inject;
 
 /**
- * Created by madanle on 7/27/16.
+ * Populates a ListView with {@link Stat} information
  */
 public class StatListAdapter extends ArrayAdapter<Stat> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.stat_list_row;
@@ -48,21 +48,21 @@ public class StatListAdapter extends ArrayAdapter<Stat> {
 		}
 
 		Stat stat = getItem(position);
-		holder.displayAbbreviation.setText(stat.getAbbreviation());
-		holder.displayName.setText(stat.getName());
-		holder.displayDescription.setText(stat.getDescription());
+		holder.abbreviationView.setText(stat.getAbbreviation());
+		holder.nameView.setText(stat.getName());
+		holder.descriptionView.setText(stat.getDescription());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView displayAbbreviation;
-		private TextView displayName;
-		private TextView displayDescription;
+		private TextView abbreviationView;
+		private TextView nameView;
+		private TextView descriptionView;
 
 		ViewHolder(TextView abbreviationView, TextView nameView, TextView descriptionView) {
-			this.displayAbbreviation = abbreviationView;
-			this.displayName = nameView;
-			this.displayDescription = descriptionView;
+			this.abbreviationView = abbreviationView;
+			this.nameView = nameView;
+			this.descriptionView = descriptionView;
 		}
 	}
 }

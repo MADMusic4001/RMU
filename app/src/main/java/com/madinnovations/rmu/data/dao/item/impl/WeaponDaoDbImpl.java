@@ -1,5 +1,6 @@
 package com.madinnovations.rmu.data.dao.item.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -17,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Weapon} objects in a SQLite database.
  */
 @Singleton
-public class WeaponDaoDbImpl extends BaseDaoDbImpl implements WeaponDao, WeaponSchema {
+public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao, WeaponSchema {
     /**
      * Creates a new instance of WeaponDaoDbImpl
      *
@@ -26,11 +27,6 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl implements WeaponDao, WeaponS
     @Inject
     public WeaponDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    protected Weapon cursorToEntity(Cursor cursor) {
-        return null;
     }
 
     @Override
@@ -56,5 +52,15 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl implements WeaponDao, WeaponS
     @Override
     public int deleteAll() {
         return 0;
+    }
+
+    @Override
+    protected Weapon cursorToEntity(Cursor cursor) {
+        return null;
+    }
+
+    @Override
+    protected ContentValues getContentValues(Weapon instance) {
+        return null;
     }
 }

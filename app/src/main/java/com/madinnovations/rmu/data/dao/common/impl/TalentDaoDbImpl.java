@@ -1,5 +1,6 @@
 package com.madinnovations.rmu.data.dao.common.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -24,7 +25,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Talent} objects in a SQLite database.
  */
 @Singleton
-public class TalentDaoDbImpl extends BaseDaoDbImpl implements TalentDao, TalentSchema {
+public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao, TalentSchema {
     private TalentCategoryDao talentCategoryDao;
     private SkillDao skillDao;
     private ParameterDao parameterDao;
@@ -121,10 +122,10 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl implements TalentDao, TalentS
         return 0;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Talent cursorToEntity(Cursor cursor) {
         Talent instance = null;
-        int columnIndex;
 
         if (cursor != null) {
             instance = new Talent();
@@ -134,13 +135,18 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl implements TalentDao, TalentS
             instance.setInitialCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INITIAL_COST)));
             instance.setCostPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_COST_PER_TIER)));
             instance.setBonusPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_PER_TIER)));
-            instance.setSituational(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SITUATIONAL)) == 1 ? true : false);
+            instance.setSituational(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SITUATIONAL)) == 1);
             instance.setActionPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ACTION_POINTS)));
             instance.setCategory(talentCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
             instance.setAffectedSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))));
             instance.setParameters(getParameters(instance.getId()));
         }
         return instance;
+    }
+
+    @Override
+    protected ContentValues getContentValues(Talent instance) {
+        return null;
     }
 
     private List<Parameter> getParameters(int talentId) {
@@ -150,18 +156,16 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl implements TalentDao, TalentS
         Cursor cursor = super.query(TalentParametersSchema.TABLE_NAME, TalentParametersSchema.COLUMNS, selection,
                 selectionArgs, TalentParametersSchema.COLUMN_PARAMETER_ID);
         List<Parameter> list = new ArrayList<>(cursor.getCount());
-        if (cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_PARAMETER_ID));
-                Parameter instance = parameterDao.getById(id);
-                if(instance != null) {
-                    list.add(instance);
-                }
-                cursor.moveToNext();
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_PARAMETER_ID));
+            Parameter instance = parameterDao.getById(id);
+            if(instance != null) {
+                list.add(instance);
             }
-            cursor.close();
+            cursor.moveToNext();
         }
+        cursor.close();
 
         return list;
     }

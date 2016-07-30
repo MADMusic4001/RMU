@@ -49,7 +49,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Character} objects in a SQLite database.
  */
 @Singleton
-public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, CharacterSchema {
+public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements CharacterDao, CharacterSchema {
 	private RaceDao raceDao;
 	private SkillDao skillDao;
 	private TalentDao talentDao;
@@ -139,7 +139,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 		// set values
 		setContentValue(instance);
 		try {
-			return super.insert(TABLE_NAME, getContentValue()) > 0;
+			return super.insert(TABLE_NAME, getContentValues(instance)) > 0;
 		} catch (SQLiteConstraintException ex){
 			Log.w("Database", ex.getMessage());
 			return false;
@@ -258,7 +258,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl implements CharacterDao, C
 		initialValues.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, character.getCurrentDevelopmentPoints());
 	}
 
-	private ContentValues getContentValue() {
+	@Override
+	protected ContentValues getContentValues(Character instance) {
 		return initialValues;
 	}
 }

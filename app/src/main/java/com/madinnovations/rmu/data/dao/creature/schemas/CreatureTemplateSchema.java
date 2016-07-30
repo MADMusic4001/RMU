@@ -18,7 +18,7 @@ package com.madinnovations.rmu.data.dao.creature.schemas;
 /**
  * Database schema data for the creature_templates table
  */
-public class CreatureTemplateSchema {
+public interface CreatureTemplateSchema {
 	public static final String TABLE_NAME = "creature_templates";
 
 	public static final String COLUMN_ID = "id";

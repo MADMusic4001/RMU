@@ -20,7 +20,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Stat} objects in a SQLite database.
  */
 @Singleton
-public class StatDaoDbImpl extends BaseDaoDbImpl implements StatDao, StatSchema {
+public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatSchema {
     /**
      * Creates a new instance of StatDaoDbImpl
      *
@@ -97,7 +97,7 @@ public class StatDaoDbImpl extends BaseDaoDbImpl implements StatDao, StatSchema 
     public boolean save(Stat instance) {
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
-		ContentValues contentValues = setContentValue(instance);
+		ContentValues contentValues = getContentValues(instance);
 		boolean result;
 
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -189,11 +189,12 @@ public class StatDaoDbImpl extends BaseDaoDbImpl implements StatDao, StatSchema 
 		return instance;
 	}
 
-	protected ContentValues setContentValue(Stat instance) {
+	@Override
+	protected ContentValues getContentValues(Stat instance) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(COLUMN_ABBREVIATION, instance.getAbbreviation());
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		return initialValues;
-    }
+	}
 }

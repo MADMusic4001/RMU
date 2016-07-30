@@ -1,5 +1,6 @@
 package com.madinnovations.rmu.data.dao.item.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -17,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Item} objects in a SQLite database.
  */
 @Singleton
-public class ItemDaoDbImpl extends BaseDaoDbImpl implements ItemDao, ItemSchema {
+public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemSchema {
     /**
      * Creates a new instance of ItemDaoDbImpl
      *
@@ -26,11 +27,6 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl implements ItemDao, ItemSchema 
     @Inject
     public ItemDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    protected Item cursorToEntity(Cursor cursor) {
-        return null;
     }
 
     @Override
@@ -56,5 +52,15 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl implements ItemDao, ItemSchema 
     @Override
     public int deleteAll() {
         return 0;
+    }
+
+    @Override
+    protected Item cursorToEntity(Cursor cursor) {
+        return null;
+    }
+
+    @Override
+    protected ContentValues getContentValues(Item instance) {
+        return null;
     }
 }

@@ -2,7 +2,6 @@ package com.madinnovations.rmu.view.activities.common;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -26,7 +25,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.LocomotionTypeRxHandler;
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.LocomotionTypeListAdapter;
+import com.madinnovations.rmu.view.adapters.common.LocomotionTypeListAdapter;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 import java.util.Collection;
@@ -145,7 +144,7 @@ public class LocomotionTypesFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.locomotion_types_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.locomotion_type_context_menu, menu);
 	}
 
 	@Override

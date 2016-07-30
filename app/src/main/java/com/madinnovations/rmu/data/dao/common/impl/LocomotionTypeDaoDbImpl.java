@@ -20,7 +20,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link LocomotionType} objects in a SQLite database.
  */
 @Singleton
-public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl implements LocomotionTypeDao, LocomotionTypeSchema {
+public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl<LocomotionType> implements LocomotionTypeDao, LocomotionTypeSchema {
     /**
      * Creates a new instance of LocomotionTypeDaoDbImpl
      *
@@ -99,7 +99,7 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl implements Locomotion
     public boolean save(LocomotionType instance) {
         final String selectionArgs[] = { String.valueOf(instance.getId()) };
         final String selection = COLUMN_ID + " = ?";
-        ContentValues contentValues = setContentValue(instance);
+        ContentValues contentValues = getContentValues(instance);
         boolean result;
 
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -177,10 +177,10 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl implements Locomotion
         return count;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected LocomotionType cursorToEntity(Cursor cursor) {
         LocomotionType instance = null;
-        int columnIndex;
 
         if (cursor != null) {
             instance = new LocomotionType();
@@ -192,7 +192,8 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl implements Locomotion
         return instance;
     }
 
-    protected ContentValues setContentValue(LocomotionType instance) {
+    @Override
+    protected ContentValues getContentValues(LocomotionType instance) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(COLUMN_DEFAULT_RATE, instance.getDefaultRate());
         initialValues.put(COLUMN_NAME, instance.getName());

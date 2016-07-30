@@ -21,6 +21,7 @@ package com.madinnovations.rmu.data.entities.common;
 public class Parameter {
 	private int id = -1;
 	private String name;
+	private String description;
 	private short value;
 	private boolean perTier;
 
@@ -36,6 +37,12 @@ public class Parameter {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public short getValue() {
 		return value;

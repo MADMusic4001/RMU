@@ -1,7 +1,7 @@
 package com.madinnovations.rmu.data.dao.common.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link SkillCategory} objects in a SQLite database.
  */
 @Singleton
-public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl implements SkillCategoryDao, SkillCategorySchema {
+public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> implements SkillCategoryDao, SkillCategorySchema {
     /**
      * Creates a new instance of SkillCategoryDaoDbImpl
      *
@@ -27,11 +27,6 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl implements SkillCatego
     @Inject
     public SkillCategoryDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    protected SkillCategory cursorToEntity(Cursor cursor) {
-        return null;
     }
 
     @Override
@@ -57,5 +52,15 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl implements SkillCatego
     @Override
     public int deleteAll() {
         return 0;
+    }
+
+    @Override
+    protected SkillCategory cursorToEntity(Cursor cursor) {
+        return null;
+    }
+
+    @Override
+    protected ContentValues getContentValues(SkillCategory instance) {
+        return null;
     }
 }

@@ -1,7 +1,7 @@
 package com.madinnovations.rmu.data.dao.common.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Size} objects in a SQLite database.
  */
 @Singleton
-public class SizeDaoDbImpl extends BaseDaoDbImpl implements SizeDao, SizeSchema {
+public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeSchema {
     /**
      * Creates a new instance of SizeDaoDbImpl
      *
@@ -27,11 +27,6 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl implements SizeDao, SizeSchema 
     @Inject
     public SizeDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    protected Size cursorToEntity(Cursor cursor) {
-        return null;
     }
 
     @Override
@@ -58,4 +53,14 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl implements SizeDao, SizeSchema 
     public int deleteAll() {
         return 0;
     }
+
+    @Override
+    protected Size cursorToEntity(Cursor cursor) {
+        return null;
+    }
+
+	@Override
+	protected ContentValues getContentValues(Size instance) {
+		return null;
+	}
 }

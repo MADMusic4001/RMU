@@ -35,7 +35,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link CriticalCode} objects in a SQLite database.
  */
 @Singleton
-public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl implements CriticalCodeDao, CriticalCodeSchema {
+public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl<CriticalCode> implements CriticalCodeDao, CriticalCodeSchema {
 	/**
 	 * Creates a new instance of CriticalCodeDaoDbImpl
 	 *
@@ -113,7 +113,7 @@ public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl implements CriticalCode
 	public boolean save(CriticalCode instance) {
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
-		ContentValues contentValues = setContentValue(instance);
+		ContentValues contentValues = getContentValues(instance);
 		boolean result;
 
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -203,7 +203,8 @@ public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl implements CriticalCode
 		return instance;
 	}
 
-	private ContentValues setContentValue(CriticalCode instance) {
+	@Override
+	protected ContentValues getContentValues(CriticalCode instance) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(COLUMN_CODE, instance.getCode());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());

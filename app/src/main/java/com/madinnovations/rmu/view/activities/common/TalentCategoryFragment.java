@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -40,7 +39,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.TalentCategoryListAdapter;
+import com.madinnovations.rmu.view.adapters.common.TalentCategoryListAdapter;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 import java.util.Collection;
@@ -113,7 +112,7 @@ public class TalentCategoryFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.e("TalentCategoryFragment", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.talent_category_action_bar, menu);
+		inflater.inflate(R.menu.talent_categories_action_bar, menu);
 	}
 
 	@Override

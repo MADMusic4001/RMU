@@ -1,7 +1,6 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -25,7 +24,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.StatListAdapter;
+import com.madinnovations.rmu.view.adapters.common.StatListAdapter;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 
 import java.util.Collection;
@@ -140,7 +139,7 @@ public class StatsFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.stats_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.stat_context_menu, menu);
 	}
 
 	@Override

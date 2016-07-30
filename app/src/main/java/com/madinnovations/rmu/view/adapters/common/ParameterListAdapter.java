@@ -13,34 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.adapters.combat;
+package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.combat.CriticalCode;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link CriticalCode} information
+ * Populates a ListView with {@link Parameter} information
  */
-public class CriticalCodeListAdapter extends ArrayAdapter<CriticalCode> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.code_description_row;
+public class ParameterListAdapter extends ArrayAdapter<Parameter> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new CriticalCodeListAdapter instance.
+	 * Creates a new ParameterListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public CriticalCodeListAdapter(Context context) {
+	public ParameterListAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -52,7 +53,7 @@ public class CriticalCodeListAdapter extends ArrayAdapter<CriticalCode> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.code_view),
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view),
 									(TextView) rowView.findViewById(R.id.description_view));
 			rowView.setTag(holder);
 		}
@@ -61,18 +62,18 @@ public class CriticalCodeListAdapter extends ArrayAdapter<CriticalCode> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		CriticalCode talentCategory = getItem(position);
-		holder.codeView.setText(talentCategory.getCode());
-		holder.descriptionView.setText(talentCategory.getDescription());
+		Parameter parameter = getItem(position);
+		holder.nameView.setText(parameter.getName());
+		holder.descriptionView.setText(parameter.getDescription());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView codeView;
+		private TextView nameView;
 		private TextView descriptionView;
 
-		ViewHolder(TextView codeView, TextView descriptionView) {
-			this.codeView = codeView;
+		ViewHolder(TextView nameView, TextView descriptionView) {
+			this.nameView = nameView;
 			this.descriptionView = descriptionView;
 		}
 	}

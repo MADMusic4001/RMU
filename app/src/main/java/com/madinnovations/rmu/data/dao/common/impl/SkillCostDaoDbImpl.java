@@ -1,7 +1,7 @@
 package com.madinnovations.rmu.data.dao.common.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link SkillCost} objects in a SQLite database.
  */
 @Singleton
-public class SkillCostDaoDbImpl extends BaseDaoDbImpl implements SkillCostDao {
+public class SkillCostDaoDbImpl extends BaseDaoDbImpl<SkillCost> implements SkillCostDao {
     /**
      * Creates a new instance of SkillCostDaoDbImpl
      *
@@ -26,11 +26,6 @@ public class SkillCostDaoDbImpl extends BaseDaoDbImpl implements SkillCostDao {
     @Inject
     public SkillCostDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    protected SkillCost cursorToEntity(Cursor cursor) {
-        return null;
     }
 
     @Override
@@ -56,5 +51,15 @@ public class SkillCostDaoDbImpl extends BaseDaoDbImpl implements SkillCostDao {
     @Override
     public int deleteAll() {
         return 0;
+    }
+
+    @Override
+    protected SkillCost cursorToEntity(Cursor cursor) {
+        return null;
+    }
+
+    @Override
+    protected ContentValues getContentValues(SkillCost instance) {
+        return null;
     }
 }

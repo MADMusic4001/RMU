@@ -26,7 +26,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @author Mark
  * Created 7/24/2016.
  */
-public abstract class BaseDaoDbImpl {
+public abstract class BaseDaoDbImpl<T> {
 	protected SQLiteOpenHelper helper;
 
 	/**
@@ -42,10 +42,17 @@ public abstract class BaseDaoDbImpl {
 	 * Creates an instance of type T from the data in the current cursor row.
 	 *
 	 * @param cursor  a{@link Cursor} positioned at a valid row in a query result
-	 * @param <T>  the type that will be returned from the method
 	 * @return an instance of type T
 	 */
-	protected abstract <T> T cursorToEntity(Cursor cursor);
+	protected abstract T cursorToEntity(Cursor cursor);
+
+	/**
+	 * Gets a {@link ContentValues} instance containing the values to use to insert or update the database.
+	 *
+	 * @param instance  the instance to get the values from
+	 * @return a ContentValues instance.
+	 */
+	protected abstract ContentValues getContentValues(T instance);
 
 	/**
 	 * Inserts a new record into the database.

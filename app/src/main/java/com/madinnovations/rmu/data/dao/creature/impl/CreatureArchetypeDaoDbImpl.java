@@ -15,12 +15,12 @@
  */
 package com.madinnovations.rmu.data.dao.creature.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link CreatureArchetype} objects in a SQLite database.
  */
 @Singleton
-public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl
+public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		implements CreatureArchetypeDao {
 	/**
 	 * Creates a new instance of CreatureArchetypeDaoImpl
@@ -70,7 +70,12 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl
 	}
 
 	@Override
-	protected <T> T cursorToEntity(Cursor cursor) {
+	protected CreatureArchetype cursorToEntity(Cursor cursor) {
+		return null;
+	}
+
+	@Override
+	protected ContentValues getContentValues(CreatureArchetype instance) {
 		return null;
 	}
 }

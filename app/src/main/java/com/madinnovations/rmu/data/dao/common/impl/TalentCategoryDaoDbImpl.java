@@ -20,7 +20,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link TalentCategory} objects in a SQLite database.
  */
 @Singleton
-public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl implements TalentCategoryDao, TalentCategorySchema {
+public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl<TalentCategory> implements TalentCategoryDao, TalentCategorySchema {
 	/**
 	 * Creates a new instance of TalentCategoryDaoDbImpl
 	 *
@@ -98,7 +98,7 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl implements TalentCate
 	public boolean save(TalentCategory instance) {
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
-		ContentValues contentValues = setContentValue(instance);
+		ContentValues contentValues = getContentValues(instance);
 		boolean result;
 
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -189,7 +189,8 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl implements TalentCate
 		return instance;
 	}
 
-	private ContentValues setContentValue(TalentCategory instance) {
+	@Override
+	protected ContentValues getContentValues(TalentCategory instance) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());

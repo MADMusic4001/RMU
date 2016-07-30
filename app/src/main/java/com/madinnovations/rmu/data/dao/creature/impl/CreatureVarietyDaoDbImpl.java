@@ -15,12 +15,12 @@
  */
 package com.madinnovations.rmu.data.dao.creature.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 
@@ -33,7 +33,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link CreatureVariety} objects in a SQLite database.
  */
 @Singleton
-public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl implements CreatureVarietyDao, CreatureTypeSchema {
+public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> implements CreatureVarietyDao, CreatureTypeSchema {
 	/**
 	 * Creates a new instance of CreatureVarietyDaoDbImpl
 	 *
@@ -70,7 +70,12 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl implements CreatureV
 	}
 
 	@Override
-	protected <T> T cursorToEntity(Cursor cursor) {
+	protected CreatureVariety cursorToEntity(Cursor cursor) {
+		return null;
+	}
+
+	@Override
+	protected ContentValues getContentValues(CreatureVariety instance) {
 		return null;
 	}
 }

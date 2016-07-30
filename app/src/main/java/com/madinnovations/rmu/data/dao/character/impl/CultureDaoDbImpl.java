@@ -1,11 +1,11 @@
 package com.madinnovations.rmu.data.dao.character.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
 import com.madinnovations.rmu.data.entities.character.Culture;
 
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Culture} objects in a SQLite database.
  */
 @Singleton
-public class CultureDaoDbImpl extends BaseDaoDbImpl implements CultureDao, CultureSchema {
+public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureDao, CultureSchema {
     /**
      * Creates a new CultureDaoDbImpl instance
      *
@@ -54,8 +54,14 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl implements CultureDao, Cultu
         return 0;
     }
 
-    @Override
-    protected <T> T cursorToEntity(Cursor cursor) {
+    @SuppressWarnings("unchecked")
+	@Override
+    protected Culture cursorToEntity(Cursor cursor) {
         return null;
     }
+
+	@Override
+	protected ContentValues getContentValues(Culture instance) {
+		return null;
+	}
 }

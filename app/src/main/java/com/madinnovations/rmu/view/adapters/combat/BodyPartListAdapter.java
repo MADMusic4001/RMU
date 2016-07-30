@@ -1,4 +1,4 @@
-package com.madinnovations.rmu.view.adapters;
+package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -47,18 +47,18 @@ public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
 		}
 
 		BodyPart talentCategory = getItem(position);
-		holder.displayName.setText(talentCategory.getName());
-		holder.displayDescription.setText(talentCategory.getDescription());
+		holder.nameView.setText(talentCategory.getName());
+		holder.descriptionView.setText(talentCategory.getDescription());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView displayName;
-		private TextView displayDescription;
+		private TextView nameView;
+		private TextView descriptionView;
 
 		ViewHolder(TextView nameView, TextView descriptionView) {
-			this.displayName = nameView;
-			this.displayDescription = descriptionView;
+			this.nameView = nameView;
+			this.descriptionView = descriptionView;
 		}
 	}
 }

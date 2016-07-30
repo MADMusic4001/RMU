@@ -1,11 +1,11 @@
 package com.madinnovations.rmu.data.dao.combat.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link DamageResult} objects in a SQLite database.
  */
 @Singleton
-public class DamageResultDaoDbImpl extends BaseDaoDbImpl implements DamageResultDao, DamageResultSchema {
+public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implements DamageResultDao, DamageResultSchema {
     /**
      * Creates a new instance of DamageResultDaoDbImpl
      *
@@ -58,4 +58,9 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl implements DamageResult
     protected DamageResult cursorToEntity(Cursor cursor) {
         return null;
     }
+
+	@Override
+	protected ContentValues getContentValues(DamageResult instance) {
+		return null;
+	}
 }

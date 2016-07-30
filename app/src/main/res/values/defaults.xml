@@ -8,6 +8,7 @@
     <string name="default_locomotion_type_description">Locomotion Type description</string>
     <string name="default_locomotion_type_default_rate">20</string>
     <string name="default_parameter_name">New Parameter</string>
+    <string name="default_parameter_description">Parameter description</string>
     <string name="default_parameter_value">5</string>
     <string name="default_parameter_per_tier">false</string>
     <string name="default_stat_abbreviation">AA</string>

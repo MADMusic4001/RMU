@@ -5,4 +5,5 @@
     <string name="validation_default_rate_required">Please enter a default movement rate.</string>
     <string name="validation_description_required">Please enter a description.</string>
     <string name="validation_name_required">Please enter a name.</string>
+    <string name="validation_value_required">Please enter a value.</string>
 </resources>

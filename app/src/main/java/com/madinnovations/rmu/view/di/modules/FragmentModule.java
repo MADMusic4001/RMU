@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.di.modules;
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
+import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
@@ -34,6 +35,7 @@ public class FragmentModule {
 	private AboutFragment      aboutFragment;
 	private MainMenuFragment   mainMenuFragment;
 	private LocomotionTypesFragment locomotionTypesFragment;
+	private ParametersFragment parametersFragment;
 	private StatsFragment statsFragment;
 	private TalentCategoryFragment talentCategoryFragment;
 
@@ -45,6 +47,9 @@ public class FragmentModule {
 	}
 	public FragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
 		this.locomotionTypesFragment = locomotionTypesFragment;
+	}
+	public FragmentModule(ParametersFragment parametersFragment) {
+		this.parametersFragment = parametersFragment;
 	}
 	public FragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
@@ -64,6 +69,10 @@ public class FragmentModule {
 	@Provides @PerFragment
 	public LocomotionTypesFragment provideLocomotionTypesFragment() {
 		return this.locomotionTypesFragment;
+	}
+	@Provides @PerFragment
+	public ParametersFragment provideParametersFragment() {
+		return this.parametersFragment;
 	}
 	@Provides @PerFragment
 	public StatsFragment provideStatsFragment() {

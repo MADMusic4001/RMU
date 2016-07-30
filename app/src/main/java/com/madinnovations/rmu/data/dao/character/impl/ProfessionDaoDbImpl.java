@@ -1,7 +1,7 @@
 package com.madinnovations.rmu.data.dao.character.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Profession} objects in a SQLite database.
  */
 @Singleton
-public class ProfessionDaoDbImpl extends BaseDaoDbImpl implements ProfessionDao, ProfessionSchema {
+public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements ProfessionDao, ProfessionSchema {
     /**
      * Creates a new instance of ProfessionDaoDbImpl
      *
@@ -27,11 +27,6 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl implements ProfessionDao,
     @Inject
     public ProfessionDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    protected Profession cursorToEntity(Cursor cursor) {
-        return null;
     }
 
     @Override
@@ -58,4 +53,15 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl implements ProfessionDao,
     public int deleteAll() {
         return 0;
     }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Profession cursorToEntity(Cursor cursor) {
+		return null;
+	}
+
+	@Override
+	protected ContentValues getContentValues(Profession instance) {
+		return null;
+	}
 }

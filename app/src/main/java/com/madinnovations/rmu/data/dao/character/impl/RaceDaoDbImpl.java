@@ -1,5 +1,6 @@
 package com.madinnovations.rmu.data.dao.character.impl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -27,7 +28,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link Race} objects in a SQLite database.
  */
 @Singleton
-public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema {
+public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceSchema {
     TalentDao talentDao;
     LocomotionTypeDao locomotionTypeDao;
 
@@ -122,10 +123,10 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
         return 0;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Race cursorToEntity(Cursor cursor) {
         Race instance = null;
-        int columnIndex;
 
         if (cursor != null) {
             instance = new Race();
@@ -168,18 +169,16 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
         Cursor cursor = super.query(RaceTalentsSchema.TABLE_NAME, RaceTalentsSchema.COLUMNS, selection,
                 selectionArgs, RaceTalentsSchema.COLUMN_TALENT_ID);
         Map<Talent, Short> map = new HashMap<>(cursor.getCount());
-        if (cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TALENT_ID));
-                Talent instance = talentDao.getById(mappedId);
-                if(instance != null) {
-                    map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TIERS)));
-                }
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TALENT_ID));
+			Talent instance = talentDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TIERS)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
 
         return map;
     }
@@ -191,19 +190,22 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl implements RaceDao, RaceSchema 
         Cursor cursor = super.query(RaceMovementSchema.TABLE_NAME, RaceMovementSchema.COLUMNS, selection,
                 selectionArgs, RaceMovementSchema.COLUMN_MOVEMENT_ID);
         List<LocomotionType> locomotionTypeList = new ArrayList<>(cursor.getCount());
-        if (cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                int movementId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceMovementSchema.COLUMN_MOVEMENT_ID));
-                LocomotionType locomotionType = locomotionTypeDao.getById(movementId);
-                if(locomotionType != null) {
-                    locomotionTypeList.add(locomotionType);
-                }
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int movementId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceMovementSchema.COLUMN_MOVEMENT_ID));
+			LocomotionType locomotionType = locomotionTypeDao.getById(movementId);
+			if(locomotionType != null) {
+				locomotionTypeList.add(locomotionType);
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
 
         return locomotionTypeList;
     }
+
+	@Override
+	protected ContentValues getContentValues(Race instance) {
+		return null;
+	}
 }

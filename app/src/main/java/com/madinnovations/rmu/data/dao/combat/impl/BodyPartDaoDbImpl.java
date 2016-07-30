@@ -20,7 +20,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link BodyPart} objects in a SQLite database.
  */
 @Singleton
-public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, BodyPartSchema {
+public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPartDao, BodyPartSchema {
     /**
      * Creates a new instance of BodyPartDaoDbImpl
      *
@@ -98,7 +98,7 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
     public boolean save(BodyPart instance) {
         final String selectionArgs[] = { String.valueOf(instance.getId()) };
         final String selection = COLUMN_ID + " = ?";
-        ContentValues contentValues = setContentValue(instance);
+        ContentValues contentValues = getContentValues(instance);
         boolean result;
 
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -188,10 +188,11 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl implements BodyPartDao, Bod
         return instance;
     }
 
-    private ContentValues setContentValue(BodyPart instance) {
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        return initialValues;
-    }
+	@Override
+	protected ContentValues getContentValues(BodyPart instance) {
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(COLUMN_NAME, instance.getName());
+		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+		return initialValues;
+	}
 }

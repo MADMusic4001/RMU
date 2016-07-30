@@ -20,42 +20,41 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.creature.CreatureDao;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
-import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.dao.creature.CreatureTemplateDao;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTemplateSchema;
+import com.madinnovations.rmu.data.entities.creature.CreatureTemplate;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
- * Methods for managing {@link Creature} objects in a SQLite database.
+ * ${CLASS_DESCRIPTION}
+ *
+ * @author Mark
+ * Created 7/30/2016.
  */
-@Singleton
-public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements CreatureDao, CreatureSchema {
+public class CreatureTemplateDaoDbImpl extends BaseDaoDbImpl<CreatureTemplate> implements CreatureTemplateDao,
+		CreatureTemplateSchema{
 	/**
-	 * Creates a new instance of CreatureDaoDbImpl
+	 * Creates a new instance of CreatureTemplateDaoDbImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
-	@Inject
-	public CreatureDaoDbImpl(SQLiteOpenHelper helper) {
+	public CreatureTemplateDaoDbImpl(SQLiteOpenHelper helper) {
 		super(helper);
 	}
 
 	@Override
-	public Creature getById(int id) {
+	public CreatureTemplate getById(int id) {
 		return null;
 	}
 
 	@Override
-	public List<Creature> getAll() {
+	public List<CreatureTemplate> getAll() {
 		return null;
 	}
 
 	@Override
-	public boolean save(Creature instance) {
+	public boolean save(CreatureTemplate instance) {
 		return false;
 	}
 
@@ -70,12 +69,12 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	}
 
 	@Override
-	protected Creature cursorToEntity(Cursor cursor) {
+	protected CreatureTemplate cursorToEntity(Cursor cursor) {
 		return null;
 	}
 
 	@Override
-	protected ContentValues getContentValues(Creature instance) {
+	protected ContentValues getContentValues(CreatureTemplate instance) {
 		return null;
 	}
 }
