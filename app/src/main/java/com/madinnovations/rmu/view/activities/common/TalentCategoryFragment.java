@@ -78,39 +78,35 @@ public class TalentCategoryFragment extends Fragment {
 		initListView(layout);
 
 		setHasOptionsMenu(true);
-		return layout;
-	}
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
 
 		talentCategoryRxHandler.getAll()
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Subscriber<Collection<TalentCategory>>() {
-				@Override
-				public void onCompleted() {
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+					@Override
+					public void onCompleted() {
 
-				}
+					}
 
-				@Override
-				public void onError(Throwable e) {
-					Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances in onAttach", e);
-					Toast.makeText(TalentCategoryFragment.this.getActivity(),
-								   getString(R.string.toast_talent_categories_load_failed),
-								   Toast.LENGTH_SHORT).show();
-				}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances in onCreateView", e);
+						Toast.makeText(TalentCategoryFragment.this.getActivity(),
+									   getString(R.string.toast_talent_categories_load_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
 
-				@Override
-				public void onNext(Collection<TalentCategory> talentCategories) {
-					listAdapter.clear();
-					listAdapter.addAll(talentCategories);
-					listAdapter.notifyDataSetChanged();
-					String toastString;
-					toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
-					Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-				}
-			});
+					@Override
+					public void onNext(Collection<TalentCategory> talentCategories) {
+						listAdapter.clear();
+						listAdapter.addAll(talentCategories);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
+						Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
+		return layout;
 	}
 
 	@Override

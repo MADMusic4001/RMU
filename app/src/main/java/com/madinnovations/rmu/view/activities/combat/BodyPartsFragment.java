@@ -1,5 +1,6 @@
 package com.madinnovations.rmu.view.activities.combat;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -64,39 +65,34 @@ public class BodyPartsFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		return layout;
-	}
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-
 		bodyPartRxHandler.getAll()
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Subscriber<Collection<BodyPart>>() {
-				@Override
-				public void onCompleted() {
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<BodyPart>>() {
+					@Override
+					public void onCompleted() {
 
-				}
+					}
 
-				@Override
-				public void onError(Throwable e) {
-					Log.e("BodyPartsFragment", "Exception caught getting all CriticalCode instances in onAttach", e);
-					Toast.makeText(BodyPartsFragment.this.getActivity(),
-								   getString(R.string.toast_body_parts_load_failed),
-								   Toast.LENGTH_SHORT).show();
-				}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("BodyPartsFragment", "Exception caught getting all CriticalCode instances in onCreateView", e);
+						Toast.makeText(BodyPartsFragment.this.getActivity(),
+									   getString(R.string.toast_body_parts_load_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
 
-				@Override
-				public void onNext(Collection<BodyPart> bodyParts) {
-					listAdapter.clear();
-					listAdapter.addAll(bodyParts);
-					listAdapter.notifyDataSetChanged();
-					String toastString;
-					toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
-					Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-				}
-			});
+					@Override
+					public void onNext(Collection<BodyPart> bodyParts) {
+						listAdapter.clear();
+						listAdapter.addAll(bodyParts);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
+						Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
+		return layout;
 	}
 
 	@Override

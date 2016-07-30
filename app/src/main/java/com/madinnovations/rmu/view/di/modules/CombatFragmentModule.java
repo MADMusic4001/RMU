@@ -38,8 +38,7 @@ public class CombatFragmentModule {
 		this.criticalCodesFragment = criticalCodesFragment;
 	}
 
-	@Provides
-	@PerFragment
+	@Provides @PerFragment
 	public BodyPartsFragment provideBodyPartsFragment() {
 		return this.bodyPartsFragment;
 	}

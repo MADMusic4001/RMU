@@ -103,6 +103,12 @@ public class CampaignActivity extends Activity {
 		replaceDetailFragment(locomotionTypesFragment);
 	}
 
+	public void showParameters() {
+//		if(parametersFragment == null) {
+//			parametersFragment = new ParametersFragment();
+//		}
+//		replaceDetailFragment(parametersFragment);
+	}
 	public void showStats() {
 		if(statsFragment == null) {
 			statsFragment = new StatsFragment();

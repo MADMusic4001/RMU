@@ -67,39 +67,35 @@ public class LocomotionTypesFragment extends Fragment {
 		initListView(layout);
 
 		setHasOptionsMenu(true);
-		return layout;
-	}
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
 
 		locomotionTypeRxHandler.getAll()
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Subscriber<Collection<LocomotionType>>() {
-				@Override
-				public void onCompleted() {
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<LocomotionType>>() {
+					@Override
+					public void onCompleted() {
 
-				}
+					}
 
-				@Override
-				public void onError(Throwable e) {
-					Log.e("LocomotionTypesFragment", "Exception caught getting all CriticalCode instances in onAttach", e);
-					Toast.makeText(LocomotionTypesFragment.this.getActivity(),
-								   getString(R.string.toast_locomotion_types_load_failed),
-								   Toast.LENGTH_SHORT).show();
-				}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("LocomotionTypesFragment", "Exception caught getting all LocomotionType instances in onCreateView", e);
+						Toast.makeText(LocomotionTypesFragment.this.getActivity(),
+									   getString(R.string.toast_locomotion_types_load_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
 
-				@Override
-				public void onNext(Collection<LocomotionType> locomotionTypes) {
-					listAdapter.clear();
-					listAdapter.addAll(locomotionTypes);
-					listAdapter.notifyDataSetChanged();
-					String toastString;
-					toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
-					Toast.makeText(LocomotionTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-				}
-			});
+					@Override
+					public void onNext(Collection<LocomotionType> locomotionTypes) {
+						listAdapter.clear();
+						listAdapter.addAll(locomotionTypes);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
+						Toast.makeText(LocomotionTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
+		return layout;
 	}
 
 	@Override

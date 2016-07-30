@@ -66,38 +66,34 @@ public class StatsFragment extends Fragment {
 		initListView(layout);
 
 		setHasOptionsMenu(true);
-		return layout;
-	}
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
 
 		statRxHandler.getAll()
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Subscriber<Collection<Stat>>() {
-				@Override
-				public void onCompleted() {
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {
 
-				}
+					}
 
-				@Override
-				public void onError(Throwable e) {
-					Log.e("StatsFragment", "Exception caught getting all Stat instances in onAttach", e);
-					Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
-								   Toast.LENGTH_SHORT).show();
-				}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("StatsFragment", "Exception caught getting all Stat instances in onCreateView", e);
+						Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
 
-				@Override
-				public void onNext(Collection<Stat> stats) {
-					listAdapter.clear();
-					listAdapter.addAll(stats);
-					listAdapter.notifyDataSetChanged();
-					String toastString;
-					toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
-					Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-				}
-			});
+					@Override
+					public void onNext(Collection<Stat> stats) {
+						listAdapter.clear();
+						listAdapter.addAll(stats);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
+						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
+		return layout;
 	}
 
 	@Override

@@ -72,7 +72,6 @@ public class MainMenuFragment extends Fragment {
 		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-				Log.d("MainMenuFragment", "groupPosition: " + groupPosition + ", childPosition:" +childPosition);
 				switch (groupPosition) {
 					case 0:
 						switch (childPosition) {
@@ -130,6 +129,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showDamageTables();
 								break;
 						}
+						break;
 					case 3:
 						switch (childPosition) {
 							case 0:
