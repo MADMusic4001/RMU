@@ -359,13 +359,14 @@ public class ParametersFragment extends Fragment {
 
 	private void initPerTierCheckBox(View layout) {
 		perTierCheckBox = (CheckBox) layout.findViewById(R.id.per_tier_checkbox);
-		valueEdit.setOnClickListener(new View.OnClickListener() {
+
+		perTierCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				dirty = true;
 			}
 		});
-		valueEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		perTierCheckBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
@@ -408,7 +409,7 @@ public class ParametersFragment extends Fragment {
 
 		int position = listAdapter.getPosition(parameter);
 		// Add 1 for the header row
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition() + 1);
+		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 		if (v != null) {
 			TextView textView = (TextView) v.findViewById(R.id.name_view);
 			if (textView != null) {
@@ -422,12 +423,7 @@ public class ParametersFragment extends Fragment {
 	}
 
 	private void initListView(View layout) {
-		View headerView;
-
 		listView = (ListView) layout.findViewById(R.id.list_view);
-		headerView = getActivity().getLayoutInflater().inflate(
-				R.layout.name_description_header, listView, false);
-		listView.addHeaderView(headerView);
 
 		listView.setAdapter(listAdapter);
 

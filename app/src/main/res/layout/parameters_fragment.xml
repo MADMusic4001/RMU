@@ -3,7 +3,8 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <ListView
+  <include layout="@layout/name_description_header"/>
+  <ListView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
@@ -49,10 +50,11 @@
 
       <CheckBox
           android:id="@+id/per_tier_checkbox"
-          android:layout_width="match_parent"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/label_per_tier"
           android:button="@null"
+          android:textAppearance="?android:attr/textAppearanceMediumInverse"
           android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
           android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
           android:layout_toEndOf="@id/value_edit"

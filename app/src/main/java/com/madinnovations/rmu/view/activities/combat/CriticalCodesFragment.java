@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -308,8 +307,7 @@ public class CriticalCodesFragment extends Fragment {
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
 		int position = listAdapter.getPosition(criticalCode);
-		// Add 1 for the header row
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition() + 1);
+		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 		if (v != null) {
 			TextView textView = (TextView) v.findViewById(R.id.name_view);
 			if (textView != null) {
@@ -323,12 +321,7 @@ public class CriticalCodesFragment extends Fragment {
 	}
 
 	private void initListView(View layout) {
-		View headerView;
-
 		listView = (ListView) layout.findViewById(R.id.list_view);
-		headerView = getActivity().getLayoutInflater().inflate(
-				R.layout.code_description_header, listView, false);
-		listView.addHeaderView(headerView);
 
 		listView.setAdapter(listAdapter);
 
