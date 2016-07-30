@@ -1,7 +1,7 @@
 package com.madinnovations.rmu.controller.rxhandler.creature;
 
-import com.madinnovations.rmu.data.dao.common.CreatureTemplateDao;
-import com.madinnovations.rmu.data.entities.common.CreatureTemplate;
+import com.madinnovations.rmu.data.dao.creature.CreatureTemplateDao;
+import com.madinnovations.rmu.data.entities.creature.CreatureTemplate;
 
 import java.util.Collection;
 
