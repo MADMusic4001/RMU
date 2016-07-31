@@ -15,11 +15,25 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
+import com.madinnovations.rmu.view.di.PerFragment;
+
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * Provides methods to allow the dependency injection engine to inject dependencies into creature package Fragment instances.
  */
 @Module
 public class CreatureFragmentModule {
+	private CreatureCategoriesFragment creatureCategoriesFragment;
+
+	public CreatureFragmentModule(CreatureCategoriesFragment creatureCategoriesFragment) {
+		this.creatureCategoriesFragment = creatureCategoriesFragment;
+	}
+
+	@Provides @PerFragment
+	public CreatureCategoriesFragment provideCreatureCategoriesFragment() {
+		return this.creatureCategoriesFragment;
+	}
 }

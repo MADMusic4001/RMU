@@ -2,6 +2,8 @@
 <resources>
     <string name="default_body_part_name">New Body Part</string>
     <string name="default_body_part_description">Body Part description</string>
+  <string name="default_creature_category_name">New Creature Category</string>
+  <string name="default_creature_category_description">Creature Category description</string>
     <string name="default_critical_code_code">New Critical Code</string>
     <string name="default_critical_code_description">Critical Code description</string>
     <string name="default_locomotion_type_name">New Locomotion Type</string>

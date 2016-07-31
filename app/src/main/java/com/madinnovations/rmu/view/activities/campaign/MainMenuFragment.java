@@ -94,7 +94,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showCreatureArchetypes();
 								break;
 							case 1:
-//								((CampaignActivity)getActivity()).showCreatureCategories();
+								((CampaignActivity)getActivity()).showCreatureCategories();
 								break;
 							case 2:
 //								((CampaignActivity)getActivity()).showCreatures();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.activities.common;
+package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -36,11 +36,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
-import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.controller.rxhandler.creature.CreatureCategoryRxHandler;
+import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.TalentCategoryListAdapter;
-import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
+import com.madinnovations.rmu.view.adapters.creature.CreatureCategoryListAdapter;
+import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.Collection;
 
@@ -51,24 +51,24 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Handles interactions with the UI for talent categories.
+ * Handles interactions with the UI for creature categories.
  */
-public class TalentCategoryFragment extends Fragment {
+public class CreatureCategoriesFragment extends Fragment {
 	@Inject
-	protected TalentCategoryRxHandler   talentCategoryRxHandler;
+	protected CreatureCategoryRxHandler   creatureCategoryRxHandler;
 	@Inject
-	protected TalentCategoryListAdapter listAdapter;
-	private   ListView                  listView;
-	private   EditText                  nameEdit;
-	private   EditText                  descriptionEdit;
-	private TalentCategory selectedInstance = null;
-	private boolean dirty = false;
+	protected CreatureCategoryListAdapter listAdapter;
+	private   ListView                    listView;
+	private   EditText                    nameEdit;
+	private   EditText                    descriptionEdit;
+	private CreatureCategory selectedInstance = null;
+	private boolean          dirty            = false;
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
-				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
+				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.name_descriptions_fragment, container, false);
 
@@ -78,9 +78,9 @@ public class TalentCategoryFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		talentCategoryRxHandler.getAll()
+		creatureCategoryRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+				.subscribe(new Subscriber<Collection<CreatureCategory>>() {
 					@Override
 					public void onCompleted() {
 
@@ -88,20 +88,21 @@ public class TalentCategoryFragment extends Fragment {
 
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances in onCreateView", e);
-						Toast.makeText(TalentCategoryFragment.this.getActivity(),
-									   getString(R.string.toast_talent_categories_load_failed),
+						Log.e("CreatureCategoriesFrag",
+							  "Exception caught getting all CreatureCategory instances in onCreateView", e);
+						Toast.makeText(CreatureCategoriesFragment.this.getActivity(),
+									   getString(R.string.toast_creature_categories_load_failed),
 									   Toast.LENGTH_SHORT).show();
 					}
 
 					@Override
-					public void onNext(Collection<TalentCategory> talentCategories) {
+					public void onNext(Collection<CreatureCategory> creatureCategories) {
 						listAdapter.clear();
-						listAdapter.addAll(talentCategories);
+						listAdapter.addAll(creatureCategories);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
-						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
-						Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						toastString = String.format(getString(R.string.toast_creature_categories_loaded), creatureCategories.size());
+						Toast.makeText(CreatureCategoriesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
 
@@ -110,40 +111,16 @@ public class TalentCategoryFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.e("TalentCategoryFragment", "Creating options menu");
+		Log.e("CreatureCategoriesFrag", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.talent_categories_action_bar, menu);
+		inflater.inflate(R.menu.creature_categories_action_bar, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_new_talent_category) {
-			TalentCategory talentCategory = new TalentCategory();
-			talentCategory.setName(getString(R.string.default_talent_category_name));
-			talentCategory.setDescription(getString(R.string.default_talent_category_description));
-			talentCategoryRxHandler.save(talentCategory)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<TalentCategory>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("TalentCategoryFragment", "Exception saving new TalentCategory in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(TalentCategory savedTalentCategory) {
-							listAdapter.add(savedTalentCategory);
-							nameEdit.setText(savedTalentCategory.getName());
-							descriptionEdit.setText(savedTalentCategory.getDescription());
-							selectedInstance = savedTalentCategory;
-						}
-					});
+		if(id == R.id.action_new_creature_category) {
+			newCreatureCategory();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -151,21 +128,24 @@ public class TalentCategoryFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.talent_category_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.creature_category_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final TalentCategory talentCategory;
+		final CreatureCategory creatureCategory;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
-			case R.id.context_delete_talent_category:
-				talentCategory = (TalentCategory)listView.getItemAtPosition(info.position);
-				if(talentCategory != null) {
-					talentCategoryRxHandler.deleteById(talentCategory.getId())
+			case R.id.context_new_creature_category:
+				newCreatureCategory();
+				return true;
+			case R.id.context_delete_creature_category:
+				creatureCategory = (CreatureCategory)listView.getItemAtPosition(info.position);
+				if(creatureCategory != null) {
+					creatureCategoryRxHandler.deleteById(creatureCategory.getId())
 							.observeOn(AndroidSchedulers.mainThread())
 							.subscribe(new Subscriber<Boolean>() {
 								@Override
@@ -175,8 +155,8 @@ public class TalentCategoryFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("TalentCategoryFragment", "Exception when deleting: " + talentCategory, e);
-									String toastString = getString(R.string.toast_talent_category_delete_failed);
+									Log.e("CreatureCategoriesFrag", "Exception when deleting: " + creatureCategory, e);
+									String toastString = getString(R.string.toast_creature_category_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
 
@@ -185,9 +165,9 @@ public class TalentCategoryFragment extends Fragment {
 									String toastString;
 
 									if(success) {
-										listAdapter.remove(talentCategory);
+										listAdapter.remove(creatureCategory);
 										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_talent_category_deleted);
+										toastString = getString(R.string.toast_creature_category_deleted);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
 								}
@@ -200,6 +180,34 @@ public class TalentCategoryFragment extends Fragment {
 			default:
 				return super.onContextItemSelected(item);
 		}
+	}
+
+	private void newCreatureCategory() {
+		CreatureCategory creatureCategory = new CreatureCategory();
+		creatureCategory.setName(getString(R.string.default_creature_category_name));
+		creatureCategory.setDescription(getString(R.string.default_creature_category_description));
+		creatureCategoryRxHandler.save(creatureCategory)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<CreatureCategory>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						Log.e("CreatureCategoriesFrag", "Exception saving new CreatureCategory in onOptionsItemSelected", e);
+					}
+
+					@Override
+					public void onNext(CreatureCategory savedCreatureCategory) {
+						listAdapter.add(savedCreatureCategory);
+						nameEdit.setText(savedCreatureCategory.getName());
+						descriptionEdit.setText(savedCreatureCategory.getDescription());
+						selectedInstance = savedCreatureCategory;
+					}
+				});
 	}
 
 	private void initNameEdit(View layout) {
@@ -226,23 +234,23 @@ public class TalentCategoryFragment extends Fragment {
 					final String newName = nameEdit.getText().toString();
 					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
 						selectedInstance.setName(newName);
-						talentCategoryRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<TalentCategory>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("TalentCategoryFragment", "Save failed for: " + selectedInstance, e);
-									String toastString = getString(R.string.toast_talent_category_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(TalentCategory savedTalentCategory) {
-									onSaved(savedTalentCategory);
-								}
-							});
+						creatureCategoryRxHandler.save(selectedInstance)
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<CreatureCategory>() {
+									@Override
+									public void onCompleted() {
+									}
+									@Override
+									public void onError(Throwable e) {
+										Log.e("CreatureCategoriesFrag", "Save failed for: " + selectedInstance, e);
+										String toastString = getString(R.string.toast_creature_category_save_failed);
+										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+									}
+									@Override
+									public void onNext(CreatureCategory savedCreatureCategory) {
+										onSaved(savedCreatureCategory);
+									}
+								});
 					}
 				}
 			}
@@ -274,48 +282,49 @@ public class TalentCategoryFragment extends Fragment {
 					final String newDescription = descriptionEdit.getText().toString();
 					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
 						selectedInstance.setDescription(newDescription);
-						talentCategoryRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<TalentCategory>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("TalentCategoryFragment", "Exception saving new TalentCategory in initDescriptionEdit", e);
-									String toastString = getString(R.string.toast_talent_category_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(TalentCategory savedTalentCategory) {
-									onSaved(savedTalentCategory);
-								}
-							});
+						creatureCategoryRxHandler.save(selectedInstance)
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<CreatureCategory>() {
+									@Override
+									public void onCompleted() {
+									}
+									@Override
+									public void onError(Throwable e) {
+										Log.e("CreatureCategoriesFrag",
+											  "Exception saving new CreatureCategory in initDescriptionEdit", e);
+										String toastString = getString(R.string.toast_creature_category_save_failed);
+										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+									}
+									@Override
+									public void onNext(CreatureCategory savedCreatureCategory) {
+										onSaved(savedCreatureCategory);
+									}
+								});
 					}
 				}
 			}
 		});
 	}
 
-	private void onSaved(TalentCategory talentCategory) {
+	private void onSaved(CreatureCategory creatureCategory) {
 		if(getActivity() == null) {
 			return;
 		}
 
 		String toastString;
-		toastString = getString(R.string.toast_talent_category_saved);
+		toastString = getString(R.string.toast_creature_category_saved);
 		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
-		int position = listAdapter.getPosition(talentCategory);
+		int position = listAdapter.getPosition(creatureCategory);
 		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 		if (v != null) {
 			TextView textView = (TextView) v.findViewById(R.id.name_view);
 			if (textView != null) {
-				textView.setText(talentCategory.getName());
+				textView.setText(creatureCategory.getName());
 			}
 			textView = (TextView) v.findViewById(R.id.description_view);
 			if (textView != null) {
-				textView.setText(talentCategory.getDescription());
+				textView.setText(creatureCategory.getDescription());
 			}
 		}
 	}
@@ -332,26 +341,26 @@ public class TalentCategoryFragment extends Fragment {
 				if(dirty && selectedInstance != null) {
 					selectedInstance.setName(nameEdit.getText().toString());
 					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					talentCategoryRxHandler.save(selectedInstance)
-						.observeOn(AndroidSchedulers.mainThread())
-						.subscribe(new Subscriber<TalentCategory>() {
-							@Override
-							public void onCompleted() {
-							}
-							@Override
-							public void onError(Throwable e) {
-								Log.e("TalentCategoryFragment", "Exception saving new TalentCategory in initListView", e);
-								String toastString = getString(R.string.toast_talent_category_save_failed);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-							}
-							@Override
-							public void onNext(TalentCategory savedTalentCategory) {
-								onSaved(savedTalentCategory);
-							}
-						});
+					creatureCategoryRxHandler.save(selectedInstance)
+							.observeOn(AndroidSchedulers.mainThread())
+							.subscribe(new Subscriber<CreatureCategory>() {
+								@Override
+								public void onCompleted() {
+								}
+								@Override
+								public void onError(Throwable e) {
+									Log.e("CreatureCategoriesFrag", "Exception saving new CreatureCategory in initListView", e);
+									String toastString = getString(R.string.toast_creature_category_save_failed);
+									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								}
+								@Override
+								public void onNext(CreatureCategory savedCreatureCategory) {
+									onSaved(savedCreatureCategory);
+								}
+							});
 				}
 
-				selectedInstance = (TalentCategory) listView.getItemAtPosition(position);
+				selectedInstance = (CreatureCategory) listView.getItemAtPosition(position);
 				if (selectedInstance != null) {
 					nameEdit.setText(selectedInstance.getName());
 					descriptionEdit.setText(selectedInstance.getDescription());

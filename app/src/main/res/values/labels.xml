@@ -70,6 +70,8 @@
   <string name="label_import">Import</string>
   <string name="label_new_body_part">New Body Part</string>
   <string name="label_delete_body_part">Delete Body Part</string>
+  <string name="label_new_creature_category">New Creature Category</string>
+  <string name="label_delete_creature_category">Delete Creature Category</string>
   <string name="label_new_critical_code">New Critical Code</string>
   <string name="label_delete_critical_code">Delete Critical Code</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>

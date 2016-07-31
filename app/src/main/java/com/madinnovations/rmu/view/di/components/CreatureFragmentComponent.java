@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
@@ -26,4 +27,5 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = CreatureFragmentModule.class)
 public interface CreatureFragmentComponent {
+	public void injectInto(CreatureCategoriesFragment creatureCategoriesFragment);
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:id="@+id/context_new_creature_category"
+      android:title="@string/label_new_creature_category"/>
+  <item
+      android:id="@+id/context_delete_creature_category"
+      android:title="@string/label_delete_creature_category"/>
+</menu>
