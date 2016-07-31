@@ -125,7 +125,7 @@ public class ParametersFragment extends Fragment {
 			Parameter parameter = new Parameter();
 			parameter.setName(getString(R.string.default_parameter_name));
 			parameter.setDescription(getString(R.string.default_parameter_description));
-			parameter.setValue(Short.valueOf(getString(R.string.default_parameter_value)));
+			parameter.setValue(getActivity().getResources().getInteger(R.integer.default_parameter_value));
 			parameter.setPerTier(Boolean.valueOf(getString(R.string.default_parameter_per_tier)));
 			parameterRxHandler.save(parameter)
 					.observeOn(AndroidSchedulers.mainThread())

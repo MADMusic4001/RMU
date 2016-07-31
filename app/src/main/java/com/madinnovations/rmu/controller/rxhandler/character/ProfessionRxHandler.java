@@ -76,17 +76,17 @@ public class ProfessionRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Profession instance to persistent storage.
 	 *
-	 * @param stat  the Profession instance to be saved
+	 * @param profession  the Profession instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Profession instance.
 	 */
-	public Observable<Profession> save(final Profession stat) {
+	public Observable<Profession> save(final Profession profession) {
 		return Observable.create(
 				new Observable.OnSubscribe<Profession>() {
 					@Override
 					public void call(Subscriber<? super Profession> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(profession);
+							subscriber.onNext(profession);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

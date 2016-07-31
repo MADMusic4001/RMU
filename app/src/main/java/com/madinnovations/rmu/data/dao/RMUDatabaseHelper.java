@@ -28,6 +28,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.ParameterSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SkillCostSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentCategorySchema;
@@ -93,6 +94,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(ParameterSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SizeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SkillCategorySchema.TABLE_CREATE);
+            sqLiteDatabase.execSQL(SkillCostSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SkillSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(StatSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(TalentCategorySchema.TABLE_CREATE);

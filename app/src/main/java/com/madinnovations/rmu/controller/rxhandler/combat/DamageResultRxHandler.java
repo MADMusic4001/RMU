@@ -76,17 +76,17 @@ public class DamageResultRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a DamageResult instance to persistent storage.
 	 *
-	 * @param stat  the DamageResult instance to be saved
+	 * @param damageResult  the DamageResult instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the DamageResult instance.
 	 */
-	public Observable<DamageResult> save(final DamageResult stat) {
+	public Observable<DamageResult> save(final DamageResult damageResult) {
 		return Observable.create(
 				new Observable.OnSubscribe<DamageResult>() {
 					@Override
 					public void call(Subscriber<? super DamageResult> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(damageResult);
+							subscriber.onNext(damageResult);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

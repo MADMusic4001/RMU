@@ -78,6 +78,8 @@
   <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_size">New Size</string>
   <string name="label_delete_size">Delete Size</string>
+  <string name="label_new_skill_cost">New Skill Cost</string>
+  <string name="label_delete_skill_cost">Delete Skill Cost</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent_category">New Talent Category</string>
@@ -85,6 +87,8 @@
 
   <!-- ListView header labels -->
   <string name="label_examples">Examples</string>
+  <string name="label_initial_cost">Initial Cost</string>
+  <string name="label_additional_cost">Additional Cost</string>
 
   <!-- TextView labels -->
   <string name="label_min_height">Minimum Height</string>
@@ -94,10 +98,12 @@
 
   <!-- EditText hints -->
   <string name="abbreviation_hint">New Abbreviation</string>
+  <string name="additional_cost_hint">New Additional Cost</string>
   <string name="code_hint">New Code</string>
   <string name="default_movement_rate_hint">Default movement rate</string>
   <string name="description_hint">New Description</string>
   <string name="examples_hint">New Examples</string>
+  <string name="initial_cost_hint">New Initial Cost</string>
   <string name="name_hint">New Name</string>
   <string name="min_height_hint">New Min Height</string>
   <string name="max_height_hint">New Max Height</string>

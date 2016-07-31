@@ -76,17 +76,17 @@ public class TalentRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Talent instance to persistent storage.
 	 *
-	 * @param stat  the Talent instance to be saved
+	 * @param talent  the Talent instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Talent instance.
 	 */
-	public Observable<Talent> save(final Talent stat) {
+	public Observable<Talent> save(final Talent talent) {
 		return Observable.create(
 				new Observable.OnSubscribe<Talent>() {
 					@Override
 					public void call(Subscriber<? super Talent> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(talent);
+							subscriber.onNext(talent);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

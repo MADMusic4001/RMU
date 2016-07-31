@@ -76,17 +76,17 @@ public class CultureRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Culture instance to persistent storage.
 	 *
-	 * @param stat  the Culture instance to be saved
+	 * @param culture  the Culture instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Culture instance.
 	 */
-	public Observable<Culture> save(final Culture stat) {
+	public Observable<Culture> save(final Culture culture) {
 		return Observable.create(
 				new Observable.OnSubscribe<Culture>() {
 					@Override
 					public void call(Subscriber<? super Culture> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(culture);
+							subscriber.onNext(culture);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

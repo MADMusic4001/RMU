@@ -76,17 +76,17 @@ public class CreatureVarietyRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a CreatureVariety instance to persistent storage.
 	 *
-	 * @param stat  the CreatureVariety instance to be saved
+	 * @param creatureVariety  the CreatureVariety instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the CreatureVariety instance.
 	 */
-	public Observable<CreatureVariety> save(final CreatureVariety stat) {
+	public Observable<CreatureVariety> save(final CreatureVariety creatureVariety) {
 		return Observable.create(
 				new Observable.OnSubscribe<CreatureVariety>() {
 					@Override
 					public void call(Subscriber<? super CreatureVariety> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(creatureVariety);
+							subscriber.onNext(creatureVariety);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

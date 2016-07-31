@@ -29,6 +29,7 @@ import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
+import com.madinnovations.rmu.view.activities.common.SkillCostsFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
@@ -45,6 +46,7 @@ public class CampaignActivity extends Activity {
 	private LocomotionTypesFragment locomotionTypesFragment;
 	private ParametersFragment      parametersFragment;
 	private SizesFragment           sizesFragment;
+	private SkillCostsFragment		skillCostsFragment;
 	private StatsFragment           statsFragment;
 	private TalentCategoryFragment  talentCategoryFragment;
 
@@ -119,6 +121,13 @@ public class CampaignActivity extends Activity {
 			sizesFragment = new SizesFragment();
 		}
 		replaceDetailFragment(sizesFragment);
+	}
+
+	public void showSkillCosts() {
+		if(skillCostsFragment == null) {
+			skillCostsFragment = new SkillCostsFragment();
+		}
+		replaceDetailFragment(skillCostsFragment);
 	}
 
 	public void showStats() {

@@ -20,8 +20,8 @@ package com.madinnovations.rmu.data.entities.common;
  */
 public class SkillCost {
 	private int id = -1;
-	private short initialCost;
-	private short additionalCost;
+	private int initialCost;
+	private int additionalCost;
 
 	// Getters and setters
 	public int getId() {
@@ -30,16 +30,16 @@ public class SkillCost {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public short getInitialCost() {
+	public int getInitialCost() {
 		return initialCost;
 	}
-	public void setInitialCost(short initialCost) {
+	public void setInitialCost(int initialCost) {
 		this.initialCost = initialCost;
 	}
-	public short getAdditionalCost() {
+	public int getAdditionalCost() {
 		return additionalCost;
 	}
-	public void setAdditionalCost(short additionalCost) {
+	public void setAdditionalCost(int additionalCost) {
 		this.additionalCost = additionalCost;
 	}
 }

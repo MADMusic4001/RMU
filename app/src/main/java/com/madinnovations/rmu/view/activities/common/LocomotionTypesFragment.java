@@ -108,7 +108,7 @@ public class LocomotionTypesFragment extends Fragment {
 		int id = item.getItemId();
 		if(id == R.id.action_new_locomotion_type) {
 			LocomotionType locomotionType = new LocomotionType();
-			locomotionType.setDefaultRate(Short.parseShort(getString(R.string.default_locomotion_type_default_rate)));
+			locomotionType.setDefaultRate(getActivity().getResources().getInteger(R.integer.default_locomotion_type_default_rate));
 			locomotionType.setName(getString(R.string.default_locomotion_type_name));
 			locomotionType.setDescription(getString(R.string.default_locomotion_type_description));
 			locomotionTypeRxHandler.save(locomotionType)
@@ -131,7 +131,7 @@ public class LocomotionTypesFragment extends Fragment {
 						@Override
 						public void onNext(LocomotionType locomotionType) {
 							listAdapter.add(locomotionType);
-							defaultRateEdit.setText(Short.toString(locomotionType.getDefaultRate()));
+							defaultRateEdit.setText(String.valueOf(locomotionType.getDefaultRate()));
 							nameEdit.setText(locomotionType.getName());
 							descriptionEdit.setText(locomotionType.getDescription());
 							selectedInstance = locomotionType;
@@ -398,7 +398,7 @@ public class LocomotionTypesFragment extends Fragment {
 
 				selectedInstance = (LocomotionType) listView.getItemAtPosition(position);
 				if (selectedInstance != null) {
-					defaultRateEdit.setText(Short.toString(selectedInstance.getDefaultRate()));
+					defaultRateEdit.setText(String.valueOf(selectedInstance.getDefaultRate()));
 					nameEdit.setText(selectedInstance.getName());
 					descriptionEdit.setText(selectedInstance.getDescription());
 				}

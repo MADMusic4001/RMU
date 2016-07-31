@@ -35,6 +35,20 @@ public class Size {
 		return isValid;
 	}
 
+	@Override
+	public String toString() {
+		return "Size{" +
+				"id=" + id +
+				", code='" + code + '\'' +
+				", name='" + name + '\'' +
+				", examples='" + examples + '\'' +
+				", minWeight=" + minWeight +
+				", maxWeight=" + maxWeight +
+				", minHeight=" + minHeight +
+				", maxHeight=" + maxHeight +
+				'}';
+	}
+
 	// Getters and setters
 	public String getCode() {
 		return code;

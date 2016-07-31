@@ -76,17 +76,17 @@ public class RaceRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Race instance to persistent storage.
 	 *
-	 * @param stat  the Race instance to be saved
+	 * @param race  the Race instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Race instance.
 	 */
-	public Observable<Race> save(final Race stat) {
+	public Observable<Race> save(final Race race) {
 		return Observable.create(
 				new Observable.OnSubscribe<Race>() {
 					@Override
 					public void call(Subscriber<? super Race> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(race);
+							subscriber.onNext(race);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

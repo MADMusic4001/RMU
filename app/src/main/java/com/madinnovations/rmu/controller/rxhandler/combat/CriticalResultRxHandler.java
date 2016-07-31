@@ -76,17 +76,17 @@ public class CriticalResultRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a CriticalResult instance to persistent storage.
 	 *
-	 * @param stat  the CriticalResult instance to be saved
+	 * @param criticalResult  the CriticalResult instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the CriticalResult instance.
 	 */
-	public Observable<CriticalResult> save(final CriticalResult stat) {
+	public Observable<CriticalResult> save(final CriticalResult criticalResult) {
 		return Observable.create(
 				new Observable.OnSubscribe<CriticalResult>() {
 					@Override
 					public void call(Subscriber<? super CriticalResult> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(criticalResult);
+							subscriber.onNext(criticalResult);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

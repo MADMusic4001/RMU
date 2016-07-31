@@ -22,7 +22,7 @@ public class LocomotionType {
 	private int id = -1;
 	private String name;
 	private String description;
-	private short defaultRate;
+	private int defaultRate;
 
 	// Getters and setters
 	public int getId() {
@@ -43,10 +43,10 @@ public class LocomotionType {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public short getDefaultRate() {
+	public int getDefaultRate() {
 		return defaultRate;
 	}
-	public void setDefaultRate(short defaultRate) {
+	public void setDefaultRate(int defaultRate) {
 		this.defaultRate = defaultRate;
 	}
 }

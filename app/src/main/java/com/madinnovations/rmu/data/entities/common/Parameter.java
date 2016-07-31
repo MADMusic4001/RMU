@@ -22,7 +22,7 @@ public class Parameter {
 	private int id = -1;
 	private String name;
 	private String description;
-	private short value;
+	private int value;
 	private boolean perTier;
 
 	// Getters and setters
@@ -44,10 +44,10 @@ public class Parameter {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public short getValue() {
+	public int getValue() {
 		return value;
 	}
-	public void setValue(short value) {
+	public void setValue(int value) {
 		this.value = value;
 	}
 	public boolean isPerTier() {

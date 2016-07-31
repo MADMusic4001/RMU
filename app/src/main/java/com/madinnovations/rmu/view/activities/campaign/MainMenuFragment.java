@@ -144,7 +144,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showSkillCategories();
 								break;
 							case 4:
-//								((CampaignActivity)getActivity()).showSkillCosts();
+								((CampaignActivity)getActivity()).showSkillCosts();
 								break;
 							case 5:
 //								((CampaignActivity)getActivity()).showSkills();

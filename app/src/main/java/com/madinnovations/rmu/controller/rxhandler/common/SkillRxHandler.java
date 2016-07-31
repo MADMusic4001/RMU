@@ -76,17 +76,17 @@ public class SkillRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Skill instance to persistent storage.
 	 *
-	 * @param stat  the Skill instance to be saved
+	 * @param skill  the Skill instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Skill instance.
 	 */
-	public Observable<Skill> save(final Skill stat) {
+	public Observable<Skill> save(final Skill skill) {
 		return Observable.create(
 				new Observable.OnSubscribe<Skill>() {
 					@Override
 					public void call(Subscriber<? super Skill> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(skill);
+							subscriber.onNext(skill);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

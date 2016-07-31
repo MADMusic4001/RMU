@@ -76,17 +76,17 @@ public class CharacterRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Character instance to persistent storage.
 	 *
-	 * @param stat  the Character instance to be saved
+	 * @param character  the Character instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Character instance.
 	 */
-	public Observable<Character> save(final Character stat) {
+	public Observable<Character> save(final Character character) {
 		return Observable.create(
 				new Observable.OnSubscribe<Character>() {
 					@Override
 					public void call(Subscriber<? super Character> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(character);
+							subscriber.onNext(character);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

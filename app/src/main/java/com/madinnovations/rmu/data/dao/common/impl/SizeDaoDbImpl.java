@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
@@ -97,6 +98,7 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 
     @Override
     public boolean save(Size instance) {
+		Log.d("SizeDaoDbImpl", "Saving " + instance);
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
 		ContentValues contentValues = getContentValues(instance);
@@ -184,7 +186,10 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 		if (cursor != null) {
 			instance = new Size();
 			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+			instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+			instance.setMinHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT)));
+			instance.setMaxHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT)));
 			instance.setMinWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT)));
 			instance.setMaxWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT)));
 		}
@@ -194,7 +199,11 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 	@Override
 	protected ContentValues getContentValues(Size instance) {
 		ContentValues initialValues = new ContentValues();
+		initialValues.put(COLUMN_CODE, instance.getCode());
 		initialValues.put(COLUMN_NAME, instance.getName());
+		initialValues.put(COLUMN_EXAMPLES, instance.getExamples());
+		initialValues.put(COLUMN_MIN_HEIGHT, instance.getMinHeight());
+		initialValues.put(COLUMN_MAX_HEIGHT, instance.getMaxHeight());
 		initialValues.put(COLUMN_MIN_WEIGHT, instance.getMinWeight());
 		initialValues.put(COLUMN_MAX_WEIGHT, instance.getMaxWeight());
 		return initialValues;

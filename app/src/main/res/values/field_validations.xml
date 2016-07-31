@@ -4,10 +4,8 @@
     <string name="validation_code_required">Please enter a code.</string>
     <string name="validation_default_rate_required">Please enter a default movement rate.</string>
     <string name="validation_description_required">Please enter a description.</string>
-    <string name="validation_max_height_required">Please enter a maximum height.</string>
-    <string name="validation_max_weight_required">Please enter a maximum weight.</string>
-    <string name="validation_min_height_required">Please enter a minimum height.</string>
-    <string name="validation_min_weight_required">Please enter a minimum weight.</string>
+    <string name="validation_initial_cost_required">Please enter an initial cost value.</string>
+    <string name="validation_additional_cost_required">Please enter an additional cost value.</string>
     <string name="validation_name_required">Please enter a name.</string>
     <string name="validation_value_required">Please enter a value.</string>
 </resources>

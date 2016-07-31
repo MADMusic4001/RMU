@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -131,10 +132,11 @@ public class SizesFragment extends Fragment {
 			size.setCode(getString(R.string.default_size_code));
 			size.setName(getString(R.string.default_size_name));
 			size.setExamples(getString(R.string.default_size_examples));
-			size.setMaxHeight(Integer.valueOf(getString(R.string.default_size_max_height)));
-			size.setMaxWeight(Integer.valueOf(getString(R.string.default_size_max_weight)));
-			size.setMinHeight(Integer.valueOf(getString(R.string.default_size_min_height)));
-			size.setMinWeight(Integer.valueOf(getString(R.string.default_size_min_weight)));
+			Resources resources = getActivity().getResources();
+			size.setMaxHeight(resources.getInteger(R.integer.default_size_max_height));
+			size.setMaxWeight(resources.getInteger(R.integer.default_size_max_weight));
+			size.setMinHeight(resources.getInteger(R.integer.default_size_min_height));
+			size.setMinWeight(resources.getInteger(R.integer.default_size_min_weight));
 			sizeRxHandler.save(size)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
