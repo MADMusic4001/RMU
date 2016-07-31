@@ -76,17 +76,17 @@ public class SizeRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Size instance to persistent storage.
 	 *
-	 * @param stat  the Size instance to be saved
+	 * @param size  the Size instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Size instance.
 	 */
-	public Observable<Size> save(final Size stat) {
+	public Observable<Size> save(final Size size) {
 		return Observable.create(
 				new Observable.OnSubscribe<Size>() {
 					@Override
 					public void call(Subscriber<? super Size> subscriber) {
 						try {
-							dao.save(stat);
-							subscriber.onNext(stat);
+							dao.save(size);
+							subscriber.onNext(size);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

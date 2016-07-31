@@ -40,7 +40,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandle
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.common.TalentCategoryListAdapter;
-import com.madinnovations.rmu.view.di.modules.FragmentModule;
+import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
 
@@ -68,7 +68,7 @@ public class TalentCategoryFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
-				newFragmentComponent(new FragmentModule(this)).injectInto(this);
+				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.talent_categories_fragment, container, false);
 

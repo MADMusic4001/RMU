@@ -23,8 +23,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Provides methods to allow the dependency injection engine to get instances of Fragment instances for injection into other
- * classes.
+ * Provides methods to allow the dependency injection engine to inject dependencies into combat Fragment instances.
  */
 @Module
 public class CombatFragmentModule {

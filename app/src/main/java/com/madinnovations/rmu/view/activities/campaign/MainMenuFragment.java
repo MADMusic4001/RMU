@@ -138,7 +138,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showParameters();
 								break;
 							case 2:
-//								((CampaignActivity)getActivity()).showSizes();
+								((CampaignActivity)getActivity()).showSizes();
 								break;
 							case 3:
 //								((CampaignActivity)getActivity()).showSkillCategories();

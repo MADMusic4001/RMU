@@ -28,6 +28,7 @@ import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
+import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
@@ -37,14 +38,15 @@ import com.madinnovations.rmu.view.di.modules.ActivityModule;
  * Activity class for managing the campaign UI.
  */
 public class CampaignActivity extends Activity {
-	private ActivityComponent      	 activityComponent;
-	private AboutFragment          	aboutFragment;
-	private BodyPartsFragment 		bodyPartsFragment;
-	private CriticalCodesFragment 	criticalCodesFragment;
+	private ActivityComponent       activityComponent;
+	private AboutFragment           aboutFragment;
+	private BodyPartsFragment       bodyPartsFragment;
+	private CriticalCodesFragment   criticalCodesFragment;
 	private LocomotionTypesFragment locomotionTypesFragment;
 	private ParametersFragment      parametersFragment;
-	private StatsFragment          	statsFragment;
-	private TalentCategoryFragment 	talentCategoryFragment;
+	private SizesFragment           sizesFragment;
+	private StatsFragment           statsFragment;
+	private TalentCategoryFragment  talentCategoryFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +112,13 @@ public class CampaignActivity extends Activity {
 			parametersFragment = new ParametersFragment();
 		}
 		replaceDetailFragment(parametersFragment);
+	}
+
+	public void showSizes() {
+		if(sizesFragment == null) {
+			sizesFragment = new SizesFragment();
+		}
+		replaceDetailFragment(sizesFragment);
 	}
 
 	public void showStats() {

@@ -15,10 +15,9 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
-import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
-import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
+import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
@@ -27,44 +26,32 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Provides methods to allow the dependency injection engine to inject dependencies into Fragment instances.
+ * Provides methods to allow the dependency injection engine to inject dependencies into common package Fragment instances.
  */
 @Module
-public class FragmentModule {
-	private AboutFragment      aboutFragment;
-	private MainMenuFragment   mainMenuFragment;
+public class CommonFragmentModule {
 	private LocomotionTypesFragment locomotionTypesFragment;
-	private ParametersFragment parametersFragment;
-	private StatsFragment statsFragment;
-	private TalentCategoryFragment talentCategoryFragment;
+	private ParametersFragment      parametersFragment;
+	private SizesFragment			sizesFragment;
+	private StatsFragment           statsFragment;
+	private TalentCategoryFragment  talentCategoryFragment;
 
-	public FragmentModule(AboutFragment aboutFragment) {
-		this.aboutFragment = aboutFragment;
-	}
-	public FragmentModule(MainMenuFragment mainMenuFragment) {
-		this.mainMenuFragment = mainMenuFragment;
-	}
-	public FragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
+	public CommonFragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
 		this.locomotionTypesFragment = locomotionTypesFragment;
 	}
-	public FragmentModule(ParametersFragment parametersFragment) {
+	public CommonFragmentModule(ParametersFragment parametersFragment) {
 		this.parametersFragment = parametersFragment;
 	}
-	public FragmentModule(StatsFragment statsFragment) {
+	public CommonFragmentModule(SizesFragment sizesFragment) {
+		this.sizesFragment = sizesFragment;
+	}
+	public CommonFragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
 	}
-	public FragmentModule(TalentCategoryFragment talentCategoryFragment) {
+	public CommonFragmentModule(TalentCategoryFragment talentCategoryFragment) {
 		this.talentCategoryFragment = talentCategoryFragment;
 	}
 
-	@Provides @PerFragment
-	public AboutFragment provideAboutFragment() {
-		return this.aboutFragment;
-	}
-	@Provides @PerFragment
-	public MainMenuFragment provideMainMenuFragment() {
-		return this.mainMenuFragment;
-	}
 	@Provides @PerFragment
 	public LocomotionTypesFragment provideLocomotionTypesFragment() {
 		return this.locomotionTypesFragment;
@@ -72,6 +59,10 @@ public class FragmentModule {
 	@Provides @PerFragment
 	public ParametersFragment provideParametersFragment() {
 		return this.parametersFragment;
+	}
+	@Provides @PerFragment
+	public SizesFragment provideSizesFragment() {
+		return this.sizesFragment;
 	}
 	@Provides @PerFragment
 	public StatsFragment provideStatsFragment() {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:id="@+id/context_new_size"
+      android:title="@string/label_new_size"/>
+  <item
+      android:id="@+id/context_delete_size"
+      android:title="@string/label_delete_size"/>
+</menu>

@@ -24,6 +24,12 @@
   <string name="toast_parameter_save_failed">Parameter save failed.</string>
   <string name="toast_parameter_deleted">Parameter deleted.</string>
   <string name="toast_parameter_delete_failed">Parameter deletion failed.</string>
+  <string name="toast_sizes_load_failed">Failed to load Sizes</string>
+  <string name="toast_sizes_loaded">%1$d Sizes loaded.</string>
+  <string name="toast_size_saved">Size saved.</string>
+  <string name="toast_size_save_failed">Size save failed.</string>
+  <string name="toast_size_deleted">Size deleted.</string>
+  <string name="toast_size_delete_failed">Size deletion failed.</string>
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>

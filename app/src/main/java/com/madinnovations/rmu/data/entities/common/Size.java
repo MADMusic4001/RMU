@@ -20,11 +20,28 @@ package com.madinnovations.rmu.data.entities.common;
  */
 public class Size {
 	private int id = -1;
-	private String name;
-	private int minWeight;
-	private int maxWeight;
+	private String  code;
+	private String  name;
+	private String  examples;
+	private Integer minWeight;
+	private Integer maxWeight;
+	private Integer minHeight;
+	private Integer maxHeight;
+
+	public boolean isValid() {
+		boolean isValid = !(code == null || code.length() == 0);
+		isValid &= !(name == null || name.length() == 0);
+		isValid &= !(examples == null || examples.length() == 0);
+		return isValid;
+	}
 
 	// Getters and setters
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
 	public int getId() {
 		return id;
 	}
@@ -37,16 +54,34 @@ public class Size {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getMinWeight() {
+	public String getExamples() {
+		return examples;
+	}
+	public void setExamples(String examples) {
+		this.examples = examples;
+	}
+	public Integer getMinWeight() {
 		return minWeight;
 	}
-	public void setMinWeight(int minWeight) {
+	public void setMinWeight(Integer minWeight) {
 		this.minWeight = minWeight;
 	}
-	public int getMaxWeight() {
+	public Integer getMaxWeight() {
 		return maxWeight;
 	}
-	public void setMaxWeight(int maxWeight) {
+	public void setMaxWeight(Integer maxWeight) {
 		this.maxWeight = maxWeight;
+	}
+	public Integer getMinHeight() {
+		return minHeight;
+	}
+	public void setMinHeight(Integer minHeight) {
+		this.minHeight = minHeight;
+	}
+	public Integer getMaxHeight() {
+		return maxHeight;
+	}
+	public void setMaxHeight(Integer maxHeight) {
+		this.maxHeight = maxHeight;
 	}
 }

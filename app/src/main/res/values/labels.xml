@@ -76,22 +76,32 @@
   <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
   <string name="label_new_parameter">New Parameter</string>
   <string name="label_delete_parameter">Delete Parameter</string>
+  <string name="label_new_size">New Size</string>
+  <string name="label_delete_size">Delete Size</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent_category">New Talent Category</string>
   <string name="label_delete_talent_category">Delete Talent Category</string>
 
   <!-- ListView header labels -->
-  <string name="abbreviation_label">Abbreviation</string>
-  <string name="code_label">Code</string>
-  <string name="description_label">Description</string>
-  <string name="name_label">Name</string>
+  <string name="label_examples">Examples</string>
+
+  <!-- TextView labels -->
+  <string name="label_min_height">Minimum Height</string>
+  <string name="label_max_height">Maximum Height</string>
+  <string name="label_min_weight">Minimum Weight</string>
+  <string name="label_max_weight">Maximum Weight</string>
 
   <!-- EditText hints -->
   <string name="abbreviation_hint">New Abbreviation</string>
   <string name="code_hint">New Code</string>
   <string name="default_movement_rate_hint">Default movement rate</string>
   <string name="description_hint">New Description</string>
+  <string name="examples_hint">New Examples</string>
   <string name="name_hint">New Name</string>
+  <string name="min_height_hint">New Min Height</string>
+  <string name="max_height_hint">New Max Height</string>
+  <string name="min_weight_hint">New Min Weight</string>
+  <string name="max_weight_hint">New Max Weight</string>
   <string name="value_hint">New Value</string>
 </resources>

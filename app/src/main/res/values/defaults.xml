@@ -11,6 +11,13 @@
     <string name="default_parameter_description">Parameter description</string>
     <string name="default_parameter_value">5</string>
     <string name="default_parameter_per_tier">false</string>
+    <string name="default_size_code">V</string>
+    <string name="default_size_name">Medium</string>
+    <string name="default_size_examples">human, dwarf</string>
+    <string name="default_size_min_height">48</string>
+    <string name="default_size_max_height">96</string>
+    <string name="default_size_min_weight">64</string>
+    <string name="default_size_max_weight">256</string>
     <string name="default_stat_abbreviation">AA</string>
     <string name="default_stat_name">New Stat</string>
     <string name="default_stat_description">Stat description</string>

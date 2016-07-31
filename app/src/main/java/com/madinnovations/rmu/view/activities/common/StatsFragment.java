@@ -25,7 +25,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.common.StatListAdapter;
-import com.madinnovations.rmu.view.di.modules.FragmentModule;
+import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
 
@@ -54,7 +54,7 @@ public class StatsFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
-				newFragmentComponent(new FragmentModule(this)).injectInto(this);
+				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.stats_fragment, container, false);
 

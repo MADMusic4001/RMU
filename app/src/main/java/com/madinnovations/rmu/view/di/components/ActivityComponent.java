@@ -18,8 +18,13 @@ package com.madinnovations.rmu.view.di.components;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.PerActivity;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
+import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
+import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
+import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
+import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
 import dagger.Subcomponent;
 
@@ -30,7 +35,12 @@ import dagger.Subcomponent;
 @Subcomponent(modules = ActivityModule.class)
 public interface ActivityComponent {
 	public FragmentComponent newFragmentComponent(FragmentModule fragmentModule);
+	public CharacterFragmentComponent newCharacterFragmentComponent(CharacterFragmentModule fragmentModule);
 	public CombatFragmentComponent newCombatFragmentComponent(CombatFragmentModule fragmentModule);
+	public CommonFragmentComponent newCommonFragmentComponent(CommonFragmentModule fragmentModule);
+	public CreatureFragmentComponent newCreatureFragmentComponent(CreatureFragmentModule fragmentModule);
+	public ItemFragmentComponent newItemFragmentComponent(ItemFragmentModule fragmentModule);
+	public PlayFragmentComponent newPlayFragmentComponent(PlayFragmentModule fragmentModule);
 
 	public void injectInto(CampaignActivity campaignActivity);
 }
