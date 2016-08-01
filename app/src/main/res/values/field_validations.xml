@@ -8,4 +8,5 @@
     <string name="validation_additional_cost_required">Please enter an additional cost value.</string>
     <string name="validation_name_required">Please enter a name.</string>
     <string name="validation_value_required">Please enter a value.</string>
+    <string name="validation_weight_required">Please enter a weight value.</string>
 </resources>

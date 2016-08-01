@@ -27,4 +27,7 @@
     <string name="default_stat_description">Stat description</string>
     <string name="default_talent_category_name">New Talent Category</string>
     <string name="default_talent_category_description">Talent Category description</string>
+    <string name="default_item_name">New Item Name</string>
+    <string name="default_item_description">Item Description</string>
+    <integer name="default_item_weight">5</integer>
 </resources>

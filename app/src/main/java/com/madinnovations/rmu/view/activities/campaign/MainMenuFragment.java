@@ -163,7 +163,7 @@ public class MainMenuFragment extends Fragment {
 					case 4:
 						switch (childPosition) {
 							case 0:
-//								((CampaignActivity)getActivity()).showItems();
+								((CampaignActivity)getActivity()).showItems();
 								break;
 							case 1:
 //								((CampaignActivity)getActivity()).showWeapons();

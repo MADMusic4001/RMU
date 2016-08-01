@@ -26,27 +26,10 @@ import java.util.Map;
  */
 public class Creature {
 	private int id;
-	private String name;
-	private String description;
-	private CreatureArchetype archetype;
+	private CreatureTemplate template;
 	private short level;
-	private char levelSpread;
-	private CreatureCategory category;
-	private CreatureType type;
-	private Map<Stat, Short> stats;
-	private short height;
-	private short length;
-	private short weight;
-	private float healingRate;
-	private short baseHits;
-	private short baseEndurance;
-	private Size size;
-	private short armorType;
-	private CriticalCode criticalCode;
-	private int baseMovementRate;
-	private int defensiveBonus;
-	private int endurance;
-	private int offensiveBonus;
+	private int maxHits;
+	private int currentHits;
 
 	// Getters and setters
 	public int getId() {
@@ -55,23 +38,11 @@ public class Creature {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
+	public CreatureTemplate getTemplate() {
+		return template;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public CreatureArchetype getArchetype() {
-		return archetype;
-	}
-	public void setArchetype(CreatureArchetype archetype) {
-		this.archetype = archetype;
+	public void setTemplate(CreatureTemplate template) {
+		this.template = template;
 	}
 	public short getLevel() {
 		return level;
@@ -79,106 +50,16 @@ public class Creature {
 	public void setLevel(short level) {
 		this.level = level;
 	}
-	public char getLevelSpread() {
-		return levelSpread;
+	public int getMaxHits() {
+		return maxHits;
 	}
-	public void setLevelSpread(char levelSpread) {
-		this.levelSpread = levelSpread;
+	public void setMaxHits(int maxHits) {
+		this.maxHits = maxHits;
 	}
-	public CreatureCategory getCategory() {
-		return category;
+	public int getCurrentHits() {
+		return currentHits;
 	}
-	public void setCategory(CreatureCategory category) {
-		this.category = category;
-	}
-	public CreatureType getType() {
-		return type;
-	}
-	public void setType(CreatureType type) {
-		this.type = type;
-	}
-	public Map<Stat, Short> getStats() {
-		return stats;
-	}
-	public void setStats(Map<Stat, Short> stats) {
-		this.stats = stats;
-	}
-	public short getHeight() {
-		return height;
-	}
-	public void setHeight(short height) {
-		this.height = height;
-	}
-	public short getLength() {
-		return length;
-	}
-	public void setLength(short length) {
-		this.length = length;
-	}
-	public short getWeight() {
-		return weight;
-	}
-	public void setWeight(short weight) {
-		this.weight = weight;
-	}
-	public float getHealingRate() {
-		return healingRate;
-	}
-	public void setHealingRate(float healingRate) {
-		this.healingRate = healingRate;
-	}
-	public short getBaseHits() {
-		return baseHits;
-	}
-	public void setBaseHits(short baseHits) {
-		this.baseHits = baseHits;
-	}
-	public short getBaseEndurance() {
-		return baseEndurance;
-	}
-	public void setBaseEndurance(short baseEndurance) {
-		this.baseEndurance = baseEndurance;
-	}
-	public Size getSize() {
-		return size;
-	}
-	public void setSize(Size size) {
-		this.size = size;
-	}
-	public short getArmorType() {
-		return armorType;
-	}
-	public void setArmorType(short armorType) {
-		this.armorType = armorType;
-	}
-	public CriticalCode getCriticalCode() {
-		return criticalCode;
-	}
-	public void setCriticalCode(CriticalCode criticalCode) {
-		this.criticalCode = criticalCode;
-	}
-	public int getBaseMovementRate() {
-		return baseMovementRate;
-	}
-	public void setBaseMovementRate(int baseMovementRate) {
-		this.baseMovementRate = baseMovementRate;
-	}
-	public int getDefensiveBonus() {
-		return defensiveBonus;
-	}
-	public void setDefensiveBonus(int defensiveBonus) {
-		this.defensiveBonus = defensiveBonus;
-	}
-	public int getEndurance() {
-		return endurance;
-	}
-	public void setEndurance(int endurance) {
-		this.endurance = endurance;
-	}
-	public int getOffensiveBonus() {
-		return offensiveBonus;
-	}
-	public void setOffensiveBonus(int offensiveBonus) {
-		this.offensiveBonus = offensiveBonus;
+	public void setCurrentHits(int currentHits) {
+		this.currentHits = currentHits;
 	}
 }

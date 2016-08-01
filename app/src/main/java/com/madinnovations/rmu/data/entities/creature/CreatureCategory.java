@@ -15,6 +15,10 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.common.Talent;
+
+import java.util.List;
+
 /**
  * Class containing Creature Category attributes.
  */
@@ -22,6 +26,7 @@ public class CreatureCategory {
 	private int id;
 	private String name;
 	private String description;
+	private List<Talent> talents;
 
 	// Getters and setters
 	public int getId() {

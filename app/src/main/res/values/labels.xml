@@ -74,6 +74,8 @@
   <string name="label_delete_creature_category">Delete Creature Category</string>
   <string name="label_new_critical_code">New Critical Code</string>
   <string name="label_delete_critical_code">Delete Critical Code</string>
+  <string name="label_new_item">New Item</string>
+  <string name="label_delete_item">Delete Item</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>
   <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
   <string name="label_new_parameter">New Parameter</string>
@@ -112,4 +114,5 @@
   <string name="min_weight_hint">New Min Weight</string>
   <string name="max_weight_hint">New Max Weight</string>
   <string name="value_hint">New Value</string>
+  <string name="weight_hint">New Weight</string>
 </resources>
