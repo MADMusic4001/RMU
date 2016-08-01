@@ -1,5 +1,7 @@
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+
 /**
  * Database schema data for the character_skills table
  */
@@ -16,7 +18,9 @@ public interface CharacterSkillsSchema {
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL, "
             + COLUMN_SKILL_ID + " INTEGER NOT NULL, "
             + COLUMN_RANKS  + " INTEGER NOT NULL, "
-            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + ")"
+            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_CHARACTER_ID + ") REFERENCES " + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
             + ")";
 
     public static final String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_RANKS};

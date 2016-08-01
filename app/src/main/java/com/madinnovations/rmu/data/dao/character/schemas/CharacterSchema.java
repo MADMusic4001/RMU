@@ -35,7 +35,7 @@ public interface CharacterSchema {
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
+			+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ COLUMN_NAME  + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_RACE_ID  + " INTEGER NOT NULL, "
@@ -44,7 +44,8 @@ public interface CharacterSchema {
 			+ COLUMN_STRIDE + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_MAX_HITS + " INTEGER NOT NULL, "
-			+ COLUMN_CURRENT_DEVELOPMENT_POINTS + " INTEGER NOT NULL"
+			+ COLUMN_CURRENT_DEVELOPMENT_POINTS + " INTEGER NOT NULL, "
+			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] { COLUMN_ID,
