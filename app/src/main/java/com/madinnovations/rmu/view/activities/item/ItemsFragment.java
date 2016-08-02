@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.activities.item;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -91,10 +90,10 @@ public class ItemsFragment extends Fragment {
 
 					@Override
 					public void onError(Throwable e) {
-						Log.e("ItemsFrag",
+						Log.e("ItemsFragment",
 							  "Exception caught getting all Item instances in onCreateView", e);
 						Toast.makeText(ItemsFragment.this.getActivity(),
-									   getString(R.string.toast_creature_categories_load_failed),
+									   getString(R.string.toast_items_load_failed),
 									   Toast.LENGTH_SHORT).show();
 					}
 
@@ -104,7 +103,7 @@ public class ItemsFragment extends Fragment {
 						listAdapter.addAll(creatureCategories);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
-						toastString = String.format(getString(R.string.toast_creature_categories_loaded), creatureCategories.size());
+						toastString = String.format(getString(R.string.toast_items_loaded), creatureCategories.size());
 						Toast.makeText(ItemsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
@@ -114,7 +113,6 @@ public class ItemsFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.e("ItemsFrag", "Creating options menu");
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.items_action_bar, menu);
 	}
@@ -158,7 +156,7 @@ public class ItemsFragment extends Fragment {
 
 								@Override
 								public void onError(Throwable e) {
-									Log.e("ItemsFrag", "Exception when deleting: " + item, e);
+									Log.e("ItemsFragment", "Exception when deleting: " + item, e);
 									String toastString = getString(R.string.toast_item_delete_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}
@@ -201,7 +199,7 @@ public class ItemsFragment extends Fragment {
 
 				@Override
 				public void onError(Throwable e) {
-					Log.e("ItemsFrag", "Exception saving new Item in onOptionsItemSelected", e);
+					Log.e("ItemsFragment", "Exception saving new Item in onOptionsItemSelected", e);
 				}
 
 				@Override
@@ -247,7 +245,7 @@ public class ItemsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
-										Log.e("ItemsFrag", "Save failed for: " + selectedInstance, e);
+										Log.e("ItemsFragment", "Save failed for: " + selectedInstance, e);
 										String toastString = getString(R.string.toast_item_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 									}
@@ -295,7 +293,7 @@ public class ItemsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
-										Log.e("ItemsFrag",
+										Log.e("ItemsFragment",
 											  "Exception saving new Item in initDescriptionEdit", e);
 										String toastString = getString(R.string.toast_item_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
@@ -348,7 +346,7 @@ public class ItemsFragment extends Fragment {
 									}
 									@Override
 									public void onError(Throwable e) {
-										Log.e("ItemsFrag",
+										Log.e("ItemsFragment",
 											  "Exception saving new Item in initDescriptionEdit", e);
 										String toastString = getString(R.string.toast_item_save_failed);
 										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
@@ -408,7 +406,7 @@ public class ItemsFragment extends Fragment {
 								}
 								@Override
 								public void onError(Throwable e) {
-									Log.e("ItemsFrag", "Exception saving new Item in initListView", e);
+									Log.e("ItemsFragment", "Exception saving new Item in initListView", e);
 									String toastString = getString(R.string.toast_item_save_failed);
 									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 								}

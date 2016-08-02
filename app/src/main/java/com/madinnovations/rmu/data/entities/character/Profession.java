@@ -29,6 +29,16 @@ public class Profession {
 	private String description;
 	private Map<SkillCategory, SkillCost> skillCostMap;
 
+	@Override
+	public String toString() {
+		return "Profession{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", skillCostMap=" + skillCostMap +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+
 /**
  * Database schema data for the archetype_skills table
  */
@@ -32,6 +34,8 @@ public interface ArchetypeSkillsSchema {
 			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
 			+ COLUMN_PRIORITY + " TEXT NOT NULL, "
 			+ "PRIMARY KEY(" + COLUMN_ARCHETYPE_ID + "," + COLUMN_SKILL_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_ARCHETYPE_ID + ") REFERENCES " + CreatureArchetypeSchema.TABLE_NAME + "(" + CreatureArchetypeSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] {COLUMN_ARCHETYPE_ID, COLUMN_SKILL_ID, COLUMN_PRIORITY };

@@ -33,6 +33,23 @@ public class Talent {
 	private short actionPoints;
 	private List<Parameter> parameters;
 
+	@Override
+	public String toString() {
+		return "Talent{" +
+				"id=" + id +
+				", category=" + category +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", affectedSkill=" + affectedSkill +
+				", initialCost=" + initialCost +
+				", costPerTier=" + costPerTier +
+				", bonusPerTier=" + bonusPerTier +
+				", situational=" + situational +
+				", actionPoints=" + actionPoints +
+				", parameters=" + parameters +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

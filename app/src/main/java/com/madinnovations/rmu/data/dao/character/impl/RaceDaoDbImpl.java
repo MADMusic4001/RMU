@@ -188,11 +188,11 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
         final String selection = RaceMovementSchema.COLUMN_RACE_ID + " = ?";
 
         Cursor cursor = super.query(RaceMovementSchema.TABLE_NAME, RaceMovementSchema.COLUMNS, selection,
-                selectionArgs, RaceMovementSchema.COLUMN_MOVEMENT_ID);
+                selectionArgs, RaceMovementSchema.COLUMN_LOCOMOTION_TYPE_ID);
         List<LocomotionType> locomotionTypeList = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int movementId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceMovementSchema.COLUMN_MOVEMENT_ID));
+			int movementId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceMovementSchema.COLUMN_LOCOMOTION_TYPE_ID));
 			LocomotionType locomotionType = locomotionTypeDao.getById(movementId);
 			if(locomotionType != null) {
 				locomotionTypeList.add(locomotionType);

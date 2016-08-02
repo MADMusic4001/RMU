@@ -32,7 +32,8 @@ public interface SkillSchema {
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
-			+ COLUMN_CATEGORY_ID + " INTEGER NOT NULL"
+			+ COLUMN_CATEGORY_ID + " INTEGER NOT NULL, "
+			+ "FOREIGN KEY (" + COLUMN_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] { COLUMN_ID,

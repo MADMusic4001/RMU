@@ -9,6 +9,16 @@ public class Item {
     private String description;
     private int weight;
 
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", weight=" + weight +
+                '}';
+    }
+
     // Getters and setters
     public int getId() {
         return id;

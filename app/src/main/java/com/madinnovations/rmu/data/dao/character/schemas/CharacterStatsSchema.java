@@ -1,5 +1,7 @@
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
+
 /**
  * Database schema data for the character_stats table
  */
@@ -18,7 +20,9 @@ public interface CharacterStatsSchema {
             + COLUMN_STAT_ID + " INTEGER NOT NULL, "
             + COLUMN_CURRENT_VALUE  + " INTEGER NOT NULL, "
             + COLUMN_POTENTIAL_VALUE + " INTEGER NOT NULL, "
-            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_STAT_ID + ")"
+            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_STAT_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_CHARACTER_ID + ") REFERENCES " + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
             + ")";
 
     public static final String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_STAT_ID, COLUMN_CURRENT_VALUE, COLUMN_POTENTIAL_VALUE};

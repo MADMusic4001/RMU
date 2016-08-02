@@ -25,7 +25,7 @@ import java.util.Map;
  * Creature template attributes
  */
 public class CreatureTemplate {
-	private int               id;
+	private int               id = -1;
 	private String            name;
 	private String            description;
 	private CreatureArchetype archetype;
@@ -47,6 +47,34 @@ public class CreatureTemplate {
 	private int               defensiveBonus;
 	private int               endurance;
 	private int               offensiveBonus;
+
+	@Override
+	public String toString() {
+		return "CreatureTemplate{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", archetype=" + archetype +
+				", level=" + level +
+				", levelSpread=" + levelSpread +
+				", category=" + category +
+				", type=" + type +
+				", stats=" + stats +
+				", height=" + height +
+				", length=" + length +
+				", weight=" + weight +
+				", healingRate=" + healingRate +
+				", baseHits=" + baseHits +
+				", baseEndurance=" + baseEndurance +
+				", size=" + size +
+				", armorType=" + armorType +
+				", criticalCode=" + criticalCode +
+				", baseMovementRate=" + baseMovementRate +
+				", defensiveBonus=" + defensiveBonus +
+				", endurance=" + endurance +
+				", offensiveBonus=" + offensiveBonus +
+				'}';
+	}
 
 	// Getters and setters
 	public int getId() {

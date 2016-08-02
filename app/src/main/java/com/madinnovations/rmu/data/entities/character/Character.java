@@ -40,6 +40,26 @@ public class Character {
 	private Map<Stat, Short> statTemps;
 	private Map<Stat, Short> statPotentials;
 
+	@Override
+	public String toString() {
+		return "Character{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", race=" + race +
+				", height=" + height +
+				", weight=" + weight +
+				", stride=" + stride +
+				", currentHits=" + currentHits +
+				", maxHits=" + maxHits +
+				", currentDevelopmentPoints=" + currentDevelopmentPoints +
+				", skillRanks=" + skillRanks +
+				", talentTiers=" + talentTiers +
+				", statTemps=" + statTemps +
+				", statPotentials=" + statPotentials +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

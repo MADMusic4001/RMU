@@ -15,21 +15,26 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
-import com.madinnovations.rmu.data.entities.combat.CriticalCode;
-import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Stat;
-
-import java.util.Map;
-
 /**
  * Creature attributes
  */
 public class Creature {
-	private int id;
+	private int id = -1;
 	private CreatureTemplate template;
 	private short level;
 	private int maxHits;
 	private int currentHits;
+
+	@Override
+	public String toString() {
+		return "Creature{" +
+				"id=" + id +
+				", template=" + template +
+				", level=" + level +
+				", maxHits=" + maxHits +
+				", currentHits=" + currentHits +
+				'}';
+	}
 
 	// Getters and setters
 	public int getId() {

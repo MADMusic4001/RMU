@@ -26,6 +26,18 @@ public class SkillCategory {
 	private Stat stat2;
 	private Stat stat3;
 
+	@Override
+	public String toString() {
+		return "SkillCategory{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", stat1=" + stat1 +
+				", stat2=" + stat2 +
+				", stat3=" + stat3 +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

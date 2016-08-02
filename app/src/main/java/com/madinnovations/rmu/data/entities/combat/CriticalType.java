@@ -10,6 +10,15 @@ public class CriticalType {
     private String name;
     private List<CriticalResult> results;
 
+    @Override
+    public String toString() {
+        return "CriticalType{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", results=" + results +
+                '}';
+    }
+
     // Getters and setters
     public int getId() {
         return id;

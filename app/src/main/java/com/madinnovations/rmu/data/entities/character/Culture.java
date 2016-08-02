@@ -32,6 +32,18 @@ public class Culture {
 	private List<Skill> whiteList;
 	private List<Skill> blackList;
 
+	@Override
+	public String toString() {
+		return "Culture{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", skillRanks=" + skillRanks +
+				", whiteList=" + whiteList +
+				", blackList=" + blackList +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

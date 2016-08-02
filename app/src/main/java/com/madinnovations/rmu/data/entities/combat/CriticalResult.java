@@ -22,6 +22,29 @@ public class CriticalResult {
     private boolean prone;
     private short grappled;
 
+    @Override
+    public String toString() {
+        return "CriticalResult{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", minRoll=" + minRoll +
+                ", maxRoll=" + maxRoll +
+                ", bodyPart=" + bodyPart +
+                ", hits=" + hits +
+                ", bleeding=" + bleeding +
+                ", fatigue=" + fatigue +
+                ", breakage=" + breakage +
+                ", injury=" + injury +
+                ", dazed=" + dazed +
+                ", stunned=" + stunned +
+                ", noParry=" + noParry +
+                ", staggered=" + staggered +
+                ", knockBack=" + knockBack +
+                ", prone=" + prone +
+                ", grappled=" + grappled +
+                '}';
+    }
+
     // Getters and setters
     public int getId() {
         return id;

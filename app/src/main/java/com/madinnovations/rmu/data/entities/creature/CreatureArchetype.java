@@ -24,7 +24,7 @@ import java.util.List;
  * Class containing Creature Archetype attributes.
  */
 public class CreatureArchetype {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private Stat stat1;
@@ -34,6 +34,22 @@ public class CreatureArchetype {
 	private List<SkillCategory> tertiarySkills;
 	private String spells;
 	private String role;
+
+	@Override
+	public String toString() {
+		return "CreatureArchetype{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", stat1=" + stat1 +
+				", stat2=" + stat2 +
+				", primarySkills=" + primarySkills +
+				", secondarySkills=" + secondarySkills +
+				", tertiarySkills=" + tertiarySkills +
+				", spells='" + spells + '\'' +
+				", role='" + role + '\'' +
+				'}';
+	}
 
 	// Getters and setters
 	public int getId() {

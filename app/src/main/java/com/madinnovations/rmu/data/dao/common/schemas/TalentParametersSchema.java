@@ -29,7 +29,9 @@ public interface TalentParametersSchema {
 			+ " ("
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
 			+ COLUMN_PARAMETER_ID + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_TALENT_ID + "," + COLUMN_PARAMETER_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_TALENT_ID + "," + COLUMN_PARAMETER_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_PARAMETER_ID + ") REFERENCES " + ParameterSchema.TABLE_NAME + "(" + ParameterSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_PARAMETER_ID};

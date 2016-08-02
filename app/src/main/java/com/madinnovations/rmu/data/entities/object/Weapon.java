@@ -10,6 +10,14 @@ public class Weapon extends Item {
     private Skill combatSkill;
     private DamageTable damageTable;
 
+    @Override
+    public String toString() {
+        return "Weapon{" +
+                "combatSkill=" + combatSkill +
+                ", damageTable=" + damageTable +
+                '}';
+    }
+
     // Getters and setters
     public Skill getCombatSkill() {
         return combatSkill;

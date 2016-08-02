@@ -15,24 +15,28 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
+
 /**
  * Database schema data for the race_movements table
  */
 public interface RaceMovementSchema {
 	public static final String TABLE_NAME = "race_movements";
 
-	public static final String COLUMN_MOVEMENT_ID = "movementId";
+	public static final String COLUMN_LOCOMOTION_TYPE_ID = "locomotionTypeId";
 	public static final String COLUMN_RACE_ID = "raceId";
 	public static final String COLUMN_RATE = "rate";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_MOVEMENT_ID + " INTEGER NOT NULL, "
+			+ COLUMN_LOCOMOTION_TYPE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_RACE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_RATE + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY (" + COLUMN_MOVEMENT_ID + "," + COLUMN_RACE_ID + ")"
+			+ "PRIMARY KEY (" + COLUMN_LOCOMOTION_TYPE_ID + "," + COLUMN_RACE_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_LOCOMOTION_TYPE_ID + ") REFERENCES " + LocomotionTypeSchema.TABLE_NAME + "(" + LocomotionTypeSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_MOVEMENT_ID, COLUMN_RACE_ID, COLUMN_RATE};
+	public static final String[] COLUMNS = new String[] {COLUMN_LOCOMOTION_TYPE_ID, COLUMN_RACE_ID, COLUMN_RATE};
 }

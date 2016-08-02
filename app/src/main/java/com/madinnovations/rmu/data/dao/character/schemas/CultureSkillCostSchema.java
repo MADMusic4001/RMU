@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
+
 /**
  * Database schema data for the culture_skill_costs table
  */
@@ -31,7 +33,9 @@ public interface CultureSkillCostSchema {
 			+ COLUMN_PROFESSION_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_COST + " TEXT NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] {COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_SKILL_COST};

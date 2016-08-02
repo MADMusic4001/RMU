@@ -25,6 +25,17 @@ public class Parameter {
 	private int value;
 	private boolean perTier;
 
+	@Override
+	public String toString() {
+		return "Parameter{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", value=" + value +
+				", perTier=" + perTier +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

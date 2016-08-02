@@ -10,6 +10,15 @@ public class DamageTable {
     private String name;
     private List<DamageResult> results;
 
+    @Override
+    public String toString() {
+        return "DamageTable{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", results=" + results +
+                '}';
+    }
+
     // Getters and setters
     public int getId() {
         return id;

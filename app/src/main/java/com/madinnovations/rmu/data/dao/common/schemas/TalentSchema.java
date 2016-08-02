@@ -44,7 +44,9 @@ public interface TalentSchema {
 			+ COLUMN_COST_PER_TIER + " INTEGER NOT NULL, "
 			+ COLUMN_BONUS_PER_TIER + " INTEGER NOT NULL, "
 			+ COLUMN_SITUATIONAL + " INTEGER NOT NULL, "
-			+ COLUMN_ACTION_POINTS + " INTEGER NOT NULL"
+			+ COLUMN_ACTION_POINTS + " INTEGER NOT NULL, "
+			+ "FOREIGN KEY (" + COLUMN_CATEGORY_ID + ") REFERENCES " + TalentCategorySchema.TABLE_NAME + "(" + TalentCategorySchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_AFFECTED_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] { COLUMN_ID,

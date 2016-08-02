@@ -23,6 +23,15 @@ public class CriticalCode {
  	private String code;
 	private String description;
 
+	@Override
+	public String toString() {
+		return "CriticalCode{" +
+				"id=" + id +
+				", code='" + code + '\'' +
+				", description='" + description + '\'' +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

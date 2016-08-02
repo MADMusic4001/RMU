@@ -45,7 +45,9 @@ public interface CriticalResultSchema {
             + COLUMN_STAGGERED + " INTEGER NOT NULL, "
             + COLUMN_KNOCK_BACK + " INTEGER NOT NULL, "
             + COLUMN_PRONE + " INTEGER NOT NULL, "
-            + COLUMN_GRAPPLED + " INTEGER NOT NULL"
+            + COLUMN_GRAPPLED + " INTEGER NOT NULL, "
+            + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_BODY_PART_ID + ") REFERENCES " + BodyPartSchema.TABLE_NAME + "(" + BodyPartSchema.COLUMN_ID + ")"
             + ")";
 
     public static final String[] COLUMNS = new String[] { COLUMN_ID,

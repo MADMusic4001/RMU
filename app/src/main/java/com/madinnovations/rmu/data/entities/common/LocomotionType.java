@@ -24,6 +24,16 @@ public class LocomotionType {
 	private String description;
 	private int defaultRate;
 
+	@Override
+	public String toString() {
+		return "LocomotionType{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", defaultRate=" + defaultRate +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

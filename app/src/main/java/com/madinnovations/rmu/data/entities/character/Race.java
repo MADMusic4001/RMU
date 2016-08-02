@@ -54,6 +54,40 @@ public class Race {
 	private short averageWeight;
 	private short poundsPerInch;
 
+	@Override
+	public String toString() {
+		return "Race{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", bonusDevelopmentPoints=" + bonusDevelopmentPoints +
+				", agilityModifier=" + agilityModifier +
+				", constitutionModifier=" + constitutionModifier +
+				", empathyModifier=" + empathyModifier +
+				", intuitionModifier=" + intuitionModifier +
+				", memoryModifier=" + memoryModifier +
+				", presenceModifier=" + presenceModifier +
+				", quicknessModifier=" + quicknessModifier +
+				", reasoningModifier=" + reasoningModifier +
+				", selfDisciplineModifier=" + selfDisciplineModifier +
+				", strengthModifier=" + strengthModifier +
+				", channelingResistanceModifier=" + channelingResistanceModifier +
+				", essenceResistanceModifier=" + essenceResistanceModifier +
+				", mentalismResistanceModifier=" + mentalismResistanceModifier +
+				", physicalResistanceModifier=" + physicalResistanceModifier +
+				", enduranceModifier=" + enduranceModifier +
+				", baseHits=" + baseHits +
+				", recoveryMultiplier=" + recoveryMultiplier +
+				", talentsAndFlaws=" + talentsAndFlaws +
+				", sizeCategory=" + sizeCategory +
+				", locomotionTypes=" + locomotionTypes +
+				", strideModifier=" + strideModifier +
+				", averageHeight=" + averageHeight +
+				", averageWeight=" + averageWeight +
+				", poundsPerInch=" + poundsPerInch +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

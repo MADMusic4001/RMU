@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
+
 /**
  * Database schema data for the archetype_spells table
  */
@@ -29,7 +31,9 @@ public interface ArchetypeSpellsSchema {
 			+ " ("
 			+ COLUMN_ARCHETYPE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SPELL_ID + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_ARCHETYPE_ID + "," + COLUMN_SPELL_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_ARCHETYPE_ID + "," + COLUMN_SPELL_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_ARCHETYPE_ID + ") REFERENCES " + CreatureArchetypeSchema.TABLE_NAME + "(" + CreatureArchetypeSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_SPELL_ID + ") REFERENCES " + SpellSchema.TABLE_NAME + "(" + SpellSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] {COLUMN_ARCHETYPE_ID, COLUMN_SPELL_ID};

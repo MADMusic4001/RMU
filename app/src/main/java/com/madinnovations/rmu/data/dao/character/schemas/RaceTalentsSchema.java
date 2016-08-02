@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
+
 /**
  * Database schema data for the race_talents table
  */
@@ -31,7 +33,9 @@ public interface RaceTalentsSchema {
 			+ COLUMN_RACE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
 			+ COLUMN_TIERS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_RACE_ID + "," + COLUMN_TALENT_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_RACE_ID + "," + COLUMN_TALENT_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_TIERS};

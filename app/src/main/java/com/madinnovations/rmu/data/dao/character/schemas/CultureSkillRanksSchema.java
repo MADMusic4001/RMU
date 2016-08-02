@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
+
 /**
  * Database schema data for the culture_skill_ranks table
  */
@@ -31,7 +33,9 @@ public interface CultureSkillRanksSchema {
 			+ COLUMN_CULTURE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_RANKS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_CULTURE_ID + "," + COLUMN_SKILL_CATEGORY_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_CULTURE_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_CULTURE_ID + ") REFERENCES " + CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] {COLUMN_CULTURE_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_RANKS};

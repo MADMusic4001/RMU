@@ -12,6 +12,18 @@ public class DamageResult {
     private String criticalSeverity;
     private CriticalType criticalType;
 
+    @Override
+    public String toString() {
+        return "DamageResult{" +
+                "id=" + id +
+                ", minRoll=" + minRoll +
+                ", maxRoll=" + maxRoll +
+                ", hits=" + hits +
+                ", criticalSeverity='" + criticalSeverity + '\'' +
+                ", criticalType=" + criticalType +
+                '}';
+    }
+
     // Getters and setters
     public int getId() {
         return id;

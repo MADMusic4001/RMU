@@ -27,7 +27,9 @@ public interface DamageResultSchema {
             + COLUMN_MAX_ROLL  + " INTEGER NOT NULL, "
             + COLUMN_HITS  + " INTEGER NOT NULL, "
             + COLUMN_CRITICAL_SEVERITY  + " TEXT NOT NULL, "
-            + COLUMN_CRITICAL_TYPE_ID  + " INTEGER NOT NULL"
+            + COLUMN_CRITICAL_TYPE_ID  + " INTEGER NOT NULL, "
+            + "FOREIGN KEY (" + COLUMN_DAMAGE_TABLE_ID + ") REFERENCES " + DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
             + ")";
 
     public static final String[] COLUMNS = new String[] { COLUMN_ID,

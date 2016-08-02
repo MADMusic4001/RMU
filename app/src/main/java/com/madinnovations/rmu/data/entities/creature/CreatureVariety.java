@@ -15,19 +15,26 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
-import com.madinnovations.rmu.data.entities.creature.CreatureType;
-
 /**
  * Class containing Creature Variety attributes.
  */
 public class CreatureVariety {
-	private int id;
+	private int id = -1;
 	private CreatureType type;
 	private String name;
 	private String description;
 
-	// Getters and setters
+	@Override
+	public String toString() {
+		return "CreatureVariety{" +
+				"id=" + id +
+				", type=" + type +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				'}';
+	}
 
+	// Getters and setters
 	public int getId() {
 		return id;
 	}

@@ -23,6 +23,15 @@ public class SkillCost {
 	private int initialCost;
 	private int additionalCost;
 
+	@Override
+	public String toString() {
+		return "SkillCost{" +
+				"id=" + id +
+				", initialCost=" + initialCost +
+				", additionalCost=" + additionalCost +
+				'}';
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;

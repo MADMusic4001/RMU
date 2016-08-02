@@ -23,10 +23,20 @@ import java.util.List;
  * Class containing Creature Category attributes.
  */
 public class CreatureCategory {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String description;
 	private List<Talent> talents;
+
+	@Override
+	public String toString() {
+		return "CreatureCategory{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", talents=" + talents +
+				'}';
+	}
 
 	// Getters and setters
 	public int getId() {
