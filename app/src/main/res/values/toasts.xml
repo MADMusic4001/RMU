@@ -18,6 +18,12 @@
   <string name="toast_critical_code_save_failed">Critical Code save failed.</string>
   <string name="toast_critical_code_deleted">Critical Code deleted.</string>
   <string name="toast_critical_code_delete_failed">Critical Code deletion failed.</string>
+  <string name="toast_critical_results_load_failed">Failed to load Critical Results</string>
+  <string name="toast_critical_results_loaded">%1$d Critical Results loaded.</string>
+  <string name="toast_critical_result_saved">Critical Result saved.</string>
+  <string name="toast_critical_result_save_failed">Critical Result save failed.</string>
+  <string name="toast_critical_result_deleted">Critical Result deleted.</string>
+  <string name="toast_critical_result_delete_failed">Critical Result deletion failed.</string>
   <string name="toast_items_load_failed">Failed to load Items</string>
   <string name="toast_items_loaded">%1$d Items loaded.</string>
   <string name="toast_item_saved">Item saved.</string>

@@ -26,6 +26,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
+import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
@@ -46,6 +47,7 @@ public class CampaignActivity extends Activity {
 	private BodyPartsFragment       bodyPartsFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 	private CriticalCodesFragment   criticalCodesFragment;
+	private CriticalResultsFragment criticalResultsFragment;
 	private ItemsFragment           itemsFragment;
 	private LocomotionTypesFragment locomotionTypesFragment;
 	private ParametersFragment      parametersFragment;
@@ -111,6 +113,13 @@ public class CampaignActivity extends Activity {
 			criticalCodesFragment = new CriticalCodesFragment();
 		}
 		replaceDetailFragment(criticalCodesFragment);
+	}
+
+	public void showCriticalResults() {
+		if(criticalResultsFragment == null) {
+			criticalResultsFragment = new CriticalResultsFragment();
+		}
+		replaceDetailFragment(criticalResultsFragment);
 	}
 
 	public void showItems() {

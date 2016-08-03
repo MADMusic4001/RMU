@@ -13,21 +13,26 @@ import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link BodyPart} information
+ * Populates a Spinner with {@link BodyPart} information
  */
-public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;
+public class BodyPartSpinnerAdapter extends ArrayAdapter<BodyPart> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.name_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new BodyPartListAdapter instance.
+	 * Creates a new BodyPartSpinnerAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public BodyPartListAdapter(Context context) {
+	public BodyPartSpinnerAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return getView(position, convertView, parent);
 	}
 
 	@Override
@@ -37,8 +42,7 @@ public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view),
-					(TextView) rowView.findViewById(R.id.description_view));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view));
 			rowView.setTag(holder);
 		}
 		else {
@@ -48,17 +52,14 @@ public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
 
 		BodyPart bodyPart = getItem(position);
 		holder.nameView.setText(bodyPart.getName());
-		holder.descriptionView.setText(bodyPart.getDescription());
 		return rowView;
 	}
 
 	private class ViewHolder {
 		private TextView nameView;
-		private TextView descriptionView;
 
-		ViewHolder(TextView nameView, TextView descriptionView) {
+		ViewHolder(TextView nameView) {
 			this.nameView = nameView;
-			this.descriptionView = descriptionView;
 		}
 	}
 }

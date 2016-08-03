@@ -7,7 +7,7 @@ public interface CriticalResultSchema {
     public static final String TABLE_NAME = "critical_results";
 
     public static final String COLUMN_ID = "id";
-    public static final String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
+    public static final String COLUMN_SEVERITY_CODE = "severityCode";
     public static final String COLUMN_DESCRIPTION = "description";
     public static final String COLUMN_MIN_ROLL = "minRoll";
     public static final String COLUMN_MAX_ROLL = "maxRoll";
@@ -29,7 +29,7 @@ public interface CriticalResultSchema {
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
-            + COLUMN_CRITICAL_TYPE_ID + " INTEGER NOT NULL, "
+            + COLUMN_SEVERITY_CODE + " TEXT NOT NULL, "
             + COLUMN_DESCRIPTION  + " TEXT NOT NULL, "
             + COLUMN_MIN_ROLL + " INTEGER NOT NULL, "
             + COLUMN_MAX_ROLL + " INTEGER NOT NULL, "
@@ -46,12 +46,11 @@ public interface CriticalResultSchema {
             + COLUMN_KNOCK_BACK + " INTEGER NOT NULL, "
             + COLUMN_PRONE + " INTEGER NOT NULL, "
             + COLUMN_GRAPPLED + " INTEGER NOT NULL, "
-            + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + "), "
             + "FOREIGN KEY (" + COLUMN_BODY_PART_ID + ") REFERENCES " + BodyPartSchema.TABLE_NAME + "(" + BodyPartSchema.COLUMN_ID + ")"
             + ")";
 
     public static final String[] COLUMNS = new String[] { COLUMN_ID,
-            COLUMN_CRITICAL_TYPE_ID, COLUMN_DESCRIPTION, COLUMN_MIN_ROLL,
+            COLUMN_SEVERITY_CODE, COLUMN_DESCRIPTION, COLUMN_MIN_ROLL,
             COLUMN_MAX_ROLL, COLUMN_BODY_PART_ID, COLUMN_HITS,
             COLUMN_BLEEDING, COLUMN_FATIGUE, COLUMN_BREAKAGE,
             COLUMN_INJURY, COLUMN_DAZED, COLUMN_STUNNED,

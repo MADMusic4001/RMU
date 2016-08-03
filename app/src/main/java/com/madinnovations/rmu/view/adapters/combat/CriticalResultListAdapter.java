@@ -8,24 +8,24 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
+import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link BodyPart} information
+ * Populates a ListView with {@link CriticalResult} information
  */
-public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;
+public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.range_description_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new BodyPartListAdapter instance.
+	 * Creates a new CriticalResultListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public BodyPartListAdapter(Context context) {
+	public CriticalResultListAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -37,7 +37,8 @@ public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view),
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.range_view),
+					(TextView) rowView.findViewById(R.id.severity_code_view),
 					(TextView) rowView.findViewById(R.id.description_view));
 			rowView.setTag(holder);
 		}
@@ -46,18 +47,22 @@ public class BodyPartListAdapter extends ArrayAdapter<BodyPart> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		BodyPart bodyPart = getItem(position);
-		holder.nameView.setText(bodyPart.getName());
-		holder.descriptionView.setText(bodyPart.getDescription());
+		CriticalResult item = getItem(position);
+		holder.rangeView.setText(String.format(getContext().getString(R.string.min_max_roll_value),
+				item.getMinRoll(), item.getMaxRoll()));
+		holder.severityCodeView.setText(String.valueOf(item.getSeverityCode()));
+		holder.descriptionView.setText(item.getDescription());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView nameView;
+		private TextView rangeView;
+		private TextView severityCodeView;
 		private TextView descriptionView;
 
-		ViewHolder(TextView nameView, TextView descriptionView) {
-			this.nameView = nameView;
+		ViewHolder(TextView rangeView, TextView severityCodeView, TextView descriptionView) {
+			this.rangeView = rangeView;
+			this.severityCodeView = severityCodeView;
 			this.descriptionView = descriptionView;
 		}
 	}

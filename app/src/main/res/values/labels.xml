@@ -61,6 +61,7 @@
   <string name="label_abbreviation">Abbreviation</string>
   <string name="label_code">Code</string>
   <string name="label_description">Description</string>
+  <string name="label_range">Range</string>
   <string name="label_name">Name</string>
   <string name="label_per_tier">Per Tier</string>
   <string name="label_value">Value</string>
@@ -74,6 +75,8 @@
   <string name="label_delete_creature_category">Delete Creature Category</string>
   <string name="label_new_critical_code">New Critical Code</string>
   <string name="label_delete_critical_code">Delete Critical Code</string>
+  <string name="label_new_critical_result">New Critical Result</string>
+  <string name="label_delete_critical_result">Delete Critical Result</string>
   <string name="label_new_item">New Item</string>
   <string name="label_delete_item">Delete Item</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>
@@ -93,26 +96,45 @@
   <string name="label_examples">Examples</string>
   <string name="label_initial_cost">Initial Cost</string>
   <string name="label_additional_cost">Additional Cost</string>
+  <string name="label_severity_code">Severity</string>
 
   <!-- TextView labels -->
+  <string name="label_hyphen">-</string>
   <string name="label_min_height">Minimum Height</string>
   <string name="label_max_height">Maximum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
   <string name="label_max_weight">Maximum Weight</string>
 
   <!-- EditText hints -->
-  <string name="abbreviation_hint">New Abbreviation</string>
-  <string name="additional_cost_hint">New Additional Cost</string>
-  <string name="code_hint">New Code</string>
-  <string name="default_movement_rate_hint">Default movement rate</string>
-  <string name="description_hint">New Description</string>
-  <string name="examples_hint">New Examples</string>
-  <string name="initial_cost_hint">New Initial Cost</string>
-  <string name="name_hint">New Name</string>
-  <string name="min_height_hint">New Min Height</string>
-  <string name="max_height_hint">New Max Height</string>
-  <string name="min_weight_hint">New Min Weight</string>
-  <string name="max_weight_hint">New Max Weight</string>
-  <string name="value_hint">New Value</string>
-  <string name="weight_hint">New Weight</string>
+  <string name="hint_abbreviation">New Abbreviation</string>
+  <string name="hint_additional_cost">New Additional Cost</string>
+  <string name="hint_bleeding">Bleeding per round</string>
+  <string name="hint_breakage">Breakage roll</string>
+  <string name="hint_code">New Code</string>
+  <string name="hint_dazed">Dazed rounds</string>
+  <string name="hint_default_movement_rate">Default movement rate</string>
+  <string name="hint_description">New Description</string>
+  <string name="hint_examples">New Examples</string>
+  <string name="hint_fatigue">Fatigue penalty</string>
+  <string name="hint_grappled">Grappled %</string>
+  <string name="hint_hits">Hits</string>
+  <string name="hint_initial_cost">New Initial Cost</string>
+  <string name="hint_injury">Injury penalty</string>
+  <string name="hint_knock_back">Knock back distance</string>
+  <string name="hint_name">New Name</string>
+  <string name="hint_max">Max</string>
+  <string name="hint_min">Min</string>
+  <string name="hint_min_height">New Min Height</string>
+  <string name="hint_max_height">New Max Height</string>
+  <string name="hint_min_weight">New Min Weight</string>
+  <string name="hint_max_weight">New Max Weight</string>
+  <string name="hint_prone">Prone</string>
+  <string name="hint_severity_code">Severity Code</string>
+  <string name="hint_staggered">Staggered</string>
+  <string name="hint_stunned">Stunned rounds</string>
+  <string name="hint_stunned_no_parry">Stunned no parry rounds</string>
+  <string name="hint_value">New Value</string>
+  <string name="hint_weight">New Weight</string>
+
+  <string name="min_max_roll_value">%1$03d-%2$03d</string>
 </resources>

@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="validation_abbreviation_required">Please enter an abbreviation.</string>
+    <string name="validation_additional_cost_required">Please enter an additional cost value.</string>
+    <string name="validation_bleeding_required">Please enter how many hits/round of bleeding.</string>
+    <string name="validation_breakage_required">Please enter the penalty for the breakage roll.</string>
+    <string name="validation_body_part_required">Please select a body part.</string>
     <string name="validation_code_required">Please enter a code.</string>
+    <string name="validation_dazed_required">Please enter the number of rounds the defender is dazed.</string>
     <string name="validation_default_rate_required">Please enter a default movement rate.</string>
     <string name="validation_description_required">Please enter a description.</string>
+    <string name="validation_fatigue_required">Please enter the amount of fatigue penalty.</string>
+    <string name="validation_grappled_required">Please enter the percent the defender is grappled.</string>
+    <string name="validation_hits_required">Please enter the number of additional hit point damage done.</string>
     <string name="validation_initial_cost_required">Please enter an initial cost value.</string>
-    <string name="validation_additional_cost_required">Please enter an additional cost value.</string>
+    <string name="validation_injury_required">Please enter the amount of injury penalty.</string>
+    <string name="validation_knock_back_required">Please enter the distance in feet that the defender is knocked back.</string>
+    <string name="validation_min_roll_gt_max_roll">Minimum roll value cannot be greater than maximum roll value.</string>
+    <string name="validation_min_roll_required">Please enter a minimum roll value.</string>
+    <string name="validation_max_roll_le_min_roll">Maximum roll value cannot be less than minimum roll value.</string>
+    <string name="validation_max_roll_required">Please enter a maximum roll value.</string>
     <string name="validation_name_required">Please enter a name.</string>
+    <string name="validation_no_parry_required">Please enter the number of rounds the defender is unable to parry.</string>
+    <string name="validation_severity_code_required">Please enter a severity code.</string>
+    <string name="validation_stunned_required">Please enter the number of rounds the defender is stunned.</string>
     <string name="validation_value_required">Please enter a value.</string>
     <string name="validation_weight_required">Please enter a weight value.</string>
 </resources>

@@ -5,27 +5,33 @@ package com.madinnovations.rmu.data.entities.combat;
  */
 public class CriticalResult {
     private int id = -1;
+    private char severityCode = 'A';
     private String description;
-    private int minRoll;
-    private int maxRoll;
+    private int minRoll = 0;
+    private int maxRoll = 1;
     private BodyPart bodyPart;
-    private short hits;
-    private short bleeding;
-    private short fatigue;
-    private short breakage;
-    private short injury;
-    private short dazed;
-    private short stunned;
-    private short noParry;
-    private short staggered;
-    private short knockBack;
-    private boolean prone;
-    private short grappled;
+    private short hits = 0;
+    private short bleeding = 0;
+    private short fatigue = 0;
+    private short breakage = 0;
+    private short injury = 0;
+    private short dazed = 0;
+    private short stunned = 0;
+    private short noParry = 0;
+    private boolean staggered = false;
+    private short knockBack = 0;
+    private boolean prone = false;
+    private short grappled = 0;
+
+    public boolean isValid() {
+        return description != null && !description.isEmpty() && bodyPart != null && minRoll <= maxRoll;
+    }
 
     @Override
     public String toString() {
         return "CriticalResult{" +
                 "id=" + id +
+                ", severityCode=" + severityCode +
                 ", description='" + description + '\'' +
                 ", minRoll=" + minRoll +
                 ", maxRoll=" + maxRoll +
@@ -51,6 +57,12 @@ public class CriticalResult {
     }
     public void setId(int id) {
         this.id = id;
+    }
+    public char getSeverityCode() {
+        return severityCode;
+    }
+    public void setSeverityCode(char severityCode) {
+        this.severityCode = severityCode;
     }
     public String getDescription() {
         return description;
@@ -124,10 +136,10 @@ public class CriticalResult {
     public void setNoParry(short noParry) {
         this.noParry = noParry;
     }
-    public short getStaggered() {
+    public boolean isStaggered() {
         return staggered;
     }
-    public void setStaggered(short staggered) {
+    public void setStaggered(boolean staggered) {
         this.staggered = staggered;
     }
     public short getKnockBack() {

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/abbreviation_edit"
-            android:hint="@string/abbreviation_hint"
+            android:hint="@string/hint_abbreviation"
             android:inputType="textNoSuggestions"
             android:maxLength="2"/>
 
@@ -32,13 +32,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/name_edit"
-            android:hint="@string/name_hint"
+            android:hint="@string/hint_name"
             android:maxLength="20"/>
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/description_edit"
-            android:hint="@string/description_hint"/>
+            android:hint="@string/hint_description"/>
     </LinearLayout>
 </LinearLayout>

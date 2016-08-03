@@ -24,13 +24,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/name_edit"
-            android:hint="@string/name_hint"/>
+            android:hint="@string/hint_name"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/description_edit"
-            android:hint="@string/description_hint"/>
+            android:hint="@string/hint_description"/>
 
         <EditText
             android:layout_width="wrap_content"
@@ -38,7 +38,7 @@
             android:inputType="number"
             android:ems="10"
             android:id="@+id/default_rate_edit"
-            android:hint="@string/default_movement_rate_hint"/>
+            android:hint="@string/hint_default_movement_rate"/>
 
     </LinearLayout>
 </LinearLayout>

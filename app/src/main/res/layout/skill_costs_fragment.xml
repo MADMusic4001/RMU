@@ -22,14 +22,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/initial_cost_edit"
-        android:hint="@string/initial_cost_hint"
+        android:hint="@string/hint_initial_cost"
         android:maxLength="20"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/additional_cost_edit"
-        android:hint="@string/additional_cost_hint"
+        android:hint="@string/hint_additional_cost"
         android:maxLines="1"/>
   </LinearLayout>
 </LinearLayout>

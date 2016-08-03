@@ -24,12 +24,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/name_edit"
-            android:hint="@string/name_hint"/>
+            android:hint="@string/hint_name"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/description_edit"
-            android:hint="@string/description_hint"/>
+            android:hint="@string/hint_description"/>
     </LinearLayout>
 </LinearLayout>
