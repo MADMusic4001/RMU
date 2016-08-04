@@ -22,10 +22,10 @@
   <include layout="@layout/cost_cost_header"/>
 
   <ListView
+      android:id="@+id/list_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
-      android:id="@+id/list_view"
       android:layout_gravity="center_horizontal"
       android:choiceMode="singleChoice"/>
 
@@ -34,17 +34,16 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
     <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/initial_cost_edit"
-        android:hint="@string/hint_initial_cost"
-        android:maxLength="20"/>
-
-    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLength="2"
+        android:hint="@string/hint_initial_cost"/>
+    <EditText
         android:id="@+id/additional_cost_edit"
-        android:hint="@string/hint_additional_cost"
-        android:maxLines="1"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="2"
+        android:hint="@string/hint_additional_cost"/>
   </LinearLayout>
 </LinearLayout>

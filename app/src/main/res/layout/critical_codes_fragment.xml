@@ -22,29 +22,28 @@
   <include layout="@layout/code_description_header"/>
 
   <ListView
+      android:id="@+id/list_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
-      android:id="@+id/list_view"
       android:layout_gravity="center_horizontal"
       android:choiceMode="singleChoice"/>
 
   <LinearLayout
+      android:id="@+id/form_view"
       android:orientation="vertical"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal"
-      android:id="@+id/form_view">
+      android:layout_gravity="center_horizontal">
     <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/code_edit"
-        android:hint="@string/hint_code"/>
-
-    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/hint_code"/>
+    <EditText
         android:id="@+id/description_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:hint="@string/hint_description"/>
   </LinearLayout>
 </LinearLayout>

@@ -24,10 +24,10 @@
     <include layout="@layout/stat_list_header"/>
 
     <ListView
+        android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/list_view"
         android:layout_gravity="center_horizontal"
         android:choiceMode="singleChoice"/>
 
@@ -36,24 +36,22 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/abbreviation_edit"
-            android:hint="@string/hint_abbreviation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:inputType="textNoSuggestions"
-            android:maxLength="2"/>
-
+            android:maxLength="2"
+            android:hint="@string/hint_abbreviation"/>
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/name_edit"
-            android:hint="@string/hint_name"
-            android:maxLength="20"/>
-
-        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLength="20"
+            android:hint="@string/hint_name"/>
+        <EditText
             android:id="@+id/description_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:hint="@string/hint_description"/>
     </LinearLayout>
 </LinearLayout>

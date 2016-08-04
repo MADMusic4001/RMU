@@ -22,10 +22,10 @@
   <include layout="@layout/name_description_header"/>
 
   <ListView
+      android:id="@+id/list_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
-      android:id="@+id/list_view"
       android:layout_gravity="center_horizontal"
       android:choiceMode="singleChoice"/>
 
@@ -34,25 +34,23 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
     <EditText
+        android:id="@+id/name_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/name_edit"
-        android:hint="@string/hint_name"
-        android:maxLength="20"/>
+        android:maxLength="20"
+        android:hint="@string/hint_name"/>
 
     <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/description_edit"
-        android:hint="@string/hint_description"
-        android:maxLines="1"/>
-    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/hint_description"/>
+    <EditText
         android:id="@+id/weight_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:inputType="number"
         android:maxLength="6"
-        android:hint="@string/hint_weight"
-        android:maxLines="1"/>
+        android:hint="@string/hint_weight"/>
   </LinearLayout>
 </LinearLayout>
