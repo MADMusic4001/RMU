@@ -1,7 +1,23 @@
+/**
+ * Copyright (C) 2016 MadInnovations
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -100,7 +116,7 @@ public class CriticalResultsFragment extends Fragment {
 		initGrappledEdit(layout);
 		initListView(layout);
 
-		copyCriticalResultToControls();
+		copyItemToControls();
 		setHasOptionsMenu(true);
 
 		return layout;
@@ -109,7 +125,7 @@ public class CriticalResultsFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		saveCriticalResult();
+		saveItem();
 	}
 
 	@Override
@@ -124,8 +140,9 @@ public class CriticalResultsFragment extends Fragment {
 		if(id == R.id.action_new_critical_result) {
 			currentInstance = new CriticalResult();
 			isNew = true;
-			copyCriticalResultToControls();
-			listView.setItemChecked(listView.getSelectedItemPosition(), false);
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -147,54 +164,20 @@ public class CriticalResultsFragment extends Fragment {
 			case R.id.context_new_critical_result:
 				currentInstance = new CriticalResult();
 				isNew = true;
-				copyCriticalResultToControls();
-				listView.setItemChecked(listView.getSelectedItemPosition(), false);
+				copyItemToControls();
+				listView.clearChoices();
 				return true;
 			case R.id.context_delete_critical_result:
 				criticalResult = (CriticalResult)listView.getItemAtPosition(info.position);
 				if(criticalResult != null) {
-					criticalResultRxHandler.deleteById(criticalResult.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribeOn(Schedulers.io())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("CriticalResultFragment", "Exception when deleting: " + criticalResult, e);
-									String toastString = getString(R.string.toast_critical_result_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(criticalResult);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_critical_result_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(criticalResult);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
 		}
+		return super.onContextItemSelected(item);
 	}
 
-	private void copyCriticalResultToControls() {
-		if(currentInstance.getDescription() != null) {
-			descriptionEdit.setError(null);
-		}
+	private void copyItemToControls() {
 		descriptionEdit.setText(currentInstance.getDescription());
 		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
 		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
@@ -212,9 +195,12 @@ public class CriticalResultsFragment extends Fragment {
 		knockBackEdit.setText(String.valueOf(currentInstance.getKnockBack()));
 		proneCheckBox.setChecked(currentInstance.isProne());
 		grappledEdit.setText(String.valueOf(currentInstance.getGrappled()));
+		if(currentInstance.getDescription() != null) {
+			descriptionEdit.setError(null);
+		}
 	}
 
-	private void saveCriticalResult() {
+	private void saveItem() {
 		if(currentInstance.isValid()) {
 			criticalResultRxHandler.save(currentInstance)
 				.observeOn(AndroidSchedulers.mainThread())
@@ -238,7 +224,6 @@ public class CriticalResultsFragment extends Fragment {
 							listView.setItemChecked(listAdapter.getPosition(savedCriticalResult), true);
 							isNew = false;
 						}
-						isNew = false;
 						if(getActivity() != null) {
 							String toastString;
 							toastString = getString(R.string.toast_critical_result_saved);
@@ -259,6 +244,43 @@ public class CriticalResultsFragment extends Fragment {
 					}
 				});
 		}
+	}
+
+	private void deleteItem(@NonNull final CriticalResult item) {
+		criticalResultRxHandler.deleteById(item.getId())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("CriticalResultFragment", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_critical_result_delete_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Boolean success) {
+						if(success) {
+							int position = listAdapter.getPosition(item);
+							if(position == listAdapter.getCount() -1) {
+								position--;
+							}
+							listAdapter.remove(item);
+							listAdapter.notifyDataSetChanged();
+							if(position >= 0) {
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								currentInstance = listAdapter.getItem(position);
+							}
+							else {
+								currentInstance = new CriticalResult();
+							}
+							copyItemToControls();
+							Toast.makeText(getActivity(), getString(R.string.toast_critical_result_deleted), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 
 	private void initDescriptionEdit(View layout) {
@@ -282,7 +304,7 @@ public class CriticalResultsFragment extends Fragment {
 					final String newDescription = descriptionEdit.getText().toString();
 					if (!newDescription.equals(currentInstance.getDescription())) {
 						currentInstance.setDescription(newDescription);
-						saveCriticalResult();
+						saveItem();
 					}
 				}
 			}
@@ -317,7 +339,7 @@ public class CriticalResultsFragment extends Fragment {
 						int newMinRoll = Integer.valueOf(minRollEdit.getText().toString());
 						if (newMinRoll != currentInstance.getMinRoll()) {
 							currentInstance.setMinRoll(newMinRoll);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -353,7 +375,7 @@ public class CriticalResultsFragment extends Fragment {
 						int newMaxRoll = Integer.valueOf(maxRollEdit.getText().toString());
 						if (newMaxRoll != currentInstance.getMaxRoll()) {
 							currentInstance.setMaxRoll(newMaxRoll);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -383,7 +405,7 @@ public class CriticalResultsFragment extends Fragment {
 						final char newValue = severityCodeEdit.getText().charAt(0);
 						if (newValue != currentInstance.getSeverityCode()) {
 							currentInstance.setSeverityCode(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -422,14 +444,14 @@ public class CriticalResultsFragment extends Fragment {
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if(currentInstance.getBodyPart() == null || spinnerAdapter.getPosition(currentInstance.getBodyPart()) != position) {
 					currentInstance.setBodyPart(spinnerAdapter.getItem(position));
-					saveCriticalResult();
+					saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				if(currentInstance.getBodyPart() != null) {
 					currentInstance.setBodyPart(null);
-					saveCriticalResult();
+					saveItem();
 				}
 			}
 		});
@@ -457,7 +479,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newHits = Short.valueOf(hitsEdit.getText().toString());
 						if (newHits != currentInstance.getHits()) {
 							currentInstance.setHits(newHits);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -487,7 +509,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newBleeding = Short.valueOf(bleedingEdit.getText().toString());
 						if (newBleeding != currentInstance.getBleeding()) {
 							currentInstance.setBleeding(newBleeding);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -517,7 +539,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(fatigueEdit.getText().toString());
 						if (newValue != currentInstance.getFatigue()) {
 							currentInstance.setFatigue(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -547,7 +569,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(breakageEdit.getText().toString());
 						if (newValue != currentInstance.getBreakage()) {
 							currentInstance.setBreakage(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -577,7 +599,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(injuryEdit.getText().toString());
 						if (newValue != currentInstance.getInjury()) {
 							currentInstance.setInjury(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -607,7 +629,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(dazedEdit.getText().toString());
 						if (newValue != currentInstance.getDazed()) {
 							currentInstance.setDazed(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -637,7 +659,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(stunnedEdit.getText().toString());
 						if (newValue != currentInstance.getStunned()) {
 							currentInstance.setStunned(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -667,7 +689,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(noParryEdit.getText().toString());
 						if (newValue != currentInstance.getNoParry()) {
 							currentInstance.setNoParry(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -681,7 +703,7 @@ public class CriticalResultsFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				currentInstance.setStaggered(staggeredCheckBox.isChecked());
-				saveCriticalResult();
+				saveItem();
 			}
 		});
 	}
@@ -708,7 +730,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(knockBackEdit.getText().toString());
 						if (newValue != currentInstance.getKnockBack()) {
 							currentInstance.setKnockBack(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -722,7 +744,7 @@ public class CriticalResultsFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				currentInstance.setProne(proneCheckBox.isChecked());
-				saveCriticalResult();
+				saveItem();
 			}
 		});
 	}
@@ -749,7 +771,7 @@ public class CriticalResultsFragment extends Fragment {
 						short newValue = Short.valueOf(grappledEdit.getText().toString());
 						if (newValue != currentInstance.getGrappled()) {
 							currentInstance.setGrappled(newValue);
-							saveCriticalResult();
+							saveItem();
 						}
 					}
 				}
@@ -785,7 +807,7 @@ public class CriticalResultsFragment extends Fragment {
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
-						copyCriticalResultToControls();
+						copyItemToControls();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_critical_results_loaded), criticalResults.size());
@@ -801,7 +823,7 @@ public class CriticalResultsFragment extends Fragment {
 					currentInstance = new CriticalResult();
 					isNew = true;
 				}
-				copyCriticalResultToControls();
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

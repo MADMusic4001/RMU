@@ -20,8 +20,8 @@ package com.madinnovations.rmu.data.entities.combat;
  */
 public class CriticalCode {
 	private int id = -1;
- 	private String code;
-	private String description;
+ 	private String code = null;
+	private String description = null;
 
 	/**
 	 * Checks the validity of the CriticalCode instance.

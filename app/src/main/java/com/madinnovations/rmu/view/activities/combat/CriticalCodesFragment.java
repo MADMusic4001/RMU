@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -61,8 +62,8 @@ public class CriticalCodesFragment extends Fragment {
 	private   ListView                listView;
 	private   EditText                codeEdit;
 	private   EditText                descriptionEdit;
-	private CriticalCode selectedInstance = null;
-	private boolean  dirty            = false;
+	private CriticalCode currentInstance = new CriticalCode();
+	private boolean isNew = true;
 
 	@Nullable
 	@Override
@@ -78,33 +79,6 @@ public class CriticalCodesFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		criticalCodeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<CriticalCode>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CriticalCodesFragment", "Exception caught getting all CriticalCode instances in onCreateView", e);
-						Toast.makeText(CriticalCodesFragment.this.getActivity(),
-									   getString(R.string.toast_critical_codes_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<CriticalCode> criticalCodes) {
-						listAdapter.clear();
-						listAdapter.addAll(criticalCodes);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_critical_codes_loaded), criticalCodes.size());
-						Toast.makeText(CriticalCodesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		return layout;
 	}
 
@@ -118,31 +92,11 @@ public class CriticalCodesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_critical_code) {
-			CriticalCode criticalCode = new CriticalCode();
-			criticalCode.setCode(getString(R.string.default_critical_code_code));
-			criticalCode.setDescription(getString(R.string.default_critical_code_description));
-			criticalCodeRxHandler.save(criticalCode)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<CriticalCode>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("CriticalCodesFragment", "Exception saving new CriticalCode in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(CriticalCode savedCriticalCode) {
-							listAdapter.add(savedCriticalCode);
-							codeEdit.setText(savedCriticalCode.getCode());
-							descriptionEdit.setText(savedCriticalCode.getDescription());
-							selectedInstance = savedCriticalCode;
-						}
-					});
+			currentInstance = new CriticalCode();
+			isNew = true;
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -161,44 +115,107 @@ public class CriticalCodesFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_critical_code:
+				currentInstance = new CriticalCode();
+				isNew = true;
+				copyItemToControls();
+				listView.clearChoices();
+				return true;
 			case R.id.context_delete_critical_code:
 				criticalCode = (CriticalCode)listView.getItemAtPosition(info.position);
 				if(criticalCode != null) {
-					criticalCodeRxHandler.deleteById(criticalCode.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("CriticalCodeFragment", "Exception thrown when deleting: " + criticalCode, e);
-									String toastString = getString(R.string.toast_critical_code_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(criticalCode);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_critical_code_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(criticalCode);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
 		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		codeEdit.setText(currentInstance.getCode());
+		descriptionEdit.setText(currentInstance.getDescription());
+		if(currentInstance.getCode() != null && !currentInstance.getCode().isEmpty()) {
+			codeEdit.setError(null);
+		}
+		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
+			descriptionEdit.setError(null);
+		}
+	}
+
+	private void saveItem() {
+		criticalCodeRxHandler.save(currentInstance)
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<CriticalCode>() {
+				@Override
+				public void onCompleted() {}
+				@Override
+				public void onError(Throwable e) {
+					Log.e("CriticalCodeFragment", "Save failed for: " + currentInstance, e);
+					String toastString = getString(R.string.toast_critical_code_save_failed);
+					Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+				@Override
+				public void onNext(CriticalCode savedCriticalCode) {
+					if (isNew) {
+						listAdapter.add(savedCriticalCode);
+						listView.setSelection(listAdapter.getPosition(savedCriticalCode));
+						listView.setItemChecked(listAdapter.getPosition(savedCriticalCode), true);
+						isNew = false;
+					}
+					if(getActivity() != null) {
+						Toast.makeText(getActivity(), getString(R.string.toast_critical_code_saved), Toast.LENGTH_SHORT).show();
+						int position = listAdapter.getPosition(savedCriticalCode);
+						LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+						if (v != null) {
+							TextView textView = (TextView) v.findViewById(R.id.name_view);
+							if (textView != null) {
+								textView.setText(savedCriticalCode.getCode());
+							}
+							textView = (TextView) v.findViewById(R.id.description_view);
+							if (textView != null) {
+								textView.setText(savedCriticalCode.getDescription());
+							}
+						}
+					}
+				}
+			});
+	}
+
+	private void deleteItem(@NonNull final CriticalCode item) {
+		criticalCodeRxHandler.deleteById(item.getId())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Subscriber<Boolean>() {
+				@Override
+				public void onCompleted() {}
+				@Override
+				public void onError(Throwable e) {
+					Log.e("CriticalCodeFragment", "Exception thrown when deleting: " + item, e);
+					String toastString = getString(R.string.toast_critical_code_delete_failed);
+					Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+				@Override
+				public void onNext(Boolean success) {
+					if(success) {
+						int position = listAdapter.getPosition(item);
+						if(position == listAdapter.getCount() -1) {
+							position--;
+						}
+						listAdapter.remove(item);
+						listAdapter.notifyDataSetChanged();
+						if(position >= 0) {
+							listView.setSelection(position);
+							listView.setItemChecked(position, true);
+							currentInstance = listAdapter.getItem(position);
+						}
+						else {
+							currentInstance = new CriticalCode();
+						}
+						copyItemToControls();
+						Toast.makeText(getActivity(), getString(R.string.toast_critical_code_deleted), Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
 	}
 
 	private void initCodeEdit(View layout) {
@@ -213,9 +230,6 @@ public class CriticalCodesFragment extends Fragment {
 				if (editable.length() == 0 && codeEdit != null) {
 					codeEdit.setError(getString(R.string.validation_code_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getCode())) {
-					dirty = true;
-				}
 			}
 		});
 		codeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -223,25 +237,9 @@ public class CriticalCodesFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newCode = codeEdit.getText().toString();
-					if (selectedInstance != null && !newCode.equals(selectedInstance.getCode())) {
-						selectedInstance.setCode(newCode);
-						criticalCodeRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<CriticalCode>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("CriticalCodeFragment", "Save failed for: " + selectedInstance, e);
-										String toastString = getString(R.string.toast_critical_code_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(CriticalCode savedCriticalCode) {
-										onSaved(savedCriticalCode);
-									}
-								});
+					if (currentInstance != null && !newCode.equals(currentInstance.getCode())) {
+						currentInstance.setCode(newCode);
+						saveItem();
 					}
 				}
 			}
@@ -257,12 +255,8 @@ public class CriticalCodesFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				dirty = true;
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
-				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
-					dirty = true;
 				}
 			}
 		});
@@ -271,53 +265,13 @@ public class CriticalCodesFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
-						selectedInstance.setDescription(newDescription);
-						criticalCodeRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<CriticalCode>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("CriticalCodesFragment",
-											  "Exception caught saving new CriticalCode in initDescriptionEdit", e);
-										String toastString = getString(R.string.toast_critical_code_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(CriticalCode savedCriticalCode) {
-										onSaved(savedCriticalCode);
-									}
-								});
+					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
+						currentInstance.setDescription(newDescription);
+						saveItem();
 					}
 				}
 			}
 		});
-	}
-
-	private void onSaved(CriticalCode criticalCode) {
-		if(getActivity() == null) {
-			return;
-		}
-
-		String toastString;
-		toastString = getString(R.string.toast_critical_code_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
-		int position = listAdapter.getPosition(criticalCode);
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(criticalCode.getCode());
-			}
-			textView = (TextView) v.findViewById(R.id.description_view);
-			if (textView != null) {
-				textView.setText(criticalCode.getDescription());
-			}
-		}
 	}
 
 	private void initListView(View layout) {
@@ -325,38 +279,47 @@ public class CriticalCodesFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
+		criticalCodeRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Subscriber<Collection<CriticalCode>>() {
+				@Override
+				public void onCompleted() {}
+				@Override
+				public void onError(Throwable e) {
+					Log.e("CriticalCodesFragment", "Exception caught getting all CriticalCode instances", e);
+					Toast.makeText(CriticalCodesFragment.this.getActivity(),
+							getString(R.string.toast_critical_codes_load_failed),
+							Toast.LENGTH_SHORT).show();
+				}
+				@Override
+				public void onNext(Collection<CriticalCode> criticalCodes) {
+					listAdapter.clear();
+					listAdapter.addAll(criticalCodes);
+					listAdapter.notifyDataSetChanged();
+					if(criticalCodes.size() > 0) {
+						listView.setSelection(0);
+						listView.setItemChecked(0, true);
+						currentInstance = listAdapter.getItem(0);
+						isNew = false;
+						copyItemToControls();
+					}
+					String toastString;
+					toastString = String.format(getString(R.string.toast_critical_codes_loaded), criticalCodes.size());
+					Toast.makeText(CriticalCodesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
+
 		// Clicking a row in the listView will send the user to the edit world activity
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && selectedInstance != null) {
-					selectedInstance.setCode(codeEdit.getText().toString());
-					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					criticalCodeRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<CriticalCode>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("CriticalCodesFragment",
-										  "Exception caught saving new CriticalCode in initListView", e);
-									String toastString = getString(R.string.toast_critical_code_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(CriticalCode savedCriticalCode) {
-									onSaved(savedCriticalCode);
-								}
-							});
+				currentInstance = (CriticalCode) listView.getItemAtPosition(position);
+				if (currentInstance == null) {
+					currentInstance = new CriticalCode();
+					isNew = true;
 				}
-
-				selectedInstance = (CriticalCode) listView.getItemAtPosition(position);
-				if (selectedInstance != null) {
-					codeEdit.setText(selectedInstance.getCode());
-					descriptionEdit.setText(selectedInstance.getDescription());
-				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);
