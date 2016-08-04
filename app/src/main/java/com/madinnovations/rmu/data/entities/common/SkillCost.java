@@ -23,6 +23,15 @@ public class SkillCost {
 	private int initialCost;
 	private int additionalCost;
 
+	/**
+	 * Checks the validity of the SkillCost instance.
+	 *
+	 * @return true if the SkillCost instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return true;
+	}
+
 	@Override
 	public String toString() {
 		return "SkillCost{" +
@@ -30,6 +39,22 @@ public class SkillCost {
 				", initialCost=" + initialCost +
 				", additionalCost=" + additionalCost +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SkillCost skillCost = (SkillCost) o;
+
+		return id == skillCost.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

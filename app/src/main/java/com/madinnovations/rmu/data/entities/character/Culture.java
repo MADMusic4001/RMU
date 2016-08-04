@@ -32,6 +32,15 @@ public class Culture {
 	private List<Skill> whiteList;
 	private List<Skill> blackList;
 
+	/**
+	 * Checks the validity of the Culture instance.
+	 *
+	 * @return true if the Culture instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Culture{" +
@@ -42,6 +51,22 @@ public class Culture {
 				", whiteList=" + whiteList +
 				", blackList=" + blackList +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Culture culture = (Culture) o;
+
+		return id == culture.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

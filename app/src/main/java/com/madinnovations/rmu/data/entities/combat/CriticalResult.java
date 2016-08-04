@@ -23,6 +23,11 @@ public class CriticalResult {
     private boolean prone = false;
     private short grappled = 0;
 
+	/**
+     * Checks the validity of the CriticalResult instance.
+     *
+     * @return true if the CriticalResult instance is valid, otherwise false.
+     */
     public boolean isValid() {
         return description != null && !description.isEmpty() && bodyPart != null && minRoll <= maxRoll;
     }
@@ -49,6 +54,22 @@ public class CriticalResult {
                 ", prone=" + prone +
                 ", grappled=" + grappled +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CriticalResult that = (CriticalResult) o;
+
+        return id == that.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     // Getters and setters

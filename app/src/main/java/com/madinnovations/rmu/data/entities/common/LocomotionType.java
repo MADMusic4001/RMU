@@ -24,6 +24,15 @@ public class LocomotionType {
 	private String description;
 	private int defaultRate;
 
+	/**
+	 * Checks the validity of the LocomotionType instance.
+	 *
+	 * @return true if the LocomotionType instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "LocomotionType{" +
@@ -32,6 +41,22 @@ public class LocomotionType {
 				", description='" + description + '\'' +
 				", defaultRate=" + defaultRate +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LocomotionType that = (LocomotionType) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

@@ -5,8 +5,17 @@ package com.madinnovations.rmu.data.entities.combat;
  */
 public class BodyPart {
     private int id = -1;
-    private String name;
-    private String description;
+    private String name = null;
+    private String description = null;
+
+    /**
+     * Checks the validity of the BodyPart instance.
+     *
+     * @return true if the BodyPart instance is valid, otherwise false.
+     */
+    public boolean isValid() {
+        return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+    }
 
     @Override
     public String toString() {
@@ -15,6 +24,22 @@ public class BodyPart {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BodyPart bodyPart = (BodyPart) o;
+
+        return id == bodyPart.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     // Getters and setters

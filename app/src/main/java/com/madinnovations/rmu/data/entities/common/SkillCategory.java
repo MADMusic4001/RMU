@@ -26,6 +26,16 @@ public class SkillCategory {
 	private Stat stat2;
 	private Stat stat3;
 
+	/**
+	 * Checks the validity of the SkillCategory instance.
+	 *
+	 * @return true if the SkillCategory instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat1 != null && stat2 != null &&
+				stat3 != null;
+	}
+
 	@Override
 	public String toString() {
 		return "SkillCategory{" +
@@ -36,6 +46,22 @@ public class SkillCategory {
 				", stat2=" + stat2 +
 				", stat3=" + stat3 +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SkillCategory that = (SkillCategory) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

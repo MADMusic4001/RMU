@@ -25,6 +25,15 @@ public class Creature {
 	private int maxHits;
 	private int currentHits;
 
+	/**
+	 * Checks the validity of the Creature instance.
+	 *
+	 * @return true if the Creature instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return template != null;
+	}
+
 	@Override
 	public String toString() {
 		return "Creature{" +
@@ -34,6 +43,22 @@ public class Creature {
 				", maxHits=" + maxHits +
 				", currentHits=" + currentHits +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Creature creature = (Creature) o;
+
+		return id == creature.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

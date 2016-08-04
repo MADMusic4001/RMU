@@ -12,6 +12,15 @@ public class DamageResult {
     private String criticalSeverity;
     private CriticalType criticalType;
 
+    /**
+     * Checks the validity of the DamageResult instance.
+     *
+     * @return true if the DamageResult instance is valid, otherwise false.
+     */
+    public boolean isValid() {
+        return criticalSeverity != null && !criticalSeverity.isEmpty() && criticalType != null;
+    }
+
     @Override
     public String toString() {
         return "DamageResult{" +
@@ -22,6 +31,22 @@ public class DamageResult {
                 ", criticalSeverity='" + criticalSeverity + '\'' +
                 ", criticalType=" + criticalType +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DamageResult that = (DamageResult) o;
+
+        return id == that.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     // Getters and setters

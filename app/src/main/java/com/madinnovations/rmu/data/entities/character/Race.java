@@ -54,6 +54,15 @@ public class Race {
 	private short averageWeight;
 	private short poundsPerInch;
 
+	/**
+	 * Checks the validity of the Profession instance.
+	 *
+	 * @return true if the Profession instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Race{" +
@@ -86,6 +95,22 @@ public class Race {
 				", averageWeight=" + averageWeight +
 				", poundsPerInch=" + poundsPerInch +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Race race = (Race) o;
+
+		return id == race.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

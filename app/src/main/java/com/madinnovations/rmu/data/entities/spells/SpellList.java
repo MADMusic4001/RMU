@@ -10,6 +10,15 @@ public class SpellList {
 	private Realm realm;
 	private SpellListType spellListType;
 
+	/**
+	 * Checks the validity of the SpellList instance.
+	 *
+	 * @return true if the SpellList instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && realm != null && spellListType != null;
+	}
+
 	@Override
 	public String toString() {
 		return "SpellList{" +
@@ -19,6 +28,22 @@ public class SpellList {
 				", realm=" + realm +
 				", spellListType=" + spellListType +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SpellList spellList = (SpellList) o;
+
+		return id == spellList.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

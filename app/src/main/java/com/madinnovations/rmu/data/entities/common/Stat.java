@@ -24,6 +24,16 @@ public class Stat {
 	private String name;
 	private String description;
 
+	/**
+	 * Checks the validity of the Stat instance.
+	 *
+	 * @return true if the Stat instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return abbreviation != null && !abbreviation.isEmpty() && name != null && !name.isEmpty() && description != null &&
+				!description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Stat{" +
@@ -32,6 +42,22 @@ public class Stat {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Stat stat = (Stat) o;
+
+		return id == stat.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

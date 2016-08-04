@@ -8,6 +8,15 @@ public class Realm {
 	private String name;
 	private String description;
 
+	/**
+	 * Checks the validity of the Realm instance.
+	 *
+	 * @return true if the Realm instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Realm{" +
@@ -15,6 +24,22 @@ public class Realm {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Realm realm = (Realm) o;
+
+		return id == realm.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

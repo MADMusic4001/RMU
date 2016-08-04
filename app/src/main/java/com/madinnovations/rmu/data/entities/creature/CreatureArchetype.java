@@ -35,6 +35,16 @@ public class CreatureArchetype {
 	private String spells;
 	private String role;
 
+	/**
+	 * Checks the validity of the CreatureArchetype instance.
+	 *
+	 * @return true if the CreatureArchetype instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat1 != null && stat2 != null &&
+				role != null;
+	}
+
 	@Override
 	public String toString() {
 		return "CreatureArchetype{" +
@@ -49,6 +59,22 @@ public class CreatureArchetype {
 				", spells='" + spells + '\'' +
 				", role='" + role + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CreatureArchetype that = (CreatureArchetype) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

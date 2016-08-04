@@ -10,6 +10,15 @@ public class Weapon extends Item {
     private Skill combatSkill;
     private DamageTable damageTable;
 
+    /**
+     * Checks the validity of the Weapon instance.
+     *
+     * @return true if the Weapon instance is valid, otherwise false.
+     */
+    public boolean isValid() {
+        return combatSkill != null && damageTable != null;
+    }
+
     @Override
     public String toString() {
         return "Weapon{" +

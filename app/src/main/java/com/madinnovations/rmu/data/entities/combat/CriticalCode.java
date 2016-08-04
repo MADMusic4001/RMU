@@ -23,6 +23,15 @@ public class CriticalCode {
  	private String code;
 	private String description;
 
+	/**
+	 * Checks the validity of the CriticalCode instance.
+	 *
+	 * @return true if the CriticalCode instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return code != null && !code.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "CriticalCode{" +
@@ -30,6 +39,22 @@ public class CriticalCode {
 				", code='" + code + '\'' +
 				", description='" + description + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CriticalCode that = (CriticalCode) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

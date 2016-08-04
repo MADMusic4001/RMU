@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -73,7 +72,6 @@ public class CriticalResultsFragment extends Fragment {
 	private EditText grappledEdit;
 	private CriticalResult currentInstance = new CriticalResult();
 	private boolean isNew = true;
-	private boolean dirty = false;
 
 	@Nullable
 	@Override
@@ -102,7 +100,7 @@ public class CriticalResultsFragment extends Fragment {
 		initGrappledEdit(layout);
 		initListView(layout);
 
-		copyCriticalResult();
+		copyCriticalResultToControls();
 		setHasOptionsMenu(true);
 
 		return layout;
@@ -126,7 +124,8 @@ public class CriticalResultsFragment extends Fragment {
 		if(id == R.id.action_new_critical_result) {
 			currentInstance = new CriticalResult();
 			isNew = true;
-			copyCriticalResult();
+			copyCriticalResultToControls();
+			listView.setItemChecked(listView.getSelectedItemPosition(), false);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -148,7 +147,8 @@ public class CriticalResultsFragment extends Fragment {
 			case R.id.context_new_critical_result:
 				currentInstance = new CriticalResult();
 				isNew = true;
-				copyCriticalResult();
+				copyCriticalResultToControls();
+				listView.setItemChecked(listView.getSelectedItemPosition(), false);
 				return true;
 			case R.id.context_delete_critical_result:
 				criticalResult = (CriticalResult)listView.getItemAtPosition(info.position);
@@ -191,7 +191,10 @@ public class CriticalResultsFragment extends Fragment {
 		}
 	}
 
-	private void copyCriticalResult() {
+	private void copyCriticalResultToControls() {
+		if(currentInstance.getDescription() != null) {
+			descriptionEdit.setError(null);
+		}
 		descriptionEdit.setText(currentInstance.getDescription());
 		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
 		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
@@ -231,8 +234,11 @@ public class CriticalResultsFragment extends Fragment {
 					public void onNext(CriticalResult savedCriticalResult) {
 						if (isNew) {
 							listAdapter.add(savedCriticalResult);
+							listView.setSelection(listAdapter.getPosition(savedCriticalResult));
+							listView.setItemChecked(listAdapter.getPosition(savedCriticalResult), true);
 							isNew = false;
 						}
+						isNew = false;
 						if(getActivity() != null) {
 							String toastString;
 							toastString = getString(R.string.toast_critical_result_saved);
@@ -253,9 +259,6 @@ public class CriticalResultsFragment extends Fragment {
 					}
 				});
 		}
-		else {
-			Log.d("CriticalResultsFragment", "currentInstance is not valid. currentInstance = " + currentInstance);
-		}
 	}
 
 	private void initDescriptionEdit(View layout) {
@@ -269,9 +272,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
-				}
-				else if (!editable.toString().equals(currentInstance.getDescription())) {
-					dirty = true;
 				}
 			}
 		});
@@ -305,9 +305,6 @@ public class CriticalResultsFragment extends Fragment {
 					int newValue = Integer.valueOf(editable.toString());
 					if(newValue > currentInstance.getMaxRoll()) {
 						minRollEdit.setError(getString(R.string.validation_min_roll_gt_max_roll));
-					}
-					else if (newValue != currentInstance.getMinRoll()) {
-						dirty = true;
 					}
 				}
 			}
@@ -345,9 +342,6 @@ public class CriticalResultsFragment extends Fragment {
 					if(newValue <= currentInstance.getMinRoll()) {
 						maxRollEdit.setError(getString(R.string.validation_max_roll_le_min_roll));
 					}
-					else if (newValue != currentInstance.getMinRoll()) {
-						dirty = true;
-					}
 				}
 			}
 		});
@@ -379,9 +373,6 @@ public class CriticalResultsFragment extends Fragment {
 				if (editable.length() == 0 && descriptionEdit != null) {
 					severityCodeEdit.setError(getString(R.string.validation_severity_code_required));
 				}
-				else if (!editable.toString().equals(String.valueOf(currentInstance.getSeverityCode()))) {
-					dirty = true;
-				}
 			}
 		});
 		severityCodeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -410,10 +401,7 @@ public class CriticalResultsFragment extends Fragment {
 			.subscribeOn(Schedulers.io())
 			.subscribe(new Subscriber<Collection<BodyPart>>() {
 				@Override
-				public void onCompleted() {
-
-				}
-
+				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
 					Log.e("CriticalResultsFragment", "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
@@ -421,27 +409,28 @@ public class CriticalResultsFragment extends Fragment {
 							getString(R.string.toast_body_parts_load_failed),
 							Toast.LENGTH_SHORT).show();
 				}
-
 				@Override
 				public void onNext(Collection<BodyPart> bodyPartsResults) {
 					spinnerAdapter.clear();
 					spinnerAdapter.addAll(bodyPartsResults);
 					spinnerAdapter.notifyDataSetChanged();
-					String toastString;
-					toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyPartsResults.size());
-					Toast.makeText(CriticalResultsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 				}
 			});
 
 		bodyPartSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				currentInstance.setBodyPart(spinnerAdapter.getItem(position));
+				if(currentInstance.getBodyPart() == null || spinnerAdapter.getPosition(currentInstance.getBodyPart()) != position) {
+					currentInstance.setBodyPart(spinnerAdapter.getItem(position));
+					saveCriticalResult();
+				}
 			}
-
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				currentInstance.setBodyPart(null);
+				if(currentInstance.getBodyPart() != null) {
+					currentInstance.setBodyPart(null);
+					saveCriticalResult();
+				}
 			}
 		});
 	}
@@ -457,9 +446,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && hitsEdit != null) {
 					hitsEdit.setError(getString(R.string.validation_hits_required));
-				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getHits()) {
-					dirty = true;
 				}
 			}
 		});
@@ -491,9 +477,6 @@ public class CriticalResultsFragment extends Fragment {
 				if (editable.length() == 0 && bleedingEdit != null) {
 					bleedingEdit.setError(getString(R.string.validation_bleeding_required));
 				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getBleeding()) {
-					dirty = true;
-				}
 			}
 		});
 		bleedingEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -523,9 +506,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && fatigueEdit != null) {
 					fatigueEdit.setError(getString(R.string.validation_fatigue_required));
-				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getFatigue()) {
-					dirty = true;
 				}
 			}
 		});
@@ -557,9 +537,6 @@ public class CriticalResultsFragment extends Fragment {
 				if (editable.length() == 0 && breakageEdit != null) {
 					breakageEdit.setError(getString(R.string.validation_breakage_required));
 				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getBreakage()) {
-					dirty = true;
-				}
 			}
 		});
 		breakageEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -589,9 +566,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && injuryEdit != null) {
 					injuryEdit.setError(getString(R.string.validation_injury_required));
-				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getInjury()) {
-					dirty = true;
 				}
 			}
 		});
@@ -623,9 +597,6 @@ public class CriticalResultsFragment extends Fragment {
 				if (editable.length() == 0 && dazedEdit != null) {
 					dazedEdit.setError(getString(R.string.validation_dazed_required));
 				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getDazed()) {
-					dirty = true;
-				}
 			}
 		});
 		dazedEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -655,9 +626,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && stunnedEdit != null) {
 					stunnedEdit.setError(getString(R.string.validation_stunned_required));
-				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getStunned()) {
-					dirty = true;
 				}
 			}
 		});
@@ -689,9 +657,6 @@ public class CriticalResultsFragment extends Fragment {
 				if (editable.length() == 0 && noParryEdit != null) {
 					noParryEdit.setError(getString(R.string.validation_no_parry_required));
 				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getNoParry()) {
-					dirty = true;
-				}
 			}
 		});
 		noParryEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -712,22 +677,11 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initStaggeredCheckBox(View layout) {
 		staggeredCheckBox = (CheckBox) layout.findViewById(R.id.staggered_checkbox);
-		staggeredCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		staggeredCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-				currentInstance.setStaggered(compoundButton.isChecked());
-			}
-		});
-		staggeredCheckBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					boolean newValue = staggeredCheckBox.isChecked();
-					if (newValue != currentInstance.isStaggered()) {
-						currentInstance.setStaggered(newValue);
-						saveCriticalResult();
-					}
-				}
+			public void onClick(View view) {
+				currentInstance.setStaggered(staggeredCheckBox.isChecked());
+				saveCriticalResult();
 			}
 		});
 	}
@@ -743,9 +697,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && knockBackEdit != null) {
 					knockBackEdit.setError(getString(R.string.validation_knock_back_required));
-				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getKnockBack()) {
-					dirty = true;
 				}
 			}
 		});
@@ -767,22 +718,11 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initProneCheckBox(View layout) {
 		proneCheckBox = (CheckBox) layout.findViewById(R.id.prone_checkbox);
-		proneCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		proneCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-				currentInstance.setProne(compoundButton.isChecked());
-			}
-		});
-		proneCheckBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					boolean newValue = proneCheckBox.isChecked();
-					if (newValue != currentInstance.isProne()) {
-						currentInstance.setProne(newValue);
-						saveCriticalResult();
-					}
-				}
+			public void onClick(View view) {
+				currentInstance.setProne(proneCheckBox.isChecked());
+				saveCriticalResult();
 			}
 		});
 	}
@@ -798,9 +738,6 @@ public class CriticalResultsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && grappledEdit != null) {
 					grappledEdit.setError(getString(R.string.validation_grappled_required));
-				}
-				else if (Short.valueOf(editable.toString()) != currentInstance.getGrappled()) {
-					dirty = true;
 				}
 			}
 		});
@@ -830,10 +767,7 @@ public class CriticalResultsFragment extends Fragment {
 			.subscribeOn(Schedulers.io())
 			.subscribe(new Subscriber<Collection<CriticalResult>>() {
 				@Override
-				public void onCompleted() {
-
-				}
-
+				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
 					Log.e("CriticalResultsFragment", "Exception caught getting all CriticalCode instances in onCreateView", e);
@@ -841,7 +775,6 @@ public class CriticalResultsFragment extends Fragment {
 							getString(R.string.toast_critical_results_load_failed),
 							Toast.LENGTH_SHORT).show();
 				}
-
 				@Override
 				public void onNext(Collection<CriticalResult> criticalResults) {
 					listAdapter.clear();
@@ -849,7 +782,10 @@ public class CriticalResultsFragment extends Fragment {
 					listAdapter.notifyDataSetChanged();
 					if(criticalResults.size() > 0) {
 						listView.setSelection(0);
+						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
+						isNew = false;
+						copyCriticalResultToControls();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_critical_results_loaded), criticalResults.size());
@@ -857,30 +793,15 @@ public class CriticalResultsFragment extends Fragment {
 				}
 			});
 
-		// Clicking a row in the listView will send the user to the edit world activity
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty) {
-					currentInstance.setDescription(descriptionEdit.getText().toString());
-					if(minRollEdit.getText().length() > 0) {
-						currentInstance.setMinRoll(Integer.valueOf(minRollEdit.getText().toString()));
-					}
-					if(maxRollEdit.getText().length() > 0) {
-						currentInstance.setMaxRoll(Integer.valueOf(maxRollEdit.getText().toString()));
-					}
-					if(hitsEdit.getText().length() > 0) {
-						currentInstance.setHits(Short.valueOf(hitsEdit.getText().toString()));
-					}
-					saveCriticalResult();
-				}
-
 				currentInstance = (CriticalResult) listView.getItemAtPosition(position);
 				if(currentInstance == null) {
 					currentInstance = new CriticalResult();
 					isNew = true;
 				}
-				copyCriticalResult();
+				copyCriticalResultToControls();
 			}
 		});
 		registerForContextMenu(listView);

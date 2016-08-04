@@ -29,6 +29,15 @@ public class Profession {
 	private String description;
 	private Map<SkillCategory, SkillCost> skillCostMap;
 
+	/**
+	 * Checks the validity of the Profession instance.
+	 *
+	 * @return true if the Profession instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Profession{" +
@@ -37,6 +46,22 @@ public class Profession {
 				", description='" + description + '\'' +
 				", skillCostMap=" + skillCostMap +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Profession that = (Profession) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

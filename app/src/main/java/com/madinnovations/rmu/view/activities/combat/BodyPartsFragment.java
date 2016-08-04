@@ -46,8 +46,8 @@ public class BodyPartsFragment extends Fragment {
 	private ListView              listView;
 	private EditText              nameEdit;
 	private EditText              descriptionEdit;
-	private BodyPart selectedInstance = null;
-	private boolean dirty = false;
+	private BodyPart currentInstance = new BodyPart();
+	private boolean isNew = true;
 
 	@Nullable
 	@Override
@@ -63,33 +63,6 @@ public class BodyPartsFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		bodyPartRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<BodyPart>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("BodyPartsFragment", "Exception caught getting all CriticalCode instances in onCreateView", e);
-						Toast.makeText(BodyPartsFragment.this.getActivity(),
-									   getString(R.string.toast_body_parts_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<BodyPart> bodyParts) {
-						listAdapter.clear();
-						listAdapter.addAll(bodyParts);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
-						Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		return layout;
 	}
 
@@ -103,31 +76,10 @@ public class BodyPartsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_body_part) {
-			BodyPart bodyPart = new BodyPart();
-			bodyPart.setName(getString(R.string.default_body_part_name));
-			bodyPart.setDescription(getString(R.string.default_body_part_description));
-			bodyPartRxHandler.save(bodyPart)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<BodyPart>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("BodyPartsFragment", "Exception saving new BodyPart in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(BodyPart savedBodyPart) {
-							listAdapter.add(savedBodyPart);
-							nameEdit.setText(savedBodyPart.getName());
-							descriptionEdit.setText(savedBodyPart.getDescription());
-							selectedInstance = savedBodyPart;
-						}
-					});
+			currentInstance = new BodyPart();
+			isNew = true;
+			copyItemToControls();
+			listView.setItemChecked(listView.getSelectedItemPosition(), false);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -146,43 +98,104 @@ public class BodyPartsFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_body_part:
+				currentInstance = new BodyPart();
+				isNew = true;
+				copyItemToControls();
+				listView.setItemChecked(listView.getSelectedItemPosition(), false);
+				return true;
 			case R.id.context_delete_body_part:
 				bodyPart = (BodyPart)listView.getItemAtPosition(info.position);
 				if(bodyPart != null) {
-					bodyPartRxHandler.deleteById(bodyPart.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("BodyPartFragment", "Exception when deleting: " + bodyPart, e);
-									String toastString = getString(R.string.toast_body_part_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(bodyPart);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_body_part_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(bodyPart);
 					return true;
 				}
-				else {
-					return false;
+				break;
+		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		nameEdit.setText(currentInstance.getName());
+		descriptionEdit.setText(currentInstance.getDescription());
+	}
+
+	private void deleteItem(final BodyPart item) {
+		bodyPartRxHandler.deleteById(item.getId())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Subscriber<Boolean>() {
+				@Override
+				public void onCompleted() {}
+				@Override
+				public void onError(Throwable e) {
+					Log.e("BodyPartFragment", "Exception when deleting: " + item, e);
+					Toast.makeText(getActivity(), getString(R.string.toast_body_part_delete_failed), Toast.LENGTH_SHORT).show();
 				}
-			default:
-				return super.onContextItemSelected(item);
+				@Override
+				public void onNext(Boolean success) {
+					if(success) {
+						int position = listAdapter.getPosition(item);
+						if(position == listAdapter.getCount() -1) {
+							position--;
+						}
+						listAdapter.remove(item);
+						listAdapter.notifyDataSetChanged();
+						if(position >= 0) {
+							listView.setSelection(position);
+							listView.setItemChecked(position, true);
+							currentInstance = listAdapter.getItem(position);
+							copyItemToControls();
+						}
+						Toast.makeText(getActivity(), getString(R.string.toast_body_part_deleted), Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
+	}
+
+	private void saveItem() {
+		if(currentInstance.isValid()) {
+			bodyPartRxHandler.save(currentInstance)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<BodyPart>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("BodyPartsFragment", "Exception saving BodyPart", e);
+						String toastString = getString(R.string.toast_body_part_save_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(BodyPart savedBodyPart) {
+						if (isNew) {
+							listAdapter.add(savedBodyPart);
+							listView.setSelection(listAdapter.getPosition(savedBodyPart));
+							listView.setItemChecked(listAdapter.getPosition(savedBodyPart), true);
+							isNew = false;
+						}
+						isNew = false;
+						if (getActivity() != null) {
+							String toastString;
+							toastString = getString(R.string.toast_body_part_saved);
+							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+
+							int position = listAdapter.getPosition(currentInstance);
+							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+							if (v != null) {
+								TextView textView = (TextView) v.findViewById(R.id.name_view);
+								if (textView != null) {
+									textView.setText(currentInstance.getName());
+								}
+								textView = (TextView) v.findViewById(R.id.description_view);
+								if (textView != null) {
+									textView.setText(currentInstance.getDescription());
+								}
+							}
+						}
+					}
+				});
 		}
 	}
 
@@ -198,9 +211,6 @@ public class BodyPartsFragment extends Fragment {
 				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
-					dirty = true;
-				}
 			}
 		});
 		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -208,25 +218,9 @@ public class BodyPartsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
-					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
-						selectedInstance.setName(newName);
-						bodyPartRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<BodyPart>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("BodyPartsFragment", "Exception saving new BodyPart in initNameEdit", e);
-										String toastString = getString(R.string.toast_body_part_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(BodyPart savedBodyPart) {
-										onSaved(savedBodyPart);
-									}
-								});
+					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
+						currentInstance.setName(newName);
+						saveItem();
 					}
 				}
 			}
@@ -242,12 +236,8 @@ public class BodyPartsFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				dirty = true;
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
-				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
-					dirty = true;
 				}
 			}
 		});
@@ -256,52 +246,13 @@ public class BodyPartsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
-						selectedInstance.setDescription(newDescription);
-						bodyPartRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<BodyPart>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("BodyPartsFragment", "Exception saving new BodyPart in initDescriptionEdit", e);
-										String toastString = getString(R.string.toast_body_part_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(BodyPart savedBodyPart) {
-										onSaved(savedBodyPart);
-									}
-								});
+					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
+						currentInstance.setDescription(newDescription);
+						saveItem();
 					}
 				}
 			}
 		});
-	}
-
-	private void onSaved(BodyPart bodyPart) {
-		if(getActivity() == null) {
-			return;
-		}
-
-		String toastString;
-		toastString = getString(R.string.toast_body_part_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
-		int position = listAdapter.getPosition(bodyPart);
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(bodyPart.getName());
-			}
-			textView = (TextView) v.findViewById(R.id.description_view);
-			if (textView != null) {
-				textView.setText(bodyPart.getDescription());
-			}
-		}
 	}
 
 	private void initListView(View layout) {
@@ -309,37 +260,47 @@ public class BodyPartsFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		// Clicking a row in the listView will send the user to the edit world activity
+		bodyPartRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Subscriber<Collection<BodyPart>>() {
+				@Override
+				public void onCompleted() {}
+				@Override
+				public void onError(Throwable e) {
+					Log.e("BodyPartsFragment", "Exception caught getting all CriticalCode instances", e);
+					Toast.makeText(BodyPartsFragment.this.getActivity(),
+							getString(R.string.toast_body_parts_load_failed),
+							Toast.LENGTH_SHORT).show();
+				}
+				@Override
+				public void onNext(Collection<BodyPart> bodyParts) {
+					listAdapter.clear();
+					listAdapter.addAll(bodyParts);
+					listAdapter.notifyDataSetChanged();
+					if(bodyParts.size() > 0) {
+						listView.setSelection(0);
+						listView.setItemChecked(0, true);
+						currentInstance = listAdapter.getItem(0);
+						isNew = false;
+						copyItemToControls();
+					}
+					String toastString;
+					toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
+					Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
+
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && selectedInstance != null) {
-					selectedInstance.setName(nameEdit.getText().toString());
-					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					bodyPartRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<BodyPart>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("BodyPartsFragment", "Exception saving new BodyPart in initListView", e);
-									String toastString = getString(R.string.toast_body_part_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(BodyPart savedBodyPart) {
-									onSaved(savedBodyPart);
-								}
-							});
+				currentInstance = (BodyPart) listView.getItemAtPosition(position);
+				isNew = false;
+				if (currentInstance == null) {
+					currentInstance = new BodyPart();
+					isNew = true;
 				}
-
-				selectedInstance = (BodyPart) listView.getItemAtPosition(position);
-				if (selectedInstance != null) {
-					nameEdit.setText(selectedInstance.getName());
-					descriptionEdit.setText(selectedInstance.getDescription());
-				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

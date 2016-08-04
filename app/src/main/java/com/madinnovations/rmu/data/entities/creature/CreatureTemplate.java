@@ -48,6 +48,16 @@ public class CreatureTemplate {
 	private int               endurance;
 	private int               offensiveBonus;
 
+	/**
+	 * Checks the validity of the CreatureCategory instance.
+	 *
+	 * @return true if the CreatureCategory instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && archetype != null && category != null &&
+				type != null && size != null && criticalCode != null;
+	}
+
 	@Override
 	public String toString() {
 		return "CreatureTemplate{" +
@@ -74,6 +84,22 @@ public class CreatureTemplate {
 				", endurance=" + endurance +
 				", offensiveBonus=" + offensiveBonus +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CreatureTemplate that = (CreatureTemplate) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

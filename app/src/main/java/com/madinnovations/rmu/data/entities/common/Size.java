@@ -28,11 +28,13 @@ public class Size {
 	private Integer minHeight;
 	private Integer maxHeight;
 
+	/**
+	 * Checks the validity of the Size instance.
+	 *
+	 * @return true if the Size instance is valid, otherwise false.
+	 */
 	public boolean isValid() {
-		boolean isValid = !(code == null || code.length() == 0);
-		isValid &= !(name == null || name.length() == 0);
-		isValid &= !(examples == null || examples.length() == 0);
-		return isValid;
+		return code != null && !code.isEmpty() && name != null && !name.isEmpty() && examples != null && !examples.isEmpty();
 	}
 
 	@Override
@@ -47,6 +49,22 @@ public class Size {
 				", minHeight=" + minHeight +
 				", maxHeight=" + maxHeight +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Size size = (Size) o;
+
+		return id == size.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

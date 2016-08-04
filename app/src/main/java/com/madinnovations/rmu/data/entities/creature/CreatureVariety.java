@@ -24,6 +24,15 @@ public class CreatureVariety {
 	private String name;
 	private String description;
 
+	/**
+	 * Checks the validity of the CreatureVariety instance.
+	 *
+	 * @return true if the CreatureVariety instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && type != null;
+	}
+
 	@Override
 	public String toString() {
 		return "CreatureVariety{" +
@@ -32,6 +41,22 @@ public class CreatureVariety {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CreatureVariety that = (CreatureVariety) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

@@ -29,6 +29,7 @@ public class Character {
 	private String name;
 	private String description;
 	private Race race;
+	private Profession profession;
 	private short height;
 	private short weight;
 	private short stride;
@@ -40,6 +41,15 @@ public class Character {
 	private Map<Stat, Short> statTemps;
 	private Map<Stat, Short> statPotentials;
 
+	/**
+	 * Checks the validity of the Character instance.
+	 *
+	 * @return true if the Character instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && race != null && profession != null;
+	}
+
 	@Override
 	public String toString() {
 		return "Character{" +
@@ -47,6 +57,7 @@ public class Character {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				", race=" + race +
+				", profession=" + profession +
 				", height=" + height +
 				", weight=" + weight +
 				", stride=" + stride +
@@ -58,6 +69,22 @@ public class Character {
 				", statTemps=" + statTemps +
 				", statPotentials=" + statPotentials +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Character character = (Character) o;
+
+		return id == character.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters
@@ -84,6 +111,12 @@ public class Character {
 	}
 	public void setRace(Race race) {
 		this.race = race;
+	}
+	public Profession getProfession() {
+		return profession;
+	}
+	public void setProfession(Profession profession) {
+		this.profession = profession;
 	}
 	public short getHeight() {
 		return height;

@@ -25,6 +25,15 @@ public class Parameter {
 	private int value;
 	private boolean perTier;
 
+	/**
+	 * Checks the validity of the Parameter instance.
+	 *
+	 * @return true if the Parameter instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Parameter{" +
@@ -34,6 +43,22 @@ public class Parameter {
 				", value=" + value +
 				", perTier=" + perTier +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Parameter parameter = (Parameter) o;
+
+		return id == parameter.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

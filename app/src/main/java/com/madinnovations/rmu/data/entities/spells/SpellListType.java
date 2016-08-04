@@ -8,6 +8,15 @@ public class SpellListType {
 	private String name;
 	private String description;
 
+	/**
+	 * Checks the validity of the SpellListType instance.
+	 *
+	 * @return true if the SpellListType instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "SpellListType{" +
@@ -15,6 +24,22 @@ public class SpellListType {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SpellListType that = (SpellListType) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters

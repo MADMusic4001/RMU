@@ -33,6 +33,16 @@ public class Talent {
 	private short actionPoints;
 	private List<Parameter> parameters;
 
+	/**
+	 * Checks the validity of the Talent instance.
+	 *
+	 * @return true if the Talent instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && category != null &&
+				affectedSkill != null;
+	}
+
 	@Override
 	public String toString() {
 		return "Talent{" +
@@ -48,6 +58,22 @@ public class Talent {
 				", actionPoints=" + actionPoints +
 				", parameters=" + parameters +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Talent talent = (Talent) o;
+
+		return id == talent.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	// Getters and setters
