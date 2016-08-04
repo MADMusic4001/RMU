@@ -20,8 +20,8 @@ package com.madinnovations.rmu.data.entities.common;
  */
 public class SkillCost {
 	private int id = -1;
-	private int initialCost;
-	private int additionalCost;
+	private int initialCost = 0;
+	private int additionalCost = 0;
 
 	/**
 	 * Checks the validity of the SkillCost instance.

@@ -16,8 +16,8 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -67,8 +67,8 @@ public class SizesFragment extends Fragment {
 	private   EditText        maxWeightEdit;
 	private   EditText        minHeightEdit;
 	private   EditText        minWeightEdit;
-	private   Size            currentInstance = null;
-	private   boolean         dirty = false;
+	private   Size            currentInstance = new Size();
+	private   boolean         isNew = true;
 
 	@Nullable
 	@Override
@@ -81,39 +81,13 @@ public class SizesFragment extends Fragment {
 		initCodeEdit(layout);
 		initNameEdit(layout);
 		initExamplesEdit(layout);
-		initMaxHeightEdit(layout);
+		initMinWeightEdit(layout);
 		initMaxWeightEdit(layout);
 		initMinHeightEdit(layout);
-		initMinWeightEdit(layout);
+		initMaxHeightEdit(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
-
-		sizeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Size>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("SizesFragment", "Exception caught getting all Size instances in onCreateView", e);
-						Toast.makeText(SizesFragment.this.getActivity(), getString(R.string.toast_sizes_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<Size> sizes) {
-						listAdapter.clear();
-						listAdapter.addAll(sizes);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_sizes_loaded), sizes.size());
-						Toast.makeText(SizesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
 
 		return layout;
 	}
@@ -128,42 +102,11 @@ public class SizesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_size) {
-			Size size = new Size();
-			size.setCode(getString(R.string.default_size_code));
-			size.setName(getString(R.string.default_size_name));
-			size.setExamples(getString(R.string.default_size_examples));
-			Resources resources = getActivity().getResources();
-			size.setMaxHeight(resources.getInteger(R.integer.default_size_max_height));
-			size.setMaxWeight(resources.getInteger(R.integer.default_size_max_weight));
-			size.setMinHeight(resources.getInteger(R.integer.default_size_min_height));
-			size.setMinWeight(resources.getInteger(R.integer.default_size_min_weight));
-			sizeRxHandler.save(size)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Size>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("SizesFragment", "Exception saving new Size in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(Size savedSize) {
-							listAdapter.add(savedSize);
-							codeEdit.setText(savedSize.getCode());
-							nameEdit.setText(savedSize.getName());
-							examplesEdit.setText(savedSize.getExamples());
-							maxHeightEdit.setText(String.valueOf(savedSize.getMaxHeight()));
-							maxWeightEdit.setText(String.valueOf(savedSize.getMaxWeight()));
-							minHeightEdit.setText(String.valueOf(savedSize.getMinHeight()));
-							minWeightEdit.setText(String.valueOf(savedSize.getMinWeight()));
-							currentInstance = savedSize;
-						}
-					});
+			currentInstance = new Size();
+			isNew = true;
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -182,44 +125,141 @@ public class SizesFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_size:
+				currentInstance = new Size();
+				isNew = true;
+				copyItemToControls();
+				listView.clearChoices();
+				return true;
 			case R.id.context_delete_size:
-				size = (Size)listView.getItemAtPosition(info.position);
+				size = (Size) listView.getItemAtPosition(info.position);
 				if(size != null) {
-					sizeRxHandler.deleteById(size.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("SizeFragment", "Exception when deleting: " + size, e);
-									String toastString = getString(R.string.toast_size_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(size);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_size_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(size);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
+				break;
 		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		codeEdit.setText(currentInstance.getCode());
+		nameEdit.setText(currentInstance.getName());
+		examplesEdit.setText(currentInstance.getExamples());
+		if(currentInstance.getMinWeight() != null) {
+			minWeightEdit.setText(currentInstance.getMinWeight().toString());
+		}
+		else {
+			minWeightEdit.setText(null);
+		}
+		if(currentInstance.getMaxWeight() != null) {
+			maxWeightEdit.setText(currentInstance.getMaxWeight().toString());
+		}
+		else {
+			maxWeightEdit.setText(null);
+		}
+		if(currentInstance.getMinHeight() != null) {
+			minHeightEdit.setText(currentInstance.getMinHeight().toString());
+		}
+		else {
+			minHeightEdit.setText(null);
+		}
+		if(currentInstance.getMaxHeight() != null) {
+			maxHeightEdit.setText(currentInstance.getMaxHeight().toString());
+		}
+		else {
+			maxHeightEdit.setText(null);
+		}
+
+		if(currentInstance.getCode() != null && !currentInstance.getCode().isEmpty()) {
+			codeEdit.setError(null);
+		}
+		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
+			nameEdit.setError(null);
+		}
+		if(currentInstance.getExamples() != null && !currentInstance.getExamples().isEmpty()) {
+			examplesEdit.setError(null);
+		}
+		minWeightEdit.setError(null);
+		maxWeightEdit.setError(null);
+		minHeightEdit.setError(null);
+		maxHeightEdit.setError(null);
+	}
+
+	private void saveItem() {
+		if(currentInstance.isValid()) {
+			sizeRxHandler.save(currentInstance)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<Size>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e("SizesFragment", "Exception saving new Size: " + currentInstance, e);
+							Toast.makeText(getActivity(), getString(R.string.toast_size_save_failed), Toast.LENGTH_SHORT).show();
+						}
+						@Override
+						public void onNext(Size savedItem) {
+							if (isNew) {
+								listAdapter.add(savedItem);
+								listView.setSelection(listAdapter.getPosition(savedItem));
+								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								isNew = false;
+							}
+							if(getActivity() != null) {
+								Toast.makeText(getActivity(), getString(R.string.toast_size_saved), Toast.LENGTH_SHORT).show();
+								int position = listAdapter.getPosition(savedItem);
+								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+								if (v != null) {
+									TextView textView = (TextView) v.findViewById(R.id.code_view);
+									textView.setText(savedItem.getCode());
+									textView = (TextView) v.findViewById(R.id.name_view);
+									textView.setText(savedItem.getName());
+									textView = (TextView) v.findViewById(R.id.examples_view);
+									textView.setText(savedItem.getExamples());
+								}
+							}
+						}
+					});
+		}
+	}
+
+	private void deleteItem(@NonNull final Size item) {
+		sizeRxHandler.deleteById(item.getId())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SizesFragment", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_size_delete_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Boolean success) {
+						if(success) {
+							int position = listAdapter.getPosition(item);
+							if(position == listAdapter.getCount() -1) {
+								position--;
+							}
+							listAdapter.remove(item);
+							listAdapter.notifyDataSetChanged();
+							if(position >= 0) {
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								currentInstance = listAdapter.getItem(position);
+							}
+							else {
+								currentInstance = new Size();
+							}
+							copyItemToControls();
+							Toast.makeText(getActivity(), getString(R.string.toast_size_deleted), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 
 	private void initCodeEdit(View layout) {
@@ -232,10 +272,7 @@ public class SizesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && codeEdit != null) {
-					codeEdit.setError(getString(R.string.validation_abbreviation_required));
-				}
-				else if (currentInstance != null && !editable.toString().equals(currentInstance.getCode())) {
-					dirty = true;
+					codeEdit.setError(getString(R.string.validation_size_code_required));
 				}
 			}
 		});
@@ -245,9 +282,8 @@ public class SizesFragment extends Fragment {
 				if(!hasFocus) {
 					final String newCode = codeEdit.getText().toString();
 					if (currentInstance != null && !newCode.equals(currentInstance.getCode())) {
-						dirty = true;
 						currentInstance.setCode(newCode);
-						save();
+						saveItem();
 					}
 				}
 			}
@@ -264,10 +300,7 @@ public class SizesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_name_required));
-				}
-				else if (currentInstance != null && !editable.toString().equals(currentInstance.getName())) {
-					dirty = true;
+					nameEdit.setError(getString(R.string.validation_size_name_required));
 				}
 			}
 		});
@@ -277,9 +310,8 @@ public class SizesFragment extends Fragment {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
 					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						dirty = true;
 						currentInstance.setName(newName);
-						save();
+						saveItem();
 					}
 				}
 			}
@@ -296,10 +328,7 @@ public class SizesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && examplesEdit != null) {
-					examplesEdit.setError(getString(R.string.validation_description_required));
-				}
-				else if (currentInstance != null && !editable.toString().equals(currentInstance.getExamples())) {
-					dirty = true;
+					examplesEdit.setError(getString(R.string.validation_size_examples_required));
 				}
 			}
 		});
@@ -309,121 +338,8 @@ public class SizesFragment extends Fragment {
 				if(!hasFocus) {
 					final String newExamples = examplesEdit.getText().toString();
 					if (currentInstance != null && !newExamples.equals(currentInstance.getExamples())) {
-						dirty = true;
 						currentInstance.setExamples(newExamples);
-						save();
-					}
-				}
-			}
-		});
-	}
-
-	private void initMaxHeightEdit(View layout) {
-		maxHeightEdit = (EditText)layout.findViewById(R.id.max_height_edit);
-		maxHeightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (currentInstance != null && ((editable.length() == 0 && currentInstance.getMaxHeight() != null) ||
-					(editable.length() > 0 && !Integer.valueOf(editable.toString()).equals(currentInstance.getMaxHeight())))) {
-					dirty = true;
-				}
-			}
-		});
-		maxHeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final Integer newMaxHeight;
-					if(maxHeightEdit.getText() != null && maxHeightEdit.getText().length() > 0) {
-						newMaxHeight = Integer.valueOf(maxHeightEdit.getText().toString());
-					}
-					else {
-						newMaxHeight = null;
-					}
-					if (currentInstance != null && ((currentInstance.getMaxHeight() == null && newMaxHeight != null) ||
-						(currentInstance.getMaxHeight() != null && currentInstance.getMaxHeight().equals(newMaxHeight)))) {
-						dirty = true;
-						currentInstance.setMaxHeight(newMaxHeight);
-						Log.d("SizesFragment", "Saving size");
-						save();
-					}
-				}
-			}
-		});
-	}
-
-	private void initMaxWeightEdit(View layout) {
-		maxWeightEdit = (EditText)layout.findViewById(R.id.max_weight_edit);
-		maxWeightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (currentInstance != null && ((editable.length() == 0 && currentInstance.getMaxWeight() != null) ||
-					(editable.length() > 0 && !Integer.valueOf(editable.toString()).equals(currentInstance.getMinWeight())))) {
-					dirty = true;
-				}
-			}
-		});
-		maxWeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final Integer newMaxWeight;
-					if(maxWeightEdit.getText() != null && maxWeightEdit.getText().length() > 0) {
-						newMaxWeight = Integer.valueOf(maxWeightEdit.getText().toString());
-					}
-					else {
-						newMaxWeight = null;
-					}
-					if (currentInstance != null && ((currentInstance.getMaxWeight() == null && newMaxWeight != null) ||
-							(currentInstance.getMaxWeight() != null && currentInstance.getMaxWeight().equals(newMaxWeight)))) {
-						dirty = true;
-						currentInstance.setMaxWeight(newMaxWeight);
-						save();
-					}
-				}
-			}
-		});
-	}
-
-	private void initMinHeightEdit(View layout) {
-		minHeightEdit = (EditText)layout.findViewById(R.id.min_height_edit);
-		minHeightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (currentInstance != null && ((editable.length() == 0 && currentInstance.getMinHeight() != null) ||
-					(editable.length() > 0 && !Integer.valueOf(editable.toString()).equals(currentInstance.getMinHeight())))) {
-					dirty = true;
-				}
-			}
-		});
-		minHeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final Integer newMinHeight;
-					if(minHeightEdit.getText() != null && minHeightEdit.getText().length() > 0) {
-						newMinHeight = Integer.valueOf(minHeightEdit.getText().toString());
-					}
-					else {
-						newMinHeight = null;
-					}
-					if (currentInstance != null && ((currentInstance.getMinHeight() == null && newMinHeight != null) ||
-							(currentInstance.getMinHeight() != null && currentInstance.getMinHeight().equals(newMinHeight)))) {
-						dirty = true;
-						currentInstance.setMinHeight(newMinHeight);
-						save();
+						saveItem();
 					}
 				}
 			}
@@ -439,9 +355,11 @@ public class SizesFragment extends Fragment {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (currentInstance != null && ((editable.length() == 0 && currentInstance.getMinWeight() != null) ||
-					(editable.length() > 0 && !Integer.valueOf(editable.toString()).equals(currentInstance.getMinWeight())))) {
-					dirty = true;
+				if (editable.length() > 0 ) {
+					int value = Integer.valueOf(editable.toString());
+					if(currentInstance.getMaxWeight() != null && value > currentInstance.getMaxWeight()) {
+						minWeightEdit.setError(getString(R.string.validation_size_min_weight_gt_max_weight));
+					}
 				}
 			}
 		});
@@ -449,72 +367,139 @@ public class SizesFragment extends Fragment {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
-					final Integer newMinWeight;
-					if(minWeightEdit.getText() != null && minWeightEdit.getText().length() > 0) {
-						newMinWeight = Integer.valueOf(minWeightEdit.getText().toString());
+					if(minWeightEdit.getText().length() > 0) {
+						Integer newValue = Integer.valueOf(minWeightEdit.getText().toString());
+						if(!newValue.equals(currentInstance.getMinWeight())) {
+							currentInstance.setMinWeight(newValue);
+							saveItem();
+						}
 					}
 					else {
-						newMinWeight = null;
-					}
-					if (currentInstance != null && ((currentInstance.getMinWeight() == null && newMinWeight != null) ||
-							(currentInstance.getMinWeight() != null && currentInstance.getMinWeight().equals(newMinWeight)))) {
-						dirty = true;
-						currentInstance.setMinWeight(newMinWeight);
-						save();
+						if(currentInstance.getMinWeight() != null) {
+							currentInstance.setMinWeight(null);
+							saveItem();
+						}
 					}
 				}
 			}
 		});
 	}
 
-	private void save() {
-		if(currentInstance.isValid()) {
-			sizeRxHandler.save(currentInstance)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribe(new Subscriber<Size>() {
-						@Override
-						public void onCompleted() {
+	private void initMaxWeightEdit(View layout) {
+		maxWeightEdit = (EditText)layout.findViewById(R.id.max_weight_edit);
+		maxWeightEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if (editable.length() > 0 ) {
+					int value = Integer.valueOf(editable.toString());
+					if(currentInstance.getMinWeight() != null && value < currentInstance.getMinWeight()) {
+						maxWeightEdit.setError(getString(R.string.validation_size_max_weight_lt_min_weight));
+					}
+				}
+			}
+		});
+		maxWeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					if(maxWeightEdit.getText().length() > 0) {
+						Integer newValue = Integer.valueOf(maxWeightEdit.getText().toString());
+						if(!newValue.equals(currentInstance.getMaxWeight())) {
+							currentInstance.setMaxWeight(newValue);
+							saveItem();
 						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("SizesFragment", "Exception saving Size", e);
-							String toastString = getString(R.string.toast_size_save_failed);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					else {
+						if(currentInstance.getMaxWeight() != null) {
+							currentInstance.setMaxWeight(null);
+							saveItem();
 						}
-
-						@Override
-						public void onNext(Size savedSize) {
-							onSaved(savedSize);
-						}
-					});
-		}
+					}
+				}
+			}
+		});
 	}
 
-	private void onSaved(Size size) {
-		if(getActivity() == null) {
-			return;
-		}
-		String toastString;
-		toastString = getString(R.string.toast_size_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+	private void initMinHeightEdit(View layout) {
+		minHeightEdit = (EditText)layout.findViewById(R.id.min_height_edit);
+		minHeightEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if (editable.length() > 0 ) {
+					int value = Integer.valueOf(editable.toString());
+					if(currentInstance.getMaxHeight() != null && value > currentInstance.getMaxHeight()) {
+						minHeightEdit.setError(getString(R.string.validation_size_min_height_gt_max_height));
+					}
+				}
+			}
+		});
+		minHeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					if(minHeightEdit.getText().length() > 0) {
+						Integer newValue = Integer.valueOf(minHeightEdit.getText().toString());
+						if(!newValue.equals(currentInstance.getMinHeight())) {
+							currentInstance.setMinHeight(newValue);
+							saveItem();
+						}
+					}
+					else {
+						if(currentInstance.getMinHeight() != null) {
+							currentInstance.setMinHeight(null);
+							saveItem();
+						}
+					}
+				}
+			}
+		});
+	}
 
-		int position = listAdapter.getPosition(size);
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.code_view);
-			if (textView != null) {
-				textView.setText(size.getCode());
+	private void initMaxHeightEdit(View layout) {
+		maxHeightEdit = (EditText)layout.findViewById(R.id.max_height_edit);
+		maxHeightEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if (editable.length() > 0 ) {
+					int value = Integer.valueOf(editable.toString());
+					if(currentInstance.getMinHeight() != null && value < currentInstance.getMinHeight()) {
+						maxHeightEdit.setError(getString(R.string.validation_size_max_height_lt_min_height));
+					}
+				}
 			}
-			textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(size.getName());
+		});
+		maxHeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					if(maxHeightEdit.getText().length() > 0) {
+						Integer newValue = Integer.valueOf(maxHeightEdit.getText().toString());
+						if(!newValue.equals(currentInstance.getMaxHeight())) {
+							currentInstance.setMaxHeight(newValue);
+							saveItem();
+						}
+					}
+					else {
+						if(currentInstance.getMaxHeight() != null) {
+							currentInstance.setMaxHeight(null);
+							saveItem();
+						}
+					}
+				}
 			}
-			textView = (TextView) v.findViewById(R.id.examples_view);
-			if (textView != null) {
-				textView.setText(size.getExamples());
-			}
-		}
+		});
 	}
 
 	private void initListView(View layout) {
@@ -522,88 +507,42 @@ public class SizesFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		// Clicking a row in the listView will send the user to the edit world activity
+		sizeRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Size>>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SizesFragment", "Exception caught getting all Size instances", e);
+						Toast.makeText(SizesFragment.this.getActivity(), getString(R.string.toast_sizes_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+
+					@Override
+					public void onNext(Collection<Size> sizes) {
+						listAdapter.clear();
+						listAdapter.addAll(sizes);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_sizes_loaded), sizes.size());
+						Toast.makeText(SizesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && currentInstance != null) {
-					currentInstance.setCode(codeEdit.getText().toString());
-					currentInstance.setName(nameEdit.getText().toString());
-					currentInstance.setExamples(examplesEdit.getText().toString());
-					if(maxHeightEdit.getText().length() > 0) {
-						currentInstance.setMaxHeight(Integer.valueOf(maxHeightEdit.getText().toString()));
-					}
-					else {
-						currentInstance.setMaxHeight(null);
-					}
-					if(maxWeightEdit.getText().length() > 0) {
-						currentInstance.setMaxWeight(Integer.valueOf(maxWeightEdit.getText().toString()));
-					}
-					else {
-						currentInstance.setMaxWeight(null);
-					}
-					if(minHeightEdit.getText().length() > 0) {
-						currentInstance.setMinHeight(Integer.valueOf(minHeightEdit.getText().toString()));
-					}
-					else {
-						currentInstance.setMinHeight(null);
-					}
-					if(minWeightEdit.getText().length() > 0) {
-						currentInstance.setMinWeight(Integer.valueOf(minWeightEdit.getText().toString()));
-					}
-					else {
-						currentInstance.setMinWeight(null);
-					}
-					sizeRxHandler.save(currentInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Size>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("SizesFragment", "Exception saving new Size in initListView", e);
-									String toastString = getString(R.string.toast_size_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(Size savedSize) {
-									onSaved(savedSize);
-								}
-							});
-					dirty = false;
-				}
-
 				currentInstance = (Size) listView.getItemAtPosition(position);
-				if (currentInstance != null) {
-					codeEdit.setText(currentInstance.getCode());
-					nameEdit.setText(currentInstance.getName());
-					examplesEdit.setText(currentInstance.getExamples());
-					if(currentInstance.getMaxHeight() != null) {
-						maxHeightEdit.setText(String.valueOf(currentInstance.getMaxHeight()));
-					}
-					else {
-						maxHeightEdit.setText("");
-					}
-					if(currentInstance.getMaxWeight() != null) {
-						maxWeightEdit.setText(String.valueOf(currentInstance.getMaxWeight()));
-					}
-					else {
-						maxWeightEdit.setText("");
-					}
-					if(currentInstance.getMinHeight() != null) {
-						minHeightEdit.setText(String.valueOf(currentInstance.getMinHeight()));
-					}
-					else {
-						minHeightEdit.setText("");
-					}
-					if(currentInstance.getMinWeight() != null) {
-						minWeightEdit.setText(String.valueOf(currentInstance.getMinWeight()));
-					}
-					else {
-						minWeightEdit.setText("");
-					}
+				isNew = false;
+				if (currentInstance == null) {
+					currentInstance = new Size();
+					isNew = true;
 				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

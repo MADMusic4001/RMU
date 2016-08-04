@@ -20,10 +20,10 @@ package com.madinnovations.rmu.data.entities.common;
  */
 public class Parameter {
 	private int id = -1;
-	private String name;
-	private String description;
-	private int value;
-	private boolean perTier;
+	private String name = null;
+	private String description = null;
+	private int value = 0;
+	private boolean perTier = false;
 
 	/**
 	 * Checks the validity of the Parameter instance.

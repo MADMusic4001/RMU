@@ -362,7 +362,7 @@ public class CriticalResultsFragment extends Fragment {
 				else {
 					int newValue = Integer.valueOf(editable.toString());
 					if(newValue <= currentInstance.getMinRoll()) {
-						maxRollEdit.setError(getString(R.string.validation_max_roll_le_min_roll));
+						maxRollEdit.setError(getString(R.string.validation_max_roll_lt_min_roll));
 					}
 				}
 			}

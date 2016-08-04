@@ -34,7 +34,10 @@ public class Size {
 	 * @return true if the Size instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return code != null && !code.isEmpty() && name != null && !name.isEmpty() && examples != null && !examples.isEmpty();
+		boolean isValid = code != null && !code.isEmpty() && name != null && !name.isEmpty() && examples != null && !examples.isEmpty();
+		isValid &= minHeight == null || maxHeight == null || minHeight.intValue() <= maxHeight.intValue();
+		isValid &= minWeight == null || maxWeight == null || minWeight.intValue() <= maxWeight.intValue();
+		return isValid;
 	}
 
 	@Override

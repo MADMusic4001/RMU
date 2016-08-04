@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.activities.common;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,8 +64,8 @@ public class LocomotionTypesFragment extends Fragment {
 	private EditText nameEdit;
 	private EditText descriptionEdit;
 	private EditText defaultRateEdit;
-	private LocomotionType selectedInstance = null;
-	private boolean dirty = false;
+	private LocomotionType currentInstance = new LocomotionType();
+	private boolean isNew = true;
 
 	@Nullable
 	@Override
@@ -77,37 +78,9 @@ public class LocomotionTypesFragment extends Fragment {
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initDefaultRateEdit(layout);
-
 		initListView(layout);
 
 		setHasOptionsMenu(true);
-
-		locomotionTypeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<LocomotionType>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("LocomotionTypesFragment", "Exception caught getting all LocomotionType instances in onCreateView", e);
-						Toast.makeText(LocomotionTypesFragment.this.getActivity(),
-									   getString(R.string.toast_locomotion_types_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<LocomotionType> locomotionTypes) {
-						listAdapter.clear();
-						listAdapter.addAll(locomotionTypes);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
-						Toast.makeText(LocomotionTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
 
 		return layout;
 	}
@@ -122,36 +95,11 @@ public class LocomotionTypesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_locomotion_type) {
-			LocomotionType locomotionType = new LocomotionType();
-			locomotionType.setDefaultRate(getActivity().getResources().getInteger(R.integer.default_locomotion_type_default_rate));
-			locomotionType.setName(getString(R.string.default_locomotion_type_name));
-			locomotionType.setDescription(getString(R.string.default_locomotion_type_description));
-			locomotionTypeRxHandler.save(locomotionType)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<LocomotionType>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in onOptionsItemSelected", e);
-							Toast.makeText(LocomotionTypesFragment.this.getActivity(),
-									getString(R.string.toast_locomotion_type_save_failed), Toast.LENGTH_SHORT).show();
-						}
-
-						@SuppressLint("SetTextI18n")
-						@Override
-						public void onNext(LocomotionType locomotionType) {
-							listAdapter.add(locomotionType);
-							defaultRateEdit.setText(String.valueOf(locomotionType.getDefaultRate()));
-							nameEdit.setText(locomotionType.getName());
-							descriptionEdit.setText(locomotionType.getDescription());
-							selectedInstance = locomotionType;
-						}
-					});
+			currentInstance = new LocomotionType();
+			isNew = true;
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -170,92 +118,109 @@ public class LocomotionTypesFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_locomotion_type:
+				currentInstance = new LocomotionType();
+				isNew = true;
+				copyItemToControls();
+				listView.clearChoices();
+				return true;
 			case R.id.context_delete_locomotion_type:
-				locomotionType = (LocomotionType)listView.getItemAtPosition(info.position);
+				locomotionType = (LocomotionType) listView.getItemAtPosition(info.position);
 				if(locomotionType != null) {
-					locomotionTypeRxHandler.deleteById(locomotionType.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("LocomotionTypesFragment", "Exception when deleting: " + locomotionType, e);
-									String toastString = getString(R.string.toast_locomotion_type_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(locomotionType);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_locomotion_type_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(locomotionType);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
+				break;
+		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		descriptionEdit.setText(currentInstance.getDescription());
+		nameEdit.setText(currentInstance.getName());
+		defaultRateEdit.setText(String.valueOf(currentInstance.getDefaultRate()));
+
+		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
+			descriptionEdit.setError(null);
+		}
+		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
+			nameEdit.setError(null);
+		}
+		defaultRateEdit.setError(null);
+	}
+
+	private void saveItem() {
+		if(currentInstance.isValid()) {
+			locomotionTypeRxHandler.save(currentInstance)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<LocomotionType>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("LocomotionTypesFragment", "Exception saving new LocomotionType: " + currentInstance, e);
+						Toast.makeText(getActivity(), getString(R.string.toast_locomotion_type_save_failed), Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(LocomotionType savedItem) {
+						if (isNew) {
+							listAdapter.add(savedItem);
+							listView.setSelection(listAdapter.getPosition(savedItem));
+							listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+							isNew = false;
+						}
+						if(getActivity() != null) {
+							Toast.makeText(getActivity(), getString(R.string.toast_locomotion_type_saved), Toast.LENGTH_SHORT).show();
+							int position = listAdapter.getPosition(savedItem);
+							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+							if (v != null) {
+								TextView textView = (TextView) v.findViewById(R.id.name_view);
+								textView.setText(savedItem.getName());
+								textView = (TextView) v.findViewById(R.id.description_view);
+								textView.setText(savedItem.getDescription());
+							}
+						}
+					}
+				});
 		}
 	}
 
-	private void initDefaultRateEdit(View layout) {
-		defaultRateEdit = (EditText)layout.findViewById(R.id.default_rate_edit);
-		defaultRateEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && defaultRateEdit != null) {
-					defaultRateEdit.setError(getString(R.string.validation_default_rate_required));
-				}
-				else if (selectedInstance != null && Short.parseShort(editable.toString()) != selectedInstance.getDefaultRate()) {
-					dirty = true;
-				}
-			}
-		});
-		defaultRateEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final short newDefaultRate = Short.parseShort(defaultRateEdit.getText().toString());
-					if (selectedInstance != null && newDefaultRate != selectedInstance.getDefaultRate()) {
-						dirty = true;
-						selectedInstance.setDefaultRate(newDefaultRate);
-						locomotionTypeRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<LocomotionType>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in initDefaultRateEdit", e);
-									String toastString = getString(R.string.toast_locomotion_type_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(LocomotionType locomotionType) {
-									onSaved(locomotionType);
-								}
-							});
+	private void deleteItem(@NonNull final LocomotionType item) {
+		locomotionTypeRxHandler.deleteById(item.getId())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("LocomotionTypesFragment", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_locomotion_type_delete_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
-				}
-			}
-		});
+					@Override
+					public void onNext(Boolean success) {
+						if(success) {
+							int position = listAdapter.getPosition(item);
+							if(position == listAdapter.getCount() -1) {
+								position--;
+							}
+							listAdapter.remove(item);
+							listAdapter.notifyDataSetChanged();
+							if(position >= 0) {
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								currentInstance = listAdapter.getItem(position);
+							}
+							else {
+								currentInstance = new LocomotionType();
+							}
+							copyItemToControls();
+							Toast.makeText(getActivity(), getString(R.string.toast_locomotion_type_deleted), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 
 	private void initNameEdit(View layout) {
@@ -270,9 +235,6 @@ public class LocomotionTypesFragment extends Fragment {
 				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
-					dirty = true;
-				}
 			}
 		});
 		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -280,26 +242,9 @@ public class LocomotionTypesFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
-					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
-						dirty = true;
-						selectedInstance.setName(newName);
-						locomotionTypeRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<LocomotionType>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in initNameEdit", e);
-									String toastString = getString(R.string.toast_locomotion_type_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(LocomotionType locomotionType) {
-									onSaved(locomotionType);
-								}
-							});
+					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
+						currentInstance.setName(newName);
+						saveItem();
 					}
 				}
 			}
@@ -318,9 +263,6 @@ public class LocomotionTypesFragment extends Fragment {
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
-					dirty = true;
-				}
 			}
 		});
 		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -328,53 +270,43 @@ public class LocomotionTypesFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
-						dirty = true;
-						selectedInstance.setDescription(newDescription);
-						locomotionTypeRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<LocomotionType>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("LocomotionTypesFragment",
-										  "Exception saving LocomotionType in initDescriptionEdit", e);
-									String toastString = getString(R.string.toast_locomotion_type_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(LocomotionType locomotionType) {
-									onSaved(locomotionType);
-								}
-							});
+					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
+						currentInstance.setDescription(newDescription);
+						saveItem();
 					}
 				}
 			}
 		});
 	}
 
-	private void onSaved(LocomotionType locomotionType) {
-		if(getActivity() == null) {
-			return;
-		}
-		String toastString;
-		toastString = getString(R.string.toast_locomotion_type_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
-		int position = listAdapter.getPosition(locomotionType);
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(locomotionType.getName());
+	private void initDefaultRateEdit(View layout) {
+		defaultRateEdit = (EditText)layout.findViewById(R.id.default_rate_edit);
+		defaultRateEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if (editable.length() == 0 && defaultRateEdit != null) {
+					defaultRateEdit.setError(getString(R.string.validation_default_rate_required));
+				}
 			}
-			textView = (TextView) v.findViewById(R.id.description_view);
-			if (textView != null) {
-				textView.setText(locomotionType.getDescription());
+		});
+		defaultRateEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					if(defaultRateEdit.length() > 0) {
+						final int newValue = Integer.valueOf(defaultRateEdit.getText().toString());
+						if (currentInstance != null && newValue != currentInstance.getDefaultRate()) {
+							currentInstance.setDefaultRate(newValue);
+							saveItem();
+						}
+					}
+				}
 			}
-		}
+		});
 	}
 
 	private void initListView(View layout) {
@@ -382,41 +314,48 @@ public class LocomotionTypesFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		// Clicking a row in the listView will send the user to the edit world activity
+		locomotionTypeRxHandler.getAll()
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Subscriber<Collection<LocomotionType>>() {
+				@Override
+				public void onCompleted() {}
+				@Override
+				public void onError(Throwable e) {
+					Log.e("LocomotionTypesFragment", "Exception caught getting all LocomotionType instances", e);
+					Toast.makeText(LocomotionTypesFragment.this.getActivity(),
+							getString(R.string.toast_locomotion_types_load_failed),
+							Toast.LENGTH_SHORT).show();
+				}
+				@Override
+				public void onNext(Collection<LocomotionType> locomotionTypes) {
+					listAdapter.clear();
+					listAdapter.addAll(locomotionTypes);
+					listAdapter.notifyDataSetChanged();
+					if(locomotionTypes.size() > 0) {
+						listView.setSelection(0);
+						listView.setItemChecked(0, true);
+						currentInstance = listAdapter.getItem(0);
+						isNew = false;
+						copyItemToControls();
+					}
+					String toastString;
+					toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
+					Toast.makeText(LocomotionTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+				}
+			});
+
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@SuppressLint("SetTextI18n")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && selectedInstance != null) {
-					selectedInstance.setDefaultRate(Short.parseShort(defaultRateEdit.getText().toString()));
-					selectedInstance.setName(nameEdit.getText().toString());
-					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					locomotionTypeRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<LocomotionType>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("LocomotionTypesFragment", "Exception saving LocomotionType in initListView", e);
-									String toastString = getString(R.string.toast_locomotion_type_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(LocomotionType locomotionType) {
-									onSaved(locomotionType);
-								}
-							});
-					dirty = false;
+				currentInstance = (LocomotionType) listView.getItemAtPosition(position);
+				isNew = false;
+				if (currentInstance == null) {
+					currentInstance = new LocomotionType();
+					isNew = true;
 				}
-
-				selectedInstance = (LocomotionType) listView.getItemAtPosition(position);
-				if (selectedInstance != null) {
-					defaultRateEdit.setText(String.valueOf(selectedInstance.getDefaultRate()));
-					nameEdit.setText(selectedInstance.getName());
-					descriptionEdit.setText(selectedInstance.getDescription());
-				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

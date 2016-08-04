@@ -16,8 +16,8 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -62,8 +62,8 @@ public class SkillCostsFragment extends Fragment {
 	private   ListView             listView;
 	private   EditText             initialCostEdit;
 	private   EditText             additionalCostEdit;
-	private SkillCost    currentInstance = null;
-	private boolean dirty           = false;
+	private SkillCost    currentInstance = new SkillCost();
+	private boolean isNew           = true;
 
 	@Nullable
 	@Override
@@ -79,32 +79,6 @@ public class SkillCostsFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		skillCostRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<SkillCost>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("SkillCostsFragment", "Exception caught getting all SkillCost instances in onCreateView", e);
-						Toast.makeText(SkillCostsFragment.this.getActivity(), getString(R.string.toast_skill_costs_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<SkillCost> skillCosts) {
-						listAdapter.clear();
-						listAdapter.addAll(skillCosts);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_skill_costs_loaded), skillCosts.size());
-						Toast.makeText(SkillCostsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		return layout;
 	}
 
@@ -118,32 +92,11 @@ public class SkillCostsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_skill_cost) {
-			SkillCost skillCost = new SkillCost();
-			Resources resources = getActivity().getResources();
-			skillCost.setInitialCost(resources.getInteger(R.integer.default_skill_cost_initial_cost));
-			skillCost.setAdditionalCost(resources.getInteger(R.integer.default_skill_cost_additional_cost));
-			skillCostRxHandler.save(skillCost)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<SkillCost>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("SkillCostsFragment", "Exception saving new SkillCost in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(SkillCost savedSkillCost) {
-							listAdapter.add(savedSkillCost);
-							initialCostEdit.setText(String.valueOf(savedSkillCost.getInitialCost()));
-							additionalCostEdit.setText(String.valueOf(savedSkillCost.getAdditionalCost()));
-							currentInstance = savedSkillCost;
-						}
-					});
+			currentInstance = new SkillCost();
+			isNew = true;
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -162,44 +115,103 @@ public class SkillCostsFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_skill_cost:
+				currentInstance = new SkillCost();
+				isNew = true;
+				copyItemToControls();
+				listView.clearChoices();
+				return true;
 			case R.id.context_delete_skill_cost:
-				skillCost = (SkillCost)listView.getItemAtPosition(info.position);
+				skillCost = (SkillCost) listView.getItemAtPosition(info.position);
 				if(skillCost != null) {
-					skillCostRxHandler.deleteById(skillCost.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("SkillCostFragment", "Exception when deleting: " + skillCost, e);
-									String toastString = getString(R.string.toast_skill_cost_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(skillCost);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_skill_cost_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(skillCost);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
+				break;
 		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		initialCostEdit.setText(String.valueOf(currentInstance.getInitialCost()));
+		additionalCostEdit.setText(String.valueOf(currentInstance.getAdditionalCost()));
+
+		initialCostEdit.setError(null);
+		additionalCostEdit.setError(null);
+	}
+
+	private void saveItem() {
+		if(currentInstance.isValid()) {
+			skillCostRxHandler.save(currentInstance)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<SkillCost>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e("SkillCostsFragment", "Exception saving new SkillCost: " + currentInstance, e);
+							Toast.makeText(getActivity(), getString(R.string.toast_skill_cost_save_failed), Toast.LENGTH_SHORT).show();
+						}
+						@Override
+						public void onNext(SkillCost savedItem) {
+							if (isNew) {
+								listAdapter.add(savedItem);
+								listView.setSelection(listAdapter.getPosition(savedItem));
+								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								isNew = false;
+							}
+							if(getActivity() != null) {
+								Toast.makeText(getActivity(), getString(R.string.toast_skill_cost_saved), Toast.LENGTH_SHORT).show();
+								int position = listAdapter.getPosition(savedItem);
+								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+								if (v != null) {
+									TextView textView = (TextView) v.findViewById(R.id.initial_cost_view);
+									textView.setText(String.valueOf(savedItem.getInitialCost()));
+									textView = (TextView) v.findViewById(R.id.additional_cost_view);
+									textView.setText(String.valueOf(savedItem.getAdditionalCost()));
+								}
+							}
+						}
+					});
+		}
+	}
+
+	private void deleteItem(@NonNull final SkillCost item) {
+		skillCostRxHandler.deleteById(item.getId())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCostsFragment", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_skill_cost_delete_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Boolean success) {
+						if(success) {
+							int position = listAdapter.getPosition(item);
+							if(position == listAdapter.getCount() -1) {
+								position--;
+							}
+							listAdapter.remove(item);
+							listAdapter.notifyDataSetChanged();
+							if(position >= 0) {
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								currentInstance = listAdapter.getItem(position);
+							}
+							else {
+								currentInstance = new SkillCost();
+							}
+							copyItemToControls();
+							Toast.makeText(getActivity(), getString(R.string.toast_skill_cost_deleted), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 
 	private void initInitialCostEdit(View layout) {
@@ -213,11 +225,6 @@ public class SkillCostsFragment extends Fragment {
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && initialCostEdit != null) {
 					initialCostEdit.setError(getString(R.string.validation_initial_cost_required));
-				}
-				else if (currentInstance != null && ((editable.length() == 0) ||
-						(editable.length() > 0 &&
-								!Integer.valueOf(editable.toString()).equals(currentInstance.getInitialCost())))) {
-					dirty = true;
 				}
 			}
 		});
@@ -233,10 +240,8 @@ public class SkillCostsFragment extends Fragment {
 						newInitialCost = null;
 					}
 					if (currentInstance != null && ( newInitialCost != null && currentInstance.getInitialCost() != newInitialCost)) {
-						dirty = true;
 						currentInstance.setInitialCost(newInitialCost);
-						Log.d("SkillCostsFragment", "Saving skillCost");
-						save();
+						saveItem();
 					}
 				}
 			}
@@ -255,11 +260,6 @@ public class SkillCostsFragment extends Fragment {
 				if (editable.length() == 0 && additionalCostEdit != null) {
 					additionalCostEdit.setError(getString(R.string.validation_additional_cost_required));
 				}
-				else if (currentInstance != null && ((editable.length() == 0) ||
-						(editable.length() > 0 &&
-								!Integer.valueOf(editable.toString()).equals(currentInstance.getInitialCost())))) {
-					dirty = true;
-				}
 			}
 		});
 		additionalCostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -275,58 +275,12 @@ public class SkillCostsFragment extends Fragment {
 					}
 					if (currentInstance != null && (
 							newAdditionalCost != null && currentInstance.getAdditionalCost() != newAdditionalCost)) {
-						dirty = true;
 						currentInstance.setAdditionalCost(newAdditionalCost);
-						Log.d("SkillCostsFragment", "Saving skillCost");
-						save();
+						saveItem();
 					}
 				}
 			}
 		});
-	}
-
-	private void save() {
-		skillCostRxHandler.save(currentInstance)
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Subscriber<SkillCost>() {
-				@Override
-				public void onCompleted() {
-				}
-
-				@Override
-				public void onError(Throwable e) {
-					Log.e("SkillCostsFragment", "Exception saving SkillCost", e);
-					String toastString = getString(R.string.toast_skill_cost_save_failed);
-					Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-				}
-
-				@Override
-				public void onNext(SkillCost savedSkillCost) {
-					onSaved(savedSkillCost);
-				}
-			});
-	}
-
-	private void onSaved(SkillCost skillCost) {
-		if(getActivity() == null) {
-			return;
-		}
-		String toastString;
-		toastString = getString(R.string.toast_skill_cost_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
-		int position = listAdapter.getPosition(skillCost);
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.initial_cost_view);
-			if (textView != null) {
-				textView.setText(String.valueOf(skillCost.getInitialCost()));
-			}
-			textView = (TextView) v.findViewById(R.id.additional_cost_view);
-			if (textView != null) {
-				textView.setText(String.valueOf(skillCost.getAdditionalCost()));
-			}
-		}
 	}
 
 	private void initListView(View layout) {
@@ -334,42 +288,42 @@ public class SkillCostsFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		// Clicking a row in the listView will send the user to the edit world activity
+		skillCostRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<SkillCost>>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCostsFragment", "Exception caught getting all SkillCost instances", e);
+						Toast.makeText(SkillCostsFragment.this.getActivity(), getString(R.string.toast_skill_costs_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+
+					@Override
+					public void onNext(Collection<SkillCost> skillCosts) {
+						listAdapter.clear();
+						listAdapter.addAll(skillCosts);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_skill_costs_loaded), skillCosts.size());
+						Toast.makeText(SkillCostsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && currentInstance != null) {
-					if(initialCostEdit.getText().length() > 0) {
-						currentInstance.setInitialCost(Integer.valueOf(initialCostEdit.getText().toString()));
-					}
-					if(additionalCostEdit.getText().length() > 0) {
-						currentInstance.setAdditionalCost(Integer.valueOf(additionalCostEdit.getText().toString()));
-					}
-					skillCostRxHandler.save(currentInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<SkillCost>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("SkillCostsFragment", "Exception saving new SkillCost in initListView", e);
-									String toastString = getString(R.string.toast_skill_cost_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(SkillCost savedSkillCost) {
-									onSaved(savedSkillCost);
-								}
-							});
-					dirty = false;
-				}
-
 				currentInstance = (SkillCost) listView.getItemAtPosition(position);
-				if (currentInstance != null) {
-					initialCostEdit.setText(String.valueOf(currentInstance.getInitialCost()));
-					additionalCostEdit.setText(String.valueOf(currentInstance.getAdditionalCost()));
+				isNew = false;
+				if (currentInstance == null) {
+					currentInstance = new SkillCost();
+					isNew = true;
 				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

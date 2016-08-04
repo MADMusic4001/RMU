@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -62,8 +63,8 @@ public class StatsFragment extends Fragment {
 	private EditText abbreviationEdit;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
-	private Stat selectedInstance = null;
-	private boolean dirty = false;
+	private Stat currentInstance = new Stat();
+	private boolean isNew = true;
 
 	@Nullable
 	@Override
@@ -81,32 +82,6 @@ public class StatsFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("StatsFragment", "Exception caught getting all Stat instances in onCreateView", e);
-						Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<Stat> stats) {
-						listAdapter.clear();
-						listAdapter.addAll(stats);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
-						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		return layout;
 	}
 
@@ -120,33 +95,11 @@ public class StatsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_stat) {
-			Stat stat = new Stat();
-			stat.setAbbreviation("NA");
-			stat.setName(getString(R.string.default_stat_name));
-			stat.setDescription(getString(R.string.default_stat_description));
-			statRxHandler.save(stat)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Stat>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("StatsFragment", "Exception saving new Stat in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(Stat savedStat) {
-							listAdapter.add(savedStat);
-							abbreviationEdit.setText(savedStat.getAbbreviation());
-							nameEdit.setText(savedStat.getName());
-							descriptionEdit.setText(savedStat.getDescription());
-							selectedInstance = savedStat;
-						}
-					});
+			currentInstance = new Stat();
+			isNew = true;
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -165,44 +118,113 @@ public class StatsFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_stat:
+				currentInstance = new Stat();
+				isNew = true;
+				copyItemToControls();
+				listView.clearChoices();
+				return true;
 			case R.id.context_delete_stat:
-				stat = (Stat)listView.getItemAtPosition(info.position);
+				stat = (Stat) listView.getItemAtPosition(info.position);
 				if(stat != null) {
-					statRxHandler.deleteById(stat.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("StatFragment", "Exception when deleting: " + stat, e);
-									String toastString = getString(R.string.toast_stat_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(stat);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_stat_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(stat);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
+				break;
 		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		abbreviationEdit.setText(currentInstance.getAbbreviation());
+		nameEdit.setText(currentInstance.getName());
+		descriptionEdit.setText(currentInstance.getDescription());
+
+		if(currentInstance.getAbbreviation() != null && !currentInstance.getAbbreviation().isEmpty()) {
+			abbreviationEdit.setError(null);
+		}
+		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
+			nameEdit.setError(null);
+		}
+		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
+			descriptionEdit.setError(null);
+		}
+	}
+
+	private void saveItem() {
+		if(currentInstance.isValid()) {
+			statRxHandler.save(currentInstance)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<Stat>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e("StatsFragment", "Exception saving new Stat: " + currentInstance, e);
+							Toast.makeText(getActivity(), getString(R.string.toast_stat_save_failed), Toast.LENGTH_SHORT).show();
+						}
+						@Override
+						public void onNext(Stat savedItem) {
+							if (isNew) {
+								listAdapter.add(savedItem);
+								listView.setSelection(listAdapter.getPosition(savedItem));
+								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								isNew = false;
+							}
+							if(getActivity() != null) {
+								Toast.makeText(getActivity(), getString(R.string.toast_stat_saved), Toast.LENGTH_SHORT).show();
+								int position = listAdapter.getPosition(savedItem);
+								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+								if (v != null) {
+									TextView textView = (TextView) v.findViewById(R.id.abbreviation_view);
+									textView.setText(savedItem.getAbbreviation());
+									textView = (TextView) v.findViewById(R.id.name_view);
+									textView.setText(savedItem.getName());
+									textView = (TextView) v.findViewById(R.id.description_view);
+									textView.setText(savedItem.getDescription());
+								}
+							}
+						}
+					});
+		}
+	}
+
+	private void deleteItem(@NonNull final Stat item) {
+		statRxHandler.deleteById(item.getId())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("StatsFragment", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_stat_delete_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Boolean success) {
+						if(success) {
+							int position = listAdapter.getPosition(item);
+							if(position == listAdapter.getCount() -1) {
+								position--;
+							}
+							listAdapter.remove(item);
+							listAdapter.notifyDataSetChanged();
+							if(position >= 0) {
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								currentInstance = listAdapter.getItem(position);
+							}
+							else {
+								currentInstance = new Stat();
+							}
+							copyItemToControls();
+							Toast.makeText(getActivity(), getString(R.string.toast_stat_deleted), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 
 	private void initAbbreviationEdit(View layout) {
@@ -217,9 +239,6 @@ public class StatsFragment extends Fragment {
 				if (editable.length() == 0 && abbreviationEdit != null) {
 					abbreviationEdit.setError(getString(R.string.validation_abbreviation_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getAbbreviation())) {
-					dirty = true;
-				}
 			}
 		});
 		abbreviationEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -227,26 +246,9 @@ public class StatsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newAbbreviation = abbreviationEdit.getText().toString();
-					if (selectedInstance != null && !newAbbreviation.equals(selectedInstance.getAbbreviation())) {
-						dirty = true;
-						selectedInstance.setAbbreviation(newAbbreviation);
-						statRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Stat>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("StatsFragment", "Exception saving new Stat in initAbbreviationEdit", e);
-										String toastString = getString(R.string.toast_stat_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(Stat savedStat) {
-										onSaved(savedStat);
-									}
-								});
+					if (currentInstance != null && !newAbbreviation.equals(currentInstance.getAbbreviation())) {
+						currentInstance.setAbbreviation(newAbbreviation);
+						saveItem();
 					}
 				}
 			}
@@ -265,9 +267,6 @@ public class StatsFragment extends Fragment {
 				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
-					dirty = true;
-				}
 			}
 		});
 		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -275,26 +274,9 @@ public class StatsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
-					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
-						dirty = true;
-						selectedInstance.setName(newName);
-						statRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Stat>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("StatsFragment", "Exception saving new Stat in initNameEdit", e);
-										String toastString = getString(R.string.toast_stat_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(Stat savedStat) {
-										onSaved(savedStat);
-									}
-								});
+					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
+						currentInstance.setName(newName);
+						saveItem();
 					}
 				}
 			}
@@ -313,66 +295,20 @@ public class StatsFragment extends Fragment {
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
-					dirty = true;
-				}
 			}
 		});
 		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
+				if (!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
-						dirty = true;
-						selectedInstance.setDescription(newDescription);
-						statRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Stat>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("StatsFragment", "Exception saving new Stat in initDescriptionEdit", e);
-										String toastString = getString(R.string.toast_stat_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(Stat savedStat) {
-										onSaved(savedStat);
-									}
-								});
+					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
+						currentInstance.setDescription(newDescription);
+						saveItem();
 					}
 				}
 			}
 		});
-	}
-
-	private void onSaved(Stat stat) {
-		if(getActivity() == null) {
-			return;
-		}
-		String toastString;
-		toastString = getString(R.string.toast_stat_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
-		int position = listAdapter.getPosition(stat);
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.abbreviation_view);
-			if (textView != null) {
-				textView.setText(stat.getAbbreviation());
-			}
-			textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(stat.getName());
-			}
-			textView = (TextView) v.findViewById(R.id.description_view);
-			if (textView != null) {
-				textView.setText(stat.getDescription());
-			}
-		}
 	}
 
 	private void initListView(View layout) {
@@ -380,40 +316,42 @@ public class StatsFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		// Clicking a row in the listView will send the user to the edit world activity
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						Log.e("StatsFragment", "Exception caught getting all Stat instances", e);
+						Toast.makeText(StatsFragment.this.getActivity(), getString(R.string.toast_stats_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+
+					@Override
+					public void onNext(Collection<Stat> stats) {
+						listAdapter.clear();
+						listAdapter.addAll(stats);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_stats_loaded), stats.size());
+						Toast.makeText(StatsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && selectedInstance != null) {
-					selectedInstance.setAbbreviation(abbreviationEdit.getText().toString());
-					selectedInstance.setName(nameEdit.getText().toString());
-					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					statRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Stat>() {
-								@Override
-								public void onCompleted() {
-								}
-								@Override
-								public void onError(Throwable e) {
-									Log.e("StatsFragment", "Exception saving new Stat in initListView", e);
-									String toastString = getString(R.string.toast_stat_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-								@Override
-								public void onNext(Stat savedStat) {
-									onSaved(savedStat);
-								}
-							});
-					dirty = false;
+				currentInstance = (Stat) listView.getItemAtPosition(position);
+				isNew = false;
+				if (currentInstance == null) {
+					currentInstance = new Stat();
+					isNew = true;
 				}
-
-				selectedInstance = (Stat) listView.getItemAtPosition(position);
-				if (selectedInstance != null) {
-					abbreviationEdit.setText(selectedInstance.getAbbreviation());
-					nameEdit.setText(selectedInstance.getName());
-					descriptionEdit.setText(selectedInstance.getDescription());
-				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

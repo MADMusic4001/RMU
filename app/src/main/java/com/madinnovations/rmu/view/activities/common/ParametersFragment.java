@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -64,8 +65,8 @@ public class ParametersFragment extends Fragment {
 	private   EditText             descriptionEdit;
 	private   EditText             valueEdit;
 	private   CheckBox      perTierCheckBox;
-	private Parameter    selectedInstance = null;
-	private boolean dirty            = false;
+	private Parameter currentInstance = new Parameter();
+	private boolean isNew            = true;
 
 	@Nullable
 	@Override
@@ -83,32 +84,6 @@ public class ParametersFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		parameterRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Parameter>>() {
-					@Override
-					public void onCompleted() {
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						Log.e("ParametersFragment", "Exception caught getting all Parameter instances in onCreateView", e);
-						Toast.makeText(ParametersFragment.this.getActivity(), getString(R.string.toast_parameters_load_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					public void onNext(Collection<Parameter> parameters) {
-						listAdapter.clear();
-						listAdapter.addAll(parameters);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_parameters_loaded), parameters.size());
-						Toast.makeText(ParametersFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
 		return layout;
 	}
 
@@ -122,35 +97,11 @@ public class ParametersFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_parameter) {
-			Parameter parameter = new Parameter();
-			parameter.setName(getString(R.string.default_parameter_name));
-			parameter.setDescription(getString(R.string.default_parameter_description));
-			parameter.setValue(getActivity().getResources().getInteger(R.integer.default_parameter_value));
-			parameter.setPerTier(Boolean.valueOf(getString(R.string.default_parameter_per_tier)));
-			parameterRxHandler.save(parameter)
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Parameter>() {
-						@Override
-						public void onCompleted() {
-
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.e("ParametersFragment", "Exception saving new Parameter in onOptionsItemSelected", e);
-						}
-
-						@Override
-						public void onNext(Parameter savedParameter) {
-							listAdapter.add(savedParameter);
-							nameEdit.setText(savedParameter.getName());
-							descriptionEdit.setText(savedParameter.getDescription());
-							valueEdit.setText(String.valueOf(savedParameter.getValue()));
-							perTierCheckBox.setChecked(savedParameter.isPerTier());
-							selectedInstance = savedParameter;
-						}
-					});
+			currentInstance = new Parameter();
+			isNew = true;
+			copyItemToControls();
+			listView.clearChoices();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -169,44 +120,110 @@ public class ParametersFragment extends Fragment {
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
+			case R.id.context_new_parameter:
+				currentInstance = new Parameter();
+				isNew = true;
+				copyItemToControls();
+				listView.clearChoices();
+				return true;
 			case R.id.context_delete_parameter:
-				parameter = (Parameter)listView.getItemAtPosition(info.position);
+				parameter = (Parameter) listView.getItemAtPosition(info.position);
 				if(parameter != null) {
-					parameterRxHandler.deleteById(parameter.getId())
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Boolean>() {
-								@Override
-								public void onCompleted() {
-
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("ParameterFragment", "Exception when deleting: " + parameter, e);
-									String toastString = getString(R.string.toast_parameter_delete_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Boolean success) {
-									String toastString;
-
-									if(success) {
-										listAdapter.remove(parameter);
-										listAdapter.notifyDataSetChanged();
-										toastString = getString(R.string.toast_parameter_deleted);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+					deleteItem(parameter);
 					return true;
 				}
-				else {
-					return false;
-				}
-			default:
-				return super.onContextItemSelected(item);
+				break;
 		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void copyItemToControls() {
+		nameEdit.setText(currentInstance.getName());
+		descriptionEdit.setText(currentInstance.getDescription());
+		valueEdit.setText(String.valueOf(currentInstance.getValue()));
+		perTierCheckBox.setChecked(currentInstance.isPerTier());
+
+		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
+			nameEdit.setError(null);
+		}
+		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
+			descriptionEdit.setError(null);
+		}
+		valueEdit.setError(null);
+	}
+
+	private void saveItem() {
+		if(currentInstance.isValid()) {
+			parameterRxHandler.save(currentInstance)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<Parameter>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e("ParametersFragment", "Exception saving new Parameter: " + currentInstance, e);
+							Toast.makeText(getActivity(), getString(R.string.toast_parameter_save_failed), Toast.LENGTH_SHORT).show();
+						}
+						@Override
+						public void onNext(Parameter savedItem) {
+							if (isNew) {
+								listAdapter.add(savedItem);
+								listView.setSelection(listAdapter.getPosition(savedItem));
+								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								isNew = false;
+							}
+							if(getActivity() != null) {
+								Toast.makeText(getActivity(), getString(R.string.toast_parameter_saved), Toast.LENGTH_SHORT).show();
+								int position = listAdapter.getPosition(savedItem);
+								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+								if (v != null) {
+									TextView textView = (TextView) v.findViewById(R.id.name_view);
+									textView.setText(savedItem.getName());
+									textView = (TextView) v.findViewById(R.id.description_view);
+									textView.setText(savedItem.getDescription());
+								}
+							}
+						}
+					});
+		}
+	}
+
+	private void deleteItem(@NonNull final Parameter item) {
+		parameterRxHandler.deleteById(item.getId())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("ParametersFragment", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_parameter_delete_failed);
+						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Boolean success) {
+						if(success) {
+							int position = listAdapter.getPosition(item);
+							if(position == listAdapter.getCount() -1) {
+								position--;
+							}
+							listAdapter.remove(item);
+							listAdapter.notifyDataSetChanged();
+							if(position >= 0) {
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								currentInstance = listAdapter.getItem(position);
+							}
+							else {
+								currentInstance = new Parameter();
+							}
+							copyItemToControls();
+							Toast.makeText(getActivity(), getString(R.string.toast_parameter_deleted), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 
 	private void initNameEdit(View layout) {
@@ -221,9 +238,6 @@ public class ParametersFragment extends Fragment {
 				if (editable.length() == 0 && nameEdit != null) {
 					nameEdit.setError(getString(R.string.validation_name_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getName())) {
-					dirty = true;
-				}
 			}
 		});
 		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -231,26 +245,9 @@ public class ParametersFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newName = nameEdit.getText().toString();
-					if (selectedInstance != null && !newName.equals(selectedInstance.getName())) {
-						dirty = true;
-						selectedInstance.setName(newName);
-						parameterRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Parameter>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("ParametersFragment", "Exception saving new Parameter in initNameEdit", e);
-										String toastString = getString(R.string.toast_parameter_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(Parameter savedParameter) {
-										onSaved(savedParameter);
-									}
-								});
+					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
+						currentInstance.setName(newName);
+						saveItem();
 					}
 				}
 			}
@@ -269,9 +266,6 @@ public class ParametersFragment extends Fragment {
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
-				else if (selectedInstance != null && !editable.toString().equals(selectedInstance.getDescription())) {
-					dirty = true;
-				}
 			}
 		});
 		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -279,26 +273,9 @@ public class ParametersFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					if (selectedInstance != null && !newDescription.equals(selectedInstance.getDescription())) {
-						dirty = true;
-						selectedInstance.setDescription(newDescription);
-						parameterRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Parameter>() {
-									@Override
-									public void onCompleted() {
-									}
-									@Override
-									public void onError(Throwable e) {
-										Log.e("ParametersFragment", "Exception saving new Parameter in initDescriptionEdit", e);
-										String toastString = getString(R.string.toast_parameter_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-									@Override
-									public void onNext(Parameter savedParameter) {
-										onSaved(savedParameter);
-									}
-								});
+					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
+						currentInstance.setDescription(newDescription);
+						saveItem();
 					}
 				}
 			}
@@ -317,9 +294,6 @@ public class ParametersFragment extends Fragment {
 				if (editable.length() == 0 && valueEdit != null) {
 					valueEdit.setError(getString(R.string.validation_value_required));
 				}
-				else if (selectedInstance != null && Short.valueOf(editable.toString()) != selectedInstance.getValue()) {
-					dirty = true;
-				}
 			}
 		});
 		valueEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -328,28 +302,9 @@ public class ParametersFragment extends Fragment {
 				if(!hasFocus) {
 					if (valueEdit.getText() != null && valueEdit.getText().length() > 0) {
 						final short newValue = Short.valueOf(valueEdit.getText().toString());
-						if (selectedInstance != null && newValue != selectedInstance.getValue()) {
-							dirty = true;
-							selectedInstance.setValue(newValue);
-							parameterRxHandler.save(selectedInstance)
-								.observeOn(AndroidSchedulers.mainThread())
-								.subscribe(new Subscriber<Parameter>() {
-									@Override
-									public void onCompleted() {
-									}
-
-									@Override
-									public void onError(Throwable e) {
-										Log.e("ParametersFragment", "Exception saving new Parameter in initValueEdit", e);
-										String toastString = getString(R.string.toast_parameter_save_failed);
-										Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-									}
-
-									@Override
-									public void onNext(Parameter savedParameter) {
-										onSaved(savedParameter);
-									}
-								});
+						if (currentInstance != null && newValue != currentInstance.getValue()) {
+							currentInstance.setValue(newValue);
+							saveItem();
 						}
 					}
 				}
@@ -359,67 +314,13 @@ public class ParametersFragment extends Fragment {
 
 	private void initPerTierCheckBox(View layout) {
 		perTierCheckBox = (CheckBox) layout.findViewById(R.id.per_tier_checkbox);
-
 		perTierCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				dirty = true;
+				currentInstance.setPerTier(perTierCheckBox.isChecked());
+				saveItem();
 			}
 		});
-		perTierCheckBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final boolean newPerTier = perTierCheckBox.isChecked();
-					if (selectedInstance != null && newPerTier != selectedInstance.isPerTier()) {
-						dirty = true;
-						selectedInstance.setPerTier(newPerTier);
-						parameterRxHandler.save(selectedInstance)
-							.observeOn(AndroidSchedulers.mainThread())
-							.subscribe(new Subscriber<Parameter>() {
-								@Override
-								public void onCompleted() {
-								}
-
-								@Override
-								public void onError(Throwable e) {
-									Log.e("ParametersFragment", "Exception saving new Parameter in initValueEdit", e);
-									String toastString = getString(R.string.toast_parameter_save_failed);
-									Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-								}
-
-								@Override
-								public void onNext(Parameter savedParameter) {
-											onSaved(savedParameter);
-										}
-							});
-					}
-				}
-			}
-		});
-	}
-
-	private void onSaved(Parameter parameter) {
-		if(getActivity() == null) {
-			return;
-		}
-		String toastString;
-		toastString = getString(R.string.toast_parameter_saved);
-		Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
-		int position = listAdapter.getPosition(parameter);
-		// Add 1 for the header row
-		LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-		if (v != null) {
-			TextView textView = (TextView) v.findViewById(R.id.name_view);
-			if (textView != null) {
-				textView.setText(parameter.getName());
-			}
-			textView = (TextView) v.findViewById(R.id.description_view);
-			if (textView != null) {
-				textView.setText(parameter.getDescription());
-			}
-		}
 	}
 
 	private void initListView(View layout) {
@@ -427,42 +328,38 @@ public class ParametersFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		// Clicking a row in the listView will send the user to the edit world activity
+		parameterRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Parameter>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("ParametersFragment", "Exception caught getting all Parameter instances", e);
+						Toast.makeText(ParametersFragment.this.getActivity(), getString(R.string.toast_parameters_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<Parameter> parameters) {
+						listAdapter.clear();
+						listAdapter.addAll(parameters);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_parameters_loaded), parameters.size());
+						Toast.makeText(ParametersFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(dirty && selectedInstance != null) {
-					selectedInstance.setName(nameEdit.getText().toString());
-					selectedInstance.setDescription(descriptionEdit.getText().toString());
-					selectedInstance.setValue(Short.valueOf(valueEdit.getText().toString()));
-					selectedInstance.setPerTier(perTierCheckBox.isChecked());
-					parameterRxHandler.save(selectedInstance)
-						.observeOn(AndroidSchedulers.mainThread())
-						.subscribe(new Subscriber<Parameter>() {
-							@Override
-							public void onCompleted() {
-							}
-							@Override
-							public void onError(Throwable e) {
-								Log.e("ParametersFragment", "Exception saving new Parameter in initListView", e);
-								String toastString = getString(R.string.toast_parameter_save_failed);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-							}
-							@Override
-							public void onNext(Parameter savedParameter) {
-								onSaved(savedParameter);
-							}
-						});
-					dirty = false;
+				currentInstance = (Parameter) listView.getItemAtPosition(position);
+				isNew = false;
+				if (currentInstance == null) {
+					currentInstance = new Parameter();
+					isNew = true;
 				}
-
-				selectedInstance = (Parameter) listView.getItemAtPosition(position);
-				if (selectedInstance != null) {
-					nameEdit.setText(selectedInstance.getName());
-					descriptionEdit.setText(selectedInstance.getDescription());
-					valueEdit.setText(String.valueOf(selectedInstance.getValue()));
-					perTierCheckBox.setChecked(selectedInstance.isPerTier());
-				}
+				copyItemToControls();
 			}
 		});
 		registerForContextMenu(listView);

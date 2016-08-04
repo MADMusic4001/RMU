@@ -20,9 +20,9 @@ package com.madinnovations.rmu.data.entities.common;
  */
 public class LocomotionType {
 	private int id = -1;
-	private String name;
-	private String description;
-	private int defaultRate;
+	private String name = null;
+	private String description = null;
+	private int defaultRate = 20;
 
 	/**
 	 * Checks the validity of the LocomotionType instance.

@@ -19,7 +19,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
@@ -89,8 +88,7 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null,
-										null, COLUMN_ID);
+			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null, null, COLUMN_ID);
 
 			if (cursor != null) {
 				cursor.moveToFirst();
@@ -113,7 +111,6 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 
     @Override
     public boolean save(Size instance) {
-		Log.d("SizeDaoDbImpl", "Saving " + instance);
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
 		ContentValues contentValues = getContentValues(instance);
@@ -203,6 +200,7 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 			instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+			instance.setExamples(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXAMPLES)));
 			instance.setMinHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT)));
 			instance.setMaxHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT)));
 			instance.setMinWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT)));
