@@ -24,15 +24,25 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
+      android:paddingStart="10dp"
       android:paddingLeft="10dp"
-      android:text="@string/label_initial_cost"/>
+      android:paddingEnd="10dp"
+      android:paddingRight="10dp"
+      android:text="@string/label_initial_cost"
+      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:background="?android:attr/activatedBackgroundIndicator"/>
 
   <TextView
       android:id="@+id/additional_cost_view"
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
+      android:paddingStart="10dp"
       android:paddingLeft="10dp"
-      android:text="@string/label_additional_cost"/>
+      android:paddingEnd="10dp"
+      android:paddingRight="10dp"
+      android:text="@string/label_additional_cost"
+      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:background="?android:attr/activatedBackgroundIndicator"/>
 
 </LinearLayout>

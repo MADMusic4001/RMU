@@ -24,6 +24,14 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:paddingStart="10dp"
+      android:paddingLeft="10dp"
+      android:paddingEnd="10dp"
+      android:paddingRight="10dp"
+      android:background="@android:color/background_dark"
+      android:textColor="@android:color/primary_text_dark"
+      android:textAppearance="?android:attr/textAppearanceSmall"
       android:text="@string/label_code"/>
 
   <TextView
@@ -31,6 +39,14 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:paddingStart="10dp"
+      android:paddingLeft="10dp"
+      android:paddingEnd="10dp"
+      android:paddingRight="10dp"
+      android:background="@android:color/background_dark"
+      android:textColor="@android:color/primary_text_dark"
+      android:textAppearance="?android:attr/textAppearanceSmall"
       android:text="@string/label_name"/>
 
   <TextView
@@ -38,5 +54,13 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:paddingStart="10dp"
+      android:paddingLeft="10dp"
+      android:paddingEnd="10dp"
+      android:paddingRight="10dp"
+      android:background="@android:color/background_dark"
+      android:textColor="@android:color/primary_text_dark"
+      android:textAppearance="?android:attr/textAppearanceSmall"
       android:text="@string/label_examples"/>
 </LinearLayout>
