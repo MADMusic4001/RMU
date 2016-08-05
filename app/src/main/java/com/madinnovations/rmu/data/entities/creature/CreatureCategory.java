@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.common.Talent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +25,9 @@ import java.util.List;
  */
 public class CreatureCategory {
 	private int id = -1;
-	private String name;
-	private String description;
-	private List<Talent> talents;
+	private String name = null;
+	private String description = null;
+	private List<Talent> talents = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the CreatureCategory instance.

@@ -219,6 +219,7 @@ public class StatsFragment extends Fragment {
 							}
 							else {
 								currentInstance = new Stat();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_stat_deleted), Toast.LENGTH_SHORT).show();

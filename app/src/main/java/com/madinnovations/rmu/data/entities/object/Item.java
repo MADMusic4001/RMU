@@ -20,9 +20,9 @@ package com.madinnovations.rmu.data.entities.object;
  */
 public class Item {
     private int id = -1;
-    private String name;
-    private String description;
-    private int weight;
+    private String name = null;
+    private String description = null;
+    private float weight = 0.5f;
 
     /**
      * Checks the validity of the Item instance.
@@ -78,10 +78,10 @@ public class Item {
     public void setDescription(String description) {
         this.description = description;
     }
-    public int getWeight() {
+    public float getWeight() {
         return weight;
     }
-    public void setWeight(int weight) {
+    public void setWeight(float weight) {
         this.weight = weight;
     }
 }

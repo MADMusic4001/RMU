@@ -210,6 +210,7 @@ public class TalentCategoryFragment extends Fragment {
 							}
 							else {
 								currentInstance = new TalentCategory();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();

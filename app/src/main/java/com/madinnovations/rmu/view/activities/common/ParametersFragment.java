@@ -218,6 +218,7 @@ public class ParametersFragment extends Fragment {
 							}
 							else {
 								currentInstance = new Parameter();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_parameter_deleted), Toast.LENGTH_SHORT).show();

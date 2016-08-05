@@ -210,6 +210,7 @@ public class CriticalCodesFragment extends Fragment {
 						}
 						else {
 							currentInstance = new CriticalCode();
+							isNew = true;
 						}
 						copyItemToControls();
 						Toast.makeText(getActivity(), getString(R.string.toast_critical_code_deleted), Toast.LENGTH_SHORT).show();

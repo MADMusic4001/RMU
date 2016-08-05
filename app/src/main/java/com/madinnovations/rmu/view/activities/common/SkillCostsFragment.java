@@ -206,6 +206,7 @@ public class SkillCostsFragment extends Fragment {
 							}
 							else {
 								currentInstance = new SkillCost();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_skill_cost_deleted), Toast.LENGTH_SHORT).show();

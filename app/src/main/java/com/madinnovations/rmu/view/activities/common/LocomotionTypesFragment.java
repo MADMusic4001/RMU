@@ -215,6 +215,7 @@ public class LocomotionTypesFragment extends Fragment {
 							}
 							else {
 								currentInstance = new LocomotionType();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_locomotion_type_deleted), Toast.LENGTH_SHORT).show();

@@ -275,6 +275,7 @@ public class CriticalResultsFragment extends Fragment {
 							}
 							else {
 								currentInstance = new CriticalResult();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_critical_result_deleted), Toast.LENGTH_SHORT).show();

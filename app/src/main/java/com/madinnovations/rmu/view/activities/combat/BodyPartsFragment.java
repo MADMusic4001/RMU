@@ -170,6 +170,7 @@ public class BodyPartsFragment extends Fragment {
 						}
 						else {
 							currentInstance = new BodyPart();
+							isNew = true;
 						}
 						copyItemToControls();
 						Toast.makeText(getActivity(), getString(R.string.toast_body_part_deleted), Toast.LENGTH_SHORT).show();

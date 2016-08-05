@@ -254,6 +254,7 @@ public class SizesFragment extends Fragment {
 							}
 							else {
 								currentInstance = new Size();
+								isNew = true;
 							}
 							copyItemToControls();
 							Toast.makeText(getActivity(), getString(R.string.toast_size_deleted), Toast.LENGTH_SHORT).show();
