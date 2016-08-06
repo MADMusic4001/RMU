@@ -19,8 +19,7 @@ package com.madinnovations.rmu.data.entities.common;
  * Cost of improving a skill
  */
 public class SkillCost {
-	private int id = -1;
-	private int initialCost = 0;
+	private int firstCost = 0;
 	private int additionalCost = 0;
 
 	/**
@@ -35,8 +34,7 @@ public class SkillCost {
 	@Override
 	public String toString() {
 		return "SkillCost{" +
-				"id=" + id +
-				", initialCost=" + initialCost +
+				"firstCost=" + firstCost +
 				", additionalCost=" + additionalCost +
 				'}';
 	}
@@ -48,27 +46,24 @@ public class SkillCost {
 
 		SkillCost skillCost = (SkillCost) o;
 
-		return id == skillCost.id;
+		if (firstCost != skillCost.firstCost) return false;
+		return additionalCost == skillCost.additionalCost;
 
 	}
 
 	@Override
 	public int hashCode() {
-		return id;
+		int result = firstCost;
+		result = 31 * result + additionalCost;
+		return result;
 	}
 
 	// Getters and setters
-	public int getId() {
-		return id;
+	public int getFirstCost() {
+		return firstCost;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public int getInitialCost() {
-		return initialCost;
-	}
-	public void setInitialCost(int initialCost) {
-		this.initialCost = initialCost;
+	public void setFirstCost(int firstCost) {
+		this.firstCost = firstCost;
 	}
 	public int getAdditionalCost() {
 		return additionalCost;

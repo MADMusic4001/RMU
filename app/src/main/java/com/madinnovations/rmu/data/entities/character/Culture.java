@@ -28,7 +28,7 @@ public class Culture {
 	private int id = -1;
 	private String name;
 	private String description;
-	private Map<SkillCategory, Short> skillRanks;
+	private Map<SkillCategory, Short> skillCategoryRanks;
 	private List<Skill> whiteList;
 	private List<Skill> blackList;
 
@@ -47,7 +47,7 @@ public class Culture {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
-				", skillRanks=" + skillRanks +
+				", skillCategoryRanks=" + skillCategoryRanks +
 				", whiteList=" + whiteList +
 				", blackList=" + blackList +
 				'}';
@@ -88,11 +88,11 @@ public class Culture {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Map<SkillCategory, Short> getSkillRanks() {
-		return skillRanks;
+	public Map<SkillCategory, Short> getSkillCategoryRanks() {
+		return skillCategoryRanks;
 	}
-	public void setSkillRanks(Map<SkillCategory, Short> skillRanks) {
-		this.skillRanks = skillRanks;
+	public void setSkillCategoryRanks(Map<SkillCategory, Short> skillCategoryRanks) {
+		this.skillCategoryRanks = skillCategoryRanks;
 	}
 	public List<Skill> getWhiteList() {
 		return whiteList;

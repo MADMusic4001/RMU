@@ -95,7 +95,7 @@ public class SkillCostDaoDbImpl extends BaseDaoDbImpl<SkillCost> implements Skil
         if (cursor != null) {
             instance = new SkillCost();
             instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setInitialCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SKILL_COST)));
+            instance.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SKILL_COST)));
             instance.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ADDITIONAL_COST)));
         }
         return instance;
@@ -104,7 +104,7 @@ public class SkillCostDaoDbImpl extends BaseDaoDbImpl<SkillCost> implements Skil
     @Override
     protected ContentValues getContentValues(SkillCost instance) {
         ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_SKILL_COST, instance.getInitialCost());
+        initialValues.put(COLUMN_SKILL_COST, instance.getFirstCost());
         initialValues.put(COLUMN_ADDITIONAL_COST, instance.getAdditionalCost());
         return initialValues;
     }

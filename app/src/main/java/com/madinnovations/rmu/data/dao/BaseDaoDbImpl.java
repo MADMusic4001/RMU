@@ -95,6 +95,17 @@ public abstract class BaseDaoDbImpl<T> {
 	protected abstract void setId(T instance, int id);
 
 	/**
+	 * Saves any related instances.
+	 *
+	 * @param db  the SQLiteDatabase instance to use to save the relationships
+	 * @param instance  the T instance being saved
+	 * @return  true if no error occurred.
+	 */
+	protected boolean saveRelationships(SQLiteDatabase db, T instance) {
+		return true;
+	}
+
+	/**
 	 * Retrieves a T object from persistent storage.
 	 *
 	 * @param id  the id of the T object to retrieve
@@ -193,6 +204,7 @@ public abstract class BaseDaoDbImpl<T> {
 				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
 				result = (count == 1);
 			}
+			result &= saveRelationships(db, instance);
 			if(result && newTransaction) {
 				db.setTransactionSuccessful();
 			}

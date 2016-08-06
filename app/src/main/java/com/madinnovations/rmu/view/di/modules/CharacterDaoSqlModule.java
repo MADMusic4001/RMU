@@ -25,6 +25,7 @@ import com.madinnovations.rmu.data.dao.character.impl.CultureDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.impl.ProfessionDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.impl.RaceDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
+import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
@@ -46,13 +47,13 @@ public class CharacterDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	public CultureDao provideCultureDao(RMUDatabaseHelper helper) {
-		return new CultureDaoDbImpl(helper);
+	public CultureDao provideCultureDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, SkillDao skillDao) {
+		return new CultureDaoDbImpl(helper, skillCategoryDao, skillDao);
 	}
 
 	@Provides @Singleton
-	public ProfessionDao provideProfessionDao(RMUDatabaseHelper helper) {
-		return new ProfessionDaoDbImpl(helper);
+	public ProfessionDao provideProfessionDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao) {
+		return new ProfessionDaoDbImpl(helper, skillCategoryDao);
 	}
 
 	@Provides @Singleton

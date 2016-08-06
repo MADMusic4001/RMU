@@ -16,9 +16,10 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
+import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,33 +27,33 @@ import java.util.Map;
  */
 public class Race {
 	private int id = -1;
-	private String name;
-	private String description;
-	private short bonusDevelopmentPoints;
-	private short agilityModifier;
-	private short constitutionModifier;
-	private short empathyModifier;
-	private short intuitionModifier;
-	private short memoryModifier;
-	private short presenceModifier;
-	private short quicknessModifier;
-	private short reasoningModifier;
-	private short selfDisciplineModifier;
-	private short strengthModifier;
-	private short channelingResistanceModifier;
-	private short essenceResistanceModifier;
-	private short mentalismResistanceModifier;
-	private short physicalResistanceModifier;
-	private short enduranceModifier;
-	private short baseHits;
-	private float recoveryMultiplier;
-	private Map<Talent, Short> talentsAndFlaws;
-	private short sizeCategory;
-	private List<LocomotionType> locomotionTypes;
-	private short strideModifier;
-	private short averageHeight;
-	private short averageWeight;
-	private short poundsPerInch;
+	private String name = null;
+	private String description = null;
+	private short bonusDevelopmentPoints = 0;
+	private short agilityModifier = 0;
+	private short constitutionModifier = 0;
+	private short empathyModifier = 0;
+	private short intuitionModifier = 0;
+	private short memoryModifier = 0;
+	private short presenceModifier = 0;
+	private short quicknessModifier = 0;
+	private short reasoningModifier = 0;
+	private short selfDisciplineModifier = 0;
+	private short strengthModifier = 0;
+	private short channelingResistanceModifier = 0;
+	private short essenceResistanceModifier = 0;
+	private short mentalismResistanceModifier = 0;
+	private short physicalResistanceModifier = 0;
+	private short enduranceModifier = 0;
+	private short baseHits = 0;
+	private float recoveryMultiplier = 1.0f;
+	private Map<Talent, Short> talentsAndFlawsTiersMap = new HashMap<>();
+	private Size size = null;
+	private Map<LocomotionType, Short> locomotionTypeRatesMap = new HashMap<>();
+	private short strideModifier = 0;
+	private short averageHeight = 0;
+	private short averageWeight = 0;
+	private short poundsPerInch = 0;
 
 	/**
 	 * Checks the validity of the Profession instance.
@@ -87,9 +88,9 @@ public class Race {
 				", enduranceModifier=" + enduranceModifier +
 				", baseHits=" + baseHits +
 				", recoveryMultiplier=" + recoveryMultiplier +
-				", talentsAndFlaws=" + talentsAndFlaws +
-				", sizeCategory=" + sizeCategory +
-				", locomotionTypes=" + locomotionTypes +
+				", talentsAndFlawsTiersMap=" + talentsAndFlawsTiersMap +
+				", size=" + size +
+				", locomotionTypeRatesMap=" + locomotionTypeRatesMap +
 				", strideModifier=" + strideModifier +
 				", averageHeight=" + averageHeight +
 				", averageWeight=" + averageWeight +
@@ -240,23 +241,23 @@ public class Race {
 	public void setRecoveryMultiplier(float recoveryMultiplier) {
 		this.recoveryMultiplier = recoveryMultiplier;
 	}
-	public Map<Talent, Short> getTalentsAndFlaws() {
-		return talentsAndFlaws;
+	public Map<Talent, Short> getTalentsAndFlawsTiersMap() {
+		return talentsAndFlawsTiersMap;
 	}
-	public void setTalentsAndFlaws(Map<Talent, Short> talentsAndFlaws) {
-		this.talentsAndFlaws = talentsAndFlaws;
+	public void setTalentsAndFlawsTiersMap(Map<Talent, Short> talentsAndFlawsTiersMap) {
+		this.talentsAndFlawsTiersMap = talentsAndFlawsTiersMap;
 	}
-	public short getSizeCategory() {
-		return sizeCategory;
+	public Size getSize() {
+		return size;
 	}
-	public void setSizeCategory(short sizeCategory) {
-		this.sizeCategory = sizeCategory;
+	public void setSize(Size size) {
+		this.size = size;
 	}
-	public List<LocomotionType> getLocomotionTypes() {
-		return locomotionTypes;
+	public Map<LocomotionType, Short> getLocomotionTypeRatesMap() {
+		return locomotionTypeRatesMap;
 	}
-	public void setLocomotionTypes(List<LocomotionType> locomotionTypes) {
-		this.locomotionTypes = locomotionTypes;
+	public void setLocomotionTypeRatesMap(Map<LocomotionType, Short> locomotionTypeRatesMap) {
+		this.locomotionTypeRatesMap = locomotionTypeRatesMap;
 	}
 	public short getStrideModifier() {
 		return strideModifier;

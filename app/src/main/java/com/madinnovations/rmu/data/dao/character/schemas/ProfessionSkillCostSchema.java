@@ -25,18 +25,21 @@ public interface ProfessionSkillCostSchema {
 
 	public static final String COLUMN_PROFESSION_ID = "professionId";
 	public static final String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
-	public static final String COLUMN_COST = "cost";
+	public static final String COLUMN_FIRST_COST = "firstCost";
+	public static final String COLUMN_SECOND_COST = "secondCost";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_PROFESSION_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
-			+ COLUMN_COST + " TEXT NOT NULL, "
+			+ COLUMN_FIRST_COST + " INTEGER NOT NULL, "
+			+ COLUMN_SECOND_COST + " INTEGER NOT NULL, "
 			+ "PRIMARY KEY(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_COST};
+	public static final String[] COLUMNS = new String[] {COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_FIRST_COST,
+			COLUMN_SECOND_COST};
 }

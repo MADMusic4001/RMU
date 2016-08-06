@@ -20,8 +20,8 @@ import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
 /**
  * Database schema data for the race_movements table
  */
-public interface RaceMovementSchema {
-	public static final String TABLE_NAME = "race_movements";
+public interface RaceLocomotionSchema {
+	public static final String TABLE_NAME = "race_locomotion_types";
 
 	public static final String COLUMN_LOCOMOTION_TYPE_ID = "locomotionTypeId";
 	public static final String COLUMN_RACE_ID = "raceId";

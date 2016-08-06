@@ -17,22 +17,22 @@ package com.madinnovations.rmu.data.dao.character.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceMovementSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
+import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -45,6 +45,7 @@ import javax.inject.Singleton;
 public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceSchema {
     TalentDao talentDao;
     LocomotionTypeDao locomotionTypeDao;
+	SizeDao sizeDao;
 
     /**
      * Creates a new instance of RaceDaoDbImpl
@@ -52,10 +53,11 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, LocomotionTypeDao locomotionTypeDao) {
+    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, LocomotionTypeDao locomotionTypeDao, SizeDao sizeDao) {
         super(helper);
         this.talentDao = talentDao;
         this.locomotionTypeDao = locomotionTypeDao;
+		this.sizeDao = sizeDao;
     }
 
     @Override
@@ -103,7 +105,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
         instance.setId(id);
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     protected Race cursorToEntity(Cursor cursor) {
@@ -132,18 +133,101 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
             instance.setEnduranceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ENDURANCE_MODIFIER)));
             instance.setBaseHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_HITS)));
             instance.setRecoveryMultiplier(cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_RECOVERY_MULTIPLIER)));
-            instance.setSizeCategory(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_CATEGORY)));
             instance.setStrideModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRIDE_MODIFIER)));
             instance.setAverageHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_HEIGHT)));
             instance.setAverageWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_WEIGHT)));
             instance.setPoundsPerInch(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_POUNDS_PER_INCH)));
-            instance.setTalentsAndFlaws(getTalentsAndFlaws(instance.getId()));
-            instance.setLocomotionTypes(getMovements(instance.getId()));
+			instance.setSize(sizeDao.getById(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
+            instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
+            instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
         }
         return instance;
     }
 
-    private Map<Talent, Short> getTalentsAndFlaws(int id) {
+	@Override
+	protected ContentValues getContentValues(Race instance) {
+		ContentValues values = new ContentValues();
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_BONUS_DEVELOPMENT_POINTS, instance.getBonusDevelopmentPoints());
+		values.put(COLUMN_AGILITY_MODIFIER, instance.getAgilityModifier());
+		values.put(COLUMN_CONSTITUTION_MODIFIER, instance.getConstitutionModifier());
+		values.put(COLUMN_EMPATHY_MODIFIER, instance.getEmpathyModifier());
+		values.put(COLUMN_INTUITION_MODIFIER, instance.getIntuitionModifier());
+		values.put(COLUMN_MEMORY_MODIFIER, instance.getMemoryModifier());
+		values.put(COLUMN_PRESENCE_MODIFIER, instance.getPresenceModifier());
+		values.put(COLUMN_QUICKNESS_MODIFIER, instance.getQuicknessModifier());
+		values.put(COLUMN_REASONING_MODIFIER, instance.getReasoningModifier());
+		values.put(COLUMN_SELF_DISCIPLINE_MODIFIER, instance.getSelfDisciplineModifier());
+		values.put(COLUMN_STRENGTH_MODIFIER, instance.getStrengthModifier());
+		values.put(COLUMN_CHANNELING_RESISTANCE_MODIFIER, instance.getChannelingResistanceModifier());
+		values.put(COLUMN_ESSENCE_RESISTANCE_MODIFIER, instance.getEssenceResistanceModifier());
+		values.put(COLUMN_MENTALISM_RESISTANCE_MODIFIER, instance.getMentalismResistanceModifier());
+		values.put(COLUMN_PHYSICAL_RESISTANCE_MODIFIER, instance.getPhysicalResistanceModifier());
+		values.put(COLUMN_ENDURANCE_MODIFIER, instance.getEnduranceModifier());
+		values.put(COLUMN_BASE_HITS, instance.getBaseHits());
+		values.put(COLUMN_RECOVERY_MULTIPLIER, instance.getRecoveryMultiplier());
+		values.put(COLUMN_SIZE_ID, instance.getSize().getId());
+		values.put(COLUMN_STRIDE_MODIFIER, instance.getStrideModifier());
+		values.put(COLUMN_AVERAGE_HEIGHT, instance.getAverageHeight());
+		values.put(COLUMN_AVERAGE_WEIGHT, instance.getAverageWeight());
+		values.put(COLUMN_POUNDS_PER_INCH, instance.getPoundsPerInch());
+		instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
+		instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
+		return values;
+	}
+
+	@Override
+	protected boolean saveRelationships(SQLiteDatabase db, Race instance) {
+		boolean result = saveTalentsAndFlaws(db, instance.getId(), instance.getTalentsAndFlawsTiersMap());
+		result &= saveLocomotionTypes(db, instance.getId(), instance.getLocomotionTypeRatesMap());
+		return result;
+	}
+
+	private boolean saveTalentsAndFlaws(SQLiteDatabase db, int raceId, Map<Talent, Short> talentTiersMap) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(raceId) };
+		final String selection = RaceTalentsSchema.COLUMN_RACE_ID + " = ?";
+
+		db.delete(RaceTalentsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Talent, Short> entry : talentTiersMap.entrySet()) {
+			result &= (db.insert(RaceTalentsSchema.TABLE_NAME, null, getTalentTiersValues(raceId,
+					entry.getKey(), entry.getValue())) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getTalentTiersValues(int raceId, Talent talent, Short tiers) {
+		ContentValues values = new ContentValues();
+		values.put(RaceTalentsSchema.COLUMN_RACE_ID, raceId);
+		values.put(RaceTalentsSchema.COLUMN_TALENT_ID, talent.getId());
+		values.put(RaceTalentsSchema.COLUMN_TIERS, tiers);
+		return values;
+	}
+
+	private boolean saveLocomotionTypes(SQLiteDatabase db, int raceId, Map<LocomotionType, Short> locomotionTypeRatesMap) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(raceId) };
+		final String selection = RaceLocomotionSchema.COLUMN_RACE_ID + " = ?";
+
+		db.delete(RaceLocomotionSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<LocomotionType, Short> entry : locomotionTypeRatesMap.entrySet()) {
+			result &= (db.insert(RaceLocomotionSchema.TABLE_NAME, null, getLocomotionTypeValues(raceId, entry)) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getLocomotionTypeValues(int raceId, Map.Entry<LocomotionType, Short> locomotionTypeRateEntry) {
+		ContentValues values = new ContentValues();
+		values.put(RaceLocomotionSchema.COLUMN_RACE_ID, raceId);
+		values.put(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID, locomotionTypeRateEntry.getKey().getId());
+		values.put(RaceLocomotionSchema.COLUMN_RATE, locomotionTypeRateEntry.getValue());
+		return values;
+	}
+
+	private Map<Talent, Short> getTalentsAndFlaws(int id) {
         final String selectionArgs[] = { String.valueOf(id) };
         final String selection = RaceTalentsSchema.COLUMN_RACE_ID + " = ?";
 
@@ -164,29 +248,24 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
         return map;
     }
 
-    private List<LocomotionType> getMovements(int id) {
+    private Map<LocomotionType, Short> getLocomotionTypeRates(int id) {
         final String selectionArgs[] = { String.valueOf(id) };
-        final String selection = RaceMovementSchema.COLUMN_RACE_ID + " = ?";
+        final String selection = RaceLocomotionSchema.COLUMN_RACE_ID + " = ?";
 
-        Cursor cursor = super.query(RaceMovementSchema.TABLE_NAME, RaceMovementSchema.COLUMNS, selection,
-                selectionArgs, RaceMovementSchema.COLUMN_LOCOMOTION_TYPE_ID);
-        List<LocomotionType> locomotionTypeList = new ArrayList<>(cursor.getCount());
+        Cursor cursor = super.query(RaceLocomotionSchema.TABLE_NAME, RaceLocomotionSchema.COLUMNS, selection,
+                selectionArgs, RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID);
+        Map<LocomotionType, Short> locomotionTypeRatesMap = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int movementId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceMovementSchema.COLUMN_LOCOMOTION_TYPE_ID));
-			LocomotionType locomotionType = locomotionTypeDao.getById(movementId);
+			int locomotionTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID));
+			LocomotionType locomotionType = locomotionTypeDao.getById(locomotionTypeId);
 			if(locomotionType != null) {
-				locomotionTypeList.add(locomotionType);
+				locomotionTypeRatesMap.put(locomotionType, cursor.getShort(cursor.getColumnIndexOrThrow(RaceLocomotionSchema.COLUMN_RATE)));
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
 
-        return locomotionTypeList;
+        return locomotionTypeRatesMap;
     }
-
-	@Override
-	protected ContentValues getContentValues(Race instance) {
-		return null;
-	}
 }

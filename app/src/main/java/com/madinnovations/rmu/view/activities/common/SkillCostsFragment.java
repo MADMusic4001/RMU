@@ -133,7 +133,7 @@ public class SkillCostsFragment extends Fragment {
 	}
 
 	private void copyItemToControls() {
-		initialCostEdit.setText(String.valueOf(currentInstance.getInitialCost()));
+		initialCostEdit.setText(String.valueOf(currentInstance.getFirstCost()));
 		additionalCostEdit.setText(String.valueOf(currentInstance.getAdditionalCost()));
 
 		initialCostEdit.setError(null);
@@ -167,7 +167,7 @@ public class SkillCostsFragment extends Fragment {
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
 									TextView textView = (TextView) v.findViewById(R.id.initial_cost_view);
-									textView.setText(String.valueOf(savedItem.getInitialCost()));
+									textView.setText(String.valueOf(savedItem.getFirstCost()));
 									textView = (TextView) v.findViewById(R.id.additional_cost_view);
 									textView.setText(String.valueOf(savedItem.getAdditionalCost()));
 								}
@@ -240,8 +240,8 @@ public class SkillCostsFragment extends Fragment {
 					else {
 						newInitialCost = null;
 					}
-					if (currentInstance != null && ( newInitialCost != null && currentInstance.getInitialCost() != newInitialCost)) {
-						currentInstance.setInitialCost(newInitialCost);
+					if (currentInstance != null && ( newInitialCost != null && currentInstance.getFirstCost() != newInitialCost)) {
+						currentInstance.setFirstCost(newInitialCost);
 						saveItem();
 					}
 				}

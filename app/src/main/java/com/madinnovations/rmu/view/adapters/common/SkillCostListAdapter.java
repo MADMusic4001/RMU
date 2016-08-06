@@ -62,7 +62,7 @@ public class SkillCostListAdapter extends ArrayAdapter<SkillCost> {
 		}
 
 		SkillCost skillCost = getItem(position);
- 		holder.initialCostView.setText(String.valueOf(skillCost.getInitialCost()));
+ 		holder.initialCostView.setText(String.valueOf(skillCost.getFirstCost()));
 		holder.additionalCostView.setText(String.valueOf(skillCost.getAdditionalCost()));
 		return rowView;
 	}
