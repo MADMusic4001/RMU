@@ -24,8 +24,6 @@ import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
 import com.madinnovations.rmu.data.entities.character.Culture;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -46,28 +44,49 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
 
     @Override
     public Culture getById(int id) {
-        return null;
-    }
-
-    @Override
-    public List<Culture> getAll() {
-        return null;
+        return super.getById(id);
     }
 
     @Override
     public boolean save(Culture instance) {
-        return false;
+        return super.save(instance);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return false;
+        return super.deleteById(id);
     }
 
     @Override
     public int deleteAll() {
-        return 0;
+        return super.deleteAll();
     }
+
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected String[] getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    protected String getIdColumnName() {
+        return COLUMN_ID;
+    }
+
+    @Override
+    protected int getId(Culture instance) {
+        return instance.getId();
+    }
+
+    @Override
+    protected void setId(Culture instance, int id) {
+        instance.setId(id);
+    }
+
 
     @SuppressWarnings("unchecked")
 	@Override

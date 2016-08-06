@@ -20,6 +20,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ${CLASS_DESCRIPTION}
  *
@@ -53,6 +56,211 @@ public abstract class BaseDaoDbImpl<T> {
 	 * @return a ContentValues instance.
 	 */
 	protected abstract ContentValues getContentValues(T instance);
+
+	/**
+	 * Gets the name of the database table.
+	 *
+	 * @return the name of the database table.
+	 */
+	protected abstract String getTableName();
+
+	/**
+	 * Gets an array of the table column names.
+	 *
+	 * @return  the array of column names.
+	 */
+	protected abstract String[] getColumns();
+
+	/**
+	 * The name of the id column for the table.
+	 *
+	 * @return the name of the id column.
+	 */
+	protected abstract String getIdColumnName();
+
+	/**
+	 * Gets the value of the id for a T instance.
+	 *
+	 * @param instance  a T instance
+	 * @return the value of the id for the T isntance.
+	 */
+	protected abstract int getId(T instance);
+
+	/**
+	 * Sets the value of the id for a T instance.
+	 *
+	 * @param instance  a T instance
+	 * @param id  the value of the id
+	 */
+	protected abstract void setId(T instance, int id);
+
+	/**
+	 * Retrieves a T object from persistent storage.
+	 *
+	 * @param id  the id of the T object to retrieve
+	 * @return the T instance with the given id or null if not found.
+	 */
+	public T getById(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = getIdColumnName() + " = ?";
+		T instance = null;
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection,
+					selectionArgs, getIdColumnName());
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					instance = cursorToEntity(cursor);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return instance;
+	}
+
+	/**
+	 * Retrieves all T objects from persistent storage.
+	 *
+	 * @return  a List containing all T objects currently in persistent storage.
+	 */
+	public List<T> getAll() {
+		List<T> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), null, null, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					T instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Saves a T object to persistent storage.
+	 *
+	 * @param instance  the T object to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(T instance) {
+		final String selectionArgs[] = { String.valueOf(getId(instance)) };
+		final String selection = getIdColumnName() + " = ?";
+		ContentValues contentValues = getContentValues(instance);
+		boolean result;
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			if(getId(instance) == -1) {
+				setId(instance, (int)db.insert(getTableName(), null, contentValues));
+				result = (getId(instance) != -1);
+			}
+			else {
+				contentValues.put(getIdColumnName(), getId(instance));
+				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
+				result = (count == 1);
+			}
+			if(result && newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Delete the T object with the given id from persistent storage.
+	 *
+	 * @param id  the id of the T object to delete
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean deleteById(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = getIdColumnName() + " = ?";
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			db.delete(getTableName(), selection, selectionArgs);
+			if(newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Delete all T objects from persistent storage.
+	 *
+	 * @return the number of instances that were deleted.
+	 */
+	public int deleteAll() {
+		int count = 0;
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			count = db.delete(getTableName(), null, null);
+			if(newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return count;
+	}
 
 	/**
 	 * Inserts a new record into the database.

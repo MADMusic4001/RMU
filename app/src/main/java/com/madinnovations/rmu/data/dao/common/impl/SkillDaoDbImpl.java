@@ -24,8 +24,6 @@ import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -46,28 +44,49 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 
     @Override
     public Skill getById(int id) {
-        return null;
-    }
-
-    @Override
-    public List<Skill> getAll() {
-        return null;
+        return super.getById(id);
     }
 
     @Override
     public boolean save(Skill instance) {
-        return false;
+        return super.save(instance);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return false;
+        return super.deleteById(id);
     }
 
     @Override
     public int deleteAll() {
-        return 0;
+        return super.deleteAll();
     }
+
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected String[] getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    protected String getIdColumnName() {
+        return COLUMN_ID;
+    }
+
+    @Override
+    protected int getId(Skill instance) {
+        return instance.getId();
+    }
+
+    @Override
+    protected void setId(Skill instance, int id) {
+        instance.setId(id);
+    }
+
 
     @Override
     protected Skill cursorToEntity(Cursor cursor) {

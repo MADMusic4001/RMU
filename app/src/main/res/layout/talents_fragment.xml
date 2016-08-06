@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright (C) 2016 MadInnovations
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:choiceMode="singleChoice"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/category_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"/>
+        <EditText
+            android:id="@+id/name_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/category_spinner"
+            android:layout_toEndOf="@id/category_spinner"
+            android:layout_alignBaseline="@id/category_spinner"
+            android:hint="@string/hint_name"
+            android:padding="5dp"/>
+
+        <EditText
+            android:id="@+id/description_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/category_spinner"/>
+
+        <Spinner
+            android:id="@+id/affected_skill_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/description_edit"/>
+        <EditText
+            android:id="@+id/initial_cost_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:hint="@string/hint_initial_cost"
+            android:layout_toRightOf="@id/affected_skill_spinner"
+            android:layout_toEndOf="@id/affected_skill_spinner"
+            android:layout_alignBaseline="@id/affected_skill_spinner"/>
+        <EditText
+            android:id="@+id/cost_per_tier_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:hint="@string/hint_cost_per_tier"
+            android:layout_toRightOf="@id/initial_cost_edit"
+            android:layout_toEndOf="@id/initial_cost_edit"
+            android:layout_alignBaseline="@id/affected_skill_spinner"/>
+        <EditText
+            android:id="@+id/bonus_per_tier_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:hint="@string/hint_bonus_per_tier"
+            android:layout_toEndOf="@id/cost_per_tier_edit"
+            android:layout_toRightOf="@id/cost_per_tier_edit"
+            android:layout_alignBaseline="@id/affected_skill_spinner"/>
+
+        <CheckBox
+            android:id="@+id/situational_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/label_situational"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/affected_skill_spinner"/>
+        <EditText
+            android:id="@+id/action_points_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_toRightOf="@id/situational_check_box"
+            android:layout_toEndOf="@id/situational_check_box"
+            android:layout_alignBaseline="@id/situational_check_box"/>
+
+        <ListView
+            android:id="@+id/parameters_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/situational_check_box"
+            android:choiceMode="multipleChoice"/>
+        <LinearLayout
+            android:id="@+id/move_buttons_layout"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/parameters_list"
+            android:layout_toEndOf="@id/parameters_list"
+            android:layout_centerVertical="true">
+            <Button
+                android:id="@+id/add_parameter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/label_move_right"/>
+            <Button
+                android:id="@+id/remove_parameter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/label_move_left"/>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/selected_parameters_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/move_buttons_layout"
+            android:layout_toEndOf="@id/move_buttons_layout"
+            android:layout_alignBaseline="@id/parameters_list"
+            android:choiceMode="multipleChoice"/>
+    </RelativeLayout>
+
+</LinearLayout>

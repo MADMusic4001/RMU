@@ -24,8 +24,6 @@ import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.entities.character.Profession;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -44,30 +42,51 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
         super(helper);
     }
 
-    @Override
-    public Profession getById(int id) {
-        return null;
-    }
+	@Override
+	public Profession getById(int id) {
+		return super.getById(id);
+	}
 
-    @Override
-    public List<Profession> getAll() {
-        return null;
-    }
+	@Override
+	public boolean save(Profession instance) {
+		return super.save(instance);
+	}
 
-    @Override
-    public boolean save(Profession instance) {
-        return false;
-    }
+	@Override
+	public boolean deleteById(int id) {
+		return super.deleteById(id);
+	}
 
-    @Override
-    public boolean deleteById(int id) {
-        return false;
-    }
+	@Override
+	public int deleteAll() {
+		return super.deleteAll();
+	}
 
-    @Override
-    public int deleteAll() {
-        return 0;
-    }
+	@Override
+	protected String getTableName() {
+		return TABLE_NAME;
+	}
+
+	@Override
+	protected String[] getColumns() {
+		return COLUMNS;
+	}
+
+	@Override
+	protected String getIdColumnName() {
+		return COLUMN_ID;
+	}
+
+	@Override
+	protected int getId(Profession instance) {
+		return instance.getId();
+	}
+
+	@Override
+	protected void setId(Profession instance, int id) {
+		instance.setId(id);
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

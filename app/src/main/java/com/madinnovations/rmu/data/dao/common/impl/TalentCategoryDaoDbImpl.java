@@ -17,16 +17,12 @@ package com.madinnovations.rmu.data.dao.common.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentCategorySchema;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,147 +44,47 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl<TalentCategory> imple
 
 	@Override
 	public TalentCategory getById(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = COLUMN_ID + " = ?";
-		TalentCategory instance = new TalentCategory();
-
-		SQLiteDatabase db = helper.getReadableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, selection,
-										selectionArgs, COLUMN_ID);
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					instance = cursorToEntity(cursor);
-					cursor.moveToNext();
-				}
-				cursor.close();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-
-		return instance;
-	}
-
-	@Override
-	public List<TalentCategory> getAll() {
-		List<TalentCategory> list = new ArrayList<>();
-
-		SQLiteDatabase db = helper.getReadableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null, null, COLUMN_ID);
-
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					TalentCategory instance = cursorToEntity(cursor);
-					list.add(instance);
-					cursor.moveToNext();
-				}
-				cursor.close();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-
-		return list;
+		return super.getById(id);
 	}
 
 	@Override
 	public boolean save(TalentCategory instance) {
-		final String selectionArgs[] = { String.valueOf(instance.getId()) };
-		final String selection = COLUMN_ID + " = ?";
-		ContentValues contentValues = getContentValues(instance);
-		boolean result;
-
-		SQLiteDatabase db = helper.getWritableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			if(instance.getId() == -1) {
-				instance.setId((int)db.insert(TABLE_NAME, null, contentValues));
-				result = (instance.getId() != -1);
-			}
-			else {
-				contentValues.put(COLUMN_ID, instance.getId());
-				int count = db.update(TABLE_NAME, contentValues, selection, selectionArgs);
-				result = (count == 1);
-			}
-			if(result && newTransaction) {
-				db.setTransactionSuccessful();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-		return true;
+		return super.save(instance);
 	}
 
 	@Override
 	public boolean deleteById(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = COLUMN_ID + " = ?";
-
-		SQLiteDatabase db = helper.getWritableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			db.delete(TABLE_NAME, selection, selectionArgs);
-			if(newTransaction) {
-				db.setTransactionSuccessful();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-		return true;
+		return super.deleteById(id);
 	}
 
 	@Override
 	public int deleteAll() {
-		int count = 0;
+		return super.deleteAll();
+	}
 
-		SQLiteDatabase db = helper.getWritableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			count = db.delete(TABLE_NAME, null, null);
-			if(newTransaction) {
-				db.setTransactionSuccessful();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
+	@Override
+	protected String getTableName() {
+		return TABLE_NAME;
+	}
 
-		return count;
+	@Override
+	protected String[] getColumns() {
+		return COLUMNS;
+	}
+
+	@Override
+	protected String getIdColumnName() {
+		return COLUMN_ID;
+	}
+
+	@Override
+	protected int getId(TalentCategory instance) {
+		return instance.getId();
+	}
+
+	@Override
+	protected void setId(TalentCategory instance, int id) {
+		instance.setId(id);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -17,10 +17,7 @@ package com.madinnovations.rmu.data.dao.character.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
@@ -37,9 +34,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -69,92 +64,52 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		this.talentDao = talentDao;
 		this.statDao = statDao;
 	}
-
 	@Override
 	public Character getById(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = COLUMN_ID + " = ?";
-		Character instance = new Character();
-
-		SQLiteDatabase db = helper.getReadableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, selection,
-								 selectionArgs, COLUMN_ID);
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					instance = cursorToEntity(cursor);
-					cursor.moveToNext();
-				}
-				cursor.close();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-
-		return instance;
-	}
-
-	@Override
-	public List<Character> getAll() {
-		List<Character> list = new ArrayList<>();
-
-		SQLiteDatabase db = helper.getReadableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null,
-								 null, COLUMN_ID);
-
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					Character instance = cursorToEntity(cursor);
-					list.add(instance);
-					cursor.moveToNext();
-				}
-				cursor.close();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-
-		return list;
+		return super.getById(id);
 	}
 
 	@Override
 	public boolean save(Character instance) {
-		// set values
-		setContentValue(instance);
-		try {
-			return super.insert(TABLE_NAME, getContentValues(instance)) > 0;
-		} catch (SQLiteConstraintException ex){
-			Log.w("Database", ex.getMessage());
-			return false;
-		}
+		return super.save(instance);
 	}
 
 	@Override
-	public boolean deleteById(int instanceId) {
-		return false;
+	public boolean deleteById(int id) {
+		return super.deleteById(id);
 	}
 
 	@Override
 	public int deleteAll() {
-		return 0;
+		return super.deleteAll();
 	}
+
+	@Override
+	protected String getTableName() {
+		return TABLE_NAME;
+	}
+
+	@Override
+	protected String[] getColumns() {
+		return COLUMNS;
+	}
+
+	@Override
+	protected String getIdColumnName() {
+		return COLUMN_ID;
+	}
+
+	@Override
+	protected int getId(Character instance) {
+		return instance.getId();
+	}
+
+	@Override
+	protected void setId(Character instance, int id) {
+		instance.setId(id);
+	}
+
+
 
 	@SuppressWarnings("unchecked")
 	@Override

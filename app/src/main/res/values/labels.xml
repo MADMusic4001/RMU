@@ -80,6 +80,9 @@
   <string name="label_name">Name</string>
   <string name="label_per_tier">Per Tier</string>
   <string name="label_value">Value</string>
+  <string name="label_situational">Situational</string>
+  <string name="label_move_right">&gt;&gt;</string>
+  <string name="label_move_left">&lt;&lt;</string>
 
   <!-- Menu labels -->
   <string name="label_export">Export</string>
@@ -104,6 +107,8 @@
   <string name="label_delete_skill_cost">Delete Skill Cost</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
+  <string name="label_new_talent">New Talent</string>
+  <string name="label_delete_talent">Delete Talent</string>
   <string name="label_new_talent_category">New Talent Category</string>
   <string name="label_delete_talent_category">Delete Talent Category</string>
 
@@ -124,8 +129,10 @@
   <string name="hint_abbreviation">New Abbreviation</string>
   <string name="hint_additional_cost">New Additional Cost</string>
   <string name="hint_bleeding">Bleeding per round</string>
+  <string name="hint_bonus_per_tier">Bonus per tier</string>
   <string name="hint_breakage">Breakage roll</string>
   <string name="hint_code">New Code</string>
+  <string name="hint_cost_per_tier">Cost per tier</string>
   <string name="hint_dazed">Dazed rounds</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_description">New Description</string>

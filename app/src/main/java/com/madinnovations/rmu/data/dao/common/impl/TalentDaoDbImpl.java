@@ -60,81 +60,47 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 
     @Override
     public Talent getById(int id) {
-        final String selectionArgs[] = { String.valueOf(id) };
-        final String selection = COLUMN_ID + " = ?";
-        Talent instance = new Talent();
-
-        SQLiteDatabase db = helper.getReadableDatabase();
-        boolean newTransaction = !db.inTransaction();
-        if(newTransaction) {
-            db.beginTransaction();
-        }
-        try {
-            Cursor cursor = super.query(TABLE_NAME, COLUMNS, selection,
-                    selectionArgs, COLUMN_ID);
-            if (cursor != null) {
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    instance = cursorToEntity(cursor);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-            }
-        }
-        finally {
-            if(newTransaction) {
-                db.endTransaction();
-            }
-        }
-
-        return instance;
-    }
-
-    @Override
-    public List<Talent> getAll() {
-        List<Talent> list = new ArrayList<>();
-
-        SQLiteDatabase db = helper.getReadableDatabase();
-        boolean newTransaction = !db.inTransaction();
-        if(newTransaction) {
-            db.beginTransaction();
-        }
-        try {
-            Cursor cursor = super.query(TABLE_NAME, COLUMNS, null,
-                    null, COLUMN_ID);
-
-            if (cursor != null) {
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    Talent talent = cursorToEntity(cursor);
-                    list.add(talent);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-            }
-        }
-        finally {
-            if(newTransaction) {
-                db.endTransaction();
-            }
-        }
-
-        return list;
+        return super.getById(id);
     }
 
     @Override
     public boolean save(Talent instance) {
-        return false;
+        return super.save(instance);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return false;
+        return super.deleteById(id);
     }
 
     @Override
     public int deleteAll() {
-        return 0;
+        return super.deleteAll();
+    }
+
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected String[] getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    protected String getIdColumnName() {
+        return COLUMN_ID;
+    }
+
+    @Override
+    protected int getId(Talent instance) {
+        return instance.getId();
+    }
+
+    @Override
+    protected void setId(Talent instance, int id) {
+        instance.setId(id);
     }
 
     @SuppressWarnings("unchecked")
@@ -161,7 +127,17 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 
     @Override
     protected ContentValues getContentValues(Talent instance) {
-        return null;
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
+        initialValues.put(COLUMN_NAME, instance.getName());
+        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+        initialValues.put(COLUMN_AFFECTED_SKILL_ID, instance.getAffectedSkill().getId());
+        initialValues.put(COLUMN_INITIAL_COST, instance.getInitialCost());
+        initialValues.put(COLUMN_COST_PER_TIER, instance.getCostPerTier());
+        initialValues.put(COLUMN_BONUS_PER_TIER, instance.getBonusPerTier());
+        initialValues.put(COLUMN_SITUATIONAL, instance.isSituational());
+        initialValues.put(COLUMN_ACTION_POINTS, instance.getActionPoints());
+        return initialValues;
     }
 
     private List<Parameter> getParameters(int talentId) {
@@ -183,5 +159,22 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         cursor.close();
 
         return list;
+    }
+
+    private boolean saveParameters(SQLiteDatabase db, Talent instance) {
+        boolean result;
+        final String selectionArgs[] = { String.valueOf(instance.getId()) };
+        final String selection = TalentParametersSchema.COLUMN_TALENT_ID + " = ?";
+        ContentValues contentValues = new ContentValues();
+
+        // Delete all current parameters for this talent and then recreate them
+        result = (db.delete(TalentParametersSchema.TABLE_NAME, selection, selectionArgs) != -1);
+
+        contentValues.put(TalentParametersSchema.COLUMN_TALENT_ID, instance.getId());
+        for(Parameter parameter : instance.getParameters()) {
+            contentValues.put(TalentParametersSchema.COLUMN_PARAMETER_ID, parameter.getId());
+            result &= (db.insert(TABLE_NAME, null, contentValues) != -1);
+        }
+        return result;
     }
 }

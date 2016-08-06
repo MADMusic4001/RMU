@@ -75,6 +75,12 @@
   <string name="toast_stat_save_failed">Stat save failed.</string>
   <string name="toast_stat_deleted">Stat deleted.</string>
   <string name="toast_stat_delete_failed">Stat deletion failed.</string>
+  <string name="toast_talents_load_failed">Failed to load Talents</string>
+  <string name="toast_talents_loaded">%1$d Talents loaded.</string>
+  <string name="toast_talent_saved">Talent saved.</string>
+  <string name="toast_talent_save_failed">Talent save failed.</string>
+  <string name="toast_talent_deleted">Talent deleted.</string>
+  <string name="toast_talent_delete_failed">Talent deletion failed.</string>
   <string name="toast_talent_categories_load_failed">Failed to load Talent Categories</string>
   <string name="toast_talent_categories_loaded">%1$d Talent Categories loaded.</string>
   <string name="toast_talent_category_saved">Talent Category saved.</string>

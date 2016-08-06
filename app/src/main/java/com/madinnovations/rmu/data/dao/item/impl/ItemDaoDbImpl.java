@@ -17,16 +17,12 @@ package com.madinnovations.rmu.data.dao.item.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.entities.object.Item;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,149 +42,49 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
         super(helper);
     }
 
-    @Override
-    public Item getById(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = COLUMN_ID + " = ?";
-		Item instance = new Item();
+	@Override
+	public Item getById(int id) {
+		return super.getById(id);
+	}
 
-		SQLiteDatabase db = helper.getReadableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, selection,
-										selectionArgs, COLUMN_ID);
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					instance = cursorToEntity(cursor);
-					cursor.moveToNext();
-				}
-				cursor.close();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-
-		return instance;
-    }
-
-    @Override
-    public List<Item> getAll() {
-		List<Item> list = new ArrayList<>();
-
-		SQLiteDatabase db = helper.getReadableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			Cursor cursor = super.query(TABLE_NAME, COLUMNS, null, null, COLUMN_ID);
-
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					Item instance = cursorToEntity(cursor);
-					list.add(instance);
-					cursor.moveToNext();
-				}
-				cursor.close();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-
-		return list;
-    }
-
-    @Override
-    public boolean save(Item instance) {
-		final String selectionArgs[] = { String.valueOf(instance.getId()) };
-		final String selection = COLUMN_ID + " = ?";
-		ContentValues contentValues = getContentValues(instance);
-		boolean result;
-
-		SQLiteDatabase db = helper.getWritableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			if(instance.getId() == -1) {
-				instance.setId((int)db.insert(TABLE_NAME, null, contentValues));
-				result = (instance.getId() != -1);
-			}
-			else {
-				contentValues.put(COLUMN_ID, instance.getId());
-				int count = db.update(TABLE_NAME, contentValues, selection, selectionArgs);
-				result = (count == 1);
-			}
-			if(result && newTransaction) {
-				db.setTransactionSuccessful();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-		return true;
+	@Override
+	public boolean save(Item instance) {
+		return super.save(instance);
 	}
 
 	@Override
 	public boolean deleteById(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = COLUMN_ID + " = ?";
-
-		SQLiteDatabase db = helper.getWritableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			db.delete(TABLE_NAME, selection, selectionArgs);
-			if(newTransaction) {
-				db.setTransactionSuccessful();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
-		return true;
+		return super.deleteById(id);
 	}
 
 	@Override
 	public int deleteAll() {
-		int count = 0;
+		return super.deleteAll();
+	}
 
-		SQLiteDatabase db = helper.getWritableDatabase();
-		boolean newTransaction = !db.inTransaction();
-		if(newTransaction) {
-			db.beginTransaction();
-		}
-		try {
-			count = db.delete(TABLE_NAME, null, null);
-			if(newTransaction) {
-				db.setTransactionSuccessful();
-			}
-		}
-		finally {
-			if(newTransaction) {
-				db.endTransaction();
-			}
-		}
+	@Override
+	protected String getTableName() {
+		return TABLE_NAME;
+	}
 
-		return count;
+	@Override
+	protected String[] getColumns() {
+		return COLUMNS;
+	}
+
+	@Override
+	protected String getIdColumnName() {
+		return COLUMN_ID;
+	}
+
+	@Override
+	protected int getId(Item instance) {
+		return instance.getId();
+	}
+
+	@Override
+	protected void setId(Item instance, int id) {
+		instance.setId(id);
 	}
 
     @Override

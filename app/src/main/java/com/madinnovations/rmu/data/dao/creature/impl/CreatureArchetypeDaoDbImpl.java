@@ -21,9 +21,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,7 +32,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
-		implements CreatureArchetypeDao {
+		implements CreatureArchetypeDao, CreatureArchetypeSchema {
 	/**
 	 * Creates a new instance of CreatureArchetypeDaoImpl
 	 *
@@ -46,27 +45,47 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 
 	@Override
 	public CreatureArchetype getById(int id) {
-		return null;
-	}
-
-	@Override
-	public List<CreatureArchetype> getAll() {
-		return null;
+		return super.getById(id);
 	}
 
 	@Override
 	public boolean save(CreatureArchetype instance) {
-		return false;
+		return super.save(instance);
 	}
 
 	@Override
 	public boolean deleteById(int id) {
-		return false;
+		return super.deleteById(id);
 	}
 
 	@Override
 	public int deleteAll() {
-		return 0;
+		return super.deleteAll();
+	}
+
+	@Override
+	protected String getTableName() {
+		return TABLE_NAME;
+	}
+
+	@Override
+	protected String[] getColumns() {
+		return COLUMNS;
+	}
+
+	@Override
+	protected String getIdColumnName() {
+		return COLUMN_ID;
+	}
+
+	@Override
+	protected int getId(CreatureArchetype instance) {
+		return instance.getId();
+	}
+
+	@Override
+	protected void setId(CreatureArchetype instance, int id) {
+		instance.setId(id);
 	}
 
 	@Override

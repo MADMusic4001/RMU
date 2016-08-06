@@ -428,9 +428,6 @@ public class CriticalResultsFragment extends Fragment {
 				@Override
 				public void onError(Throwable e) {
 					Log.e("CriticalResultsFragment", "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
-					Toast.makeText(CriticalResultsFragment.this.getActivity(),
-							getString(R.string.toast_body_parts_load_failed),
-							Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Collection<BodyPart> bodyPartsResults) {

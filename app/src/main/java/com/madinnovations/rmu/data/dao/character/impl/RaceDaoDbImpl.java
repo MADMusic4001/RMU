@@ -17,7 +17,6 @@ package com.madinnovations.rmu.data.dao.character.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
@@ -61,82 +60,49 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
     @Override
     public Race getById(int id) {
-        final String selectionArgs[] = { String.valueOf(id) };
-        final String selection = COLUMN_ID + " = ?";
-        Race instance = new Race();
-
-        SQLiteDatabase db = helper.getReadableDatabase();
-        boolean newTransaction = !db.inTransaction();
-        if(newTransaction) {
-            db.beginTransaction();
-        }
-        try {
-            Cursor cursor = super.query(TABLE_NAME, COLUMNS, selection,
-                    selectionArgs, COLUMN_ID);
-            if (cursor != null) {
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    instance = cursorToEntity(cursor);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-            }
-        }
-        finally {
-            if(newTransaction) {
-                db.endTransaction();
-            }
-        }
-
-        return instance;
-    }
-
-    @Override
-    public List<Race> getAll() {
-        List<Race> list = new ArrayList<>();
-
-        SQLiteDatabase db = helper.getReadableDatabase();
-        boolean newTransaction = !db.inTransaction();
-        if(newTransaction) {
-            db.beginTransaction();
-        }
-        try {
-            Cursor cursor = super.query(TABLE_NAME, COLUMNS, null,
-                    null, COLUMN_ID);
-
-            if (cursor != null) {
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    Race instance = cursorToEntity(cursor);
-                    list.add(instance);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-            }
-        }
-        finally {
-            if(newTransaction) {
-                db.endTransaction();
-            }
-        }
-
-        return list;
+        return super.getById(id);
     }
 
     @Override
     public boolean save(Race instance) {
-        return false;
+        return super.save(instance);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return false;
+        return super.deleteById(id);
     }
 
     @Override
     public int deleteAll() {
-        return 0;
+        return super.deleteAll();
     }
+
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected String[] getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    protected String getIdColumnName() {
+        return COLUMN_ID;
+    }
+
+    @Override
+    protected int getId(Race instance) {
+        return instance.getId();
+    }
+
+    @Override
+    protected void setId(Race instance, int id) {
+        instance.setId(id);
+    }
+
 
     @SuppressWarnings("unchecked")
     @Override

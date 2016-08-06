@@ -24,8 +24,6 @@ import com.madinnovations.rmu.data.dao.item.WeaponDao;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -46,27 +44,47 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
 
     @Override
     public Weapon getById(int id) {
-        return null;
-    }
-
-    @Override
-    public List<Weapon> getAll() {
-        return null;
+        return super.getById(id);
     }
 
     @Override
     public boolean save(Weapon instance) {
-        return false;
+        return super.save(instance);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return false;
+        return super.deleteById(id);
     }
 
     @Override
     public int deleteAll() {
-        return 0;
+        return super.deleteAll();
+    }
+
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected String[] getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    protected String getIdColumnName() {
+        return COLUMN_ID;
+    }
+
+    @Override
+    protected int getId(Weapon instance) {
+        return instance.getId();
+    }
+
+    @Override
+    protected void setId(Weapon instance, int id) {
+        instance.setId(id);
     }
 
     @Override

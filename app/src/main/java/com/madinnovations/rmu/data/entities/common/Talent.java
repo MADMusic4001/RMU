@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,16 +23,16 @@ import java.util.List;
  */
 public class Talent {
 	private int id = -1;
-	private TalentCategory category;
-	private String name;
-	private String description;
-	private Skill affectedSkill;
-	private short initialCost;
-	private short costPerTier;
-	private short bonusPerTier;
-	private boolean situational;
-	private short actionPoints;
-	private List<Parameter> parameters;
+	private TalentCategory category = null;
+	private String name = null;
+	private String description = null;
+	private Skill affectedSkill = null;
+	private short initialCost = 5;
+	private short costPerTier = 5;
+	private short bonusPerTier = 5;
+	private boolean situational = false;
+	private short actionPoints = 10;
+	private List<Parameter> parameters = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Talent instance.

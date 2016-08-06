@@ -45,6 +45,12 @@
     <string name="validation_size_min_weight_gt_max_weight">Minimum weight cannot be greater than maximum weight.</string>
     <string name="validation_size_name_required">Please enter a name for this creature size.</string>
     <string name="validation_stunned_required">Please enter the number of rounds the defender is stunned.</string>
+    <string name="validation_talent_action_points_required">Please enter the number of Action Points required to use the Talent.</string>
+    <string name="validation_talent_bonus_per_tier_required">Please enter the bonus given per tier for the Talent.</string>
+    <string name="validation_talent_cost_per_tier_required">Please enter the cost per tier for the Talent.</string>
+    <string name="validation_talent_description_required">Please enter a description for the Talent.</string>
+    <string name="validation_talent_initial_cost_required">Please enter the initial cost of the Talent.</string>
+    <string name="validation_talent_name_required">Please enter the name of the Talent.</string>
     <string name="validation_value_required">Please enter a value.</string>
     <string name="validation_weight_required">Please enter a weight value.</string>
 </resources>

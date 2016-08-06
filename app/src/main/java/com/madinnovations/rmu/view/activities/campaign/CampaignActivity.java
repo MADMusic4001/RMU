@@ -33,6 +33,7 @@ import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCostsFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
+import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
@@ -55,6 +56,7 @@ public class CampaignActivity extends Activity {
 	private SkillCostsFragment		skillCostsFragment;
 	private StatsFragment           statsFragment;
 	private TalentCategoryFragment  talentCategoryFragment;
+	private TalentsFragment         talentsFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +171,13 @@ public class CampaignActivity extends Activity {
 			talentCategoryFragment = new TalentCategoryFragment();
 		}
 		replaceDetailFragment(talentCategoryFragment);
+	}
+
+	public void showTalents() {
+		if(talentsFragment == null) {
+			talentsFragment = new TalentsFragment();
+		}
+		replaceDetailFragment(talentsFragment);
 	}
 
 	private void replaceDetailFragment(Fragment fragment) {

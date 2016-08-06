@@ -61,8 +61,8 @@ public class CommonDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	public SkillCategoryDao provideSkillCategoryDao(RMUDatabaseHelper helper) {
-		return new SkillCategoryDaoDbImpl(helper);
+	public SkillCategoryDao provideSkillCategoryDao(RMUDatabaseHelper helper, StatDao statDao) {
+		return new SkillCategoryDaoDbImpl(helper, statDao);
 	}
 
 	@Provides @Singleton

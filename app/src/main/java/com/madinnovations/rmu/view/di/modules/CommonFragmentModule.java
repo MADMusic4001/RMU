@@ -21,6 +21,7 @@ import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCostsFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
+import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -37,6 +38,7 @@ public class CommonFragmentModule {
 	private SkillCostsFragment      skillCostsFragment;
 	private StatsFragment           statsFragment;
 	private TalentCategoryFragment  talentCategoryFragment;
+	private TalentsFragment         talentsFragment;
 
 	public CommonFragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
 		this.locomotionTypesFragment = locomotionTypesFragment;
@@ -55,6 +57,9 @@ public class CommonFragmentModule {
 	}
 	public CommonFragmentModule(TalentCategoryFragment talentCategoryFragment) {
 		this.talentCategoryFragment = talentCategoryFragment;
+	}
+	public CommonFragmentModule(TalentsFragment talentsFragment) {
+		this.talentsFragment = talentsFragment;
 	}
 
 	@Provides @PerFragment
@@ -78,7 +83,11 @@ public class CommonFragmentModule {
 		return this.statsFragment;
 	}
 	@Provides @PerFragment
-	public TalentCategoryFragment provideCommonDataFragment() {
+	public TalentCategoryFragment provideTalentCategoryFragment() {
 		return this.talentCategoryFragment;
+	}
+	@Provides @PerFragment
+	public TalentsFragment provideTalentsFragment() {
+		return this.talentsFragment;
 	}
 }
