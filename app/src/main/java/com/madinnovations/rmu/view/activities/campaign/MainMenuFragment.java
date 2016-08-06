@@ -144,18 +144,15 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showSkillCategories();
 								break;
 							case 4:
-								((CampaignActivity)getActivity()).showSkillCosts();
-								break;
-							case 5:
 //								((CampaignActivity)getActivity()).showSkills();
 								break;
-							case 6:
+							case 5:
 								((CampaignActivity)getActivity()).showStats();
 								break;
-							case 7:
+							case 6:
 								((CampaignActivity)getActivity()).showTalentCategories();
 								break;
-							case 8:
+							case 7:
 								((CampaignActivity)getActivity()).showTalents();
 								break;
 						}
@@ -230,12 +227,11 @@ public class MainMenuFragment extends Fragment {
 		combatItems.add(getString(R.string.manage_damage_results));
 		combatItems.add(getString(R.string.manage_damage_tables));
 
-		List<String> commonDataItems = new ArrayList<>(9);
+		List<String> commonDataItems = new ArrayList<>(8);
 		commonDataItems.add(getString(R.string.manage_locomotion_types));
 		commonDataItems.add(getString(R.string.manage_parameters));
 		commonDataItems.add(getString(R.string.manage_sizes));
 		commonDataItems.add(getString(R.string.manage_skill_categories));
-		commonDataItems.add(getString(R.string.manage_skill_costs));
 		commonDataItems.add(getString(R.string.manage_skills));
 		commonDataItems.add(getString(R.string.manage_stats));
 		commonDataItems.add(getString(R.string.manage_talent_categories));

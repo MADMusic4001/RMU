@@ -18,7 +18,6 @@ package com.madinnovations.rmu.view.di.modules;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
-import com.madinnovations.rmu.view.activities.common.SkillCostsFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
@@ -35,7 +34,6 @@ public class CommonFragmentModule {
 	private LocomotionTypesFragment locomotionTypesFragment;
 	private ParametersFragment      parametersFragment;
 	private SizesFragment           sizesFragment;
-	private SkillCostsFragment      skillCostsFragment;
 	private StatsFragment           statsFragment;
 	private TalentCategoryFragment  talentCategoryFragment;
 	private TalentsFragment         talentsFragment;
@@ -48,9 +46,6 @@ public class CommonFragmentModule {
 	}
 	public CommonFragmentModule(SizesFragment sizesFragment) {
 		this.sizesFragment = sizesFragment;
-	}
-	public CommonFragmentModule(SkillCostsFragment skillCostsFragment) {
-		this.skillCostsFragment = skillCostsFragment;
 	}
 	public CommonFragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
@@ -73,10 +68,6 @@ public class CommonFragmentModule {
 	@Provides @PerFragment
 	public SizesFragment provideSizesFragment() {
 		return this.sizesFragment;
-	}
-	@Provides @PerFragment
-	public SkillCostsFragment provideSkillCostsFragment() {
-		return this.skillCostsFragment;
 	}
 	@Provides @PerFragment
 	public StatsFragment provideStatsFragment() {
