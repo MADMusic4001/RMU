@@ -19,7 +19,7 @@ import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
-import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
+import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -35,7 +35,7 @@ public class CommonFragmentModule {
 	private ParametersFragment      parametersFragment;
 	private SizesFragment           sizesFragment;
 	private StatsFragment           statsFragment;
-	private TalentCategoryFragment  talentCategoryFragment;
+	private TalentCategoriesFragment talentCategoriesFragment;
 	private TalentsFragment         talentsFragment;
 
 	public CommonFragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
@@ -50,8 +50,8 @@ public class CommonFragmentModule {
 	public CommonFragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
 	}
-	public CommonFragmentModule(TalentCategoryFragment talentCategoryFragment) {
-		this.talentCategoryFragment = talentCategoryFragment;
+	public CommonFragmentModule(TalentCategoriesFragment talentCategoriesFragment) {
+		this.talentCategoriesFragment = talentCategoriesFragment;
 	}
 	public CommonFragmentModule(TalentsFragment talentsFragment) {
 		this.talentsFragment = talentsFragment;
@@ -74,8 +74,8 @@ public class CommonFragmentModule {
 		return this.statsFragment;
 	}
 	@Provides @PerFragment
-	public TalentCategoryFragment provideTalentCategoryFragment() {
-		return this.talentCategoryFragment;
+	public TalentCategoriesFragment provideTalentCategoryFragment() {
+		return this.talentCategoriesFragment;
 	}
 	@Provides @PerFragment
 	public TalentsFragment provideTalentsFragment() {

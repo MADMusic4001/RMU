@@ -29,22 +29,22 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <Spinner
-            android:id="@+id/category_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"/>
         <EditText
             android:id="@+id/name_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/category_spinner"
-            android:layout_toEndOf="@id/category_spinner"
-            android:layout_alignBaseline="@id/category_spinner"
-            android:hint="@string/hint_name"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:hint="@string/hint_name"/>
+        <Spinner
+            android:id="@+id/category_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/name_edit"
+            android:layout_toEndOf="@id/name_edit"
+            android:layout_alignBaseline="@id/name_edit"/>
 
         <EditText
             android:id="@+id/description_edit"
@@ -53,53 +53,54 @@
             android:padding="5dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/category_spinner"/>
+            android:layout_below="@id/name_edit"
+            android:hint="@string/hint_description"/>
 
-        <Spinner
-            android:id="@+id/affected_skill_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/description_edit"/>
         <EditText
             android:id="@+id/initial_cost_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:hint="@string/hint_initial_cost"
-            android:layout_toRightOf="@id/affected_skill_spinner"
-            android:layout_toEndOf="@id/affected_skill_spinner"
-            android:layout_alignBaseline="@id/affected_skill_spinner"/>
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/description_edit"
+            android:hint="@string/hint_initial_cost"/>
         <EditText
             android:id="@+id/cost_per_tier_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:hint="@string/hint_cost_per_tier"
             android:layout_toRightOf="@id/initial_cost_edit"
             android:layout_toEndOf="@id/initial_cost_edit"
-            android:layout_alignBaseline="@id/affected_skill_spinner"/>
+            android:layout_alignBaseline="@id/initial_cost_edit"
+            android:hint="@string/hint_cost_per_tier"/>
         <EditText
             android:id="@+id/bonus_per_tier_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:hint="@string/hint_bonus_per_tier"
             android:layout_toEndOf="@id/cost_per_tier_edit"
             android:layout_toRightOf="@id/cost_per_tier_edit"
-            android:layout_alignBaseline="@id/affected_skill_spinner"/>
+            android:layout_alignBaseline="@id/initial_cost_edit"
+            android:hint="@string/hint_bonus_per_tier"/>
+        <Spinner
+            android:id="@+id/affected_skill_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_toRightOf="@id/bonus_per_tier_edit"
+            android:layout_toEndOf="@id/bonus_per_tier_edit"
+            android:layout_alignBaseline="@id/initial_cost_edit"/>
 
         <CheckBox
             android:id="@+id/situational_check_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:text="@string/label_situational"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/affected_skill_spinner"/>
+            android:layout_below="@id/initial_cost_edit"
+            android:text="@string/label_situational"/>
         <EditText
             android:id="@+id/action_points_edit"
             android:layout_width="wrap_content"
@@ -107,7 +108,8 @@
             android:padding="5dp"
             android:layout_toRightOf="@id/situational_check_box"
             android:layout_toEndOf="@id/situational_check_box"
-            android:layout_alignBaseline="@id/situational_check_box"/>
+            android:layout_alignBaseline="@id/situational_check_box"
+            android:hint="@string/hint_action_points"/>
 
         <ListView
             android:id="@+id/parameters_list"

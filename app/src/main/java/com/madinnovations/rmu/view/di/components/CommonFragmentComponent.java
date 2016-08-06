@@ -19,7 +19,7 @@ import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
-import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
+import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
@@ -36,6 +36,6 @@ public interface CommonFragmentComponent {
 	public void injectInto(ParametersFragment parametersFragment);
 	public void injectInto(SizesFragment sizesFragment);
 	public void injectInto(StatsFragment statsFragment);
-	public void injectInto(TalentCategoryFragment talentCategoryFragment);
+	public void injectInto(TalentCategoriesFragment talentCategoriesFragment);
 	public void injectInto(TalentsFragment talentsFragment);
 }

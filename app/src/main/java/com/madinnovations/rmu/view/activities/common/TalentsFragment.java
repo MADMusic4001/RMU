@@ -131,6 +131,14 @@ public class TalentsFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.talents_action_bar, menu);
@@ -140,9 +148,12 @@ public class TalentsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_talent) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new Talent();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			return true;
 		}
@@ -164,9 +175,12 @@ public class TalentsFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_talent:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new Talent();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				return true;
 			case R.id.context_delete_talent:
@@ -179,7 +193,105 @@ public class TalentsFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+		short newShort;
+
+		TalentCategory newCategory = categorySpinnerAdapter.getItem(categorySpinner.getSelectedItemPosition());
+		if((newCategory == null && currentInstance.getCategory() != null) ||
+				(newCategory != null && !newCategory.equals(currentInstance.getCategory()))) {
+			currentInstance.setCategory(newCategory);
+			changed = true;
+		}
+
+		String newValue = nameEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getName() != null) ||
+				(newValue != null && !newValue.equals(currentInstance.getName()))) {
+			currentInstance.setName(newValue);
+			changed = true;
+		}
+
+		newValue = descriptionEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getDescription() != null) ||
+				(newValue != null && !newValue.equals(currentInstance.getDescription()))) {
+			currentInstance.setDescription(newValue);
+			changed = true;
+		}
+
+		Skill newSkill = affectedSkillSpinnerAdapter.getItem(affectedSkillSpinner.getSelectedItemPosition());
+		if((newSkill == null && currentInstance.getAffectedSkill() != null) ||
+				(newSkill != null && !newSkill.equals(currentInstance.getAffectedSkill()))) {
+			currentInstance.setAffectedSkill(newSkill);
+			changed = true;
+		}
+
+		if(initialCostEdit.getText().length() > 0) {
+			newShort = Short.valueOf(initialCostEdit.getText().toString());
+			if(newShort != currentInstance.getInitialCost()) {
+				currentInstance.setInitialCost(newShort);
+				changed = true;
+			}
+		}
+
+		if(costPerTierEdit.getText().length() > 0) {
+			newShort = Short.valueOf(costPerTierEdit.getText().toString());
+			if(newShort != currentInstance.getCostPerTier()) {
+				currentInstance.setCostPerTier(newShort);
+				changed = true;
+			}
+		}
+
+		if(bonusPerTierEdit.getText().length() > 0) {
+			newShort = Short.valueOf(bonusPerTierEdit.getText().toString());
+			if(newShort != currentInstance.getBonusPerTier()) {
+				currentInstance.setBonusPerTier(newShort);
+				changed = true;
+			}
+		}
+
+		if(situationalCheckbox.isChecked() != currentInstance.isSituational()) {
+			currentInstance.setSituational(situationalCheckbox.isChecked());
+			changed = true;
+		}
+
+		if(actionPointsEdit.getText().length() > 0) {
+			newShort = Short.valueOf(actionPointsEdit.getText().toString());
+			if(newShort != currentInstance.getActionPoints()) {
+				currentInstance.setActionPoints(newShort);
+				changed = true;
+			}
+		}
+
+		boolean updateParameters = false;
+		if(selectedParametersListAdapter.getCount() != currentInstance.getParameters().size()) {
+			updateParameters = true;
+		}
+		else {
+			for(Parameter parameter : currentInstance.getParameters()) {
+				if(selectedParametersListAdapter.getPosition(parameter) == -1) {
+					updateParameters = true;
+					break;
+				}
+			}
+		}
+		if(updateParameters) {
+			currentInstance.getParameters().clear();
+			for(int i = 0; i < selectedParametersListAdapter.getCount(); i++) {
+				currentInstance.getParameters().add(selectedParametersListAdapter.getItem(i));
+			}
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		categorySpinner.setSelection(categorySpinnerAdapter.getPosition(currentInstance.getCategory()));
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
@@ -203,6 +315,8 @@ public class TalentsFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			talentRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -216,11 +330,11 @@ public class TalentsFragment extends Fragment {
 						}
 						@Override
 						public void onNext(Talent savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
+								listAdapter.notifyDataSetChanged();
 								listView.setSelection(listAdapter.getPosition(savedItem));
 								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_talent_saved), Toast.LENGTH_SHORT).show();
@@ -269,7 +383,7 @@ public class TalentsFragment extends Fragment {
 								currentInstance = new Talent();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -640,13 +754,16 @@ public class TalentsFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (Talent) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new Talent();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

@@ -54,7 +54,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for talent categories.
  */
-public class TalentCategoryFragment extends Fragment {
+public class TalentCategoriesFragment extends Fragment {
 	@Inject
 	protected TalentCategoryRxHandler   talentCategoryRxHandler;
 	@Inject
@@ -83,6 +83,14 @@ public class TalentCategoryFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.talent_categories_action_bar, menu);
@@ -92,6 +100,9 @@ public class TalentCategoryFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_talent_category) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new TalentCategory();
 			isNew = true;
 			copyItemToControls();
@@ -116,6 +127,9 @@ public class TalentCategoryFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_talent_category:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new TalentCategory();
 				isNew = true;
 				copyItemToControls();
@@ -132,6 +146,31 @@ public class TalentCategoryFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+		String value = nameEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getName() != null) ||
+				(value != null && !value.equals(currentInstance.getName()))) {
+			currentInstance.setName(value);
+			changed = true;
+		}
+
+		value = descriptionEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getDescription() != null) ||
+				(value != null && !value.equals(currentInstance.getDescription()))) {
+			currentInstance.setName(value);
+			changed = true;
+		}
+
+		return changed;
+	}
+
 	private void copyItemToControls() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
@@ -146,6 +185,8 @@ public class TalentCategoryFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			talentCategoryRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -159,11 +200,11 @@ public class TalentCategoryFragment extends Fragment {
 						}
 						@Override
 						public void onNext(TalentCategory savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
+								listAdapter.notifyDataSetChanged();
 								listView.setSelection(listAdapter.getPosition(savedItem));
 								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_talent_category_saved), Toast.LENGTH_SHORT).show();
@@ -291,7 +332,7 @@ public class TalentCategoryFragment extends Fragment {
 					@Override
 					public void onError(Throwable e) {
 						Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances", e);
-						Toast.makeText(TalentCategoryFragment.this.getActivity(),
+						Toast.makeText(TalentCategoriesFragment.this.getActivity(),
 								getString(R.string.toast_talent_categories_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
@@ -303,13 +344,16 @@ public class TalentCategoryFragment extends Fragment {
 						listAdapter.notifyDataSetChanged();
 						String toastString;
 						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
-						Toast.makeText(TalentCategoryFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(TalentCategoriesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
 
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (TalentCategory) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {

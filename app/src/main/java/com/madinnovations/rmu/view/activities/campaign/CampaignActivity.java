@@ -31,7 +31,7 @@ import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
-import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
+import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
@@ -53,7 +53,7 @@ public class CampaignActivity extends Activity {
 	private ParametersFragment      parametersFragment;
 	private SizesFragment           sizesFragment;
 	private StatsFragment           statsFragment;
-	private TalentCategoryFragment  talentCategoryFragment;
+	private TalentCategoriesFragment talentCategoriesFragment;
 	private TalentsFragment         talentsFragment;
 
 	@Override
@@ -158,10 +158,10 @@ public class CampaignActivity extends Activity {
 	}
 
 	public void showTalentCategories() {
-		if(talentCategoryFragment == null) {
-			talentCategoryFragment = new TalentCategoryFragment();
+		if(talentCategoriesFragment == null) {
+			talentCategoriesFragment = new TalentCategoriesFragment();
 		}
-		replaceDetailFragment(talentCategoryFragment);
+		replaceDetailFragment(talentCategoriesFragment);
 	}
 
 	public void showTalents() {

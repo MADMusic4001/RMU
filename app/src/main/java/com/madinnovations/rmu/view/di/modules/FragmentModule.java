@@ -20,7 +20,7 @@ import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
-import com.madinnovations.rmu.view.activities.common.TalentCategoryFragment;
+import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -36,7 +36,7 @@ public class FragmentModule {
 	private LocomotionTypesFragment locomotionTypesFragment;
 	private ParametersFragment parametersFragment;
 	private StatsFragment statsFragment;
-	private TalentCategoryFragment talentCategoryFragment;
+	private TalentCategoriesFragment talentCategoriesFragment;
 
 	public FragmentModule(AboutFragment aboutFragment) {
 		this.aboutFragment = aboutFragment;
@@ -53,8 +53,8 @@ public class FragmentModule {
 	public FragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
 	}
-	public FragmentModule(TalentCategoryFragment talentCategoryFragment) {
-		this.talentCategoryFragment = talentCategoryFragment;
+	public FragmentModule(TalentCategoriesFragment talentCategoriesFragment) {
+		this.talentCategoriesFragment = talentCategoriesFragment;
 	}
 
 	@Provides @PerFragment
@@ -78,7 +78,7 @@ public class FragmentModule {
 		return this.statsFragment;
 	}
 	@Provides @PerFragment
-	public TalentCategoryFragment provideCommonDataFragment() {
-		return this.talentCategoryFragment;
+	public TalentCategoriesFragment provideCommonDataFragment() {
+		return this.talentCategoriesFragment;
 	}
 }
