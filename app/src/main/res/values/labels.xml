@@ -78,6 +78,7 @@
   <string name="label_description">Description</string>
   <string name="label_range">Range</string>
   <string name="label_name">Name</string>
+  <string name="label_per_level">Per Level</string>
   <string name="label_per_tier">Per Tier</string>
   <string name="label_value">Value</string>
   <string name="label_situational">Situational</string>
@@ -150,6 +151,8 @@
   <string name="hint_max_height">New Max Height</string>
   <string name="hint_min_weight">New Min Weight</string>
   <string name="hint_max_weight">New Max Weight</string>
+  <string name="hint_base_parameter_value">Base Value</string>
+  <string name="hint_base_parameter_value_per_tier_or_level">Value /Lvl/Tier</string>
   <string name="hint_prone">Prone</string>
   <string name="hint_severity_code">Severity Code</string>
   <string name="hint_staggered">Staggered</string>

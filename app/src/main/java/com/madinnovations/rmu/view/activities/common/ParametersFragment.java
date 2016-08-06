@@ -60,11 +60,13 @@ public class ParametersFragment extends Fragment {
 	protected ParameterRxHandler   parameterRxHandler;
 	@Inject
 	protected ParameterListAdapter listAdapter;
-	private   ListView             listView;
-	private   EditText             nameEdit;
-	private   EditText             descriptionEdit;
-	private   EditText             valueEdit;
-	private   CheckBox      perTierCheckBox;
+	private ListView listView;
+	private EditText nameEdit;
+	private EditText descriptionEdit;
+	private EditText baseValueEdit;
+	private EditText perValueEdit;
+	private CheckBox perTierCheckBox;
+	private CheckBox perLevelCheckBox;
 	private Parameter currentInstance = new Parameter();
 	private boolean isNew            = true;
 
@@ -78,13 +80,23 @@ public class ParametersFragment extends Fragment {
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
-		initValueEdit(layout);
+		initBaseValueEdit(layout);
+		initPerValueEdit(layout);
+		initPerLevelCheckBox(layout);
 		initPerTierCheckBox(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
 
 		return layout;
+	}
+
+	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
 	}
 
 	@Override
@@ -97,9 +109,12 @@ public class ParametersFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_parameter) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new Parameter();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			return true;
 		}
@@ -121,9 +136,12 @@ public class ParametersFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_parameter:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new Parameter();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				return true;
 			case R.id.context_delete_parameter:
@@ -137,10 +155,67 @@ public class ParametersFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+		String value = nameEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getName() != null) ||
+				(value != null && !value.equals(currentInstance.getName()))) {
+			currentInstance.setName(value);
+			changed = true;
+		}
+
+		value = descriptionEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getDescription() != null) ||
+				(value != null && !value.equals(currentInstance.getDescription()))) {
+			currentInstance.setName(value);
+			changed = true;
+		}
+
+		value = baseValueEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getBaseValue() != null) ||
+				(value != null && !value.equals(currentInstance.getBaseValue()))) {
+			currentInstance.setBaseValue(value);
+			changed = true;
+		}
+
+		value = perValueEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getValuePerLevelOrTier() != null) ||
+				(value != null && !value.equals(currentInstance.getValuePerLevelOrTier()))) {
+			currentInstance.setValuePerLevelOrTier(value);
+			changed = true;
+		}
+
+		if(perLevelCheckBox.isChecked() != currentInstance.isPerLevel()) {
+			currentInstance.setPerLevel(perLevelCheckBox.isChecked());
+			changed = true;
+		}
+
+		if(perTierCheckBox.isChecked() != currentInstance.isPerTier()) {
+			currentInstance.setPerTier(perTierCheckBox.isChecked());
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-		valueEdit.setText(String.valueOf(currentInstance.getValue()));
+		baseValueEdit.setText(currentInstance.getBaseValue());
+		perValueEdit.setText(currentInstance.getValuePerLevelOrTier());
+		perLevelCheckBox.setChecked(currentInstance.isPerLevel());
 		perTierCheckBox.setChecked(currentInstance.isPerTier());
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
@@ -149,11 +224,12 @@ public class ParametersFragment extends Fragment {
 		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
 			descriptionEdit.setError(null);
 		}
-		valueEdit.setError(null);
 	}
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			parameterRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -167,11 +243,10 @@ public class ParametersFragment extends Fragment {
 						}
 						@Override
 						public void onNext(Parameter savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
 								listView.setSelection(listAdapter.getPosition(savedItem));
 								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_parameter_saved), Toast.LENGTH_SHORT).show();
@@ -220,7 +295,7 @@ public class ParametersFragment extends Fragment {
 								currentInstance = new Parameter();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_parameter_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -267,6 +342,7 @@ public class ParametersFragment extends Fragment {
 				if (editable.length() == 0 && descriptionEdit != null) {
 					descriptionEdit.setError(getString(R.string.validation_description_required));
 				}
+				currentInstance.setDescription(descriptionEdit.getText().toString());
 			}
 		});
 		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -283,28 +359,16 @@ public class ParametersFragment extends Fragment {
 		});
 	}
 
-	private void initValueEdit(View layout) {
-		valueEdit = (EditText)layout.findViewById(R.id.value_edit);
-		valueEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && valueEdit != null) {
-					valueEdit.setError(getString(R.string.validation_value_required));
-				}
-			}
-		});
-		valueEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+	private void initBaseValueEdit(View layout) {
+		baseValueEdit = (EditText)layout.findViewById(R.id.base_value_edit);
+		baseValueEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
-					if (valueEdit.getText() != null && valueEdit.getText().length() > 0) {
-						final short newValue = Short.valueOf(valueEdit.getText().toString());
-						if (currentInstance != null && newValue != currentInstance.getValue()) {
-							currentInstance.setValue(newValue);
+					if (baseValueEdit.getText() != null) {
+						final String newValue = baseValueEdit.getText().toString();
+						if (!newValue.equals(currentInstance.getBaseValue())) {
+							currentInstance.setBaseValue(newValue);
 							saveItem();
 						}
 					}
@@ -313,8 +377,39 @@ public class ParametersFragment extends Fragment {
 		});
 	}
 
+	private void initPerValueEdit(View layout) {
+		perValueEdit = (EditText)layout.findViewById(R.id.per_value_edit);
+		perValueEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					if (perValueEdit.getText() != null) {
+						final String newValue = perValueEdit.getText().toString();
+						if (!newValue.equals(currentInstance.getValuePerLevelOrTier())) {
+							currentInstance.setValuePerLevelOrTier(newValue);
+							saveItem();
+						}
+					}
+				}
+			}
+		});
+	}
+
+	private void initPerLevelCheckBox(View layout) {
+		perLevelCheckBox = (CheckBox) layout.findViewById(R.id.per_level_checkbox);
+
+		perLevelCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				currentInstance.setPerTier(perLevelCheckBox.isChecked());
+				saveItem();
+			}
+		});
+	}
+
 	private void initPerTierCheckBox(View layout) {
 		perTierCheckBox = (CheckBox) layout.findViewById(R.id.per_tier_checkbox);
+
 		perTierCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -354,13 +449,16 @@ public class ParametersFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (Parameter) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new Parameter();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

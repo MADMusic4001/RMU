@@ -98,8 +98,10 @@ public class ParameterDaoDbImpl extends BaseDaoDbImpl<Parameter> implements Para
 			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			instance.setValue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_VALUE)));
-			instance.setPerTier(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_TIER)) == 1);
+			instance.setBaseValue(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE)));
+			instance.setValuePerLevelOrTier(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE)));
+			instance.setPerLevel(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_LEVEL)) != 0);
+			instance.setPerTier(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_TIER)) != 0);
 		}
 		return instance;
 	}
@@ -109,7 +111,9 @@ public class ParameterDaoDbImpl extends BaseDaoDbImpl<Parameter> implements Para
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_VALUE, instance.getValue());
+		initialValues.put(COLUMN_BASE_VALUE, instance.getBaseValue());
+		initialValues.put(COLUMN_PER_VALUE, instance.getValuePerLevelOrTier());
+		initialValues.put(COLUMN_PER_LEVEL, instance.isPerLevel());
 		initialValues.put(COLUMN_PER_TIER, instance.isPerTier());
 		return initialValues;
 	}

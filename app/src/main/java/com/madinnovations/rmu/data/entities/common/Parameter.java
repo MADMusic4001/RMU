@@ -22,7 +22,9 @@ public class Parameter {
 	private int id = -1;
 	private String name = null;
 	private String description = null;
-	private int value = 0;
+	private String baseValue = null;
+	private String valuePerLevelOrTier = null;
+	private boolean perLevel = false;
 	private boolean perTier = false;
 
 	/**
@@ -31,7 +33,7 @@ public class Parameter {
 	 * @return true if the Parameter instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && !(perLevel && perTier);
 	}
 
 	@Override
@@ -40,7 +42,9 @@ public class Parameter {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
-				", value=" + value +
+				", baseValue='" + baseValue + '\'' +
+				", valuePerLevelOrTier='" + valuePerLevelOrTier + '\'' +
+				", perLevel=" + perLevel +
 				", perTier=" + perTier +
 				'}';
 	}
@@ -80,11 +84,23 @@ public class Parameter {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public int getValue() {
-		return value;
+	public String getBaseValue() {
+		return baseValue;
 	}
-	public void setValue(int value) {
-		this.value = value;
+	public void setBaseValue(String baseValue) {
+		this.baseValue = baseValue;
+	}
+	public String getValuePerLevelOrTier() {
+		return valuePerLevelOrTier;
+	}
+	public void setValuePerLevelOrTier(String valuePerLevelOrTier) {
+		this.valuePerLevelOrTier = valuePerLevelOrTier;
+	}
+	public boolean isPerLevel() {
+		return perLevel;
+	}
+	public void setPerLevel(boolean perLevel) {
+		this.perLevel = perLevel;
 	}
 	public boolean isPerTier() {
 		return perTier;
