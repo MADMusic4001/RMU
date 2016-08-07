@@ -46,7 +46,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:hint="@string/hint_code"/>
+        android:hint="@string/hint_size_code"/>
     <EditText
         android:id="@+id/name_edit"
         android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
         android:layout_toEndOf="@id/code_edit"
         android:layout_toRightOf="@id/code_edit"
         android:layout_alignBaseline="@id/code_edit"
-        android:hint="@string/hint_name"/>
+        android:hint="@string/hint_size_name"/>
 
     <EditText
         android:id="@+id/examples_edit"
@@ -76,7 +76,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@id/code_edit"
-        android:hint="@string/hint_examples"/>
+        android:hint="@string/hint_example_races"/>
 
     <EditText
         android:id="@+id/min_weight_edit"

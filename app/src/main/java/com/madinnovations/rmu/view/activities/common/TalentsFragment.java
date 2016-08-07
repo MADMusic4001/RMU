@@ -226,11 +226,13 @@ public class TalentsFragment extends Fragment {
 			changed = true;
 		}
 
-		Skill newSkill = affectedSkillSpinnerAdapter.getItem(affectedSkillSpinner.getSelectedItemPosition());
-		if((newSkill == null && currentInstance.getAffectedSkill() != null) ||
-				(newSkill != null && !newSkill.equals(currentInstance.getAffectedSkill()))) {
-			currentInstance.setAffectedSkill(newSkill);
-			changed = true;
+		if(affectedSkillSpinner.getSelectedItemPosition() != -1) {
+			Skill newSkill = affectedSkillSpinnerAdapter.getItem(affectedSkillSpinner.getSelectedItemPosition());
+			if ((newSkill == null && currentInstance.getAffectedSkill() != null) ||
+					(newSkill != null && !newSkill.equals(currentInstance.getAffectedSkill()))) {
+				currentInstance.setAffectedSkill(newSkill);
+				changed = true;
+			}
 		}
 
 		if(initialCostEdit.getText().length() > 0) {

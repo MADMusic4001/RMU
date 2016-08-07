@@ -41,17 +41,17 @@
             android:layout_height="wrap_content"
             android:inputType="textNoSuggestions"
             android:maxLength="2"
-            android:hint="@string/hint_abbreviation"/>
+            android:hint="@string/hint_stat_abbreviation"/>
         <EditText
             android:id="@+id/name_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="20"
-            android:hint="@string/hint_name"/>
+            android:hint="@string/hint_stat_name"/>
         <EditText
             android:id="@+id/description_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_description"/>
+            android:hint="@string/hint_stat_description"/>
     </LinearLayout>
 </LinearLayout>

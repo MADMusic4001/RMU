@@ -40,7 +40,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:hint="@string/hint_description"/>
+            android:hint="@string/hint_critical_result_description"/>
 
         <EditText
             android:id="@+id/min_roll_edit"
