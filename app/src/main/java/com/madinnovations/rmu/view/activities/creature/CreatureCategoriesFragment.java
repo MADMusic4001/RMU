@@ -71,7 +71,7 @@ public class CreatureCategoriesFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.name_descriptions_fragment, container, false);
+		View layout = inflater.inflate(R.layout.creature_categories_fragment, container, false);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);

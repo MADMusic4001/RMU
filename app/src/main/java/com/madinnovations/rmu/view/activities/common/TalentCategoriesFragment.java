@@ -71,7 +71,7 @@ public class TalentCategoriesFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.name_descriptions_fragment, container, false);
+		View layout = inflater.inflate(R.layout.talent_categories_fragment, container, false);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);

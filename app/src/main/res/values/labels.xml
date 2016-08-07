@@ -138,6 +138,8 @@
   <string name="hint_body_part_description">Body Part Description</string>
   <string name="hint_code">New Code</string>
   <string name="hint_cost_per_tier">Cost per tier</string>
+  <string name="hint_creature_category_description">Creature Category Description</string>
+  <string name="hint_creature_category_name">Creature Category Name</string>
   <string name="hint_critical_code">Critical Code</string>
   <string name="hint_critical_code_description">Critical Code Description</string>
   <string name="hint_critical_result_description">Critical Result Description</string>
@@ -177,6 +179,8 @@
   <string name="hint_stat_description">Stat Description</string>
   <string name="hint_stunned">Stunned rounds</string>
   <string name="hint_stunned_no_parry">Stunned no parry rounds</string>
+  <string name="hint_talent_category_name">Talent Category Name</string>
+  <string name="hint_talent_category_description">Talent Category Description</string>
   <string name="hint_talent_description">Talent Description</string>
   <string name="hint_talent_name">Talent Name</string>
   <string name="hint_value">New Value</string>
