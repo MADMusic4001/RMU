@@ -116,7 +116,7 @@ public class CriticalResultsFragment extends Fragment {
 		initGrappledEdit(layout);
 		initListView(layout);
 
-		copyItemToControls();
+		copyItemToViews();
 		setHasOptionsMenu(true);
 
 		return layout;
@@ -124,8 +124,10 @@ public class CriticalResultsFragment extends Fragment {
 
 	@Override
 	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
 		super.onPause();
-		saveItem();
 	}
 
 	@Override
@@ -138,9 +140,12 @@ public class CriticalResultsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_critical_result) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new CriticalResult();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -163,9 +168,12 @@ public class CriticalResultsFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_critical_result:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new CriticalResult();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -179,7 +187,153 @@ public class CriticalResultsFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+		String newString;
+		char newChar;
+		short newShort;
+		BodyPart newBodyPart;
+
+		newString = descriptionEdit.getText().toString();
+		if(newString.isEmpty()) {
+			newString = null;
+		}
+		if((newString == null && currentInstance.getDescription() != null) ||
+				(newString != null && !newString.equals(currentInstance.getDescription()))) {
+			currentInstance.setDescription(newString);
+			changed = true;
+		}
+
+		if(severityCodeEdit.length() > 0) {
+			newChar = severityCodeEdit.getText().charAt(0);
+			if(newChar !=  currentInstance.getSeverityCode()) {
+				currentInstance.setSeverityCode(newChar);
+				changed = true;
+			}
+		}
+
+		if(minRollEdit.length() > 0) {
+			newShort = Short.valueOf(minRollEdit.getText().toString());
+			if(newShort !=  currentInstance.getMinRoll()) {
+				currentInstance.setMinRoll(newShort);
+				changed = true;
+			}
+		}
+
+		if(maxRollEdit.length() > 0) {
+			newShort = Short.valueOf(maxRollEdit.getText().toString());
+			if(newShort !=  currentInstance.getMaxRoll()) {
+				currentInstance.setMaxRoll(newShort);
+				changed = true;
+			}
+		}
+
+		if(bodyPartSpinner.getSelectedItemPosition() >= 0) {
+			newBodyPart = spinnerAdapter.getItem(bodyPartSpinner.getSelectedItemPosition());
+		}
+		else {
+			newBodyPart = null;
+		}
+		if((newBodyPart == null && currentInstance.getBodyPart() != null) ||
+				(newBodyPart!= null && !newBodyPart.equals(currentInstance.getBodyPart()))) {
+			currentInstance.setBodyPart(newBodyPart);
+			changed = true;
+		}
+
+		if(hitsEdit.length() > 0) {
+			newShort = Short.valueOf(hitsEdit.getText().toString());
+			if(newShort !=  currentInstance.getHits()) {
+				currentInstance.setHits(newShort);
+				changed = true;
+			}
+		}
+
+		if(bleedingEdit.length() > 0) {
+			newShort = Short.valueOf(bleedingEdit.getText().toString());
+			if(newShort !=  currentInstance.getBleeding()) {
+				currentInstance.setBleeding(newShort);
+				changed = true;
+			}
+		}
+
+		if(fatigueEdit.length() > 0) {
+			newShort = Short.valueOf(fatigueEdit.getText().toString());
+			if(newShort !=  currentInstance.getFatigue()) {
+				currentInstance.setFatigue(newShort);
+				changed = true;
+			}
+		}
+
+		if(breakageEdit.length() > 0) {
+			newShort = Short.valueOf(breakageEdit.getText().toString());
+			if(newShort !=  currentInstance.getBreakage()) {
+				currentInstance.setBreakage(newShort);
+				changed = true;
+			}
+		}
+
+		if(injuryEdit.length() > 0) {
+			newShort = Short.valueOf(injuryEdit.getText().toString());
+			if(newShort !=  currentInstance.getInjury()) {
+				currentInstance.setInjury(newShort);
+				changed = true;
+			}
+		}
+
+		if(dazedEdit.length() > 0) {
+			newShort = Short.valueOf(dazedEdit.getText().toString());
+			if(newShort !=  currentInstance.getDazed()) {
+				currentInstance.setDazed(newShort);
+				changed = true;
+			}
+		}
+
+		if(stunnedEdit.length() > 0) {
+			newShort = Short.valueOf(stunnedEdit.getText().toString());
+			if(newShort !=  currentInstance.getStunned()) {
+				currentInstance.setStunned(newShort);
+				changed = true;
+			}
+		}
+
+		if(noParryEdit.length() > 0) {
+			newShort = Short.valueOf(noParryEdit.getText().toString());
+			if(newShort !=  currentInstance.getNoParry()) {
+				currentInstance.setNoParry(newShort);
+				changed = true;
+			}
+		}
+
+		if(staggeredCheckBox.isChecked() != currentInstance.isStaggered()) {
+			currentInstance.setStaggered(staggeredCheckBox.isChecked());
+			changed = true;
+		}
+
+		if(knockBackEdit.length() > 0) {
+			newShort = Short.valueOf(knockBackEdit.getText().toString());
+			if(newShort !=  currentInstance.getKnockBack()) {
+				currentInstance.setKnockBack(newShort);
+				changed = true;
+			}
+		}
+
+		if(proneCheckBox.isChecked() != currentInstance.isProne()) {
+			currentInstance.setProne(proneCheckBox.isChecked());
+			changed = true;
+		}
+
+		if(grappledEdit.length() > 0) {
+			newShort = Short.valueOf(grappledEdit.getText().toString());
+			if(newShort !=  currentInstance.getGrappled()) {
+				currentInstance.setGrappled(newShort);
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		descriptionEdit.setText(currentInstance.getDescription());
 		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
 		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
@@ -278,7 +432,7 @@ public class CriticalResultsFragment extends Fragment {
 								currentInstance = new CriticalResult();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_critical_result_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -338,7 +492,7 @@ public class CriticalResultsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					if(minRollEdit.getText().length() > 0) {
-						int newMinRoll = Integer.valueOf(minRollEdit.getText().toString());
+						short newMinRoll = Short.valueOf(minRollEdit.getText().toString());
 						if (newMinRoll != currentInstance.getMinRoll()) {
 							currentInstance.setMinRoll(newMinRoll);
 							saveItem();
@@ -362,7 +516,7 @@ public class CriticalResultsFragment extends Fragment {
 					maxRollEdit.setError(getString(R.string.validation_max_roll_required));
 				}
 				else {
-					int newValue = Integer.valueOf(editable.toString());
+					short newValue = Short.valueOf(editable.toString());
 					if(newValue <= currentInstance.getMinRoll()) {
 						maxRollEdit.setError(getString(R.string.validation_max_roll_lt_min_roll));
 					}
@@ -374,7 +528,7 @@ public class CriticalResultsFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					if(maxRollEdit.getText().length() > 0) {
-						int newMaxRoll = Integer.valueOf(maxRollEdit.getText().toString());
+						short newMaxRoll = Short.valueOf(maxRollEdit.getText().toString());
 						if (newMaxRoll != currentInstance.getMaxRoll()) {
 							currentInstance.setMaxRoll(newMaxRoll);
 							saveItem();
@@ -806,7 +960,7 @@ public class CriticalResultsFragment extends Fragment {
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
-						copyItemToControls();
+						copyItemToViews();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_critical_results_loaded), criticalResults.size());
@@ -817,12 +971,15 @@ public class CriticalResultsFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (CriticalResult) listView.getItemAtPosition(position);
 				if(currentInstance == null) {
 					currentInstance = new CriticalResult();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

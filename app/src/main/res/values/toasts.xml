@@ -63,6 +63,12 @@
   <string name="toast_size_save_failed">Size save failed.</string>
   <string name="toast_size_deleted">Size deleted.</string>
   <string name="toast_size_delete_failed">Size deletion failed.</string>
+  <string name="toast_skills_load_failed">Failed to load Skills</string>
+  <string name="toast_skills_loaded">%1$d Skills loaded.</string>
+  <string name="toast_skill_saved">Skill saved.</string>
+  <string name="toast_skill_save_failed">Skill save failed.</string>
+  <string name="toast_skill_deleted">Skill deleted.</string>
+  <string name="toast_skill_delete_failed">Skill deletion failed.</string>
   <string name="toast_skill_categories_load_failed">Failed to load Skill Categories</string>
   <string name="toast_skill_categories_loaded">%1$d Skill Categories loaded.</string>
   <string name="toast_skill_category_saved">Skill Category saved.</string>

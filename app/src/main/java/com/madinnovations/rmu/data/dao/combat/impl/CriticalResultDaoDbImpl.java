@@ -100,8 +100,8 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
             instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
             instance.setSeverityCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
             instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setMinRoll(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
-            instance.setMaxRoll(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
+            instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
+            instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
             instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));
             instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
             instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));

@@ -22,8 +22,8 @@ public class CriticalResult {
     private int id = -1;
     private char severityCode = 'A';
     private String description;
-    private int minRoll = 0;
-    private int maxRoll = 1;
+    private short minRoll = 0;
+    private short maxRoll = 1;
     private BodyPart bodyPart;
     private short hits = 0;
     private short bleeding = 0;
@@ -106,16 +106,16 @@ public class CriticalResult {
     public void setDescription(String description) {
         this.description = description;
     }
-    public int getMinRoll() {
+    public short getMinRoll() {
         return minRoll;
     }
-    public void setMinRoll(int minRoll) {
+    public void setMinRoll(short minRoll) {
         this.minRoll = minRoll;
     }
-    public int getMaxRoll() {
+    public short getMaxRoll() {
         return maxRoll;
     }
-    public void setMaxRoll(int maxRoll) {
+    public void setMaxRoll(short maxRoll) {
         this.maxRoll = maxRoll;
     }
     public BodyPart getBodyPart() {

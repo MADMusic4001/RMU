@@ -83,6 +83,14 @@ public class CreatureCategoriesFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.creature_categories_action_bar, menu);
@@ -92,9 +100,12 @@ public class CreatureCategoriesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_creature_category) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new CreatureCategory();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -117,9 +128,12 @@ public class CreatureCategoriesFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_creature_category:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new CreatureCategory();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -133,7 +147,33 @@ public class CreatureCategoriesFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+
+		String newValue = nameEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getName() != null) ||
+				(newValue != null && !newValue.equals(currentInstance.getName()))) {
+			currentInstance.setName(newValue);
+			changed = true;
+		}
+
+		newValue = descriptionEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getDescription() != null) ||
+				(newValue != null && !newValue.equals(currentInstance.getDescription()))) {
+			currentInstance.setDescription(newValue);
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 
@@ -217,7 +257,7 @@ public class CreatureCategoriesFragment extends Fragment {
 								currentInstance = new CreatureCategory();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -313,13 +353,16 @@ public class CreatureCategoriesFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (CreatureCategory) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new CreatureCategory();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

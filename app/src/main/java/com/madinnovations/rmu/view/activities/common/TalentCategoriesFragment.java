@@ -166,7 +166,7 @@ public class TalentCategoriesFragment extends Fragment {
 		}
 		if((value == null && currentInstance.getDescription() != null) ||
 				(value != null && !value.equals(currentInstance.getDescription()))) {
-			currentInstance.setName(value);
+			currentInstance.setDescription(value);
 			changed = true;
 		}
 

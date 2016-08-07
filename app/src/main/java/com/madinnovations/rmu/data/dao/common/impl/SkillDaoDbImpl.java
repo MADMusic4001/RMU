@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -32,14 +33,17 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, SkillSchema {
+    private SkillCategoryDao skillCategoryDao;
+
     /**
      * Creates a new instance of SkillDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public SkillDaoDbImpl(SQLiteOpenHelper helper) {
+    public SkillDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao) {
         super(helper);
+        this.skillCategoryDao = skillCategoryDao;
     }
 
     @Override
@@ -87,14 +91,26 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
         instance.setId(id);
     }
 
-
     @Override
     protected Skill cursorToEntity(Cursor cursor) {
-        return null;
+        Skill instance = null;
+
+        if (cursor != null) {
+            instance = new Skill();
+            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+            instance.setCategory(skillCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
+        }
+        return instance;
     }
 
     @Override
     protected ContentValues getContentValues(Skill instance) {
-        return null;
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_NAME, instance.getName());
+        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+        initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
+        return initialValues;
     }
 }

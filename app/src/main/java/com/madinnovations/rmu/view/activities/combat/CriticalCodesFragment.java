@@ -83,6 +83,14 @@ public class CriticalCodesFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.critical_codes_action_bar, menu);
@@ -92,9 +100,12 @@ public class CriticalCodesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_critical_code) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new CriticalCode();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -117,9 +128,12 @@ public class CriticalCodesFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_critical_code:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new CriticalCode();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -133,7 +147,33 @@ public class CriticalCodesFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+
+		String newValue = codeEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getCode() != null) ||
+				(newValue != null && !newValue.equals(currentInstance.getCode()))) {
+			currentInstance.setCode(newValue);
+			changed = true;
+		}
+
+		newValue = descriptionEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getDescription() != null) ||
+				(newValue != null && !newValue.equals(currentInstance.getDescription()))) {
+			currentInstance.setDescription(newValue);
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		codeEdit.setText(currentInstance.getCode());
 		descriptionEdit.setText(currentInstance.getDescription());
 		if(currentInstance.getCode() != null && !currentInstance.getCode().isEmpty()) {
@@ -220,7 +260,7 @@ public class CriticalCodesFragment extends Fragment {
 							currentInstance = new CriticalCode();
 							isNew = true;
 						}
-						copyItemToControls();
+						copyItemToViews();
 						Toast.makeText(getActivity(), getString(R.string.toast_critical_code_deleted), Toast.LENGTH_SHORT).show();
 					}
 				}
@@ -311,7 +351,7 @@ public class CriticalCodesFragment extends Fragment {
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
-						copyItemToControls();
+						copyItemToViews();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_critical_codes_loaded), criticalCodes.size());
@@ -323,12 +363,15 @@ public class CriticalCodesFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (CriticalCode) listView.getItemAtPosition(position);
 				if (currentInstance == null) {
 					currentInstance = new CriticalCode();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

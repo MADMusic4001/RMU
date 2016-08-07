@@ -93,6 +93,14 @@ public class SizesFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.sizes_action_bar, menu);
@@ -102,9 +110,12 @@ public class SizesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_size) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new Size();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -127,9 +138,12 @@ public class SizesFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_size:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new Size();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -144,7 +158,83 @@ public class SizesFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+
+		String newValue = codeEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getCode() != null) ||
+				newValue != null && !newValue.equals(currentInstance.getCode())) {
+			currentInstance.setCode(newValue);
+			changed = true;
+		}
+
+		newValue = nameEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getName() != null) ||
+				newValue != null && !newValue.equals(currentInstance.getName())) {
+			currentInstance.setName(newValue);
+			changed = true;
+		}
+
+		newValue = examplesEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getExamples() != null) ||
+				newValue != null && !newValue.equals(currentInstance.getExamples())) {
+			currentInstance.setExamples(newValue);
+			changed = true;
+		}
+
+		Integer newInteger = null;
+		if(minWeightEdit.getText().length() > 0) {
+			newInteger = Integer.valueOf(minWeightEdit.getText().toString());
+		}
+		if((newInteger == null && currentInstance.getMinWeight() != null) ||
+				(newInteger != null && !newInteger.equals(currentInstance.getMinWeight()))) {
+			currentInstance.setMinWeight(newInteger);
+			changed = true;
+		}
+
+		newInteger = null;
+		if(maxWeightEdit.getText().length() > 0) {
+			newInteger = Integer.valueOf(maxWeightEdit.getText().toString());
+		}
+		if((newInteger == null && currentInstance.getMaxWeight() != null) ||
+				(newInteger != null && !newInteger.equals(currentInstance.getMaxWeight()))) {
+			currentInstance.setMaxWeight(newInteger);
+			changed = true;
+		}
+
+		newInteger = null;
+		if(minHeightEdit.getText().length() > 0) {
+			newInteger = Integer.valueOf(minHeightEdit.getText().toString());
+		}
+		if((newInteger == null && currentInstance.getMinHeight() != null) ||
+				(newInteger != null && !newInteger.equals(currentInstance.getMinHeight()))) {
+			currentInstance.setMinHeight(newInteger);
+			changed = true;
+		}
+
+		newInteger = null;
+		if(maxHeightEdit.getText().length() > 0) {
+			newInteger = Integer.valueOf(maxHeightEdit.getText().toString());
+		}
+		if((newInteger == null && currentInstance.getMaxHeight() != null) ||
+				(newInteger != null && !newInteger.equals(currentInstance.getMaxHeight()))) {
+			currentInstance.setMaxHeight(newInteger);
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		codeEdit.setText(currentInstance.getCode());
 		nameEdit.setText(currentInstance.getName());
 		examplesEdit.setText(currentInstance.getExamples());
@@ -262,7 +352,7 @@ public class SizesFragment extends Fragment {
 								currentInstance = new Size();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_size_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -543,13 +633,16 @@ public class SizesFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (Size) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new Size();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

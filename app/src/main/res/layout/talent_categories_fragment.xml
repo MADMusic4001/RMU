@@ -43,6 +43,8 @@
         android:id="@+id/description_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:inputType="textMultiLine"
         android:hint="@string/hint_talent_category_description"/>
   </LinearLayout>
 </LinearLayout>

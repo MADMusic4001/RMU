@@ -104,6 +104,8 @@
   <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_size">New Size</string>
   <string name="label_delete_size">Delete Size</string>
+  <string name="label_new_skill">New Skill</string>
+  <string name="label_delete_skill">Delete Skill</string>
   <string name="label_new_skill_category">New Skill Category</string>
   <string name="label_delete_skill_category">Delete Skill Category</string>
   <string name="label_new_stat">New Stat</string>
@@ -173,6 +175,8 @@
   <string name="hint_size_name">Size Name</string>
   <string name="hint_skill_category_name">Skill Category Name</string>
   <string name="hint_skill_category_description">Skill Category Description</string>
+  <string name="hint_skill_description">Skill Description</string>
+  <string name="hint_skill_name">Skill Name</string>
   <string name="hint_staggered">Staggered</string>
   <string name="hint_stat_abbreviation">Stat Abbreviation</string>
   <string name="hint_stat_name">Stat Name</string>

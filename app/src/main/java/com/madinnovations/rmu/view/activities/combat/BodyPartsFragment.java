@@ -166,7 +166,7 @@ public class BodyPartsFragment extends Fragment {
 		}
 		if((value == null && currentInstance.getDescription() != null) ||
 				(value != null && !value.equals(currentInstance.getDescription()))) {
-			currentInstance.setName(value);
+			currentInstance.setDescription(value);
 			changed = true;
 		}
 
@@ -339,7 +339,7 @@ public class BodyPartsFragment extends Fragment {
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("BodyPartsFragment", "Exception caught getting all CriticalCode instances", e);
+					Log.e("BodyPartsFragment", "Exception caught getting all BodyPart instances", e);
 					Toast.makeText(BodyPartsFragment.this.getActivity(),
 							getString(R.string.toast_body_parts_load_failed),
 							Toast.LENGTH_SHORT).show();

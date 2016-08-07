@@ -86,6 +86,14 @@ public class LocomotionTypesFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.locomotion_types_action_bar, menu);
@@ -95,9 +103,12 @@ public class LocomotionTypesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_locomotion_type) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new LocomotionType();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -120,9 +131,12 @@ public class LocomotionTypesFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_locomotion_type:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new LocomotionType();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -137,7 +151,41 @@ public class LocomotionTypesFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+
+		String newValue = nameEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getName() != null) ||
+				newValue != null && !newValue.equals(currentInstance.getName())) {
+			currentInstance.setName(newValue);
+			changed = true;
+		}
+
+		newValue = descriptionEdit.getText().toString();
+		if(newValue.isEmpty()) {
+			newValue = null;
+		}
+		if((newValue == null && currentInstance.getDescription() != null) ||
+				newValue != null && !newValue.equals(currentInstance.getDescription())) {
+			currentInstance.setDescription(newValue);
+			changed = true;
+		}
+
+		if(defaultRateEdit.getText().length() > 0) {
+			int newDefaultRate = Integer.valueOf(defaultRateEdit.getText().toString());
+			if(newDefaultRate != currentInstance.getDefaultRate()) {
+				currentInstance.setDefaultRate(newDefaultRate);
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		descriptionEdit.setText(currentInstance.getDescription());
 		nameEdit.setText(currentInstance.getName());
 		defaultRateEdit.setText(String.valueOf(currentInstance.getDefaultRate()));
@@ -223,7 +271,7 @@ public class LocomotionTypesFragment extends Fragment {
 								currentInstance = new LocomotionType();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_locomotion_type_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -344,7 +392,7 @@ public class LocomotionTypesFragment extends Fragment {
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
-						copyItemToControls();
+						copyItemToViews();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_locomotion_types_loaded), locomotionTypes.size());
@@ -356,13 +404,16 @@ public class LocomotionTypesFragment extends Fragment {
 			@SuppressLint("SetTextI18n")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (LocomotionType) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new LocomotionType();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);
