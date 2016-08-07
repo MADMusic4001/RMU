@@ -103,43 +103,48 @@
             android:layout_alignBaseline="@id/situational_check_box"
             android:hint="@string/hint_action_points"/>
 
-        <ListView
-            android:id="@+id/parameters_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/situational_check_box"
-            android:choiceMode="multipleChoice"/>
         <LinearLayout
-            android:id="@+id/move_buttons_layout"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/parameters_list"
-            android:layout_toEndOf="@id/parameters_list"
-            android:layout_centerVertical="true">
-            <Button
-                android:id="@+id/add_parameter_button"
-                android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/situational_check_box">
+            <ListView
+                android:id="@+id/parameters_list"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="120dp"
+                android:minHeight="20dp"
+                android:choiceMode="multipleChoice"/>
+            <LinearLayout
+                android:id="@+id/move_buttons_layout"
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/label_move_right"/>
-            <Button
-                android:id="@+id/remove_parameter_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/label_move_left"/>
+                android:gravity="center">
+                <Button
+                    android:id="@+id/add_parameter_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="@string/label_move_right"/>
+                <Button
+                    android:id="@+id/remove_parameter_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="@string/label_move_left"/>
+            </LinearLayout>
+            <ListView
+                android:id="@+id/selected_parameters_list"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="120dp"
+                android:minHeight="20dp"
+                android:choiceMode="multipleChoice"/>
         </LinearLayout>
-        <ListView
-            android:id="@+id/selected_parameters_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/move_buttons_layout"
-            android:layout_toEndOf="@id/move_buttons_layout"
-            android:layout_alignBaseline="@id/parameters_list"
-            android:choiceMode="multipleChoice"/>
     </RelativeLayout>
 
 </LinearLayout>

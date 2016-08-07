@@ -50,10 +50,10 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.ParameterListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentCategorySpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentListAdapter;
+import com.madinnovations.rmu.view.adapters.common.TalentParameterListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
@@ -83,9 +83,9 @@ public class TalentsFragment extends Fragment {
 	@Inject
 	protected SkillSpinnerAdapter affectedSkillSpinnerAdapter;
 	@Inject
-	protected ParameterListAdapter parametersListAdapter;
+	protected TalentParameterListAdapter parametersListAdapter;
 	@Inject
-	protected ParameterListAdapter selectedParametersListAdapter;
+	protected TalentParameterListAdapter selectedParametersListAdapter;
 	private ListView listView;
 	private Spinner  categorySpinner;
 	private EditText nameEdit;
@@ -691,13 +691,24 @@ public class TalentsFragment extends Fragment {
 		addParameterButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				boolean change = false;
 				SparseBooleanArray checkedList = parametersListview.getCheckedItemPositions();
 				for(int i = 0; i < checkedList.size(); i++) {
-					if(checkedList.get(i)) {
-						selectedParametersListAdapter.add(parametersListAdapter.getItem(i));
+					if(checkedList.valueAt(i)) {
+						if(selectedParametersListAdapter.getPosition(parametersListAdapter.getItem(checkedList.keyAt(i))) == -1) {
+							Parameter parameter = parametersListAdapter.getItem(checkedList.keyAt(i));
+							selectedParametersListAdapter.add(parameter);
+							currentInstance.getParameters().add(parameter);
+							change = true;
+						}
 					}
 				}
+				parametersListview.clearChoices();
+				parametersListAdapter.notifyDataSetChanged();
 				selectedParametersListAdapter.notifyDataSetChanged();
+				if(change) {
+					saveItem();
+				}
 			}
 		});
 	}
@@ -708,13 +719,21 @@ public class TalentsFragment extends Fragment {
 		removeParameterButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				boolean change = false;
 				SparseBooleanArray checkedList = selectedParametersListview.getCheckedItemPositions();
-				for(int i = 0; i < checkedList.size(); i++) {
-					if(checkedList.get(i)) {
-						selectedParametersListAdapter.remove(selectedParametersListAdapter.getItem(i));
+				for(int i = checkedList.size() - 1 ; i >=0 ; i--) {
+					if(checkedList.valueAt(i)) {
+						Parameter parameter = selectedParametersListAdapter.getItem(checkedList.keyAt(i));
+						selectedParametersListAdapter.remove(parameter);
+						currentInstance.getParameters().remove(parameter);
+						change = true;
 					}
 				}
+				selectedParametersListview.clearChoices();
 				selectedParametersListAdapter.notifyDataSetChanged();
+				if(change) {
+					saveItem();
+				}
 			}
 		});
 	}
