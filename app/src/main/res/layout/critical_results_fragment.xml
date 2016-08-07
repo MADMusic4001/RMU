@@ -37,11 +37,10 @@
             android:id="@+id/description_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:hint="@string/hint_description"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"/>
+            android:layout_alignParentTop="true"
+            android:hint="@string/hint_description"/>
 
         <EditText
             android:id="@+id/min_roll_edit"
@@ -49,42 +48,42 @@
             android:layout_height="wrap_content"
             android:maxLength="3"
             android:inputType="number"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:hint="@string/hint_min"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/description_edit"/>
+            android:layout_below="@id/description_edit"
+            android:hint="@string/hint_min"/>
         <TextView
             android:id="@+id/hyphen_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/label_hyphen"
+            android:paddingLeft="0dp"
+            android:paddingStart="0dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
             android:layout_toRightOf="@id/min_roll_edit"
             android:layout_toEndOf="@id/min_roll_edit"
-            android:layout_alignBaseline="@id/min_roll_edit"/>
+            android:layout_alignBaseline="@id/min_roll_edit"
+            android:text="@string/label_hyphen"/>
         <EditText
             android:id="@+id/max_roll_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="3"
             android:inputType="number"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:hint="@string/hint_max"
             android:layout_toRightOf="@id/hyphen_view"
             android:layout_toEndOf="@id/hyphen_view"
-            android:layout_alignBaseline="@id/min_roll_edit"/>
+            android:layout_alignBaseline="@id/min_roll_edit"
+            android:hint="@string/hint_max"/>
         <EditText
             android:id="@+id/severity_code_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="1"
             android:inputType="textCapCharacters"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:hint="@string/hint_severity_code"
             android:layout_toRightOf="@id/max_roll_edit"
             android:layout_toEndOf="@id/max_roll_edit"
-            android:layout_alignBaseline="@id/min_roll_edit"/>
+            android:layout_alignBaseline="@id/min_roll_edit"
+            android:hint="@string/hint_severity_code"/>
         <Spinner
             android:id="@+id/body_part_spinner"
             android:layout_width="wrap_content"
@@ -102,99 +101,99 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="3"
-            android:hint="@string/hint_hits"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/min_roll_edit"/>
+            android:layout_below="@id/min_roll_edit"
+            android:hint="@string/hint_hits"/>
         <EditText
             android:id="@+id/bleeding_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_bleeding"
             android:layout_toRightOf="@id/hits_edit"
             android:layout_toEndOf="@id/hits_edit"
-            android:layout_alignBaseline="@id/hits_edit"/>
+            android:layout_alignBaseline="@id/hits_edit"
+            android:hint="@string/hint_bleeding"/>
         <EditText
             android:id="@+id/fatigue_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_fatigue"
             android:layout_toRightOf="@id/bleeding_edit"
             android:layout_toEndOf="@id/bleeding_edit"
-            android:layout_alignBaseline="@id/hits_edit"/>
+            android:layout_alignBaseline="@id/hits_edit"
+            android:hint="@string/hint_fatigue"/>
         <EditText
             android:id="@+id/breakage_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_breakage"
             android:layout_toRightOf="@id/fatigue_edit"
             android:layout_toEndOf="@id/fatigue_edit"
-            android:layout_alignBaseline="@id/hits_edit"/>
+            android:layout_alignBaseline="@id/hits_edit"
+            android:hint="@string/hint_breakage"/>
         <EditText
             android:id="@+id/injury_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_injury"
             android:layout_toRightOf="@id/breakage_edit"
             android:layout_toEndOf="@id/breakage_edit"
-            android:layout_alignBaseline="@id/hits_edit"/>
+            android:layout_alignBaseline="@id/hits_edit"
+            android:hint="@string/hint_injury"/>
         <EditText
             android:id="@+id/dazed_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_dazed"
             android:layout_toRightOf="@id/injury_edit"
             android:layout_toEndOf="@id/injury_edit"
-            android:layout_alignBaseline="@id/hits_edit"/>
+            android:layout_alignBaseline="@id/hits_edit"
+            android:hint="@string/hint_dazed"/>
 
         <EditText
             android:id="@+id/stunned_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_stunned"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/hits_edit"/>
+            android:layout_below="@id/hits_edit"
+            android:hint="@string/hint_stunned"/>
         <EditText
             android:id="@+id/stunned_no_parry_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_stunned_no_parry"
             android:layout_toRightOf="@id/stunned_edit"
             android:layout_toEndOf="@id/stunned_edit"
-            android:layout_alignBaseline="@id/stunned_edit"/>
+            android:layout_alignBaseline="@id/stunned_edit"
+            android:hint="@string/hint_stunned_no_parry"/>
         <CheckBox
             android:id="@+id/staggered_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_staggered"
             android:layout_toRightOf="@id/stunned_no_parry_edit"
             android:layout_toEndOf="@id/stunned_no_parry_edit"
-            android:layout_alignBaseline="@id/stunned_edit"/>
+            android:layout_alignBaseline="@id/stunned_edit"
+            android:text="@string/hint_staggered"/>
         <EditText
             android:id="@+id/knock_back_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_knock_back"
             android:layout_toRightOf="@id/staggered_checkbox"
             android:layout_toEndOf="@id/staggered_checkbox"
-            android:layout_alignBaseline="@id/stunned_edit"/>
+            android:layout_alignBaseline="@id/stunned_edit"
+            android:hint="@string/hint_knock_back"/>
         <CheckBox
             android:id="@+id/prone_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_prone"
             android:layout_toRightOf="@id/knock_back_edit"
             android:layout_toEndOf="@id/knock_back_edit"
-            android:layout_alignBaseline="@id/stunned_edit"/>
+            android:layout_alignBaseline="@id/stunned_edit"
+            android:text="@string/hint_prone"/>
         <EditText
             android:id="@+id/grappled_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_grappled"
             android:layout_toRightOf="@id/prone_checkbox"
             android:layout_toEndOf="@id/prone_checkbox"
-            android:layout_alignBaseline="@id/stunned_edit"/>
+            android:layout_alignBaseline="@id/stunned_edit"
+            android:hint="@string/hint_grappled"/>
     </RelativeLayout>
 
 </LinearLayout>

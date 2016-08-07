@@ -39,11 +39,12 @@
             android:id="@+id/name_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_name"/>
+            android:maxLength="30"
+            android:hint="@string/hint_body_part_name"/>
         <EditText
             android:id="@+id/description_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_description"/>
+            android:hint="@string/hint_body_part_description"/>
     </LinearLayout>
 </LinearLayout>

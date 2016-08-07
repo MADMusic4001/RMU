@@ -133,8 +133,12 @@
   <string name="hint_bleeding">Bleeding per round</string>
   <string name="hint_bonus_per_tier">Bonus per tier</string>
   <string name="hint_breakage">Breakage roll</string>
+  <string name="hint_body_part_name">Body Part Name</string>
+  <string name="hint_body_part_description">Body Part Description</string>
   <string name="hint_code">New Code</string>
   <string name="hint_cost_per_tier">Cost per tier</string>
+  <string name="hint_critical_code">Critical Code</string>
+  <string name="hint_critical_code_description">Critical Code Description</string>
   <string name="hint_dazed">Dazed rounds</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_description">New Description</string>

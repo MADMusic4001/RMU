@@ -82,6 +82,14 @@ public class BodyPartsFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.body_parts_action_bar, menu);
@@ -91,9 +99,12 @@ public class BodyPartsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_body_part) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new BodyPart();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -116,9 +127,12 @@ public class BodyPartsFragment extends Fragment {
 
 		switch (item.getItemId()) {
 			case R.id.context_new_body_part:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new BodyPart();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -133,7 +147,33 @@ public class BodyPartsFragment extends Fragment {
 		return super.onContextItemSelected(item);
 	}
 
-	private void copyItemToControls() {
+	private boolean copyViewsToItem() {
+		boolean changed = false;
+
+		String value = nameEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getName() != null) ||
+				(value != null && !value.equals(currentInstance.getName()))) {
+			currentInstance.setName(value);
+			changed = true;
+		}
+
+		value = descriptionEdit.getText().toString();
+		if(value.isEmpty()) {
+			value = null;
+		}
+		if((value == null && currentInstance.getDescription() != null) ||
+				(value != null && !value.equals(currentInstance.getDescription()))) {
+			currentInstance.setName(value);
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
@@ -174,7 +214,7 @@ public class BodyPartsFragment extends Fragment {
 							currentInstance = new BodyPart();
 							isNew = true;
 						}
-						copyItemToControls();
+						copyItemToViews();
 						Toast.makeText(getActivity(), getString(R.string.toast_body_part_deleted), Toast.LENGTH_SHORT).show();
 					}
 				}
@@ -314,7 +354,7 @@ public class BodyPartsFragment extends Fragment {
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
-						copyItemToControls();
+						copyItemToViews();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
@@ -325,13 +365,16 @@ public class BodyPartsFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (BodyPart) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new BodyPart();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

@@ -34,63 +34,53 @@
           android:id="@+id/name_edit"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="@string/hint_name"
           android:maxLength="20"
-          android:padding="5dp"
           android:layout_alignParentStart="true"
           android:layout_alignParentLeft="true"
-          android:layout_alignParentTop="true"/>
+          android:layout_alignParentTop="true"
+          android:hint="@string/hint_name"/>
       <EditText
           android:id="@+id/description_edit"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:padding="5dp"
-          android:hint="@string/hint_description"
           android:layout_alignParentStart="true"
           android:layout_alignParentLeft="true"
-          android:layout_below="@id/name_edit"/>
+          android:layout_below="@id/name_edit"
+          android:hint="@string/hint_description"/>
 
       <EditText
           android:id="@+id/base_value_edit"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:hint="@string/hint_base_parameter_value"
           android:maxLength="15"
           android:layout_alignParentStart="true"
           android:layout_alignParentLeft="true"
-          android:layout_below="@id/description_edit"/>
+          android:layout_below="@id/description_edit"
+          android:hint="@string/hint_base_parameter_value"/>
       <EditText
           android:id="@+id/per_value_edit"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:hint="@string/hint_base_parameter_value_per_tier_or_level"
           android:maxLength="15"
           android:layout_toRightOf="@id/base_value_edit"
           android:layout_toEndOf="@id/base_value_edit"
-          android:layout_alignBaseline="@id/base_value_edit"/>
+          android:layout_alignBaseline="@id/base_value_edit"
+          android:hint="@string/hint_base_parameter_value_per_tier_or_level"/>
       <CheckBox
           android:id="@+id/per_level_checkbox"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/label_per_level"
-          android:button="@null"
-          android:textAppearance="?android:attr/textAppearanceMediumInverse"
-          android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-          android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
           android:layout_toEndOf="@id/per_value_edit"
           android:layout_toRightOf="@id/per_value_edit"
-          android:layout_alignBaseline="@id/base_value_edit"/>
+          android:layout_alignBaseline="@id/base_value_edit"
+          android:text="@string/label_per_level"/>
       <CheckBox
           android:id="@+id/per_tier_checkbox"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/label_per_tier"
-          android:button="@null"
-          android:textAppearance="?android:attr/textAppearanceMediumInverse"
-          android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-          android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
           android:layout_toEndOf="@id/per_level_checkbox"
           android:layout_toRightOf="@id/per_level_checkbox"
-          android:layout_alignBaseline="@id/base_value_edit"/>
+          android:layout_alignBaseline="@id/base_value_edit"
+          android:text="@string/label_per_tier"/>
     </RelativeLayout>
 </LinearLayout>
