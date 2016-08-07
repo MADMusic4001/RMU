@@ -43,6 +43,7 @@
         android:id="@+id/description_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
         android:hint="@string/hint_creature_category_description"/>
   </LinearLayout>
 </LinearLayout>
