@@ -98,6 +98,7 @@ public class ItemsFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -122,6 +123,7 @@ public class ItemsFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_item:
 				item = (Item)listView.getItemAtPosition(info.position);
@@ -149,6 +151,8 @@ public class ItemsFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			itemRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -162,11 +166,13 @@ public class ItemsFragment extends Fragment {
 						}
 						@Override
 						public void onNext(Item savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
-								listView.setSelection(listAdapter.getPosition(savedItem));
-								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
+								if(savedItem == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItem));
+									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								}
+								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_item_saved), Toast.LENGTH_SHORT).show();

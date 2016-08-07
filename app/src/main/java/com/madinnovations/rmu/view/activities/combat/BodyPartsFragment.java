@@ -95,6 +95,7 @@ public class BodyPartsFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -119,6 +120,7 @@ public class BodyPartsFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_body_part:
 				bodyPart = (BodyPart)listView.getItemAtPosition(info.position);
@@ -181,6 +183,8 @@ public class BodyPartsFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			bodyPartRxHandler.save(currentInstance)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
@@ -195,11 +199,13 @@ public class BodyPartsFragment extends Fragment {
 					}
 					@Override
 					public void onNext(BodyPart savedBodyPart) {
-						if (isNew) {
+						if (wasNew) {
 							listAdapter.add(savedBodyPart);
-							listView.setSelection(listAdapter.getPosition(savedBodyPart));
-							listView.setItemChecked(listAdapter.getPosition(savedBodyPart), true);
-							isNew = false;
+							if(savedBodyPart == currentInstance) {
+								listView.setSelection(listAdapter.getPosition(savedBodyPart));
+								listView.setItemChecked(listAdapter.getPosition(savedBodyPart), true);
+							}
+							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
 							String toastString;

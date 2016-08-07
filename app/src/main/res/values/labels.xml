@@ -104,8 +104,8 @@
   <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_size">New Size</string>
   <string name="label_delete_size">Delete Size</string>
-  <string name="label_new_skill_cost">New Skill Cost</string>
-  <string name="label_delete_skill_cost">Delete Skill Cost</string>
+  <string name="label_new_skill_category">New Skill Category</string>
+  <string name="label_delete_skill_category">Delete Skill Category</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent">New Talent</string>

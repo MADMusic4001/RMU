@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.di.modules;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
+import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
@@ -31,12 +32,13 @@ import dagger.Provides;
  */
 @Module
 public class CommonFragmentModule {
-	private LocomotionTypesFragment locomotionTypesFragment;
-	private ParametersFragment      parametersFragment;
-	private SizesFragment           sizesFragment;
-	private StatsFragment           statsFragment;
+	private LocomotionTypesFragment  locomotionTypesFragment;
+	private ParametersFragment       parametersFragment;
+	private SizesFragment            sizesFragment;
+	private SkillCategoriesFragment  skillCategoriesFragment;
+	private StatsFragment            statsFragment;
 	private TalentCategoriesFragment talentCategoriesFragment;
-	private TalentsFragment         talentsFragment;
+	private TalentsFragment          talentsFragment;
 
 	public CommonFragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
 		this.locomotionTypesFragment = locomotionTypesFragment;
@@ -46,6 +48,9 @@ public class CommonFragmentModule {
 	}
 	public CommonFragmentModule(SizesFragment sizesFragment) {
 		this.sizesFragment = sizesFragment;
+	}
+	public CommonFragmentModule(SkillCategoriesFragment skillCategoriesFragment) {
+		this.skillCategoriesFragment = skillCategoriesFragment;
 	}
 	public CommonFragmentModule(StatsFragment statsFragment) {
 		this.statsFragment = statsFragment;
@@ -68,6 +73,10 @@ public class CommonFragmentModule {
 	@Provides @PerFragment
 	public SizesFragment provideSizesFragment() {
 		return this.sizesFragment;
+	}
+	@Provides @PerFragment
+	public SkillCategoriesFragment provideSkillCategoriesFragment() {
+		return this.skillCategoriesFragment;
 	}
 	@Provides @PerFragment
 	public StatsFragment provideStatsFragment() {

@@ -106,6 +106,7 @@ public class SizesFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -130,6 +131,7 @@ public class SizesFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_size:
 				size = (Size) listView.getItemAtPosition(info.position);
@@ -147,25 +149,25 @@ public class SizesFragment extends Fragment {
 		nameEdit.setText(currentInstance.getName());
 		examplesEdit.setText(currentInstance.getExamples());
 		if(currentInstance.getMinWeight() != null) {
-			minWeightEdit.setText(currentInstance.getMinWeight().toString());
+			minWeightEdit.setText(String.valueOf(currentInstance.getMinWeight()));
 		}
 		else {
 			minWeightEdit.setText(null);
 		}
 		if(currentInstance.getMaxWeight() != null) {
-			maxWeightEdit.setText(currentInstance.getMaxWeight().toString());
+			maxWeightEdit.setText(String.valueOf(currentInstance.getMaxWeight()));
 		}
 		else {
 			maxWeightEdit.setText(null);
 		}
 		if(currentInstance.getMinHeight() != null) {
-			minHeightEdit.setText(currentInstance.getMinHeight().toString());
+			minHeightEdit.setText(String.valueOf(currentInstance.getMinHeight()));
 		}
 		else {
 			minHeightEdit.setText(null);
 		}
 		if(currentInstance.getMaxHeight() != null) {
-			maxHeightEdit.setText(currentInstance.getMaxHeight().toString());
+			maxHeightEdit.setText(String.valueOf(currentInstance.getMaxHeight()));
 		}
 		else {
 			maxHeightEdit.setText(null);
@@ -188,6 +190,8 @@ public class SizesFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			sizeRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -201,11 +205,13 @@ public class SizesFragment extends Fragment {
 						}
 						@Override
 						public void onNext(Size savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
-								listView.setSelection(listAdapter.getPosition(savedItem));
-								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
+								if(savedItem == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItem));
+									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								}
+								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_size_saved), Toast.LENGTH_SHORT).show();

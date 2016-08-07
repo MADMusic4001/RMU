@@ -23,26 +23,31 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
+import com.madinnovations.rmu.data.entities.common.Stat;
 
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link SkillCost} information
+ * Populates a Spinner with {@link Stat} information
  */
-public class SkillCostListAdapter extends ArrayAdapter<SkillCost> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.cost_cost_row;
+public class StatSpinnerAdapter extends ArrayAdapter<Stat> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.name_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new SkillCostListAdapter instance.
+	 * Creates a new StatSpinnerAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public SkillCostListAdapter(Context context) {
+	public StatSpinnerAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return getView(position, convertView, parent);
 	}
 
 	@Override
@@ -52,8 +57,7 @@ public class SkillCostListAdapter extends ArrayAdapter<SkillCost> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.initial_cost_view),
-									(TextView) rowView.findViewById(R.id.additional_cost_view));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view));
 			rowView.setTag(holder);
 		}
 		else {
@@ -61,19 +65,16 @@ public class SkillCostListAdapter extends ArrayAdapter<SkillCost> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		SkillCost skillCost = getItem(position);
- 		holder.initialCostView.setText(String.valueOf(skillCost.getFirstCost()));
-		holder.additionalCostView.setText(String.valueOf(skillCost.getAdditionalCost()));
+		Stat item = getItem(position);
+		holder.nameView.setText(item.getName());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView initialCostView;
-		private TextView additionalCostView;
+		private TextView nameView;
 
-		ViewHolder(TextView initialCostView, TextView additionalCostView) {
-			this.initialCostView = initialCostView;
-			this.additionalCostView = additionalCostView;
+		ViewHolder(TextView nameView) {
+			this.nameView = nameView;
 		}
 	}
 }

@@ -99,6 +99,7 @@ public class LocomotionTypesFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -123,6 +124,7 @@ public class LocomotionTypesFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_locomotion_type:
 				locomotionType = (LocomotionType) listView.getItemAtPosition(info.position);
@@ -151,6 +153,8 @@ public class LocomotionTypesFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			locomotionTypeRxHandler.save(currentInstance)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
@@ -164,11 +168,13 @@ public class LocomotionTypesFragment extends Fragment {
 					}
 					@Override
 					public void onNext(LocomotionType savedItem) {
-						if (isNew) {
+						if (wasNew) {
 							listAdapter.add(savedItem);
-							listView.setSelection(listAdapter.getPosition(savedItem));
-							listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-							isNew = false;
+							if(savedItem == currentInstance) {
+								listView.setSelection(listAdapter.getPosition(savedItem));
+								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+							}
+							listAdapter.notifyDataSetChanged();
 						}
 						if(getActivity() != null) {
 							Toast.makeText(getActivity(), getString(R.string.toast_locomotion_type_saved), Toast.LENGTH_SHORT).show();

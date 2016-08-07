@@ -96,6 +96,7 @@ public class CreatureCategoriesFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -120,6 +121,7 @@ public class CreatureCategoriesFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_creature_category:
 				creatureCategory = (CreatureCategory)listView.getItemAtPosition(info.position);
@@ -145,6 +147,8 @@ public class CreatureCategoriesFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			creatureCategoryRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -158,11 +162,13 @@ public class CreatureCategoriesFragment extends Fragment {
 						}
 						@Override
 						public void onNext(CreatureCategory savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
-								listView.setSelection(listAdapter.getPosition(savedItem));
-								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
+								if(savedItem == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItem));
+									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								}
+								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_creature_category_saved), Toast.LENGTH_SHORT).show();

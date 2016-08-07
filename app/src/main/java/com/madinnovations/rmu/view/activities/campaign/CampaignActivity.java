@@ -30,6 +30,7 @@ import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
+import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
@@ -42,19 +43,20 @@ import com.madinnovations.rmu.view.di.modules.ActivityModule;
  * Activity class for managing the campaign UI.
  */
 public class CampaignActivity extends Activity {
-	private ActivityComponent       activityComponent;
-	private AboutFragment           aboutFragment;
-	private BodyPartsFragment       bodyPartsFragment;
+	private ActivityComponent          activityComponent;
+	private AboutFragment              aboutFragment;
+	private BodyPartsFragment          bodyPartsFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
-	private CriticalCodesFragment   criticalCodesFragment;
-	private CriticalResultsFragment criticalResultsFragment;
-	private ItemsFragment           itemsFragment;
-	private LocomotionTypesFragment locomotionTypesFragment;
-	private ParametersFragment      parametersFragment;
-	private SizesFragment           sizesFragment;
-	private StatsFragment           statsFragment;
-	private TalentCategoriesFragment talentCategoriesFragment;
-	private TalentsFragment         talentsFragment;
+	private CriticalCodesFragment      criticalCodesFragment;
+	private CriticalResultsFragment    criticalResultsFragment;
+	private ItemsFragment              itemsFragment;
+	private LocomotionTypesFragment    locomotionTypesFragment;
+	private ParametersFragment         parametersFragment;
+	private SizesFragment              sizesFragment;
+	private SkillCategoriesFragment    skillCategoriesFragment;
+	private StatsFragment              statsFragment;
+	private TalentCategoriesFragment   talentCategoriesFragment;
+	private TalentsFragment            talentsFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +150,13 @@ public class CampaignActivity extends Activity {
 			sizesFragment = new SizesFragment();
 		}
 		replaceDetailFragment(sizesFragment);
+	}
+
+	public void showSkillCategories() {
+		if(skillCategoriesFragment == null) {
+			skillCategoriesFragment = new SkillCategoriesFragment();
+		}
+		replaceDetailFragment(skillCategoriesFragment);
 	}
 
 	public void showStats() {

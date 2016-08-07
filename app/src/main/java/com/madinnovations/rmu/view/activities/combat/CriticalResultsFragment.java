@@ -142,6 +142,7 @@ public class CriticalResultsFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -166,6 +167,7 @@ public class CriticalResultsFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_critical_result:
 				criticalResult = (CriticalResult)listView.getItemAtPosition(info.position);
@@ -202,27 +204,26 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			criticalResultRxHandler.save(currentInstance)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<CriticalResult>() {
 					@Override
-					public void onCompleted() {
-
-					}
-
+					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
 						Log.e("CriticalResultsFragment", "Exception saving new CriticalResult", e);
 					}
-
 					@Override
 					public void onNext(CriticalResult savedCriticalResult) {
-						if (isNew) {
+						if (wasNew) {
 							listAdapter.add(savedCriticalResult);
-							listView.setSelection(listAdapter.getPosition(savedCriticalResult));
-							listView.setItemChecked(listAdapter.getPosition(savedCriticalResult), true);
-							isNew = false;
+							if(savedCriticalResult == currentInstance) {
+								listView.setSelection(listAdapter.getPosition(savedCriticalResult));
+								listView.setItemChecked(listAdapter.getPosition(savedCriticalResult), true);
+							}
 						}
 						if(getActivity() != null) {
 							String toastString;

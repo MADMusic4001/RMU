@@ -99,6 +99,7 @@ public class StatsFragment extends Fragment {
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -123,6 +124,7 @@ public class StatsFragment extends Fragment {
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_stat:
 				stat = (Stat) listView.getItemAtPosition(info.position);
@@ -153,6 +155,8 @@ public class StatsFragment extends Fragment {
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			final boolean wasNew = isNew;
+			isNew = false;
 			statRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -166,11 +170,13 @@ public class StatsFragment extends Fragment {
 						}
 						@Override
 						public void onNext(Stat savedItem) {
-							if (isNew) {
+							if (wasNew) {
 								listAdapter.add(savedItem);
-								listView.setSelection(listAdapter.getPosition(savedItem));
-								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
-								isNew = false;
+								if(savedItem == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItem));
+									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								}
+								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_stat_saved), Toast.LENGTH_SHORT).show();

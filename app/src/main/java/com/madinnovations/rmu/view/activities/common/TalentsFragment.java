@@ -155,6 +155,7 @@ public class TalentsFragment extends Fragment {
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -182,6 +183,7 @@ public class TalentsFragment extends Fragment {
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_talent:
 				talent = (Talent)listView.getItemAtPosition(info.position);
@@ -332,9 +334,11 @@ public class TalentsFragment extends Fragment {
 						public void onNext(Talent savedItem) {
 							if (wasNew) {
 								listAdapter.add(savedItem);
+								if(savedItem == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItem));
+									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								}
 								listAdapter.notifyDataSetChanged();
-								listView.setSelection(listAdapter.getPosition(savedItem));
-								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_talent_saved), Toast.LENGTH_SHORT).show();

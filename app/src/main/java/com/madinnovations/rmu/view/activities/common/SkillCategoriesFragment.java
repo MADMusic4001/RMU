@@ -33,14 +33,18 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
-import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.TalentCategoryListAdapter;
+import com.madinnovations.rmu.view.adapters.common.SkillCategoryListAdapter;
+import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
@@ -52,17 +56,28 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Handles interactions with the UI for talent categories.
+ * Handles interactions with the UI for skill categories.
  */
-public class TalentCategoriesFragment extends Fragment {
+public class SkillCategoriesFragment extends Fragment {
 	@Inject
-	protected TalentCategoryRxHandler   talentCategoryRxHandler;
+	protected SkillCategoryRxHandler skillCategoryRxHandler;
 	@Inject
-	protected TalentCategoryListAdapter listAdapter;
-	private   ListView                  listView;
-	private   EditText                  nameEdit;
-	private   EditText                  descriptionEdit;
-	private TalentCategory currentInstance = new TalentCategory();
+	protected StatRxHandler statRxHandler;
+	@Inject
+	protected SkillCategoryListAdapter listAdapter;
+	@Inject
+	protected StatSpinnerAdapter stat1SpinnerAdapter;
+	@Inject
+	protected StatSpinnerAdapter stat2SpinnerAdapter;
+	@Inject
+	protected StatSpinnerAdapter stat3SpinnerAdapter;
+	private ListView listView;
+	private EditText nameEdit;
+	private EditText descriptionEdit;
+	private Spinner stat1Spinner;
+	private Spinner stat2Spinner;
+	private Spinner stat3Spinner;
+	private SkillCategory currentInstance = new SkillCategory();
 	private boolean isNew = true;
 
 	@Nullable
@@ -71,10 +86,13 @@ public class TalentCategoriesFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.name_descriptions_fragment, container, false);
+		View layout = inflater.inflate(R.layout.skill_categories_fragment, container, false);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
+		initStat1Spinner(layout);
+		initStat2Spinner(layout);
+		initStat3Spinner(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -93,17 +111,17 @@ public class TalentCategoriesFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.talent_categories_action_bar, menu);
+		inflater.inflate(R.menu.skill_categories_action_bar, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_new_talent_category) {
+		if(id == R.id.action_new_skill_category) {
 			if(copyViewsToItem()) {
 				saveItem();
 			}
-			currentInstance = new TalentCategory();
+			currentInstance = new SkillCategory();
 			isNew = true;
 			copyItemToControls();
 			listView.clearChoices();
@@ -116,31 +134,31 @@ public class TalentCategoriesFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.talent_category_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.skill_category_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final TalentCategory talentCategory;
+		final SkillCategory skillCategory;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
-			case R.id.context_new_talent_category:
+			case R.id.context_new_skill_category:
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = new TalentCategory();
+				currentInstance = new SkillCategory();
 				isNew = true;
 				copyItemToControls();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
-			case R.id.context_delete_talent_category:
-				talentCategory = (TalentCategory) listView.getItemAtPosition(info.position);
-				if(talentCategory != null) {
-					deleteItem(talentCategory);
+			case R.id.context_delete_skill_category:
+				skillCategory = (SkillCategory) listView.getItemAtPosition(info.position);
+				if(skillCategory != null) {
+					deleteItem(skillCategory);
 					return true;
 				}
 				break;
@@ -170,12 +188,45 @@ public class TalentCategoriesFragment extends Fragment {
 			changed = true;
 		}
 
+		Stat newStat = null;
+		if(stat1Spinner.getSelectedItemPosition() >= 0) {
+			newStat = stat1SpinnerAdapter.getItem(stat1Spinner.getSelectedItemPosition());
+		}
+		if((newStat == null && currentInstance.getStat1() != null) ||
+				(newStat != null && !newStat.equals(currentInstance.getStat1()))) {
+			currentInstance.setStat1(newStat);
+			changed = true;
+		}
+
+		newStat = null;
+		if(stat2Spinner.getSelectedItemPosition() >= 0) {
+			newStat = stat2SpinnerAdapter.getItem(stat2Spinner.getSelectedItemPosition());
+		}
+		if((newStat == null && currentInstance.getStat1() != null) ||
+				(newStat != null && !newStat.equals(currentInstance.getStat2()))) {
+			currentInstance.setStat2(newStat);
+			changed = true;
+		}
+
+		newStat = null;
+		if(stat3Spinner.getSelectedItemPosition() >= 0) {
+			newStat = stat3SpinnerAdapter.getItem(stat3Spinner.getSelectedItemPosition());
+		}
+		if((newStat == null && currentInstance.getStat1() != null) ||
+				(newStat != null && !newStat.equals(currentInstance.getStat3()))) {
+			currentInstance.setStat3(newStat);
+			changed = true;
+		}
+
 		return changed;
 	}
 
 	private void copyItemToControls() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
+		stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat1()));
+		stat2Spinner.setSelection(stat2SpinnerAdapter.getPosition(currentInstance.getStat2()));
+		stat3Spinner.setSelection(stat3SpinnerAdapter.getPosition(currentInstance.getStat3()));
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -189,19 +240,19 @@ public class TalentCategoriesFragment extends Fragment {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;
-			talentCategoryRxHandler.save(currentInstance)
+			skillCategoryRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<TalentCategory>() {
+					.subscribe(new Subscriber<SkillCategory>() {
 						@Override
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("TalentCategoriesFrag", "Exception saving new TalentCategory: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_save_failed), Toast.LENGTH_SHORT).show();
+							Log.e("SkillCategoriesFrag", "Exception saving new SkillCategory: " + currentInstance, e);
+							Toast.makeText(getActivity(), getString(R.string.toast_skill_category_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
-						public void onNext(TalentCategory savedItem) {
+						public void onNext(SkillCategory savedItem) {
 							if (wasNew) {
 								listAdapter.add(savedItem);
 								if(savedItem == currentInstance) {
@@ -211,7 +262,7 @@ public class TalentCategoriesFragment extends Fragment {
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_talent_category_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), getString(R.string.toast_skill_category_saved), Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -226,8 +277,8 @@ public class TalentCategoriesFragment extends Fragment {
 		}
 	}
 
-	private void deleteItem(@NonNull final TalentCategory item) {
-		talentCategoryRxHandler.deleteById(item.getId())
+	private void deleteItem(@NonNull final SkillCategory item) {
+		skillCategoryRxHandler.deleteById(item.getId())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<Boolean>() {
@@ -235,8 +286,8 @@ public class TalentCategoriesFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentCategoriesFrag", "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_talent_category_delete_failed);
+						Log.e("SkillCategoriesFrag", "Exception when deleting: " + item, e);
+						String toastString = getString(R.string.toast_skill_category_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -254,11 +305,11 @@ public class TalentCategoriesFragment extends Fragment {
 								currentInstance = listAdapter.getItem(position);
 							}
 							else {
-								currentInstance = new TalentCategory();
+								currentInstance = new SkillCategory();
 								isNew = true;
 							}
 							copyItemToControls();
-							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), getString(R.string.toast_skill_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -320,35 +371,148 @@ public class TalentCategoriesFragment extends Fragment {
 		});
 	}
 
+	private void initStat1Spinner(View layout) {
+		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
+		stat1Spinner.setAdapter(stat1SpinnerAdapter);
+
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> items) {
+						stat1SpinnerAdapter.clear();
+						stat1SpinnerAdapter.addAll(items);
+						stat1SpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(currentInstance.getStat1() == null || stat1SpinnerAdapter.getPosition(currentInstance.getStat1()) != position) {
+					currentInstance.setStat1(stat1SpinnerAdapter.getItem(position));
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getStat1() != null) {
+					currentInstance.setStat1(null);
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initStat2Spinner(View layout) {
+		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
+		stat2Spinner.setAdapter(stat2SpinnerAdapter);
+
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> items) {
+						stat2SpinnerAdapter.clear();
+						stat2SpinnerAdapter.addAll(items);
+						stat2SpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(currentInstance.getStat2() == null || stat2SpinnerAdapter.getPosition(currentInstance.getStat2()) != position) {
+					currentInstance.setStat2(stat2SpinnerAdapter.getItem(position));
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getStat2() != null) {
+					currentInstance.setStat2(null);
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initStat3Spinner(View layout) {
+		stat3Spinner = (Spinner)layout.findViewById(R.id.stat3_spinner);
+		stat3Spinner.setAdapter(stat3SpinnerAdapter);
+
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> items) {
+						stat3SpinnerAdapter.clear();
+						stat3SpinnerAdapter.addAll(items);
+						stat3SpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(currentInstance.getStat3() == null || stat3SpinnerAdapter.getPosition(currentInstance.getStat3()) != position) {
+					currentInstance.setStat3(stat3SpinnerAdapter.getItem(position));
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getStat3() != null) {
+					currentInstance.setStat3(null);
+					saveItem();
+				}
+			}
+		});
+	}
+
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 
 		listView.setAdapter(listAdapter);
 
-		talentCategoryRxHandler.getAll()
+		skillCategoryRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+				.subscribe(new Subscriber<Collection<SkillCategory>>() {
 					@Override
-					public void onCompleted() {
-
-					}
-
+					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances", e);
-						Toast.makeText(TalentCategoriesFragment.this.getActivity(),
-								getString(R.string.toast_talent_categories_load_failed),
+						Log.e("SkillCategoriesFrag", "Exception caught getting all SkillCategory instances", e);
+						Toast.makeText(SkillCategoriesFragment.this.getActivity(),
+								getString(R.string.toast_skill_categories_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
-
 					@Override
-					public void onNext(Collection<TalentCategory> talentCategories) {
+					public void onNext(Collection<SkillCategory> skillCategories) {
 						listAdapter.clear();
-						listAdapter.addAll(talentCategories);
+						listAdapter.addAll(skillCategories);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
-						toastString = String.format(getString(R.string.toast_talent_categories_loaded), talentCategories.size());
-						Toast.makeText(TalentCategoriesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						toastString = String.format(getString(R.string.toast_skill_categories_loaded), skillCategories.size());
+						Toast.makeText(SkillCategoriesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
 
@@ -358,10 +522,10 @@ public class TalentCategoriesFragment extends Fragment {
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = (TalentCategory) listView.getItemAtPosition(position);
+				currentInstance = (SkillCategory) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
-					currentInstance = new TalentCategory();
+					currentInstance = new SkillCategory();
 					isNew = true;
 				}
 				copyItemToControls();

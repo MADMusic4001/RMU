@@ -116,6 +116,7 @@ public class ParametersFragment extends Fragment {
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
+			listAdapter.notifyDataSetChanged();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -143,6 +144,7 @@ public class ParametersFragment extends Fragment {
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
+				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_parameter:
 				parameter = (Parameter) listView.getItemAtPosition(info.position);
@@ -245,8 +247,11 @@ public class ParametersFragment extends Fragment {
 						public void onNext(Parameter savedItem) {
 							if (wasNew) {
 								listAdapter.add(savedItem);
-								listView.setSelection(listAdapter.getPosition(savedItem));
-								listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								if(savedItem == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItem));
+									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								}
+								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_parameter_saved), Toast.LENGTH_SHORT).show();
