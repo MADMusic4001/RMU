@@ -258,7 +258,7 @@ public class CreatureCategoriesFragment extends Fragment {
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), getString(R.string.toast_creature_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
 				});

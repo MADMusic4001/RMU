@@ -35,6 +35,7 @@ import com.madinnovations.rmu.view.activities.common.SkillsFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
@@ -47,6 +48,7 @@ public class CampaignActivity extends Activity {
 	private ActivityComponent          activityComponent;
 	private AboutFragment              aboutFragment;
 	private BodyPartsFragment          bodyPartsFragment;
+	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 	private CriticalCodesFragment      criticalCodesFragment;
 	private CriticalResultsFragment    criticalResultsFragment;
@@ -103,6 +105,13 @@ public class CampaignActivity extends Activity {
 			bodyPartsFragment = new BodyPartsFragment();
 		}
 		replaceDetailFragment(bodyPartsFragment);
+	}
+
+	public void showCreatureArchetypes() {
+		if(creatureArchetypesFragment == null) {
+			creatureArchetypesFragment = new CreatureArchetypesFragment();
+		}
+		replaceDetailFragment(creatureArchetypesFragment);
 	}
 
 	public void showCreatureCategories() {

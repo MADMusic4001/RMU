@@ -21,6 +21,12 @@
   <string name="toast_body_part_save_failed">Body Part save failed.</string>
   <string name="toast_body_part_deleted">Body Part deleted.</string>
   <string name="toast_body_part_delete_failed">Body Part deletion failed.</string>
+  <string name="toast_creature_archetypes_load_failed">Failed to load Creature Archetypes</string>
+  <string name="toast_creature_archetypes_loaded">%1$d Creature Archetypes loaded.</string>
+  <string name="toast_creature_archetype_saved">Creature Archetype saved.</string>
+  <string name="toast_creature_archetype_save_failed">Creature Archetype save failed.</string>
+  <string name="toast_creature_archetype_deleted">Creature Archetype deleted.</string>
+  <string name="toast_creature_archetype_delete_failed">Creature Archetype deletion failed.</string>
   <string name="toast_creature_categories_load_failed">Failed to load Creature Categories</string>
   <string name="toast_creature_categories_loaded">%1$d Creature Categories loaded.</string>
   <string name="toast_creature_category_saved">Creature Category saved.</string>

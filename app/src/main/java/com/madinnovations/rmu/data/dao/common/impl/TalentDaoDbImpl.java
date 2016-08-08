@@ -103,6 +103,11 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         instance.setId(id);
     }
 
+    @Override
+    protected boolean saveRelationships(SQLiteDatabase db, Talent instance) {
+        return saveParameters(db, instance);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected Talent cursorToEntity(Cursor cursor) {
@@ -173,7 +178,7 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         contentValues.put(TalentParametersSchema.COLUMN_TALENT_ID, instance.getId());
         for(Parameter parameter : instance.getParameters()) {
             contentValues.put(TalentParametersSchema.COLUMN_PARAMETER_ID, parameter.getId());
-            result &= (db.insert(TABLE_NAME, null, contentValues) != -1);
+            result &= (db.insert(TalentParametersSchema.TABLE_NAME, null, contentValues) != -1);
         }
         return result;
     }

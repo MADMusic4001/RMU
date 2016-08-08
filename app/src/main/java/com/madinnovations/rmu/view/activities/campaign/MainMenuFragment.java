@@ -91,7 +91,7 @@ public class MainMenuFragment extends Fragment {
 					case 1:
 						switch (childPosition) {
 							case 0:
-//								((CampaignActivity)getActivity()).showCreatureArchetypes();
+								((CampaignActivity)getActivity()).showCreatureArchetypes();
 								break;
 							case 1:
 								((CampaignActivity)getActivity()).showCreatureCategories();

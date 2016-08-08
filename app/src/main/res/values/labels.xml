@@ -90,6 +90,8 @@
   <string name="label_import">Import</string>
   <string name="label_new_body_part">New Body Part</string>
   <string name="label_delete_body_part">Delete Body Part</string>
+  <string name="label_new_creature_archetype">New Creature Archetype</string>
+  <string name="label_delete_creature_archetype">Delete Creature Archetype</string>
   <string name="label_new_creature_category">New Creature Category</string>
   <string name="label_delete_creature_category">Delete Creature Category</string>
   <string name="label_new_critical_code">New Critical Code</string>
@@ -123,6 +125,9 @@
 
   <!-- TextView labels -->
   <string name="label_hyphen">-</string>
+  <string name="label_primary_skills">Primary Skills</string>
+  <string name="label_secondary_skills">Secondary Skills</string>
+  <string name="label_tertiary_skills">Tertiary Skills</string>
   <string name="label_min_height">Minimum Height</string>
   <string name="label_max_height">Maximum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
@@ -140,6 +145,10 @@
   <string name="hint_body_part_description">Body Part Description</string>
   <string name="hint_code">New Code</string>
   <string name="hint_cost_per_tier">Cost per tier</string>
+  <string name="hint_creature_archetype_description">Creature Archetype Description</string>
+  <string name="hint_creature_archetype_name">Creature Archetype Name</string>
+  <string name="hint_creature_archetype_roles">Creature Archetype Roles Instructions</string>
+  <string name="hint_creature_archetype_spells">Creature Archetype Spells Instructions</string>
   <string name="hint_creature_category_description">Creature Category Description</string>
   <string name="hint_creature_category_name">Creature Category Name</string>
   <string name="hint_critical_code">Critical Code</string>

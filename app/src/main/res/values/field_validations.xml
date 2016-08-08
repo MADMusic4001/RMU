@@ -36,6 +36,7 @@
     <string name="validation_max_roll_required">Please enter a maximum roll baseValue.</string>
     <string name="validation_name_required">Please enter a name.</string>
     <string name="validation_no_parry_required">Please enter the number of rounds the defender is unable to parry.</string>
+    <string name="validation_roles_required">Please enter roles instructions.</string>
     <string name="validation_severity_code_required">Please enter a severity code.</string>
     <string name="validation_size_examples_required">Please enter examples of creatures this size.</string>
     <string name="validation_size_code_required">Please enter a code for this creature size.</string>
@@ -44,6 +45,7 @@
     <string name="validation_size_min_height_gt_max_height">Minimum height cannot be greater than maximum height.</string>
     <string name="validation_size_min_weight_gt_max_weight">Minimum weight cannot be greater than maximum weight.</string>
     <string name="validation_size_name_required">Please enter a name for this creature size.</string>
+    <string name="validation_spells_required">Please enter spells instructions.</string>
     <string name="validation_stunned_required">Please enter the number of rounds the defender is stunned.</string>
     <string name="validation_talent_action_points_required">Please enter the number of Action Points required to use the Talent.</string>
     <string name="validation_talent_bonus_per_tier_required">Please enter the bonus given per tier for the Talent.</string>

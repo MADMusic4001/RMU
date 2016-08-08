@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.entities.creature;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,15 +26,15 @@ import java.util.List;
  */
 public class CreatureArchetype {
 	private int id = -1;
-	private String name;
-	private String description;
-	private Stat stat1;
-	private Stat stat2;
-	private List<SkillCategory> primarySkills;
-	private List<SkillCategory> secondarySkills;
-	private List<SkillCategory> tertiarySkills;
-	private String spells;
-	private String role;
+	private String name = null;
+	private String description = null;
+	private Stat stat1 = null;
+	private Stat stat2 = null;
+	private List<SkillCategory> primarySkills = new ArrayList<>();
+	private List<SkillCategory> secondarySkills = new ArrayList<>();
+	private List<SkillCategory> tertiarySkills = new ArrayList<>();
+	private String spells = null;
+	private String roles = null;
 
 	/**
 	 * Checks the validity of the CreatureArchetype instance.
@@ -42,7 +43,7 @@ public class CreatureArchetype {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat1 != null && stat2 != null &&
-				role != null;
+				spells !=null && roles != null;
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class CreatureArchetype {
 				", secondarySkills=" + secondarySkills +
 				", tertiarySkills=" + tertiarySkills +
 				", spells='" + spells + '\'' +
-				", role='" + role + '\'' +
+				", roles='" + roles + '\'' +
 				'}';
 	}
 
@@ -132,10 +133,10 @@ public class CreatureArchetype {
 	public void setSpells(String spells) {
 		this.spells = spells;
 	}
-	public String getRole() {
-		return role;
+	public String getRoles() {
+		return roles;
 	}
-	public void setRole(String role) {
-		this.role = role;
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
 }

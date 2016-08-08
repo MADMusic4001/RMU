@@ -25,14 +25,14 @@ public interface ArchetypeSkillsSchema {
 
 	public static final String COLUMN_ARCHETYPE_ID = "archetypeId";
 	public static final String COLUMN_SKILL_ID = "skillId";
-	public static final String COLUMN_PRIORITY = "priority";
+	public static final String COLUMN_PRIORITY = "priority"; // 0 = primary, 1 = secondary, 2 = tertiary
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ARCHETYPE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
-			+ COLUMN_PRIORITY + " TEXT NOT NULL, "
+			+ COLUMN_PRIORITY + " INTEGER NOT NULL, "
 			+ "PRIMARY KEY(" + COLUMN_ARCHETYPE_ID + "," + COLUMN_SKILL_ID + ")"
 			+ "FOREIGN KEY (" + COLUMN_ARCHETYPE_ID + ") REFERENCES " + CreatureArchetypeSchema.TABLE_NAME + "(" + CreatureArchetypeSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"

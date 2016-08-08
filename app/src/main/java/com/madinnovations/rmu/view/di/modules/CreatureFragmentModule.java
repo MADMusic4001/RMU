@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -26,12 +27,20 @@ import dagger.Provides;
  */
 @Module
 public class CreatureFragmentModule {
+	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 
+	public CreatureFragmentModule(CreatureArchetypesFragment creatureArchetypesFragment) {
+		this.creatureArchetypesFragment = creatureArchetypesFragment;
+	}
 	public CreatureFragmentModule(CreatureCategoriesFragment creatureCategoriesFragment) {
 		this.creatureCategoriesFragment = creatureCategoriesFragment;
 	}
 
+	@Provides @PerFragment
+	public CreatureArchetypesFragment provideCreatureArchetypesFragment() {
+		return this.creatureArchetypesFragment;
+	}
 	@Provides @PerFragment
 	public CreatureCategoriesFragment provideCreatureCategoriesFragment() {
 		return this.creatureCategoriesFragment;

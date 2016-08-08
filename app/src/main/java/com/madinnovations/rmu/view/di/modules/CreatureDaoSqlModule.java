@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
@@ -38,8 +39,8 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class CreatureDaoSqlModule {
 	@Provides @Singleton
-	public CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper) {
-		return new CreatureArchetypeDaoDbImpl(helper);
+	public CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper, StatDao statDao) {
+		return new CreatureArchetypeDaoDbImpl(helper, statDao);
 	}
 
 	@Provides @Singleton

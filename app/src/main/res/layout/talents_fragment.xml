@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/bonus_per_tier_edit"
             android:layout_toEndOf="@id/bonus_per_tier_edit"
-            android:layout_alignBaseline="@id/initial_cost_edit"/>
+            android:layout_alignTop="@id/initial_cost_edit"/>
 
         <CheckBox
             android:id="@+id/situational_check_box"
