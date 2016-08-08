@@ -45,13 +45,13 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/name_edit"
             android:layout_toEndOf="@id/name_edit"
-            android:layout_alignBottom="@id/name_edit"/>
+            android:layout_alignTop="@id/name_edit"/>
         <Spinner
             android:id="@+id/stat2_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/stat1_spinner"
-            android:layout_toEndOf="@id/stat1_spinner"/>
+            android:layout_alignTop="@id/name_edit"/>
 
         <EditText
             android:id="@+id/description_edit"
@@ -99,19 +99,22 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="120dp"
-                android:minHeight="20dp"/>
+                android:minHeight="20dp"
+                android:choiceMode="multipleChoice"/>
             <ListView
                 android:id="@+id/secondary_skills_list"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="120dp"
-                android:minHeight="20dp"/>
+                android:minHeight="20dp"
+                android:choiceMode="multipleChoice"/>
             <ListView
                 android:id="@+id/tertiary_skills_list"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="120dp"
-                android:minHeight="20dp"/>
+                android:minHeight="20dp"
+                android:choiceMode="multipleChoice"/>
         </LinearLayout>
 
         <EditText

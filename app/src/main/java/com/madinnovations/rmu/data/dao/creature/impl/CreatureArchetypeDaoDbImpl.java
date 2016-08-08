@@ -19,14 +19,19 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -38,6 +43,7 @@ import javax.inject.Singleton;
 public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		implements CreatureArchetypeDao, CreatureArchetypeSchema {
 	private StatDao statDao;
+	private SkillCategoryDao skillCategoryDao;
 
 	/**
 	 * Creates a new instance of CreatureArchetypeDaoImpl
@@ -45,29 +51,10 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
 	@Inject
-	public CreatureArchetypeDaoDbImpl(SQLiteOpenHelper helper, StatDao statDao) {
+	public CreatureArchetypeDaoDbImpl(SQLiteOpenHelper helper, StatDao statDao, SkillCategoryDao skillCategoryDao) {
 		super(helper);
 		this.statDao = statDao;
-	}
-
-	@Override
-	public CreatureArchetype getById(int id) {
-		return super.getById(id);
-	}
-
-	@Override
-	public boolean save(CreatureArchetype instance) {
-		return super.save(instance);
-	}
-
-	@Override
-	public boolean deleteById(int id) {
-		return super.deleteById(id);
-	}
-
-	@Override
-	public int deleteAll() {
-		return super.deleteAll();
+		this.skillCategoryDao = skillCategoryDao;
 	}
 
 	@Override
@@ -105,6 +92,7 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 			instance.setStat1(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))));
 			instance.setStat2(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))));
+			setSkillCategories(instance);
 			instance.setSpells(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SPELLS)));
 			instance.setRoles(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLES)));
 		}
@@ -157,5 +145,39 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		values.put(ArchetypeSkillsSchema.COLUMN_PRIORITY, priority);
 
 		return values;
+	}
+
+	private void setSkillCategories(@NonNull  CreatureArchetype instance) {
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+		final String selection = ArchetypeSkillsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+
+		Cursor cursor = super.query(ArchetypeSkillsSchema.TABLE_NAME, ArchetypeSkillsSchema.COLUMNS, selection,
+				selectionArgs, ArchetypeSkillsSchema.COLUMN_PRIORITY);
+		List<SkillCategory> primaryList = new ArrayList<>();
+		List<SkillCategory> secondaryList = new ArrayList<>();
+		List<SkillCategory> tertiaryList = new ArrayList<>();
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(ArchetypeSkillsSchema.COLUMN_SKILL_ID));
+			short priority = cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeSkillsSchema.COLUMN_PRIORITY));
+			SkillCategory skillCategory = skillCategoryDao.getById(mappedId);
+			if(skillCategory != null) {
+				if(priority == 0) {
+					primaryList.add(skillCategory);
+				}
+				if(priority == 1) {
+					secondaryList.add(skillCategory);
+				}
+				if(priority == 2) {
+					tertiaryList.add((skillCategory));
+				}
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		instance.setPrimarySkills(primaryList);
+		instance.setSecondarySkills(secondaryList);
+		instance.setTertiarySkills(tertiaryList);
 	}
 }

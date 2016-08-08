@@ -43,7 +43,26 @@ public class CreatureArchetype {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat1 != null && stat2 != null &&
-				spells !=null && roles != null;
+				spells !=null && roles != null && checkValidCategories();
+	}
+
+	private boolean checkValidCategories() {
+		boolean isValid = true;
+		for(SkillCategory category : primarySkills) {
+			if(secondarySkills.contains(category) || tertiarySkills.contains(category)) {
+				isValid = false;
+				break;
+			}
+		}
+		if(isValid) {
+			for(SkillCategory category : secondarySkills) {
+				if(tertiarySkills.contains(category)) {
+					isValid = false;
+					break;
+				}
+			}
+		}
+		return isValid;
 	}
 
 	@Override

@@ -581,15 +581,19 @@ public class CreatureArchetypesFragment extends Fragment {
 						primarySkillCategoriesListAdapter.notifyDataSetChanged();
 					}
 				});
-		primarySkillCategoriesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		primarySkillCategoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				Log.d("CreatureArchetypesFrag", "Selected item at position " + position);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> adapterView) {
-				Log.d("CreatureArchetypesFrag", "Nothing selected");
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				SkillCategory skillCategory = primarySkillCategoriesListAdapter.getItem(position);
+				boolean checked = primarySkillCategoriesList.isItemChecked(position);
+				if(currentInstance.getPrimarySkills().contains(skillCategory) && !checked) {
+					currentInstance.getPrimarySkills().remove(skillCategory);
+					saveItem();
+				}
+				else if(!currentInstance.getPrimarySkills().contains(skillCategory) && checked) {
+					currentInstance.getPrimarySkills().add(skillCategory);
+					saveItem();
+				}
 			}
 		});
 	}
@@ -616,15 +620,19 @@ public class CreatureArchetypesFragment extends Fragment {
 						secondarySkillCategoriesListAdapter.notifyDataSetChanged();
 					}
 				});
-		secondarySkillCategoriesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		secondarySkillCategoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				Log.d("CreatureArchetypesFrag", "Selected item at position " + position);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> adapterView) {
-				Log.d("CreatureArchetypesFrag", "Nothing selected");
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				SkillCategory skillCategory = secondarySkillCategoriesListAdapter.getItem(position);
+				boolean checked = secondarySkillCategoriesList.isItemChecked(position);
+				if(currentInstance.getSecondarySkills().contains(skillCategory) && !checked) {
+					currentInstance.getSecondarySkills().remove(skillCategory);
+					saveItem();
+				}
+				else if(!currentInstance.getSecondarySkills().contains(skillCategory) && checked) {
+					currentInstance.getSecondarySkills().add(skillCategory);
+					saveItem();
+				}
 			}
 		});
 	}
@@ -651,15 +659,19 @@ public class CreatureArchetypesFragment extends Fragment {
 						tertiarySkillCategoriesListAdapter.notifyDataSetChanged();
 					}
 				});
-		tertiarySkillCategoriesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		tertiarySkillCategoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				Log.d("CreatureArchetypesFrag", "Selected item at position " + position);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> adapterView) {
-				Log.d("CreatureArchetypesFrag", "Nothing selected");
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				SkillCategory skillCategory = tertiarySkillCategoriesListAdapter.getItem(position);
+				boolean checked = tertiarySkillCategoriesList.isItemChecked(position);
+				if(currentInstance.getTertiarySkills().contains(skillCategory) && !checked) {
+					currentInstance.getTertiarySkills().remove(skillCategory);
+					saveItem();
+				}
+				else if(!currentInstance.getTertiarySkills().contains(skillCategory) && checked) {
+					currentInstance.getTertiarySkills().add(skillCategory);
+					saveItem();
+				}
 			}
 		});
 	}
