@@ -20,30 +20,26 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.dao.common.BiomeDao;
+import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
+import com.madinnovations.rmu.data.entities.common.Biome;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Methods for managing {@link Skill} objects in a SQLite database.
+ * Methods for managing {@link Biome} objects in a SQLite database.
  */
 @Singleton
-public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, SkillSchema {
-    private SkillCategoryDao skillCategoryDao;
-
+public class BiomesDaoDbImpl extends BaseDaoDbImpl<Biome> implements BiomeDao, BiomeSchema {
     /**
-     * Creates a new instance of SkillDaoDbImpl
+     * Creates a new instance of BiomeDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public SkillDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao) {
+    public BiomesDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-        this.skillCategoryDao = skillCategoryDao;
     }
 
     @Override
@@ -62,35 +58,40 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
     }
 
     @Override
-    protected int getId(Skill instance) {
+    protected int getId(Biome instance) {
         return instance.getId();
     }
 
     @Override
-    protected void setId(Skill instance, int id) {
+    protected void setId(Biome instance, int id) {
         instance.setId(id);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected Skill cursorToEntity(Cursor cursor) {
-        Skill instance = null;
+    protected Biome cursorToEntity(Cursor cursor) {
+        Biome instance = null;
 
         if (cursor != null) {
-            instance = new Skill();
+            instance = new Biome();
             instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+            instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)).charAt(0));
             instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setCategory(skillCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
+            instance.setHumidity(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY)));
+            instance.setFlora(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FLORA)));
+            instance.setFauna(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAUNA)));
         }
         return instance;
     }
 
     @Override
-    protected ContentValues getContentValues(Skill instance) {
+    protected ContentValues getContentValues(Biome instance) {
         ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_NAME, instance.getName());
+        initialValues.put(COLUMN_CODE, String.valueOf(instance.getCode()));
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
+        initialValues.put(COLUMN_HUMIDITY, instance.getHumidity());
+        initialValues.put(COLUMN_FLORA, instance.getFlora());
+        initialValues.put(COLUMN_FAUNA, instance.getFauna());
         return initialValues;
     }
 }

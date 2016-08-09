@@ -43,26 +43,6 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl<LocomotionType> imple
     }
 
     @Override
-    public LocomotionType getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(LocomotionType instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
-    }
-
-    @Override
     protected String getTableName() {
         return TABLE_NAME;
     }
@@ -87,7 +67,6 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl<LocomotionType> imple
         instance.setId(id);
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     protected LocomotionType cursorToEntity(Cursor cursor) {
@@ -106,9 +85,9 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl<LocomotionType> imple
     @Override
     protected ContentValues getContentValues(LocomotionType instance) {
         ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_DEFAULT_RATE, instance.getDefaultRate());
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+        initialValues.put(COLUMN_DEFAULT_RATE, instance.getDefaultRate());
         return initialValues;
     }
 }

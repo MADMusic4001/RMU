@@ -100,10 +100,13 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showCreatures();
 								break;
 							case 3:
-//								((CampaignActivity)getActivity()).showCreatureTypes();
+								((CampaignActivity)getActivity()).showCreatureTypes();
 								break;
 							case 4:
-//								((CampaignActivity)getActivity()).showCreatureVatieties();
+								((CampaignActivity)getActivity()).showCreatureVarieties();
+								break;
+							case 5:
+								((CampaignActivity)getActivity()).showOutlooks();
 								break;
 						}
 						break;
@@ -212,12 +215,13 @@ public class MainMenuFragment extends Fragment {
 		characterItems.add(getString(R.string.manage_profession));
 		characterItems.add(getString(R.string.manage_race));
 
-		List<String> creatureItems = new ArrayList<>(5);
+		List<String> creatureItems = new ArrayList<>(6);
 		creatureItems.add(getString(R.string.manage_archetypes));
 		creatureItems.add(getString(R.string.manage_categories));
 		creatureItems.add(getString(R.string.manage_creatures));
 		creatureItems.add(getString(R.string.manage_types));
 		creatureItems.add(getString(R.string.manage_varieties));
+		creatureItems.add(getString(R.string.manage_outlooks));
 
 		List<String> combatItems = new ArrayList<>(6);
 		combatItems.add(getString(R.string.manage_body_parts));

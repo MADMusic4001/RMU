@@ -16,25 +16,29 @@
 package com.madinnovations.rmu.data.dao.common.schemas;
 
 /**
- * Database schema data for the locomotion_types table
+ * Database schema data for the biomes table
  */
-public interface LocomotionTypeSchema {
-	public static final String TABLE_NAME = "locomotion_types";
+public interface BiomeSchema {
+	public static final String TABLE_NAME = "biomes";
 
 	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_CODE = "code";
 	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_DEFAULT_RATE = "defaultRate";
+	public static final String COLUMN_HUMIDITY = "humidity";
+	public static final String COLUMN_FLORA = "flora";
+	public static final String COLUMN_FAUNA = "fauna";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_NAME + " TEXT NOT NULL, "
+			+ COLUMN_CODE + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
-			+ COLUMN_DEFAULT_RATE + " INTEGER NOT NULL"
+			+ COLUMN_HUMIDITY + " TEXT NOT NULL, "
+			+ COLUMN_FLORA + " TEXT NOT NULL, "
+			+ COLUMN_FAUNA + " TEXT NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID,
-			COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_DEFAULT_RATE};
+	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CODE, COLUMN_DESCRIPTION, COLUMN_HUMIDITY, COLUMN_FLORA,
+			COLUMN_FAUNA};
 }

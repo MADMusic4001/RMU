@@ -59,26 +59,6 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
     }
 
     @Override
-    public Talent getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(Talent instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
-    }
-
-    @Override
     protected String getTableName() {
         return TABLE_NAME;
     }

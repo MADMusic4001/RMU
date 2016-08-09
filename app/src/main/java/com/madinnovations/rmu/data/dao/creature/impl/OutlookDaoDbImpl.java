@@ -13,34 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.common.impl;
+package com.madinnovations.rmu.data.dao.creature.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.StatDao;
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.dao.creature.OutlookDao;
+import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
+import com.madinnovations.rmu.data.entities.creature.Outlook;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Methods for managing {@link Stat} objects in a SQLite database.
+ * Methods for managing {@link Outlook} objects in a SQLite database.
  */
 @Singleton
-public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatSchema {
-    /**
-     * Creates a new instance of StatDaoDbImpl
-     *
-     * @param helper  an SQLiteOpenHelper instance
-     */
-    @Inject
-    public StatDaoDbImpl(SQLiteOpenHelper helper) {
-        super(helper);
-    }
+public class OutlookDaoDbImpl extends BaseDaoDbImpl<Outlook>
+		implements OutlookDao, OutlookSchema {
+	/**
+	 * Creates a new instance of OutlookDaoDbImpl
+	 *
+	 * @param helper  an SQLiteOpenHelper instance
+	 */
+	@Inject
+	public OutlookDaoDbImpl(SQLiteOpenHelper helper) {
+		super(helper);
+	}
 
 	@Override
 	protected String getTableName() {
@@ -58,23 +59,21 @@ public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatS
 	}
 
 	@Override
-	protected int getId(Stat instance) {
+	protected int getId(Outlook instance) {
 		return instance.getId();
 	}
 
 	@Override
-	protected void setId(Stat instance, int id) {
+	protected void setId(Outlook instance, int id) {
 		instance.setId(id);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-    protected Stat cursorToEntity(Cursor cursor) {
-		Stat instance = new Stat();
+	protected Outlook cursorToEntity(Cursor cursor) {
+		Outlook instance = new Outlook();
 
 		if (cursor != null) {
 			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setAbbreviation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ABBREVIATION)));
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 		}
@@ -82,9 +81,8 @@ public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatS
 	}
 
 	@Override
-	protected ContentValues getContentValues(Stat instance) {
+	protected ContentValues getContentValues(Outlook instance) {
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(COLUMN_ABBREVIATION, instance.getAbbreviation());
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		return initialValues;

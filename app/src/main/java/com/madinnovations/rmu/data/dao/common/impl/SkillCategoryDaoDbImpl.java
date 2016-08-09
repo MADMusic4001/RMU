@@ -47,26 +47,6 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
     }
 
     @Override
-    public SkillCategory getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(SkillCategory instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
-    }
-
-    @Override
     protected String getTableName() {
         return TABLE_NAME;
     }

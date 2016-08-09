@@ -17,6 +17,9 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
+import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -29,12 +32,24 @@ import dagger.Provides;
 public class CreatureFragmentModule {
 	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
+	private CreatureTypesFragment      creatureTypesFragment;
+	private CreatureVarietiesFragment  creatureVarietiesFragment;
+	private OutlooksFragment           outlooksFragment;
 
 	public CreatureFragmentModule(CreatureArchetypesFragment creatureArchetypesFragment) {
 		this.creatureArchetypesFragment = creatureArchetypesFragment;
 	}
 	public CreatureFragmentModule(CreatureCategoriesFragment creatureCategoriesFragment) {
 		this.creatureCategoriesFragment = creatureCategoriesFragment;
+	}
+	public CreatureFragmentModule(CreatureTypesFragment creatureTypesFragment) {
+		this.creatureTypesFragment = creatureTypesFragment;
+	}
+	public CreatureFragmentModule(CreatureVarietiesFragment creatureVarietiesFragment) {
+		this.creatureVarietiesFragment = creatureVarietiesFragment;
+	}
+	public CreatureFragmentModule(OutlooksFragment outlooksFragment) {
+		this.outlooksFragment = outlooksFragment;
 	}
 
 	@Provides @PerFragment
@@ -44,5 +59,17 @@ public class CreatureFragmentModule {
 	@Provides @PerFragment
 	public CreatureCategoriesFragment provideCreatureCategoriesFragment() {
 		return this.creatureCategoriesFragment;
+	}
+	@Provides @PerFragment
+	public CreatureTypesFragment provideCreatureTypesFragment() {
+		return this.creatureTypesFragment;
+	}
+	@Provides @PerFragment
+	public CreatureVarietiesFragment provideCreatureVarietiesFragment() {
+		return this.creatureVarietiesFragment;
+	}
+	@Provides @PerFragment
+	public OutlooksFragment provideOutlooksFragment() {
+		return this.outlooksFragment;
 	}
 }

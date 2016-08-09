@@ -15,47 +15,47 @@
  */
 package com.madinnovations.rmu.data.dao.creature;
 
-import com.madinnovations.rmu.data.entities.creature.CreatureTemplate;
+import com.madinnovations.rmu.data.entities.creature.Outlook;
 
 import java.util.List;
 
 /**
- * Methods to manage {@link CreatureTemplate} objects in persistent storage.
+ * Methods to manage {@link Outlook} objects in persistent storage.
  */
-public interface CreatureTemplateDao {
+public interface OutlookDao {
 	/**
-	 * Retrieves a Creature object from persistent storage.
+	 * Retrieves a Outlook object from persistent storage.
 	 *
-	 * @param id  the id of the Creature object to retrieve
-	 * @return the Creature instance with the given id or null if not found.
+	 * @param id  the id of the Outlook object to retrieve
+	 * @return the Outlook instance with the given id or null if not found.
 	 */
-	public CreatureTemplate getById(int id);
+	public Outlook getById(int id);
 
 	/**
-	 * Retrieves all Creature objects from persistent storage.
+	 * Retrieves all Outlook objects from persistent storage.
 	 *
-	 * @return  a List containing all Creature objects currently in persistent storage.
+	 * @return  a List containing all Outlook objects currently in persistent storage.
 	 */
-	public List<CreatureTemplate> getAll();
+	public List<Outlook> getAll();
 
 	/**
-	 * Saves a Creature object to persistent storage.
+	 * Saves a Outlook object to persistent storage.
 	 *
-	 * @param instance  the Creature object to be saved
+	 * @param instance  the Outlook object to be saved
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(CreatureTemplate instance);
+	public boolean save(Outlook instance);
 
 	/**
-	 * Delete the Creature object with the given id from persistent storage.
+	 * Delete the Outlook object with the given id from persistent storage.
 	 *
-	 * @param id  the id of the Creature object to delete
+	 * @param id  the id of the Outlook object to delete
 	 * @return true if successful, otherwise false.
 	 */
 	public boolean deleteById(int id);
 
 	/**
-	 * Delete all Creature objects from persistent storage.
+	 * Delete all Outlook objects from persistent storage.
 	 *
 	 * @return the number of instances that were deleted.
 	 */

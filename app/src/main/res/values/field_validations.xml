@@ -21,6 +21,10 @@
     <string name="validation_breakage_required">Please enter the penalty for the breakage roll.</string>
     <string name="validation_body_part_required">Please select a body part.</string>
     <string name="validation_code_required">Please enter a code.</string>
+    <string name="validation_creature_type_description_required">Please enter a creature type description.</string>
+    <string name="validation_creature_type_name_required">Please enter a creature type name.</string>
+    <string name="validation_creature_variety_description_required">Please enter a creature variety description.</string>
+    <string name="validation_creature_variety_name_required">Please enter a creature variety name.</string>
     <string name="validation_dazed_required">Please enter the number of rounds the defender is dazed.</string>
     <string name="validation_default_rate_required">Please enter a default movement rate.</string>
     <string name="validation_description_required">Please enter a description.</string>

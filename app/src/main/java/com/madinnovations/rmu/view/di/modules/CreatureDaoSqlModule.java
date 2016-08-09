@@ -23,11 +23,13 @@ import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
+import com.madinnovations.rmu.data.dao.creature.OutlookDao;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureArchetypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureCategoryDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureVarietyDaoDbImpl;
+import com.madinnovations.rmu.data.dao.creature.impl.OutlookDaoDbImpl;
 
 import javax.inject.Singleton;
 
@@ -43,24 +45,24 @@ public class CreatureDaoSqlModule {
 	public CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper, StatDao statDao, SkillCategoryDao skillCategoryDao) {
 		return new CreatureArchetypeDaoDbImpl(helper, statDao, skillCategoryDao);
 	}
-
 	@Provides @Singleton
 	public CreatureCategoryDao provideCreatureCategoryDao(RMUDatabaseHelper helper) {
 		return new CreatureCategoryDaoDbImpl(helper);
 	}
-
 	@Provides @Singleton
 	public CreatureDao provideCreatureDao(RMUDatabaseHelper helper) {
 		return new CreatureDaoDbImpl(helper);
 	}
-
 	@Provides @Singleton
-	public CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper) {
-		return new CreatureTypeDaoDbImpl(helper);
+	public CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao) {
+		return new CreatureTypeDaoDbImpl(helper, creatureCategoryDao);
 	}
-
 	@Provides @Singleton
-	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper) {
-		return new CreatureVarietyDaoDbImpl(helper);
+	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao) {
+		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao);
+	}
+	@Provides @Singleton
+	public OutlookDao provideOutlookDao(RMUDatabaseHelper helper) {
+		return new OutlookDaoDbImpl(helper);
 	}
 }

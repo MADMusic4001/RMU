@@ -20,8 +20,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 
 import javax.inject.Inject;
@@ -31,35 +32,18 @@ import javax.inject.Singleton;
  * Methods for managing {@link CreatureVariety} objects in a SQLite database.
  */
 @Singleton
-public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> implements CreatureVarietyDao, CreatureTypeSchema {
+public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> implements CreatureVarietyDao, CreatureVarietySchema {
+	private CreatureTypeDao creatureTypeDao;
+
 	/**
 	 * Creates a new instance of CreatureVarietyDaoDbImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
 	@Inject
-	public CreatureVarietyDaoDbImpl(SQLiteOpenHelper helper) {
+	public CreatureVarietyDaoDbImpl(SQLiteOpenHelper helper, CreatureTypeDao creatureTypeDao) {
 		super(helper);
-	}
-
-	@Override
-	public CreatureVariety getById(int id) {
-		return super.getById(id);
-	}
-
-	@Override
-	public boolean save(CreatureVariety instance) {
-		return super.save(instance);
-	}
-
-	@Override
-	public boolean deleteById(int id) {
-		return super.deleteById(id);
-	}
-
-	@Override
-	public int deleteAll() {
-		return super.deleteAll();
+		this.creatureTypeDao = creatureTypeDao;
 	}
 
 	@Override
@@ -89,11 +73,23 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 
 	@Override
 	protected CreatureVariety cursorToEntity(Cursor cursor) {
-		return null;
+		CreatureVariety instance = new CreatureVariety();
+
+		if (cursor != null) {
+			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+			instance.setType(creatureTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TYPE_ID))));
+		}
+		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(CreatureVariety instance) {
-		return null;
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(COLUMN_NAME, instance.getName());
+		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+		initialValues.put(COLUMN_TYPE_ID, instance.getType().getId());
+		return initialValues;
 	}
 }

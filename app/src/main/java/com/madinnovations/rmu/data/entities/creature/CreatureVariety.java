@@ -15,6 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.combat.CriticalCode;
+import com.madinnovations.rmu.data.entities.common.Size;
+import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Talent;
+
+import java.util.Map;
+
 /**
  * Class containing Creature Variety attributes.
  */
@@ -23,6 +30,29 @@ public class CreatureVariety {
 	private CreatureType type;
 	private String name;
 	private String description;
+	private short typicalLevel;
+	private char levelSpread;
+	private Map<Stat, Short> racialStatBonuses;
+	private short             height;
+	private short             length;
+	private short             weight;
+	private float             healingRate;
+	private short             baseHits;
+	private short             baseEndurance;
+	private Size size;
+	private short             armorType;
+	private CriticalCode criticalCode;
+	private short             baseMovementRate;
+	private short baseChannellingRR;
+	private short baseEssenceRR;
+	private short baseMentalismRR;
+	private short basePhysicalRR;
+	private short baseFearRR;
+	private short baseStride;
+	private short leftoverDP;
+	private Outlook outlook;
+	private Map<Talent, Short> talentTiersMap;
+
 
 	/**
 	 * Checks the validity of the CreatureVariety instance.

@@ -41,6 +41,7 @@
   <string name="manage_creatures">Manage Creatures</string>
   <string name="manage_types">Manage Types</string>
   <string name="manage_varieties">Manage Varieties</string>
+  <string name="manage_outlooks">Manage Outlooks</string>
 
   <!-- Combat menu labels -->
   <string name="manage_body_parts">Manage Body Parts</string>
@@ -94,6 +95,10 @@
   <string name="label_delete_creature_archetype">Delete Creature Archetype</string>
   <string name="label_new_creature_category">New Creature Category</string>
   <string name="label_delete_creature_category">Delete Creature Category</string>
+  <string name="label_new_creature_type">New Creature Type</string>
+  <string name="label_delete_creature_type">Delete Creature Type</string>
+  <string name="label_new_creature_variety">New Creature Variety</string>
+  <string name="label_delete_creature_variety">Delete Creature Variety</string>
   <string name="label_new_critical_code">New Critical Code</string>
   <string name="label_delete_critical_code">Delete Critical Code</string>
   <string name="label_new_critical_result">New Critical Result</string>
@@ -102,6 +107,8 @@
   <string name="label_delete_item">Delete Item</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>
   <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
+  <string name="label_new_outlook">New Outlook</string>
+  <string name="label_delete_outlook">Delete Outlook</string>
   <string name="label_new_parameter">New Parameter</string>
   <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_size">New Size</string>
@@ -151,6 +158,10 @@
   <string name="hint_creature_archetype_spells">Creature Archetype Spells Instructions</string>
   <string name="hint_creature_category_description">Creature Category Description</string>
   <string name="hint_creature_category_name">Creature Category Name</string>
+  <string name="hint_creature_type_name">Creature Type Name</string>
+  <string name="hint_creature_type_description">Creature Type Description</string>
+  <string name="hint_creature_variety_name">Creature Variety Name</string>
+  <string name="hint_creature_variety_description">Creature Variety Description</string>
   <string name="hint_critical_code">Critical Code</string>
   <string name="hint_critical_code_description">Critical Code Description</string>
   <string name="hint_critical_result_description">Critical Result Description</string>
@@ -176,6 +187,8 @@
   <string name="hint_min_weight">New Min Weight</string>
   <string name="hint_max_weight">New Max Weight</string>
   <string name="hint_name">New Name</string>
+  <string name="hint_outlook_description">Outlook Description</string>
+  <string name="hint_outlook_name">Outlook Name</string>
   <string name="hint_parameter_description">Parameter Description</string>
   <string name="hint_parameter_name">Parameter Name</string>
   <string name="hint_prone">Prone</string>

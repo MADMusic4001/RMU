@@ -17,6 +17,9 @@ package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
+import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
@@ -30,4 +33,7 @@ import dagger.Subcomponent;
 public interface CreatureFragmentComponent {
 	public void injectInto(CreatureArchetypesFragment creatureArchetypesFragment);
 	public void injectInto(CreatureCategoriesFragment creatureCategoriesFragment);
+	public void injectInto(CreatureTypesFragment creatureTypesFragment);
+	public void injectInto(CreatureVarietiesFragment creatureVarietiesFragment);
+	public void injectInto(OutlooksFragment outlooksFragment);
 }

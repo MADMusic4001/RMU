@@ -43,26 +43,6 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
     }
 
 	@Override
-	public Size getById(int id) {
-		return super.getById(id);
-	}
-
-	@Override
-	public boolean save(Size instance) {
-		return super.save(instance);
-	}
-
-	@Override
-	public boolean deleteById(int id) {
-		return super.deleteById(id);
-	}
-
-	@Override
-	public int deleteAll() {
-		return super.deleteAll();
-	}
-
-	@Override
 	protected String getTableName() {
 		return TABLE_NAME;
 	}

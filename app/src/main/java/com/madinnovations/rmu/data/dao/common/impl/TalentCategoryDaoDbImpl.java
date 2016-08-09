@@ -43,26 +43,6 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl<TalentCategory> imple
 	}
 
 	@Override
-	public TalentCategory getById(int id) {
-		return super.getById(id);
-	}
-
-	@Override
-	public boolean save(TalentCategory instance) {
-		return super.save(instance);
-	}
-
-	@Override
-	public boolean deleteById(int id) {
-		return super.deleteById(id);
-	}
-
-	@Override
-	public int deleteAll() {
-		return super.deleteAll();
-	}
-
-	@Override
 	protected String getTableName() {
 		return TABLE_NAME;
 	}

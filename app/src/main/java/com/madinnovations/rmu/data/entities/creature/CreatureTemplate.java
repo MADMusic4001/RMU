@@ -31,8 +31,7 @@ public class CreatureTemplate {
 	private CreatureArchetype archetype;
 	private short             level;
 	private char              levelSpread;
-	private CreatureCategory  category;
-	private CreatureType      type;
+	private CreatureVariety   variety;
 	private Map<Stat, Short>  stats;
 	private short             height;
 	private short             length;
@@ -54,8 +53,8 @@ public class CreatureTemplate {
 	 * @return true if the CreatureCategory instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && archetype != null && category != null &&
-				type != null && size != null && criticalCode != null;
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && archetype != null && variety != null &&
+				size != null && criticalCode != null;
 	}
 
 	@Override
@@ -67,8 +66,7 @@ public class CreatureTemplate {
 				", archetype=" + archetype +
 				", level=" + level +
 				", levelSpread=" + levelSpread +
-				", category=" + category +
-				", type=" + type +
+				", variety=" + variety +
 				", stats=" + stats +
 				", height=" + height +
 				", length=" + length +
@@ -139,17 +137,11 @@ public class CreatureTemplate {
 	public void setLevelSpread(char levelSpread) {
 		this.levelSpread = levelSpread;
 	}
-	public CreatureCategory getCategory() {
-		return category;
+	public CreatureVariety getVariety() {
+		return variety;
 	}
-	public void setCategory(CreatureCategory category) {
-		this.category = category;
-	}
-	public CreatureType getType() {
-		return type;
-	}
-	public void setType(CreatureType type) {
-		this.type = type;
+	public void setVariety(CreatureVariety variety) {
+		this.variety = variety;
 	}
 	public Map<Stat, Short> getStats() {
 		return stats;

@@ -37,6 +37,9 @@ import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
+import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
@@ -50,11 +53,14 @@ public class CampaignActivity extends Activity {
 	private BodyPartsFragment          bodyPartsFragment;
 	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
+	private CreatureTypesFragment      creatureTypesFragment;
+	private CreatureVarietiesFragment  creatureVarietiesFragment;
 	private CriticalCodesFragment      criticalCodesFragment;
 	private CriticalResultsFragment    criticalResultsFragment;
 	private ItemsFragment              itemsFragment;
 	private LocomotionTypesFragment    locomotionTypesFragment;
 	private ParametersFragment         parametersFragment;
+	private OutlooksFragment           outlooksFragment;
 	private SizesFragment              sizesFragment;
 	private SkillCategoriesFragment    skillCategoriesFragment;
 	private SkillsFragment             skillsFragment;
@@ -121,6 +127,20 @@ public class CampaignActivity extends Activity {
 		replaceDetailFragment(creatureCategoriesFragment);
 	}
 
+	public void showCreatureTypes() {
+		if(creatureTypesFragment == null) {
+			creatureTypesFragment = new CreatureTypesFragment();
+		}
+		replaceDetailFragment(creatureTypesFragment);
+	}
+
+	public void showCreatureVarieties() {
+		if(creatureVarietiesFragment == null) {
+			creatureVarietiesFragment = new CreatureVarietiesFragment();
+		}
+		replaceDetailFragment(creatureVarietiesFragment);
+	}
+
 	public void showCriticalCodes() {
 		if(criticalCodesFragment == null) {
 			criticalCodesFragment = new CriticalCodesFragment();
@@ -147,6 +167,13 @@ public class CampaignActivity extends Activity {
 			locomotionTypesFragment = new LocomotionTypesFragment();
 		}
 		replaceDetailFragment(locomotionTypesFragment);
+	}
+
+	public void showOutlooks() {
+		if(outlooksFragment == null) {
+			outlooksFragment = new OutlooksFragment();
+		}
+		replaceDetailFragment(outlooksFragment);
 	}
 
 	public void showParameters() {

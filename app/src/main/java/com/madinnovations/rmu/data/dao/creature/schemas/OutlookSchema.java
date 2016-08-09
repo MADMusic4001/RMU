@@ -16,23 +16,23 @@
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
 /**
- * Database schema data for the creature_stats table
+ * Database schema data for the outlooks table
  */
-public interface CreatureStatsSchema {
-	public static final String TABLE_NAME = "creature_stats";
+public interface OutlookSchema {
+	public static final String TABLE_NAME = "outlooks";
 
-	public static final String COLUMN_CREATURE_ID = "creatureId";
-	public static final String COLUMN_STAT_ID = "statId";
-	public static final String COLUMN_VALUE = "value";
+	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_DESCRIPTION = "description";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_CREATURE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_STAT_ID + " INTEGER NOT NULL, "
-			+ COLUMN_VALUE + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_CREATURE_ID + "," + COLUMN_STAT_ID + ")"
+			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
+			+ COLUMN_NAME + " TEXT NOT NULL, "
+			+ COLUMN_DESCRIPTION + " TEXT NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_CREATURE_ID, COLUMN_STAT_ID, COLUMN_VALUE};
+	public static final String[] COLUMNS = new String[] { COLUMN_ID,
+			COLUMN_NAME, COLUMN_DESCRIPTION};
 }
