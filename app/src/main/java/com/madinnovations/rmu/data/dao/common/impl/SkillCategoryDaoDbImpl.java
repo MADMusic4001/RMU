@@ -17,13 +17,20 @@ package com.madinnovations.rmu.data.dao.common.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.Stat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -72,30 +79,76 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
     }
 
     @Override
-    protected SkillCategory cursorToEntity(Cursor cursor) {
+    protected SkillCategory cursorToEntity(@NonNull Cursor cursor) {
         SkillCategory instance = null;
 
-        if (cursor != null) {
-            instance = new SkillCategory();
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setStat1(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))));
-            instance.setStat2(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))));
-            instance.setStat3(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT3_ID))));
+        instance = new SkillCategory();
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setNoStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NO_STATS)) != 0);
+        instance.setRealmStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_STATS)) != 0);
+        if(!instance.isNoStats()) {
+            instance.setStats(getStats(instance.getId()));
         }
         return instance;
     }
 
     @Override
     protected ContentValues getContentValues(SkillCategory instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(8);
+
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_STAT1_ID, instance.getStat1().getId());
-        initialValues.put(COLUMN_STAT1_ID, instance.getStat1().getId());
-        initialValues.put(COLUMN_STAT2_ID, instance.getStat2().getId());
-        initialValues.put(COLUMN_STAT3_ID, instance.getStat3().getId());
+        initialValues.put(COLUMN_NO_STATS, instance.isNoStats());
+        initialValues.put(COLUMN_REALM_STATS, instance.isRealmStats());
+
         return initialValues;
+    }
+
+    @Override
+    protected boolean saveRelationships(SQLiteDatabase db, SkillCategory instance) {
+        boolean result = true;
+        final String selectionArgs[] = { String.valueOf(instance.getId()) };
+        final String selection = SkillCategoryStatsSchema.COLUMN_SKILL_CATEGORY_ID + " = ?";
+
+        db.delete(SkillCategoryStatsSchema.TABLE_NAME, selection, selectionArgs);
+
+        if(instance.getStats() != null) {
+            for (Stat stat : instance.getStats()) {
+                result &= (db.insert(SkillCategoryStatsSchema.TABLE_NAME, null, getSkillCategoryStat(instance.getId(), stat.getId())) != -1);
+            }
+        }
+        return result;
+    }
+
+    private ContentValues getSkillCategoryStat(int skillCategoryId, int statId) {
+        ContentValues values = new ContentValues(2);
+
+        values.put(SkillCategoryStatsSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
+        values.put(SkillCategoryStatsSchema.COLUMN_STAT_ID, statId);
+
+        return values;
+    }
+
+    private List<Stat> getStats(int skillCategoryId) {
+        final String selectionArgs[] = { String.valueOf(skillCategoryId) };
+        final String selection = SkillCategoryStatsSchema.COLUMN_SKILL_CATEGORY_ID + " = ?";
+
+        Cursor cursor = super.query(SkillCategoryStatsSchema.TABLE_NAME, SkillCategoryStatsSchema.COLUMNS, selection,
+                selectionArgs, SkillCategoryStatsSchema.COLUMN_STAT_ID);
+        List<Stat> list = new ArrayList<>(cursor.getCount());
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_ID));
+            Stat instance = statDao.getById(id);
+            if(instance != null) {
+                list.add(instance);
+            }
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        return list;
     }
 }

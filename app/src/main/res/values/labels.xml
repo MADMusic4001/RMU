@@ -77,14 +77,15 @@
   <string name="label_abbreviation">Abbreviation</string>
   <string name="label_code">Code</string>
   <string name="label_description">Description</string>
-  <string name="label_range">Range</string>
+  <string name="label_flaw">Flaw</string>
+  <string name="label_move_right">&gt;&gt;</string>
+  <string name="label_move_left">&lt;&lt;</string>
   <string name="label_name">Name</string>
   <string name="label_per_level">Per Level</string>
   <string name="label_per_tier">Per Tier</string>
-  <string name="label_value">Value</string>
+  <string name="label_range">Range</string>
   <string name="label_situational">Situational</string>
-  <string name="label_move_right">&gt;&gt;</string>
-  <string name="label_move_left">&lt;&lt;</string>
+  <string name="label_value">Value</string>
 
   <!-- Menu labels -->
   <string name="label_export">Export</string>
@@ -132,6 +133,8 @@
 
   <!-- TextView labels -->
   <string name="label_hyphen">-</string>
+  <string name="label_no_stats">No Stats</string>
+  <string name="label_realm_stats">Realm Stats</string>
   <string name="label_primary_skills">Primary Skills</string>
   <string name="label_secondary_skills">Secondary Skills</string>
   <string name="label_tertiary_skills">Tertiary Skills</string>
@@ -191,6 +194,7 @@
   <string name="hint_outlook_name">Outlook Name</string>
   <string name="hint_parameter_description">Parameter Description</string>
   <string name="hint_parameter_name">Parameter Name</string>
+  <string name="hint_parameter_value">Parameter Value</string>
   <string name="hint_prone">Prone</string>
   <string name="hint_severity_code">Severity Code</string>
   <string name="hint_size_code">Size Code</string>

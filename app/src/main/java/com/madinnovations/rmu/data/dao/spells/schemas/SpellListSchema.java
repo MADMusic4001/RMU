@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.spells.schemas;
 
+import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
+
 /**
  * Database schema data for the spell_lists table
  */
@@ -25,7 +27,9 @@ public interface SpellListSchema {
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_DESCRIPTION = "description";
 	public static final String COLUMN_REALM_ID = "realmId";
-	public static final String COLUMN_TYPE_ID = "typeId";
+	public static final String COLUMN_REALM2_ID = "realm2Id";
+	public static final String COLUMN_PROFESSION_ID = "professionId";
+	public static final String COLUMN_SPELL_LIST_TYPE_ID = "spellListTypeId";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -34,10 +38,15 @@ public interface SpellListSchema {
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_REALM_ID + " INTEGER NOT NULL, "
-			+ COLUMN_TYPE_ID + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
-			+ "FOREIGN KEY (" + COLUMN_TYPE_ID + ") REFERENCES " + SpellListTypeSchema.TABLE_NAME + "(" + SpellListTypeSchema.COLUMN_ID + ")"
+			+ COLUMN_REALM2_ID + " INTEGER, "
+			+ COLUMN_PROFESSION_ID + " INTEGER, "
+			+ COLUMN_SPELL_LIST_TYPE_ID + " INTEGER NOT NULL, "
+			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_REALM2_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_SPELL_LIST_TYPE_ID + ") REFERENCES " + SpellListTypeSchema.TABLE_NAME + "(" + SpellListTypeSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_REALM_ID, COLUMN_TYPE_ID};
+	public static final String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_REALM_ID, COLUMN_REALM2_ID,
+			COLUMN_PROFESSION_ID, COLUMN_SPELL_LIST_TYPE_ID};
 }

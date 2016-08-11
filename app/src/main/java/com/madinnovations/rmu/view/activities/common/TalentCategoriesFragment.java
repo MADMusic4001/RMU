@@ -105,7 +105,7 @@ public class TalentCategoriesFragment extends Fragment {
 			}
 			currentInstance = new TalentCategory();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -133,7 +133,7 @@ public class TalentCategoriesFragment extends Fragment {
 				}
 				currentInstance = new TalentCategory();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -173,7 +173,7 @@ public class TalentCategoriesFragment extends Fragment {
 		return changed;
 	}
 
-	private void copyItemToControls() {
+	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 
@@ -257,7 +257,7 @@ public class TalentCategoriesFragment extends Fragment {
 								currentInstance = new TalentCategory();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -330,9 +330,15 @@ public class TalentCategoriesFragment extends Fragment {
 				.subscribe(new Subscriber<Collection<TalentCategory>>() {
 					@Override
 					public void onCompleted() {
-
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToViews();;
+						}
 					}
-
 					@Override
 					public void onError(Throwable e) {
 						Log.e("TalentCategoryFragment", "Exception caught getting all TalentCategory instances", e);
@@ -340,7 +346,6 @@ public class TalentCategoriesFragment extends Fragment {
 								getString(R.string.toast_talent_categories_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
-
 					@Override
 					public void onNext(Collection<TalentCategory> talentCategories) {
 						listAdapter.clear();
@@ -364,7 +369,7 @@ public class TalentCategoriesFragment extends Fragment {
 					currentInstance = new TalentCategory();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

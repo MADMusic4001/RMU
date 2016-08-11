@@ -15,16 +15,18 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import java.util.List;
+
 /**
  * Skill category attributes
  */
 public class SkillCategory {
 	private int id = -1;
-	private String name;
-	private String description;
-	private Stat stat1;
-	private Stat stat2;
-	private Stat stat3;
+	private String name = null;
+	private String description = null;
+	private boolean noStats = false;
+	private boolean realmStats = false;
+	private List<Stat> stats = null;
 
 	/**
 	 * Checks the validity of the SkillCategory instance.
@@ -32,8 +34,9 @@ public class SkillCategory {
 	 * @return true if the SkillCategory instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat1 != null && stat2 != null &&
-				stat3 != null;
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() &&
+				(noStats || (stats != null && stats.size() >= 1 &&
+				(realmStats || (stats != null && stats.size() == 3))));
 	}
 
 	@Override
@@ -42,9 +45,9 @@ public class SkillCategory {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
-				", stat1=" + stat1 +
-				", stat2=" + stat2 +
-				", stat3=" + stat3 +
+				", noStats=" + noStats +
+				", realmStats=" + realmStats +
+				", stats=" + stats +
 				'}';
 	}
 
@@ -56,7 +59,6 @@ public class SkillCategory {
 		SkillCategory that = (SkillCategory) o;
 
 		return id == that.id;
-
 	}
 
 	@Override
@@ -83,22 +85,22 @@ public class SkillCategory {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Stat getStat1() {
-		return stat1;
+	public boolean isNoStats() {
+		return noStats;
 	}
-	public void setStat1(Stat stat1) {
-		this.stat1 = stat1;
+	public void setNoStats(boolean noStats) {
+		this.noStats = noStats;
 	}
-	public Stat getStat2() {
-		return stat2;
+	public boolean isRealmStats() {
+		return realmStats;
 	}
-	public void setStat2(Stat stat2) {
-		this.stat2 = stat2;
+	public void setRealmStats(boolean realmStats) {
+		this.realmStats = realmStats;
 	}
-	public Stat getStat3() {
-		return stat3;
+	public List<Stat> getStats() {
+		return stats;
 	}
-	public void setStat3(Stat stat3) {
-		this.stat3 = stat3;
+	public void setStats(List<Stat> stats) {
+		this.stats = stats;
 	}
 }

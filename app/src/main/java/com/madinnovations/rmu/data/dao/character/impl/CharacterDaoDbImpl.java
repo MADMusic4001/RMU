@@ -109,8 +109,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setId(id);
 	}
 
-
-
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Character cursorToEntity(Cursor cursor) {

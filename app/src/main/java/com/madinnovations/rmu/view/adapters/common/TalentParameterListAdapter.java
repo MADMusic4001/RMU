@@ -20,22 +20,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.common.Parameter;
+import com.madinnovations.rmu.data.entities.common.ParameterValue;
 
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link Parameter} information
+ * Populates a ListView with {@link ParameterValue} information
  */
-public class TalentParameterListAdapter extends ArrayAdapter<Parameter> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.name_description_row;
+public class TalentParameterListAdapter extends ArrayAdapter<ParameterValue> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.parameter_value_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new ParameterListAdapter instance.
+	 * Creates a new TalentParameterListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
@@ -51,9 +52,9 @@ public class TalentParameterListAdapter extends ArrayAdapter<Parameter> {
 		ViewHolder holder;
 
 		if (convertView == null) {
-			rowView = layoutInflater.inflate(R.layout.name_row, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view));
-//									(TextView) rowView.findViewById(R.id.description_view));
+			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.parameter_name_view),
+									(EditText) rowView.findViewById(R.id.parameter_value_edit));
 			rowView.setTag(holder);
 		}
 		else {
@@ -61,19 +62,19 @@ public class TalentParameterListAdapter extends ArrayAdapter<Parameter> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		Parameter parameter = getItem(position);
-		holder.nameView.setText(parameter.getName());
-//		holder.descriptionView.setText(parameter.getDescription());
+		ParameterValue parameterValue = getItem(position);
+		holder.nameView.setText(parameterValue.getParameter().getName());
+		holder.valueEdit.setText(parameterValue.getValue());
 		return rowView;
 	}
 
 	private class ViewHolder {
 		private TextView nameView;
-//		private TextView descriptionView;
+		private EditText valueEdit;
 
-		ViewHolder(TextView nameView) {
+		ViewHolder(TextView nameView, EditText valueEdit) {
 			this.nameView = nameView;
-//			this.descriptionView = descriptionView;
+			this.valueEdit = valueEdit;
 		}
 	}
 }

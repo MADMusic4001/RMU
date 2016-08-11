@@ -741,7 +741,16 @@ public class CreatureArchetypesFragment extends Fragment {
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<CreatureArchetype>>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToViews();;
+						}
+					}
 					@Override
 					public void onError(Throwable e) {
 						Log.e("CreatureArchetypesFrag",

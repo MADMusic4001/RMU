@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import com.madinnovations.rmu.data.entities.common.Stat;
+
 /**
  * Realm attributes
  */
@@ -22,6 +24,7 @@ public class Realm {
 	private int id = -1;
 	private String name;
 	private String description;
+	private Stat   stat;
 
 	/**
 	 * Checks the validity of the Realm instance.
@@ -29,7 +32,7 @@ public class Realm {
 	 * @return true if the Realm instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat != null;
 	}
 
 	@Override
@@ -38,6 +41,7 @@ public class Realm {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
+				", stat=" + stat +
 				'}';
 	}
 
@@ -75,5 +79,11 @@ public class Realm {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public Stat getStat() {
+		return stat;
+	}
+	public void setStat(Stat stat) {
+		this.stat = stat;
 	}
 }

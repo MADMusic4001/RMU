@@ -78,8 +78,18 @@ public class ParameterDaoDbImpl extends BaseDaoDbImpl<Parameter> implements Para
 			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			instance.setBaseValue(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE)));
-			instance.setValuePerLevelOrTier(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE)));
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE))) {
+				instance.setBaseValue(null);
+			}
+			else {
+				instance.setBaseValue(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE)));
+			}
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE))) {
+				instance.setValuePerLevelOrTier(null);
+			}
+			else {
+				instance.setValuePerLevelOrTier(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE)));
+			}
 			instance.setPerLevel(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_LEVEL)) != 0);
 			instance.setPerTier(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_TIER)) != 0);
 		}

@@ -77,10 +77,30 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 			instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 			instance.setExamples(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXAMPLES)));
-			instance.setMinHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT)));
-			instance.setMaxHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT)));
-			instance.setMinWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT)));
-			instance.setMaxWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT)));
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT))) {
+				instance.setMinHeight(null);
+			}
+			else {
+				instance.setMinHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT)));
+			}
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT))) {
+				instance.setMaxWeight(null);
+			}
+			else {
+				instance.setMaxHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT)));
+			}
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT))) {
+				instance.setMinWeight(null);
+			}
+			else {
+				instance.setMinWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT)));
+			}
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT))) {
+				instance.setMaxWeight(null);
+			}
+			else {
+				instance.setMaxWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT)));
+			}
 		}
 		return instance;
     }

@@ -62,26 +62,6 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
     }
 
     @Override
-    public Culture getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(Culture instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
-    }
-
-    @Override
     protected String getTableName() {
         return TABLE_NAME;
     }
@@ -105,7 +85,6 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
     protected void setId(Culture instance, int id) {
         instance.setId(id);
     }
-
 
     @SuppressWarnings("unchecked")
 	@Override

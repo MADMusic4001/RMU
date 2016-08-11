@@ -609,16 +609,21 @@ public class SizesFragment extends Fragment {
 				.subscribe(new Subscriber<Collection<Size>>() {
 					@Override
 					public void onCompleted() {
-
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToViews();;
+						}
 					}
-
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SizesFragment", "Exception caught getting all Size instances", e);
 						Toast.makeText(SizesFragment.this.getActivity(), getString(R.string.toast_sizes_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
-
 					@Override
 					public void onNext(Collection<Size> sizes) {
 						listAdapter.clear();

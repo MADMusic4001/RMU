@@ -15,15 +15,19 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import com.madinnovations.rmu.data.entities.character.Profession;
+
 /**
  * Spell list attributes
  */
 public class SpellList {
 	private int id = -1;
-	private String name;
-	private String description;
-	private Realm realm;
-	private SpellListType spellListType;
+	private String name = null;
+	private String description = null;
+	private Realm realm = null;
+	private Realm realm2 = null;
+	private Profession profession = null;
+	private SpellListType spellListType = null;
 
 	/**
 	 * Checks the validity of the SpellList instance.
@@ -41,6 +45,8 @@ public class SpellList {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				", realm=" + realm +
+				", realm2=" + realm2 +
+				", profession=" + profession +
 				", spellListType=" + spellListType +
 				'}';
 	}
@@ -53,7 +59,6 @@ public class SpellList {
 		SpellList spellList = (SpellList) o;
 
 		return id == spellList.id;
-
 	}
 
 	@Override
@@ -85,6 +90,18 @@ public class SpellList {
 	}
 	public void setRealm(Realm realm) {
 		this.realm = realm;
+	}
+	public Realm getRealm2() {
+		return realm2;
+	}
+	public void setRealm2(Realm realm2) {
+		this.realm2 = realm2;
+	}
+	public Profession getProfession() {
+		return profession;
+	}
+	public void setProfession(Profession profession) {
+		this.profession = profession;
 	}
 	public SpellListType getSpellListType() {
 		return spellListType;

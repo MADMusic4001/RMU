@@ -17,9 +17,14 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,32 +32,37 @@ import java.util.Map;
  */
 public class CreatureVariety {
 	private int id = -1;
-	private CreatureType type;
-	private String name;
-	private String description;
-	private short typicalLevel;
-	private char levelSpread;
-	private Map<Stat, Short> racialStatBonuses;
-	private short             height;
-	private short             length;
-	private short             weight;
-	private float             healingRate;
-	private short             baseHits;
-	private short             baseEndurance;
-	private Size size;
-	private short             armorType;
-	private CriticalCode criticalCode;
-	private short             baseMovementRate;
-	private short baseChannellingRR;
-	private short baseEssenceRR;
-	private short baseMentalismRR;
-	private short basePhysicalRR;
-	private short baseFearRR;
-	private short baseStride;
-	private short leftoverDP;
-	private Outlook outlook;
-	private Map<Talent, Short> talentTiersMap;
-
+	private CreatureType type = null;
+	private String name = null;
+	private String description = null;
+	private short typicalLevel = 1;
+	private char levelSpread = 'A';
+	private Map<Stat, Short> racialStatBonuses = new HashMap<>();
+	private short height = 60;
+	private short length = 60;
+	private short weight = 200;
+	private short healingRate = 1;
+	private short baseHits = 25;
+	private short baseEndurance = 0;
+	private Size size = null;
+	private short armorType = 1;
+	private CriticalCode criticalCode = null;
+	private short baseMovementRate = 15;
+	private short baseChannellingRR = 0;
+	private short baseEssenceRR = 0;
+	private short baseMentalismRR = 0;
+	private short basePhysicalRR = 0;
+	private short baseFearRR = 0;
+	private Realm realm1;
+	private Realm realm2;
+	private short baseStride = 0;
+	private short leftoverDP = 200;
+	private Outlook outlook = null;
+	private Map<Talent, Short> talentTiersMap = new HashMap<>();
+	private Skill primaryAttack = null;
+	private List<Skill> secondaryAttacks = new ArrayList<>();
+	private List<Skill> primeSkills = new ArrayList<>();
+	private List<Skill> secondarySkills = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the CreatureVariety instance.
@@ -60,7 +70,8 @@ public class CreatureVariety {
 	 * @return true if the CreatureVariety instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && type != null;
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && type != null && size != null &&
+				criticalCode != null && realm1 != null && outlook != null;
 	}
 
 	@Override
@@ -70,6 +81,34 @@ public class CreatureVariety {
 				", type=" + type +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
+				", typicalLevel=" + typicalLevel +
+				", levelSpread=" + levelSpread +
+				", racialStatBonuses=" + racialStatBonuses +
+				", height=" + height +
+				", length=" + length +
+				", weight=" + weight +
+				", healingRate=" + healingRate +
+				", baseHits=" + baseHits +
+				", baseEndurance=" + baseEndurance +
+				", size=" + size +
+				", armorType=" + armorType +
+				", criticalCode=" + criticalCode +
+				", baseMovementRate=" + baseMovementRate +
+				", baseChannellingRR=" + baseChannellingRR +
+				", baseEssenceRR=" + baseEssenceRR +
+				", baseMentalismRR=" + baseMentalismRR +
+				", basePhysicalRR=" + basePhysicalRR +
+				", baseFearRR=" + baseFearRR +
+				", realm1=" + realm1 +
+				", realm2=" + realm2 +
+				", baseStride=" + baseStride +
+				", leftoverDP=" + leftoverDP +
+				", outlook=" + outlook +
+				", talentTiersMap=" + talentTiersMap +
+				", primaryAttack=" + primaryAttack +
+				", secondaryAttacks=" + secondaryAttacks +
+				", primeSkills=" + primeSkills +
+				", secondarySkills=" + secondarySkills +
 				'}';
 	}
 
@@ -113,5 +152,173 @@ public class CreatureVariety {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public short getTypicalLevel() {
+		return typicalLevel;
+	}
+	public void setTypicalLevel(short typicalLevel) {
+		this.typicalLevel = typicalLevel;
+	}
+	public char getLevelSpread() {
+		return levelSpread;
+	}
+	public void setLevelSpread(char levelSpread) {
+		this.levelSpread = levelSpread;
+	}
+	public Map<Stat, Short> getRacialStatBonuses() {
+		return racialStatBonuses;
+	}
+	public void setRacialStatBonuses(Map<Stat, Short> racialStatBonuses) {
+		this.racialStatBonuses = racialStatBonuses;
+	}
+	public short getHeight() {
+		return height;
+	}
+	public void setHeight(short height) {
+		this.height = height;
+	}
+	public short getLength() {
+		return length;
+	}
+	public void setLength(short length) {
+		this.length = length;
+	}
+	public short getWeight() {
+		return weight;
+	}
+	public void setWeight(short weight) {
+		this.weight = weight;
+	}
+	public short getHealingRate() {
+		return healingRate;
+	}
+	public void setHealingRate(short healingRate) {
+		this.healingRate = healingRate;
+	}
+	public short getBaseHits() {
+		return baseHits;
+	}
+	public void setBaseHits(short baseHits) {
+		this.baseHits = baseHits;
+	}
+	public short getBaseEndurance() {
+		return baseEndurance;
+	}
+	public void setBaseEndurance(short baseEndurance) {
+		this.baseEndurance = baseEndurance;
+	}
+	public Size getSize() {
+		return size;
+	}
+	public void setSize(Size size) {
+		this.size = size;
+	}
+	public short getArmorType() {
+		return armorType;
+	}
+	public void setArmorType(short armorType) {
+		this.armorType = armorType;
+	}
+	public CriticalCode getCriticalCode() {
+		return criticalCode;
+	}
+	public void setCriticalCode(CriticalCode criticalCode) {
+		this.criticalCode = criticalCode;
+	}
+	public short getBaseMovementRate() {
+		return baseMovementRate;
+	}
+	public void setBaseMovementRate(short baseMovementRate) {
+		this.baseMovementRate = baseMovementRate;
+	}
+	public short getBaseChannellingRR() {
+		return baseChannellingRR;
+	}
+	public void setBaseChannellingRR(short baseChannellingRR) {
+		this.baseChannellingRR = baseChannellingRR;
+	}
+	public short getBaseEssenceRR() {
+		return baseEssenceRR;
+	}
+	public void setBaseEssenceRR(short baseEssenceRR) {
+		this.baseEssenceRR = baseEssenceRR;
+	}
+	public short getBaseMentalismRR() {
+		return baseMentalismRR;
+	}
+	public void setBaseMentalismRR(short baseMentalismRR) {
+		this.baseMentalismRR = baseMentalismRR;
+	}
+	public short getBasePhysicalRR() {
+		return basePhysicalRR;
+	}
+	public void setBasePhysicalRR(short basePhysicalRR) {
+		this.basePhysicalRR = basePhysicalRR;
+	}
+	public short getBaseFearRR() {
+		return baseFearRR;
+	}
+	public void setBaseFearRR(short baseFearRR) {
+		this.baseFearRR = baseFearRR;
+	}
+	public Realm getRealm1() {
+		return realm1;
+	}
+	public void setRealm1(Realm realm1) {
+		this.realm1 = realm1;
+	}
+	public Realm getRealm2() {
+		return realm2;
+	}
+	public void setRealm2(Realm realm2) {
+		this.realm2 = realm2;
+	}
+	public short getBaseStride() {
+		return baseStride;
+	}
+	public void setBaseStride(short baseStride) {
+		this.baseStride = baseStride;
+	}
+	public short getLeftoverDP() {
+		return leftoverDP;
+	}
+	public void setLeftoverDP(short leftoverDP) {
+		this.leftoverDP = leftoverDP;
+	}
+	public Outlook getOutlook() {
+		return outlook;
+	}
+	public void setOutlook(Outlook outlook) {
+		this.outlook = outlook;
+	}
+	public Map<Talent, Short> getTalentTiersMap() {
+		return talentTiersMap;
+	}
+	public void setTalentTiersMap(Map<Talent, Short> talentTiersMap) {
+		this.talentTiersMap = talentTiersMap;
+	}
+	public Skill getPrimaryAttack() {
+		return primaryAttack;
+	}
+	public void setPrimaryAttack(Skill primaryAttack) {
+		this.primaryAttack = primaryAttack;
+	}
+	public List<Skill> getSecondaryAttacks() {
+		return secondaryAttacks;
+	}
+	public void setSecondaryAttacks(List<Skill> secondaryAttacks) {
+		this.secondaryAttacks = secondaryAttacks;
+	}
+	public List<Skill> getPrimeSkills() {
+		return primeSkills;
+	}
+	public void setPrimeSkills(List<Skill> primeSkills) {
+		this.primeSkills = primeSkills;
+	}
+	public List<Skill> getSecondarySkills() {
+		return secondarySkills;
+	}
+	public void setSecondarySkills(List<Skill> secondarySkills) {
+		this.secondarySkills = secondarySkills;
 	}
 }

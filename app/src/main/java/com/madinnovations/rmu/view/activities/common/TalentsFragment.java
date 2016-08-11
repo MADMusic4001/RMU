@@ -16,14 +16,23 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +40,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,17 +54,21 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.data.entities.common.Parameter;
+import com.madinnovations.rmu.data.entities.common.ParameterValue;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.common.DragParameterListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentCategorySpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentListAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentParameterListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -83,7 +95,7 @@ public class TalentsFragment extends Fragment {
 	@Inject
 	protected SkillSpinnerAdapter affectedSkillSpinnerAdapter;
 	@Inject
-	protected TalentParameterListAdapter parametersListAdapter;
+	protected DragParameterListAdapter parametersListAdapter;
 	@Inject
 	protected TalentParameterListAdapter selectedParametersListAdapter;
 	private ListView listView;
@@ -94,11 +106,12 @@ public class TalentsFragment extends Fragment {
 	private EditText initialCostEdit;
 	private EditText costPerTierEdit;
 	private EditText bonusPerTierEdit;
+	private CheckBox flawCheckbox;
 	private CheckBox situationalCheckbox;
 	private EditText actionPointsEdit;
 	private ListView parametersListview;
 	private ListView selectedParametersListview;
-
+	private List<ParameterValue> parameterValueList = new ArrayList<>();
 	private Talent currentInstance = new Talent();
 	private boolean          isNew            = true;
 
@@ -117,11 +130,10 @@ public class TalentsFragment extends Fragment {
 		initInitialCostEdit(layout);
 		initCostPerTierEdit(layout);
 		initBonusPerTierEdit(layout);
+		initFlawCheckbox(layout);
 		initSituationalCheckbox(layout);
 		initActionPointsEdit(layout);
 		initParametersListview(layout);
-		initAddParameterButton(layout);
-		initRemoveParameterButton(layout);
 		initSelectedParametersListview(layout);
 		initListView(layout);
 
@@ -191,6 +203,14 @@ public class TalentsFragment extends Fragment {
 					deleteItem(talent);
 					return true;
 				}
+			case R.id.context_delete_parameter:
+				ParameterValue parameterValue = (ParameterValue)selectedParametersListview.getItemAtPosition(info.position);
+				if(parameterValue != null) {
+					selectedParametersListAdapter.remove(parameterValue);
+					selectedParametersListAdapter.notifyDataSetChanged();
+					saveItem();
+					return true;
+				}
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -199,11 +219,13 @@ public class TalentsFragment extends Fragment {
 		boolean changed = false;
 		short newShort;
 
-		TalentCategory newCategory = categorySpinnerAdapter.getItem(categorySpinner.getSelectedItemPosition());
-		if((newCategory == null && currentInstance.getCategory() != null) ||
-				(newCategory != null && !newCategory.equals(currentInstance.getCategory()))) {
-			currentInstance.setCategory(newCategory);
-			changed = true;
+		if(categorySpinner.getSelectedItemPosition() != -1) {
+			TalentCategory newCategory = categorySpinnerAdapter.getItem(categorySpinner.getSelectedItemPosition());
+			if ((newCategory == null && currentInstance.getCategory() != null) ||
+					(newCategory != null && !newCategory.equals(currentInstance.getCategory()))) {
+				currentInstance.setCategory(newCategory);
+				changed = true;
+			}
 		}
 
 		String newValue = nameEdit.getText().toString();
@@ -237,16 +259,16 @@ public class TalentsFragment extends Fragment {
 
 		if(initialCostEdit.getText().length() > 0) {
 			newShort = Short.valueOf(initialCostEdit.getText().toString());
-			if(newShort != currentInstance.getInitialCost()) {
-				currentInstance.setInitialCost(newShort);
+			if(newShort != currentInstance.getDpCost()) {
+				currentInstance.setDpCost(newShort);
 				changed = true;
 			}
 		}
 
 		if(costPerTierEdit.getText().length() > 0) {
 			newShort = Short.valueOf(costPerTierEdit.getText().toString());
-			if(newShort != currentInstance.getCostPerTier()) {
-				currentInstance.setCostPerTier(newShort);
+			if(newShort != currentInstance.getDpCostPerTier()) {
+				currentInstance.setDpCostPerTier(newShort);
 				changed = true;
 			}
 		}
@@ -273,21 +295,21 @@ public class TalentsFragment extends Fragment {
 		}
 
 		boolean updateParameters = false;
-		if(selectedParametersListAdapter.getCount() != currentInstance.getParameters().size()) {
+		if(selectedParametersListAdapter.getCount() != currentInstance.getParameterValues().size()) {
 			updateParameters = true;
 		}
 		else {
-			for(Parameter parameter : currentInstance.getParameters()) {
-				if(selectedParametersListAdapter.getPosition(parameter) == -1) {
+			for(ParameterValue parameterValue : currentInstance.getParameterValues()) {
+				if(selectedParametersListAdapter.getPosition(parameterValue) == -1) {
 					updateParameters = true;
 					break;
 				}
 			}
 		}
 		if(updateParameters) {
-			currentInstance.getParameters().clear();
+			currentInstance.getParameterValues().clear();
 			for(int i = 0; i < selectedParametersListAdapter.getCount(); i++) {
-				currentInstance.getParameters().add(selectedParametersListAdapter.getItem(i));
+				currentInstance.getParameterValues().add(selectedParametersListAdapter.getItem(i));
 			}
 			changed = true;
 		}
@@ -300,13 +322,14 @@ public class TalentsFragment extends Fragment {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 		affectedSkillSpinner.setSelection(affectedSkillSpinnerAdapter.getPosition(currentInstance.getAffectedSkill()));
-		initialCostEdit.setText(String.valueOf(currentInstance.getInitialCost()));
-		costPerTierEdit.setText(String.valueOf(currentInstance.getCostPerTier()));
+		initialCostEdit.setText(String.valueOf(currentInstance.getDpCost()));
+		costPerTierEdit.setText(String.valueOf(currentInstance.getDpCostPerTier()));
 		bonusPerTierEdit.setText(String.valueOf(currentInstance.getBonusPerTier()));
+		flawCheckbox.setChecked(currentInstance.isFlaw());
 		situationalCheckbox.setChecked(currentInstance.isSituational());
 		actionPointsEdit.setText(String.valueOf(currentInstance.getActionPoints()));
 		selectedParametersListAdapter.clear();
-		selectedParametersListAdapter.addAll(currentInstance.getParameters());
+		selectedParametersListAdapter.addAll(currentInstance.getParameterValues());
 		selectedParametersListAdapter.notifyDataSetChanged();
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
@@ -550,8 +573,8 @@ public class TalentsFragment extends Fragment {
 				if(!hasFocus) {
 					if(initialCostEdit.getText().length() > 0) {
 						short newHits = Short.valueOf(initialCostEdit.getText().toString());
-						if (newHits != currentInstance.getInitialCost()) {
-							currentInstance.setInitialCost(newHits);
+						if (newHits != currentInstance.getDpCost()) {
+							currentInstance.setDpCost(newHits);
 							saveItem();
 						}
 					}
@@ -580,8 +603,8 @@ public class TalentsFragment extends Fragment {
 				if(!hasFocus) {
 					if(costPerTierEdit.getText().length() > 0) {
 						short newHits = Short.valueOf(costPerTierEdit.getText().toString());
-						if (newHits != currentInstance.getCostPerTier()) {
-							currentInstance.setCostPerTier(newHits);
+						if (newHits != currentInstance.getDpCostPerTier()) {
+							currentInstance.setDpCostPerTier(newHits);
 							saveItem();
 						}
 					}
@@ -616,6 +639,17 @@ public class TalentsFragment extends Fragment {
 						}
 					}
 				}
+			}
+		});
+	}
+
+	private void initFlawCheckbox(View layout) {
+		flawCheckbox = (CheckBox) layout.findViewById(R.id.flaw_check_box);
+		flawCheckbox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				currentInstance.setFlaw(situationalCheckbox.isChecked());
+				saveItem();
 			}
 		});
 	}
@@ -666,6 +700,25 @@ public class TalentsFragment extends Fragment {
 
 		parametersListview.setAdapter(parametersListAdapter);
 
+		parametersListview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+				String positionString = String.valueOf(position);
+				ClipData.Item clipDataItem = new ClipData.Item(positionString);
+				ClipData dragData = new ClipData(positionString, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN},
+						clipDataItem);
+
+				View.DragShadowBuilder myShadow = new MyDragShadowBuilder(view);
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					view.startDragAndDrop(dragData, myShadow, null, 0);
+				}
+				else {
+					view.startDrag(dragData, myShadow, null, 0);
+				}
+				return false;
+			}
+		});
 		parameterRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
@@ -685,66 +738,67 @@ public class TalentsFragment extends Fragment {
 				});
 	}
 
-	private void initAddParameterButton(View layout) {
-		Button addParameterButton = (Button) layout.findViewById(R.id.add_parameter_button);
-
-		addParameterButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				boolean change = false;
-				SparseBooleanArray checkedList = parametersListview.getCheckedItemPositions();
-				for(int i = 0; i < checkedList.size(); i++) {
-					if(checkedList.valueAt(i)) {
-						if(selectedParametersListAdapter.getPosition(parametersListAdapter.getItem(checkedList.keyAt(i))) == -1) {
-							Parameter parameter = parametersListAdapter.getItem(checkedList.keyAt(i));
-							selectedParametersListAdapter.add(parameter);
-							currentInstance.getParameters().add(parameter);
-							change = true;
-						}
-					}
-				}
-				parametersListview.clearChoices();
-				parametersListAdapter.notifyDataSetChanged();
-				selectedParametersListAdapter.notifyDataSetChanged();
-				if(change) {
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initRemoveParameterButton(View layout) {
-		Button removeParameterButton = (Button) layout.findViewById(R.id.remove_parameter_button);
-
-		removeParameterButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				boolean change = false;
-				SparseBooleanArray checkedList = selectedParametersListview.getCheckedItemPositions();
-				for(int i = checkedList.size() - 1 ; i >=0 ; i--) {
-					if(checkedList.valueAt(i)) {
-						Parameter parameter = selectedParametersListAdapter.getItem(checkedList.keyAt(i));
-						selectedParametersListAdapter.remove(parameter);
-						currentInstance.getParameters().remove(parameter);
-						change = true;
-					}
-				}
-				selectedParametersListview.clearChoices();
-				selectedParametersListAdapter.notifyDataSetChanged();
-				if(change) {
-					saveItem();
-				}
-			}
-		});
-	}
+//	private void initAddParameterButton(View layout) {
+//		Button addParameterButton = (Button) layout.findViewById(R.id.add_parameter_button);
+//
+//		addParameterButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//				boolean change = false;
+//				SparseBooleanArray checkedList = parametersListview.getCheckedItemPositions();
+//				for(int i = 0; i < checkedList.size(); i++) {
+//					if(checkedList.valueAt(i)) {
+//						if(selectedParametersListAdapter.getPosition(parametersListAdapter.getItem(checkedList.keyAt(i))) == -1) {
+//							Parameter parameter = parametersListAdapter.getItem(checkedList.keyAt(i));
+//							selectedParametersListAdapter.add(parameter);
+//							currentInstance.getParameters().add(parameter);
+//							change = true;
+//						}
+//					}
+//				}
+//				parametersListview.clearChoices();
+//				parametersListAdapter.notifyDataSetChanged();
+//				selectedParametersListAdapter.notifyDataSetChanged();
+//				if(change) {
+//					saveItem();
+//				}
+//			}
+//		});
+//	}
+//
+//	private void initRemoveParameterButton(View layout) {
+//		Button removeParameterButton = (Button) layout.findViewById(R.id.remove_parameter_button);
+//
+//		removeParameterButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//				boolean change = false;
+//				SparseBooleanArray checkedList = selectedParametersListview.getCheckedItemPositions();
+//				for(int i = checkedList.size() - 1 ; i >=0 ; i--) {
+//					if(checkedList.valueAt(i)) {
+//						Parameter parameter = selectedParametersListAdapter.getItem(checkedList.keyAt(i));
+//						selectedParametersListAdapter.remove(parameter);
+//						currentInstance.getParameters().remove(parameter);
+//						change = true;
+//					}
+//				}
+//				selectedParametersListview.clearChoices();
+//				selectedParametersListAdapter.notifyDataSetChanged();
+//				if(change) {
+//					saveItem();
+//				}
+//			}
+//		});
+//	}
 
 	private void initSelectedParametersListview(View layout) {
 		selectedParametersListview = (ListView) layout.findViewById(R.id.selected_parameters_list);
 		selectedParametersListview.setAdapter(selectedParametersListAdapter);
-
+		selectedParametersListview.setOnDragListener(new MyDragEventListener());
 		selectedParametersListAdapter.clear();
-		selectedParametersListAdapter.addAll(currentInstance.getParameters());
+		selectedParametersListAdapter.addAll(currentInstance.getParameterValues());
 		selectedParametersListAdapter.notifyDataSetChanged();
+		registerForContextMenu(selectedParametersListview);
 	}
 
 	private void initListView(View layout) {
@@ -756,7 +810,16 @@ public class TalentsFragment extends Fragment {
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<Talent>>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToViews();;
+						}
+					}
 					@Override
 					public void onError(Throwable e) {
 						Log.e("TalentsFragment", "Exception caught getting all Talent instances", e);
@@ -792,5 +855,197 @@ public class TalentsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	protected class MyDragEventListener implements View.OnDragListener {
+		private Drawable originalDrawable;
+		private int originalBackgroundColor;
+
+		// This is the method that the system calls when it dispatches a drag event to the
+		// listener.
+		public boolean onDrag(View v, DragEvent event) {
+
+			// Defines a variable to store the action type for the incoming event
+			final int action = event.getAction();
+
+			// Handles each of the expected events
+			switch(action) {
+
+				case DragEvent.ACTION_DRAG_STARTED:
+
+					// Determines if this View can accept the dragged data
+					if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+
+						// As an example of what your application might do,
+						// applies a blue color tint to the View to indicate that it can accept
+						// data.
+						if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+							originalDrawable = v.getBackground();
+							v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
+									null));
+						}
+						else {
+							originalBackgroundColor = v.getDrawingCacheBackgroundColor();
+							v.setBackgroundColor(Color.BLUE);
+						}
+
+						// Invalidate the view to force a redraw in the new tint
+						v.invalidate();
+
+						// returns true to indicate that the View can accept the dragged data.
+						return true;
+
+					}
+
+					// Returns false. During the current drag and drop operation, this View will
+					// not receive events again until ACTION_DRAG_ENDED is sent.
+					return false;
+
+				case DragEvent.ACTION_DRAG_ENTERED:
+
+					// Applies a green tint to the View. Return true; the return value is ignored.
+
+					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null));
+					}
+					else {
+						v.setBackgroundColor(Color.GREEN);
+					}
+
+					// Invalidate the view to force a redraw in the new tint
+					v.invalidate();
+
+					return true;
+
+				case DragEvent.ACTION_DRAG_LOCATION:
+
+					// Ignore the event
+					return true;
+
+				case DragEvent.ACTION_DRAG_EXITED:
+
+					// Re-sets the color tint to blue. Returns true; the return value is ignored.
+					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
+								null));
+					}
+					else {
+						v.setBackgroundColor(Color.BLUE);
+					}
+
+					// Invalidate the view to force a redraw in the new tint
+					v.invalidate();
+
+					return true;
+
+				case DragEvent.ACTION_DROP:
+
+					// Gets the item containing the dragged data
+					ClipData.Item item = event.getClipData().getItemAt(0);
+
+					// Gets the text data from the item.
+					CharSequence dragData = item.getText();
+					int position = Integer.valueOf(item.getText().toString());
+					Parameter parameter = parametersListAdapter.getItem(position);
+
+					Log.e("TalentsFragment", "parameter = " + parameter);
+					Toast.makeText(getActivity(), "Dragged data is " + parameter.getName(), Toast.LENGTH_LONG).show();
+					selectedParametersListAdapter.add(new ParameterValue(parameter, null));
+					selectedParametersListAdapter.notifyDataSetChanged();
+					// Displays a message containing the dragged data.
+
+					// Turns off any color tints
+					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+						v.setBackground(originalDrawable);
+					}
+					else {
+						v.setBackgroundColor(originalBackgroundColor);
+					}
+
+					// Invalidates the view to force a redraw
+					v.invalidate();
+
+					// Returns true. DragEvent.getResult() will return true.
+					return true;
+
+				case DragEvent.ACTION_DRAG_ENDED:
+
+					// Turns off any color tinting
+					v.setBackgroundColor(originalBackgroundColor);
+
+					// Invalidates the view to force a redraw
+					v.invalidate();
+
+					// Does a getResult(), and displays what happened.
+					if (event.getResult()) {
+						Toast.makeText(getActivity(), "The drop was handled.", Toast.LENGTH_LONG).show();
+
+					} else {
+						Toast.makeText(getActivity(), "The drop didn't work.", Toast.LENGTH_LONG).show();
+
+					}
+
+					// returns true; the value is ignored.
+					return true;
+
+				// An unknown action type was received.
+				default:
+					Log.e("DragDrop Example","Unknown action type received by OnDragListener.");
+					break;
+			}
+
+			return false;
+		}
+	}
+
+	private static class MyDragShadowBuilder extends View.DragShadowBuilder {
+
+		// The drag shadow image, defined as a drawable thing
+		private static Drawable shadow;
+
+		// Defines the constructor for myDragShadowBuilder
+		public MyDragShadowBuilder(View v) {
+
+			// Stores the View parameter passed to myDragShadowBuilder.
+			super(v);
+
+			// Creates a draggable image that will fill the Canvas provided by the system.
+			shadow = new ColorDrawable(Color.LTGRAY);
+		}
+
+		// Defines a callback that sends the drag shadow dimensions and touch point back to the
+		// system.
+		@Override
+		public void onProvideShadowMetrics (Point size, Point touch) {
+			// Defines local variables
+			int width, height;
+
+			// Sets the width of the shadow to half the width of the original View
+			width = getView().getWidth() / 2;
+
+			// Sets the height of the shadow to half the height of the original View
+			height = getView().getHeight() / 2;
+
+			// The drag shadow is a ColorDrawable. This sets its dimensions to be the same as the
+			// Canvas that the system will provide. As a result, the drag shadow will fill the
+			// Canvas.
+			shadow.setBounds(0, 0, width, height);
+
+			// Sets the size parameter's width and height values. These get back to the system
+			// through the size parameter.
+			size.set(width, height);
+
+			// Sets the touch point's position to be in the middle of the drag shadow
+			touch.set(width / 2, height / 2);
+		}
+
+		// Defines a callback that draws the drag shadow in a Canvas that the system constructs
+		// from the dimensions passed in onProvideShadowMetrics().
+		@Override
+		public void onDrawShadow(Canvas canvas) {
+
+			// Draws the ColorDrawable in the Canvas passed in from the system.
+			shadow.draw(canvas);
+		}
 	}
 }

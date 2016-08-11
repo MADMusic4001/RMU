@@ -96,7 +96,7 @@ public class ItemsFragment extends Fragment {
 		if(id == R.id.action_new_item) {
 			currentInstance = new Item();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -121,7 +121,7 @@ public class ItemsFragment extends Fragment {
 			case R.id.context_new_item:
 				currentInstance = new Item();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -135,7 +135,7 @@ public class ItemsFragment extends Fragment {
 		return super.onContextItemSelected(menuItem);
 	}
 
-	private void copyItemToControls() {
+	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 		weightEdit.setText(String.valueOf(currentInstance.getWeight()));
@@ -221,7 +221,7 @@ public class ItemsFragment extends Fragment {
 								currentInstance = new Item();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -324,9 +324,15 @@ public class ItemsFragment extends Fragment {
 				.subscribe(new Subscriber<Collection<Item>>() {
 					@Override
 					public void onCompleted() {
-
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToViews();;
+						}
 					}
-
 					@Override
 					public void onError(Throwable e) {
 						Log.e("ItemsFragment",
@@ -335,7 +341,6 @@ public class ItemsFragment extends Fragment {
 								getString(R.string.toast_items_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
-
 					@Override
 					public void onNext(Collection<Item> creatureCategories) {
 						listAdapter.clear();
@@ -357,7 +362,7 @@ public class ItemsFragment extends Fragment {
 					currentInstance = new Item();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);

@@ -398,7 +398,16 @@ public class SkillsFragment extends Fragment {
 				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<Collection<Skill>>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToViews();;
+						}
+					}
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SkillsFragment", "Exception caught getting all CriticalCode instances", e);

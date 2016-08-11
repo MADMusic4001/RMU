@@ -22,6 +22,7 @@ import com.madinnovations.rmu.view.di.modules.CombatDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CommonDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CreatureDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.ItemDaoSqlModule;
+import com.madinnovations.rmu.view.di.modules.SpellDaoSqlModule;
 
 import javax.inject.Singleton;
 
@@ -32,7 +33,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {ApplicationModule.class, CharacterDaoSqlModule.class, CommonDaoSqlModule.class, CombatDaoSqlModule.class,
-		CreatureDaoSqlModule.class, ItemDaoSqlModule.class})
+		CreatureDaoSqlModule.class, ItemDaoSqlModule.class, SpellDaoSqlModule.class})
 public interface ApplicationComponent {
 	ActivityComponent newActivityComponent(ActivityModule activityModule);
 }

@@ -17,13 +17,16 @@ package com.madinnovations.rmu.data.dao.common.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Stat;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -92,5 +95,28 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
         return initialValues;
+    }
+
+    @Override
+    protected boolean saveRelationships(SQLiteDatabase db, Skill instance) {
+        boolean result = true;
+        final String selectionArgs[] = { String.valueOf(instance.getId()) };
+        final String selection = SkillStatsSchema.COLUMN_SKILL_ID + " = ?";
+
+        db.delete(SkillStatsSchema.TABLE_NAME, selection, selectionArgs);
+
+        for(Stat stat : instance.getStats()) {
+            result &= (db.insert(SkillStatsSchema.TABLE_NAME, null, getSkillStat(instance.getId(), stat.getId())) != -1);
+        }
+        return result;
+    }
+
+    private ContentValues getSkillStat(int skillId, int statId) {
+        ContentValues values = new ContentValues(2);
+
+        values.put(SkillStatsSchema.COLUMN_SKILL_ID, skillId);
+        values.put(SkillStatsSchema.COLUMN_STAT_ID, statId);
+
+        return values;
     }
 }

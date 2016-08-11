@@ -15,14 +15,20 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class representing a Rolemaster Skill
  */
 public class Skill {
 	private int id = -1;
-	private String name;
-	private String description;
-	private SkillCategory category;
+	private String name = null;
+	private String description = null;
+	private SkillCategory category = null;
+	private boolean requiresSpecialization = false;
+	private boolean categoryStats = true;
+	private List<Stat> stats = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Skill instance.
@@ -30,7 +36,8 @@ public class Skill {
 	 * @return true if the Skill instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && category != null;
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && category != null &&
+				(categoryStats || (stats != null && !stats.isEmpty() && stats.size() == 3));
 	}
 
 	@Override
@@ -40,6 +47,9 @@ public class Skill {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				", category=" + category +
+				", requiresSpecialization=" + requiresSpecialization +
+				", categoryStats=" + categoryStats +
+				", stats=" + stats +
 				'}';
 	}
 
@@ -51,7 +61,6 @@ public class Skill {
 		Skill skill = (Skill) o;
 
 		return id == skill.id;
-
 	}
 
 	@Override
@@ -83,5 +92,23 @@ public class Skill {
 	}
 	public void setCategory(SkillCategory category) {
 		this.category = category;
+	}
+	public boolean isRequiresSpecialization() {
+		return requiresSpecialization;
+	}
+	public void setRequiresSpecialization(boolean requiresSpecialization) {
+		this.requiresSpecialization = requiresSpecialization;
+	}
+	public boolean isCategoryStats() {
+		return categoryStats;
+	}
+	public void setCategoryStats(boolean categoryStats) {
+		this.categoryStats = categoryStats;
+	}
+	public List<Stat> getStats() {
+		return stats;
+	}
+	public void setStats(List<Stat> stats) {
+		this.stats = stats;
 	}
 }

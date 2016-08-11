@@ -52,13 +52,30 @@
             android:inputType="textMultiLine"
             android:hint="@string/hint_skill_category_description"/>
 
+        <CheckBox
+            android:id="@+id/no_stats_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/description_edit"
+            android:text="@string/label_no_stats"/>
+        <CheckBox
+            android:id="@+id/realm_stats_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/no_stats_check_box"
+            android:layout_toEndOf="@id/no_stats_check_box"
+            android:layout_alignTop="@id/no_stats_check_box"
+            android:text="@string/label_realm_stats"/>
+
         <Spinner
             android:id="@+id/stat1_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/description_edit"/>
+            android:layout_below="@id/no_stats_check_box"/>
         <Spinner
             android:id="@+id/stat2_spinner"
             android:layout_width="wrap_content"

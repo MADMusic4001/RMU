@@ -16,8 +16,12 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
+import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
+import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
@@ -30,6 +34,7 @@ import com.madinnovations.rmu.data.dao.creature.impl.CreatureDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureVarietyDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.OutlookDaoDbImpl;
+import com.madinnovations.rmu.data.dao.spells.RealmDao;
 
 import javax.inject.Singleton;
 
@@ -58,8 +63,11 @@ public class CreatureDaoSqlModule {
 		return new CreatureTypeDaoDbImpl(helper, creatureCategoryDao);
 	}
 	@Provides @Singleton
-	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao) {
-		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao);
+	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,
+														CriticalCodeDao criticalCodeDao, RealmDao realmDao, OutlookDao outlookDao,
+														StatDao statDao, SkillDao skillDao, TalentDao talentDao) {
+		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao, sizeDao, criticalCodeDao, realmDao, outlookDao, statDao, skillDao,
+				talentDao);
 	}
 	@Provides @Singleton
 	public OutlookDao provideOutlookDao(RMUDatabaseHelper helper) {

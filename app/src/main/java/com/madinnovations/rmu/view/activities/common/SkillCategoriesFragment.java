@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -47,7 +48,9 @@ import com.madinnovations.rmu.view.adapters.common.SkillCategoryListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -74,6 +77,8 @@ public class SkillCategoriesFragment extends Fragment {
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
+	private CheckBox noStatsCheckBox;
+	private CheckBox realmStatsCheckBox;
 	private Spinner stat1Spinner;
 	private Spinner stat2Spinner;
 	private Spinner stat3Spinner;
@@ -90,6 +95,8 @@ public class SkillCategoriesFragment extends Fragment {
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
+		initNoStatsCheckBox(layout);
+		initRealmStatsCheckBox(layout);
 		initStat1Spinner(layout);
 		initStat2Spinner(layout);
 		initStat3Spinner(layout);
@@ -168,53 +175,143 @@ public class SkillCategoriesFragment extends Fragment {
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
-		String value = nameEdit.getText().toString();
-		if(value.isEmpty()) {
-			value = null;
+		String newString;
+		Stat newStat;
+		int position;
+		List<Stat> stats;
+
+		newString = nameEdit.getText().toString();
+		if(newString.isEmpty()) {
+			newString = null;
 		}
-		if((value == null && currentInstance.getName() != null) ||
-				(value != null && !value.equals(currentInstance.getName()))) {
-			currentInstance.setName(value);
+		if((newString == null && currentInstance.getName() != null) ||
+				(newString != null && !newString.equals(currentInstance.getName()))) {
+			currentInstance.setName(newString);
 			changed = true;
 		}
 
-		value = descriptionEdit.getText().toString();
-		if(value.isEmpty()) {
-			value = null;
+		newString = descriptionEdit.getText().toString();
+		if(newString.isEmpty()) {
+			newString = null;
 		}
-		if((value == null && currentInstance.getDescription() != null) ||
-				(value != null && !value.equals(currentInstance.getDescription()))) {
-			currentInstance.setName(value);
+		if((newString == null && currentInstance.getDescription() != null) ||
+				(newString != null && !newString.equals(currentInstance.getDescription()))) {
+			currentInstance.setName(newString);
 			changed = true;
 		}
 
-		Stat newStat = null;
-		if(stat1Spinner.getSelectedItemPosition() >= 0) {
-			newStat = stat1SpinnerAdapter.getItem(stat1Spinner.getSelectedItemPosition());
-		}
-		if((newStat == null && currentInstance.getStat1() != null) ||
-				(newStat != null && !newStat.equals(currentInstance.getStat1()))) {
-			currentInstance.setStat1(newStat);
+		// If checkbox does not match value in entity then update value in entity
+		boolean newNoStats = noStatsCheckBox.isChecked();
+		if(currentInstance.isNoStats() != newNoStats) {
+			currentInstance.setNoStats(newNoStats);
 			changed = true;
 		}
+		// If checkbox is checked then set stats list to null
+		if(newNoStats) {
+			// If current instance says to use realm stats
+			if(currentInstance.isRealmStats()) {
+				currentInstance.setRealmStats(false);
+				changed = true;
+			}
+			if(currentInstance.getStats() != null || !currentInstance.getStats().isEmpty()) {
+				currentInstance.setStats(null);
+			}
+			realmStatsCheckBox.setVisibility(View.GONE);
+			stat1Spinner.setVisibility(View.GONE);
+			stat2Spinner.setVisibility(View.GONE);
+			stat3Spinner.setVisibility(View.GONE);
+		}
+		else {
+			boolean newRealmStats = realmStatsCheckBox.isChecked();
+			if(currentInstance.isRealmStats() != newRealmStats) {
+				currentInstance.setRealmStats(newRealmStats);
+				changed = true;
+			}
+			stats = currentInstance.getStats();
+			if(newRealmStats) {
+				if(stats != null && stats.size() != 1) {
+					while(stats.size() > 1 ) {
+						stats.remove(1);
+						changed = true;
+					}
+				}
+				position = stat1Spinner.getSelectedItemPosition();
+				if(position != -1) {
+					newStat = stat1SpinnerAdapter.getItem(position);
+					if(stats == null || stats.isEmpty() || !newStat.equals(stats.get(0))) {
+						if(stats == null) {
+							stats = new ArrayList<>(1);
+						}
+						stats.add(0, newStat);
+						changed = true;
+					}
+				}
+				else {
+					if(stats != null && !stats.isEmpty()) {
+						changed = true;
+					}
+					stats = null;
+				}
+				currentInstance.setStats(stats);
+			}
+			else {
+				int currentIndex = 0;
+				if(stats == null) {
+					stats = new ArrayList<>(3);
+				}
 
-		newStat = null;
-		if(stat2Spinner.getSelectedItemPosition() >= 0) {
-			newStat = stat2SpinnerAdapter.getItem(stat2Spinner.getSelectedItemPosition());
-		}
-		if((newStat == null && currentInstance.getStat1() != null) ||
-				(newStat != null && !newStat.equals(currentInstance.getStat2()))) {
-			currentInstance.setStat2(newStat);
-			changed = true;
+				newStat = null;
+				position = stat1Spinner.getSelectedItemPosition();
+				if (position >= 0) {
+					newStat = stat1SpinnerAdapter.getItem(position);
+				}
+				if(setStat(stats, newStat, currentIndex)) {
+					currentIndex++;
+					changed = true;
+				}
+
+				newStat = null;
+				position = stat2Spinner.getSelectedItemPosition();
+				if (position >= 0) {
+					newStat = stat2SpinnerAdapter.getItem(position);
+				}
+				if(setStat(stats, newStat, currentIndex)) {
+					currentIndex++;
+					changed = true;
+				}
+
+				newStat = null;
+				position = stat3Spinner.getSelectedItemPosition();
+				if (position >= 0) {
+					newStat = stat3SpinnerAdapter.getItem(position);
+				}
+				changed |= setStat(stats, newStat, currentIndex);
+
+				if(stats.size() == 0) {
+					stats = null;
+				}
+				currentInstance.setStats(stats);
+			}
 		}
 
-		newStat = null;
-		if(stat3Spinner.getSelectedItemPosition() >= 0) {
-			newStat = stat3SpinnerAdapter.getItem(stat3Spinner.getSelectedItemPosition());
+		return changed;
+	}
+
+	private boolean setStat(List<Stat> stats, Stat newStat, int currentIndex) {
+		boolean changed = false;
+
+		if (newStat != null) {
+			if (stats.size() <= currentIndex) {
+				stats.add(currentIndex, newStat);
+				changed = true;
+			}
+			else if(!newStat.equals(stats.get(currentIndex))) {
+				stats.set(currentIndex, newStat);
+				changed = true;
+			}
 		}
-		if((newStat == null && currentInstance.getStat1() != null) ||
-				(newStat != null && !newStat.equals(currentInstance.getStat3()))) {
-			currentInstance.setStat3(newStat);
+		else {
+			stats.add(currentIndex, null);
 			changed = true;
 		}
 
@@ -224,9 +321,35 @@ public class SkillCategoriesFragment extends Fragment {
 	private void copyItemToControls() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-		stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat1()));
-		stat2Spinner.setSelection(stat2SpinnerAdapter.getPosition(currentInstance.getStat2()));
-		stat3Spinner.setSelection(stat3SpinnerAdapter.getPosition(currentInstance.getStat3()));
+		noStatsCheckBox.setChecked(currentInstance.isNoStats());
+		if(currentInstance.isNoStats()) {
+			realmStatsCheckBox.setVisibility(View.GONE);
+			stat1Spinner.setVisibility(View.GONE);
+			stat2Spinner.setVisibility(View.GONE);
+			stat3Spinner.setVisibility(View.GONE);
+		}
+		else {
+			realmStatsCheckBox.setChecked(currentInstance.isRealmStats());
+			stat1Spinner.setVisibility(View.VISIBLE);
+			List<Stat> stats = currentInstance.getStats();
+			if(stats != null && stats.size() >= 1) {
+				stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(stats.get(0)));
+			}
+			if(currentInstance.isRealmStats()) {
+				stat2Spinner.setVisibility(View.GONE);
+				stat3Spinner.setVisibility(View.GONE);
+			}
+			else {
+				stat2Spinner.setVisibility(View.VISIBLE);
+				stat3Spinner.setVisibility(View.VISIBLE);
+				if(stats != null && stats.size() >= 2) {
+					stat2Spinner.setSelection(stat2SpinnerAdapter.getPosition(stats.get(1)));
+				}
+				if(stats != null && stats.size() == 3) {
+					stat3Spinner.setSelection(stat3SpinnerAdapter.getPosition(stats.get(2)));
+				}
+			}
+		}
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -274,6 +397,9 @@ public class SkillCategoriesFragment extends Fragment {
 							}
 						}
 					});
+		}
+		else {
+			Log.i("SkillCategoriesFrag", "Skill Category not valid: " + currentInstance);
 		}
 	}
 
@@ -371,6 +497,57 @@ public class SkillCategoriesFragment extends Fragment {
 		});
 	}
 
+	private void initNoStatsCheckBox(View layout) {
+		noStatsCheckBox = (CheckBox)layout.findViewById(R.id.no_stats_check_box);
+		noStatsCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if(noStatsCheckBox.isChecked() != currentInstance.isNoStats()) {
+					if (noStatsCheckBox.isChecked()) {
+						realmStatsCheckBox.setVisibility(View.GONE);
+						stat1Spinner.setVisibility(View.GONE);
+						stat2Spinner.setVisibility(View.GONE);
+						stat3Spinner.setVisibility(View.GONE);
+					} else {
+						realmStatsCheckBox.setVisibility(View.VISIBLE);
+						stat1Spinner.setVisibility(View.VISIBLE);
+						if (realmStatsCheckBox.isChecked()) {
+							stat2Spinner.setVisibility(View.GONE);
+							stat3Spinner.setVisibility(View.GONE);
+						} else {
+							stat2Spinner.setVisibility(View.VISIBLE);
+							stat3Spinner.setVisibility(View.VISIBLE);
+						}
+					}
+					currentInstance.setNoStats(noStatsCheckBox.isChecked());
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initRealmStatsCheckBox(View layout) {
+		realmStatsCheckBox = (CheckBox)layout.findViewById(R.id.realm_stats_check_box);
+		realmStatsCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if(realmStatsCheckBox.isChecked() != currentInstance.isRealmStats()) {
+					if(realmStatsCheckBox.isChecked()) {
+						stat2Spinner.setVisibility(View.GONE);
+						stat3Spinner.setVisibility(View.GONE);
+					}
+					else {
+						stat2Spinner.setVisibility(View.VISIBLE);
+						stat3Spinner.setVisibility(View.VISIBLE);
+					}
+					currentInstance.setRealmStats(realmStatsCheckBox.isChecked());
+					saveItem();
+				}
+			}
+		});
+
+	}
+
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
@@ -395,15 +572,25 @@ public class SkillCategoriesFragment extends Fragment {
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getStat1() == null || stat1SpinnerAdapter.getPosition(currentInstance.getStat1()) != position) {
-					currentInstance.setStat1(stat1SpinnerAdapter.getItem(position));
+				List<Stat> stats = currentInstance.getStats();
+				if(stats == null || stats.isEmpty() || stat1SpinnerAdapter.getPosition(stats.get(0)) != position) {
+					if(stats == null) {
+						stats = new ArrayList<Stat>(1);
+					}
+					if(stats.isEmpty()) {
+						stats.add(stat1SpinnerAdapter.getItem(position));
+					}
+					else {
+						stats.set(0, stat1SpinnerAdapter.getItem(position));
+					}
+					currentInstance.setStats(stats);
 					saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getStat1() != null) {
-					currentInstance.setStat1(null);
+				if(currentInstance.getStats() != null && !currentInstance.getStats().isEmpty()) {
+					currentInstance.getStats().remove(0);
 					saveItem();
 				}
 			}
@@ -434,15 +621,22 @@ public class SkillCategoriesFragment extends Fragment {
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getStat2() == null || stat2SpinnerAdapter.getPosition(currentInstance.getStat2()) != position) {
-					currentInstance.setStat2(stat2SpinnerAdapter.getItem(position));
+				List<Stat> stats = currentInstance.getStats();
+				if(stats != null && (stats.size() == 1 || (stats.size() > 1 && stat2SpinnerAdapter.getPosition(stats.get(1)) != position))) {
+					if(stats.size() == 1) {
+						stats.add(stat2SpinnerAdapter.getItem(position));
+					}
+					else {
+						stats.set(1, stat2SpinnerAdapter.getItem(position));
+					}
+					currentInstance.setStats(stats);
 					saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getStat2() != null) {
-					currentInstance.setStat2(null);
+				if(currentInstance.getStats() != null && currentInstance.getStats().size() > 1) {
+					currentInstance.getStats().remove(1);
 					saveItem();
 				}
 			}
@@ -473,15 +667,22 @@ public class SkillCategoriesFragment extends Fragment {
 		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getStat3() == null || stat3SpinnerAdapter.getPosition(currentInstance.getStat3()) != position) {
-					currentInstance.setStat3(stat3SpinnerAdapter.getItem(position));
+				List<Stat> stats = currentInstance.getStats();
+				if(stats != null && (stats.size() == 2 || (stats.size() == 3 && stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
+					if(stats.size() == 2) {
+						stats.add(stat3SpinnerAdapter.getItem(position));
+					}
+					else {
+						stats.set(2, stat3SpinnerAdapter.getItem(position));
+					}
+					currentInstance.setStats(stats);
 					saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getStat3() != null) {
-					currentInstance.setStat3(null);
+				if(currentInstance.getStats() != null && currentInstance.getStats().size() == 3) {
+					currentInstance.getStats().remove(2);
 					saveItem();
 				}
 			}
@@ -497,7 +698,16 @@ public class SkillCategoriesFragment extends Fragment {
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<SkillCategory>>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {
+						if(listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							listView.setSelection(0);
+							listView.setItemChecked(0, true);
+							listAdapter.notifyDataSetChanged();
+							copyItemToControls();;
+						}
+					}
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SkillCategoriesFrag", "Exception caught getting all SkillCategory instances", e);
