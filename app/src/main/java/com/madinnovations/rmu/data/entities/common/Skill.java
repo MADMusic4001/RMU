@@ -22,13 +22,13 @@ import java.util.List;
  * Class representing a Rolemaster Skill
  */
 public class Skill {
-	private int id = -1;
-	private String name = null;
-	private String description = null;
-	private SkillCategory category = null;
-	private boolean requiresSpecialization = false;
-	private boolean categoryStats = true;
-	private List<Stat> stats = new ArrayList<>();
+	private int           id                     = -1;
+	private String        name                   = null;
+	private String        description            = null;
+	private SkillCategory category               = null;
+	private boolean       requiresSpecialization = false;
+	private boolean       useCategoryStats       = true;
+	private List<Stat>    stats                  = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Skill instance.
@@ -37,7 +37,7 @@ public class Skill {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && category != null &&
-				(categoryStats || (stats != null && !stats.isEmpty() && stats.size() == 3));
+				(useCategoryStats || (stats != null && !stats.isEmpty() && stats.size() == 3));
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class Skill {
 				", description='" + description + '\'' +
 				", category=" + category +
 				", requiresSpecialization=" + requiresSpecialization +
-				", categoryStats=" + categoryStats +
+				", useCategoryStats=" + useCategoryStats +
 				", stats=" + stats +
 				'}';
 	}
@@ -99,11 +99,11 @@ public class Skill {
 	public void setRequiresSpecialization(boolean requiresSpecialization) {
 		this.requiresSpecialization = requiresSpecialization;
 	}
-	public boolean isCategoryStats() {
-		return categoryStats;
+	public boolean isUseCategoryStats() {
+		return useCategoryStats;
 	}
-	public void setCategoryStats(boolean categoryStats) {
-		this.categoryStats = categoryStats;
+	public void setUseCategoryStats(boolean useCategoryStats) {
+		this.useCategoryStats = useCategoryStats;
 	}
 	public List<Stat> getStats() {
 		return stats;

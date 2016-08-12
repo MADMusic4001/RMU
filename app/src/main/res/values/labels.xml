@@ -85,6 +85,7 @@
   <string name="label_per_tier">Per Tier</string>
   <string name="label_range">Range</string>
   <string name="label_situational">Situational</string>
+  <string name="label_use_category_stats">Use Category Stats</string>
   <string name="label_value">Value</string>
 
   <!-- Menu labels -->
@@ -142,6 +143,7 @@
   <string name="label_max_height">Maximum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
   <string name="label_max_weight">Maximum Weight</string>
+  <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- EditText hints -->
   <string name="hint_action_points">Action Points</string>

@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -39,14 +40,19 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.common.SkillCategorySpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillListAdapter;
+import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -59,17 +65,29 @@ import rx.schedulers.Schedulers;
  */
 public class SkillsFragment extends Fragment {
 	@Inject
-	protected SkillRxHandler skillRxHandler;
+	protected SkillRxHandler              skillRxHandler;
 	@Inject
-	protected SkillCategoryRxHandler skillCategoryRxHandler;
+	protected SkillCategoryRxHandler      skillCategoryRxHandler;
 	@Inject
-	protected SkillListAdapter listAdapter;
+	protected StatRxHandler               statRxHandler;
+	@Inject
+	protected SkillListAdapter            listAdapter;
 	@Inject
 	protected SkillCategorySpinnerAdapter skillCategorySpinnerAdapter;
-	private ListView listView;
-	private EditText nameEdit;
-	private EditText descriptionEdit;
-	private Spinner skillCategorySpinner;
+	@Inject
+	protected StatSpinnerAdapter          stat1SpinnerAdapter;
+	@Inject
+	protected StatSpinnerAdapter          stat2SpinnerAdapter;
+	@Inject
+	protected StatSpinnerAdapter          stat3SpinnerAdapter;
+	private   ListView                    listView;
+	private   EditText                    nameEdit;
+	private   EditText                    descriptionEdit;
+	private   Spinner                     skillCategorySpinner;
+	private   CheckBox                    useCategoryStatsCheckBox;
+	private   Spinner                     stat1Spinner;
+	private   Spinner                     stat2Spinner;
+	private   Spinner                     stat3Spinner;
 	private Skill currentInstance = new Skill();
 	private boolean isNew = true;
 
@@ -84,6 +102,10 @@ public class SkillsFragment extends Fragment {
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initSkillCategorySpinner(layout);
+		initUseCategoryStatsCheckBox(layout);
+		initStat1Spinner(layout);
+		initStat2Spinner(layout);
+		initStat3Spinner(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -159,6 +181,7 @@ public class SkillsFragment extends Fragment {
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
+		Stat newStat;
 
 		String newValue = nameEdit.getText().toString();
 		if(newValue.isEmpty()) {
@@ -188,6 +211,51 @@ public class SkillsFragment extends Fragment {
 			}
 		}
 
+		boolean newBoolean = useCategoryStatsCheckBox.isChecked();
+		if(newBoolean != currentInstance.isUseCategoryStats()) {
+			currentInstance.setUseCategoryStats(newBoolean);
+		}
+		if(newBoolean) {
+			if(currentInstance.getStats() != null && !currentInstance.getStats().isEmpty()) {
+				currentInstance.setStats(null);
+				changed = true;
+			}
+		}
+		else {
+			List<Stat> stats = currentInstance.getStats();
+			if(stats == null) {
+				stats = new ArrayList<>(3);
+				changed = true;
+			}
+			newStat = stat1SpinnerAdapter.getItem(stat1Spinner.getSelectedItemPosition());
+			if(stats.size() < 1) {
+				stats.add(newStat);
+				changed = true;
+			}
+			else if(!stats.get(0).equals(newStat)) {
+				stats.set(0, newStat);
+				changed = true;
+			}
+			newStat = stat2SpinnerAdapter.getItem(stat2Spinner.getSelectedItemPosition());
+			if(stats.size() < 2) {
+				stats.add(newStat);
+				changed = true;
+			}
+			else if(!stats.get(1).equals(newStat)) {
+				stats.set(1, newStat);
+				changed = true;
+			}
+			newStat = stat3SpinnerAdapter.getItem(stat3Spinner.getSelectedItemPosition());
+			if(stats.size() < 3) {
+				stats.add(newStat);
+				changed = true;
+			}
+			else if(!stats.get(2).equals(newStat)) {
+				stats.set(2, newStat);
+				changed = true;
+			}
+		}
+
 		return changed;
 	}
 
@@ -195,6 +263,28 @@ public class SkillsFragment extends Fragment {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 		skillCategorySpinner.setSelection(skillCategorySpinnerAdapter.getPosition(currentInstance.getCategory()));
+		useCategoryStatsCheckBox.setChecked(currentInstance.isUseCategoryStats());
+		if(currentInstance.isUseCategoryStats()) {
+			stat1Spinner.setVisibility(View.GONE);
+			stat2Spinner.setVisibility(View.GONE);
+			stat3Spinner.setVisibility(View.GONE);
+		}
+		else {
+			stat1Spinner.setVisibility(View.VISIBLE);
+			stat2Spinner.setVisibility(View.VISIBLE);
+			stat3Spinner.setVisibility(View.VISIBLE);
+			if(currentInstance.getStats() != null) {
+				if(currentInstance.getStats().size() > 0) {
+					stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStats().get(0)));
+				}
+				if(currentInstance.getStats().size() > 1) {
+					stat2Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStats().get(1)));
+				}
+				if(currentInstance.getStats().size() > 2) {
+					stat3Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStats().get(2)));
+				}
+			}
+		}
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -383,6 +473,170 @@ public class SkillsFragment extends Fragment {
 			public void onNothingSelected(AdapterView<?> parent) {
 				if(currentInstance.getCategory() != null) {
 					currentInstance.setCategory(null);
+				}
+			}
+		});
+	}
+
+	private void initUseCategoryStatsCheckBox(View layout) {
+		useCategoryStatsCheckBox = (CheckBox)layout.findViewById(R.id.use_cat_stats_check_box);
+		useCategoryStatsCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if(useCategoryStatsCheckBox.isChecked() != currentInstance.isUseCategoryStats()) {
+					if (useCategoryStatsCheckBox.isChecked()) {
+						stat1Spinner.setVisibility(View.GONE);
+						stat2Spinner.setVisibility(View.GONE);
+						stat3Spinner.setVisibility(View.GONE);
+					} else {
+						stat1Spinner.setVisibility(View.VISIBLE);
+						stat2Spinner.setVisibility(View.VISIBLE);
+						stat3Spinner.setVisibility(View.VISIBLE);
+					}
+					currentInstance.setUseCategoryStats(useCategoryStatsCheckBox.isChecked());
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initStat1Spinner(View layout) {
+		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
+		stat1Spinner.setAdapter(stat1SpinnerAdapter);
+
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> items) {
+						stat1SpinnerAdapter.clear();
+						stat1SpinnerAdapter.addAll(items);
+						stat1SpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				List<Stat> stats = currentInstance.getStats();
+				if(stats == null || stats.isEmpty() || stat1SpinnerAdapter.getPosition(stats.get(0)) != position) {
+					if(stats == null) {
+						stats = new ArrayList<>(3);
+					}
+					if(stats.isEmpty()) {
+						stats.add(stat1SpinnerAdapter.getItem(position));
+					}
+					else {
+						stats.set(0, stat1SpinnerAdapter.getItem(position));
+					}
+					currentInstance.setStats(stats);
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getStats() != null && !currentInstance.getStats().isEmpty()) {
+					currentInstance.getStats().remove(0);
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initStat2Spinner(View layout) {
+		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
+		stat2Spinner.setAdapter(stat2SpinnerAdapter);
+
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> items) {
+						stat2SpinnerAdapter.clear();
+						stat2SpinnerAdapter.addAll(items);
+						stat2SpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				List<Stat> stats = currentInstance.getStats();
+				if(stats != null && (stats.size() == 1 ||
+						(stats.size() > 1 && stat2SpinnerAdapter.getPosition(stats.get(1)) != position))) {
+					if(stats.size() == 1) {
+						stats.add(stat2SpinnerAdapter.getItem(position));
+					}
+					else {
+						stats.set(1, stat2SpinnerAdapter.getItem(position));
+					}
+					currentInstance.setStats(stats);
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getStats() != null && currentInstance.getStats().size() > 1) {
+					currentInstance.getStats().remove(1);
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initStat3Spinner(View layout) {
+		stat3Spinner = (Spinner)layout.findViewById(R.id.stat3_spinner);
+		stat3Spinner.setAdapter(stat3SpinnerAdapter);
+
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> items) {
+						stat3SpinnerAdapter.clear();
+						stat3SpinnerAdapter.addAll(items);
+						stat3SpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				List<Stat> stats = currentInstance.getStats();
+				if(stats != null && (stats.size() == 2 || (stats.size() == 3 && stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
+					if(stats.size() == 2) {
+						stats.add(stat3SpinnerAdapter.getItem(position));
+					}
+					else {
+						stats.set(2, stat3SpinnerAdapter.getItem(position));
+					}
+					currentInstance.setStats(stats);
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getStats() != null && currentInstance.getStats().size() == 3) {
+					currentInstance.getStats().remove(2);
+					saveItem();
 				}
 			}
 		});

@@ -620,7 +620,8 @@ public class SkillCategoriesFragment extends Fragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				List<Stat> stats = currentInstance.getStats();
-				if(stats != null && (stats.size() == 1 || (stats.size() > 1 && stat2SpinnerAdapter.getPosition(stats.get(1)) != position))) {
+				if(stats != null && (stats.size() == 1 ||
+						(stats.size() > 1 && stat2SpinnerAdapter.getPosition(stats.get(1)) != position))) {
 					if(stats.size() == 1) {
 						stats.add(stat2SpinnerAdapter.getItem(position));
 					}
@@ -666,7 +667,8 @@ public class SkillCategoriesFragment extends Fragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				List<Stat> stats = currentInstance.getStats();
-				if(stats != null && (stats.size() == 2 || (stats.size() == 3 && stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
+				if(stats != null && (stats.size() == 2 ||
+						(stats.size() == 3 && stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
 					if(stats.size() == 2) {
 						stats.add(stat3SpinnerAdapter.getItem(position));
 					}
