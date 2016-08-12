@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
@@ -87,6 +88,12 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
     @Inject
     public RMUDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+		db.setForeignKeyConstraintsEnabled(true);
     }
 
     @Override

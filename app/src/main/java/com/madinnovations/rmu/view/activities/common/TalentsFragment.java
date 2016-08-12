@@ -879,15 +879,9 @@ public class TalentsFragment extends Fragment {
 						// As an example of what your application might do,
 						// applies a blue color tint to the View to indicate that it can accept
 						// data.
-						if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-							originalDrawable = v.getBackground();
-							v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
-									null));
-						}
-						else {
-							originalBackgroundColor = v.getDrawingCacheBackgroundColor();
-							v.setBackgroundColor(Color.BLUE);
-						}
+						originalDrawable = v.getBackground();
+						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
+								null));
 
 						// Invalidate the view to force a redraw in the new tint
 						v.invalidate();
@@ -925,13 +919,8 @@ public class TalentsFragment extends Fragment {
 				case DragEvent.ACTION_DRAG_EXITED:
 
 					// Re-sets the color tint to blue. Returns true; the return value is ignored.
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
-								null));
-					}
-					else {
-						v.setBackgroundColor(Color.BLUE);
-					}
+					v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
+							null));
 
 					// Invalidate the view to force a redraw in the new tint
 					v.invalidate();

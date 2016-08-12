@@ -130,7 +130,7 @@ public class SkillCategoriesFragment extends Fragment {
 			}
 			currentInstance = new SkillCategory();
 			isNew = true;
-			copyItemToControls();
+			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
@@ -158,7 +158,7 @@ public class SkillCategoriesFragment extends Fragment {
 				}
 				currentInstance = new SkillCategory();
 				isNew = true;
-				copyItemToControls();
+				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
@@ -213,8 +213,9 @@ public class SkillCategoriesFragment extends Fragment {
 				currentInstance.setRealmStats(false);
 				changed = true;
 			}
-			if(currentInstance.getStats() != null || !currentInstance.getStats().isEmpty()) {
+			if(currentInstance.getStats() != null) {
 				currentInstance.setStats(null);
+				changed = true;
 			}
 			realmStatsCheckBox.setVisibility(View.GONE);
 			stat1Spinner.setVisibility(View.GONE);
@@ -235,19 +236,19 @@ public class SkillCategoriesFragment extends Fragment {
 						changed = true;
 					}
 				}
+				else if(stats == null) {
+					stats = new ArrayList<>(1);
+				}
 				position = stat1Spinner.getSelectedItemPosition();
 				if(position != -1) {
 					newStat = stat1SpinnerAdapter.getItem(position);
-					if(stats == null || stats.isEmpty() || !newStat.equals(stats.get(0))) {
-						if(stats == null) {
-							stats = new ArrayList<>(1);
-						}
+					if(stats.isEmpty() || !newStat.equals(stats.get(0))) {
 						stats.add(0, newStat);
 						changed = true;
 					}
 				}
 				else {
-					if(stats != null && !stats.isEmpty()) {
+					if(!stats.isEmpty()) {
 						changed = true;
 					}
 					stats = null;
@@ -265,20 +266,14 @@ public class SkillCategoriesFragment extends Fragment {
 				if (position >= 0) {
 					newStat = stat1SpinnerAdapter.getItem(position);
 				}
-				if(setStat(stats, newStat, currentIndex)) {
-					currentIndex++;
-					changed = true;
-				}
+				changed |= setStat(stats, newStat, currentIndex++);
 
 				newStat = null;
 				position = stat2Spinner.getSelectedItemPosition();
 				if (position >= 0) {
 					newStat = stat2SpinnerAdapter.getItem(position);
 				}
-				if(setStat(stats, newStat, currentIndex)) {
-					currentIndex++;
-					changed = true;
-				}
+				changed |= setStat(stats, newStat, currentIndex++);
 
 				newStat = null;
 				position = stat3Spinner.getSelectedItemPosition();
@@ -300,6 +295,7 @@ public class SkillCategoriesFragment extends Fragment {
 	private boolean setStat(List<Stat> stats, Stat newStat, int currentIndex) {
 		boolean changed = false;
 
+		Log.d("RMU", "setting stats[" + currentIndex + "] = " + newStat);
 		if (newStat != null) {
 			if (stats.size() <= currentIndex) {
 				stats.add(currentIndex, newStat);
@@ -318,7 +314,7 @@ public class SkillCategoriesFragment extends Fragment {
 		return changed;
 	}
 
-	private void copyItemToControls() {
+	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 		noStatsCheckBox.setChecked(currentInstance.isNoStats());
@@ -329,8 +325,10 @@ public class SkillCategoriesFragment extends Fragment {
 			stat3Spinner.setVisibility(View.GONE);
 		}
 		else {
-			realmStatsCheckBox.setChecked(currentInstance.isRealmStats());
+			realmStatsCheckBox.setVisibility(View.VISIBLE);
 			stat1Spinner.setVisibility(View.VISIBLE);
+
+			realmStatsCheckBox.setChecked(currentInstance.isRealmStats());
 			List<Stat> stats = currentInstance.getStats();
 			if(stats != null && stats.size() >= 1) {
 				stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(stats.get(0)));
@@ -434,7 +432,7 @@ public class SkillCategoriesFragment extends Fragment {
 								currentInstance = new SkillCategory();
 								isNew = true;
 							}
-							copyItemToControls();
+							copyItemToViews();
 							Toast.makeText(getActivity(), getString(R.string.toast_skill_category_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -575,7 +573,7 @@ public class SkillCategoriesFragment extends Fragment {
 				List<Stat> stats = currentInstance.getStats();
 				if(stats == null || stats.isEmpty() || stat1SpinnerAdapter.getPosition(stats.get(0)) != position) {
 					if(stats == null) {
-						stats = new ArrayList<Stat>(1);
+						stats = new ArrayList<>(1);
 					}
 					if(stats.isEmpty()) {
 						stats.add(stat1SpinnerAdapter.getItem(position));
@@ -705,7 +703,7 @@ public class SkillCategoriesFragment extends Fragment {
 							listView.setSelection(0);
 							listView.setItemChecked(0, true);
 							listAdapter.notifyDataSetChanged();
-							copyItemToControls();;
+							copyItemToViews();
 						}
 					}
 					@Override
@@ -738,7 +736,7 @@ public class SkillCategoriesFragment extends Fragment {
 					currentInstance = new SkillCategory();
 					isNew = true;
 				}
-				copyItemToControls();
+				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);
