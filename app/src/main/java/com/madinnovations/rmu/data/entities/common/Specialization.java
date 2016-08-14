@@ -25,12 +25,12 @@ public class Specialization {
 	private String name = null;
 	private String description = null;
 	private Skill skill = null;
-	private boolean skillStats = true;
+	private boolean useSkillStats = true;
 	private List<Stat> stats = null;
 
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && skill != null &&
-				(skillStats || (stats != null && stats.size() == 3));
+				(useSkillStats || (stats != null && stats.size() == 3));
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class Specialization {
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				", skill=" + skill +
-				", skillStats=" + skillStats +
+				", useSkillStats=" + useSkillStats +
 				", stats=" + stats +
 				'}';
 	}
@@ -85,11 +85,11 @@ public class Specialization {
 	public void setSkill(Skill skill) {
 		this.skill = skill;
 	}
-	public boolean isSkillStats() {
-		return skillStats;
+	public boolean isUseSkillStats() {
+		return useSkillStats;
 	}
-	public void setSkillStats(boolean skillStats) {
-		this.skillStats = skillStats;
+	public void setUseSkillStats(boolean useSkillStats) {
+		this.useSkillStats = useSkillStats;
 	}
 	public List<Stat> getStats() {
 		return stats;

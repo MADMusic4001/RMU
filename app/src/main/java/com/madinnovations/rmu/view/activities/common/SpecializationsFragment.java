@@ -38,15 +38,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.SkillCategorySpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillListAdapter;
+import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
+import com.madinnovations.rmu.view.adapters.common.SpecializationListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
@@ -56,40 +56,43 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Handles interactions with the UI for skills.
+ * Handles interactions with the UI for specializations.
  */
-public class SkillsFragment extends Fragment {
+public class SpecializationsFragment extends Fragment {
+	@Inject
+	protected SpecializationRxHandler specializationRxHandler;
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
-	protected SkillCategoryRxHandler      skillCategoryRxHandler;
-	@Inject
 	protected StatRxHandler               statRxHandler;
 	@Inject
-	protected SkillListAdapter            listAdapter;
+	protected SpecializationListAdapter   listAdapter;
 	@Inject
-	protected SkillCategorySpinnerAdapter skillCategorySpinnerAdapter;
+	protected SkillSpinnerAdapter         skillFilterSpinnerAdapter;
+	@Inject
+	protected SkillSpinnerAdapter         skillSpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter          stat1SpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter          stat2SpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter          stat3SpinnerAdapter;
+	private   Spinner                     skillFilterSpinner;
 	private   ListView                    listView;
 	private   EditText                    nameEdit;
 	private   EditText                    descriptionEdit;
-	private   Spinner                     skillCategorySpinner;
-	private   CheckBox                    useCategoryStatsCheckBox;
-	private   CheckBox                    requiresSpecializationCheckBox;
+	private   Spinner                     skillSpinner;
+	private   CheckBox                    useSkillStatsCheckBox;
 	private   Spinner                     stat1Spinner;
 	private   Spinner                     stat2Spinner;
 	private   Spinner                     stat3Spinner;
-	private Skill currentInstance = new Skill();
+	private Specialization currentInstance = new Specialization();
 	private boolean isNew = true;
 
 	@Nullable
@@ -98,13 +101,13 @@ public class SkillsFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.skills_fragment, container, false);
+		View layout = inflater.inflate(R.layout.specializations_fragment, container, false);
 
+		initSkillFilterSpinner(layout);
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
-		initSkillCategorySpinner(layout);
-		initUseCategoryStatsCheckBox(layout);
-		initRequiresSpecializationCheckBox(layout);
+		initSkillSpinner(layout);
+		initUseSkillStatsCheckBox(layout);
 		initStat1Spinner(layout);
 		initStat2Spinner(layout);
 		initStat3Spinner(layout);
@@ -127,17 +130,17 @@ public class SkillsFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.skills_action_bar, menu);
+		inflater.inflate(R.menu.specializations_action_bar, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_new_skill) {
+		if(id == R.id.action_new_specialization) {
 			if(copyViewsToItem()) {
 				saveItem();
 			}
-			currentInstance = new Skill();
+			currentInstance = new Specialization();
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -150,31 +153,31 @@ public class SkillsFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.skill_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.specialization_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final Skill skill;
+		final Specialization specialization;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
-			case R.id.context_new_skill:
+			case R.id.context_new_specialization:
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = new Skill();
+				currentInstance = new Specialization();
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
-			case R.id.context_delete_skill:
-				skill = (Skill)listView.getItemAtPosition(info.position);
-				if(skill != null) {
-					deleteItem(skill);
+			case R.id.context_delete_specialization:
+				specialization = (Specialization)listView.getItemAtPosition(info.position);
+				if(specialization != null) {
+					deleteItem(specialization);
 					return true;
 				}
 				break;
@@ -207,22 +210,17 @@ public class SkillsFragment extends Fragment {
 			changed = true;
 		}
 
-		if(skillCategorySpinner.getSelectedItemPosition() != -1) {
-			SkillCategory skillCategory = skillCategorySpinnerAdapter.getItem(skillCategorySpinner.getSelectedItemPosition());
-			if(!skillCategory.equals(currentInstance.getCategory())) {
-				currentInstance.setCategory(skillCategory);
+		if(skillSpinner.getSelectedItemPosition() != -1) {
+			Skill skill = skillSpinnerAdapter.getItem(skillSpinner.getSelectedItemPosition());
+			if(!skill.equals(currentInstance.getSkill())) {
+				currentInstance.setSkill(skill);
 				changed = true;
 			}
 		}
 
-		newBoolean = requiresSpecializationCheckBox.isChecked();
-		if(newBoolean != currentInstance.isRequiresSpecialization()) {
-			currentInstance.setRequiresSpecialization(newBoolean);
-		}
-
-		newBoolean = useCategoryStatsCheckBox.isChecked();
-		if(newBoolean != currentInstance.isUseCategoryStats()) {
-			currentInstance.setUseCategoryStats(newBoolean);
+		newBoolean = useSkillStatsCheckBox.isChecked();
+		if(newBoolean != currentInstance.isUseSkillStats()) {
+			currentInstance.setUseSkillStats(newBoolean);
 		}
 		if(newBoolean) {
 			if(currentInstance.getStats() != null && !currentInstance.getStats().isEmpty()) {
@@ -271,18 +269,17 @@ public class SkillsFragment extends Fragment {
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-		if(currentInstance.getCategory() == null) {
-			if(skillCategorySpinner.getSelectedItemPosition() != -1) {
-				currentInstance.setCategory(skillCategorySpinnerAdapter.getItem(skillCategorySpinner.getSelectedItemPosition()));
+		if(currentInstance.getSkill() == null) {
+			if(skillSpinner.getSelectedItemPosition() != -1) {
+				currentInstance.setSkill(skillSpinnerAdapter.getItem(skillSpinner.getSelectedItemPosition()));
 			}
 		}
 		else {
-			skillCategorySpinner.setSelection(skillCategorySpinnerAdapter.getPosition(currentInstance.getCategory()));
+			skillSpinner.setSelection(skillSpinnerAdapter.getPosition(currentInstance.getSkill()));
 		}
 
-		requiresSpecializationCheckBox.setChecked(currentInstance.isRequiresSpecialization());
-		useCategoryStatsCheckBox.setChecked(currentInstance.isUseCategoryStats());
-		if(currentInstance.isUseCategoryStats()) {
+		useSkillStatsCheckBox.setChecked(currentInstance.isUseSkillStats());
+		if(currentInstance.isUseSkillStats()) {
 			stat1Spinner.setVisibility(View.GONE);
 			stat2Spinner.setVisibility(View.GONE);
 			stat3Spinner.setVisibility(View.GONE);
@@ -302,8 +299,8 @@ public class SkillsFragment extends Fragment {
 		}
 	}
 
-	private void deleteItem(final Skill item) {
-		skillRxHandler.deleteById(item.getId())
+	private void deleteItem(final Specialization item) {
+		specializationRxHandler.deleteById(item.getId())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<Boolean>() {
@@ -311,8 +308,8 @@ public class SkillsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillFragment", "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_skill_delete_failed), Toast.LENGTH_SHORT).show();
+						Log.e("SpecializationFragment", "Exception when deleting: " + item, e);
+						Toast.makeText(getActivity(), getString(R.string.toast_specialization_delete_failed), Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -329,11 +326,11 @@ public class SkillsFragment extends Fragment {
 								currentInstance = listAdapter.getItem(position);
 							}
 							else {
-								currentInstance = new Skill();
+								currentInstance = new Specialization();
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_skill_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), getString(R.string.toast_specialization_deleted), Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -343,31 +340,31 @@ public class SkillsFragment extends Fragment {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;
-			skillRxHandler.save(currentInstance)
+			specializationRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Skill>() {
+					.subscribe(new Subscriber<Specialization>() {
 						@Override
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("SkillsFragment", "Exception saving Skill", e);
-							String toastString = getString(R.string.toast_skill_save_failed);
+							Log.e("SpecializationsFragment", "Exception saving Specialization", e);
+							String toastString = getString(R.string.toast_specialization_save_failed);
 							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 						}
 						@Override
-						public void onNext(Skill savedSkill) {
+						public void onNext(Specialization savedSpecialization) {
 							if (wasNew) {
-								listAdapter.add(savedSkill);
-								if(savedSkill == currentInstance) {
-									listView.setSelection(listAdapter.getPosition(savedSkill));
-									listView.setItemChecked(listAdapter.getPosition(savedSkill), true);
+								listAdapter.add(savedSpecialization);
+								if(savedSpecialization == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedSpecialization));
+									listView.setItemChecked(listAdapter.getPosition(savedSpecialization), true);
 								}
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
 								String toastString;
-								toastString = getString(R.string.toast_skill_saved);
+								toastString = getString(R.string.toast_specialization_saved);
 								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(currentInstance);
@@ -386,6 +383,43 @@ public class SkillsFragment extends Fragment {
 						}
 					});
 		}
+	}
+
+	private void initSkillFilterSpinner(View layout) {
+		skillFilterSpinner = (Spinner)layout.findViewById(R.id.skill_filter_spinner);
+		skillFilterSpinner.setAdapter(skillFilterSpinnerAdapter);
+
+		final Skill allSkills = new Skill();
+		allSkills.setName(getString(R.string.label_all_skills));
+		skillFilterSpinnerAdapter.add(allSkills);
+		skillRxHandler.getSpecializationSkills()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<Skill>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
+					}
+					@Override
+					public void onNext(Collection<Skill> skills) {
+						skillFilterSpinnerAdapter.addAll(skills);
+						skillFilterSpinnerAdapter.notifyDataSetChanged();
+						skillSpinner.setSelection(skillSpinnerAdapter.getPosition(allSkills));
+					}
+				});
+
+		skillFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+				loadFilteredSpecializations(skillFilterSpinnerAdapter.getItem(position));
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				loadFilteredSpecializations(null);
+			}
+		});
 	}
 
 	private void initNameEdit(View layout) {
@@ -444,55 +478,55 @@ public class SkillsFragment extends Fragment {
 		});
 	}
 
-	private void initSkillCategorySpinner(View layout) {
-		skillCategorySpinner = (Spinner)layout.findViewById(R.id.skill_category_spinner);
-		skillCategorySpinner.setAdapter(skillCategorySpinnerAdapter);
+	private void initSkillSpinner(View layout) {
+		skillSpinner = (Spinner)layout.findViewById(R.id.skill_spinner);
+		skillSpinner.setAdapter(skillSpinnerAdapter);
 
-		skillCategoryRxHandler.getAll()
+		skillRxHandler.getSpecializationSkills()
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<SkillCategory>>() {
+				.subscribe(new Subscriber<Collection<Skill>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillsFragment", "Exception caught getting all SkillCategory instances", e);
+						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
 					}
 					@Override
-					public void onNext(Collection<SkillCategory> skillCategories) {
-						skillCategorySpinnerAdapter.addAll(skillCategories);
-						skillCategorySpinnerAdapter.notifyDataSetChanged();
-						if(currentInstance.getCategory() != null) {
-							skillCategorySpinner.setSelection(skillCategorySpinnerAdapter.getPosition(currentInstance.getCategory()));
+					public void onNext(Collection<Skill> skills) {
+						skillSpinnerAdapter.addAll(skills);
+						skillSpinnerAdapter.notifyDataSetChanged();
+						if(currentInstance.getSkill() != null) {
+							skillSpinner.setSelection(skillSpinnerAdapter.getPosition(currentInstance.getSkill()));
 						}
 					}
 				});
 
-		skillCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		skillSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				if(currentInstance.getCategory() == null ||
-						skillCategorySpinnerAdapter.getPosition(currentInstance.getCategory()) != position) {
-					currentInstance.setCategory(skillCategorySpinnerAdapter.getItem(position));
+				if(currentInstance.getSkill() == null ||
+						skillSpinnerAdapter.getPosition(currentInstance.getSkill()) != position) {
+					currentInstance.setSkill(skillSpinnerAdapter.getItem(position));
 					saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getCategory() != null) {
-					currentInstance.setCategory(null);
+				if(currentInstance.getSkill() != null) {
+					currentInstance.setSkill(null);
 				}
 			}
 		});
 	}
 
-	private void initUseCategoryStatsCheckBox(View layout) {
-		useCategoryStatsCheckBox = (CheckBox)layout.findViewById(R.id.use_cat_stats_check_box);
-		useCategoryStatsCheckBox.setOnClickListener(new View.OnClickListener() {
+	private void initUseSkillStatsCheckBox(View layout) {
+		useSkillStatsCheckBox = (CheckBox)layout.findViewById(R.id.use_skill_stats_check_box);
+		useSkillStatsCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if(useCategoryStatsCheckBox.isChecked() != currentInstance.isUseCategoryStats()) {
-					if (useCategoryStatsCheckBox.isChecked()) {
+				if(useSkillStatsCheckBox.isChecked() != currentInstance.isUseSkillStats()) {
+					if (useSkillStatsCheckBox.isChecked()) {
 						stat1Spinner.setVisibility(View.GONE);
 						stat2Spinner.setVisibility(View.GONE);
 						stat3Spinner.setVisibility(View.GONE);
@@ -502,20 +536,7 @@ public class SkillsFragment extends Fragment {
 						stat3Spinner.setVisibility(View.VISIBLE);
 						copyStatsToSpinners();
 					}
-					currentInstance.setUseCategoryStats(useCategoryStatsCheckBox.isChecked());
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initRequiresSpecializationCheckBox(View layout) {
-		requiresSpecializationCheckBox = (CheckBox)layout.findViewById(R.id.requires_specialization_check_box);
-		requiresSpecializationCheckBox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if(requiresSpecializationCheckBox.isChecked() != currentInstance.isRequiresSpecialization()) {
-					currentInstance.setRequiresSpecialization(requiresSpecializationCheckBox.isChecked());
+					currentInstance.setUseSkillStats(useSkillStatsCheckBox.isChecked());
 					saveItem();
 				}
 			}
@@ -618,49 +639,17 @@ public class SkillsFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		skillRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Skill>>() {
-					@Override
-					public void onCompleted() {
-						if(listAdapter.getCount() > 0) {
-							currentInstance = listAdapter.getItem(0);
-							isNew = false;
-							listView.setSelection(0);
-							listView.setItemChecked(0, true);
-							listAdapter.notifyDataSetChanged();
-						}
-						copyItemToViews();
-					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("SkillsFragment", "Exception caught getting all Skill instances", e);
-						Toast.makeText(SkillsFragment.this.getActivity(),
-								getString(R.string.toast_skills_load_failed),
-								Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(Collection<Skill> skills) {
-						listAdapter.clear();
-						listAdapter.addAll(skills);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_skills_loaded), skills.size());
-						Toast.makeText(SkillsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
+		loadFilteredSpecializations(null);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = (Skill) listView.getItemAtPosition(position);
+				currentInstance = (Specialization) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
-					currentInstance = new Skill();
+					currentInstance = new Specialization();
 					isNew = true;
 				}
 				copyItemToViews();
@@ -727,5 +716,53 @@ public class SkillsFragment extends Fragment {
 				spinner.setSelection(0);
 			}
 		}
+	}
+
+	private void loadFilteredSpecializations(final Skill filter) {
+		Observable<Collection<Specialization>> observable;
+
+		Log.d("RMU", "filter = " + filter);
+		if(filter == null || filter.getId() == -1) {
+			observable = specializationRxHandler.getAll();
+			Log.d("RMU", "calling getAll");
+		}
+		else {
+			observable = specializationRxHandler.getSpecializationsForSkill(filter);
+			Log.d("RMU", "calling getSpecializationsForSkill");
+		}
+		observable.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Specialization>>() {
+					@Override
+					public void onCompleted() {
+						int position = listAdapter.getPosition(currentInstance);
+						if (position == -1 && listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							position = 0;
+						}
+						if (position >= 0) {
+							listView.setSelection(position);
+							listView.setItemChecked(position, true);
+							listAdapter.notifyDataSetChanged();
+						}
+						copyItemToViews();
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SpecializationsFragment", "Exception caught getting all Specialization instances", e);
+						Toast.makeText(SpecializationsFragment.this.getActivity(),
+								getString(R.string.toast_specializations_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<Specialization> specializations) {
+						listAdapter.clear();
+						listAdapter.addAll(specializations);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_specializations_loaded), specializations.size());
+						Toast.makeText(SpecializationsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
 	}
 }

@@ -32,6 +32,7 @@ import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillsFragment;
+import com.madinnovations.rmu.view.activities.common.SpecializationsFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
@@ -64,6 +65,7 @@ public class CampaignActivity extends Activity {
 	private SizesFragment              sizesFragment;
 	private SkillCategoriesFragment    skillCategoriesFragment;
 	private SkillsFragment             skillsFragment;
+	private SpecializationsFragment    specializationsFragment;
 	private StatsFragment              statsFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
@@ -203,6 +205,14 @@ public class CampaignActivity extends Activity {
 		}
 		replaceDetailFragment(skillsFragment);
 	}
+
+	public void showSpecializations() {
+		if(specializationsFragment == null) {
+			specializationsFragment = new SpecializationsFragment();
+		}
+		replaceDetailFragment(specializationsFragment);
+	}
+
 	public void showStats() {
 		if(statsFragment == null) {
 			statsFragment = new StatsFragment();

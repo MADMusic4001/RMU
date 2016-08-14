@@ -99,6 +99,12 @@
   <string name="toast_skill_category_save_failed">Skill Category save failed.</string>
   <string name="toast_skill_category_deleted">Skill Category deleted.</string>
   <string name="toast_skill_category_delete_failed">Skill Category deletion failed.</string>
+  <string name="toast_specializations_load_failed">Failed to load Specializations</string>
+  <string name="toast_specializations_loaded">%1$d Specializations loaded.</string>
+  <string name="toast_specialization_saved">Specialization saved.</string>
+  <string name="toast_specialization_save_failed">Specialization save failed.</string>
+  <string name="toast_specialization_deleted">Specialization deleted.</string>
+  <string name="toast_specialization_delete_failed">Specialization deletion failed.</string>
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>

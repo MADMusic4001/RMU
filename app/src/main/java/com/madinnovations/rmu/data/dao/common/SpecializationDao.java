@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.common;
 
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
 import java.util.List;
@@ -60,4 +61,12 @@ public interface SpecializationDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all T objects that reference the given skill from persistent storage.
+	 *
+	 * @param filter  a Skill instance whose ID will be used to filter the T objects returned by the query
+	 * @return  a List containing all T objects that reference the given skill currently in persistent storage.
+	 */
+	public List<Specialization> getSpecializationsForSkill(Skill filter);
 }

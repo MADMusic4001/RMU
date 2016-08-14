@@ -157,4 +157,28 @@ public class SkillRxHandler {
 				}
 		).subscribeOn(Schedulers.io());
 	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that require
+	 * specialization.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization instances.
+	 */
+	public Observable<Collection<Skill>> getSpecializationSkills() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Skill>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Skill>> subscriber) {
+						try {
+							subscriber.onNext(dao.getSpecializationSkills());
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io());
+	}
+
 }

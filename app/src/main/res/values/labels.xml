@@ -58,6 +58,7 @@
   <string name="manage_skill_categories">Manage Skill Categories</string>
   <string name="manage_skill_costs">Manage Skill Costs</string>
   <string name="manage_skills">Manage Skills</string>
+  <string name="manage_specializations">Manage Specializations</string>
   <string name="manage_stats">Manage Stats</string>
   <string name="manage_talent_categories">Manage Talent/Flaw Categories</string>
   <string name="manage_talents">Manage Talents/Flaws</string>
@@ -119,6 +120,8 @@
   <string name="label_delete_skill">Delete Skill</string>
   <string name="label_new_skill_category">New Skill Category</string>
   <string name="label_delete_skill_category">Delete Skill Category</string>
+  <string name="label_new_specialization">New Specialization</string>
+  <string name="label_delete_specialization">Delete Specialization</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent">New Talent</string>
@@ -132,6 +135,9 @@
   <string name="label_additional_cost">Additional Cost</string>
   <string name="label_severity_code">Severity</string>
 
+  <!-- Filter default labels -->
+  <string name="label_all_skills">All Skills</string>
+
   <!-- TextView labels -->
   <string name="label_hyphen">-</string>
   <string name="label_no_stats">No Stats</string>
@@ -143,6 +149,8 @@
   <string name="label_max_height">Maximum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
   <string name="label_max_weight">Maximum Weight</string>
+  <string name="label_requires_specialization">Requires Specialization</string>
+  <string name="label_skill_filter">Skill Filter:</string>
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- EditText hints -->

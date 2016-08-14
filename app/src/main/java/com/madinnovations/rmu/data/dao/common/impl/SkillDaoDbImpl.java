@@ -121,13 +121,49 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 
         db.delete(SkillStatsSchema.TABLE_NAME, selection, selectionArgs);
 
-        for(Stat stat : instance.getStats()) {
-            result &= (db.insert(SkillStatsSchema.TABLE_NAME, null, getSkillStat(instance.getId(), stat.getId())) != -1);
-        }
+		if(instance.getStats() != null) {
+			for (Stat stat : instance.getStats()) {
+				result &= (db.insert(SkillStatsSchema.TABLE_NAME, null, getSkillStat(instance.getId(), stat.getId())) != -1);
+			}
+		}
+
         return result;
     }
 
-    private ContentValues getSkillStat(int skillId, int statId) {
+	@Override
+	public List<Skill> getSpecializationSkills() {
+		final String selectionArgs[] = { "1" };
+		final String selection = COLUMN_REQUIRES_SPECIALIZATION + " = ?";
+		List<Skill> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Skill instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	private ContentValues getSkillStat(int skillId, int statId) {
         ContentValues values = new ContentValues(2);
 
         values.put(SkillStatsSchema.COLUMN_SKILL_ID, skillId);

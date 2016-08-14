@@ -60,4 +60,11 @@ public interface SkillDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all Skill objects that require specialization from persistent storage.
+	 *
+	 * @return  a List containing all Skill objects that require specialization currently in persistent storage.
+	 */
+	public List<Skill> getSpecializationSkills();
 }
