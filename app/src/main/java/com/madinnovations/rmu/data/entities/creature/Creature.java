@@ -20,10 +20,10 @@ package com.madinnovations.rmu.data.entities.creature;
  */
 public class Creature {
 	private int id = -1;
-	private CreatureTemplate template;
-	private short level;
-	private int maxHits;
-	private int currentHits;
+	private CreatureVariety creatureVariety = null;
+	private short level = 0;
+	private int maxHits = 0;
+	private int currentHits = 0;
 
 	/**
 	 * Checks the validity of the Creature instance.
@@ -31,14 +31,14 @@ public class Creature {
 	 * @return true if the Creature instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return template != null;
+		return creatureVariety != null;
 	}
 
 	@Override
 	public String toString() {
 		return "Creature{" +
 				"id=" + id +
-				", template=" + template +
+				", creatureVariety=" + creatureVariety +
 				", level=" + level +
 				", maxHits=" + maxHits +
 				", currentHits=" + currentHits +
@@ -53,7 +53,6 @@ public class Creature {
 		Creature creature = (Creature) o;
 
 		return id == creature.id;
-
 	}
 
 	@Override
@@ -68,11 +67,11 @@ public class Creature {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public CreatureTemplate getTemplate() {
-		return template;
+	public CreatureVariety getCreatureVariety() {
+		return creatureVariety;
 	}
-	public void setTemplate(CreatureTemplate template) {
-		this.template = template;
+	public void setCreatureVariety(CreatureVariety creatureVariety) {
+		this.creatureVariety = creatureVariety;
 	}
 	public short getLevel() {
 		return level;

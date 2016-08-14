@@ -15,15 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
-import java.util.List;
-
 /**
  * Critical Type attributes
  */
 public class CriticalType {
     private int id = -1;
-    private String name;
-    private List<CriticalResult> results;
+    private String name = null;
+    private String description = null;
 
     /**
      * Checks the validity of the CriticalType instance.
@@ -39,7 +37,7 @@ public class CriticalType {
         return "CriticalType{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", results=" + results +
+                ", description='" + description + '\'' +
                 '}';
     }
 
@@ -51,7 +49,6 @@ public class CriticalType {
         CriticalType that = (CriticalType) o;
 
         return id == that.id;
-
     }
 
     @Override
@@ -72,10 +69,10 @@ public class CriticalType {
     public void setName(String name) {
         this.name = name;
     }
-    public List<CriticalResult> getResults() {
-        return results;
+    public String getDescription() {
+        return description;
     }
-    public void setResults(List<CriticalResult> results) {
-        this.results = results;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

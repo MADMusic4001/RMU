@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.creature.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
@@ -160,10 +161,91 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	@Override
 	protected ContentValues getContentValues(CreatureVariety instance) {
 		ContentValues initialValues = new ContentValues();
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_TYPE_ID, instance.getType().getId());
+		initialValues.put(COLUMN_TYPICAL_LEVEL, instance.getTypicalLevel());
+		initialValues.put(COLUMN_LEVEL_SPREAD, String.valueOf(instance.getLevelSpread()));
+		initialValues.put(COLUMN_HEIGHT, instance.getHeight());
+		initialValues.put(COLUMN_LENGTH, instance.getLength());
+		initialValues.put(COLUMN_WEIGHT, instance.getWeight());
+		initialValues.put(COLUMN_HEALING_RATE, instance.getHealingRate());
+		initialValues.put(COLUMN_BASE_HITS, instance.getBaseHits());
+		initialValues.put(COLUMN_BASE_ENDURANCE, instance.getBaseEndurance());
+		initialValues.put(COLUMN_SIZE_ID, instance.getSize().getId());
+		initialValues.put(COLUMN_ARMOR_TYPE, instance.getArmorType());
+		initialValues.put(COLUMN_CRITICAL_CODE_ID, instance.getCriticalCode().getId());
+		initialValues.put(COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
+		initialValues.put(COLUMN_BASE_CHANNELING_RR, instance.getBaseChannellingRR());
+		initialValues.put(COLUMN_BASE_ESSENCE_RR, instance.getBaseEssenceRR());
+		initialValues.put(COLUMN_BASE_MENTALISM_RR, instance.getBaseMentalismRR());
+		initialValues.put(COLUMN_BASE_PHYSICAL_RR, instance.getBasePhysicalRR());
+		initialValues.put(COLUMN_BASE_FEAR_RR, instance.getBaseFearRR());
+		initialValues.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
+		initialValues.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
+		initialValues.put(COLUMN_BASE_STRIDE, instance.getBaseStride());
+		initialValues.put(COLUMN_LEFTOVER_DP, instance.getLeftoverDP());
+		initialValues.put(COLUMN_OUTLOOK_ID, instance.getOutlook().getId());
+		initialValues.put(COLUMN_PRIMARY_ATTACK_ID, instance.getPrimaryAttack().getId());
+		setSkills(instance);
+
 		return initialValues;
+	}
+
+	@Override
+	protected boolean saveRelationships(SQLiteDatabase db, CreatureVariety instance) {
+		boolean result = saveRacialStatBonuses(db, instance.getId(), instance.getRacialStatBonuses());
+		result &= saveTalentTiersMap(db, instance.getId(), instance.getTalentTiersMap());
+		return result;
+	}
+
+	private boolean saveRacialStatBonuses(SQLiteDatabase db, int creatureVarietyid, Map<Stat, Short> statBonusesMap) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(creatureVarietyid) };
+		final String selection = VarietyStatsSchema.COLUMN_VARIETY_ID + " = ?";
+
+		db.delete(VarietyStatsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Stat, Short> entry : statBonusesMap.entrySet()) {
+			result &= (db.insert(VarietyStatsSchema.TABLE_NAME, null, getRacialStatBonusesValues(creatureVarietyid,
+					entry.getKey(), entry.getValue())) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getRacialStatBonusesValues(int creatureVarietyId, Stat stat, Short bonus) {
+		ContentValues values = new ContentValues();
+
+		values.put(VarietyStatsSchema.COLUMN_VARIETY_ID, creatureVarietyId);
+		values.put(VarietyStatsSchema.COLUMN_STAT_ID, stat.getId());
+		values.put(VarietyStatsSchema.COLUMN_BONUS, bonus);
+
+		return values;
+	}
+
+	private boolean saveTalentTiersMap(SQLiteDatabase db, int creatureVarietyid, Map<Talent, Short> talentTiersesMap) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(creatureVarietyid) };
+		final String selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
+
+		db.delete(VarietyTalentTiersSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Talent, Short> entry : talentTiersesMap.entrySet()) {
+			result &= (db.insert(VarietyTalentTiersSchema.TABLE_NAME, null, getTalentTierValues(creatureVarietyid,
+					entry.getKey(), entry.getValue())) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getTalentTierValues(int creatureVarietyId, Talent talent, Short tiers) {
+		ContentValues values = new ContentValues();
+
+		values.put(VarietyTalentTiersSchema.COLUMN_VARIETY_ID, creatureVarietyId);
+		values.put(VarietyTalentTiersSchema.COLUMN_TALENT_ID, talent.getId());
+		values.put(VarietyTalentTiersSchema.COLUMN_TIERS, tiers);
+
+		return values;
 	}
 
 	private Map<Stat, Short> getRacialStatBonuses(int creatureVarietyId) {

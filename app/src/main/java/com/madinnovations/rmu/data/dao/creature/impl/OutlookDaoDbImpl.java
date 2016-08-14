@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.creature.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.OutlookDao;
@@ -69,22 +70,23 @@ public class OutlookDaoDbImpl extends BaseDaoDbImpl<Outlook>
 	}
 
 	@Override
-	protected Outlook cursorToEntity(Cursor cursor) {
+	protected Outlook cursorToEntity(@NonNull Cursor cursor) {
 		Outlook instance = new Outlook();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(Outlook instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(3);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+
 		return initialValues;
 	}
 }

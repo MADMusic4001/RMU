@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.ParameterDao;
@@ -89,33 +90,31 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         return saveParameters(db, instance);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected Talent cursorToEntity(Cursor cursor) {
-        Talent instance = null;
+    protected Talent cursorToEntity(@NonNull Cursor cursor) {
+        Talent instance = new Talent();
 
-        if (cursor != null) {
-            instance = new Talent();
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setDpCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DP_COST)));
-            instance.setDpCostPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DP_COST_PER_TIER)));
-            instance.setBonusPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_PER_TIER)));
-            instance.setSituational(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_SITUATIONAL)) == 1);
-            instance.setActionPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ACTION_POINTS)));
-            instance.setCategory(talentCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
-            if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))) {
-                instance.setAffectedSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))));
-            }
-            instance.setParameterValues(getParameters(instance.getId()));
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setDpCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DP_COST)));
+        instance.setDpCostPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DP_COST_PER_TIER)));
+        instance.setBonusPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_PER_TIER)));
+        instance.setSituational(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_SITUATIONAL)) == 1);
+        instance.setActionPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ACTION_POINTS)));
+        instance.setCategory(talentCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
+        if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))) {
+            instance.setAffectedSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))));
         }
+        instance.setParameterValues(getParameters(instance.getId()));
+
         return instance;
     }
 
     @Override
     protected ContentValues getContentValues(Talent instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(10);
+
         initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
@@ -126,6 +125,7 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         initialValues.put(COLUMN_BONUS_PER_TIER, instance.getBonusPerTier());
         initialValues.put(COLUMN_IS_SITUATIONAL, instance.isSituational());
         initialValues.put(COLUMN_ACTION_POINTS, instance.getActionPoints());
+
         return initialValues;
     }
 

@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.StatDao;
@@ -67,26 +68,26 @@ public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatS
 		instance.setId(id);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-    protected Stat cursorToEntity(Cursor cursor) {
+    protected Stat cursorToEntity(@NonNull Cursor cursor) {
 		Stat instance = new Stat();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setAbbreviation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ABBREVIATION)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setAbbreviation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ABBREVIATION)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(Stat instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(4);
+
 		initialValues.put(COLUMN_ABBREVIATION, instance.getAbbreviation());
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+
 		return initialValues;
 	}
 }

@@ -63,10 +63,10 @@ public interface SpecializationDao {
 	public int deleteAll();
 
 	/**
-	 * Retrieves all T objects that reference the given skill from persistent storage.
+	 * Retrieves all Specialization objects that reference the given skill from persistent storage.
 	 *
-	 * @param filter  a Skill instance whose ID will be used to filter the T objects returned by the query
-	 * @return  a List containing all T objects that reference the given skill currently in persistent storage.
+	 * @param filter  a Skill instance whose ID will be used to filter the Specialization objects returned by the query
+	 * @return  a List containing all Specialization objects that reference the given skill currently in persistent storage.
 	 */
 	public List<Specialization> getSpecializationsForSkill(Skill filter);
 }

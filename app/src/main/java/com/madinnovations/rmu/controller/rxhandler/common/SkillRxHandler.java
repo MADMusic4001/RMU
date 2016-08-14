@@ -17,6 +17,7 @@ package com.madinnovations.rmu.controller.rxhandler.common;
 
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
 import java.util.Collection;
 
@@ -181,4 +182,26 @@ public class SkillRxHandler {
 		).subscribeOn(Schedulers.io());
 	}
 
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that reference
+	 * the given SkillCategory.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill instances.
+	 */
+	public Observable<Collection<Skill>> getSkillsForCategory(final SkillCategory filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Skill>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Skill>> subscriber) {
+						try {
+							subscriber.onNext(dao.getSkillsForCategory(filter));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io());
+	}
 }

@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.creature.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
@@ -72,24 +73,25 @@ public class CreatureTypeDaoDbImpl extends BaseDaoDbImpl<CreatureType> implement
 	}
 
 	@Override
-	protected CreatureType cursorToEntity(Cursor cursor) {
+	protected CreatureType cursorToEntity(@NonNull Cursor cursor) {
 		CreatureType instance = new CreatureType();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			instance.setCategory(creatureCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setCategory(creatureCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
+
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(CreatureType instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(4);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
+
 		return initialValues;
 	}
 }

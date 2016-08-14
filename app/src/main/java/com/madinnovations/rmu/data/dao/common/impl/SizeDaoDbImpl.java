@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
@@ -68,46 +69,45 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 	}
 
 	@Override
-    protected Size cursorToEntity(Cursor cursor) {
-		Size instance = null;
+    protected Size cursorToEntity(@NonNull Cursor cursor) {
+		Size instance = new Size();
 
-		if (cursor != null) {
-			instance = new Size();
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setExamples(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXAMPLES)));
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT))) {
-				instance.setMinHeight(null);
-			}
-			else {
-				instance.setMinHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT)));
-			}
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT))) {
-				instance.setMaxWeight(null);
-			}
-			else {
-				instance.setMaxHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT)));
-			}
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT))) {
-				instance.setMinWeight(null);
-			}
-			else {
-				instance.setMinWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT)));
-			}
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT))) {
-				instance.setMaxWeight(null);
-			}
-			else {
-				instance.setMaxWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT)));
-			}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setExamples(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXAMPLES)));
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT))) {
+			instance.setMinHeight(null);
 		}
+		else {
+			instance.setMinHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_HEIGHT)));
+		}
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT))) {
+			instance.setMaxWeight(null);
+		}
+		else {
+			instance.setMaxHeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HEIGHT)));
+		}
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT))) {
+			instance.setMinWeight(null);
+		}
+		else {
+			instance.setMinWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MIN_WEIGHT)));
+		}
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT))) {
+			instance.setMaxWeight(null);
+		}
+		else {
+			instance.setMaxWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_WEIGHT)));
+		}
+
 		return instance;
     }
 
 	@Override
 	protected ContentValues getContentValues(Size instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(8);
+
 		initialValues.put(COLUMN_CODE, instance.getCode());
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_EXAMPLES, instance.getExamples());
@@ -115,6 +115,7 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 		initialValues.put(COLUMN_MAX_HEIGHT, instance.getMaxHeight());
 		initialValues.put(COLUMN_MIN_WEIGHT, instance.getMinWeight());
 		initialValues.put(COLUMN_MAX_WEIGHT, instance.getMaxWeight());
+
 		return initialValues;
 	}
 }

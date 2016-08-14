@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
@@ -67,31 +68,30 @@ public class BiomesDaoDbImpl extends BaseDaoDbImpl<Biome> implements BiomeDao, B
         instance.setId(id);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected Biome cursorToEntity(Cursor cursor) {
-        Biome instance = null;
+    protected Biome cursorToEntity(@NonNull Cursor cursor) {
+        Biome instance = new Biome();
 
-        if (cursor != null) {
-            instance = new Biome();
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)).charAt(0));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setHumidity(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY)));
-            instance.setFlora(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FLORA)));
-            instance.setFauna(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAUNA)));
-        }
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)).charAt(0));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setHumidity(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY)));
+        instance.setFlora(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FLORA)));
+        instance.setFauna(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAUNA)));
+
         return instance;
     }
 
     @Override
     protected ContentValues getContentValues(Biome instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(6);
+
         initialValues.put(COLUMN_CODE, String.valueOf(instance.getCode()));
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_HUMIDITY, instance.getHumidity());
         initialValues.put(COLUMN_FLORA, instance.getFlora());
         initialValues.put(COLUMN_FAUNA, instance.getFauna());
+
         return initialValues;
     }
 }

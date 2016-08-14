@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.ParameterDao;
@@ -67,44 +68,42 @@ public class ParameterDaoDbImpl extends BaseDaoDbImpl<Parameter> implements Para
 		instance.setId(id);
 	}
 
-
-	@SuppressWarnings("unchecked")
 	@Override
-	protected Parameter cursorToEntity(Cursor cursor) {
-		Parameter instance = null;
+	protected Parameter cursorToEntity(@NonNull Cursor cursor) {
+		Parameter instance = new Parameter();
 
-		if (cursor != null) {
-			instance = new Parameter();
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE))) {
-				instance.setBaseValue(null);
-			}
-			else {
-				instance.setBaseValue(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE)));
-			}
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE))) {
-				instance.setValuePerLevelOrTier(null);
-			}
-			else {
-				instance.setValuePerLevelOrTier(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE)));
-			}
-			instance.setPerLevel(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_LEVEL)) != 0);
-			instance.setPerTier(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_TIER)) != 0);
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE))) {
+			instance.setBaseValue(null);
 		}
+		else {
+			instance.setBaseValue(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BASE_VALUE)));
+		}
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE))) {
+			instance.setValuePerLevelOrTier(null);
+		}
+		else {
+			instance.setValuePerLevelOrTier(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PER_VALUE)));
+		}
+		instance.setPerLevel(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_LEVEL)) != 0);
+		instance.setPerTier(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PER_TIER)) != 0);
+
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(Parameter instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(7);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_BASE_VALUE, instance.getBaseValue());
 		initialValues.put(COLUMN_PER_VALUE, instance.getValuePerLevelOrTier());
 		initialValues.put(COLUMN_PER_LEVEL, instance.isPerLevel());
 		initialValues.put(COLUMN_PER_TIER, instance.isPerTier());
+
 		return initialValues;
 	}
 }

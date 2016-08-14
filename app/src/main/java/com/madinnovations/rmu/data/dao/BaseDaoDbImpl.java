@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 * @param cursor  a{@link Cursor} positioned at a valid row in a query result
 	 * @return an instance of type T
 	 */
-	protected abstract T cursorToEntity(Cursor cursor);
+	protected abstract T cursorToEntity(@NonNull Cursor cursor);
 
 	/**
 	 * Gets a {@link ContentValues} instance containing the values to use to insert or update the database.

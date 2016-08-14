@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.character.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
@@ -49,7 +50,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	private SkillDao skillDao;
 	private TalentDao talentDao;
 	private StatDao statDao;
-	private ContentValues initialValues;
 
 	/**
 	 * Creates a new instance of CharacterDaoImpl
@@ -111,25 +111,42 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Character cursorToEntity(Cursor cursor) {
+	protected Character cursorToEntity(@NonNull Cursor cursor) {
 		Character instance = new Character();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
-			instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
-			instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
-			instance.setStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRIDE)));
-			instance.setCurrentHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HITS)));
-			instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
-			instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
-			instance.setSkillRanks(getSkillRanks(instance.getId()));
-			instance.setTalentTiers(getTalentTiers(instance.getId()));
-			setStatValues(instance);
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
+		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
+		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
+		instance.setStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRIDE)));
+		instance.setCurrentHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HITS)));
+		instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
+		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
+		instance.setSkillRanks(getSkillRanks(instance.getId()));
+		instance.setTalentTiers(getTalentTiers(instance.getId()));
+		setStatValues(instance);
+
 		return instance;
+	}
+
+	@Override
+	protected ContentValues getContentValues(Character instance) {
+		ContentValues values = new ContentValues(11);
+
+		values.put(COLUMN_ID, instance.getId());
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_RACE_ID, instance.getRace().getId());
+		values.put(COLUMN_HEIGHT, instance.getHeight());
+		values.put(COLUMN_WEIGHT, instance.getWeight());
+		values.put(COLUMN_STRIDE, instance.getStride());
+		values.put(COLUMN_CURRENT_HITS, instance.getCurrentHits());
+		values.put(COLUMN_MAX_HITS, instance.getMaxHits());
+		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
+
+		return values;
 	}
 
 	private Map<Skill, Short> getSkillRanks(int id) {
@@ -195,24 +212,5 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		cursor.close();
 		character.setStatTemps(tempsMap);
 		character.setStatPotentials(potentialsMap);
-	}
-
-	private void setContentValue(Character character) {
-		initialValues = new ContentValues();
-		initialValues.put(COLUMN_ID, character.getId());
-		initialValues.put(COLUMN_NAME, character.getName());
-		initialValues.put(COLUMN_DESCRIPTION, character.getDescription());
-		initialValues.put(COLUMN_RACE_ID, character.getRace().getId());
-		initialValues.put(COLUMN_HEIGHT, character.getHeight());
-		initialValues.put(COLUMN_WEIGHT, character.getWeight());
-		initialValues.put(COLUMN_STRIDE, character.getStride());
-		initialValues.put(COLUMN_CURRENT_HITS, character.getCurrentHits());
-		initialValues.put(COLUMN_MAX_HITS, character.getMaxHits());
-		initialValues.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, character.getCurrentDevelopmentPoints());
-	}
-
-	@Override
-	protected ContentValues getContentValues(Character instance) {
-		return initialValues;
 	}
 }

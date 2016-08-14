@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
@@ -67,27 +68,26 @@ public class LocomotionTypeDaoDbImpl extends BaseDaoDbImpl<LocomotionType> imple
         instance.setId(id);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected LocomotionType cursorToEntity(Cursor cursor) {
-        LocomotionType instance = null;
+    protected LocomotionType cursorToEntity(@NonNull Cursor cursor) {
+        LocomotionType instance = new LocomotionType();
 
-        if (cursor != null) {
-            instance = new LocomotionType();
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setDefaultRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DEFAULT_RATE)));
-        }
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setDefaultRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DEFAULT_RATE)));
+
         return instance;
     }
 
     @Override
     protected ContentValues getContentValues(LocomotionType instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(4);
+
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_DEFAULT_RATE, instance.getDefaultRate());
+
         return initialValues;
     }
 }

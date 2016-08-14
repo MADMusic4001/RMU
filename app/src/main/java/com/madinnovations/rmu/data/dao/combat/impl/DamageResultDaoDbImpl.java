@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
@@ -88,7 +89,7 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
     }
 
     @Override
-    protected DamageResult cursorToEntity(Cursor cursor) {
+    protected DamageResult cursorToEntity(@NonNull Cursor cursor) {
         return null;
     }
 

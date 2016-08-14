@@ -104,22 +104,14 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 	@Override
 	protected ContentValues getContentValues(@NonNull SpellList instance) {
 		ContentValues initialValues = new ContentValues(7);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_REALM_ID, instance.getRealm().getId());
-		if(instance.getRealm2() == null) {
-			initialValues.putNull(COLUMN_REALM2_ID);
-		}
-		else {
-			initialValues.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
-		}
-		if(instance.getProfession() == null) {
-			initialValues.putNull(COLUMN_PROFESSION_ID);
-		}
-		else {
-			initialValues.put(COLUMN_PROFESSION_ID, instance.getProfession().getId());
-		}
+		initialValues.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
+		initialValues.put(COLUMN_PROFESSION_ID, instance.getProfession() != null ? instance.getProfession().getId() : null);
 		initialValues.put(COLUMN_SPELL_LIST_TYPE_ID, instance.getSpellListType().getId());
+
 		return initialValues;
 	}
 }

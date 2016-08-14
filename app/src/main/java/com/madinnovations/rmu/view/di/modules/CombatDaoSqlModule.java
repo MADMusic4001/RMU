@@ -50,8 +50,8 @@ public class CombatDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	public CriticalResultDao provideCriticalResultDao(RMUDatabaseHelper helper, BodyPartDao bodyPartDao) {
-		return new CriticalResultDaoDbImpl(helper, bodyPartDao);
+	public CriticalResultDao provideCriticalResultDao(RMUDatabaseHelper helper, BodyPartDao bodyPartDao, CriticalTypeDao criticalTypeDao) {
+		return new CriticalResultDaoDbImpl(helper, bodyPartDao, criticalTypeDao);
 	}
 
 	@Provides @Singleton

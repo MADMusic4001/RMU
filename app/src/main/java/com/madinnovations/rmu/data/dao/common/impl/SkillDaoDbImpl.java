@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
@@ -27,6 +28,7 @@ import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
 import java.util.ArrayList;
@@ -81,35 +83,35 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
     }
 
     @Override
-    protected Skill cursorToEntity(Cursor cursor) {
-        Skill instance = null;
+    protected Skill cursorToEntity(@NonNull Cursor cursor) {
+        Skill instance = new Skill();
 
-        if (cursor != null) {
-            instance = new Skill();
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setCategory(skillCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
-			instance.setRequiresSpecialization(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REQUIRES_SPECIALIZATION)) != 0);
-			instance.setUseCategoryStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USE_CATEGORY_STATS)) != 0);
-			if(!instance.isUseCategoryStats()) {
-				instance.setStats(getStats(instance.getId()));
-			}
-			else {
-				instance.setStats(null);
-			}
-        }
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setCategory(skillCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
+		instance.setRequiresSpecialization(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REQUIRES_SPECIALIZATION)) != 0);
+		instance.setUseCategoryStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USE_CATEGORY_STATS)) != 0);
+		if(!instance.isUseCategoryStats()) {
+			instance.setStats(getStats(instance.getId()));
+		}
+		else {
+			instance.setStats(null);
+		}
+
         return instance;
     }
 
     @Override
     protected ContentValues getContentValues(Skill instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(6);
+
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
         initialValues.put(COLUMN_REQUIRES_SPECIALIZATION, instance.isRequiresSpecialization());
         initialValues.put(COLUMN_USE_CATEGORY_STATS, instance.isUseCategoryStats());
+
         return initialValues;
     }
 
@@ -163,8 +165,61 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 		return list;
 	}
 
+	@Override
+	public List<Skill> getSkillsForCategory(@NonNull SkillCategory filter) {
+		final String selectionArgs[] = { String.valueOf(filter.getId()) };
+		final String selection = COLUMN_CATEGORY_ID + " = ?";
+		List<Skill> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Skill instance = cursorToEntity(cursor, filter);
+
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	protected Skill cursorToEntity(@NonNull Cursor cursor, SkillCategory skillCategory) {
+		Skill instance = new Skill();
+
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setCategory(skillCategory);
+		instance.setRequiresSpecialization(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REQUIRES_SPECIALIZATION)) != 0);
+		instance.setUseCategoryStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USE_CATEGORY_STATS)) != 0);
+		if(!instance.isUseCategoryStats()) {
+			instance.setStats(getStats(instance.getId()));
+		}
+		else {
+			instance.setStats(null);
+		}
+
+		return instance;
+	}
+
 	private ContentValues getSkillStat(int skillId, int statId) {
-        ContentValues values = new ContentValues(2);
+        ContentValues values = new ContentValues(3);
 
         values.put(SkillStatsSchema.COLUMN_SKILL_ID, skillId);
         values.put(SkillStatsSchema.COLUMN_STAT_ID, statId);

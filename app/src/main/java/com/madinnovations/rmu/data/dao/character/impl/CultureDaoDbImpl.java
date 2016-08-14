@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.CultureDao;
@@ -88,29 +89,30 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
 
     @SuppressWarnings("unchecked")
 	@Override
-    protected Culture cursorToEntity(Cursor cursor) {
+    protected Culture cursorToEntity(@NonNull Cursor cursor) {
         Culture instance = new Culture();
 
-        if (cursor != null) {
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setSkillCategoryRanks(getSkillCategoryRanks(instance.getId()));
-            instance.setBlackList(getList(instance.getId(), CultureSkillBlackListSchema.TABLE_NAME,
-                    CultureSkillBlackListSchema.COLUMN_CULTURE_ID, CultureSkillBlackListSchema.COLUMN_SKILL_ID,
-                    CultureSkillBlackListSchema.COLUMNS));
-            instance.setWhiteList(getList(instance.getId(), CultureSkillWhiteListSchema.TABLE_NAME,
-                    CultureSkillWhiteListSchema.COLUMN_CULTURE_ID, CultureSkillWhiteListSchema.COLUMN_SKILL_ID,
-                    CultureSkillWhiteListSchema.COLUMNS));
-        }
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setSkillCategoryRanks(getSkillCategoryRanks(instance.getId()));
+        instance.setBlackList(getList(instance.getId(), CultureSkillBlackListSchema.TABLE_NAME,
+                CultureSkillBlackListSchema.COLUMN_CULTURE_ID, CultureSkillBlackListSchema.COLUMN_SKILL_ID,
+                CultureSkillBlackListSchema.COLUMNS));
+        instance.setWhiteList(getList(instance.getId(), CultureSkillWhiteListSchema.TABLE_NAME,
+                CultureSkillWhiteListSchema.COLUMN_CULTURE_ID, CultureSkillWhiteListSchema.COLUMN_SKILL_ID,
+                CultureSkillWhiteListSchema.COLUMNS));
+
         return instance;
     }
 
     @Override
 	protected ContentValues getContentValues(Culture instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(3);
+
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+
         return initialValues;
 	}
 
@@ -139,10 +141,12 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
     }
 
     private ContentValues getCultureSkillRanksValues(int cultureId, SkillCategory skillCategory, Short ranks) {
-        ContentValues values = new ContentValues();
+        ContentValues values = new ContentValues(4);
+
         values.put(CultureSkillRanksSchema.COLUMN_CULTURE_ID, cultureId);
         values.put(CultureSkillRanksSchema.COLUMN_SKILL_CATEGORY_ID, skillCategory.getId());
         values.put(CultureSkillRanksSchema.COLUMN_SKILL_RANKS, ranks);
+
         return values;
     }
 

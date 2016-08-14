@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
@@ -89,7 +90,7 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPa
 
 
     @Override
-    protected BodyPart cursorToEntity(Cursor cursor) {
+    protected BodyPart cursorToEntity(@NonNull Cursor cursor) {
         BodyPart instance = new BodyPart();
 
         if (cursor != null) {

@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
@@ -101,15 +102,14 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Profession cursorToEntity(Cursor cursor) {
+	protected Profession cursorToEntity(@NonNull Cursor cursor) {
 		Profession instance = new Profession();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			instance.setSkillCostMap(getSkillCostMap(instance.getId()));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setSkillCostMap(getSkillCostMap(instance.getId()));
+
 		return instance;
 	}
 

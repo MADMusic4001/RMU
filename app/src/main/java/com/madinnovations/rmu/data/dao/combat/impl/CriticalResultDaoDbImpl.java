@@ -18,10 +18,12 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
+import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 
@@ -34,6 +36,7 @@ import javax.inject.Singleton;
 @Singleton
 public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> implements CriticalResultDao, CriticalResultSchema {
     BodyPartDao bodyPartDao;
+    CriticalTypeDao criticalTypeDao;
 
     /**
      * Creates a new instance of CriticalResultDaoDbImpl
@@ -41,9 +44,10 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public CriticalResultDaoDbImpl(SQLiteOpenHelper helper, BodyPartDao bodyPartDao) {
+    public CriticalResultDaoDbImpl(SQLiteOpenHelper helper, BodyPartDao bodyPartDao, CriticalTypeDao criticalTypeDao) {
         super(helper);
         this.bodyPartDao = bodyPartDao;
+        this.criticalTypeDao = criticalTypeDao;
     }
 
     @Override
@@ -93,35 +97,36 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 
 
     @Override
-    protected CriticalResult cursorToEntity(Cursor cursor) {
+    protected CriticalResult cursorToEntity(@NonNull Cursor cursor) {
         CriticalResult instance = new CriticalResult();
 
-        if (cursor != null) {
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setSeverityCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
-            instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
-            instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));
-            instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
-            instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));
-            instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FATIGUE)));
-            instance.setBreakage(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE)));
-            instance.setInjury(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INJURY)));
-            instance.setDazed(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DAZED)));
-            instance.setStunned(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STUNNED)));
-            instance.setNoParry(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NO_PARRY)));
-            instance.setStaggered(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAGGERED)) != 0);
-            instance.setKnockBack(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_KNOCK_BACK)));
-            instance.setProne(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRONE)) != 0);
-            instance.setGrappled(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRAPPLED)));
-        }
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setSeverityCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
+        instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
+        instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));
+        instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
+        instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));
+        instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FATIGUE)));
+        instance.setBreakage(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE)));
+        instance.setInjury(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INJURY)));
+        instance.setDazed(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DAZED)));
+        instance.setStunned(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STUNNED)));
+        instance.setNoParry(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NO_PARRY)));
+        instance.setStaggered(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAGGERED)) != 0);
+        instance.setKnockBack(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_KNOCK_BACK)));
+        instance.setProne(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRONE)) != 0);
+        instance.setGrappled(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRAPPLED)));
+        instance.setCriticalType(criticalTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))));
+
         return instance;
     }
 
 	@Override
 	protected ContentValues getContentValues(CriticalResult instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(20);
+
         initialValues.put(COLUMN_SEVERITY_CODE, String.valueOf(instance.getSeverityCode()));
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_MIN_ROLL, instance.getMinRoll());
@@ -139,6 +144,8 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         initialValues.put(COLUMN_KNOCK_BACK, instance.getKnockBack());
         initialValues.put(COLUMN_PRONE, instance.isProne());
         initialValues.put(COLUMN_GRAPPLED, instance.getGrappled());
+        initialValues.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
+
         return initialValues;
 	}
 }

@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
@@ -88,12 +89,23 @@ public class CriticalTypeDaoDbImpl extends BaseDaoDbImpl<CriticalType> implement
     }
 
     @Override
-    protected CriticalType cursorToEntity(Cursor cursor) {
-        return null;
+    protected CriticalType cursorToEntity(@NonNull Cursor cursor) {
+        CriticalType instance = new CriticalType();
+
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+
+        return instance;
     }
 
 	@Override
 	protected ContentValues getContentValues(CriticalType instance) {
+        ContentValues values = new ContentValues(3);
+
+        values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+
 		return null;
 	}
 }

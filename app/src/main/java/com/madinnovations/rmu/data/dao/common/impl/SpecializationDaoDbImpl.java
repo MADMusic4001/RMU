@@ -20,7 +20,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
@@ -124,11 +123,13 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
 
     @Override
     protected ContentValues getContentValues(Specialization instance) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(5);
+
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_SKILL_ID, instance.getSkill().getId());
         initialValues.put(COLUMN_SKILL_STATS, instance.isUseSkillStats());
+
         return initialValues;
     }
 
@@ -154,8 +155,6 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         final String selection = COLUMN_SKILL_ID + " = ?";
         List<Specialization> list = new ArrayList<>();
 
-        Log.d("DAO", "selection = " + selection);
-        Log.d("DAO", "selectionArgs[0] = " + selectionArgs[0]);
         SQLiteDatabase db = helper.getReadableDatabase();
         boolean newTransaction = !db.inTransaction();
         if(newTransaction) {
@@ -194,9 +193,8 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
     }
 
     protected Specialization cursorToEntity(@NonNull Cursor cursor, @NonNull Skill filterSkill) {
-        Specialization instance = null;
+        Specialization instance = new Specialization();
 
-        instance = new Specialization();
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));

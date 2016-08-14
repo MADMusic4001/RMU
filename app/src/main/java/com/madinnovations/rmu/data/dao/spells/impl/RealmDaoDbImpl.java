@@ -88,9 +88,11 @@ public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, Re
 	@Override
 	protected ContentValues getContentValues(Realm instance) {
 		ContentValues initialValues = new ContentValues(4);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_STAT_ID, instance.getStat().getId());
+
 		return initialValues;
 	}
 }

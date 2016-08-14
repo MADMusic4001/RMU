@@ -22,7 +22,7 @@ public interface CreatureSchema {
 	public static final String TABLE_NAME = "creatures";
 
 	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_TEMPLATE_ID = "templateId";
+	public static final String COLUMN_CREATURE_VARIETY_ID = "creatureVarietyId";
 	public static final String COLUMN_LEVEL = "level";
 	public static final String COLUMN_MAX_HITS = "maxHits";
 	public static final String COLUMN_CURRENT_HITS = "currentHits";
@@ -31,12 +31,12 @@ public interface CreatureSchema {
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_TEMPLATE_ID + " INTEGER NOT NULL, "
+			+ COLUMN_CREATURE_VARIETY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_LEVEL + " INTEGER NOT NULL, "
 			+ COLUMN_MAX_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_TEMPLATE_ID, COLUMN_LEVEL, COLUMN_MAX_HITS,
+	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_VARIETY_ID, COLUMN_LEVEL, COLUMN_MAX_HITS,
 			COLUMN_CURRENT_HITS};
 }

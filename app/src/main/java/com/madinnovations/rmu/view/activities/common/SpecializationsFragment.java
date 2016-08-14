@@ -406,7 +406,7 @@ public class SpecializationsFragment extends Fragment {
 					public void onNext(Collection<Skill> skills) {
 						skillFilterSpinnerAdapter.addAll(skills);
 						skillFilterSpinnerAdapter.notifyDataSetChanged();
-						skillSpinner.setSelection(skillSpinnerAdapter.getPosition(allSkills));
+						skillFilterSpinner.setSelection(skillFilterSpinnerAdapter.getPosition(allSkills));
 					}
 				});
 
@@ -721,14 +721,11 @@ public class SpecializationsFragment extends Fragment {
 	private void loadFilteredSpecializations(final Skill filter) {
 		Observable<Collection<Specialization>> observable;
 
-		Log.d("RMU", "filter = " + filter);
 		if(filter == null || filter.getId() == -1) {
 			observable = specializationRxHandler.getAll();
-			Log.d("RMU", "calling getAll");
 		}
 		else {
 			observable = specializationRxHandler.getSpecializationsForSkill(filter);
-			Log.d("RMU", "calling getSpecializationsForSkill");
 		}
 		observable.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<Specialization>>() {

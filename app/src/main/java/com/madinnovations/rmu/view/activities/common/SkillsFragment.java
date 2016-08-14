@@ -56,6 +56,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -73,6 +74,8 @@ public class SkillsFragment extends Fragment {
 	@Inject
 	protected SkillListAdapter            listAdapter;
 	@Inject
+	protected SkillCategorySpinnerAdapter skillCategoryFilterSpinnerAdapter;
+	@Inject
 	protected SkillCategorySpinnerAdapter skillCategorySpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter          stat1SpinnerAdapter;
@@ -80,6 +83,7 @@ public class SkillsFragment extends Fragment {
 	protected StatSpinnerAdapter          stat2SpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter          stat3SpinnerAdapter;
+	private   Spinner                     skillCategoryFilterSpinner;
 	private   ListView                    listView;
 	private   EditText                    nameEdit;
 	private   EditText                    descriptionEdit;
@@ -100,6 +104,7 @@ public class SkillsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.skills_fragment, container, false);
 
+		initSkillCategoryFilterSpinner(layout);
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initSkillCategorySpinner(layout);
@@ -388,6 +393,43 @@ public class SkillsFragment extends Fragment {
 		}
 	}
 
+	private void initSkillCategoryFilterSpinner(View layout) {
+		skillCategoryFilterSpinner = (Spinner)layout.findViewById(R.id.skill_category_filter_spinner);
+		skillCategoryFilterSpinner.setAdapter(skillCategoryFilterSpinnerAdapter);
+
+		final SkillCategory allSkillCategories = new SkillCategory();
+		allSkillCategories.setName(getString(R.string.label_all_skill_categories));
+		skillCategoryFilterSpinnerAdapter.add(allSkillCategories);
+		skillCategoryRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<SkillCategory>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillsFragment", "Exception caught getting all SkillCategory instances", e);
+					}
+					@Override
+					public void onNext(Collection<SkillCategory> skillCategories) {
+						skillCategoryFilterSpinnerAdapter.addAll(skillCategories);
+						skillCategoryFilterSpinnerAdapter.notifyDataSetChanged();
+						skillCategoryFilterSpinner.setSelection(skillCategoryFilterSpinnerAdapter.getPosition(allSkillCategories));
+					}
+				});
+
+		skillCategoryFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+				loadFilteredSkills(skillCategoryFilterSpinnerAdapter.getItem(position));
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				loadFilteredSkills(null);
+			}
+		});
+	}
+
 	private void initNameEdit(View layout) {
 		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
 		nameEdit.addTextChangedListener(new TextWatcher() {
@@ -618,39 +660,7 @@ public class SkillsFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		skillRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Skill>>() {
-					@Override
-					public void onCompleted() {
-						if(listAdapter.getCount() > 0) {
-							currentInstance = listAdapter.getItem(0);
-							isNew = false;
-							listView.setSelection(0);
-							listView.setItemChecked(0, true);
-							listAdapter.notifyDataSetChanged();
-						}
-						copyItemToViews();
-					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("SkillsFragment", "Exception caught getting all Skill instances", e);
-						Toast.makeText(SkillsFragment.this.getActivity(),
-								getString(R.string.toast_skills_load_failed),
-								Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(Collection<Skill> skills) {
-						listAdapter.clear();
-						listAdapter.addAll(skills);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_skills_loaded), skills.size());
-						Toast.makeText(SkillsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
+		loadFilteredSkills(null);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -727,5 +737,50 @@ public class SkillsFragment extends Fragment {
 				spinner.setSelection(0);
 			}
 		}
+	}
+
+	private void loadFilteredSkills(final SkillCategory filter) {
+		Observable<Collection<Skill>> observable;
+
+		if(filter == null || filter.getId() == -1) {
+			observable = skillRxHandler.getAll();
+		}
+		else {
+			observable = skillRxHandler.getSkillsForCategory(filter);
+		}
+		observable.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Skill>>() {
+					@Override
+					public void onCompleted() {
+						int position = listAdapter.getPosition(currentInstance);
+						if (position == -1 && listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							position = 0;
+						}
+						if (position >= 0) {
+							listView.setSelection(position);
+							listView.setItemChecked(position, true);
+							listAdapter.notifyDataSetChanged();
+						}
+						copyItemToViews();
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SkillsFragment", "Exception caught getting all Skill instances", e);
+						Toast.makeText(SkillsFragment.this.getActivity(),
+								getString(R.string.toast_specializations_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<Skill> skills) {
+						listAdapter.clear();
+						listAdapter.addAll(skills);
+						listAdapter.notifyDataSetChanged();
+						String toastString;
+						toastString = String.format(getString(R.string.toast_specializations_loaded), skills.size());
+						Toast.makeText(SkillsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
 	}
 }

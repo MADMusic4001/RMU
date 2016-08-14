@@ -55,8 +55,8 @@ public class CreatureDaoSqlModule {
 		return new CreatureCategoryDaoDbImpl(helper);
 	}
 	@Provides @Singleton
-	public CreatureDao provideCreatureDao(RMUDatabaseHelper helper) {
-		return new CreatureDaoDbImpl(helper);
+	public CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CreatureVarietyDao creatureVarietyDao) {
+		return new CreatureDaoDbImpl(helper, creatureVarietyDao);
 	}
 	@Provides @Singleton
 	public CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao) {

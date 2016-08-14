@@ -88,9 +88,11 @@ public class SpellDaoDbImpl extends BaseDaoDbImpl<Spell> implements SpellDao, Sp
 	@Override
 	protected ContentValues getContentValues(Spell instance) {
 		ContentValues initialValues = new ContentValues(4);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_SPELL_LIST_ID, instance.getSpellList().getId());
+
 		return initialValues;
 	}
 }

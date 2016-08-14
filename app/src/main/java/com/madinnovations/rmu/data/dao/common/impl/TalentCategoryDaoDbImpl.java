@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
@@ -67,24 +68,24 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl<TalentCategory> imple
 		instance.setId(id);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected TalentCategory cursorToEntity(Cursor cursor) {
+	protected TalentCategory cursorToEntity(@NonNull Cursor cursor) {
 		TalentCategory instance = new TalentCategory();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(TalentCategory instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(3);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+
 		return initialValues;
 	}
 }

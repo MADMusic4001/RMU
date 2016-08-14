@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.item.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.WeaponDao;
@@ -88,7 +89,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
     }
 
     @Override
-    protected Weapon cursorToEntity(Cursor cursor) {
+    protected Weapon cursorToEntity(@NonNull Cursor cursor) {
         return null;
     }
 

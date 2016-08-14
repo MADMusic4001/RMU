@@ -96,7 +96,7 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
 
     @Override
     protected ContentValues getContentValues(SkillCategory instance) {
-        ContentValues initialValues = new ContentValues(8);
+        ContentValues initialValues = new ContentValues(5);
 
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());

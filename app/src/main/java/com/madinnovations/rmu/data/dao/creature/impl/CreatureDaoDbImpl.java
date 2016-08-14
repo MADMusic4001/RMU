@@ -18,9 +18,11 @@ package com.madinnovations.rmu.data.dao.creature.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
+import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 
@@ -32,14 +34,17 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements CreatureDao, CreatureSchema {
+	private CreatureVarietyDao creatureVarietyDao;
+
 	/**
 	 * Creates a new instance of CreatureDaoDbImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
 	@Inject
-	public CreatureDaoDbImpl(SQLiteOpenHelper helper) {
+	public CreatureDaoDbImpl(SQLiteOpenHelper helper, CreatureVarietyDao creatureVarietyDao) {
 		super(helper);
+		this.creatureVarietyDao = creatureVarietyDao;
 	}
 
 	@Override
@@ -88,12 +93,27 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	}
 
 	@Override
-	protected Creature cursorToEntity(Cursor cursor) {
-		return null;
+	protected Creature cursorToEntity(@NonNull Cursor cursor) {
+		Creature instance = new Creature();
+
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setCurrentHits(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HITS)));
+		instance.setMaxHits(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
+		instance.setLevel(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_LEVEL)));
+		instance.setCreatureVariety(creatureVarietyDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CREATURE_VARIETY_ID))));
+
+		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(Creature instance) {
-		return null;
+		ContentValues values = new ContentValues(5);
+
+		values.put(COLUMN_CURRENT_HITS, instance.getCurrentHits());
+		values.put(COLUMN_MAX_HITS, instance.getMaxHits());
+		values.put(COLUMN_LEVEL, instance.getLevel());
+		values.put(COLUMN_CREATURE_VARIETY_ID, instance.getCreatureVariety().getId());
+
+		return values;
 	}
 }

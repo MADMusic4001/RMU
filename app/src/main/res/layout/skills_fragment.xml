@@ -18,6 +18,14 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_category_filter"/>
+    <Spinner
+        android:id="@+id/skill_category_filter_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <include layout="@layout/name_description_header"/>
 

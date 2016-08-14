@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.item.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
@@ -88,24 +89,25 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	}
 
     @Override
-    protected Item cursorToEntity(Cursor cursor) {
+    protected Item cursorToEntity(@NonNull Cursor cursor) {
 		Item instance = new Item();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-			instance.setWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
+
 		return instance;
     }
 
     @Override
     protected ContentValues getContentValues(Item instance) {
-		ContentValues initialValues = new ContentValues();
+		ContentValues initialValues = new ContentValues(4);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 		initialValues.put(COLUMN_WEIGHT, instance.getWeight());
+
 		return initialValues;
     }
 }

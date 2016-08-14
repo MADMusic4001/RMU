@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
@@ -107,40 +108,38 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Race cursorToEntity(Cursor cursor) {
-        Race instance = null;
+    protected Race cursorToEntity(@NonNull Cursor cursor) {
+        Race instance = new Race();
 
-        if (cursor != null) {
-            instance = new Race();
-            instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-            instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            instance.setBonusDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_DEVELOPMENT_POINTS)));
-            instance.setAgilityModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AGILITY_MODIFIER)));
-            instance.setConstitutionModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CONSTITUTION_MODIFIER)));
-            instance.setEmpathyModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_EMPATHY_MODIFIER)));
-            instance.setIntuitionModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INTUITION_MODIFIER)));
-            instance.setMemoryModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MEMORY_MODIFIER)));
-            instance.setPresenceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PRESENCE_MODIFIER)));
-            instance.setQuicknessModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_QUICKNESS_MODIFIER)));
-            instance.setReasoningModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_REASONING_MODIFIER)));
-            instance.setSelfDisciplineModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SELF_DISCIPLINE_MODIFIER)));
-            instance.setStrengthModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRENGTH_MODIFIER)));
-            instance.setChannelingResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CHANNELING_RESISTANCE_MODIFIER)));
-            instance.setEssenceResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ESSENCE_RESISTANCE_MODIFIER)));
-            instance.setMentalismResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MENTALISM_RESISTANCE_MODIFIER)));
-            instance.setPhysicalResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PHYSICAL_RESISTANCE_MODIFIER)));
-            instance.setEnduranceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ENDURANCE_MODIFIER)));
-            instance.setBaseHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_HITS)));
-            instance.setRecoveryMultiplier(cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_RECOVERY_MULTIPLIER)));
-            instance.setStrideModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRIDE_MODIFIER)));
-            instance.setAverageHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_HEIGHT)));
-            instance.setAverageWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_WEIGHT)));
-            instance.setPoundsPerInch(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_POUNDS_PER_INCH)));
-			instance.setSize(sizeDao.getById(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
-            instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
-            instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
-        }
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		instance.setBonusDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_DEVELOPMENT_POINTS)));
+		instance.setAgilityModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AGILITY_MODIFIER)));
+		instance.setConstitutionModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CONSTITUTION_MODIFIER)));
+		instance.setEmpathyModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_EMPATHY_MODIFIER)));
+		instance.setIntuitionModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INTUITION_MODIFIER)));
+		instance.setMemoryModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MEMORY_MODIFIER)));
+		instance.setPresenceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PRESENCE_MODIFIER)));
+		instance.setQuicknessModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_QUICKNESS_MODIFIER)));
+		instance.setReasoningModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_REASONING_MODIFIER)));
+		instance.setSelfDisciplineModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SELF_DISCIPLINE_MODIFIER)));
+		instance.setStrengthModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRENGTH_MODIFIER)));
+		instance.setChannelingResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CHANNELING_RESISTANCE_MODIFIER)));
+		instance.setEssenceResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ESSENCE_RESISTANCE_MODIFIER)));
+		instance.setMentalismResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MENTALISM_RESISTANCE_MODIFIER)));
+		instance.setPhysicalResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PHYSICAL_RESISTANCE_MODIFIER)));
+		instance.setEnduranceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ENDURANCE_MODIFIER)));
+		instance.setBaseHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_HITS)));
+		instance.setRecoveryMultiplier(cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_RECOVERY_MULTIPLIER)));
+		instance.setStrideModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRIDE_MODIFIER)));
+		instance.setAverageHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_HEIGHT)));
+		instance.setAverageWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_WEIGHT)));
+		instance.setPoundsPerInch(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_POUNDS_PER_INCH)));
+		instance.setSize(sizeDao.getById(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
+		instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
+		instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
+
         return instance;
     }
 

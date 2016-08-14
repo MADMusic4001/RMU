@@ -37,6 +37,7 @@ public class CriticalResult {
     private short knockBack = 0;
     private boolean prone = false;
     private short grappled = 0;
+    private CriticalType criticalType;
 
 	/**
      * Checks the validity of the CriticalResult instance.
@@ -44,7 +45,7 @@ public class CriticalResult {
      * @return true if the CriticalResult instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return description != null && !description.isEmpty() && bodyPart != null && minRoll <= maxRoll;
+        return description != null && !description.isEmpty() && bodyPart != null && minRoll <= maxRoll && criticalType != null;
     }
 
     @Override
@@ -68,6 +69,7 @@ public class CriticalResult {
                 ", knockBack=" + knockBack +
                 ", prone=" + prone +
                 ", grappled=" + grappled +
+                ", criticalType=" + criticalType +
                 '}';
     }
 
@@ -79,7 +81,6 @@ public class CriticalResult {
         CriticalResult that = (CriticalResult) o;
 
         return id == that.id;
-
     }
 
     @Override
@@ -195,5 +196,11 @@ public class CriticalResult {
     }
     public void setGrappled(short grappled) {
         this.grappled = grappled;
+    }
+    public CriticalType getCriticalType() {
+        return criticalType;
+    }
+    public void setCriticalType(CriticalType criticalType) {
+        this.criticalType = criticalType;
     }
 }

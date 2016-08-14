@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.common;
 
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
 import java.util.List;
 
@@ -67,4 +68,12 @@ public interface SkillDao {
 	 * @return  a List containing all Skill objects that require specialization currently in persistent storage.
 	 */
 	public List<Skill> getSpecializationSkills();
+
+	/**
+	 * Retrieves all Specialization objects that reference the given skill from persistent storage.
+	 *
+	 * @param filter  a Skill instance whose ID will be used to filter the Specialization objects returned by the query
+	 * @return  a List containing all Specialization objects that reference the given skill currently in persistent storage.
+	 */
+	public List<Skill> getSkillsForCategory(SkillCategory filter);
 }

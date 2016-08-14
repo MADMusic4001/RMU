@@ -136,9 +136,11 @@
   <string name="label_severity_code">Severity</string>
 
   <!-- Filter default labels -->
+  <string name="label_all_skill_categories">All Skill Categories</string>
   <string name="label_all_skills">All Skills</string>
 
   <!-- TextView labels -->
+  <string name="label_category_filter">Category Filter:</string>
   <string name="label_hyphen">-</string>
   <string name="label_no_stats">No Stats</string>
   <string name="label_realm_stats">Realm Stats</string>

@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
@@ -89,7 +90,7 @@ public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl<CriticalCode> implement
 
 
 	@Override
-	protected CriticalCode cursorToEntity(Cursor cursor) {
+	protected CriticalCode cursorToEntity(@NonNull  Cursor cursor) {
 		CriticalCode instance = new CriticalCode();
 
 		if (cursor != null) {
