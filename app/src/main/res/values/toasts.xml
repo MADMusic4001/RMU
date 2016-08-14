@@ -57,6 +57,12 @@
   <string name="toast_critical_result_save_failed">Critical Result save failed.</string>
   <string name="toast_critical_result_deleted">Critical Result deleted.</string>
   <string name="toast_critical_result_delete_failed">Critical Result deletion failed.</string>
+  <string name="toast_critical_types_load_failed">Failed to load Critical Types</string>
+  <string name="toast_critical_types_loaded">%1$d Critical Types loaded.</string>
+  <string name="toast_critical_type_saved">Critical Type saved.</string>
+  <string name="toast_critical_type_save_failed">Critical Type save failed.</string>
+  <string name="toast_critical_type_deleted">Critical Type deleted.</string>
+  <string name="toast_critical_type_delete_failed">Critical Type deletion failed.</string>
   <string name="toast_items_load_failed">Failed to load Items</string>
   <string name="toast_items_loaded">%1$d Items loaded.</string>
   <string name="toast_item_saved">Item saved.</string>

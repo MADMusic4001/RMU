@@ -317,7 +317,7 @@ public class ParametersFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_name_required));
+					nameEdit.setError(getString(R.string.validation_parameter_name_required));
 				}
 			}
 		});
@@ -345,9 +345,8 @@ public class ParametersFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_description_required));
+					descriptionEdit.setError(getString(R.string.validation_parameter_description_required));
 				}
-				currentInstance.setDescription(descriptionEdit.getText().toString());
 			}
 		});
 		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -440,7 +439,7 @@ public class ParametersFragment extends Fragment {
 							listView.setSelection(0);
 							listView.setItemChecked(0, true);
 							listAdapter.notifyDataSetChanged();
-							copyItemToViews();;
+							copyItemToViews();
 						}
 					}
 					@Override

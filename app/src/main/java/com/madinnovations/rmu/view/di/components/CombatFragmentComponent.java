@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.di.components;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
+import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
@@ -32,4 +33,5 @@ public interface CombatFragmentComponent {
 	public void injectInto(BodyPartsFragment bodyPartsFragment);
 	public void injectInto(CriticalCodesFragment criticalCodesFragment);
 	public void injectInto(CriticalResultsFragment criticalResultsFragment);
+	public void injectInto(CriticalTypesFragment criticalTypesFragment);
 }

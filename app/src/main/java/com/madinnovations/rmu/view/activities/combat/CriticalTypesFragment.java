@@ -36,10 +36,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
+import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.combat.BodyPartListAdapter;
+import com.madinnovations.rmu.view.adapters.combat.CriticalTypeListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -53,15 +53,15 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class BodyPartsFragment extends Fragment {
+public class CriticalTypesFragment extends Fragment {
 	@Inject
-	protected BodyPartRxHandler   bodyPartRxHandler;
+	protected CriticalTypeRxHandler criticalTypeRxHandler;
 	@Inject
-	protected BodyPartListAdapter listAdapter;
+	protected CriticalTypeListAdapter listAdapter;
 	private ListView              listView;
 	private EditText              nameEdit;
 	private EditText              descriptionEdit;
-	private BodyPart currentInstance = new BodyPart();
+	private CriticalType currentInstance = new CriticalType();
 	private boolean isNew = true;
 
 	@Nullable
@@ -70,7 +70,7 @@ public class BodyPartsFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCombatFragmentComponent(new CombatFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.body_parts_fragment, container, false);
+		View layout = inflater.inflate(R.layout.critical_types_fragment, container, false);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
@@ -92,17 +92,17 @@ public class BodyPartsFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.body_parts_action_bar, menu);
+		inflater.inflate(R.menu.critical_types_action_bar, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_new_body_part) {
+		if(id == R.id.action_new_critical_type) {
 			if(copyViewsToItem()) {
 				saveItem();
 			}
-			currentInstance = new BodyPart();
+			currentInstance = new CriticalType();
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -115,31 +115,31 @@ public class BodyPartsFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.body_part_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.critical_type_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final BodyPart bodyPart;
+		final CriticalType criticalType;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
-			case R.id.context_new_body_part:
+			case R.id.context_new_critical_type:
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = new BodyPart();
+				currentInstance = new CriticalType();
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
-			case R.id.context_delete_body_part:
-				bodyPart = (BodyPart)listView.getItemAtPosition(info.position);
-				if(bodyPart != null) {
-					deleteItem(bodyPart);
+			case R.id.context_delete_critical_type:
+				criticalType = (CriticalType)listView.getItemAtPosition(info.position);
+				if(criticalType != null) {
+					deleteItem(criticalType);
 					return true;
 				}
 				break;
@@ -184,8 +184,8 @@ public class BodyPartsFragment extends Fragment {
 		}
 	}
 
-	private void deleteItem(final BodyPart item) {
-		bodyPartRxHandler.deleteById(item.getId())
+	private void deleteItem(final CriticalType item) {
+		criticalTypeRxHandler.deleteById(item.getId())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribeOn(Schedulers.io())
 			.subscribe(new Subscriber<Boolean>() {
@@ -193,8 +193,8 @@ public class BodyPartsFragment extends Fragment {
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("BodyPartFragment", "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_body_part_delete_failed), Toast.LENGTH_SHORT).show();
+					Log.e("CriticalTypeFragment", "Exception when deleting: " + item, e);
+					Toast.makeText(getActivity(), getString(R.string.toast_critical_type_delete_failed), Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -211,11 +211,11 @@ public class BodyPartsFragment extends Fragment {
 							currentInstance = listAdapter.getItem(position);
 						}
 						else {
-							currentInstance = new BodyPart();
+							currentInstance = new CriticalType();
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_body_part_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), getString(R.string.toast_critical_type_deleted), Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -225,31 +225,31 @@ public class BodyPartsFragment extends Fragment {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;
-			bodyPartRxHandler.save(currentInstance)
+			criticalTypeRxHandler.save(currentInstance)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<BodyPart>() {
+				.subscribe(new Subscriber<CriticalType>() {
 					@Override
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("BodyPartsFragment", "Exception saving BodyPart", e);
-						String toastString = getString(R.string.toast_body_part_save_failed);
+						Log.e("CriticalTypesFragment", "Exception saving CriticalType", e);
+						String toastString = getString(R.string.toast_critical_type_save_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(BodyPart savedBodyPart) {
+					public void onNext(CriticalType savedCriticalType) {
 						if (wasNew) {
-							listAdapter.add(savedBodyPart);
-							if(savedBodyPart == currentInstance) {
-								listView.setSelection(listAdapter.getPosition(savedBodyPart));
-								listView.setItemChecked(listAdapter.getPosition(savedBodyPart), true);
+							listAdapter.add(savedCriticalType);
+							if(savedCriticalType == currentInstance) {
+								listView.setSelection(listAdapter.getPosition(savedCriticalType));
+								listView.setItemChecked(listAdapter.getPosition(savedCriticalType), true);
 							}
 							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
 							String toastString;
-							toastString = getString(R.string.toast_body_part_saved);
+							toastString = getString(R.string.toast_critical_type_saved);
 							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
@@ -280,7 +280,7 @@ public class BodyPartsFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_body_part_name_required));
+					nameEdit.setError(getString(R.string.validation_critical_type_name_required));
 				}
 			}
 		});
@@ -308,7 +308,7 @@ public class BodyPartsFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_body_part_description_required));
+					descriptionEdit.setError(getString(R.string.validation_critical_type_description_required));
 				}
 			}
 		});
@@ -331,10 +331,10 @@ public class BodyPartsFragment extends Fragment {
 
 		listView.setAdapter(listAdapter);
 
-		bodyPartRxHandler.getAll()
+		criticalTypeRxHandler.getAll()
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribeOn(Schedulers.io())
-			.subscribe(new Subscriber<Collection<BodyPart>>() {
+			.subscribe(new Subscriber<Collection<CriticalType>>() {
 				@Override
 				public void onCompleted() {
 					if(listAdapter.getCount() > 0) {
@@ -348,17 +348,17 @@ public class BodyPartsFragment extends Fragment {
 				}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("BodyPartsFragment", "Exception caught getting all BodyPart instances", e);
-					Toast.makeText(BodyPartsFragment.this.getActivity(),
-							getString(R.string.toast_body_parts_load_failed),
+					Log.e("CriticalTypesFragment", "Exception caught getting all CriticalType instances", e);
+					Toast.makeText(CriticalTypesFragment.this.getActivity(),
+							getString(R.string.toast_critical_types_load_failed),
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override
-				public void onNext(Collection<BodyPart> bodyParts) {
+				public void onNext(Collection<CriticalType> criticalTypes) {
 					listAdapter.clear();
-					listAdapter.addAll(bodyParts);
+					listAdapter.addAll(criticalTypes);
 					listAdapter.notifyDataSetChanged();
-					if(bodyParts.size() > 0) {
+					if(criticalTypes.size() > 0) {
 						listView.setSelection(0);
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
@@ -366,8 +366,8 @@ public class BodyPartsFragment extends Fragment {
 						copyItemToViews();
 					}
 					String toastString;
-					toastString = String.format(getString(R.string.toast_body_parts_loaded), bodyParts.size());
-					Toast.makeText(BodyPartsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					toastString = String.format(getString(R.string.toast_critical_types_loaded), criticalTypes.size());
+					Toast.makeText(CriticalTypesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 				}
 			});
 
@@ -377,10 +377,10 @@ public class BodyPartsFragment extends Fragment {
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = (BodyPart) listView.getItemAtPosition(position);
+				currentInstance = (CriticalType) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
-					currentInstance = new BodyPart();
+					currentInstance = new CriticalType();
 					isNew = true;
 				}
 				copyItemToViews();

@@ -122,7 +122,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showCriticalResults();
 								break;
 							case 3:
-//								((CampaignActivity)getActivity()).showCriticalTypes();
+								((CampaignActivity)getActivity()).showCriticalTypes();
 								break;
 							case 4:
 //								((CampaignActivity)getActivity()).showDamageResults();

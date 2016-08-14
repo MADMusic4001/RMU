@@ -449,7 +449,7 @@ public class CriticalResultsFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_description_required));
+					descriptionEdit.setError(getString(R.string.validation_critical_result_description_required));
 				}
 			}
 		});
@@ -949,7 +949,7 @@ public class CriticalResultsFragment extends Fragment {
 						listView.setSelection(0);
 						listView.setItemChecked(0, true);
 						listAdapter.notifyDataSetChanged();
-						copyItemToViews();;
+						copyItemToViews();
 					}
 				}
 				@Override

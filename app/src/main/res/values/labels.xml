@@ -106,6 +106,8 @@
   <string name="label_delete_critical_code">Delete Critical Code</string>
   <string name="label_new_critical_result">New Critical Result</string>
   <string name="label_delete_critical_result">Delete Critical Result</string>
+  <string name="label_new_critical_type">New Critical Type</string>
+  <string name="label_delete_critical_type">Delete Critical Type</string>
   <string name="label_new_item">New Item</string>
   <string name="label_delete_item">Delete Item</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>
@@ -180,6 +182,8 @@
   <string name="hint_critical_code">Critical Code</string>
   <string name="hint_critical_code_description">Critical Code Description</string>
   <string name="hint_critical_result_description">Critical Result Description</string>
+  <string name="hint_critical_type_name">Critical Type Name</string>
+  <string name="hint_critical_type_description">Critical Type Description</string>
   <string name="hint_dazed">Dazed rounds</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_description">New Description</string>

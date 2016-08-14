@@ -615,7 +615,7 @@ public class SizesFragment extends Fragment {
 							listView.setSelection(0);
 							listView.setItemChecked(0, true);
 							listAdapter.notifyDataSetChanged();
-							copyItemToViews();;
+							copyItemToViews();
 						}
 					}
 					@Override

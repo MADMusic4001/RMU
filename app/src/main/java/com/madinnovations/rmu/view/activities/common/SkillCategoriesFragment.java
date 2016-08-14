@@ -444,7 +444,7 @@ public class SkillCategoriesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_name_required));
+					nameEdit.setError(getString(R.string.validation_skill_category_name_required));
 				}
 			}
 		});
@@ -472,7 +472,7 @@ public class SkillCategoriesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_description_required));
+					descriptionEdit.setError(getString(R.string.validation_skill_category_description_required));
 				}
 			}
 		});
@@ -792,7 +792,7 @@ public class SkillCategoriesFragment extends Fragment {
 			if (position != -1) {
 				stats.set(statIndex, adapter.getItem(position));
 			}
-			else {
+			else if(adapter.getCount() > 0) {
 				stats.set(statIndex, adapter.getItem(0));
 				spinner.setSelection(0);
 			}

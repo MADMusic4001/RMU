@@ -440,7 +440,7 @@ public class SkillsFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_name_required));
+					nameEdit.setError(getString(R.string.validation_skill_name_required));
 				}
 			}
 		});
@@ -468,7 +468,7 @@ public class SkillsFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_description_required));
+					descriptionEdit.setError(getString(R.string.validation_skill_description_required));
 				}
 			}
 		});

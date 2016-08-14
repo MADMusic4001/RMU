@@ -190,10 +190,7 @@ public class CreatureArchetypesFragment extends Fragment {
 		boolean changed = false;
 		String newString;
 		Stat newStat;
-		SkillCategory newSkillCategory;
 		int position;
-		SparseBooleanArray checkedSkillCategories;
-		List<SkillCategory> selectedSkillCategories = new ArrayList<>();
 
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
@@ -435,7 +432,7 @@ public class CreatureArchetypesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_name_required));
+					nameEdit.setError(getString(R.string.validation_creature_archetype_name_required));
 				}
 			}
 		});
@@ -463,7 +460,7 @@ public class CreatureArchetypesFragment extends Fragment {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_description_required));
+					descriptionEdit.setError(getString(R.string.validation_creature_archetype_description_required));
 				}
 			}
 		});
@@ -748,7 +745,7 @@ public class CreatureArchetypesFragment extends Fragment {
 							listView.setSelection(0);
 							listView.setItemChecked(0, true);
 							listAdapter.notifyDataSetChanged();
-							copyItemToViews();;
+							copyItemToViews();
 						}
 					}
 					@Override
