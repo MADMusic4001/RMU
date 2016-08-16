@@ -84,22 +84,7 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 
     @Override
     protected Skill cursorToEntity(@NonNull Cursor cursor) {
-        Skill instance = new Skill();
-
-		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		instance.setCategory(skillCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
-		instance.setRequiresSpecialization(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REQUIRES_SPECIALIZATION)) != 0);
-		instance.setUseCategoryStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USE_CATEGORY_STATS)) != 0);
-		if(!instance.isUseCategoryStats()) {
-			instance.setStats(getStats(instance.getId()));
-		}
-		else {
-			instance.setStats(null);
-		}
-
-        return instance;
+		return cursorToEntity(cursor, skillCategoryDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))));
     }
 
     @Override

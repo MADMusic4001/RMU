@@ -70,10 +70,10 @@ public interface SkillDao {
 	public List<Skill> getSpecializationSkills();
 
 	/**
-	 * Retrieves all Specialization objects that reference the given skill from persistent storage.
+	 * Retrieves all Skill objects that reference the given SkillCategory from persistent storage.
 	 *
-	 * @param filter  a Skill instance whose ID will be used to filter the Specialization objects returned by the query
-	 * @return  a List containing all Specialization objects that reference the given skill currently in persistent storage.
+	 * @param filter  a SkillCategory instance whose ID will be used to filter the Skill objects returned by the query
+	 * @return  a List containing all Skill objects that reference the given SkillCategory currently in persistent storage.
 	 */
 	public List<Skill> getSkillsForCategory(SkillCategory filter);
 }

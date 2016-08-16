@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.combat;
 
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
 import java.util.List;
 
@@ -60,4 +61,12 @@ public interface CriticalResultDao {
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+    /**
+     * Retrieves all CriticalResult objects that reference the given CriticalType from persistent storage.
+     *
+     * @param filter  a CriticalType instance whose ID will be used to filter the CriticalResult objects returned by the query
+     * @return  a List containing all CriticalResult objects that reference the given CriticalType currently in persistent storage.
+     */
+    public List<CriticalResult> getCriticalResultsForCriticalType(CriticalType filter);
 }

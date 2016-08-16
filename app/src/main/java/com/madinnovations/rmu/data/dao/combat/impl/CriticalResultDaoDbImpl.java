@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
@@ -26,6 +27,10 @@ import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -95,32 +100,9 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         instance.setId(id);
     }
 
-
     @Override
     protected CriticalResult cursorToEntity(@NonNull Cursor cursor) {
-        CriticalResult instance = new CriticalResult();
-
-        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-        instance.setSeverityCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
-        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-        instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
-        instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
-        instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));
-        instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
-        instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));
-        instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FATIGUE)));
-        instance.setBreakage(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE)));
-        instance.setInjury(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INJURY)));
-        instance.setDazed(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DAZED)));
-        instance.setStunned(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STUNNED)));
-        instance.setNoParry(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NO_PARRY)));
-        instance.setStaggered(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAGGERED)) != 0);
-        instance.setKnockBack(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_KNOCK_BACK)));
-        instance.setProne(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRONE)) != 0);
-        instance.setGrappled(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRAPPLED)));
-        instance.setCriticalType(criticalTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))));
-
-        return instance;
+        return cursorToEntity(cursor, criticalTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))));
     }
 
 	@Override
@@ -148,4 +130,69 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 
         return initialValues;
 	}
+
+    @Override
+    public List<CriticalResult> getCriticalResultsForCriticalType(CriticalType filter) {
+        final String selectionArgs[] = { String.valueOf(filter.getId()) };
+        final String selection = COLUMN_CRITICAL_TYPE_ID + " = ?";
+        List<CriticalResult> list = new ArrayList<>();
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        boolean newTransaction = !db.inTransaction();
+        if(newTransaction) {
+            db.beginTransaction();
+        }
+        try {
+            Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    CriticalResult instance = cursorToEntity(cursor, filter);
+
+                    list.add(instance);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+            }
+        }
+        finally {
+            if(newTransaction) {
+                db.endTransaction();
+            }
+        }
+
+        return list;
+    }
+
+    private CriticalResult cursorToEntity(@NonNull Cursor cursor, CriticalType criticalType) {
+        CriticalResult instance = new CriticalResult();
+
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setSeverityCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
+        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
+        instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
+        instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));
+        instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
+        instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));
+        instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FATIGUE)));
+        if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE))) {
+            instance.setBreakage(null);
+        }
+        else {
+            instance.setBreakage(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE)));
+        }
+        instance.setInjury(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INJURY)));
+        instance.setDazed(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DAZED)));
+        instance.setStunned(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STUNNED)));
+        instance.setNoParry(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NO_PARRY)));
+        instance.setStaggered(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAGGERED)) != 0);
+        instance.setKnockBack(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_KNOCK_BACK)));
+        instance.setProne(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRONE)) != 0);
+        instance.setGrappled(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRAPPLED)));
+        instance.setCriticalType(criticalType);
+
+        return instance;
+    }
 }

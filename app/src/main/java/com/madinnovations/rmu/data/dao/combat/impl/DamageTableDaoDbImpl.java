@@ -44,26 +44,6 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl<DamageTable> implements 
     }
 
     @Override
-    public DamageTable getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(DamageTable instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
-    }
-
-    @Override
     protected String getTableName() {
         return TABLE_NAME;
     }
@@ -90,11 +70,19 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl<DamageTable> implements 
 
     @Override
     protected DamageTable cursorToEntity(@NonNull Cursor cursor) {
-        return null;
+        DamageTable instance = new DamageTable();
+
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setName((cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))));
+        return instance;
     }
 
 	@Override
 	protected ContentValues getContentValues(DamageTable instance) {
-		return null;
+        ContentValues values = new ContentValues(2);
+
+        values.put(COLUMN_NAME, instance.getName());
+
+		return values;
 	}
 }

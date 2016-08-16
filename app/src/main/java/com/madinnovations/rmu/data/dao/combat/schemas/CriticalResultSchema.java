@@ -53,7 +53,7 @@ public interface CriticalResultSchema {
             + COLUMN_HITS + " INTEGER NOT NULL, "
             + COLUMN_BLEEDING + " INTEGER NOT NULL, "
             + COLUMN_FATIGUE + " INTEGER NOT NULL, "
-            + COLUMN_BREAKAGE + " INTEGER NOT NULL, "
+            + COLUMN_BREAKAGE + " INTEGER, "
             + COLUMN_INJURY + " INTEGER NOT NULL, "
             + COLUMN_DAZED + " INTEGER NOT NULL, "
             + COLUMN_STUNNED + " INTEGER NOT NULL, "

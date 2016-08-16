@@ -28,21 +28,26 @@ import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link CriticalType} information
+ * Populates a Spinner with {@link CriticalType} information
  */
-public class CriticalTypeListAdapter extends ArrayAdapter<CriticalType> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.code_name_row;
+public class CriticalTypeSpinnerAdapter extends ArrayAdapter<CriticalType> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.name_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new CriticalTypeListAdapter instance.
+	 * Creates a new CriticalTypeSpinnerAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public CriticalTypeListAdapter(Context context) {
+	public CriticalTypeSpinnerAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return getView(position, convertView, parent);
 	}
 
 	@Override
@@ -52,8 +57,7 @@ public class CriticalTypeListAdapter extends ArrayAdapter<CriticalType> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.code_view),
-					(TextView) rowView.findViewById(R.id.name_view));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view));
 			rowView.setTag(holder);
 		}
 		else {
@@ -61,18 +65,15 @@ public class CriticalTypeListAdapter extends ArrayAdapter<CriticalType> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		CriticalType item = getItem(position);
-		holder.codeView.setText(String.valueOf(item.getCode()));
-		holder.nameView.setText(item.getName());
+		CriticalType criticalType = getItem(position);
+		holder.nameView.setText(criticalType.getName());
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private TextView codeView;
 		private TextView nameView;
 
-		ViewHolder(TextView codeView, TextView nameView) {
-			this.codeView = codeView;
+		ViewHolder(TextView nameView) {
 			this.nameView = nameView;
 		}
 	}

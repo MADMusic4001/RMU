@@ -157,4 +157,14 @@ public class CriticalTypeRxHandler {
 				}
 		).subscribeOn(Schedulers.io());
 	}
+
+	/**
+	 * Queries persistent storage for a CriticalType instance with the given code.
+	 *
+	 * @param code  the code of the CriticalType to retrieve from persistent storage
+	 * @return the CriticalType instance with the given code or null if not found
+	 */
+	public CriticalType getByCode(final char code) {
+		return dao.getByCode(code);
+	}
 }

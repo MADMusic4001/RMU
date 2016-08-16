@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -41,17 +42,21 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.BodyPartSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.combat.CriticalResultListAdapter;
+import com.madinnovations.rmu.view.adapters.combat.CriticalTypeSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -61,19 +66,27 @@ import rx.schedulers.Schedulers;
  */
 public class CriticalResultsFragment extends Fragment {
 	@Inject
-	protected CriticalResultRxHandler criticalResultRxHandler;
+	protected CriticalResultRxHandler    criticalResultRxHandler;
 	@Inject
-	protected BodyPartRxHandler bodyPartRxHandler;
+	protected CriticalTypeRxHandler      criticalTypeRxHandler;
 	@Inject
-	protected CriticalResultListAdapter listAdapter;
+	protected BodyPartRxHandler          bodyPartRxHandler;
 	@Inject
-	protected BodyPartSpinnerAdapter spinnerAdapter;
+	protected CriticalResultListAdapter  listAdapter;
+	@Inject
+	protected CriticalTypeSpinnerAdapter criticalTypeFilterSpinnerAdapter;
+	@Inject
+	protected CriticalTypeSpinnerAdapter criticalTypeSpinnerAdapter;
+	@Inject
+	protected BodyPartSpinnerAdapter     bodyPartSpinnerAdapter;
+	private Spinner  criticalTypeFilterSpinner;
 	private ListView listView;
+	private Spinner  criticalTypeSpinner;
 	private EditText descriptionEdit;
 	private EditText minRollEdit;
 	private EditText maxRollEdit;
 	private EditText severityCodeEdit;
-	private Spinner bodyPartSpinner;
+	private Spinner  bodyPartSpinner;
 	private EditText hitsEdit;
 	private EditText bleedingEdit;
 	private EditText fatigueEdit;
@@ -97,6 +110,8 @@ public class CriticalResultsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.critical_results_fragment, container, false);
 
+		initCriticalTypeFilterSpinner(layout);
+		initCriticalTypeSpinner(layout);
 		initDescriptionEdit(layout);
 		initMinRollEdit(layout);
 		initMaxRollEdit(layout);
@@ -189,10 +204,23 @@ public class CriticalResultsFragment extends Fragment {
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
+		int position;
+		CriticalType newCriticalType = null;
 		String newString;
 		char newChar;
 		short newShort;
-		BodyPart newBodyPart;
+		Short newBreakage = null;
+		BodyPart newBodyPart = null;
+
+		position = criticalTypeSpinner.getSelectedItemPosition();
+		if(position >= 0) {
+			newCriticalType = criticalTypeSpinnerAdapter.getItem(position);
+		}
+		if((newCriticalType == null && currentInstance.getCriticalType() != null) ||
+				(newCriticalType != null && !newCriticalType.equals(currentInstance.getCriticalType()))) {
+			currentInstance.setCriticalType(newCriticalType);
+			changed = true;
+		}
 
 		newString = descriptionEdit.getText().toString();
 		if(newString.isEmpty()) {
@@ -229,10 +257,7 @@ public class CriticalResultsFragment extends Fragment {
 		}
 
 		if(bodyPartSpinner.getSelectedItemPosition() >= 0) {
-			newBodyPart = spinnerAdapter.getItem(bodyPartSpinner.getSelectedItemPosition());
-		}
-		else {
-			newBodyPart = null;
+			newBodyPart = bodyPartSpinnerAdapter.getItem(bodyPartSpinner.getSelectedItemPosition());
 		}
 		if((newBodyPart == null && currentInstance.getBodyPart() != null) ||
 				(newBodyPart!= null && !newBodyPart.equals(currentInstance.getBodyPart()))) {
@@ -265,11 +290,12 @@ public class CriticalResultsFragment extends Fragment {
 		}
 
 		if(breakageEdit.length() > 0) {
-			newShort = Short.valueOf(breakageEdit.getText().toString());
-			if(newShort !=  currentInstance.getBreakage()) {
-				currentInstance.setBreakage(newShort);
-				changed = true;
-			}
+			newBreakage = Short.valueOf(breakageEdit.getText().toString());
+		}
+		if(newBreakage ==  null && currentInstance.getBreakage() != null ||
+				newBreakage != null && !newBreakage.equals(currentInstance.getBreakage())) {
+			currentInstance.setBreakage(newBreakage);
+			changed = true;
 		}
 
 		if(injuryEdit.length() > 0) {
@@ -334,15 +360,21 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void copyItemToViews() {
+		criticalTypeSpinner.setSelection(criticalTypeSpinnerAdapter.getPosition(currentInstance.getCriticalType()));
 		descriptionEdit.setText(currentInstance.getDescription());
 		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
 		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
 		severityCodeEdit.setText(String.valueOf(currentInstance.getSeverityCode()));
-		bodyPartSpinner.setSelection(spinnerAdapter.getPosition(currentInstance.getBodyPart()));
+		bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(currentInstance.getBodyPart()));
 		hitsEdit.setText(String.valueOf(currentInstance.getHits()));
 		bleedingEdit.setText(String.valueOf(currentInstance.getBleeding()));
 		fatigueEdit.setText(String.valueOf(currentInstance.getFatigue()));
-		breakageEdit.setText(String.valueOf(currentInstance.getBreakage()));
+		if(currentInstance.getBreakage() != null) {
+			breakageEdit.setText(String.valueOf(currentInstance.getBreakage()));
+		}
+		else {
+			breakageEdit.setText("");
+		}
 		injuryEdit.setText(String.valueOf(currentInstance.getInjury()));
 		dazedEdit.setText(String.valueOf(currentInstance.getDazed()));
 		stunnedEdit.setText(String.valueOf(currentInstance.getStunned()));
@@ -439,6 +471,85 @@ public class CriticalResultsFragment extends Fragment {
 				});
 	}
 
+	private void initCriticalTypeFilterSpinner(View layout) {
+		criticalTypeFilterSpinner = (Spinner)layout.findViewById(R.id.critical_type_filter_spinner);
+		criticalTypeFilterSpinner.setAdapter(criticalTypeFilterSpinnerAdapter);
+
+		final CriticalType allSkills = new CriticalType();
+		allSkills.setName(getString(R.string.label_all_critical_types));
+		criticalTypeFilterSpinnerAdapter.add(allSkills);
+		criticalTypeRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<CriticalType>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
+					}
+					@Override
+					public void onNext(Collection<CriticalType> criticalTypes) {
+						criticalTypeFilterSpinnerAdapter.addAll(criticalTypes);
+						criticalTypeFilterSpinnerAdapter.notifyDataSetChanged();
+						criticalTypeFilterSpinner.setSelection(criticalTypeFilterSpinnerAdapter.getPosition(allSkills));
+					}
+				});
+
+		criticalTypeFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+				loadFilteredCriticalResults(criticalTypeFilterSpinnerAdapter.getItem(position));
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				loadFilteredCriticalResults(null);
+			}
+		});
+	}
+
+	private void initCriticalTypeSpinner(View layout) {
+		criticalTypeSpinner = (Spinner) layout.findViewById(R.id.critical_type_spinner);
+
+		criticalTypeSpinner.setAdapter(criticalTypeSpinnerAdapter);
+
+		criticalTypeRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<CriticalType>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("CriticalResultsFragment", "Exception caught getting all CriticalType instances in initCriticalTypeSpinner", e);
+					}
+					@Override
+					public void onNext(Collection<CriticalType> criticalTypessResults) {
+						criticalTypeSpinnerAdapter.clear();
+						criticalTypeSpinnerAdapter.addAll(criticalTypessResults);
+						criticalTypeSpinnerAdapter.notifyDataSetChanged();
+					}
+				});
+
+		criticalTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(currentInstance.getCriticalType() == null ||
+						criticalTypeSpinnerAdapter.getPosition(currentInstance.getCriticalType()) != position) {
+					currentInstance.setCriticalType(criticalTypeSpinnerAdapter.getItem(position));
+					saveItem();
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(currentInstance.getCriticalType() != null) {
+					currentInstance.setCriticalType(null);
+					saveItem();
+				}
+			}
+		});
+	}
+
 	private void initDescriptionEdit(View layout) {
 		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
 		descriptionEdit.addTextChangedListener(new TextWatcher() {
@@ -484,6 +595,10 @@ public class CriticalResultsFragment extends Fragment {
 					if(newValue > currentInstance.getMaxRoll()) {
 						minRollEdit.setError(getString(R.string.validation_min_roll_gt_max_roll));
 					}
+					else {
+						minRollEdit.setError(null);
+						maxRollEdit.setError(null);
+					}
 				}
 			}
 		});
@@ -519,6 +634,11 @@ public class CriticalResultsFragment extends Fragment {
 					short newValue = Short.valueOf(editable.toString());
 					if(newValue <= currentInstance.getMinRoll()) {
 						maxRollEdit.setError(getString(R.string.validation_max_roll_lt_min_roll));
+					}
+					else {
+						new GridView.LayoutParams(85, 85);
+						minRollEdit.setError(null);
+						maxRollEdit.setError(null);
 					}
 				}
 			}
@@ -572,7 +692,7 @@ public class CriticalResultsFragment extends Fragment {
 	private void initBodyPartSpinner(View layout) {
 		bodyPartSpinner = (Spinner) layout.findViewById(R.id.body_part_spinner);
 
-		bodyPartSpinner.setAdapter(spinnerAdapter);
+		bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
 
 		bodyPartRxHandler.getAll()
 			.observeOn(AndroidSchedulers.mainThread())
@@ -586,17 +706,17 @@ public class CriticalResultsFragment extends Fragment {
 				}
 				@Override
 				public void onNext(Collection<BodyPart> bodyPartsResults) {
-					spinnerAdapter.clear();
-					spinnerAdapter.addAll(bodyPartsResults);
-					spinnerAdapter.notifyDataSetChanged();
+					bodyPartSpinnerAdapter.clear();
+					bodyPartSpinnerAdapter.addAll(bodyPartsResults);
+					bodyPartSpinnerAdapter.notifyDataSetChanged();
 				}
 			});
 
 		bodyPartSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getBodyPart() == null || spinnerAdapter.getPosition(currentInstance.getBodyPart()) != position) {
-					currentInstance.setBodyPart(spinnerAdapter.getItem(position));
+				if(currentInstance.getBodyPart() == null || bodyPartSpinnerAdapter.getPosition(currentInstance.getBodyPart()) != position) {
+					currentInstance.setBodyPart(bodyPartSpinnerAdapter.getItem(position));
 					saveItem();
 				}
 			}
@@ -702,28 +822,18 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initBreakageEdit(View layout) {
 		breakageEdit = (EditText)layout.findViewById(R.id.breakage_edit);
-		breakageEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && breakageEdit != null) {
-					breakageEdit.setError(getString(R.string.validation_breakage_required));
-				}
-			}
-		});
 		breakageEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
+					Short newValue = null;
 					if(breakageEdit.getText().length() > 0) {
-						short newValue = Short.valueOf(breakageEdit.getText().toString());
-						if (newValue != currentInstance.getBreakage()) {
-							currentInstance.setBreakage(newValue);
-							saveItem();
-						}
+						newValue = Short.valueOf(breakageEdit.getText().toString());
+					}
+					if (newValue == null && currentInstance.getBreakage() != null ||
+							newValue != null && !newValue.equals(currentInstance.getBreakage())) {
+						currentInstance.setBreakage(newValue);
+						saveItem();
 					}
 				}
 			}
@@ -936,46 +1046,7 @@ public class CriticalResultsFragment extends Fragment {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 
 		listView.setAdapter(listAdapter);
-
-		criticalResultRxHandler.getAll()
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribeOn(Schedulers.io())
-			.subscribe(new Subscriber<Collection<CriticalResult>>() {
-				@Override
-				public void onCompleted() {
-					if(listAdapter.getCount() > 0) {
-						currentInstance = listAdapter.getItem(0);
-						isNew = false;
-						listView.setSelection(0);
-						listView.setItemChecked(0, true);
-						listAdapter.notifyDataSetChanged();
-						copyItemToViews();
-					}
-				}
-				@Override
-				public void onError(Throwable e) {
-					Log.e("CriticalResultsFragment", "Exception caught getting all CriticalCode instances in onCreateView", e);
-					Toast.makeText(CriticalResultsFragment.this.getActivity(),
-							getString(R.string.toast_critical_results_load_failed),
-							Toast.LENGTH_SHORT).show();
-				}
-				@Override
-				public void onNext(Collection<CriticalResult> criticalResults) {
-					listAdapter.clear();
-					listAdapter.addAll(criticalResults);
-					listAdapter.notifyDataSetChanged();
-					if(criticalResults.size() > 0) {
-						listView.setSelection(0);
-						listView.setItemChecked(0, true);
-						currentInstance = listAdapter.getItem(0);
-						isNew = false;
-						copyItemToViews();
-					}
-					String toastString;
-					toastString = String.format(getString(R.string.toast_critical_results_loaded), criticalResults.size());
-					Toast.makeText(CriticalResultsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-				}
-			});
+		loadFilteredCriticalResults(null);
 
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -992,5 +1063,52 @@ public class CriticalResultsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	private void loadFilteredCriticalResults(final CriticalType filter) {
+		Observable<Collection<CriticalResult>> observable;
+
+		if(filter == null || filter.getId() == -1) {
+			observable = criticalResultRxHandler.getAll();
+		}
+		else {
+			observable = criticalResultRxHandler.getCriticalResultsForCriticalType(filter);
+		}
+		observable.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<CriticalResult>>() {
+					@Override
+					public void onCompleted() {
+						int position = listAdapter.getPosition(currentInstance);
+						if (position == -1 && listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							position = 0;
+						}
+						if (position >= 0) {
+							listView.setSelection(position);
+							listView.setItemChecked(position, true);
+							listAdapter.notifyDataSetChanged();
+						}
+						copyItemToViews();
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("CriticalResultsFragment", "Exception caught getting all CriticalResult instances", e);
+						Toast.makeText(CriticalResultsFragment.this.getActivity(),
+								getString(R.string.toast_critical_results_load_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<CriticalResult> specializations) {
+						listAdapter.clear();
+						listAdapter.addAll(specializations);
+						listAdapter.notifyDataSetChanged();
+						if(filter == null) {
+							String toastString;
+							toastString = String.format(getString(R.string.toast_critical_results_loaded), specializations.size());
+							Toast.makeText(CriticalResultsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 }

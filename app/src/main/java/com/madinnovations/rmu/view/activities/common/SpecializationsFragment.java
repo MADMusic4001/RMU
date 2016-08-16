@@ -756,9 +756,11 @@ public class SpecializationsFragment extends Fragment {
 						listAdapter.clear();
 						listAdapter.addAll(specializations);
 						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_specializations_loaded), specializations.size());
-						Toast.makeText(SpecializationsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						if(filter == null) {
+							String toastString;
+							toastString = String.format(getString(R.string.toast_specializations_loaded), specializations.size());
+							Toast.makeText(SpecializationsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 	}

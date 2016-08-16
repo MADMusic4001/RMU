@@ -21,6 +21,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
@@ -33,34 +34,17 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implements DamageResultDao, DamageResultSchema {
+    CriticalTypeDao criticalTypeDao;
+
     /**
      * Creates a new instance of DamageResultDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public DamageResultDaoDbImpl(SQLiteOpenHelper helper) {
+    public DamageResultDaoDbImpl(SQLiteOpenHelper helper, CriticalTypeDao criticalTypeDao) {
         super(helper);
-    }
-
-    @Override
-    public DamageResult getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(DamageResult instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
+        this.criticalTypeDao = criticalTypeDao;
     }
 
     @Override
@@ -90,11 +74,37 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
 
     @Override
     protected DamageResult cursorToEntity(@NonNull Cursor cursor) {
-        return null;
+        DamageResult instance = new DamageResult();
+
+        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
+        if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SEVERITY)) ||
+                cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))) {
+            instance.setCriticalSeverity(null);
+            instance.setCriticalType(null);
+        }
+        else {
+            instance.setCriticalSeverity(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SEVERITY)).charAt(0));
+            instance.setCriticalType(criticalTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))));
+        }
+
+        return instance;
     }
 
 	@Override
 	protected ContentValues getContentValues(DamageResult instance) {
-		return null;
+        ContentValues values = new ContentValues(4);
+
+        values.put(COLUMN_HITS, instance.getHits());
+        if(instance.getCriticalSeverity() == null || instance.getCriticalType() == null) {
+            values.putNull(COLUMN_CRITICAL_SEVERITY);
+            values.putNull(COLUMN_CRITICAL_TYPE_ID);
+        }
+        else {
+            values.put(COLUMN_CRITICAL_SEVERITY, String.valueOf(instance.getCriticalSeverity()));
+            values.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
+        }
+
+		return values;
 	}
 }

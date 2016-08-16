@@ -33,8 +33,10 @@
     <string name="validation_critical_code_required">Please enter a critical code.</string>
     <string name="validation_critical_code_description_required">Please enter a critical code description.</string>
     <string name="validation_critical_result_description_required">Please enter a critical result description.</string>
-    <string name="validation_critical_type_description_required">Please enter a critical type description.</string>
+    <string name="validation_critical_type_code_required">Please enter a critical type code.</string>
     <string name="validation_critical_type_name_required">Please enter a critical type name.</string>
+    <string name="validation_damage_results_format_invalid">Invalid entry.</string>
+    <string name="validation_damage_table_name_required">Please enter a damage table name.</string>
     <string name="validation_dazed_required">Please enter the number of rounds the defender is dazed.</string>
     <string name="validation_default_rate_required">Please enter a default movement rate.</string>
     <string name="validation_fatigue_required">Please enter the amount of fatigue penalty.</string>

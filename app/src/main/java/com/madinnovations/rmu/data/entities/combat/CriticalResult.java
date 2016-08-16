@@ -28,7 +28,7 @@ public class CriticalResult {
     private short hits = 0;
     private short bleeding = 0;
     private short fatigue = 0;
-    private short breakage = 0;
+    private Short breakage = null;
     private short injury = 0;
     private short dazed = 0;
     private short stunned = 0;
@@ -143,10 +143,10 @@ public class CriticalResult {
     public void setFatigue(short fatigue) {
         this.fatigue = fatigue;
     }
-    public short getBreakage() {
+    public Short getBreakage() {
         return breakage;
     }
-    public void setBreakage(short breakage) {
+    public void setBreakage(Short breakage) {
         this.breakage = breakage;
     }
     public short getInjury() {

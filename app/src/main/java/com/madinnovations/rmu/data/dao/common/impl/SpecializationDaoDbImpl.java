@@ -85,40 +85,7 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
 
     @Override
     protected Specialization cursorToEntity(@NonNull Cursor cursor) {
-        Specialization instance = null;
-
-        instance = new Specialization();
-        instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-        instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-        instance.setSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SKILL_ID))));
-        instance.setUseSkillStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SKILL_STATS)) != 0);
-        if(!instance.isUseSkillStats()) {
-            instance.setStats(getStats(instance.getId()));
-        }
-
-        return instance;
-    }
-
-    private List<Stat> getStats(int specializationId) {
-        final String selectionArgs[] = { String.valueOf(specializationId) };
-        final String selection = SpecializationStatsSchema.COLUMN_SPECIALIZATION_ID + " = ?";
-
-        Cursor cursor = super.query(SpecializationStatsSchema.TABLE_NAME, SpecializationStatsSchema.COLUMNS, selection,
-                selectionArgs, SpecializationStatsSchema.COLUMN_STAT_ID);
-        List<Stat> list = new ArrayList<>(cursor.getCount());
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_ID));
-            Stat instance = statDao.getById(id);
-            if(instance != null) {
-                list.add(instance);
-            }
-            cursor.moveToNext();
-        }
-        cursor.close();
-
-        return list;
+        return cursorToEntity(cursor, skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SKILL_ID))));
     }
 
     @Override
@@ -183,6 +150,27 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         return list;
     }
 
+    private List<Stat> getStats(int specializationId) {
+        final String selectionArgs[] = { String.valueOf(specializationId) };
+        final String selection = SpecializationStatsSchema.COLUMN_SPECIALIZATION_ID + " = ?";
+
+        Cursor cursor = super.query(SpecializationStatsSchema.TABLE_NAME, SpecializationStatsSchema.COLUMNS, selection,
+                selectionArgs, SpecializationStatsSchema.COLUMN_STAT_ID);
+        List<Stat> list = new ArrayList<>(cursor.getCount());
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_ID));
+            Stat instance = statDao.getById(id);
+            if(instance != null) {
+                list.add(instance);
+            }
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        return list;
+    }
+
     private ContentValues getSpecializationStat(int specializationId, int statId) {
         ContentValues values = new ContentValues(2);
 
@@ -192,7 +180,7 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         return values;
     }
 
-    protected Specialization cursorToEntity(@NonNull Cursor cursor, @NonNull Skill filterSkill) {
+    private Specialization cursorToEntity(@NonNull Cursor cursor, @NonNull Skill filterSkill) {
         Specialization instance = new Specialization();
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));

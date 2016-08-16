@@ -21,12 +21,14 @@ import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.impl.BodyPartDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalCodeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalResultDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.impl.DamageResultRowDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageTableDaoDbImpl;
 
 import javax.inject.Singleton;
@@ -43,27 +45,27 @@ public class CombatDaoSqlModule {
 	public BodyPartDao provideBodyPartDao(RMUDatabaseHelper helper) {
 		return new BodyPartDaoDbImpl(helper);
 	}
-
 	@Provides @Singleton
 	public CriticalCodeDao provideCriticalCodeDao(RMUDatabaseHelper helper) {
 		return new CriticalCodeDaoDbImpl(helper);
 	}
-
 	@Provides @Singleton
 	public CriticalResultDao provideCriticalResultDao(RMUDatabaseHelper helper, BodyPartDao bodyPartDao, CriticalTypeDao criticalTypeDao) {
 		return new CriticalResultDaoDbImpl(helper, bodyPartDao, criticalTypeDao);
 	}
-
 	@Provides @Singleton
 	public CriticalTypeDao provideCriticalTypeDao(RMUDatabaseHelper helper) {
 		return new CriticalTypeDaoDbImpl(helper);
 	}
-
 	@Provides @Singleton
-	public DamageResultDao provideDamageResultDao(RMUDatabaseHelper helper) {
-		return new DamageResultDaoDbImpl(helper);
+	public DamageResultDao provideDamageResultDao(RMUDatabaseHelper helper, CriticalTypeDao criticalTypeDao) {
+		return new DamageResultDaoDbImpl(helper, criticalTypeDao);
 	}
-
+	@Provides @Singleton
+	public DamageResultRowDao provideDamageResultRowDao(RMUDatabaseHelper helper, DamageTableDao damageTableDao,
+														DamageResultDao damageResultDao) {
+		return new DamageResultRowDaoDbImpl(helper, damageTableDao, damageResultDao);
+	}
 	@Provides @Singleton
 	public DamageTableDao provideDamageTableDao(RMUDatabaseHelper helper) {
 		return new DamageTableDaoDbImpl(helper);

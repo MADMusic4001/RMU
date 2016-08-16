@@ -17,6 +17,7 @@ package com.madinnovations.rmu.controller.rxhandler.combat;
 
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
 import java.util.Collection;
 
@@ -151,6 +152,29 @@ public class CriticalResultRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all CriticalResult instances that
+	 * reference the given CriticalType.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of CriticalResult instances.
+	 */
+	public Observable<Collection<CriticalResult>> getCriticalResultsForCriticalType(final CriticalType filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<CriticalResult>>() {
+					@Override
+					public void call(Subscriber<? super Collection<CriticalResult>> subscriber) {
+						try {
+							subscriber.onNext(dao.getCriticalResultsForCriticalType(filter));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}

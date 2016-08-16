@@ -60,4 +60,12 @@ public interface CriticalTypeDao {
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+	/**
+     * Retrieves a CriticalType object from persistent storage.
+     *
+     * @param code  the code of the CriticalType object to retrieve
+     * @return the CriticalType instance with the given code or null if not found.
+     */
+    public CriticalType getByCode(char code);
 }

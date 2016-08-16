@@ -21,59 +21,88 @@
   <string name="toast_body_part_save_failed">Body Part save failed.</string>
   <string name="toast_body_part_deleted">Body Part deleted.</string>
   <string name="toast_body_part_delete_failed">Body Part deletion failed.</string>
+
   <string name="toast_creature_archetypes_load_failed">Failed to load Creature Archetypes</string>
   <string name="toast_creature_archetypes_loaded">%1$d Creature Archetypes loaded.</string>
   <string name="toast_creature_archetype_saved">Creature Archetype saved.</string>
   <string name="toast_creature_archetype_save_failed">Creature Archetype save failed.</string>
   <string name="toast_creature_archetype_deleted">Creature Archetype deleted.</string>
   <string name="toast_creature_archetype_delete_failed">Creature Archetype deletion failed.</string>
+
   <string name="toast_creature_categories_load_failed">Failed to load Creature Categories</string>
   <string name="toast_creature_categories_loaded">%1$d Creature Categories loaded.</string>
   <string name="toast_creature_category_saved">Creature Category saved.</string>
   <string name="toast_creature_category_save_failed">Creature Category save failed.</string>
   <string name="toast_creature_category_deleted">Creature Category deleted.</string>
   <string name="toast_creature_category_delete_failed">Creature Category deletion failed.</string>
+
   <string name="toast_creature_types_load_failed">Failed to load Creature Types</string>
   <string name="toast_creature_types_loaded">%1$d Creature Types loaded.</string>
   <string name="toast_creature_type_saved">Creature Type saved.</string>
   <string name="toast_creature_type_save_failed">Creature Type save failed.</string>
   <string name="toast_creature_type_deleted">Creature Type deleted.</string>
   <string name="toast_creature_type_delete_failed">Creature Type deletion failed.</string>
+
   <string name="toast_creature_varieties_load_failed">Failed to load Creature Varieties</string>
   <string name="toast_creature_varieties_loaded">%1$d Creature Varieties loaded.</string>
   <string name="toast_creature_variety_saved">Creature Variety saved.</string>
   <string name="toast_creature_variety_save_failed">Creature Variety save failed.</string>
   <string name="toast_creature_variety_deleted">Creature Variety deleted.</string>
   <string name="toast_creature_variety_delete_failed">Creature Variety deletion failed.</string>
+
   <string name="toast_critical_codes_load_failed">Failed to load Critical Codes</string>
   <string name="toast_critical_codes_loaded">%1$d Critical Codes loaded.</string>
   <string name="toast_critical_code_saved">Critical Code saved.</string>
   <string name="toast_critical_code_save_failed">Critical Code save failed.</string>
   <string name="toast_critical_code_deleted">Critical Code deleted.</string>
   <string name="toast_critical_code_delete_failed">Critical Code deletion failed.</string>
+
   <string name="toast_critical_results_load_failed">Failed to load Critical Results</string>
   <string name="toast_critical_results_loaded">%1$d Critical Results loaded.</string>
   <string name="toast_critical_result_saved">Critical Result saved.</string>
   <string name="toast_critical_result_save_failed">Critical Result save failed.</string>
   <string name="toast_critical_result_deleted">Critical Result deleted.</string>
   <string name="toast_critical_result_delete_failed">Critical Result deletion failed.</string>
+
   <string name="toast_critical_types_load_failed">Failed to load Critical Types</string>
   <string name="toast_critical_types_loaded">%1$d Critical Types loaded.</string>
   <string name="toast_critical_type_saved">Critical Type saved.</string>
   <string name="toast_critical_type_save_failed">Critical Type save failed.</string>
   <string name="toast_critical_type_deleted">Critical Type deleted.</string>
   <string name="toast_critical_type_delete_failed">Critical Type deletion failed.</string>
+
+  <string name="toast_damage_result_saved">Damage Result saved.</string>
+  <string name="toast_damage_result_save_failed">Damage Result save failed.</string>
+  <string name="toast_damage_result_deleted">Damage Result deleted.</string>
+  <string name="toast_damage_result_delete_failed">Damage Result deletion failed.</string>
+
+  <string name="toast_damage_result_rows_load_failed">Failed to load Damage Result Rows</string>
+  <string name="toast_damage_result_rows_loaded">%1$d Damage Result Rows loaded.</string>
+  <string name="toast_damage_result_row_saved">Damage Result Row saved.</string>
+  <string name="toast_damage_result_row_save_failed">Damage Result Row save failed.</string>
+  <string name="toast_damage_result_row_deleted">Damage Result Row deleted.</string>
+  <string name="toast_damage_result_row_delete_failed">Damage Result Row deletion failed.</string>
+
+  <string name="toast_damage_tables_load_failed">Failed to load Damage Tables</string>
+  <string name="toast_damage_tables_loaded">%1$d Damage Tables loaded.</string>
+  <string name="toast_damage_table_saved">Damage Table saved.</string>
+  <string name="toast_damage_table_save_failed">Damage Table save failed.</string>
+  <string name="toast_damage_table_deleted">Damage Table deleted.</string>
+  <string name="toast_damage_table_delete_failed">Damage Table deletion failed.</string>
+
   <string name="toast_items_load_failed">Failed to load Items</string>
   <string name="toast_items_loaded">%1$d Items loaded.</string>
   <string name="toast_item_saved">Item saved.</string>
   <string name="toast_item_save_failed">Item save failed.</string>
   <string name="toast_item_deleted">Item deleted.</string>
   <string name="toast_item_delete_failed">Item deletion failed.</string>
+
   <string name="toast_locomotion_types_load_failed">Failed to load Locomotion Types</string>
   <string name="toast_locomotion_types_loaded">%1$d Locomotion Types loaded.</string>
   <string name="toast_locomotion_type_saved">Locomotion Type saved.</string>
   <string name="toast_locomotion_type_save_failed">Locomotion Type save failed.</string>
   <string name="toast_locomotion_type_deleted">Locomotion Type deleted.</string>
+
   <string name="toast_locomotion_type_delete_failed">Locomotion Type deletion failed.</string>
   <string name="toast_outlooks_load_failed">Failed to load Outlooks</string>
   <string name="toast_outlooks_loaded">%1$d Outlooks loaded.</string>
@@ -81,48 +110,56 @@
   <string name="toast_outlook_save_failed">Outlook save failed.</string>
   <string name="toast_outlook_deleted">Outlook deleted.</string>
   <string name="toast_outlook_delete_failed">Outlook deletion failed.</string>
+
   <string name="toast_parameters_load_failed">Failed to load Parameters</string>
   <string name="toast_parameters_loaded">%1$d Parameters loaded.</string>
   <string name="toast_parameter_saved">Parameter saved.</string>
   <string name="toast_parameter_save_failed">Parameter save failed.</string>
   <string name="toast_parameter_deleted">Parameter deleted.</string>
   <string name="toast_parameter_delete_failed">Parameter deletion failed.</string>
+
   <string name="toast_sizes_load_failed">Failed to load Sizes</string>
   <string name="toast_sizes_loaded">%1$d Sizes loaded.</string>
   <string name="toast_size_saved">Size saved.</string>
   <string name="toast_size_save_failed">Size save failed.</string>
   <string name="toast_size_deleted">Size deleted.</string>
   <string name="toast_size_delete_failed">Size deletion failed.</string>
+
   <string name="toast_skills_load_failed">Failed to load Skills</string>
   <string name="toast_skills_loaded">%1$d Skills loaded.</string>
   <string name="toast_skill_saved">Skill saved.</string>
   <string name="toast_skill_save_failed">Skill save failed.</string>
   <string name="toast_skill_deleted">Skill deleted.</string>
   <string name="toast_skill_delete_failed">Skill deletion failed.</string>
+
   <string name="toast_skill_categories_load_failed">Failed to load Skill Categories</string>
   <string name="toast_skill_categories_loaded">%1$d Skill Categories loaded.</string>
   <string name="toast_skill_category_saved">Skill Category saved.</string>
   <string name="toast_skill_category_save_failed">Skill Category save failed.</string>
   <string name="toast_skill_category_deleted">Skill Category deleted.</string>
   <string name="toast_skill_category_delete_failed">Skill Category deletion failed.</string>
+
   <string name="toast_specializations_load_failed">Failed to load Specializations</string>
   <string name="toast_specializations_loaded">%1$d Specializations loaded.</string>
   <string name="toast_specialization_saved">Specialization saved.</string>
   <string name="toast_specialization_save_failed">Specialization save failed.</string>
   <string name="toast_specialization_deleted">Specialization deleted.</string>
   <string name="toast_specialization_delete_failed">Specialization deletion failed.</string>
+
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>
   <string name="toast_stat_save_failed">Stat save failed.</string>
   <string name="toast_stat_deleted">Stat deleted.</string>
   <string name="toast_stat_delete_failed">Stat deletion failed.</string>
+
   <string name="toast_talents_load_failed">Failed to load Talents</string>
   <string name="toast_talents_loaded">%1$d Talents loaded.</string>
   <string name="toast_talent_saved">Talent saved.</string>
   <string name="toast_talent_save_failed">Talent save failed.</string>
   <string name="toast_talent_deleted">Talent deleted.</string>
   <string name="toast_talent_delete_failed">Talent deletion failed.</string>
+
   <string name="toast_talent_categories_load_failed">Failed to load Talent Categories</string>
   <string name="toast_talent_categories_loaded">%1$d Talent Categories loaded.</string>
   <string name="toast_talent_category_saved">Talent Category saved.</string>

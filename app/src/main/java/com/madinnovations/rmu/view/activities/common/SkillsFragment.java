@@ -777,9 +777,11 @@ public class SkillsFragment extends Fragment {
 						listAdapter.clear();
 						listAdapter.addAll(skills);
 						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_specializations_loaded), skills.size());
-						Toast.makeText(SkillsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						if(filter == null) {
+							String toastString;
+							toastString = String.format(getString(R.string.toast_specializations_loaded), skills.size());
+							Toast.makeText(SkillsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 	}

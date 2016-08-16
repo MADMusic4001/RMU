@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
@@ -41,26 +42,6 @@ public class CriticalTypeDaoDbImpl extends BaseDaoDbImpl<CriticalType> implement
     @Inject
     public CriticalTypeDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-    }
-
-    @Override
-    public CriticalType getById(int id) {
-        return super.getById(id);
-    }
-
-    @Override
-    public boolean save(CriticalType instance) {
-        return super.save(instance);
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return super.deleteById(id);
-    }
-
-    @Override
-    public int deleteAll() {
-        return super.deleteAll();
     }
 
     @Override
@@ -93,8 +74,8 @@ public class CriticalTypeDaoDbImpl extends BaseDaoDbImpl<CriticalType> implement
         CriticalType instance = new CriticalType();
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)).charAt(0));
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 
         return instance;
     }
@@ -103,9 +84,41 @@ public class CriticalTypeDaoDbImpl extends BaseDaoDbImpl<CriticalType> implement
 	protected ContentValues getContentValues(CriticalType instance) {
         ContentValues values = new ContentValues(3);
 
+        values.put(COLUMN_CODE, String.valueOf(instance.getCode()));
         values.put(COLUMN_NAME, instance.getName());
-        values.put(COLUMN_DESCRIPTION, instance.getDescription());
 
-		return null;
+		return values;
 	}
+
+    @Override
+    public CriticalType getByCode(char code) {
+        final String selectionArgs[] = { String.valueOf(code) };
+        final String selection = COLUMN_CODE + " = ?";
+        CriticalType instance = null;
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        boolean newTransaction = !db.inTransaction();
+        if(newTransaction) {
+            db.beginTransaction();
+        }
+        try {
+            Cursor cursor = query(getTableName(), getColumns(), selection,
+                    selectionArgs, getIdColumnName());
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    instance = cursorToEntity(cursor);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+            }
+        }
+        finally {
+            if(newTransaction) {
+                db.endTransaction();
+            }
+        }
+
+        return instance;
+    }
 }

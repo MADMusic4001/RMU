@@ -21,11 +21,9 @@ package com.madinnovations.rmu.data.entities.combat;
  */
 public class DamageResult {
     private int id = -1;
-    private int minRoll;
-    private int maxRoll;
-    private int hits;
-    private String criticalSeverity;
-    private CriticalType criticalType;
+    private short hits = 0;
+    private Character criticalSeverity = null;
+    private CriticalType criticalType = null;
 
     /**
      * Checks the validity of the DamageResult instance.
@@ -33,15 +31,14 @@ public class DamageResult {
      * @return true if the DamageResult instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return criticalSeverity != null && !criticalSeverity.isEmpty() && criticalType != null;
+        return hits > 0 && ((criticalSeverity == null && criticalType == null) ||
+                (criticalSeverity != null && criticalType != null));
     }
 
     @Override
     public String toString() {
         return "DamageResult{" +
                 "id=" + id +
-                ", minRoll=" + minRoll +
-                ", maxRoll=" + maxRoll +
                 ", hits=" + hits +
                 ", criticalSeverity='" + criticalSeverity + '\'' +
                 ", criticalType=" + criticalType +
@@ -56,7 +53,6 @@ public class DamageResult {
         DamageResult that = (DamageResult) o;
 
         return id == that.id;
-
     }
 
     @Override
@@ -71,28 +67,16 @@ public class DamageResult {
     public void setId(int id) {
         this.id = id;
     }
-    public int getMinRoll() {
-        return minRoll;
-    }
-    public void setMinRoll(int minRoll) {
-        this.minRoll = minRoll;
-    }
-    public int getMaxRoll() {
-        return maxRoll;
-    }
-    public void setMaxRoll(int maxRoll) {
-        this.maxRoll = maxRoll;
-    }
-    public int getHits() {
+    public short getHits() {
         return hits;
     }
-    public void setHits(int hits) {
+    public void setHits(short hits) {
         this.hits = hits;
     }
-    public String getCriticalSeverity() {
+    public Character getCriticalSeverity() {
         return criticalSeverity;
     }
-    public void setCriticalSeverity(String criticalSeverity) {
+    public void setCriticalSeverity(Character criticalSeverity) {
         this.criticalSeverity = criticalSeverity;
     }
     public CriticalType getCriticalType() {

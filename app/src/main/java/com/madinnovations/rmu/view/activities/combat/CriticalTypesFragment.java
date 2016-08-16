@@ -59,8 +59,8 @@ public class CriticalTypesFragment extends Fragment {
 	@Inject
 	protected CriticalTypeListAdapter listAdapter;
 	private ListView              listView;
+	private EditText              codeEdit;
 	private EditText              nameEdit;
-	private EditText              descriptionEdit;
 	private CriticalType currentInstance = new CriticalType();
 	private boolean isNew = true;
 
@@ -73,7 +73,7 @@ public class CriticalTypesFragment extends Fragment {
 		View layout = inflater.inflate(R.layout.critical_types_fragment, container, false);
 
 		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		initCodeEdit(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -149,8 +149,15 @@ public class CriticalTypesFragment extends Fragment {
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
+		String value;
 
-		String value = nameEdit.getText().toString();
+		value = codeEdit.getText().toString();
+		if(!value.isEmpty() && value.charAt(0) != currentInstance.getCode()) {
+			currentInstance.setCode(value.charAt(0));
+			changed = true;
+		}
+
+		value = nameEdit.getText().toString();
 		if(value.isEmpty()) {
 			value = null;
 		}
@@ -159,28 +166,15 @@ public class CriticalTypesFragment extends Fragment {
 			currentInstance.setName(value);
 			changed = true;
 		}
-
-		value = descriptionEdit.getText().toString();
-		if(value.isEmpty()) {
-			value = null;
-		}
-		if((value == null && currentInstance.getDescription() != null) ||
-				(value != null && !value.equals(currentInstance.getDescription()))) {
-			currentInstance.setDescription(value);
-			changed = true;
-		}
-
 		return changed;
 	}
 
 	private void copyItemToViews() {
+		codeEdit.setText(String.valueOf(currentInstance.getCode()));
 		nameEdit.setText(currentInstance.getName());
-		descriptionEdit.setText(currentInstance.getDescription());
+
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
-		}
-		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
-			descriptionEdit.setError(null);
 		}
 	}
 
@@ -259,15 +253,46 @@ public class CriticalTypesFragment extends Fragment {
 								if (textView != null) {
 									textView.setText(currentInstance.getName());
 								}
-								textView = (TextView) v.findViewById(R.id.description_view);
+								textView = (TextView) v.findViewById(R.id.code_view);
 								if (textView != null) {
-									textView.setText(currentInstance.getDescription());
+									textView.setText(currentInstance.getCode());
 								}
 							}
 						}
 					}
 				});
 		}
+	}
+
+	private void initCodeEdit(View layout) {
+		codeEdit = (EditText)layout.findViewById(R.id.code_edit);
+		codeEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if (editable.length() == 0 && codeEdit != null) {
+					codeEdit.setError(getString(R.string.validation_critical_type_code_required));
+				}
+			}
+		});
+		codeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if(!hasFocus) {
+					char code = currentInstance.getCode();
+					if(codeEdit.length() > 0) {
+						code = codeEdit.getText().charAt(0);
+					}
+					if (code != currentInstance.getCode()) {
+						currentInstance.setCode(code);
+						saveItem();
+					}
+				}
+			}
+		});
 	}
 
 	private void initNameEdit(View layout) {
@@ -291,34 +316,6 @@ public class CriticalTypesFragment extends Fragment {
 					final String newName = nameEdit.getText().toString();
 					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
 						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_critical_type_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
 						saveItem();
 					}
 				}

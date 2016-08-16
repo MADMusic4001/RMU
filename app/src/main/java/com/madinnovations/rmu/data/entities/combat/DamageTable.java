@@ -15,15 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Damage table attributes
  */
 public class DamageTable {
     private int id = -1;
-    private String name;
-    private List<DamageResult> results;
+    private String name = null;
+    private Collection<DamageResultRow> resultRows = null;
 
     /**
      * Checks the validity of the DamageTable instance.
@@ -39,7 +40,7 @@ public class DamageTable {
         return "DamageTable{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", results=" + results +
+                ", resultRows=" + resultRows +
                 '}';
     }
 
@@ -51,12 +52,22 @@ public class DamageTable {
         DamageTable that = (DamageTable) o;
 
         return id == that.id;
-
     }
 
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public void resetRows() {
+        resultRows = new ArrayList<>(37);
+        for(short i = 175; i > 65; i -= 3) {
+            DamageResultRow row = new DamageResultRow();
+            row.setDamageTable(this);
+            row.setRangeLowValue((short)(i-2));
+            row.setRangeHighValue(i);
+            resultRows.add(row);
+        }
     }
 
     // Getters and setters
@@ -72,10 +83,10 @@ public class DamageTable {
     public void setName(String name) {
         this.name = name;
     }
-    public List<DamageResult> getResults() {
-        return results;
+    public Collection<DamageResultRow> getResultRows() {
+        return resultRows;
     }
-    public void setResults(List<DamageResult> results) {
-        this.results = results;
+    public void setResultRows(Collection<DamageResultRow> resultRows) {
+        this.resultRows = resultRows;
     }
 }

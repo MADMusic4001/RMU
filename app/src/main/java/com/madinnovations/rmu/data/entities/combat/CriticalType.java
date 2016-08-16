@@ -20,8 +20,8 @@ package com.madinnovations.rmu.data.entities.combat;
  */
 public class CriticalType {
     private int id = -1;
+    private char Code = 'A';
     private String name = null;
-    private String description = null;
 
     /**
      * Checks the validity of the CriticalType instance.
@@ -36,8 +36,8 @@ public class CriticalType {
     public String toString() {
         return "CriticalType{" +
                 "id=" + id +
+                ", Code=" + Code +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 '}';
     }
 
@@ -63,16 +63,16 @@ public class CriticalType {
     public void setId(int id) {
         this.id = id;
     }
+    public char getCode() {
+        return Code;
+    }
+    public void setCode(char code) {
+        Code = code;
+    }
     public String getName() {
         return name;
     }
     public void setName(String name) {
         this.name = name;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

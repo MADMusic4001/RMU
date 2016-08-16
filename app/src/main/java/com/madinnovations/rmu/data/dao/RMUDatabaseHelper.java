@@ -18,7 +18,6 @@ package com.madinnovations.rmu.data.dao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
@@ -37,6 +36,7 @@ import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalTypeSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
@@ -119,6 +119,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CriticalTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(DamageResultSchema.TABLE_CREATE);
+            sqLiteDatabase.execSQL(DamageResultRowSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(DamageTableSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(LocomotionTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(ParameterSchema.TABLE_CREATE);

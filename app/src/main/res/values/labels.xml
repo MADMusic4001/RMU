@@ -99,6 +99,7 @@
   <string name="label_new_creature_category">New Creature Category</string>
   <string name="label_delete_creature_category">Delete Creature Category</string>
   <string name="label_new_creature_type">New Creature Type</string>
+  <string name="label_new_damage_table">New Damage Table</string>
   <string name="label_delete_creature_type">Delete Creature Type</string>
   <string name="label_new_creature_variety">New Creature Variety</string>
   <string name="label_delete_creature_variety">Delete Creature Variety</string>
@@ -138,12 +139,32 @@
   <string name="label_severity_code">Severity</string>
 
   <!-- Filter default labels -->
+  <string name="label_all_critical_types">All Critical Types</string>
   <string name="label_all_skill_categories">All Skill Categories</string>
   <string name="label_all_skills">All Skills</string>
 
   <!-- TextView labels -->
+  <string name="label_1">1</string>
+  <string name="label_2">2</string>
+  <string name="label_3">3</string>
+  <string name="label_4">4</string>
+  <string name="label_5">5</string>
+  <string name="label_6">6</string>
+  <string name="label_7">7</string>
+  <string name="label_8">8</string>
+  <string name="label_9">9</string>
+  <string name="label_10">10</string>
+  <string name="label_bleeding">Bleeding:</string>
+  <string name="label_breakage">Breakage:</string>
   <string name="label_category_filter">Category Filter:</string>
+  <string name="label_critical_type">Critical Type:</string>
+  <string name="label_critical_type_filter">Critical Type Filter:</string>
+  <string name="label_damage_table">Damage Table:</string>
+  <string name="label_dazed">Dazed:</string>
+  <string name="label_fatigue">Fatigue:</string>
+  <string name="label_hits">Hits:</string>
   <string name="label_hyphen">-</string>
+  <string name="label_injury">Injury:</string>
   <string name="label_no_stats">No Stats</string>
   <string name="label_realm_stats">Realm Stats</string>
   <string name="label_primary_skills">Primary Skills</string>
@@ -153,8 +174,11 @@
   <string name="label_max_height">Maximum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
   <string name="label_max_weight">Maximum Weight</string>
+  <string name="label_no_parry">No Parry(rnds):</string>
   <string name="label_requires_specialization">Requires Specialization</string>
+  <string name="label_roll">Roll</string>
   <string name="label_skill_filter">Skill Filter:</string>
+  <string name="label_stunned">Stunned(rnds):</string>
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- EditText hints -->
@@ -182,8 +206,9 @@
   <string name="hint_critical_code">Critical Code</string>
   <string name="hint_critical_code_description">Critical Code Description</string>
   <string name="hint_critical_result_description">Critical Result Description</string>
+  <string name="hint_critical_type_code">Critical Type Code</string>
   <string name="hint_critical_type_name">Critical Type Name</string>
-  <string name="hint_critical_type_description">Critical Type Description</string>
+  <string name="hint_damage_table_name">Damage Table Name</string>
   <string name="hint_dazed">Dazed rounds</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_description">New Description</string>
@@ -232,5 +257,5 @@
   <string name="hint_value">New Value</string>
   <string name="hint_weight">New Weight</string>
 
-  <string name="min_max_roll_value">%1$03d-%2$03d</string>
+  <string name="min_max_roll_value">%1$2d-%2$3d</string>
 </resources>

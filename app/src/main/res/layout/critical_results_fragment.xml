@@ -18,6 +18,14 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_critical_type_filter"/>
+    <Spinner
+        android:id="@+id/critical_type_filter_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <include layout="@layout/range_description_header"/>
 
@@ -33,13 +41,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/critical_type_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/label_critical_type"/>
+        <Spinner
+            android:id="@+id/critical_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/critical_type_view"
+            android:layout_toEndOf="@id/critical_type_view"
+            android:layout_alignTop="@id/critical_type_view"/>
         <EditText
             android:id="@+id/description_edit"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/critical_type_spinner"
             android:inputType="textMultiLine"
             android:hint="@string/hint_critical_result_description"/>
 
@@ -97,79 +120,147 @@
             android:layout_toEndOf="@id/severity_code_edit"
             android:layout_alignTop="@+id/min_roll_edit"/>
 
+        <TextView
+            android:id="@+id/hits_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/min_roll_edit"
+            android:text="@string/label_hits"/>
         <EditText
             android:id="@+id/hits_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="3"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/min_roll_edit"
+            android:layout_toRightOf="@id/hits_view"
+            android:layout_toEndOf="@id/hits_view"
+            android:layout_alignBaseline="@id/hits_view"
             android:hint="@string/hint_hits"/>
-        <EditText
-            android:id="@+id/bleeding_edit"
+        <TextView
+            android:id="@+id/bleeding_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/hits_edit"
             android:layout_toEndOf="@id/hits_edit"
-            android:layout_alignBaseline="@id/hits_edit"
-            android:hint="@string/hint_bleeding"/>
+            android:layout_alignBaseline="@id/hits_view"
+            android:text="@string/label_bleeding"/>
         <EditText
-            android:id="@+id/fatigue_edit"
+            android:id="@+id/bleeding_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/bleeding_view"
+            android:layout_toEndOf="@id/bleeding_view"
+            android:layout_alignBaseline="@id/hits_view"
+            android:hint="@string/hint_bleeding"/>
+        <TextView
+            android:id="@+id/fatigue_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/bleeding_edit"
             android:layout_toEndOf="@id/bleeding_edit"
-            android:layout_alignBaseline="@id/hits_edit"
-            android:hint="@string/hint_fatigue"/>
+            android:layout_alignBaseline="@id/hits_view"
+            android:text="@string/label_fatigue"/>
         <EditText
-            android:id="@+id/breakage_edit"
+            android:id="@+id/fatigue_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/fatigue_view"
+            android:layout_toEndOf="@id/fatigue_view"
+            android:layout_alignBaseline="@id/hits_view"
+            android:hint="@string/hint_fatigue"/>
+        <TextView
+            android:id="@+id/breakage_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/fatigue_edit"
             android:layout_toEndOf="@id/fatigue_edit"
-            android:layout_alignBaseline="@id/hits_edit"
+            android:layout_alignBaseline="@id/hits_view"
+            android:text="@string/label_breakage"/>
+        <EditText
+            android:id="@+id/breakage_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/breakage_view"
+            android:layout_toEndOf="@id/breakage_view"
+            android:layout_alignBaseline="@id/hits_view"
             android:hint="@string/hint_breakage"/>
+        <TextView
+            android:id="@+id/injury_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/breakage_edit"
+            android:layout_toEndOf="@id/breakage_edit"
+            android:layout_alignBaseline="@id/hits_view"
+            android:text="@string/label_injury"/>
         <EditText
             android:id="@+id/injury_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/breakage_edit"
-            android:layout_toEndOf="@id/breakage_edit"
-            android:layout_alignBaseline="@id/hits_edit"
+            android:layout_toRightOf="@id/injury_view"
+            android:layout_toEndOf="@id/injury_view"
+            android:layout_alignBaseline="@id/hits_view"
             android:hint="@string/hint_injury"/>
+
+        <TextView
+            android:id="@+id/dazed_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/hits_view"
+            android:text="@string/label_dazed"/>
         <EditText
             android:id="@+id/dazed_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/injury_edit"
-            android:layout_toEndOf="@id/injury_edit"
-            android:layout_alignBaseline="@id/hits_edit"
+            android:layout_toRightOf="@id/dazed_view"
+            android:layout_toEndOf="@id/dazed_view"
+            android:layout_alignBaseline="@id/dazed_view"
             android:hint="@string/hint_dazed"/>
-
+        <TextView
+            android:id="@+id/stunned_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/dazed_edit"
+            android:layout_toEndOf="@id/dazed_edit"
+            android:layout_alignBaseline="@id/dazed_view"
+            android:text="@string/label_stunned"/>
         <EditText
             android:id="@+id/stunned_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/hits_edit"
+            android:layout_toRightOf="@id/stunned_view"
+            android:layout_toEndOf="@id/stunned_view"
+            android:layout_alignBaseline="@id/dazed_view"
             android:hint="@string/hint_stunned"/>
-        <EditText
-            android:id="@+id/stunned_no_parry_edit"
+        <TextView
+            android:id="@+id/no_parry_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/stunned_edit"
             android:layout_toEndOf="@id/stunned_edit"
-            android:layout_alignBaseline="@id/stunned_edit"
+            android:layout_alignBaseline="@id/dazed_view"
+            android:text="@string/label_no_parry"/>
+        <EditText
+            android:id="@+id/stunned_no_parry_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/no_parry_view"
+            android:layout_toEndOf="@id/no_parry_view"
+            android:layout_alignBaseline="@id/dazed_view"
             android:hint="@string/hint_stunned_no_parry"/>
+
         <CheckBox
             android:id="@+id/staggered_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/stunned_no_parry_edit"
-            android:layout_toEndOf="@id/stunned_no_parry_edit"
-            android:layout_alignBaseline="@id/stunned_edit"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/dazed_view"
             android:text="@string/hint_staggered"/>
         <EditText
             android:id="@+id/knock_back_edit"
@@ -177,7 +268,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/staggered_checkbox"
             android:layout_toEndOf="@id/staggered_checkbox"
-            android:layout_alignBaseline="@id/stunned_edit"
+            android:layout_alignTop="@id/staggered_checkbox"
             android:hint="@string/hint_knock_back"/>
         <CheckBox
             android:id="@+id/prone_checkbox"
@@ -185,7 +276,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/knock_back_edit"
             android:layout_toEndOf="@id/knock_back_edit"
-            android:layout_alignBaseline="@id/stunned_edit"
+            android:layout_alignBaseline="@id/staggered_checkbox"
             android:text="@string/hint_prone"/>
         <EditText
             android:id="@+id/grappled_edit"
@@ -193,7 +284,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/prone_checkbox"
             android:layout_toEndOf="@id/prone_checkbox"
-            android:layout_alignBaseline="@id/stunned_edit"
+            android:layout_alignTop="@id/staggered_checkbox"
             android:hint="@string/hint_grappled"/>
     </RelativeLayout>
 
