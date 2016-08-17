@@ -36,6 +36,7 @@ import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,10 +53,10 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.damage_result_row;
 	private DamageResultRxHandler damageResultRxHandler;
 	private DamageResultRowRxHandler damageResultRowRxHandler;
-	private CriticalTypeRxHandler criticalTypeRxHandler;
 	private LayoutInflater layoutInflater;
 	private InputFilter inputFilter;
-	private Pattern pattern = Pattern.compile("(\\d*)([A-E]?)([A-Z]?)");
+	private Collection<CriticalType> criticalTypes;
+	private Pattern pattern = Pattern.compile("(\\d*)([A-J]?)([A-B,E,G-I,K,M,O-P,S-U,W,Y]?)");
 
 	/**
 	 * Creates a new DamageResultListAdapter instance.
@@ -70,8 +71,29 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.damageResultRxHandler = damageResultRxHandler;
 		this.damageResultRowRxHandler = damageResultRowRxHandler;
-		this.criticalTypeRxHandler = criticalTypeRxHandler;
 		this.inputFilter = new DamageResultInputFilter();
+		criticalTypeRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<CriticalType>>() {
+					@Override
+					public void onCompleted() {
+						StringBuilder builder = new StringBuilder(20 + criticalTypes.size()*2);
+						builder.append("(\\d*)([A-J]?)([)");
+						for(CriticalType criticalType : criticalTypes) {
+							builder.append(criticalType.getCode()).append(",");
+						}
+						builder.deleteCharAt(builder.length() - 1);
+						builder.append("]?)");
+						pattern = Pattern.compile(builder.toString());
+					}
+					@Override
+					public void onError(Throwable e) {}
+					@Override
+					public void onNext(Collection<CriticalType> criticalTypes) {
+						DamageResultsGridAdapter.this.criticalTypes = criticalTypes;
+					}
+				});
 	}
 
 	@Override
@@ -104,9 +126,6 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		DamageResultRow resultsRow = getItem(position);
 		holder.damageResultRow = resultsRow;
 
-		if(resultsRow.getDamageResults()[0] != null) {
-			Log.d("DamageResultsGridAdapt", "damageResultsRow = " + resultsRow.getDamageResults()[0]);
-		}
 		String rollString = String.format(getContext().getString(R.string.min_max_roll_value), resultsRow.getRangeLowValue(),
 				resultsRow.getRangeHighValue());
 		holder.leftRollView.setText(rollString);
@@ -122,6 +141,41 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		holder.at10ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[9]));
 		holder.rightRollView.setText(rollString);
 		return rowView;
+	}
+
+	private CriticalType getTypeForCode(char code) {
+		CriticalType result = null;
+		for(CriticalType criticalType : criticalTypes) {
+			if(criticalType.getCode() == code) {
+				result = criticalType;
+				break;
+			}
+		}
+		return result;
+	}
+
+	private void deleteDamageResult(int id) {
+		damageResultRxHandler.deleteById(id)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("DamageResultsGridAdapt", "Exception deleting DamageResult", e);
+						String toastString;
+						toastString = getContext().getString(R.string.toast_damage_result_delete_failed);
+						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Boolean aBoolean) {
+						String toastString;
+						toastString = getContext().getString(R.string.toast_damage_result_deleted);
+						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
 	}
 
 	private class ViewHolder {
@@ -193,9 +247,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 										matches = false;
 									}
 									else {
-										Log.e("DamageResultsGridAdapy", "typeString = " + typeString);
-										type = criticalTypeRxHandler.getByCode(typeString.charAt(0));
-										Log.e("DamageResultsGridAdapy", "type = " + type);
+										type = getTypeForCode(typeString.charAt(0));
 									}
 								}
 							}
@@ -221,10 +273,12 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 											resultChanged = true;
 										}
 										if((severity == null && damageResult.getCriticalSeverity() != null) ||
-												(severity != null && damageResult.getCriticalSeverity() == null) ||
-												(severity != null && severity.charAt(0) != damageResult.getCriticalSeverity())) {
+												(severity != null && !severity.isEmpty() &&
+														damageResult.getCriticalSeverity() == null) ||
+												(severity != null && !severity.isEmpty() && severity.charAt(0)
+														!= damageResult.getCriticalSeverity())) {
 											resultChanged = true;
-											if(severity == null) {
+											if(severity == null || severity.isEmpty()) {
 												damageResult.setCriticalSeverity(null);
 											}
 											else {
@@ -293,45 +347,26 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 										if(damageResult != null) {
 											damageResultRow.getDamageResults()[armorTypeIndex] = null;
 											if(damageResult.getId() != -1) {
-												damageResultRxHandler.deleteById(damageResult.getId())
+												final int damageResultId = damageResult.getId();
+												damageResultRowRxHandler.save(damageResultRow)
 														.observeOn(AndroidSchedulers.mainThread())
 														.subscribeOn(Schedulers.io())
-														.subscribe(new Subscriber<Boolean>() {
+														.subscribe(new Subscriber<DamageResultRow>() {
 															@Override
 															public void onCompleted() {
-																damageResultRowRxHandler.save(damageResultRow)
-																		.observeOn(AndroidSchedulers.mainThread())
-																		.subscribeOn(Schedulers.io())
-																		.subscribe(new Subscriber<DamageResultRow>() {
-																			@Override
-																			public void onCompleted() {
-																			}
-																			@Override
-																			public void onError(Throwable e) {
-																				Log.e("DamageResultsGridAdapt", "Exception saving DamageResultRow", e);
-																				String toastString;
-																				toastString = getContext().getString(R.string.toast_damage_result_row_save_failed);
-																				Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-																			}
-																			@Override
-																			public void onNext(DamageResultRow savedDamageResultRow) {
-																				String toastString;
-																				toastString = getContext().getString(R.string.toast_damage_result_row_saved);
-																				Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-																			}
-																		});
+																deleteDamageResult(damageResultId);
 															}
 															@Override
 															public void onError(Throwable e) {
-																Log.e("DamageResultsGridAdapt", "Exception deleting DamageResult", e);
+																Log.e("DamageResultsGridAdapt", "Exception saving DamageResultRow", e);
 																String toastString;
-																toastString = getContext().getString(R.string.toast_damage_result_delete_failed);
+																toastString = getContext().getString(R.string.toast_damage_result_row_save_failed);
 																Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
 															}
 															@Override
-															public void onNext(Boolean aBoolean) {
+															public void onNext(DamageResultRow savedDamageResultRow) {
 																String toastString;
-																toastString = getContext().getString(R.string.toast_damage_result_deleted);
+																toastString = getContext().getString(R.string.toast_damage_result_row_saved);
 																Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
 															}
 														});
@@ -356,7 +391,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 				builder.append(damageResult.getCriticalSeverity());
 			}
 			if(damageResult.getCriticalType() != null) {
-				builder.append(damageResult.getCriticalType().getName());
+				builder.append(damageResult.getCriticalType().getCode());
 			}
 		}
 		return builder.toString();
@@ -367,6 +402,8 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		@Override
 		public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
 			StringBuilder builder = new StringBuilder(dest.toString());
+			Log.d("RMU", "source = " + source + ", start = " + start + ", end = " + end);
+			Log.d("RMU", "dest = " + dest + ", dstart = " + dstart + ", dend = " + dend);
 			if(source.length() > 0) {
 				builder.insert(dstart, source);
 			}

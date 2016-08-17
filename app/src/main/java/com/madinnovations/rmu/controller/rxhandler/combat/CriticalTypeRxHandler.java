@@ -15,9 +15,12 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.combat;
 
+import android.util.SparseArray;
+
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -30,6 +33,7 @@ import rx.schedulers.Schedulers;
  * Creates reactive observable for requesting operations on {@link CriticalType} instances with persistent storage.
  */
 public class CriticalTypeRxHandler {
+	private SparseArray<CriticalType> criticalTypes = null;
 	private CriticalTypeDao dao;
 
 	/**
@@ -54,7 +58,14 @@ public class CriticalTypeRxHandler {
 					@Override
 					public void call(Subscriber<? super CriticalType> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							CriticalType criticalType = null;
+							if(criticalTypes != null) {
+								criticalType = criticalTypes.get(id);
+							}
+							if(criticalType == null) {
+								criticalType = dao.getById(id);
+							}
+							subscriber.onNext(criticalType);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -77,7 +88,21 @@ public class CriticalTypeRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<CriticalType>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							Collection<CriticalType> list = null;
+							if(criticalTypes == null) {
+								list = dao.getAll();
+								criticalTypes = new SparseArray<CriticalType>(list.size());
+								for(CriticalType criticalType : list) {
+									criticalTypes.append(criticalType.getId(), criticalType);
+								}
+							}
+							else {
+								list = new ArrayList<CriticalType>(criticalTypes.size());
+								for(int i = 0; i < criticalTypes.size(); i++) {
+									list.add(criticalTypes.valueAt(i));
+								}
+							}
+							subscriber.onNext(list);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -101,6 +126,9 @@ public class CriticalTypeRxHandler {
 					public void call(Subscriber<? super CriticalType> subscriber) {
 						try {
 							dao.save(criticalType);
+							if(criticalTypes != null && criticalTypes.get(criticalType.getId()) == null) {
+								criticalTypes.append(criticalType.getId(), criticalType);
+							}
 							subscriber.onNext(criticalType);
 							subscriber.onCompleted();
 						}
@@ -124,6 +152,9 @@ public class CriticalTypeRxHandler {
 					public void call(Subscriber<? super Boolean> subscriber) {
 						try {
 							subscriber.onNext(dao.deleteById(id));
+							if(criticalTypes != null && criticalTypes.get(id) != null) {
+								criticalTypes.remove(id);
+							}
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
@@ -148,6 +179,9 @@ public class CriticalTypeRxHandler {
 							Collection<CriticalType> criticalTypesDeleted = dao.getAll();
 							dao.deleteAll();
 							subscriber.onNext(criticalTypesDeleted);
+							if(criticalTypes != null) {
+								criticalTypes.clear();
+							}
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
@@ -165,6 +199,26 @@ public class CriticalTypeRxHandler {
 	 * @return the CriticalType instance with the given code or null if not found
 	 */
 	public CriticalType getByCode(final char code) {
-		return dao.getByCode(code);
+		CriticalType result = null;
+
+		if(criticalTypes == null) {
+			Collection<CriticalType> list = dao.getAll();
+			criticalTypes = new SparseArray<CriticalType>(list.size());
+			for(CriticalType criticalType : list) {
+				criticalTypes.append(criticalType.getId(), criticalType);
+				if(criticalType.getCode() == code) {
+					result = criticalType;
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < criticalTypes.size(); i++) {
+				if(criticalTypes.valueAt(i).getCode() == code) {
+					result = criticalTypes.valueAt(i);
+					break;
+				}
+			}
+		}
+		return result;
 	}
 }
