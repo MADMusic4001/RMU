@@ -769,7 +769,7 @@ public class SkillsFragment extends Fragment {
 					public void onError(Throwable e) {
 						Log.e("SkillsFragment", "Exception caught getting all Skill instances", e);
 						Toast.makeText(SkillsFragment.this.getActivity(),
-								getString(R.string.toast_specializations_load_failed),
+								getString(R.string.toast_skills_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -779,7 +779,7 @@ public class SkillsFragment extends Fragment {
 						listAdapter.notifyDataSetChanged();
 						if(filter == null) {
 							String toastString;
-							toastString = String.format(getString(R.string.toast_specializations_loaded), skills.size());
+							toastString = String.format(getString(R.string.toast_skills_loaded), skills.size());
 							Toast.makeText(SkillsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 						}
 					}

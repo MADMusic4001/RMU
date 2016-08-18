@@ -39,7 +39,7 @@ import java.util.Map;
 public class MainMenuFragment extends Fragment {
 	private List<String> groupNames;
 	private Map<String, List<String>> groupItems;
-	private int currentGroup = -1;
+//	private int currentGroup = -1;
 
 	@Nullable
 	@Override
@@ -61,11 +61,16 @@ public class MainMenuFragment extends Fragment {
 		listView.setAdapter(adapter);
 		listView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 			@Override
-			public void onGroupExpand(int i) {
-				if(currentGroup != -1) {
-					listView.collapseGroup(currentGroup);
+			public void onGroupExpand(int groupNumber) {
+				for(int i = 0; i < groupItems.size(); i++) {
+					if(i != groupNumber && listView.isGroupExpanded(i)) {
+						listView.collapseGroup(i);
+					}
 				}
-				currentGroup = i;
+//				if(currentGroup != -1) {
+//					listView.collapseGroup(currentGroup);
+//				}
+//				currentGroup = groupNumber;
 			}
 		});
 		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
@@ -126,9 +131,6 @@ public class MainMenuFragment extends Fragment {
 								break;
 							case 4:
 								((CampaignActivity)getActivity()).showDamageResults();
-								break;
-							case 5:
-//								((CampaignActivity)getActivity()).showDamageTables();
 								break;
 						}
 						break;
@@ -202,7 +204,7 @@ public class MainMenuFragment extends Fragment {
 
 	private void createMenuData() {
 		groupNames = new ArrayList<>(7);
-		groupItems = new HashMap<>(5);
+		groupItems = new HashMap<>(7);
 
 		groupNames.add(getString(R.string.manage_character_data));
 		groupNames.add(getString(R.string.manage_creature_data));
@@ -226,12 +228,11 @@ public class MainMenuFragment extends Fragment {
 		creatureItems.add(getString(R.string.manage_varieties));
 		creatureItems.add(getString(R.string.manage_outlooks));
 
-		List<String> combatItems = new ArrayList<>(6);
+		List<String> combatItems = new ArrayList<>(5);
 		combatItems.add(getString(R.string.manage_body_parts));
 		combatItems.add(getString(R.string.manage_critical_codes));
 		combatItems.add(getString(R.string.manage_critical_results));
 		combatItems.add(getString(R.string.manage_critical_types));
-		combatItems.add(getString(R.string.manage_damage_results));
 		combatItems.add(getString(R.string.manage_damage_tables));
 
 		List<String> commonDataItems = new ArrayList<>(9);
