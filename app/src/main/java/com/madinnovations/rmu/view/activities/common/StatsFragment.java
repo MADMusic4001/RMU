@@ -36,6 +36,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
@@ -48,8 +50,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -542,20 +545,9 @@ public class StatsFragment extends Fragment {
 					}
 					@Override
 					public void onNext(String s) {
-						try {
-							JSONArray jsonArray = new JSONArray(s);
-							importData = new ArrayList<>(jsonArray.length());
-							for(int i = 0; i < jsonArray.length(); i++) {
-								Stat stat = new Stat();
-								JSONObject jsonObject = jsonArray.getJSONObject(i);
-								stat.setAbbreviation(jsonObject.getString("abbreviation"));
-								stat.setName(jsonObject.getString("name"));
-								stat.setDescription(jsonObject.getString("description"));
-								importData.add(stat);
-							}
-						} catch (JSONException e) {
-							Log.e("RMU", "Error parsing stats.json", e);
-						}
+						Gson gson = new Gson();
+						Type listType = new TypeToken<List<Stat>>(){}.getType();
+						@SuppressWarnings("unchecked") List<Stat> importData = (List<Stat>)gson.fromJson(s, listType);
 					}
 				});
 	}

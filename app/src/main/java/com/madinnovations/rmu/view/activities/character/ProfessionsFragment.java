@@ -84,6 +84,8 @@ public class ProfessionsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.professions_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.name_header)).setText(getString(R.string.label_profession_name));
+		((TextView)layout.findViewById(R.id.description_header)).setText(getString(R.string.label_profession_description));
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initCategoryCostListView(layout);

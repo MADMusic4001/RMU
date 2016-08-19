@@ -138,6 +138,8 @@
   <string name="label_examples">Examples</string>
   <string name="label_initial_cost">Initial Cost</string>
   <string name="label_additional_cost">Additional Cost</string>
+  <string name="label_profession_name">Profession Name</string>
+  <string name="label_profession_description">Profession Description</string>
   <string name="label_severity_code">Severity</string>
 
   <!-- Filter default labels -->

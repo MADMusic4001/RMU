@@ -16,6 +16,9 @@
 package com.madinnovations.rmu.view.adapters.character;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,7 +97,56 @@ public class ProfessionCategoryCostListAdapter extends ArrayAdapter<ProfessionSk
 			initCostEdit(this.additionalCostEdit, 1);
 		}
 
-		private void initCostEdit(final EditText costEdit, final int costIndex) {
+		private void initCostEdit(@NonNull final EditText costEdit, final int costIndex) {
+			costEdit.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+				@Override
+				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+				@Override
+				public void afterTextChanged(Editable editable) {
+					if(editable.length() == 0) {
+						if(costIndex == 0) {
+							costEdit.setError(getContext().getString(R.string.validation_initial_cost_required));
+						}
+						else {
+							costEdit.setError(getContext().getString(R.string.validation_additional_cost_required));
+						}
+					}
+					else {
+						int newValue = Integer.valueOf(editable.toString());
+						int otherValue;
+						if(costIndex == 0) {
+							if(additionalCostEdit.length() > 0) {
+								otherValue = Integer.valueOf(additionalCostEdit.getText().toString());
+								if(otherValue < newValue) {
+									initialCostEdit.setError(getContext().getString(R.string.validation_initial_cost_gt_additional_code));
+								}
+								else {
+									initialCostEdit.setError(null);
+									if(additionalCostEdit.length() > 0) {
+										additionalCostEdit.setError(null);
+									}
+								}
+							}
+						}
+						else {
+							if(initialCostEdit.length() > 0) {
+								otherValue = Integer.valueOf(initialCostEdit.getText().toString());
+								if(newValue < otherValue) {
+									additionalCostEdit.setError(getContext().getString(R.string.validation_initial_cost_gt_additional_code));
+								}
+								else {
+									additionalCostEdit.setError(null);
+									if(initialCostEdit.length() > 0) {
+										initialCostEdit.setError(null);
+									}
+								}
+							}
+						}
+					}
+				}
+			});
 			costEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View view, boolean hasFocus) {

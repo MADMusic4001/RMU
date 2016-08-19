@@ -56,7 +56,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	private LayoutInflater layoutInflater;
 	private InputFilter inputFilter;
 	private Collection<CriticalType> criticalTypes;
-	private Pattern pattern = Pattern.compile("(\\d*)([A-J]?)([A-B,E,G-I,K,M,O-P,S-U,W,Y]?)");
+	private Pattern pattern;
 
 	/**
 	 * Creates a new DamageResultListAdapter instance.
@@ -79,12 +79,15 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					@Override
 					public void onCompleted() {
 						StringBuilder builder = new StringBuilder(20 + criticalTypes.size()*2);
-						builder.append("(\\d*)([A-J]?)([)");
-						for(CriticalType criticalType : criticalTypes) {
-							builder.append(criticalType.getCode()).append(",");
+						builder.append("(\\d*)");
+						if(!criticalTypes.isEmpty()) {
+							builder.append("([A-J]?)([)");
+							for (CriticalType criticalType : criticalTypes) {
+								builder.append(criticalType.getCode()).append(",");
+							}
+							builder.deleteCharAt(builder.length() - 1);
+							builder.append("]?)");
 						}
-						builder.deleteCharAt(builder.length() - 1);
-						builder.append("]?)");
 						pattern = Pattern.compile(builder.toString());
 					}
 					@Override
@@ -373,7 +376,6 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 											}
 										}
 									}
-									Log.e("DamageResultsGridAdapt", "DamageResult = " + damageResult);
 								}
 							}
 						}
@@ -402,8 +404,6 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		@Override
 		public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
 			StringBuilder builder = new StringBuilder(dest.toString());
-			Log.d("RMU", "source = " + source + ", start = " + start + ", end = " + end);
-			Log.d("RMU", "dest = " + dest + ", dstart = " + dstart + ", dend = " + dend);
 			if(source.length() > 0) {
 				builder.insert(dstart, source);
 			}

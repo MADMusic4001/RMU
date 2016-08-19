@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:maxLength="2"
+        android:background="@null"
         android:hint="@string/hint_initial_cost"/>
     <EditText
         android:id="@+id/additional_cost_edit"
@@ -39,5 +40,6 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:maxLength="2"
+        android:background="@null"
         android:hint="@string/hint_additional_cost"/>
 </LinearLayout>

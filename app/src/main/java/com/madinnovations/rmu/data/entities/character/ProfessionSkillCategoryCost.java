@@ -42,7 +42,8 @@ public class ProfessionSkillCategoryCost {
 	 * @return true if the ProfessionSkillCategoryCost instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return profession != null && skillCategory != null && skillCost != null;
+		return profession != null && skillCategory != null && skillCost != null &&
+				skillCost.getFirstCost() <= skillCost.getAdditionalCost();
 	}
 
 	@Override
