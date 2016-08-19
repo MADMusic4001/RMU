@@ -86,7 +86,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showCultures();
 								break;
 							case 2:
-//								((CampaignActivity)getActivity()).showProfessions();
+								((CampaignActivity)getActivity()).showProfessions();
 								break;
 							case 3:
 //								((CampaignActivity)getActivity()).showRaces();

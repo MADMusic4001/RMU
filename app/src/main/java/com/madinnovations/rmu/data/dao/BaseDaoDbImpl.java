@@ -20,8 +20,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.LruCache;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -107,6 +109,26 @@ public abstract class BaseDaoDbImpl<T> {
 	}
 
 	/**
+	 * Allows relationships to be deleted prior to the T instance being deleted to prevent foreign key failures.
+	 *
+	 * @param db  the SQLiteDatabase instance to use to delete the relationships
+	 * @param id  the id of the T instance being deleted
+	 * @return  true if no error occurred.
+	 */
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		return true;
+	}
+
+	/**
+	 * Gets the cache for T instances.
+	 *
+	 * @return an LruCache instance with Integer keys and T values or null if T is not cached.
+	 */
+	protected LruCache<Integer, T> getCache() {
+		return null;
+	}
+
+	/**
 	 * Retrieves a T object from persistent storage.
 	 *
 	 * @param id  the id of the T object to retrieve
@@ -115,8 +137,15 @@ public abstract class BaseDaoDbImpl<T> {
 	public T getById(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = getIdColumnName() + " = ?";
+		LruCache<Integer, T> cache = getCache();
 		T instance = null;
 
+		if(cache != null) {
+			instance = cache.get(id);
+			if (instance != null) {
+				return instance;
+			}
+		}
 		SQLiteDatabase db = helper.getReadableDatabase();
 		boolean newTransaction = !db.inTransaction();
 		if(newTransaction) {
@@ -129,6 +158,9 @@ public abstract class BaseDaoDbImpl<T> {
 				cursor.moveToFirst();
 				while (!cursor.isAfterLast()) {
 					instance = cursorToEntity(cursor);
+					if(cache != null) {
+						cache.put(getId(instance), instance);
+					}
 					cursor.moveToNext();
 				}
 				cursor.close();
@@ -150,6 +182,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 */
 	public List<T> getAll() {
 		List<T> list = new ArrayList<>();
+		LruCache<Integer, T> cache = getCache();
 
 		SQLiteDatabase db = helper.getReadableDatabase();
 		boolean newTransaction = !db.inTransaction();
@@ -165,6 +198,9 @@ public abstract class BaseDaoDbImpl<T> {
 					T instance = cursorToEntity(cursor);
 					list.add(instance);
 					cursor.moveToNext();
+					if(cache != null) {
+						cache.put(getId(instance), instance);
+					}
 				}
 				cursor.close();
 			}
@@ -179,6 +215,36 @@ public abstract class BaseDaoDbImpl<T> {
 	}
 
 	/**
+	 * Saves a collection of T instances to persistent storage.
+	 *
+	 * @param collection  the collection of T instanes to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<T> collection) {
+		boolean result = true;
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			for(T t : collection) {
+				result &= save(t);
+			}
+			if(result && newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Saves a T object to persistent storage.
 	 *
 	 * @param instance  the T object to be saved
@@ -189,6 +255,7 @@ public abstract class BaseDaoDbImpl<T> {
 		final String selection = getIdColumnName() + " = ?";
 		ContentValues contentValues = getContentValues(instance);
 		boolean result;
+		LruCache<Integer, T> cache = getCache();
 
 		SQLiteDatabase db = helper.getWritableDatabase();
 		boolean newTransaction = !db.inTransaction();
@@ -206,6 +273,9 @@ public abstract class BaseDaoDbImpl<T> {
 				result = (count == 1);
 			}
 			result &= saveRelationships(db, instance);
+			if(cache != null) {
+				cache.put(getId(instance), instance);
+			}
 			if(result && newTransaction) {
 				db.setTransactionSuccessful();
 			}
@@ -227,6 +297,7 @@ public abstract class BaseDaoDbImpl<T> {
 	public boolean deleteById(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = getIdColumnName() + " = ?";
+		LruCache<Integer, T> cache = getCache();
 
 		SQLiteDatabase db = helper.getWritableDatabase();
 		boolean newTransaction = !db.inTransaction();
@@ -234,7 +305,12 @@ public abstract class BaseDaoDbImpl<T> {
 			db.beginTransaction();
 		}
 		try {
-			db.delete(getTableName(), selection, selectionArgs);
+			if(deleteRelationships(db, id)) {
+				db.delete(getTableName(), selection, selectionArgs);
+			}
+			if(cache != null) {
+				cache.remove(id);
+			}
 			if(newTransaction) {
 				db.setTransactionSuccessful();
 			}
@@ -254,6 +330,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 */
 	public int deleteAll() {
 		int count = 0;
+		LruCache<Integer, T> cache = getCache();
 
 		SQLiteDatabase db = helper.getWritableDatabase();
 		boolean newTransaction = !db.inTransaction();
@@ -262,6 +339,9 @@ public abstract class BaseDaoDbImpl<T> {
 		}
 		try {
 			count = db.delete(getTableName(), null, null);
+			if(cache != null) {
+				cache.evictAll();
+			}
 			if(newTransaction) {
 				db.setTransactionSuccessful();
 			}

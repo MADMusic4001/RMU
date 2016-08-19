@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.character;
 
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
 
 import java.util.List;
 
@@ -60,4 +61,12 @@ public interface ProfessionDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Saves a SkillCategoryCost for a Profession
+	 *
+	 * @param professionSkillCategoryCost  the {@link ProfessionSkillCategoryCost} instance to save.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean saveSkillCategoryCost(ProfessionSkillCategoryCost professionSkillCategoryCost);
 }

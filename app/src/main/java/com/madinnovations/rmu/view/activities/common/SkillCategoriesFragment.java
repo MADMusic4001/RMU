@@ -297,7 +297,6 @@ public class SkillCategoriesFragment extends Fragment {
 	private boolean setStat(List<Stat> stats, Stat newStat, int currentIndex) {
 		boolean changed = false;
 
-		Log.d("RMU", "setting stats[" + currentIndex + "] = " + newStat);
 		if (newStat != null) {
 			if (stats.size() <= currentIndex) {
 				stats.add(currentIndex, newStat);
@@ -391,9 +390,6 @@ public class SkillCategoriesFragment extends Fragment {
 						}
 					});
 		}
-		else {
-			Log.i("SkillCategoriesFrag", "Skill Category not valid: " + currentInstance);
-		}
 	}
 
 	private void deleteItem(@NonNull final SkillCategory item) {
@@ -481,8 +477,6 @@ public class SkillCategoriesFragment extends Fragment {
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
 					final String newDescription = descriptionEdit.getText().toString();
-					Log.d("RMU", "newDescription  = " + newDescription);
-					Log.d("RMU", "currentInstance = " + currentInstance.getDescription());
 					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
 						currentInstance.setDescription(newDescription);
 						saveItem();

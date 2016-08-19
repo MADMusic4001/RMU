@@ -27,11 +27,12 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,26 +54,6 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
         super(helper);
 		this.skillCategoryDao = skillCategoryDao;
     }
-
-	@Override
-	public Profession getById(int id) {
-		return super.getById(id);
-	}
-
-	@Override
-	public boolean save(Profession instance) {
-		return super.save(instance);
-	}
-
-	@Override
-	public boolean deleteById(int id) {
-		return super.deleteById(id);
-	}
-
-	@Override
-	public int deleteAll() {
-		return super.deleteAll();
-	}
 
 	@Override
 	protected String getTableName() {
@@ -99,7 +80,6 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		instance.setId(id);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Profession cursorToEntity(@NonNull Cursor cursor) {
@@ -108,7 +88,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		instance.setSkillCostMap(getSkillCostMap(instance.getId()));
+		instance.setProfessionSkillCategoryCosts(getSkillCostMap(instance));
 
 		return instance;
 	}
@@ -122,6 +102,15 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 	}
 
 	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = ProfessionSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
+
+		return db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs) >= 0;
+	}
+
+	@Override
 	protected boolean saveRelationships(SQLiteDatabase db, Profession instance) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
@@ -129,44 +118,79 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<SkillCategory, SkillCost> entry : instance.getSkillCostMap().entrySet()) {
+		for(ProfessionSkillCategoryCost skillCategoryCost : instance.getProfessionSkillCategoryCosts()) {
 			result &= (db.insert(ProfessionSkillCostSchema.TABLE_NAME, null, getProfessionSkillCostContentValues(instance.getId(),
-					entry.getKey(), entry.getValue())) != -1);
+					skillCategoryCost.getSkillCategory().getId(), skillCategoryCost.getSkillCost())) != -1);
 		}
 		return result;
 	}
 
-	private ContentValues getProfessionSkillCostContentValues(int professionId, SkillCategory skillCategory, SkillCost skillCost) {
+	@Override
+	public boolean saveSkillCategoryCost(ProfessionSkillCategoryCost instance) {
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+		final String selection = ProfessionSkillCostSchema.COLUMN_ID + " = ?";
+		ContentValues contentValues = getProfessionSkillCostContentValues(instance.getProfession().getId(),
+				instance.getSkillCategory().getId(), instance.getSkillCost());
+		boolean result;
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			if(instance.getId() == -1) {
+				instance.setId((int)db.insert(ProfessionSkillCostSchema.TABLE_NAME, null, contentValues));
+				result = (instance.getId() != -1);
+			}
+			else {
+				contentValues.put(ProfessionSkillCostSchema.COLUMN_ID, instance.getId());
+				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
+				result = (count == 1);
+			}
+			if(result && newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return true;
+	}
+
+	private ContentValues getProfessionSkillCostContentValues(int professionId, int skillCategoryId, SkillCost skillCost) {
 		ContentValues values = new ContentValues();
 		values.put(ProfessionSkillCostSchema.COLUMN_PROFESSION_ID, professionId);
-		values.put(ProfessionSkillCostSchema.COLUMN_SKILL_CATEGORY_ID, skillCategory.getId());
+		values.put(ProfessionSkillCostSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
 		values.put(ProfessionSkillCostSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
 		values.put(ProfessionSkillCostSchema.COLUMN_SECOND_COST, skillCost.getAdditionalCost());
 		return values;
 	}
 
-	private Map<SkillCategory, SkillCost> getSkillCostMap(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
+	private List<ProfessionSkillCategoryCost> getSkillCostMap(Profession profession) {
+		final String selectionArgs[] = { String.valueOf(profession.getId()) };
 		final String selection = ProfessionSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 
 		Cursor cursor = super.query(ProfessionSkillCostSchema.TABLE_NAME, ProfessionSkillCostSchema.COLUMNS, selection,
 				selectionArgs, ProfessionSkillCostSchema.COLUMN_SKILL_CATEGORY_ID);
-		Map<SkillCategory, SkillCost> map = new HashMap<>(cursor.getCount());
+		List<ProfessionSkillCategoryCost> list = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_SKILL_CATEGORY_ID));
-			SkillCategory instance = skillCategoryDao.getById(mappedId);
+			int skillCategoryId = cursor.getInt(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_SKILL_CATEGORY_ID));
+			SkillCategory skillCategory = skillCategoryDao.getById(skillCategoryId);
 			SkillCost skillCost = new SkillCost();
 			skillCost.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_FIRST_COST)));
 			skillCost.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_SECOND_COST)));
-			if(instance != null) {
-				map.put(instance, skillCost);
+			if(skillCategory != null) {
+				list.add(new ProfessionSkillCategoryCost(profession, skillCategory, skillCost));
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
 
-		return map;
+		return list;
 	}
 
 }

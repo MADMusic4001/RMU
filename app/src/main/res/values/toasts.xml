@@ -118,6 +118,16 @@
   <string name="toast_parameter_deleted">Parameter deleted.</string>
   <string name="toast_parameter_delete_failed">Parameter deletion failed.</string>
 
+  <string name="toast_professions_load_failed">Failed to load Professions</string>
+  <string name="toast_professions_loaded">%1$d Professions loaded.</string>
+  <string name="toast_profession_saved">Profession saved.</string>
+  <string name="toast_profession_save_failed">Profession save failed.</string>
+  <string name="toast_profession_deleted">Profession deleted.</string>
+  <string name="toast_profession_delete_failed">Profession deletion failed.</string>
+
+  <string name="toast_profession_category_skill_cost_saved">Profession skill category cost saved.</string>
+  <string name="toast_profession_category_skill_cost_save_failed">Profession skill category cost save failed.</string>
+
   <string name="toast_sizes_load_failed">Failed to load Sizes</string>
   <string name="toast_sizes_loaded">%1$d Sizes loaded.</string>
   <string name="toast_size_saved">Size saved.</string>
@@ -152,6 +162,12 @@
   <string name="toast_stat_save_failed">Stat save failed.</string>
   <string name="toast_stat_deleted">Stat deleted.</string>
   <string name="toast_stat_delete_failed">Stat deletion failed.</string>
+
+  <string name="toast_stats_export_succeeded">Stats export succeeded.</string>
+  <string name="toast_stats_export_failed">Stats export failed.</string>
+
+  <string name="toast_stats_import_succeeded">Stats import succeeded.</string>
+  <string name="toast_stats_import_failed">Stats import failed.</string>
 
   <string name="toast_talents_load_failed">Failed to load Talents</string>
   <string name="toast_talents_loaded">%1$d Talents loaded.</string>

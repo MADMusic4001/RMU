@@ -37,12 +37,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.common.StatListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -58,6 +64,8 @@ public class StatsFragment extends Fragment {
 	@Inject
 	protected StatRxHandler statRxHandler;
 	@Inject
+	protected FileRxHandler fileRxHandler;
+	@Inject
 	protected StatListAdapter listAdapter;
 	private ListView listView;
 	private EditText abbreviationEdit;
@@ -65,6 +73,7 @@ public class StatsFragment extends Fragment {
 	private EditText descriptionEdit;
 	private Stat currentInstance = new Stat();
 	private boolean isNew = true;
+	private Collection<Stat> importData = null;
 
 	@Nullable
 	@Override
@@ -112,6 +121,12 @@ public class StatsFragment extends Fragment {
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
 			return true;
+		}
+		else if(id == R.id.action_export) {
+			exportStats();
+		}
+		else if(id == R.id.action_import) {
+			importStats();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -420,5 +435,128 @@ public class StatsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	private void exportStats() {
+		statRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("RMU", "Error getting all stats", e);
+						Toast.makeText(getActivity(), getString(R.string.toast_stats_export_failed),
+								Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<Stat> stats) {
+						JSONArray jsonArray = new JSONArray();
+						for(Stat stat : stats) {
+							JSONObject statObject = new JSONObject();
+							try {
+								statObject.put("abbreviation", stat.getAbbreviation())
+										.put("name", stat.getName())
+										.put("description", stat.getDescription());
+								jsonArray.put(statObject);
+							}
+							catch(JSONException ex) {
+								Log.e("RMU", "JSONException caught exporting Stats", ex);
+							}
+						}
+						fileRxHandler.writeFile("stats.json", jsonArray.toString())
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribeOn(Schedulers.io())
+								.subscribe(new Subscriber<Boolean>() {
+									@Override
+									public void onCompleted() {
+										Toast.makeText(getActivity(), getString(R.string.toast_stats_export_succeeded),
+												Toast.LENGTH_SHORT).show();
+									}
+									@Override
+									public void onError(Throwable e) {
+										Log.e("RMU", "Error writing stats.json", e);
+										Toast.makeText(getActivity(), getString(R.string.toast_stats_export_failed),
+												Toast.LENGTH_SHORT).show();
+									}
+									@Override
+									public void onNext(Boolean aBoolean) {
+									}
+								});
+					}
+				});
+	}
+
+	private void importStats() {
+		importData = null;
+		fileRxHandler.readFile("stats.json")
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<String>() {
+					@Override
+					public void onCompleted() {
+						statRxHandler.deleteAll()
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribeOn(Schedulers.io())
+								.subscribe(new Subscriber<Collection<Stat>>() {
+									@Override
+									public void onCompleted() {
+										statRxHandler.save(importData)
+												.observeOn(AndroidSchedulers.mainThread())
+												.subscribeOn(Schedulers.io())
+												.subscribe(new Subscriber<Boolean>() {
+													@Override
+													public void onCompleted() {
+														listAdapter.clear();
+														listAdapter.addAll(importData);
+														listAdapter.notifyDataSetChanged();
+														Toast.makeText(getActivity(), getString(R.string.toast_stats_import_succeeded),
+																Toast.LENGTH_SHORT).show();
+													}
+													@Override
+													public void onError(Throwable e) {
+														Log.e("RMU", "Error occurred saving imported Stat instances", e);
+														Toast.makeText(getActivity(), getString(R.string.toast_stats_import_failed),
+																Toast.LENGTH_SHORT).show();
+													}
+													@Override
+													public void onNext(Boolean aBoolean) {}
+												});
+									}
+									@Override
+									public void onError(Throwable e) {
+										Log.e("RMU", "Error occurred saving imported Stat instances", e);
+										Toast.makeText(getActivity(), getString(R.string.toast_stats_import_failed),
+												Toast.LENGTH_SHORT).show();
+									}
+									@Override
+									public void onNext(Collection<Stat> stats) {
+									}
+								});
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("RMU", "Error reading stats.json");
+						Toast.makeText(getActivity(), getString(R.string.toast_stats_import_failed), Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(String s) {
+						try {
+							JSONArray jsonArray = new JSONArray(s);
+							importData = new ArrayList<>(jsonArray.length());
+							for(int i = 0; i < jsonArray.length(); i++) {
+								Stat stat = new Stat();
+								JSONObject jsonObject = jsonArray.getJSONObject(i);
+								stat.setAbbreviation(jsonObject.getString("abbreviation"));
+								stat.setName(jsonObject.getString("name"));
+								stat.setDescription(jsonObject.getString("description"));
+								importData.add(stat);
+							}
+						} catch (JSONException e) {
+							Log.e("RMU", "Error parsing stats.json", e);
+						}
+					}
+				});
 	}
 }

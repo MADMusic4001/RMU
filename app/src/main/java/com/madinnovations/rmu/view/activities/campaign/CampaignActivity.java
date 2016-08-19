@@ -24,6 +24,7 @@ import android.view.Menu;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
+import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
@@ -65,6 +66,7 @@ public class CampaignActivity extends Activity {
 	private ItemsFragment              itemsFragment;
 	private LocomotionTypesFragment    locomotionTypesFragment;
 	private ParametersFragment         parametersFragment;
+	private ProfessionsFragment        professionsFragment;
 	private OutlooksFragment           outlooksFragment;
 	private SizesFragment              sizesFragment;
 	private SkillCategoriesFragment    skillCategoriesFragment;
@@ -201,6 +203,13 @@ public class CampaignActivity extends Activity {
 			parametersFragment = new ParametersFragment();
 		}
 		replaceDetailFragment(parametersFragment);
+	}
+
+	public void showProfessions() {
+		if(professionsFragment == null) {
+			professionsFragment = new ProfessionsFragment();
+		}
+		replaceDetailFragment(professionsFragment);
 	}
 
 	public void showSizes() {

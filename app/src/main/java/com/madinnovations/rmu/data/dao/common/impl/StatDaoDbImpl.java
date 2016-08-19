@@ -19,8 +19,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
 import com.madinnovations.rmu.data.entities.common.Stat;
@@ -33,6 +35,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatSchema {
+	private LruCache<Integer, Stat> statsCache = new LruCache<>(CacheConfig.STAT_CACHE_SIZE);
+
     /**
      * Creates a new instance of StatDaoDbImpl
      *
@@ -66,6 +70,11 @@ public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatS
 	@Override
 	protected void setId(Stat instance, int id) {
 		instance.setId(id);
+	}
+
+	@Override
+	protected LruCache<Integer, Stat> getCache() {
+		return statsCache;
 	}
 
 	@Override

@@ -15,11 +15,26 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
+import com.madinnovations.rmu.view.di.PerFragment;
+
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * Provides methods to allow the dependency injection engine to inject dependencies into character package Fragment instances.
  */
 @Module
 public class CharacterFragmentModule {
+	private ProfessionsFragment professionsFragment;
+
+	public CharacterFragmentModule(ProfessionsFragment professionsFragment) {
+		this.professionsFragment = professionsFragment;
+	}
+
+	@Provides
+	@PerFragment
+	public ProfessionsFragment provideProfessionsFragment() {
+		return this.professionsFragment;
+	}
 }

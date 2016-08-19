@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.common;
 
 import com.madinnovations.rmu.data.entities.common.Stat;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -24,38 +25,46 @@ import java.util.List;
  */
 public interface StatDao {
     /**
-     * Retrieves a Skill object from persistent storage.
+     * Retrieves a Stat object from persistent storage.
      *
-     * @param id  the id of the Skill object to retrieve
-     * @return the Skill instance with the given id or null if not found.
+     * @param id  the id of the Stat object to retrieve
+     * @return the Stat instance with the given id or null if not found.
      */
     public Stat getById(int id);
 
     /**
-     * Retrieves all Skill objects from persistent storage.
+     * Retrieves all Stat objects from persistent storage.
      *
-     * @return  a List containing all Skill objects currently in persistent storage.
+     * @return  a List containing all Stat objects currently in persistent storage.
      */
     public List<Stat> getAll();
 
     /**
-     * Saves a Skill object to persistent storage.
+     * Saves a collection of Stat instance to persistent storage.
      *
-     * @param instance  the Skill object to be saved
+     * @param instance  the collection of Stat instances to be saved
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<Stat> instance);
+
+    /**
+     * Saves a Stat object to persistent storage.
+     *
+     * @param instance  the Stat object to be saved
      * @return true if successful, otherwise false.
      */
     public boolean save(Stat instance);
 
     /**
-     * Delete the Skill object with the given id from persistent storage.
+     * Delete the Stat object with the given id from persistent storage.
      *
-     * @param id  the id of the Skill object to delete
+     * @param id  the id of the Stat object to delete
      * @return true if successful, otherwise false.
      */
     public boolean deleteById(int id);
 
     /**
-     * Delete all Skill objects from persistent storage.
+     * Delete all Stat objects from persistent storage.
      *
      * @return the number of instances that were deleted.
      */

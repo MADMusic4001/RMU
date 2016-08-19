@@ -15,10 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
-
-import java.util.Map;
+import java.util.List;
 
 /**
  * Profession attributes
@@ -27,7 +24,7 @@ public class Profession {
 	private int id = -1;
 	private String name;
 	private String description;
-	private Map<SkillCategory, SkillCost> skillCostMap;
+	private List<ProfessionSkillCategoryCost> professionSkillCategoryCosts;
 
 	/**
 	 * Checks the validity of the Profession instance.
@@ -44,7 +41,7 @@ public class Profession {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
-				", skillCostMap=" + skillCostMap +
+				", skillCategoryCosts=" + professionSkillCategoryCosts +
 				'}';
 	}
 
@@ -83,10 +80,10 @@ public class Profession {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Map<SkillCategory, SkillCost> getSkillCostMap() {
-		return skillCostMap;
+	public List<ProfessionSkillCategoryCost> getProfessionSkillCategoryCosts() {
+		return professionSkillCategoryCosts;
 	}
-	public void setSkillCostMap(Map<SkillCategory, SkillCost> skillCostMap) {
-		this.skillCostMap = skillCostMap;
+	public void setProfessionSkillCategoryCosts(List<ProfessionSkillCategoryCost> professionSkillCategoryCosts) {
+		this.professionSkillCategoryCosts = professionSkillCategoryCosts;
 	}
 }

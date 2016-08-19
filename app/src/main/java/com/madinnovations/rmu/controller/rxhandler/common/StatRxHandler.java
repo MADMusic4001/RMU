@@ -89,6 +89,30 @@ public class StatRxHandler {
 	}
 
 	/**
+	 * Creates an Observable that, when subscribed to, will save a collection of Stat instances to persistent storage.
+	 *
+	 * @param stats  the collection of Stat instances to be saved
+	 * @return an {@link Observable} instance that can be subscribed to in order to save the collection of Stat instances.
+	 */
+	public Observable<Boolean> save(final Collection<Stat> stats) {
+		return Observable.create(
+				new Observable.OnSubscribe<Boolean>() {
+					@Override
+					public void call(Subscriber<? super Boolean> subscriber) {
+						try {
+							boolean result = dao.save(stats);
+							subscriber.onNext(result);
+							subscriber.onCompleted();
+						}
+						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io());
+	}
+
+	/**
 	 * Creates an Observable that, when subscribed to, will save a Stat instance to persistent storage.
 	 *
 	 * @param stat  the Stat instance to be saved

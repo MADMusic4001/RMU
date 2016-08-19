@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 public interface ProfessionSkillCostSchema {
 	public static final String TABLE_NAME = "profession_skill_costs";
 
+	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_PROFESSION_ID = "professionId";
 	public static final String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
 	public static final String COLUMN_FIRST_COST = "firstCost";
@@ -31,11 +32,12 @@ public interface ProfessionSkillCostSchema {
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
+			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_PROFESSION_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_FIRST_COST + " INTEGER NOT NULL, "
 			+ COLUMN_SECOND_COST + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
+			+ "CONSTRAINT psss_unique UNIQUE(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";

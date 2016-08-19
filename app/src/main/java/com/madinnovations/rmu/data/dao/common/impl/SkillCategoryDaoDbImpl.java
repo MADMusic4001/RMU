@@ -20,8 +20,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
@@ -40,6 +42,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> implements SkillCategoryDao, SkillCategorySchema {
+    private LruCache<Integer, SkillCategory> skillCategories = new LruCache<>(CacheConfig.SKILL_CATEGORY_CACHE_SIZE);
     private StatDao statDao;
 
     /**
@@ -79,8 +82,13 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
     }
 
     @Override
+    protected LruCache<Integer, SkillCategory> getCache() {
+        return skillCategories;
+    }
+
+    @Override
     protected SkillCategory cursorToEntity(@NonNull Cursor cursor) {
-        SkillCategory instance = null;
+        SkillCategory instance;
 
         instance = new SkillCategory();
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
@@ -91,6 +99,7 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
         if(!instance.isNoStats()) {
             instance.setStats(getStats(instance.getId()));
         }
+
         return instance;
     }
 
@@ -120,6 +129,14 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
             }
         }
         return result;
+    }
+
+    @Override
+    protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+        final String selectionArgs[] = { String.valueOf(id) };
+        final String selection = SkillCategoryStatsSchema.COLUMN_SKILL_CATEGORY_ID + " = ?";
+
+        return db.delete(SkillCategoryStatsSchema.TABLE_NAME, selection, selectionArgs) >= 0;
     }
 
     private ContentValues getSkillCategoryStat(int skillCategoryId, int statId) {

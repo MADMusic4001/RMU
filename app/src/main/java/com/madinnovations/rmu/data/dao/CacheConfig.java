@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.di.components;
-
-import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
-import com.madinnovations.rmu.view.di.PerFragment;
-import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
-
-import dagger.Subcomponent;
+package com.madinnovations.rmu.data.dao;
 
 /**
- * The CharacterFragmentComponent dependency injection interface.
+ * Class containing cache size values.
  */
-@PerFragment
-@Subcomponent(modules = CharacterFragmentModule.class)
-public interface CharacterFragmentComponent {
-	public void injectInto(ProfessionsFragment professionsFragment);
+public final class CacheConfig {
+	public static final int SKILL_CATEGORY_CACHE_SIZE = 30;
+	public static final int STAT_CACHE_SIZE = 10;
 }
