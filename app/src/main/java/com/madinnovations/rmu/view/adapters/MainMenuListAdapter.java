@@ -90,7 +90,7 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.expandable_list_group_row, null);
+			convertView = infalInflater.inflate(R.layout.list_expandable_group_row, null);
 		}
 
 		TextView lblListHeader = (TextView) convertView.findViewById(R.id.group_header);
@@ -106,7 +106,7 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.expandable_list_item_row, null);
+			convertView = infalInflater.inflate(R.layout.list_expandable_item_row, null);
 		}
 
 		TextView txtListChild = (TextView) convertView

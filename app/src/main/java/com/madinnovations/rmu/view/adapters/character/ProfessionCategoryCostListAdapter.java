@@ -42,7 +42,7 @@ import rx.schedulers.Schedulers;
  * Populates a ListView with {@link ProfessionSkillCategoryCost} information
  */
 public class ProfessionCategoryCostListAdapter extends ArrayAdapter<ProfessionSkillCategoryCost> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.profession_category_costs_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_profession_category_costs_row;
 	private ProfessionRxHandler professionRxHandler;
 	private LayoutInflater layoutInflater;
 
@@ -159,20 +159,17 @@ public class ProfessionCategoryCostListAdapter extends ArrayAdapter<ProfessionSk
 									skillCategoryCost.getSkillCost().setFirstCost(cost);
 									changed = true;
 								}
-								else if(skillCategoryCost.getSkillCost().getAdditionalCost() != cost) {
+								else if(costIndex == 1 && skillCategoryCost.getSkillCost().getAdditionalCost() != cost) {
 									skillCategoryCost.getSkillCost().setAdditionalCost(cost);
 									changed = true;
 								}
-								if(changed) {
-									Log.d("RMU", "Saving costs");
+								if(changed && skillCategoryCost.isValid()) {
 									professionRxHandler.saveSkillCategoryCost(skillCategoryCost)
 											.observeOn(AndroidSchedulers.mainThread())
 											.subscribeOn(Schedulers.io())
 											.subscribe(new Subscriber<ProfessionSkillCategoryCost>() {
 												@Override
-												public void onCompleted() {
-												}
-
+												public void onCompleted() {}
 												@Override
 												public void onError(Throwable e) {
 													Log.e("ProfCatCostListAdapter", "Exception occurred saving ProfessionSkillCategoyCost instance", e);

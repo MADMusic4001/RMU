@@ -103,6 +103,9 @@ public class SpecializationsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.specializations_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_specialization_name));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_specialization_description));
+
 		initSkillFilterSpinner(layout);
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
@@ -370,11 +373,11 @@ public class SpecializationsFragment extends Fragment {
 								int position = listAdapter.getPosition(currentInstance);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.name_view);
+									TextView textView = (TextView) v.findViewById(R.id.header_field1);
 									if (textView != null) {
 										textView.setText(currentInstance.getName());
 									}
-									textView = (TextView) v.findViewById(R.id.description_view);
+									textView = (TextView) v.findViewById(R.id.header_field2);
 									if (textView != null) {
 										textView.setText(currentInstance.getDescription());
 									}

@@ -21,13 +21,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_critical_type_filter"/>
+        android:text="@string/input_label_critical_type_filter"/>
     <Spinner
         android:id="@+id/critical_type_filter_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <include layout="@layout/range_description_header"/>
+    <include layout="@layout/list_1_to_1_to_5_header"/>
 
     <ListView
         android:id="@+id/list_view"
@@ -48,7 +48,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:text="@string/label_critical_type"/>
+            android:text="@string/input_label_critical_type"/>
         <Spinner
             android:id="@+id/critical_type_spinner"
             android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
             android:layout_toRightOf="@id/min_roll_edit"
             android:layout_toEndOf="@id/min_roll_edit"
             android:layout_alignBaseline="@id/min_roll_edit"
-            android:text="@string/label_hyphen"/>
+            android:text="@string/hyphen"/>
         <EditText
             android:id="@+id/max_roll_edit"
             android:layout_width="wrap_content"
@@ -127,7 +127,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@id/min_roll_edit"
-            android:text="@string/label_hits"/>
+            android:text="@string/input_label_hits"/>
         <EditText
             android:id="@+id/hits_edit"
             android:layout_width="wrap_content"
@@ -144,7 +144,7 @@
             android:layout_toRightOf="@id/hits_edit"
             android:layout_toEndOf="@id/hits_edit"
             android:layout_alignBaseline="@id/hits_view"
-            android:text="@string/label_bleeding"/>
+            android:text="@string/input_label_bleeding"/>
         <EditText
             android:id="@+id/bleeding_edit"
             android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
             android:layout_toRightOf="@id/bleeding_edit"
             android:layout_toEndOf="@id/bleeding_edit"
             android:layout_alignBaseline="@id/hits_view"
-            android:text="@string/label_fatigue"/>
+            android:text="@string/input_label_fatigue"/>
         <EditText
             android:id="@+id/fatigue_edit"
             android:layout_width="wrap_content"
@@ -176,7 +176,7 @@
             android:layout_toRightOf="@id/fatigue_edit"
             android:layout_toEndOf="@id/fatigue_edit"
             android:layout_alignBaseline="@id/hits_view"
-            android:text="@string/label_breakage"/>
+            android:text="@string/input_label_breakage"/>
         <EditText
             android:id="@+id/breakage_edit"
             android:layout_width="wrap_content"
@@ -193,7 +193,7 @@
             android:layout_toRightOf="@id/breakage_edit"
             android:layout_toEndOf="@id/breakage_edit"
             android:layout_alignBaseline="@id/hits_view"
-            android:text="@string/label_injury"/>
+            android:text="@string/input_label_injury"/>
         <EditText
             android:id="@+id/injury_edit"
             android:layout_width="wrap_content"
@@ -211,7 +211,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@id/hits_view"
-            android:text="@string/label_dazed"/>
+            android:text="@string/input_label_dazed"/>
         <EditText
             android:id="@+id/dazed_edit"
             android:layout_width="wrap_content"
@@ -227,7 +227,7 @@
             android:layout_toRightOf="@id/dazed_edit"
             android:layout_toEndOf="@id/dazed_edit"
             android:layout_alignBaseline="@id/dazed_view"
-            android:text="@string/label_stunned"/>
+            android:text="@string/input_label_stunned"/>
         <EditText
             android:id="@+id/stunned_edit"
             android:layout_width="wrap_content"
@@ -243,7 +243,7 @@
             android:layout_toRightOf="@id/stunned_edit"
             android:layout_toEndOf="@id/stunned_edit"
             android:layout_alignBaseline="@id/dazed_view"
-            android:text="@string/label_no_parry"/>
+            android:text="@string/input_label_no_parry"/>
         <EditText
             android:id="@+id/stunned_no_parry_edit"
             android:layout_width="wrap_content"

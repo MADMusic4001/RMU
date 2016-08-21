@@ -69,10 +69,11 @@ public class ProfessionsFragment extends Fragment {
 	protected ProfessionListAdapter listAdapter;
 	@Inject
 	protected ProfessionCategoryCostListAdapter categoryCostListAdapter;
-	private ListView              listView;
-	private EditText              nameEdit;
-	private EditText              descriptionEdit;
-	private ListView              categoryCostListView;
+	private ListView                  listView;
+	private EditText                  nameEdit;
+	private EditText                  descriptionEdit;
+	private ListView                  categoryCostListView;
+	private Collection<SkillCategory> skillCategories = null;
 	private Profession currentInstance = new Profession();
 	private boolean isNew = true;
 
@@ -84,8 +85,9 @@ public class ProfessionsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.professions_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.name_header)).setText(getString(R.string.label_profession_name));
-		((TextView)layout.findViewById(R.id.description_header)).setText(getString(R.string.label_profession_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_profession_name));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_profession_description));
+
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initCategoryCostListView(layout);
@@ -191,6 +193,7 @@ public class ProfessionsFragment extends Fragment {
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
+		addMissingCosts();
 		categoryCostListAdapter.clear();
 		if(currentInstance.getProfessionSkillCategoryCosts() != null) {
 			categoryCostListAdapter.addAll(currentInstance.getProfessionSkillCategoryCosts());
@@ -276,11 +279,11 @@ public class ProfessionsFragment extends Fragment {
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.name_view);
+								TextView textView = (TextView) v.findViewById(R.id.header_field1);
 								if (textView != null) {
 									textView.setText(currentInstance.getName());
 								}
-								textView = (TextView) v.findViewById(R.id.description_view);
+								textView = (TextView) v.findViewById(R.id.header_field2);
 								if (textView != null) {
 									textView.setText(currentInstance.getDescription());
 								}
@@ -368,16 +371,32 @@ public class ProfessionsFragment extends Fragment {
 						}
 						@Override
 						public void onNext(Collection<SkillCategory> skillCategories) {
-							List<ProfessionSkillCategoryCost> skillCategoryCosts = currentInstance.getProfessionSkillCategoryCosts();
-							if(skillCategoryCosts == null) {
-								skillCategoryCosts = new ArrayList<>();
-								currentInstance.setProfessionSkillCategoryCosts(skillCategoryCosts);
-							}
-							for(SkillCategory skillCategory : skillCategories) {
-								skillCategoryCosts.add(new ProfessionSkillCategoryCost(currentInstance, skillCategory, new SkillCost()));
-							}
+							ProfessionsFragment.this.skillCategories = skillCategories;
+							addMissingCosts();
 						}
 					});
+		}
+	}
+
+	private void addMissingCosts() {
+		List<ProfessionSkillCategoryCost> skillCategoryCosts = currentInstance.getProfessionSkillCategoryCosts();
+		if(skillCategoryCosts == null) {
+			skillCategoryCosts = new ArrayList<>();
+			currentInstance.setProfessionSkillCategoryCosts(skillCategoryCosts);
+		}
+		if(skillCategories != null) {
+			for (SkillCategory skillCategory : skillCategories) {
+				boolean newCost = true;
+				for (ProfessionSkillCategoryCost pscc : currentInstance.getProfessionSkillCategoryCosts()) {
+					if (skillCategory.equals(pscc.getSkillCategory())) {
+						newCost = false;
+						break;
+					}
+				}
+				if (newCost) {
+					skillCategoryCosts.add(new ProfessionSkillCategoryCost(-1, currentInstance, skillCategory, new SkillCost()));
+				}
+			}
 		}
 	}
 

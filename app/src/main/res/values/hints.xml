@@ -73,6 +73,8 @@
     <string name="hint_profession_description">Profession Description</string>
     <string name="hint_profession_name">Profession Name</string>
     <string name="hint_prone">Prone</string>
+    <string name="hint_realm_description">Realm Description</string>
+    <string name="hint_realm_name">Realm Name</string>
     <string name="hint_severity_code">Severity Code</string>
     <string name="hint_size_code">Size Code</string>
     <string name="hint_size_name">Size Name</string>

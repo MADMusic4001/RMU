@@ -50,9 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -85,6 +83,10 @@ public class StatsFragment extends Fragment {
 				newCommonFragmentComponent(new CommonFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.stats_fragment, container, false);
+
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_abbreviation));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_name));
+		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_description));
 
 		initAbbreviationEdit(layout);
 		initNameEdit(layout);
@@ -251,11 +253,11 @@ public class StatsFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.abbreviation_view);
+									TextView textView = (TextView) v.findViewById(R.id.header_field1);
 									textView.setText(savedItem.getAbbreviation());
-									textView = (TextView) v.findViewById(R.id.name_view);
+									textView = (TextView) v.findViewById(R.id.header_field2);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.description_view);
+									textView = (TextView) v.findViewById(R.id.header_field3);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -545,9 +547,8 @@ public class StatsFragment extends Fragment {
 					}
 					@Override
 					public void onNext(String s) {
-						Gson gson = new Gson();
-						Type listType = new TypeToken<List<Stat>>(){}.getType();
-						@SuppressWarnings("unchecked") List<Stat> importData = (List<Stat>)gson.fromJson(s, listType);
+						//noinspection unchecked
+						importData = new Gson().fromJson(s, new TypeToken<Collection<Stat>>(){}.getType());
 					}
 				});
 	}

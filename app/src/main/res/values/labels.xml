@@ -23,6 +23,7 @@
   <string name="manage_combat_data">Manage Combat Data</string>
   <string name="manage_common_data">Manage Common Data</string>
   <string name="manage_item_data">Manage Item Data</string>
+  <string name="manage_spell_data">Manage Spell Data</string>
   <string name="play">Play</string>
   <string name="about_rmu">About RMU</string>
 
@@ -66,6 +67,14 @@
   <!-- Common Data menu labels -->
   <string name="manage_items">Manage Items</string>
   <string name="manage_weapons">Manage Weapons</string>
+
+  <!-- Spell Menu labels -->
+  <string name="manage_realms">Manage Realms</string>
+  <string name="manage_spells">Manage Spells</string>
+  <string name="manage_spell_lists">Manage Spell Lists</string>
+  <string name="manage_spell_list_types">Manage Spell List Types</string>
+  <string name="manage_spell_sub_types">Manage Spell Sub Types</string>
+  <string name="manage_spell_types">Manage Spell Types</string>
 
   <!-- Play Menu labels -->
   <string name="generate_encounter">Generate Encounter</string>
@@ -119,6 +128,8 @@
   <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_profession">New Profession</string>
   <string name="label_delete_profession">Delete Profession</string>
+  <string name="label_delete_realm">Delete Realm</string>
+  <string name="label_new_realm">New Realm</string>
   <string name="label_new_size">New Size</string>
   <string name="label_delete_size">Delete Size</string>
   <string name="label_new_skill">New Skill</string>
@@ -140,6 +151,8 @@
   <string name="label_additional_cost">Additional Cost</string>
   <string name="label_profession_name">Profession Name</string>
   <string name="label_profession_description">Profession Description</string>
+  <string name="label_realm_description">Realm Description</string>
+  <string name="label_realm_name">Realm Name</string>
   <string name="label_severity_code">Severity</string>
 
   <!-- Filter default labels -->
@@ -158,33 +171,77 @@
   <string name="label_8">8</string>
   <string name="label_9">9</string>
   <string name="label_10">10</string>
-  <string name="label_bleeding">Bleeding:</string>
-  <string name="label_breakage">Breakage:</string>
-  <string name="label_category_filter">Category Filter:</string>
-  <string name="label_critical_type">Critical Type:</string>
-  <string name="label_critical_type_filter">Critical Type Filter:</string>
-  <string name="label_damage_table">Damage Table:</string>
-  <string name="label_dazed">Dazed:</string>
-  <string name="label_fatigue">Fatigue:</string>
-  <string name="label_hits">Hits:</string>
-  <string name="label_hyphen">-</string>
-  <string name="label_injury">Injury:</string>
-  <string name="label_no_stats">No Stats</string>
-  <string name="label_realm_stats">Realm Stats</string>
-  <string name="label_primary_skills">Primary Skills</string>
-  <string name="label_secondary_skills">Secondary Skills</string>
-  <string name="label_tertiary_skills">Tertiary Skills</string>
-  <string name="label_min_height">Minimum Height</string>
+  <string name="label_available_params">Available Parameters</string>
+  <string name="label_body_part_description">Body Part Description</string>
+  <string name="label_body_part_name">Body Part Name</string>
+  <string name="label_critical_code">Critical Code</string>
+  <string name="label_critical_code_description">Critical Code Description</string>
+  <string name="label_critical_result_text">Critical Result Text</string>
+  <string name="label_critical_type_code">Critical Type Code</string>
+  <string name="label_critical_type_description">Critical Type Description</string>
+  <string name="label_creature_archetype_description">Creature Archetype Description</string>
+  <string name="label_creature_archetype_name">Creature Archetype Name</string>
+  <string name="label_creature_category_description">Creature Category Description</string>
+  <string name="label_creature_category_name">Creature Category Name</string>
+  <string name="label_creature_type_description">Creature Type Description</string>
+  <string name="label_creature_type_name">Creature Type Name</string>
+  <string name="label_creature_variety_description">Creature Variety Description</string>
+  <string name="label_creature_variety_name">Creature Variety Name</string>
+  <string name="label_item_description">Item Description</string>
+  <string name="label_item_name">Item Name</string>
+  <string name="label_locomotion_type_description">Locomotion Type Description</string>
+  <string name="label_locomotion_type_name">Locomotion Type Name</string>
   <string name="label_max_height">Maximum Height</string>
-  <string name="label_min_weight">Minimum Weight</string>
   <string name="label_max_weight">Maximum Weight</string>
-  <string name="label_no_parry">No Parry(rnds):</string>
+  <string name="label_min_height">Minimum Height</string>
+  <string name="label_min_weight">Minimum Weight</string>
+  <string name="label_no_stats">No Stats</string>
+  <string name="label_outlook_description">Outlook Description</string>
+  <string name="label_outlook_name">Outlook Name</string>
+  <string name="label_parameter_description">Parameter Description</string>
+  <string name="label_parameter_name">Parameter Name</string>
+  <string name="label_params_used">Parameters Used</string>
+  <string name="label_ph_field1">Field 1</string>
+  <string name="label_ph_field2">Field 2</string>
+  <string name="label_ph_field3">Field 3</string>
+  <string name="label_primary_skills">Primary Skills</string>
+  <string name="label_realm_stats">Realm Stats</string>
   <string name="label_requires_specialization">Requires Specialization</string>
   <string name="label_roll">Roll</string>
+  <string name="label_secondary_skills">Secondary Skills</string>
+  <string name="label_size_code">Size Code</string>
+  <string name="label_size_name">Size Name</string>
+  <string name="label_size_examples">Size Examples</string>
+  <string name="label_skill_description">Skill Description</string>
+  <string name="label_skill_name">Skill Name</string>
   <string name="label_skill_category">Skill Category</string>
-  <string name="label_skill_filter">Skill Filter:</string>
-  <string name="label_stunned">Stunned(rnds):</string>
+  <string name="label_skill_category_description">Skill Category Description</string>
+  <string name="label_skill_category_name">Skill Category Name</string>
+  <string name="label_specialization_description">Specialization Description</string>
+  <string name="label_specialization_name">Specialization Name</string>
+  <string name="label_talent_description">Talent Description</string>
+  <string name="label_talent_name">Talent Name</string>
+  <string name="label_talent_category_name">Talent Category Name</string>
+  <string name="label_talent_category_description">Talent Category Description</string>
+  <string name="label_tertiary_skills">Tertiary Skills</string>
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
+  <!-- Input field labels -->
+  <string name="input_label_bleeding">Bleeding:</string>
+  <string name="input_label_breakage">Breakage:</string>
+  <string name="input_label_category_filter">Category Filter:</string>
+  <string name="input_label_critical_type">Critical Type:</string>
+  <string name="input_label_critical_type_filter">Critical Type Filter:</string>
+  <string name="input_label_damage_table">Damage Table:</string>
+  <string name="input_label_dazed">Dazed:</string>
+  <string name="input_label_fatigue">Fatigue:</string>
+  <string name="input_label_hits">Hits:</string>
+  <string name="input_label_injury">Injury:</string>
+  <string name="input_label_no_parry">No Parry(rnds):</string>
+  <string name="input_label_skill_filter">Skill Filter:</string>
+  <string name="input_label_stunned">Stunned(rnds):</string>
+
+  <!-- Format strings -->
+  <string name="hyphen">-</string>
   <string name="min_max_roll_value">%1$2d-%2$3d</string>
 </resources>

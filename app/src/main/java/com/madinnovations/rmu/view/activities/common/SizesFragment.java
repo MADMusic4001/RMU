@@ -78,6 +78,10 @@ public class SizesFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.sizes_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_size_code));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_size_name));
+		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_size_examples));
+
 		initCodeEdit(layout);
 		initNameEdit(layout);
 		initExamplesEdit(layout);
@@ -308,11 +312,11 @@ public class SizesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.code_view);
+									TextView textView = (TextView) v.findViewById(R.id.header_field1);
 									textView.setText(savedItem.getCode());
-									textView = (TextView) v.findViewById(R.id.name_view);
+									textView = (TextView) v.findViewById(R.id.header_field2);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.examples_view);
+									textView = (TextView) v.findViewById(R.id.header_field3);
 									textView.setText(savedItem.getExamples());
 								}
 							}

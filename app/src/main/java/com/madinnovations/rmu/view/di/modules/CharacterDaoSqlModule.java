@@ -30,6 +30,7 @@ import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
+import com.madinnovations.rmu.data.dao.spells.RealmDao;
 
 import javax.inject.Singleton;
 
@@ -48,13 +49,13 @@ public class CharacterDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	public CultureDao provideCultureDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, SkillDao skillDao) {
-		return new CultureDaoDbImpl(helper, skillCategoryDao, skillDao);
+	public CultureDao provideCultureDao(RMUDatabaseHelper helper, SkillDao skillDao) {
+		return new CultureDaoDbImpl(helper, skillDao);
 	}
 
 	@Provides @Singleton
-	public ProfessionDao provideProfessionDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao) {
-		return new ProfessionDaoDbImpl(helper, skillCategoryDao);
+	public ProfessionDao provideProfessionDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, RealmDao realmDao) {
+		return new ProfessionDaoDbImpl(helper, skillCategoryDao, realmDao);
 	}
 
 	@Provides @Singleton

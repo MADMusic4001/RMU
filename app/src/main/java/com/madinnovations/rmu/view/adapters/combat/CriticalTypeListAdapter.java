@@ -31,7 +31,7 @@ import javax.inject.Inject;
  * Populates a ListView with {@link CriticalType} information
  */
 public class CriticalTypeListAdapter extends ArrayAdapter<CriticalType> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.code_name_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_1_to_5_row;
 	private LayoutInflater layoutInflater;
 
 	/**
@@ -52,8 +52,8 @@ public class CriticalTypeListAdapter extends ArrayAdapter<CriticalType> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.code_view),
-					(TextView) rowView.findViewById(R.id.name_view));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.row_field1),
+					(TextView) rowView.findViewById(R.id.row_field2));
 			rowView.setTag(holder);
 		}
 		else {

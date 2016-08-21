@@ -50,7 +50,7 @@ import rx.schedulers.Schedulers;
  * Populates a ListView with {@link DamageResultRow} information
  */
 public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.damage_result_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_damage_result_row;
 	private DamageResultRxHandler damageResultRxHandler;
 	private DamageResultRowRxHandler damageResultRowRxHandler;
 	private LayoutInflater layoutInflater;

@@ -61,6 +61,8 @@
     <string name="validation_parameter_name_required">Please enter a parameter name.</string>
     <string name="validation_profession_description_required">Please enter a profession description.</string>
     <string name="validation_profession_name_required">Please enter a profession name.</string>
+    <string name="validation_realm_description_required">Please enter a realm description.</string>
+    <string name="validation_realm_name_required">Please enter a realm name.</string>
     <string name="validation_roles_required">Please enter roles instructions.</string>
     <string name="validation_severity_code_required">Please enter a severity code.</string>
     <string name="validation_size_examples_required">Please enter examples of creatures this size.</string>

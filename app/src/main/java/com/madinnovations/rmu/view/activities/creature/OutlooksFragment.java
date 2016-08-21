@@ -73,6 +73,9 @@ public class OutlooksFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.outlooks_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_outlook_name));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_outlook_description));
+
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initListView(layout);
@@ -215,9 +218,9 @@ public class OutlooksFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.name_view);
+									TextView textView = (TextView) v.findViewById(R.id.header_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.description_view);
+									textView = (TextView) v.findViewById(R.id.header_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}

@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
@@ -24,24 +23,22 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 public interface CultureSkillRanksSchema {
 	public static final String TABLE_NAME = "culture_skill_ranks";
 
+	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_CULTURE_ID = "cultureId";
-	public static final String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
 	public static final String COLUMN_SKILL_ID = "skillId";
 	public static final String COLUMN_SKILL_RANKS = "skillRanks";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
+			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_CULTURE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_ID + " INTEGER, "
 			+ COLUMN_SKILL_RANKS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_CULTURE_ID + "," + COLUMN_SKILL_CATEGORY_ID + "," + COLUMN_SKILL_ID + "), "
+			+ "CONSTRAINT unique_culture_skill UNIQUE (" + COLUMN_CULTURE_ID + "," + COLUMN_SKILL_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_CULTURE_ID + ") REFERENCES " + CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_CULTURE_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_SKILL_ID,
-			COLUMN_SKILL_RANKS};
+	public static final String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_CULTURE_ID, COLUMN_SKILL_ID, COLUMN_SKILL_RANKS};
 }

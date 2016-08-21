@@ -72,6 +72,9 @@ public class CriticalTypesFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.critical_types_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_critical_type_code));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_critical_type_description));
+
 		initNameEdit(layout);
 		initCodeEdit(layout);
 		initListView(layout);
@@ -249,11 +252,11 @@ public class CriticalTypesFragment extends Fragment {
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.name_view);
+								TextView textView = (TextView) v.findViewById(R.id.header_field1);
 								if (textView != null) {
 									textView.setText(currentInstance.getName());
 								}
-								textView = (TextView) v.findViewById(R.id.code_view);
+								textView = (TextView) v.findViewById(R.id.header_field2);
 								if (textView != null) {
 									textView.setText(currentInstance.getCode());
 								}

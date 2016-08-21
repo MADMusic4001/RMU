@@ -82,6 +82,9 @@ public class CreatureVarietiesFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.creature_varieties_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_creature_variety_name));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_creature_variety_description));
+
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initCretureTypeSpinner(layout);
@@ -238,9 +241,9 @@ public class CreatureVarietiesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.name_view);
+									TextView textView = (TextView) v.findViewById(R.id.header_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.description_view);
+									textView = (TextView) v.findViewById(R.id.header_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}

@@ -30,7 +30,8 @@ public class ProfessionSkillCategoryCost {
 	public ProfessionSkillCategoryCost() {
 	}
 
-	public ProfessionSkillCategoryCost(Profession profession, SkillCategory skillCategory, SkillCost skillCost) {
+	public ProfessionSkillCategoryCost(int id, Profession profession, SkillCategory skillCategory, SkillCost skillCost) {
+		this.id = id;
 		this.profession = profession;
 		this.skillCategory = skillCategory;
 		this.skillCost = skillCost;

@@ -178,6 +178,28 @@ public class MainMenuFragment extends Fragment {
 					case 5:
 						switch (childPosition) {
 							case 0:
+								((CampaignActivity)getActivity()).showRealms();
+								break;
+							case 1:
+//								((CampaignActivity)getActivity()).showSpells();
+								break;
+							case 2:
+//								((CampaignActivity)getActivity()).showSpellLists();
+								break;
+							case 3:
+//								((CampaignActivity)getActivity()).showSpellListTypes();
+								break;
+							case 4:
+//								((CampaignActivity)getActivity()).showSpellSubTypes();
+								break;
+							case 5:
+//								((CampaignActivity)getActivity()).showSpellTypes();
+								break;
+						}
+						break;
+					case 6:
+						switch (childPosition) {
+							case 0:
 //								((CampaignActivity)getActivity()).showGenerateEncounters();
 								break;
 							case 1:
@@ -193,7 +215,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showAdvanceTime();
 								break;
 						}
-					case 6:
+					case 7:
 						((CampaignActivity)getActivity()).showAbout();
 						break;
 				}
@@ -203,7 +225,7 @@ public class MainMenuFragment extends Fragment {
 	}
 
 	private void createMenuData() {
-		groupNames = new ArrayList<>(7);
+		groupNames = new ArrayList<>(8);
 		groupItems = new HashMap<>(7);
 
 		groupNames.add(getString(R.string.manage_character_data));
@@ -211,6 +233,7 @@ public class MainMenuFragment extends Fragment {
 		groupNames.add(getString(R.string.manage_combat_data));
 		groupNames.add(getString(R.string.manage_common_data));
 		groupNames.add(getString(R.string.manage_item_data));
+		groupNames.add(getString(R.string.manage_spell_data));
 		groupNames.add(getString(R.string.play));
 		groupNames.add(getString(R.string.about_rmu));
 
@@ -250,6 +273,14 @@ public class MainMenuFragment extends Fragment {
 		itemItems.add(getString(R.string.manage_items));
 		itemItems.add(getString(R.string.manage_weapons));
 
+		List<String> spellItems = new ArrayList<>(6);
+		spellItems.add(getString(R.string.manage_realms));
+		spellItems.add(getString(R.string.manage_spells));
+		spellItems.add(getString(R.string.manage_spell_lists));
+		spellItems.add(getString(R.string.manage_spell_list_types));
+		spellItems.add(getString(R.string.manage_spell_sub_types));
+		spellItems.add(getString(R.string.manage_spell_types));
+
 		List<String> playItems = new ArrayList<>(5);
 		playItems.add(getString(R.string.generate_encounter));
 		playItems.add(getString(R.string.generate_loot));
@@ -265,7 +296,8 @@ public class MainMenuFragment extends Fragment {
 		groupItems.put(groupNames.get(2), combatItems);
 		groupItems.put(groupNames.get(3), commonDataItems);
 		groupItems.put(groupNames.get(4), itemItems);
-		groupItems.put(groupNames.get(5), playItems);
-		groupItems.put(groupNames.get(6), aboutItems);
+		groupItems.put(groupNames.get(5), spellItems);
+		groupItems.put(groupNames.get(6), playItems);
+		groupItems.put(groupNames.get(7), aboutItems);
 	}
 }

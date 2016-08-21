@@ -16,9 +16,7 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,9 +26,8 @@ public class Culture {
 	private int id = -1;
 	private String name;
 	private String description;
-	private Map<SkillCategory, Short> skillCategoryRanks;
-	private List<Skill> whiteList;
-	private List<Skill> blackList;
+	private short tradesAndCraftsRanks = 0;
+	private Map<Skill, Short> skillRanks;
 
 	/**
 	 * Checks the validity of the Culture instance.
@@ -47,9 +44,8 @@ public class Culture {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
-				", skillCategoryRanks=" + skillCategoryRanks +
-				", whiteList=" + whiteList +
-				", blackList=" + blackList +
+				", tradesAndCraftsRanks=" + tradesAndCraftsRanks +
+				", skillRanks=" + skillRanks +
 				'}';
 	}
 
@@ -61,7 +57,6 @@ public class Culture {
 		Culture culture = (Culture) o;
 
 		return id == culture.id;
-
 	}
 
 	@Override
@@ -88,22 +83,10 @@ public class Culture {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Map<SkillCategory, Short> getSkillCategoryRanks() {
-		return skillCategoryRanks;
+	public Map<Skill, Short> getSkillRanks() {
+		return skillRanks;
 	}
-	public void setSkillCategoryRanks(Map<SkillCategory, Short> skillCategoryRanks) {
-		this.skillCategoryRanks = skillCategoryRanks;
-	}
-	public List<Skill> getWhiteList() {
-		return whiteList;
-	}
-	public void setWhiteList(List<Skill> whiteList) {
-		this.whiteList = whiteList;
-	}
-	public List<Skill> getBlackList() {
-		return blackList;
-	}
-	public void setBlackList(List<Skill> blackList) {
-		this.blackList = blackList;
+	public void setSkillRanks(Map<Skill, Short> skillRanks) {
+		this.skillRanks = skillRanks;
 	}
 }

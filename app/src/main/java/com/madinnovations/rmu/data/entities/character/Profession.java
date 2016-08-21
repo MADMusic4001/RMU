@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.spells.Realm;
+
 import java.util.List;
 
 /**
@@ -22,9 +25,12 @@ import java.util.List;
  */
 public class Profession {
 	private int id = -1;
-	private String name;
-	private String description;
-	private List<ProfessionSkillCategoryCost> professionSkillCategoryCosts;
+	private String name = null;
+	private String description = null;
+	private Realm realm1 = null;
+	private Realm realm2 = null;
+	private List<ProfessionSkillCategoryCost> professionSkillCategoryCosts = null;
+	private List<SkillCategory> professionalSkillCategories = null;
 
 	/**
 	 * Checks the validity of the Profession instance.
@@ -41,7 +47,10 @@ public class Profession {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
-				", skillCategoryCosts=" + professionSkillCategoryCosts +
+				", realm1=" + realm1 +
+				", realm2=" + realm2 +
+				", professionSkillCategoryCosts=" + professionSkillCategoryCosts +
+				", professionalSkillCategories=" + professionalSkillCategories +
 				'}';
 	}
 
@@ -80,10 +89,28 @@ public class Profession {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public Realm getRealm1() {
+		return realm1;
+	}
+	public void setRealm1(Realm realm1) {
+		this.realm1 = realm1;
+	}
+	public Realm getRealm2() {
+		return realm2;
+	}
+	public void setRealm2(Realm realm2) {
+		this.realm2 = realm2;
+	}
 	public List<ProfessionSkillCategoryCost> getProfessionSkillCategoryCosts() {
 		return professionSkillCategoryCosts;
 	}
 	public void setProfessionSkillCategoryCosts(List<ProfessionSkillCategoryCost> professionSkillCategoryCosts) {
 		this.professionSkillCategoryCosts = professionSkillCategoryCosts;
+	}
+	public List<SkillCategory> getProfessionalSkillCategories() {
+		return professionalSkillCategories;
+	}
+	public void setProfessionalSkillCategories(List<SkillCategory> professionalSkillCategories) {
+		this.professionalSkillCategories = professionalSkillCategories;
 	}
 }

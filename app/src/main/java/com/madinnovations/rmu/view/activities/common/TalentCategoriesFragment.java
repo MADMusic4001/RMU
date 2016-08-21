@@ -73,6 +73,9 @@ public class TalentCategoriesFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.talent_categories_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_talent_category_name));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_talent_category_description));
+
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initListView(layout);
@@ -215,9 +218,9 @@ public class TalentCategoriesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.name_view);
+									TextView textView = (TextView) v.findViewById(R.id.header_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.description_view);
+									textView = (TextView) v.findViewById(R.id.header_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}

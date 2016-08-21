@@ -128,6 +128,13 @@
   <string name="toast_profession_category_skill_cost_saved">Profession skill category cost saved.</string>
   <string name="toast_profession_category_skill_cost_save_failed">Profession skill category cost save failed.</string>
 
+  <string name="toast_realms_load_failed">Failed to load Realms</string>
+  <string name="toast_realms_loaded">%1$d Realms loaded.</string>
+  <string name="toast_realm_saved">Realm saved.</string>
+  <string name="toast_realm_save_failed">Realm save failed.</string>
+  <string name="toast_realm_deleted">Realm deleted.</string>
+  <string name="toast_realm_delete_failed">Realm deletion failed.</string>
+
   <string name="toast_sizes_load_failed">Failed to load Sizes</string>
   <string name="toast_sizes_loaded">%1$d Sizes loaded.</string>
   <string name="toast_size_saved">Size saved.</string>

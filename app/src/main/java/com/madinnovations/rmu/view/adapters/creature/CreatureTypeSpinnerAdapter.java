@@ -31,7 +31,7 @@ import javax.inject.Inject;
  * Populates a Spinner with {@link CreatureType} information
  */
 public class CreatureTypeSpinnerAdapter extends ArrayAdapter<CreatureType> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.name_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.spinner_row;
 	private LayoutInflater layoutInflater;
 
 	/**

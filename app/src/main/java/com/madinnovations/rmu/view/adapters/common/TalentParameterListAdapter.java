@@ -32,7 +32,7 @@ import javax.inject.Inject;
  * Populates a ListView with {@link ParameterValue} information
  */
 public class TalentParameterListAdapter extends ArrayAdapter<ParameterValue> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.parameter_value_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_parameter_value_row;
 	private LayoutInflater layoutInflater;
 
 	/**

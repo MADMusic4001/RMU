@@ -31,7 +31,7 @@ import javax.inject.Inject;
  * Populates a ListView with {@link Size} information
  */
 public class SizeListAdapter extends ArrayAdapter<Size> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.code_name_examples_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_1_to_1_to_1_row;
 	private LayoutInflater layoutInflater;
 
 	/**
@@ -52,9 +52,9 @@ public class SizeListAdapter extends ArrayAdapter<Size> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.code_view),
-									(TextView) rowView.findViewById(R.id.name_view),
-									(TextView) rowView.findViewById(R.id.examples_view));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.row_field1),
+									(TextView) rowView.findViewById(R.id.row_field2),
+									(TextView) rowView.findViewById(R.id.row_field3));
 			rowView.setTag(holder);
 		}
 		else {

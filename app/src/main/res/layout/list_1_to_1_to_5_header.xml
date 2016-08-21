@@ -20,7 +20,7 @@
               android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/range_header"
+        android:id="@+id/header_field1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -35,7 +35,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/label_range"/>
     <TextView
-        android:id="@+id/severity_code_header"
+        android:id="@+id/header_field2"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -50,7 +50,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/label_severity_code"/>
     <TextView
-        android:id="@+id/description_header"
+        android:id="@+id/header_field3"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="5"

@@ -45,6 +45,7 @@ import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
+import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
@@ -68,6 +69,7 @@ public class CampaignActivity extends Activity {
 	private ParametersFragment         parametersFragment;
 	private ProfessionsFragment        professionsFragment;
 	private OutlooksFragment           outlooksFragment;
+	private RealmsFragment             realmsFragment;
 	private SizesFragment              sizesFragment;
 	private SkillCategoriesFragment    skillCategoriesFragment;
 	private SkillsFragment             skillsFragment;
@@ -210,6 +212,13 @@ public class CampaignActivity extends Activity {
 			professionsFragment = new ProfessionsFragment();
 		}
 		replaceDetailFragment(professionsFragment);
+	}
+
+	public void showRealms() {
+		if(realmsFragment == null) {
+			realmsFragment = new RealmsFragment();
+		}
+		replaceDetailFragment(realmsFragment);
 	}
 
 	public void showSizes() {

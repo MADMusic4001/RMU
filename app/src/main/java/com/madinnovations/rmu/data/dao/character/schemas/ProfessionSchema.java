@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
+
 /**
  * Database schema data for the professions table
  */
@@ -24,13 +26,19 @@ public interface ProfessionSchema {
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_DESCRIPTION = "description";
+	public static final String COLUMN_REALM1_ID = "realm1Id";
+	public static final String COLUMN_REALM2_ID = "realm2Id";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
-			+ COLUMN_DESCRIPTION + " TEXT NOT NULL"
+			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
+			+ COLUMN_REALM1_ID + " INTEGER, "
+			+ COLUMN_REALM2_ID + " INTEGER, "
+			+ "FOREIGN KEY (" + COLUMN_REALM1_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_REALM2_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
 			+ ")";
 
 	public static final String[] COLUMNS = new String[] { COLUMN_ID,

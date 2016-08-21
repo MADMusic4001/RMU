@@ -31,7 +31,7 @@ import javax.inject.Inject;
  * Populates a ListView with {@link CriticalResult} information
  */
 public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.range_description_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_1_to_1_to_5_row;
 	private LayoutInflater layoutInflater;
 
 	/**
@@ -52,9 +52,9 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.range_view),
-					(TextView) rowView.findViewById(R.id.severity_code_view),
-					(TextView) rowView.findViewById(R.id.description_view));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.row_field1),
+									(TextView) rowView.findViewById(R.id.row_field2),
+									(TextView) rowView.findViewById(R.id.row_field3));
 			rowView.setTag(holder);
 		}
 		else {

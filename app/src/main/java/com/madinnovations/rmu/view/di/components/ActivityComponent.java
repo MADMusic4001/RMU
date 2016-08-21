@@ -25,6 +25,7 @@ import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.di.modules.FragmentModule;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
+import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import dagger.Subcomponent;
 
@@ -41,6 +42,7 @@ public interface ActivityComponent {
 	public CreatureFragmentComponent newCreatureFragmentComponent(CreatureFragmentModule fragmentModule);
 	public ItemFragmentComponent newItemFragmentComponent(ItemFragmentModule fragmentModule);
 	public PlayFragmentComponent newPlayFragmentComponent(PlayFragmentModule fragmentModule);
+	public SpellFragmentComponent newSpellFragmentComponent(SpellFragmentModule fragmentModule);
 
 	public void injectInto(CampaignActivity campaignActivity);
 }

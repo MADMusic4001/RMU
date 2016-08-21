@@ -19,7 +19,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-  <include layout="@layout/name_description_header"/>
+  <include layout="@layout/list_1_to_5_header"/>
 
   <ListView
       android:id="@+id/list_view"

@@ -6,13 +6,13 @@
   <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/label_skill_filter"/>
+      android:text="@string/input_label_skill_filter"/>
   <Spinner
       android:id="@+id/skill_filter_spinner"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"/>
 
-  <include layout="@layout/name_description_header"/>
+  <include layout="@layout/list_1_to_5_header"/>
 
   <ListView
       android:id="@+id/list_view"

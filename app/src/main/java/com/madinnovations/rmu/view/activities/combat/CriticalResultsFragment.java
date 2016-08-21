@@ -110,6 +110,10 @@ public class CriticalResultsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.critical_results_fragment, container, false);
 
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_range));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_severity_code));
+		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_critical_result_text));
+
 		initCriticalTypeFilterSpinner(layout);
 		initCriticalTypeSpinner(layout);
 		initDescriptionEdit(layout);
@@ -419,12 +423,12 @@ public class CriticalResultsFragment extends Fragment {
 							int position = listAdapter.getPosition(savedCriticalResult);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.range_view);
+								TextView textView = (TextView) v.findViewById(R.id.header_field1);
 								textView.setText(String.format(getString(R.string.min_max_roll_value),
 										savedCriticalResult.getMinRoll(), savedCriticalResult.getMaxRoll()));
-								textView = (TextView) v.findViewById(R.id.severity_code_view);
+								textView = (TextView) v.findViewById(R.id.header_field2);
 								textView.setText(String.valueOf(currentInstance.getSeverityCode()));
-								textView = (TextView) v.findViewById(R.id.description_view);
+								textView = (TextView) v.findViewById(R.id.header_field3);
 								textView.setText(savedCriticalResult.getDescription());
 							}
 						}
