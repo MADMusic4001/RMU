@@ -65,6 +65,12 @@ public class StatListAdapter extends ArrayAdapter<Stat> {
 		Stat stat = getItem(position);
 		holder.abbreviationView.setText(stat.getAbbreviation());
 		holder.nameView.setText(stat.getName());
+//		Log.d("RMU", "width = " + holder.descriptionView.getWidth());
+//		Log.d("RMU", "measuredWidth = " + holder.descriptionView.getMeasuredWidth());
+//		Log.d("RMU", "maxWidth = " + holder.descriptionView.getMaxWidth());
+//		CharSequence displayText = TextUtils.ellipsize(stat.getDescription(),holder.descriptionView.getPaint(),
+//				holder.descriptionView.getWidth(), TextUtils.TruncateAt.END);
+//		holder.descriptionView.setText(displayText);
 		holder.descriptionView.setText(stat.getDescription());
 		return rowView;
 	}

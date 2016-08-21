@@ -21,16 +21,19 @@
 
     <TextView
         android:id="@+id/parameter_name_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
         android:layout_weight="1"
-        android:text="Parameter Name"/>
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/label_ph_field1"/>
 
     <EditText
         android:id="@+id/parameter_value_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:maxLength="30"
-        android:layout_weight="1"
+        android:background="@null"
         android:hint="@string/hint_parameter_value"/>
 </LinearLayout>

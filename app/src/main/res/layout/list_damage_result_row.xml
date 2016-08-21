@@ -24,6 +24,7 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="none"
         android:clickable="false"
         android:cursorVisible="false"
         android:focusable="false"
@@ -33,66 +34,77 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at2_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at3_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at4_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at5_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at6_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at7_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at8_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at9_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/at10_result_edit"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:background="@null"/>
     <EditText
         android:id="@+id/right_roll_view"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:inputType="none"
         android:clickable="false"
         android:cursorVisible="false"
         android:focusable="false"
