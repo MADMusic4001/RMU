@@ -53,8 +53,8 @@ public class CreatureVariety {
 	private short baseMentalismRR = 0;
 	private short basePhysicalRR = 0;
 	private short baseFearRR = 0;
-	private Realm realm1;
-	private Realm realm2;
+	private Realm realm1 = null;
+	private Realm realm2 = null;
 	private short baseStride = 0;
 	private short leftoverDP = 200;
 	private Outlook outlook = null;

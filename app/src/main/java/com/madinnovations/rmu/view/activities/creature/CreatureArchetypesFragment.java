@@ -46,9 +46,9 @@ import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.creature.ArchetypeSkillCategoryListAdapter;
-import com.madinnovations.rmu.view.adapters.creature.CreatureArchetypeListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.ArrayList;
@@ -64,15 +64,13 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature archetypes.
  */
-public class CreatureArchetypesFragment extends Fragment {
+public class CreatureArchetypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureArchetype> {
 	@Inject
 	protected CreatureArchetypeRxHandler creatureArchetypeRxHandler;
 	@Inject
 	protected StatRxHandler statRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler skillCategoryRxHandler;
-	@Inject
-	protected CreatureArchetypeListAdapter listAdapter;
 	@Inject
 	protected StatSpinnerAdapter stat1SpinnerAdapter;
 	@Inject
@@ -83,16 +81,17 @@ public class CreatureArchetypesFragment extends Fragment {
 	protected ArchetypeSkillCategoryListAdapter secondarySkillCategoriesListAdapter;
 	@Inject
 	protected ArchetypeSkillCategoryListAdapter tertiarySkillCategoriesListAdapter;
-	private   ListView                     listView;
-	private   EditText                     nameEdit;
-	private   EditText                     descriptionEdit;
-	private Spinner                        stat1Spinner;
-	private Spinner                        stat2Spinner;
-	private ListView                       primarySkillCategoriesList;
-	private ListView                       secondarySkillCategoriesList;
-	private ListView                       tertiarySkillCategoriesList;
-	private   EditText                     spellsEdit;
-	private   EditText                     rolesEdit;
+	private TwoFieldListAdapter<CreatureArchetype> listAdapter;
+	private ListView                     listView;
+	private EditText                     nameEdit;
+	private EditText                     descriptionEdit;
+	private Spinner                      stat1Spinner;
+	private Spinner                      stat2Spinner;
+	private ListView                     primarySkillCategoriesList;
+	private ListView                     secondarySkillCategoriesList;
+	private ListView                     tertiarySkillCategoriesList;
+	private EditText                     spellsEdit;
+	private EditText                     rolesEdit;
 	private CreatureArchetype currentInstance = new CreatureArchetype();
 	private boolean          isNew            = true;
 	private List<SkillCategory> newSkillCategoriesList = new ArrayList<>();
@@ -377,9 +376,9 @@ public class CreatureArchetypesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -735,7 +734,7 @@ public class CreatureArchetypesFragment extends Fragment {
 
  	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 4, this);
 		listView.setAdapter(listAdapter);
 
 		creatureArchetypeRxHandler.getAll()
@@ -788,5 +787,15 @@ public class CreatureArchetypesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(CreatureArchetype creatureArchetype) {
+		return creatureArchetype.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(CreatureArchetype creatureArchetype) {
+		return creatureArchetype.getDescription();
 	}
 }

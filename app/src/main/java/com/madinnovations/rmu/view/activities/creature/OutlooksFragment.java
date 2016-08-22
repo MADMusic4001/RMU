@@ -40,7 +40,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.creature.OutlookListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.Collection;
@@ -54,11 +54,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature categories.
  */
-public class OutlooksFragment extends Fragment {
+public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Outlook> {
 	@Inject
 	protected OutlookRxHandler   outlookRxHandler;
-	@Inject
-	protected OutlookListAdapter listAdapter;
+	private   TwoFieldListAdapter<Outlook> listAdapter;
 	private   ListView                    listView;
 	private   EditText                    nameEdit;
 	private   EditText                    descriptionEdit;
@@ -218,9 +217,9 @@ public class OutlooksFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -325,7 +324,7 @@ public class OutlooksFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		outlookRxHandler.getAll()
@@ -378,5 +377,15 @@ public class OutlooksFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(Outlook outlook) {
+		return outlook.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Outlook outlook) {
+		return outlook.getDescription();
 	}
 }

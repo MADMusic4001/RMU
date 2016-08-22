@@ -43,8 +43,8 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureVarietyRxHan
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.creature.CreatureTypeSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.creature.CreatureVarietyListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.Collection;
@@ -58,15 +58,14 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature varieties.
  */
-public class CreatureVarietiesFragment extends Fragment {
+public class CreatureVarietiesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureVariety> {
 	@Inject
 	protected CreatureVarietyRxHandler   creatureVarietyRxHandler;
 	@Inject
 	protected CreatureTypeRxHandler creatureTypeRxHandler;
 	@Inject
-	protected CreatureVarietyListAdapter listAdapter;
-	@Inject
 	protected CreatureTypeSpinnerAdapter creatureTypeSpinnerAdapter;
+	private   TwoFieldListAdapter<CreatureVariety> listAdapter;
 	private   ListView                    listView;
 	private   EditText                    nameEdit;
 	private   EditText                    descriptionEdit;
@@ -241,9 +240,9 @@ public class CreatureVarietiesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -387,7 +386,7 @@ public class CreatureVarietiesFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		creatureVarietyRxHandler.getAll()
@@ -440,5 +439,15 @@ public class CreatureVarietiesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(CreatureVariety variety) {
+		return variety.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(CreatureVariety variety) {
+		return variety.getDescription();
 	}
 }
