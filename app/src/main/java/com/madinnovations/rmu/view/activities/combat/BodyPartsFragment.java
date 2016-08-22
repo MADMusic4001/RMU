@@ -39,7 +39,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.combat.BodyPartListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -53,11 +53,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class BodyPartsFragment extends Fragment {
+public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.GetValues<BodyPart> {
 	@Inject
 	protected BodyPartRxHandler   bodyPartRxHandler;
-	@Inject
-	protected BodyPartListAdapter listAdapter;
+	private TwoFieldListAdapter<BodyPart> listAdapter;
 	private ListView              listView;
 	private EditText              nameEdit;
 	private EditText              descriptionEdit;
@@ -258,14 +257,10 @@ public class BodyPartsFragment extends Fragment {
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.header_field1);
-								if (textView != null) {
-									textView.setText(currentInstance.getName());
-								}
-								textView = (TextView) v.findViewById(R.id.header_field2);
-								if (textView != null) {
-									textView.setText(currentInstance.getDescription());
-								}
+								TextView textView = (TextView) v.findViewById(R.id.row_field1);
+								textView.setText(currentInstance.getName());
+								textView = (TextView) v.findViewById(R.id.row_field2);
+								textView.setText(currentInstance.getDescription());
 							}
 						}
 					}
@@ -331,7 +326,7 @@ public class BodyPartsFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		bodyPartRxHandler.getAll()
@@ -390,5 +385,15 @@ public class BodyPartsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(BodyPart bodyPart) {
+		return bodyPart.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(BodyPart bodyPart) {
+		return bodyPart.getDescription();
 	}
 }

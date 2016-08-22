@@ -40,7 +40,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalCodeRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.combat.CriticalCodeListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -54,11 +54,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for critical codes.
  */
-public class CriticalCodesFragment extends Fragment {
+public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CriticalCode> {
 	@Inject
 	protected CriticalCodeRxHandler   criticalCodeRxHandler;
-	@Inject
-	protected CriticalCodeListAdapter listAdapter;
+	private TwoFieldListAdapter<CriticalCode> listAdapter;
 	private   ListView                listView;
 	private   EditText                codeEdit;
 	private   EditText                descriptionEdit;
@@ -217,14 +216,10 @@ public class CriticalCodesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedCriticalCode);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
-									if (textView != null) {
-										textView.setText(savedCriticalCode.getCode());
-									}
-									textView = (TextView) v.findViewById(R.id.header_field2);
-									if (textView != null) {
-										textView.setText(savedCriticalCode.getDescription());
-									}
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
+									textView.setText(savedCriticalCode.getCode());
+									textView = (TextView) v.findViewById(R.id.row_field2);
+									textView.setText(savedCriticalCode.getDescription());
 								}
 							}
 						}
@@ -328,7 +323,7 @@ public class CriticalCodesFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		criticalCodeRxHandler.getAll()
@@ -387,5 +382,15 @@ public class CriticalCodesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(CriticalCode criticalCode) {
+		return criticalCode.getCode();
+	}
+
+	@Override
+	public CharSequence getField2Value(CriticalCode criticalCode) {
+		return criticalCode.getDescription();
 	}
 }

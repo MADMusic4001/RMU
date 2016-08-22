@@ -39,7 +39,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.combat.CriticalTypeListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -53,11 +53,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class CriticalTypesFragment extends Fragment {
+public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CriticalType> {
 	@Inject
 	protected CriticalTypeRxHandler criticalTypeRxHandler;
-	@Inject
-	protected CriticalTypeListAdapter listAdapter;
+	private TwoFieldListAdapter<CriticalType> listAdapter;
 	private ListView              listView;
 	private EditText              codeEdit;
 	private EditText              nameEdit;
@@ -252,14 +251,10 @@ public class CriticalTypesFragment extends Fragment {
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.header_field1);
-								if (textView != null) {
-									textView.setText(currentInstance.getName());
-								}
-								textView = (TextView) v.findViewById(R.id.header_field2);
-								if (textView != null) {
-									textView.setText(currentInstance.getCode());
-								}
+								TextView textView = (TextView) v.findViewById(R.id.row_field1);
+								textView.setText(String.valueOf(currentInstance.getCode()));
+								textView = (TextView) v.findViewById(R.id.row_field2);
+								textView.setText(currentInstance.getName());
 							}
 						}
 					}
@@ -328,7 +323,7 @@ public class CriticalTypesFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		criticalTypeRxHandler.getAll()
@@ -387,5 +382,15 @@ public class CriticalTypesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(CriticalType criticalType) {
+		return String.valueOf(criticalType.getCode());
+	}
+
+	@Override
+	public CharSequence getField2Value(CriticalType criticalType) {
+		return criticalType.getName();
 	}
 }
