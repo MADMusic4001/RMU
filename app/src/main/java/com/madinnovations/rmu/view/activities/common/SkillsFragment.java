@@ -45,8 +45,8 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillCategorySpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
@@ -64,15 +64,13 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for skills.
  */
-public class SkillsFragment extends Fragment {
+public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Skill> {
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler      skillCategoryRxHandler;
 	@Inject
 	protected StatRxHandler               statRxHandler;
-	@Inject
-	protected SkillListAdapter            listAdapter;
 	@Inject
 	protected SkillCategorySpinnerAdapter skillCategoryFilterSpinnerAdapter;
 	@Inject
@@ -83,6 +81,7 @@ public class SkillsFragment extends Fragment {
 	protected StatSpinnerAdapter          stat2SpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter          stat3SpinnerAdapter;
+	private   TwoFieldListAdapter<Skill>  listAdapter;
 	private   Spinner                     skillCategoryFilterSpinner;
 	private   ListView                    listView;
 	private   EditText                    nameEdit;
@@ -381,14 +380,10 @@ public class SkillsFragment extends Fragment {
 								int position = listAdapter.getPosition(currentInstance);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
-									if (textView != null) {
-										textView.setText(currentInstance.getName());
-									}
-									textView = (TextView) v.findViewById(R.id.header_field2);
-									if (textView != null) {
-										textView.setText(currentInstance.getDescription());
-									}
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
+									textView.setText(currentInstance.getName());
+									textView = (TextView) v.findViewById(R.id.row_field2);
+									textView.setText(currentInstance.getDescription());
 								}
 							}
 						}
@@ -660,7 +655,7 @@ public class SkillsFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		loadFilteredSkills(null);
@@ -787,5 +782,15 @@ public class SkillsFragment extends Fragment {
 						}
 					}
 				});
+	}
+
+	@Override
+	public CharSequence getField1Value(Skill skill) {
+		return skill.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Skill skill) {
+		return skill.getDescription();
 	}
 }

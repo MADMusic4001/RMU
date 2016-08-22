@@ -106,6 +106,7 @@ public class CreatureArchetypesFragment extends Fragment {
 		View layout = inflater.inflate(R.layout.creature_archetypes_fragment, container, false);
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_creature_archetype_name));
+		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field2).getLayoutParams()).weight = 4;
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_creature_archetype_description));
 
 		initNameEdit(layout);

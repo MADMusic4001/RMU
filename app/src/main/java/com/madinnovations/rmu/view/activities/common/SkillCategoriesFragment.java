@@ -45,7 +45,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.SkillCategoryListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
@@ -62,19 +62,18 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for skill categories.
  */
-public class SkillCategoriesFragment extends Fragment {
+public class SkillCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<SkillCategory> {
 	@Inject
 	protected SkillCategoryRxHandler skillCategoryRxHandler;
 	@Inject
 	protected StatRxHandler statRxHandler;
-	@Inject
-	protected SkillCategoryListAdapter listAdapter;
 	@Inject
 	protected StatSpinnerAdapter stat1SpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter stat2SpinnerAdapter;
 	@Inject
 	protected StatSpinnerAdapter stat3SpinnerAdapter;
+	private TwoFieldListAdapter<SkillCategory> listAdapter = null;
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
@@ -384,9 +383,9 @@ public class SkillCategoriesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -634,7 +633,7 @@ public class SkillCategoriesFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -794,5 +793,15 @@ public class SkillCategoriesFragment extends Fragment {
 				spinner.setSelection(0);
 			}
 		}
+	}
+
+	@Override
+	public CharSequence getField1Value(SkillCategory skillCategory) {
+		return skillCategory.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(SkillCategory skillCategory) {
+		return skillCategory.getDescription();
 	}
 }

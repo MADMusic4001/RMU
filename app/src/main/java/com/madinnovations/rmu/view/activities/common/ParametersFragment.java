@@ -41,7 +41,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.ParameterRxHandler;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.ParameterListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
@@ -55,11 +55,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for parameters.
  */
-public class ParametersFragment extends Fragment {
+public class ParametersFragment extends Fragment implements TwoFieldListAdapter.GetValues<Parameter> {
 	@Inject
 	protected ParameterRxHandler   parameterRxHandler;
-	@Inject
-	protected ParameterListAdapter listAdapter;
+	private TwoFieldListAdapter<Parameter> listAdapter;
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
@@ -78,7 +77,9 @@ public class ParametersFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.parameters_fragment, container, false);
 
+		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field1).getLayoutParams()).weight = 1;
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_parameter_name));
+		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field2).getLayoutParams()).weight = 5;
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_parameter_description));
 
 		initNameEdit(layout);
@@ -261,9 +262,9 @@ public class ParametersFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -428,7 +429,7 @@ public class ParametersFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		parameterRxHandler.getAll()
@@ -478,5 +479,15 @@ public class ParametersFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(Parameter parameter) {
+		return parameter.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Parameter parameter) {
+		return parameter.getDescription();
 	}
 }

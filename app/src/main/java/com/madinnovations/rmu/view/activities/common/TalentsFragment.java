@@ -59,16 +59,14 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.DragParameterListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentCategorySpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.TalentListAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentParameterListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -79,7 +77,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for talents.
  */
-public class TalentsFragment extends Fragment {
+public class TalentsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Talent> {
 	@Inject
 	protected TalentRxHandler talentRxHandler;
 	@Inject
@@ -89,8 +87,6 @@ public class TalentsFragment extends Fragment {
 	@Inject
 	ParameterRxHandler parameterRxHandler;
 	@Inject
-	protected TalentListAdapter listAdapter;
-	@Inject
 	protected TalentCategorySpinnerAdapter categorySpinnerAdapter;
 	@Inject
 	protected SkillSpinnerAdapter affectedSkillSpinnerAdapter;
@@ -98,6 +94,7 @@ public class TalentsFragment extends Fragment {
 	protected DragParameterListAdapter parametersListAdapter;
 	@Inject
 	protected TalentParameterListAdapter selectedParametersListAdapter;
+	private TwoFieldListAdapter<Talent> listAdapter;
 	private ListView listView;
 	private Spinner  categorySpinner;
 	private EditText nameEdit;
@@ -109,9 +106,7 @@ public class TalentsFragment extends Fragment {
 	private CheckBox flawCheckbox;
 	private CheckBox situationalCheckbox;
 	private EditText actionPointsEdit;
-	private ListView parametersListview;
 	private ListView selectedParametersListview;
-	private List<ParameterValue> parameterValueList = new ArrayList<>();
 	private Talent currentInstance = new Talent();
 	private boolean          isNew            = true;
 
@@ -699,7 +694,7 @@ public class TalentsFragment extends Fragment {
 	}
 
 	private void initParametersListview(View layout) {
-		parametersListview = (ListView) layout.findViewById(R.id.parameters_list);
+		ListView parametersListview = (ListView) layout.findViewById(R.id.parameters_list);
 
 		parametersListview.setAdapter(parametersListAdapter);
 
@@ -717,6 +712,7 @@ public class TalentsFragment extends Fragment {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
 				}
 				else {
+					//noinspection deprecation
 					view.startDrag(dragData, myShadow, null, 0);
 				}
 				return false;
@@ -806,7 +802,7 @@ public class TalentsFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		talentRxHandler.getAll()
@@ -841,7 +837,6 @@ public class TalentsFragment extends Fragment {
 					}
 				});
 
-		// Clicking a row in the listView will send the user to the edit world activity
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -862,125 +857,54 @@ public class TalentsFragment extends Fragment {
 
 	protected class MyDragEventListener implements View.OnDragListener {
 		private Drawable originalDrawable;
-		private int originalBackgroundColor;
 
-		// This is the method that the system calls when it dispatches a drag event to the
-		// listener.
 		public boolean onDrag(View v, DragEvent event) {
-
-			// Defines a variable to store the action type for the incoming event
 			final int action = event.getAction();
 
-			// Handles each of the expected events
 			switch(action) {
-
 				case DragEvent.ACTION_DRAG_STARTED:
-
-					// Determines if this View can accept the dragged data
 					if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-
 						// As an example of what your application might do,
 						// applies a blue color tint to the View to indicate that it can accept
 						// data.
 						originalDrawable = v.getBackground();
 						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
 								null));
-
-						// Invalidate the view to force a redraw in the new tint
 						v.invalidate();
-
-						// returns true to indicate that the View can accept the dragged data.
 						return true;
-
 					}
-
-					// Returns false. During the current drag and drop operation, this View will
-					// not receive events again until ACTION_DRAG_ENDED is sent.
 					return false;
-
 				case DragEvent.ACTION_DRAG_ENTERED:
-
-					// Applies a green tint to the View. Return true; the return value is ignored.
-
 					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null));
 					}
 					else {
 						v.setBackgroundColor(Color.GREEN);
 					}
-
-					// Invalidate the view to force a redraw in the new tint
 					v.invalidate();
-
 					return true;
-
 				case DragEvent.ACTION_DRAG_LOCATION:
-
-					// Ignore the event
 					return true;
-
 				case DragEvent.ACTION_DRAG_EXITED:
-
-					// Re-sets the color tint to blue. Returns true; the return value is ignored.
 					v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
 							null));
-
-					// Invalidate the view to force a redraw in the new tint
 					v.invalidate();
-
 					return true;
-
 				case DragEvent.ACTION_DROP:
-
-					// Gets the item containing the dragged data
 					ClipData.Item item = event.getClipData().getItemAt(0);
-
-					// Gets the text data from the item.
 					CharSequence dragData = item.getText();
 					int position = Integer.valueOf(item.getText().toString());
 					Parameter parameter = parametersListAdapter.getItem(position);
-
-					Log.e("TalentsFragment", "parameter = " + parameter);
-					Toast.makeText(getActivity(), "Dragged data is " + parameter.getName(), Toast.LENGTH_LONG).show();
 					selectedParametersListAdapter.add(new ParameterValue(parameter, null));
 					selectedParametersListAdapter.notifyDataSetChanged();
-					// Displays a message containing the dragged data.
-
-					// Turns off any color tints
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-						v.setBackground(originalDrawable);
-					}
-					else {
-						v.setBackgroundColor(originalBackgroundColor);
-					}
-
-					// Invalidates the view to force a redraw
+					v.setBackground(originalDrawable);
 					v.invalidate();
-
-					// Returns true. DragEvent.getResult() will return true.
 					return true;
-
 				case DragEvent.ACTION_DRAG_ENDED:
-
-					// Turns off any color tinting
-					v.setBackgroundColor(originalBackgroundColor);
-
-					// Invalidates the view to force a redraw
+					v.setBackground(originalDrawable);
 					v.invalidate();
-
-					// Does a getResult(), and displays what happened.
-					if (event.getResult()) {
-						Toast.makeText(getActivity(), "The drop was handled.", Toast.LENGTH_LONG).show();
-
-					} else {
-						Toast.makeText(getActivity(), "The drop didn't work.", Toast.LENGTH_LONG).show();
-
-					}
-
-					// returns true; the value is ignored.
+					event.getResult();
 					return true;
-
-				// An unknown action type was received.
 				default:
 					Log.e("DragDrop Example","Unknown action type received by OnDragListener.");
 					break;
@@ -991,53 +915,37 @@ public class TalentsFragment extends Fragment {
 	}
 
 	private static class MyDragShadowBuilder extends View.DragShadowBuilder {
-
-		// The drag shadow image, defined as a drawable thing
 		private static Drawable shadow;
 
-		// Defines the constructor for myDragShadowBuilder
 		public MyDragShadowBuilder(View v) {
-
-			// Stores the View parameter passed to myDragShadowBuilder.
 			super(v);
-
-			// Creates a draggable image that will fill the Canvas provided by the system.
 			shadow = new ColorDrawable(Color.LTGRAY);
 		}
 
-		// Defines a callback that sends the drag shadow dimensions and touch point back to the
-		// system.
 		@Override
 		public void onProvideShadowMetrics (Point size, Point touch) {
-			// Defines local variables
 			int width, height;
 
-			// Sets the width of the shadow to half the width of the original View
 			width = getView().getWidth() / 2;
-
-			// Sets the height of the shadow to half the height of the original View
 			height = getView().getHeight() / 2;
-
-			// The drag shadow is a ColorDrawable. This sets its dimensions to be the same as the
-			// Canvas that the system will provide. As a result, the drag shadow will fill the
-			// Canvas.
 			shadow.setBounds(0, 0, width, height);
-
-			// Sets the size parameter's width and height values. These get back to the system
-			// through the size parameter.
 			size.set(width, height);
-
-			// Sets the touch point's position to be in the middle of the drag shadow
 			touch.set(width / 2, height / 2);
 		}
 
-		// Defines a callback that draws the drag shadow in a Canvas that the system constructs
-		// from the dimensions passed in onProvideShadowMetrics().
 		@Override
 		public void onDrawShadow(Canvas canvas) {
-
-			// Draws the ColorDrawable in the Canvas passed in from the system.
 			shadow.draw(canvas);
 		}
+	}
+
+	@Override
+	public CharSequence getField1Value(Talent talent) {
+		return talent.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Talent talent) {
+		return talent.getDescription();
 	}
 }

@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
@@ -31,7 +32,7 @@ import javax.inject.Inject;
  * Populates a ListView with {@link CreatureArchetype} information
  */
 public class CreatureArchetypeListAdapter extends ArrayAdapter<CreatureArchetype> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_1_to_5_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_2_field_row;
 	private LayoutInflater layoutInflater;
 
 	/**
@@ -54,6 +55,7 @@ public class CreatureArchetypeListAdapter extends ArrayAdapter<CreatureArchetype
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder((TextView) rowView.findViewById(R.id.row_field1),
 									(TextView) rowView.findViewById(R.id.row_field2));
+			((LinearLayout.LayoutParams)holder.descriptionView.getLayoutParams()).weight = 4;
 			rowView.setTag(holder);
 		}
 		else {

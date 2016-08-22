@@ -41,7 +41,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.LocomotionTypeRxHandler;
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.LocomotionTypeListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
@@ -55,11 +55,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for locomotion types.
  */
-public class LocomotionTypesFragment extends Fragment {
+public class LocomotionTypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<LocomotionType> {
 	@Inject
 	protected LocomotionTypeRxHandler locomotionTypeRxHandler;
-	@Inject
-	protected LocomotionTypeListAdapter listAdapter;
+	private TwoFieldListAdapter<LocomotionType> listAdapter;
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
@@ -232,9 +231,9 @@ public class LocomotionTypesFragment extends Fragment {
 							int position = listAdapter.getPosition(savedItem);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.header_field1);
+								TextView textView = (TextView) v.findViewById(R.id.row_field1);
 								textView.setText(savedItem.getName());
-								textView = (TextView) v.findViewById(R.id.header_field2);
+								textView = (TextView) v.findViewById(R.id.row_field2);
 								textView.setText(savedItem.getDescription());
 							}
 						}
@@ -369,7 +368,7 @@ public class LocomotionTypesFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		locomotionTypeRxHandler.getAll()
@@ -429,5 +428,15 @@ public class LocomotionTypesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(LocomotionType locomotionType) {
+		return locomotionType.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(LocomotionType locomotionType) {
+		return locomotionType.getDescription();
 	}
 }

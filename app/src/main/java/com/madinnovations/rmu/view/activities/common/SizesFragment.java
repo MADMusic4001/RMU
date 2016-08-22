@@ -40,7 +40,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.SizeListAdapter;
+import com.madinnovations.rmu.view.adapters.ThreeFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.Collection;
@@ -54,11 +54,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for sizes.
  */
-public class SizesFragment extends Fragment {
+public class SizesFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Size> {
 	@Inject
 	protected SizeRxHandler   sizeRxHandler;
-	@Inject
-	protected SizeListAdapter listAdapter;
+	private ThreeFieldListAdapter<Size> listAdapter;
 	private   ListView        listView;
 	private   EditText        codeEdit;
 	private   EditText        nameEdit;
@@ -80,6 +79,7 @@ public class SizesFragment extends Fragment {
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_size_code));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_size_name));
+		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field3).getLayoutParams()).weight = 5;
 		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_size_examples));
 
 		initCodeEdit(layout);
@@ -312,11 +312,11 @@ public class SizesFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getCode());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field3);
+									textView = (TextView) v.findViewById(R.id.row_field3);
 									textView.setText(savedItem.getExamples());
 								}
 							}
@@ -606,6 +606,7 @@ public class SizesFragment extends Fragment {
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 
+		listAdapter = new ThreeFieldListAdapter<>(this.getActivity(), 1, 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		sizeRxHandler.getAll()
@@ -655,5 +656,20 @@ public class SizesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(Size size) {
+		return size.getCode();
+	}
+
+	@Override
+	public CharSequence getField2Value(Size size) {
+		return size.getName();
+	}
+
+	@Override
+	public CharSequence getField3Value(Size size) {
+		return size.getExamples();
 	}
 }

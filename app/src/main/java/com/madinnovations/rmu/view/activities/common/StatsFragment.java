@@ -43,7 +43,7 @@ import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.StatListAdapter;
+import com.madinnovations.rmu.view.adapters.ThreeFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import org.json.JSONArray;
@@ -61,13 +61,12 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for stats.
  */
-public class StatsFragment extends Fragment {
+public class StatsFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Stat> {
 	@Inject
 	protected StatRxHandler statRxHandler;
 	@Inject
 	protected FileRxHandler fileRxHandler;
-	@Inject
-	protected StatListAdapter listAdapter;
+	private ThreeFieldListAdapter<Stat> listAdapter = null;
 	private ListView listView;
 	private EditText abbreviationEdit;
 	private EditText nameEdit;
@@ -86,6 +85,7 @@ public class StatsFragment extends Fragment {
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_abbreviation));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_name));
+		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field3).getLayoutParams()).weight = 6;
 		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_description));
 
 		initAbbreviationEdit(layout);
@@ -253,11 +253,11 @@ public class StatsFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getAbbreviation());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field3);
+									textView = (TextView) v.findViewById(R.id.row_field3);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -391,6 +391,7 @@ public class StatsFragment extends Fragment {
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 
+		listAdapter = new ThreeFieldListAdapter<>(this.getActivity(), 1, 1, 6, this);
 		listView.setAdapter(listAdapter);
 
 		statRxHandler.getAll()
@@ -551,5 +552,20 @@ public class StatsFragment extends Fragment {
 						importData = new Gson().fromJson(s, new TypeToken<Collection<Stat>>(){}.getType());
 					}
 				});
+	}
+
+	@Override
+	public CharSequence getField1Value(Stat stat) {
+		return stat.getAbbreviation();
+	}
+
+	@Override
+	public CharSequence getField2Value(Stat stat) {
+		return stat.getName();
+	}
+
+	@Override
+	public CharSequence getField3Value(Stat stat) {
+		return stat.getDescription();
 	}
 }

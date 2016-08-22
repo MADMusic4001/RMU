@@ -22,33 +22,16 @@
   <TextView
       android:id="@+id/row_field1"
       android:layout_width="0dp"
-      android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:ellipsize="end"
-      android:singleLine="true"
-      android:gravity="start"
-      android:paddingStart="5dp"
-      android:paddingLeft="5dp"
-      android:paddingEnd="5dp"
-      android:paddingRight="5dp"
-      android:textAppearance="?android:attr/textAppearanceSmall"
-      android:background="?android:attr/activatedBackgroundIndicator"
+      android:layout_height="wrap_content"
+      style="@style/TextViewListRow"
       android:text="@string/label_ph_field1"/>
 
   <TextView
       android:id="@+id/row_field2"
       android:layout_width="0dp"
-      android:layout_height="wrap_content"
       android:layout_weight="5"
-      android:maxLines="1"
-      android:ellipsize="end"
-      android:gravity="start"
-      android:paddingStart="5dp"
-      android:paddingLeft="5dp"
-      android:paddingEnd="5dp"
-      android:paddingRight="5dp"
-      android:selectAllOnFocus="true"
-      android:textAppearance="?android:attr/textAppearanceSmall"
-      android:background="?android:attr/activatedBackgroundIndicator"
+      android:layout_height="wrap_content"
+      style="@style/TextViewListRow"
       android:text="@string/label_ph_field2"/>
 </LinearLayout>

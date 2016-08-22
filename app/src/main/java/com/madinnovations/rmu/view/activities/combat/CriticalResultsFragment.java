@@ -110,29 +110,25 @@ public class CriticalResultsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.critical_results_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_range));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_severity_code));
-		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_critical_result_text));
-
 		initCriticalTypeFilterSpinner(layout);
 		initCriticalTypeSpinner(layout);
-		initDescriptionEdit(layout);
-		initMinRollEdit(layout);
-		initMaxRollEdit(layout);
-		initSeverityCodeEdit(layout);
-		initBodyPartSpinner(layout);
-		initHitsEdit(layout);
-		initBleedingEdit(layout);
-		initFatigueEdit(layout);
-		initBreakageEdit(layout);
-		initInjuryEdit(layout);
-		initDazedEdit(layout);
-		initStunnedEdit(layout);
-		initNoParryEdit(layout);
-		initStaggeredCheckBox(layout);
-		initKnockBackEdit(layout);
-		initProneCheckBox(layout);
-		initGrappledEdit(layout);
+//		initDescriptionEdit(layout);
+//		initMinRollEdit(layout);
+//		initMaxRollEdit(layout);
+//		initSeverityCodeEdit(layout);
+//		initBodyPartSpinner(layout);
+//		initHitsEdit(layout);
+//		initBleedingEdit(layout);
+//		initFatigueEdit(layout);
+//		initBreakageEdit(layout);
+//		initInjuryEdit(layout);
+//		initDazedEdit(layout);
+//		initStunnedEdit(layout);
+//		initNoParryEdit(layout);
+//		initStaggeredCheckBox(layout);
+//		initKnockBackEdit(layout);
+//		initProneCheckBox(layout);
+//		initGrappledEdit(layout);
 		initListView(layout);
 
 		copyItemToViews();
@@ -226,170 +222,170 @@ public class CriticalResultsFragment extends Fragment {
 			changed = true;
 		}
 
-		newString = descriptionEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && currentInstance.getDescription() != null) ||
-				(newString != null && !newString.equals(currentInstance.getDescription()))) {
-			currentInstance.setDescription(newString);
-			changed = true;
-		}
-
-		if(severityCodeEdit.length() > 0) {
-			newChar = severityCodeEdit.getText().charAt(0);
-			if(newChar !=  currentInstance.getSeverityCode()) {
-				currentInstance.setSeverityCode(newChar);
-				changed = true;
-			}
-		}
-
-		if(minRollEdit.length() > 0) {
-			newShort = Short.valueOf(minRollEdit.getText().toString());
-			if(newShort !=  currentInstance.getMinRoll()) {
-				currentInstance.setMinRoll(newShort);
-				changed = true;
-			}
-		}
-
-		if(maxRollEdit.length() > 0) {
-			newShort = Short.valueOf(maxRollEdit.getText().toString());
-			if(newShort !=  currentInstance.getMaxRoll()) {
-				currentInstance.setMaxRoll(newShort);
-				changed = true;
-			}
-		}
-
-		if(bodyPartSpinner.getSelectedItemPosition() >= 0) {
-			newBodyPart = bodyPartSpinnerAdapter.getItem(bodyPartSpinner.getSelectedItemPosition());
-		}
-		if((newBodyPart == null && currentInstance.getBodyPart() != null) ||
-				(newBodyPart!= null && !newBodyPart.equals(currentInstance.getBodyPart()))) {
-			currentInstance.setBodyPart(newBodyPart);
-			changed = true;
-		}
-
-		if(hitsEdit.length() > 0) {
-			newShort = Short.valueOf(hitsEdit.getText().toString());
-			if(newShort !=  currentInstance.getHits()) {
-				currentInstance.setHits(newShort);
-				changed = true;
-			}
-		}
-
-		if(bleedingEdit.length() > 0) {
-			newShort = Short.valueOf(bleedingEdit.getText().toString());
-			if(newShort !=  currentInstance.getBleeding()) {
-				currentInstance.setBleeding(newShort);
-				changed = true;
-			}
-		}
-
-		if(fatigueEdit.length() > 0) {
-			newShort = Short.valueOf(fatigueEdit.getText().toString());
-			if(newShort !=  currentInstance.getFatigue()) {
-				currentInstance.setFatigue(newShort);
-				changed = true;
-			}
-		}
-
-		if(breakageEdit.length() > 0) {
-			newBreakage = Short.valueOf(breakageEdit.getText().toString());
-		}
-		if(newBreakage ==  null && currentInstance.getBreakage() != null ||
-				newBreakage != null && !newBreakage.equals(currentInstance.getBreakage())) {
-			currentInstance.setBreakage(newBreakage);
-			changed = true;
-		}
-
-		if(injuryEdit.length() > 0) {
-			newShort = Short.valueOf(injuryEdit.getText().toString());
-			if(newShort !=  currentInstance.getInjury()) {
-				currentInstance.setInjury(newShort);
-				changed = true;
-			}
-		}
-
-		if(dazedEdit.length() > 0) {
-			newShort = Short.valueOf(dazedEdit.getText().toString());
-			if(newShort !=  currentInstance.getDazed()) {
-				currentInstance.setDazed(newShort);
-				changed = true;
-			}
-		}
-
-		if(stunnedEdit.length() > 0) {
-			newShort = Short.valueOf(stunnedEdit.getText().toString());
-			if(newShort !=  currentInstance.getStunned()) {
-				currentInstance.setStunned(newShort);
-				changed = true;
-			}
-		}
-
-		if(noParryEdit.length() > 0) {
-			newShort = Short.valueOf(noParryEdit.getText().toString());
-			if(newShort !=  currentInstance.getNoParry()) {
-				currentInstance.setNoParry(newShort);
-				changed = true;
-			}
-		}
-
-		if(staggeredCheckBox.isChecked() != currentInstance.isStaggered()) {
-			currentInstance.setStaggered(staggeredCheckBox.isChecked());
-			changed = true;
-		}
-
-		if(knockBackEdit.length() > 0) {
-			newShort = Short.valueOf(knockBackEdit.getText().toString());
-			if(newShort !=  currentInstance.getKnockBack()) {
-				currentInstance.setKnockBack(newShort);
-				changed = true;
-			}
-		}
-
-		if(proneCheckBox.isChecked() != currentInstance.isProne()) {
-			currentInstance.setProne(proneCheckBox.isChecked());
-			changed = true;
-		}
-
-		if(grappledEdit.length() > 0) {
-			newShort = Short.valueOf(grappledEdit.getText().toString());
-			if(newShort !=  currentInstance.getGrappled()) {
-				currentInstance.setGrappled(newShort);
-				changed = true;
-			}
-		}
-
+//		newString = descriptionEdit.getText().toString();
+//		if(newString.isEmpty()) {
+//			newString = null;
+//		}
+//		if((newString == null && currentInstance.getDescription() != null) ||
+//				(newString != null && !newString.equals(currentInstance.getDescription()))) {
+//			currentInstance.setDescription(newString);
+//			changed = true;
+//		}
+//
+//		if(severityCodeEdit.length() > 0) {
+//			newChar = severityCodeEdit.getText().charAt(0);
+//			if(newChar !=  currentInstance.getSeverityCode()) {
+//				currentInstance.setSeverityCode(newChar);
+//				changed = true;
+//			}
+//		}
+//
+//		if(minRollEdit.length() > 0) {
+//			newShort = Short.valueOf(minRollEdit.getText().toString());
+//			if(newShort !=  currentInstance.getMinRoll()) {
+//				currentInstance.setMinRoll(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(maxRollEdit.length() > 0) {
+//			newShort = Short.valueOf(maxRollEdit.getText().toString());
+//			if(newShort !=  currentInstance.getMaxRoll()) {
+//				currentInstance.setMaxRoll(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(bodyPartSpinner.getSelectedItemPosition() >= 0) {
+//			newBodyPart = bodyPartSpinnerAdapter.getItem(bodyPartSpinner.getSelectedItemPosition());
+//		}
+//		if((newBodyPart == null && currentInstance.getBodyPart() != null) ||
+//				(newBodyPart!= null && !newBodyPart.equals(currentInstance.getBodyPart()))) {
+//			currentInstance.setBodyPart(newBodyPart);
+//			changed = true;
+//		}
+//
+//		if(hitsEdit.length() > 0) {
+//			newShort = Short.valueOf(hitsEdit.getText().toString());
+//			if(newShort !=  currentInstance.getHits()) {
+//				currentInstance.setHits(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(bleedingEdit.length() > 0) {
+//			newShort = Short.valueOf(bleedingEdit.getText().toString());
+//			if(newShort !=  currentInstance.getBleeding()) {
+//				currentInstance.setBleeding(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(fatigueEdit.length() > 0) {
+//			newShort = Short.valueOf(fatigueEdit.getText().toString());
+//			if(newShort !=  currentInstance.getFatigue()) {
+//				currentInstance.setFatigue(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(breakageEdit.length() > 0) {
+//			newBreakage = Short.valueOf(breakageEdit.getText().toString());
+//		}
+//		if(newBreakage ==  null && currentInstance.getBreakage() != null ||
+//				newBreakage != null && !newBreakage.equals(currentInstance.getBreakage())) {
+//			currentInstance.setBreakage(newBreakage);
+//			changed = true;
+//		}
+//
+//		if(injuryEdit.length() > 0) {
+//			newShort = Short.valueOf(injuryEdit.getText().toString());
+//			if(newShort !=  currentInstance.getInjury()) {
+//				currentInstance.setInjury(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(dazedEdit.length() > 0) {
+//			newShort = Short.valueOf(dazedEdit.getText().toString());
+//			if(newShort !=  currentInstance.getDazed()) {
+//				currentInstance.setDazed(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(stunnedEdit.length() > 0) {
+//			newShort = Short.valueOf(stunnedEdit.getText().toString());
+//			if(newShort !=  currentInstance.getStunned()) {
+//				currentInstance.setStunned(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(noParryEdit.length() > 0) {
+//			newShort = Short.valueOf(noParryEdit.getText().toString());
+//			if(newShort !=  currentInstance.getNoParry()) {
+//				currentInstance.setNoParry(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(staggeredCheckBox.isChecked() != currentInstance.isStaggered()) {
+//			currentInstance.setStaggered(staggeredCheckBox.isChecked());
+//			changed = true;
+//		}
+//
+//		if(knockBackEdit.length() > 0) {
+//			newShort = Short.valueOf(knockBackEdit.getText().toString());
+//			if(newShort !=  currentInstance.getKnockBack()) {
+//				currentInstance.setKnockBack(newShort);
+//				changed = true;
+//			}
+//		}
+//
+//		if(proneCheckBox.isChecked() != currentInstance.isProne()) {
+//			currentInstance.setProne(proneCheckBox.isChecked());
+//			changed = true;
+//		}
+//
+//		if(grappledEdit.length() > 0) {
+//			newShort = Short.valueOf(grappledEdit.getText().toString());
+//			if(newShort !=  currentInstance.getGrappled()) {
+//				currentInstance.setGrappled(newShort);
+//				changed = true;
+//			}
+//		}
+//
 		return changed;
 	}
 
 	private void copyItemToViews() {
 		criticalTypeSpinner.setSelection(criticalTypeSpinnerAdapter.getPosition(currentInstance.getCriticalType()));
-		descriptionEdit.setText(currentInstance.getDescription());
-		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
-		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
-		severityCodeEdit.setText(String.valueOf(currentInstance.getSeverityCode()));
-		bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(currentInstance.getBodyPart()));
-		hitsEdit.setText(String.valueOf(currentInstance.getHits()));
-		bleedingEdit.setText(String.valueOf(currentInstance.getBleeding()));
-		fatigueEdit.setText(String.valueOf(currentInstance.getFatigue()));
-		if(currentInstance.getBreakage() != null) {
-			breakageEdit.setText(String.valueOf(currentInstance.getBreakage()));
-		}
-		else {
-			breakageEdit.setText("");
-		}
-		injuryEdit.setText(String.valueOf(currentInstance.getInjury()));
-		dazedEdit.setText(String.valueOf(currentInstance.getDazed()));
-		stunnedEdit.setText(String.valueOf(currentInstance.getStunned()));
-		noParryEdit.setText(String.valueOf(currentInstance.getNoParry()));
-		staggeredCheckBox.setChecked(currentInstance.isStaggered());
-		knockBackEdit.setText(String.valueOf(currentInstance.getKnockBack()));
-		proneCheckBox.setChecked(currentInstance.isProne());
-		grappledEdit.setText(String.valueOf(currentInstance.getGrappled()));
-		if(currentInstance.getDescription() != null) {
-			descriptionEdit.setError(null);
-		}
+//		descriptionEdit.setText(currentInstance.getDescription());
+//		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
+//		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
+//		severityCodeEdit.setText(String.valueOf(currentInstance.getSeverityCode()));
+//		bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(currentInstance.getBodyPart()));
+//		hitsEdit.setText(String.valueOf(currentInstance.getHits()));
+//		bleedingEdit.setText(String.valueOf(currentInstance.getBleeding()));
+//		fatigueEdit.setText(String.valueOf(currentInstance.getFatigue()));
+//		if(currentInstance.getBreakage() != null) {
+//			breakageEdit.setText(String.valueOf(currentInstance.getBreakage()));
+//		}
+//		else {
+//			breakageEdit.setText("");
+//		}
+//		injuryEdit.setText(String.valueOf(currentInstance.getInjury()));
+//		dazedEdit.setText(String.valueOf(currentInstance.getDazed()));
+//		stunnedEdit.setText(String.valueOf(currentInstance.getStunned()));
+//		noParryEdit.setText(String.valueOf(currentInstance.getNoParry()));
+//		staggeredCheckBox.setChecked(currentInstance.isStaggered());
+//		knockBackEdit.setText(String.valueOf(currentInstance.getKnockBack()));
+//		proneCheckBox.setChecked(currentInstance.isProne());
+//		grappledEdit.setText(String.valueOf(currentInstance.getGrappled()));
+//		if(currentInstance.getDescription() != null) {
+//			descriptionEdit.setError(null);
+//		}
 	}
 
 	private void saveItem() {
@@ -513,7 +509,7 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void initCriticalTypeSpinner(View layout) {
-		criticalTypeSpinner = (Spinner) layout.findViewById(R.id.critical_type_spinner);
+		criticalTypeSpinner = (Spinner) layout.findViewById(R.id.critical_type_filter_spinner);
 
 		criticalTypeSpinner.setAdapter(criticalTypeSpinnerAdapter);
 
@@ -583,7 +579,7 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void initMinRollEdit(View layout) {
-		minRollEdit = (EditText)layout.findViewById(R.id.min_roll_edit);
+//		minRollEdit = (EditText)layout.findViewById(R.id.min_roll_edit);
 		minRollEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -623,7 +619,7 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void initMaxRollEdit(View layout) {
-		maxRollEdit = (EditText)layout.findViewById(R.id.max_roll_edit);
+//		maxRollEdit = (EditText)layout.findViewById(R.id.max_roll_edit);
 		maxRollEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -664,7 +660,7 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void initSeverityCodeEdit(View layout) {
-		severityCodeEdit = (EditText)layout.findViewById(R.id.severity_code_edit);
+//		severityCodeEdit = (EditText)layout.findViewById(R.id.severity_code_edit);
 		severityCodeEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

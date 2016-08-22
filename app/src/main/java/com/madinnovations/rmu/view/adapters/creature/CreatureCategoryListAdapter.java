@@ -31,7 +31,7 @@ import javax.inject.Inject;
  * Populates a ListView with {@link CreatureCategory} information
  */
 public class CreatureCategoryListAdapter extends ArrayAdapter<CreatureCategory> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_1_to_5_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.list_2_field_row;
 	private LayoutInflater layoutInflater;
 
 	/**
