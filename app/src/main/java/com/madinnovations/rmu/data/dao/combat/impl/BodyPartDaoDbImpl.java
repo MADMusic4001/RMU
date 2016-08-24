@@ -19,8 +19,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
@@ -33,6 +35,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPartDao, BodyPartSchema {
+    private LruCache<Integer, BodyPart> bodyPartsCache = new LruCache<>(CacheConfig.BODY_PART_CACHE_SIZE);
+
     /**
      * Creates a new instance of BodyPartDaoDbImpl
      *
@@ -88,6 +92,10 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPa
         instance.setId(id);
     }
 
+    @Override
+    protected LruCache<Integer, BodyPart> getCache() {
+        return bodyPartsCache;
+    }
 
     @Override
     protected BodyPart cursorToEntity(@NonNull Cursor cursor) {

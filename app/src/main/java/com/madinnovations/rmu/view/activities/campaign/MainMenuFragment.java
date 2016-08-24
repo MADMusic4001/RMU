@@ -39,7 +39,6 @@ import java.util.Map;
 public class MainMenuFragment extends Fragment {
 	private List<String> groupNames;
 	private Map<String, List<String>> groupItems;
-//	private int currentGroup = -1;
 
 	@Nullable
 	@Override
@@ -67,10 +66,6 @@ public class MainMenuFragment extends Fragment {
 						listView.collapseGroup(i);
 					}
 				}
-//				if(currentGroup != -1) {
-//					listView.collapseGroup(currentGroup);
-//				}
-//				currentGroup = groupNumber;
 			}
 		});
 		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
@@ -187,7 +182,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showSpellLists();
 								break;
 							case 3:
-//								((CampaignActivity)getActivity()).showSpellListTypes();
+								((CampaignActivity)getActivity()).showSpellListTypes();
 								break;
 							case 4:
 //								((CampaignActivity)getActivity()).showSpellSubTypes();

@@ -40,27 +40,6 @@ public class SpellListTypeDaoDbImpl extends BaseDaoDbImpl<SpellListType> impleme
 	}
 
 	@Override
-	protected SpellListType cursorToEntity(@NonNull Cursor cursor) {
-		SpellListType instance = new SpellListType();
-
-		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-
-		return null;
-	}
-
-	@Override
-	protected ContentValues getContentValues(SpellListType instance) {
-		ContentValues values = new ContentValues(3);
-
-		values.put(COLUMN_NAME, instance.getName());
-		values.put(COLUMN_DESCRIPTION, instance.getDescription());
-
-		return values;
-	}
-
-	@Override
 	protected String getTableName() {
 		return TABLE_NAME;
 	}
@@ -83,5 +62,26 @@ public class SpellListTypeDaoDbImpl extends BaseDaoDbImpl<SpellListType> impleme
 	@Override
 	protected void setId(SpellListType instance, int id) {
 		instance.setId(id);
+	}
+
+	@Override
+	protected SpellListType cursorToEntity(@NonNull Cursor cursor) {
+		SpellListType instance = new SpellListType();
+
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+
+		return instance;
+	}
+
+	@Override
+	protected ContentValues getContentValues(SpellListType instance) {
+		ContentValues values = new ContentValues(2);
+
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+
+		return values;
 	}
 }

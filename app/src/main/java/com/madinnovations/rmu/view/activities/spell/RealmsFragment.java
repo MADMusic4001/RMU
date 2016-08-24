@@ -44,8 +44,8 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.RealmListAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import java.util.Collection;
@@ -59,15 +59,14 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for skill categories.
  */
-public class RealmsFragment extends Fragment {
+public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Realm> {
 	@Inject
 	protected RealmRxHandler realmRxHandler;
 	@Inject
 	protected StatRxHandler statRxHandler;
 	@Inject
-	protected RealmListAdapter listAdapter;
-	@Inject
 	protected StatSpinnerAdapter statSpinnerAdapter;
+	private TwoFieldListAdapter<Realm> listAdapter;
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
@@ -244,9 +243,9 @@ public class RealmsFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -401,7 +400,7 @@ public class RealmsFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		realmRxHandler.getAll()
@@ -452,5 +451,15 @@ public class RealmsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(Realm realm) {
+		return realm.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Realm realm) {
+		return realm.getDescription();
 	}
 }

@@ -41,18 +41,15 @@ public class SpellDaoSqlModule {
 	public RealmDao provideRealmDao(RMUDatabaseHelper helper, StatDao statDao) {
 		return new RealmDaoDbImpl(helper, statDao);
 	}
-
 	@Provides @Singleton
 	public SpellDao provideSpellDao(RMUDatabaseHelper helper, SpellListDao spellListDao) {
 		return new SpellDaoDbImpl(helper, spellListDao);
 	}
-
 	@Provides @Singleton
 	public SpellListDao provideSpellListDao(RMUDatabaseHelper helper, RealmDao realmDao, SpellListTypeDao spellListTypeDao,
 											ProfessionDao professionDao) {
 		return new SpellListDaoDbImpl(helper, realmDao, spellListTypeDao, professionDao);
 	}
-
 	@Provides @Singleton
 	public SpellListTypeDao provideSpellListTypeDao(RMUDatabaseHelper helper) {
 		return new SpellListTypeDaoDbImpl(helper);

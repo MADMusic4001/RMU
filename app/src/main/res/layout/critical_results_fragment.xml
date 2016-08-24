@@ -56,6 +56,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_roll"/>
         <TextView
@@ -63,6 +64,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_body_part"/>
         <TextView
@@ -70,6 +72,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_hits"/>
         <TextView
@@ -77,6 +80,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_bleeding"/>
         <TextView
@@ -84,6 +88,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_fatigue"/>
         <TextView
@@ -91,6 +96,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_break"/>
         <TextView
@@ -98,6 +104,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_injury"/>
         <TextView
@@ -105,6 +112,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_dazed"/>
         <TextView
@@ -112,6 +120,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_stunned"/>
         <TextView
@@ -119,6 +128,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_no_parry"/>
         <TextView
@@ -126,6 +136,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_stagger"/>
         <TextView
@@ -133,6 +144,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_knock_back"/>
         <TextView
@@ -140,6 +152,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_prone"/>
         <TextView
@@ -147,6 +160,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_grapple"/>
         <TextView
@@ -154,6 +168,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:gravity="center"
             style="@style/TextViewListHeader"
             android:text="@string/label_roll"/>
     </LinearLayout>

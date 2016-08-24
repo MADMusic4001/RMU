@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
@@ -28,4 +29,5 @@ import dagger.Subcomponent;
 @Subcomponent(modules = SpellFragmentModule.class)
 public interface SpellFragmentComponent {
 	public void injectInto(RealmsFragment realmsFragment);
+	public void injectInto(SpellListTypesFragment spellListTypesFragment);
 }

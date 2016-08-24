@@ -163,6 +163,13 @@
   <string name="toast_specialization_deleted">Specialization deleted.</string>
   <string name="toast_specialization_delete_failed">Specialization deletion failed.</string>
 
+  <string name="toast_spell_list_types_load_failed">Failed to load Spell List Types</string>
+  <string name="toast_spell_list_types_loaded">%1$d Spell List Types loaded.</string>
+  <string name="toast_spell_list_type_saved">Spell List Type saved.</string>
+  <string name="toast_spell_list_type_save_failed">Spell List Type save failed.</string>
+  <string name="toast_spell_list_type_deleted">Spell List Type deleted.</string>
+  <string name="toast_spell_list_type_delete_failed">Spell List Type deletion failed.</string>
+
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>

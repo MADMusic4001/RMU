@@ -40,7 +40,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemRxHandler;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.item.ItemListAdapter;
+import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 
 import java.util.Collection;
@@ -54,11 +54,10 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature categories.
  */
-public class ItemsFragment extends Fragment {
+public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Item> {
 	@Inject
 	protected ItemRxHandler   itemRxHandler;
-	@Inject
-	protected ItemListAdapter listAdapter;
+	private   TwoFieldListAdapter<Item> listAdapter;
 	private   ListView        listView;
 	private   EditText        nameEdit;
 	private   EditText        descriptionEdit;
@@ -182,9 +181,9 @@ public class ItemsFragment extends Fragment {
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -319,7 +318,7 @@ public class ItemsFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		itemRxHandler.getAll()
@@ -355,7 +354,6 @@ public class ItemsFragment extends Fragment {
 					}
 				});
 
-		// Clicking a row in the listView will send the user to the edit world activity
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -369,5 +367,15 @@ public class ItemsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	@Override
+	public CharSequence getField1Value(Item item) {
+		return item.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Item item) {
+		return item.getDescription();
 	}
 }

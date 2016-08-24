@@ -30,6 +30,7 @@ import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -110,7 +111,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         ContentValues initialValues = new ContentValues(20);
 
         initialValues.put(COLUMN_SEVERITY_CODE, String.valueOf(instance.getSeverityCode()));
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+        initialValues.put(COLUMN_DESCRIPTION, instance.getResultText());
         initialValues.put(COLUMN_MIN_ROLL, instance.getMinRoll());
         initialValues.put(COLUMN_MAX_ROLL, instance.getMaxRoll());
         initialValues.put(COLUMN_BODY_PART_ID, instance.getBodyPart().getId());
@@ -165,12 +166,50 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         return list;
     }
 
+    @Override
+    public Collection<CriticalResult> getCriticalResultTableRows(CriticalType criticalType, char severityCode) {
+        final String selectionArgs[] = { String.valueOf(criticalType.getId()), String.valueOf(severityCode) };
+        final String selection = COLUMN_CRITICAL_TYPE_ID + " = ? AND " + COLUMN_SEVERITY_CODE + " = ?";
+        List<CriticalResult> list = new ArrayList<>();
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        boolean newTransaction = !db.inTransaction();
+        if(newTransaction) {
+            db.beginTransaction();
+        }
+        try {
+            Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_MIN_ROLL);
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    CriticalResult instance = cursorToEntity(cursor, criticalType, severityCode);
+
+                    list.add(instance);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+            }
+        }
+        finally {
+            if(newTransaction) {
+                db.endTransaction();
+            }
+        }
+
+        return list;
+    }
+
     private CriticalResult cursorToEntity(@NonNull Cursor cursor, CriticalType criticalType) {
+        return cursorToEntity(cursor, criticalType, cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
+    }
+
+    private CriticalResult cursorToEntity(@NonNull Cursor cursor, CriticalType criticalType, char severityCode) {
         CriticalResult instance = new CriticalResult();
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-        instance.setSeverityCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
-        instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setSeverityCode(severityCode);
+        instance.setResultText(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
         instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
         instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
         instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));

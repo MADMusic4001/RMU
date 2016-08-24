@@ -181,4 +181,21 @@ public class CriticalResultRxHandler {
 				}
 		).subscribeOn(Schedulers.io());
 	}
+
+	public Observable<Collection<CriticalResult>> getCriticalResultTableRows(final CriticalType criticalType, final char severityCode) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<CriticalResult>>() {
+					@Override
+					public void call(Subscriber<? super Collection<CriticalResult>> subscriber) {
+						try {
+							subscriber.onNext(dao.getCriticalResultTableRows(criticalType, severityCode));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io());
+	}
 }

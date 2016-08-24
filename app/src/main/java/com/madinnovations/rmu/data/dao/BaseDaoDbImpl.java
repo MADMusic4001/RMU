@@ -268,7 +268,6 @@ public abstract class BaseDaoDbImpl<T> {
 				result = (getId(instance) != -1);
 			}
 			else {
-//				contentValues.put(getIdColumnName(), getId(instance));
 				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
 				result = (count == 1);
 			}

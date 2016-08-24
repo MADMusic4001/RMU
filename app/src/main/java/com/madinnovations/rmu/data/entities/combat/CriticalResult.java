@@ -15,16 +15,25 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Critical result attributes
  */
 public class CriticalResult {
+    private static short[] rangeStarts = {1, 2, 4, 6, 11, 16, 21, 26, 36, 46, 56, 66, 67, 76, 81, 86, 91, 96, 98, 100, 101};
+    private static String[] bodyPartForRange = {"Head", "Chest", "Groin", "Leg", "Arm", "Head", "Chest", "Groin", "Leg", "Arm",
+            "Arm", "Groin", "Leg", "Chest", "Head", "Arm", "Leg", "Groin", "Chest", "Head"};
+
     private int id = -1;
     private char severityCode = 'A';
-    private String description;
+    private String resultText = null;
     private short minRoll = 0;
     private short maxRoll = 1;
-    private BodyPart bodyPart;
+    private BodyPart bodyPart = null;
     private short hits = 0;
     private short bleeding = 0;
     private short fatigue = 0;
@@ -37,7 +46,72 @@ public class CriticalResult {
     private short knockBack = 0;
     private boolean prone = false;
     private short grappled = 0;
-    private CriticalType criticalType;
+    private CriticalType criticalType = null;
+
+	/**
+     * Creates a new CriticalResult instance with all values set to defaults.
+     */
+    public CriticalResult() {
+    }
+
+	/**
+     * Creates a new CriticalResult instance with the given criticalType, severityCode. minRoll, maxRoll, and bodyPart values and all others
+     * set to defaults.
+     *
+     * @param criticalType  a CriticalType instance to use for the initial criticalType value
+     * @param severityCode  a character to use for the initial severityCode value
+     * @param minRoll  a short to use for the initial minRoll value
+     * @param maxRoll  a short to use for the initial maxRoll value
+     * @param bodyPart  a BodyPart instance to use for the initial bodyPart value
+     */
+    public CriticalResult(CriticalType criticalType, char severityCode, short minRoll, short maxRoll, BodyPart bodyPart) {
+        this.criticalType = criticalType;
+        this.severityCode = severityCode;
+        this.minRoll = minRoll;
+        this.maxRoll = maxRoll;
+        this.bodyPart = bodyPart;
+    }
+
+    public static Collection<CriticalResult> generateMissingCriticalResultRows(Collection<CriticalResult> currentRows,
+                                                                               @NonNull CriticalType criticalType,
+                                                                               char severityCode,
+                                                                               @NonNull Collection<BodyPart> bodyParts) {
+        Collection<CriticalResult> allRows;
+        CriticalResult currentRow;
+        BodyPart currentBodyPart = null;
+
+        if(currentRows.size() == rangeStarts.length - 1) {
+            allRows = currentRows;
+        }
+        else {
+            allRows = new ArrayList<>(rangeStarts.length - 1);
+            for(int i = 0; i < rangeStarts.length - 1; i++) {
+                currentRow = null;
+                if(currentRows != null && !currentRows.isEmpty()) {
+                    for (CriticalResult criticalResult : currentRows) {
+                        if (criticalResult.getMinRoll() == rangeStarts[i]) {
+                            currentRow = criticalResult;
+                            break;
+                        }
+                    }
+                }
+                currentBodyPart = null;
+                for(BodyPart bodyPart : bodyParts) {
+                    if(bodyPart.getName().equals(bodyPartForRange[i])) {
+                        currentBodyPart = bodyPart;
+                        break;
+                    }
+                }
+                if(currentRow == null) {
+                    currentRow = new CriticalResult(criticalType, severityCode, rangeStarts[i], (short)(rangeStarts[i+1] - 1),
+                            currentBodyPart);
+                }
+                allRows.add(currentRow);
+            }
+        }
+
+        return allRows;
+    }
 
 	/**
      * Checks the validity of the CriticalResult instance.
@@ -45,7 +119,7 @@ public class CriticalResult {
      * @return true if the CriticalResult instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return description != null && !description.isEmpty() && bodyPart != null && minRoll <= maxRoll && criticalType != null;
+        return resultText != null && !resultText.isEmpty() && bodyPart != null && minRoll <= maxRoll && criticalType != null;
     }
 
     @Override
@@ -53,7 +127,7 @@ public class CriticalResult {
         return "CriticalResult{" +
                 "id=" + id +
                 ", severityCode=" + severityCode +
-                ", description='" + description + '\'' +
+                ", resultText='" + resultText + '\'' +
                 ", minRoll=" + minRoll +
                 ", maxRoll=" + maxRoll +
                 ", bodyPart=" + bodyPart +
@@ -101,11 +175,11 @@ public class CriticalResult {
     public void setSeverityCode(char severityCode) {
         this.severityCode = severityCode;
     }
-    public String getDescription() {
-        return description;
+    public String getResultText() {
+        return resultText;
     }
-    public void setDescription(String description) {
-        this.description = description;
+    public void setResultText(String resultText) {
+        this.resultText = resultText;
     }
     public short getMinRoll() {
         return minRoll;

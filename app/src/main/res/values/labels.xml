@@ -138,6 +138,8 @@
   <string name="label_delete_skill_category">Delete Skill Category</string>
   <string name="label_new_specialization">New Specialization</string>
   <string name="label_delete_specialization">Delete Specialization</string>
+  <string name="label_new_spell_list_type">New Spell List Type</string>
+  <string name="label_delete_spell_list_type">Delete Spell List Type</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent">New Talent</string>
@@ -230,6 +232,8 @@
   <string name="label_skill_category_name">Skill Category Name</string>
   <string name="label_specialization_description">Specialization Description</string>
   <string name="label_specialization_name">Specialization Name</string>
+  <string name="label_spell_list_type_description">Spell List Type Description</string>
+  <string name="label_spell_list_type_name">Spell List Type Name</string>
   <string name="label_stagger">Stagger</string>
   <string name="label_stunned">Stunned</string>
   <string name="label_talent_description">Talent Description</string>

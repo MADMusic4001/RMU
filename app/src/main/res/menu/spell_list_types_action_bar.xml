@@ -16,9 +16,8 @@
  * -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/context_new_critical_result"
-        android:title="@string/label_new_critical_result"/>
-    <item
-        android:id="@+id/context_delete_critical_result"
-        android:title="@string/label_delete_critical_result"/>
+        android:id="@+id/action_new_spell_list_type"
+        android:title="@string/label_new_spell_list_type"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="ifRoom"/>
 </menu>

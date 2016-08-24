@@ -20,8 +20,8 @@ package com.madinnovations.rmu.data.entities.spells;
  */
 public class SpellListType {
 	private int id = -1;
-	private String name;
-	private String description;
+	private String name = null;
+	private String description = null;
 
 	/**
 	 * Checks the validity of the SpellListType instance.
@@ -49,7 +49,6 @@ public class SpellListType {
 		SpellListType that = (SpellListType) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

@@ -20,9 +20,9 @@ package com.madinnovations.rmu.data.entities.spells;
  */
 public class Spell {
 	private int id = -1;
-	private SpellList spellList;
-	private String name;
-	private String description;
+	private SpellList spellList = null;
+	private String name = null;
+	private String description = null;
 
 	/**
 	 * Checks the validity of the Spell instance.
@@ -51,7 +51,6 @@ public class Spell {
 		Spell spell = (Spell) o;
 
 		return id == spell.id;
-
 	}
 
 	@Override

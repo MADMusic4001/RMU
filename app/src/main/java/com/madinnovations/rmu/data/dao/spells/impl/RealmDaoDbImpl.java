@@ -19,8 +19,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
@@ -34,6 +36,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, RealmSchema {
+	private LruCache<Integer, Realm> realmsCache = new LruCache<>(CacheConfig.REALM_CACHE_SIZE);
 	private StatDao statDao;
 
 	/**
@@ -71,6 +74,11 @@ public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, Re
 	@Override
 	protected void setId(Realm instance, int id) {
 		instance.setId(id);
+	}
+
+	@Override
+	protected LruCache<Integer, Realm> getCache() {
+		return realmsCache;
 	}
 
 	@Override

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.adapters.item;
+package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,26 +23,30 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.object.Item;
 
 import javax.inject.Inject;
 
 /**
- * Populates a ListView with {@link Item} information
+ * Populates a Spinner with critical severity levels
  */
-public class ItemListAdapter extends ArrayAdapter<Item> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_2_field_row;
+public class CriticalSeveritySpinnerAdapter extends ArrayAdapter<Character> {
+	private static final int LAYOUT_RESOURCE_ID = R.layout.spinner_row;
 	private LayoutInflater layoutInflater;
 
 	/**
-	 * Creates a new ItemListAdapter instance.
+	 * Creates a new CriticalSeveritySpinnerAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public ItemListAdapter(Context context) {
+	public CriticalSeveritySpinnerAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return getView(position, convertView, parent);
 	}
 
 	@Override
@@ -52,8 +56,7 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
 
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
-			holder = new ViewHolder((TextView) rowView.findViewById(R.id.row_field1),
-									(TextView) rowView.findViewById(R.id.row_field2));
+			holder = new ViewHolder((TextView) rowView.findViewById(R.id.name_view));
 			rowView.setTag(holder);
 		}
 		else {
@@ -61,19 +64,16 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		Item item = getItem(position);
-		holder.nameView.setText(item.getName());
-		holder.descriptionView.setText(item.getDescription());
+		Character character = getItem(position);
+		holder.nameView.setText(String.valueOf(character));
 		return rowView;
 	}
 
 	private class ViewHolder {
 		private TextView nameView;
-		private TextView descriptionView;
 
-		ViewHolder(TextView nameView, TextView descriptionView) {
+		ViewHolder(TextView nameView) {
 			this.nameView = nameView;
-			this.descriptionView = descriptionView;
 		}
 	}
 }

@@ -21,22 +21,25 @@
 
     <EditText
         android:id="@+id/left_roll_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:inputType="none"
         android:clickable="false"
         android:cursorVisible="false"
         android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        android:focusableInTouchMode="false"
+        android:background="@null"/>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_weight="13"
         android:layout_height="match_parent">
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
             <Spinner
                 android:id="@+id/body_part_spinner"
                 android:layout_width="0dp"
@@ -47,82 +50,104 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="3"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/bleeding_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/fatigue_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="3"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/breakage_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="numberSigned"
+                android:maxLength="3"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/injury_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="3"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/dazed_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/stunned_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/stunned_no_parry_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
                 android:background="@null"/>
             <CheckBox
                 android:id="@+id/staggered_checkbox"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/knock_back_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="3"
                 android:background="@null"/>
             <CheckBox
                 android:id="@+id/prone_checkbox"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:background="@null"/>
             <EditText
                 android:id="@+id/grappled_edit"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="3"
                 android:background="@null"/>
         </LinearLayout>
         <EditText
@@ -130,15 +155,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:background="@null"/>
+            android:textColor="@color/colorAccent"
+            android:background="@color/colorPrimaryDark"/>
     </LinearLayout>
     <EditText
         android:id="@+id/right_roll_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:inputType="none"
         android:clickable="false"
         android:cursorVisible="false"
         android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        android:focusableInTouchMode="false"
+        android:background="@null"/>
 </LinearLayout>

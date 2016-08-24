@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.combat;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -69,4 +70,13 @@ public interface CriticalResultDao {
      * @return  a List containing all CriticalResult objects that reference the given CriticalType currently in persistent storage.
      */
     public List<CriticalResult> getCriticalResultsForCriticalType(CriticalType filter);
+
+	/**
+     * Retrieves all CriticalResult objects that have the given severity code and reference the given CriticalType from persistent storage.
+     *
+     * @param criticalType  a CriticalType instance whose ID will be used to filter the CriticalResult objects returned by the query
+     * @param severityCode  the severity code (A-E) that will be used to filter the CriticalResult objects returned by the query
+     * @return  a Collection containing all CriticalResult objects that match the given criteria currently in persistent storage.
+     */
+    public Collection<CriticalResult> getCriticalResultTableRows(CriticalType criticalType, char severityCode);
 }
