@@ -111,7 +111,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         ContentValues initialValues = new ContentValues(20);
 
         initialValues.put(COLUMN_SEVERITY_CODE, String.valueOf(instance.getSeverityCode()));
-        initialValues.put(COLUMN_DESCRIPTION, instance.getResultText());
+        initialValues.put(COLUMN_RESULT_TEXT, instance.getResultText());
         initialValues.put(COLUMN_MIN_ROLL, instance.getMinRoll());
         initialValues.put(COLUMN_MAX_ROLL, instance.getMaxRoll());
         initialValues.put(COLUMN_BODY_PART_ID, instance.getBodyPart().getId());
@@ -209,7 +209,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setSeverityCode(severityCode);
-        instance.setResultText(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setResultText(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESULT_TEXT)));
         instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
         instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
         instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));

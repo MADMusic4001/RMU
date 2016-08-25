@@ -76,7 +76,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RMUDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "rmu_db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -156,6 +156,23 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        Log.d("RMUDatabaseHelper", "Upgrading database from version " + oldVersion + " to version " + newVersion);
+        Log.i("RMUDatabaseHelper", "Upgrading database from version " + oldVersion + " to version " + newVersion);
+        try {
+            sqLiteDatabase.beginTransaction();
+            switch (oldVersion) {
+                case 1:
+                    sqLiteDatabase.execSQL("PRAGMA writable_schema = 1;");
+                    sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_ALTER_V1_TO_V2);
+                    sqLiteDatabase.execSQL("PRAGMA writable_schema = 0;");
+//                    sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_RENAME_V1_TO_V2);
+//                    sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
+//                    sqLiteDatabase.execSQL(CriticalResultSchema.COPY_TABLE_V1_TO_V2);
+//                    sqLiteDatabase.execSQL(CriticalResultSchema.DROP_TABLE_V1);
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        }
+        finally {
+            sqLiteDatabase.endTransaction();
+        }
     }
 }

@@ -23,7 +23,7 @@ public interface CriticalResultSchema {
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_SEVERITY_CODE = "severityCode";
-    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_RESULT_TEXT = "resultText";
     public static final String COLUMN_MIN_ROLL = "minRoll";
     public static final String COLUMN_MAX_ROLL = "maxRoll";
     public static final String COLUMN_BODY_PART_ID = "bodyPartId";
@@ -46,7 +46,7 @@ public interface CriticalResultSchema {
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
             + COLUMN_SEVERITY_CODE + " TEXT NOT NULL, "
-            + COLUMN_DESCRIPTION  + " TEXT NOT NULL, "
+            + COLUMN_RESULT_TEXT  + " TEXT NOT NULL, "
             + COLUMN_MIN_ROLL + " INTEGER NOT NULL, "
             + COLUMN_MAX_ROLL + " INTEGER NOT NULL, "
             + COLUMN_BODY_PART_ID + " INTEGER NOT NULL, "
@@ -67,7 +67,10 @@ public interface CriticalResultSchema {
             + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
             + ")";
 
-    public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SEVERITY_CODE, COLUMN_DESCRIPTION, COLUMN_MIN_ROLL,
+    public static final String TABLE_ALTER_V1_TO_V2 = "UPDATE SQLITE_MASTER SET SQL = '"
+            + TABLE_CREATE + "' WHERE NAME = '" + TABLE_NAME + "';";
+
+    public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SEVERITY_CODE, COLUMN_RESULT_TEXT, COLUMN_MIN_ROLL,
             COLUMN_MAX_ROLL, COLUMN_BODY_PART_ID, COLUMN_HITS, COLUMN_BLEEDING, COLUMN_FATIGUE, COLUMN_BREAKAGE, COLUMN_INJURY,
             COLUMN_DAZED, COLUMN_STUNNED, COLUMN_NO_PARRY, COLUMN_STAGGERED, COLUMN_KNOCK_BACK, COLUMN_PRONE, COLUMN_GRAPPLED,
             COLUMN_CRITICAL_TYPE_ID};
