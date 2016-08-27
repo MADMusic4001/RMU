@@ -56,10 +56,10 @@
     <string name="hint_initial_cost">New Initial Cost</string>
     <string name="hint_locomotion_type_description">Locomotion Type Description</string>
     <string name="hint_locomotion_type_name">Locomotion Type Name</string>
-    <string name="hint_min_height">New Min Height</string>
-    <string name="hint_max_height">New Max Height</string>
-    <string name="hint_min_weight">New Min Weight</string>
-    <string name="hint_max_weight">New Max Weight</string>
+    <string name="hint_min_height">Min Height</string>
+    <string name="hint_max_height">Max Height</string>
+    <string name="hint_min_weight">Min Weight</string>
+    <string name="hint_max_weight">Max Weight</string>
     <string name="hint_parameter_description">Parameter Description</string>
     <string name="hint_parameter_name">Parameter Name</string>
     <string name="hint_parameter_value">Parameter Value</string>
@@ -89,7 +89,12 @@
     <string name="hint_creature_type_description">Creature Type Description</string>
     <string name="hint_creature_type_name">Creature Type Name</string>
     <string name="hint_creature_variety_description">Creature Variety Description</string>
+    <string name="hint_creature_variety_height">Creature Variety Height</string>
+    <string name="hint_creature_variety_length">Creature Variety Length</string>
     <string name="hint_creature_variety_name">Creature Variety Name</string>
+    <string name="hint_creature_variety_typical_level">Typical level</string>
+    <string name="hint_creature_variety_weight">Creature Variety Weight</string>
+    <string name="hint_level">Level</string>
     <string name="hint_outlook_description">Outlook Description</string>
     <string name="hint_outlook_name">Outlook Name</string>
 

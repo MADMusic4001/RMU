@@ -179,6 +179,7 @@
   <string name="label_body_part_description">Body Part Description</string>
   <string name="label_body_part_name">Body Part Name</string>
   <string name="label_break">Break</string>
+  <string name="label_choose_talent">Choose Talent</string>
   <string name="label_critical_code">Critical Code</string>
   <string name="label_critical_code_description">Critical Code Description</string>
   <string name="label_critical_result_text">Critical Result Text</string>
@@ -218,6 +219,7 @@
   <string name="label_ph_field3">Field 3</string>
   <string name="label_primary_skills">Primary Skills</string>
   <string name="label_prone">Prone</string>
+  <string name="label_racial_stat_bonuses">Racial Stat Bonuses</string>
   <string name="label_realm_stats">Realm Stats</string>
   <string name="label_requires_specialization">Requires Specialization</string>
   <string name="label_roll">Roll</string>
@@ -235,12 +237,16 @@
   <string name="label_spell_list_type_description">Spell List Type Description</string>
   <string name="label_spell_list_type_name">Spell List Type Name</string>
   <string name="label_stagger">Stagger</string>
+  <string name="label_stat_bonus">Stat Bonus</string>
+  <string name="label_stat_description">Stat Description</string>
+  <string name="label_stat_name">Stat Name</string>
   <string name="label_stunned">Stunned</string>
   <string name="label_talent_description">Talent Description</string>
   <string name="label_talent_name">Talent Name</string>
   <string name="label_talent_category_name">Talent Category Name</string>
   <string name="label_talent_category_description">Talent Category Description</string>
   <string name="label_tertiary_skills">Tertiary Skills</string>
+  <string name="label_tiers">Tiers</string>
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- Input field labels -->
@@ -253,13 +259,19 @@
   <string name="input_label_damage_table">Damage Table:</string>
   <string name="input_label_dazed">Dazed:</string>
   <string name="input_label_fatigue">Fatigue:</string>
+  <string name="input_label_height">Height:</string>
   <string name="input_label_hits">Hits:</string>
   <string name="input_label_injury">Injury:</string>
+  <string name="input_label_length">Length:</string>
+  <string name="input_label_level">Level:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
+  <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
+  <string name="input_label_weight">Weight:</string>
 
   <!-- Format strings -->
   <string name="hyphen">-</string>
   <string name="min_max_roll_value">%1$2d-%2$3d</string>
+  <string name="size_code_name_string">%1$s - %2$s</string>
 </resources>

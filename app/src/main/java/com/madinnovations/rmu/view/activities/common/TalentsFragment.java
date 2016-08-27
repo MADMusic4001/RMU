@@ -78,6 +78,8 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for talents.
  */
 public class TalentsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Talent> {
+	private static final String DRAG_ADD_PARAMETER = "add-parameter";
+	private static final String DRAG_REMOVE_PARAMETER = "remove-parameter";
 	@Inject
 	protected TalentRxHandler talentRxHandler;
 	@Inject
@@ -106,7 +108,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private CheckBox flawCheckbox;
 	private CheckBox situationalCheckbox;
 	private EditText actionPointsEdit;
-	private ListView selectedParametersListview;
+	private ListView selectedParametersList;
 	private Talent currentInstance = new Talent();
 	private boolean          isNew            = true;
 
@@ -131,8 +133,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initFlawCheckbox(layout);
 		initSituationalCheckbox(layout);
 		initActionPointsEdit(layout);
-		initParametersListview(layout);
-		initSelectedParametersListview(layout);
+		initParametersListView(layout);
+		initSelectedParametersListView(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -202,7 +204,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					return true;
 				}
 			case R.id.context_delete_parameter:
-				ParameterValue parameterValue = (ParameterValue)selectedParametersListview.getItemAtPosition(info.position);
+				ParameterValue parameterValue = (ParameterValue) selectedParametersList.getItemAtPosition(info.position);
 				if(parameterValue != null) {
 					selectedParametersListAdapter.remove(parameterValue);
 					selectedParametersListAdapter.notifyDataSetChanged();
@@ -368,9 +370,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.header_field1);
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
 									textView.setText(savedItem.getName());
-									textView = (TextView) v.findViewById(R.id.header_field2);
+									textView = (TextView) v.findViewById(R.id.row_field2);
 									textView.setText(savedItem.getDescription());
 								}
 							}
@@ -673,7 +675,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			@Override
 			public void afterTextChanged(Editable editable) {
 				if (editable.length() == 0 && actionPointsEdit != null) {
-					actionPointsEdit.setError(getString(R.string.validation_hits_required));
+					actionPointsEdit.setError(getString(R.string.validation_talent_action_points_required));
 				}
 			}
 		});
@@ -693,17 +695,17 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initParametersListview(View layout) {
-		ListView parametersListview = (ListView) layout.findViewById(R.id.parameters_list);
+	private void initParametersListView(View layout) {
+		ListView parametersListView = (ListView) layout.findViewById(R.id.parameters_list);
 
-		parametersListview.setAdapter(parametersListAdapter);
+		parametersListView.setAdapter(parametersListAdapter);
 
-		parametersListview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+		parametersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 				String positionString = String.valueOf(position);
 				ClipData.Item clipDataItem = new ClipData.Item(positionString);
-				ClipData dragData = new ClipData(positionString, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN},
+				ClipData dragData = new ClipData(DRAG_ADD_PARAMETER, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN},
 						clipDataItem);
 
 				View.DragShadowBuilder myShadow = new MyDragShadowBuilder(view);
@@ -726,7 +728,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentsFragment", "Exception caught getting all Parameter instances in initParametersListview", e);
+						Log.e("TalentsFragment", "Exception caught getting all Parameter instances in initParametersListView", e);
 					}
 					@Override
 					public void onNext(Collection<Parameter> items) {
@@ -737,67 +739,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				});
 	}
 
-//	private void initAddParameterButton(View layout) {
-//		Button addParameterButton = (Button) layout.findViewById(R.id.add_parameter_button);
-//
-//		addParameterButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				boolean change = false;
-//				SparseBooleanArray checkedList = parametersListview.getCheckedItemPositions();
-//				for(int i = 0; i < checkedList.size(); i++) {
-//					if(checkedList.valueAt(i)) {
-//						if(selectedParametersListAdapter.getPosition(parametersListAdapter.getItem(checkedList.keyAt(i))) == -1) {
-//							Parameter parameter = parametersListAdapter.getItem(checkedList.keyAt(i));
-//							selectedParametersListAdapter.add(parameter);
-//							currentInstance.getParameters().add(parameter);
-//							change = true;
-//						}
-//					}
-//				}
-//				parametersListview.clearChoices();
-//				parametersListAdapter.notifyDataSetChanged();
-//				selectedParametersListAdapter.notifyDataSetChanged();
-//				if(change) {
-//					saveItem();
-//				}
-//			}
-//		});
-//	}
-//
-//	private void initRemoveParameterButton(View layout) {
-//		Button removeParameterButton = (Button) layout.findViewById(R.id.remove_parameter_button);
-//
-//		removeParameterButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				boolean change = false;
-//				SparseBooleanArray checkedList = selectedParametersListview.getCheckedItemPositions();
-//				for(int i = checkedList.size() - 1 ; i >=0 ; i--) {
-//					if(checkedList.valueAt(i)) {
-//						Parameter parameter = selectedParametersListAdapter.getItem(checkedList.keyAt(i));
-//						selectedParametersListAdapter.remove(parameter);
-//						currentInstance.getParameters().remove(parameter);
-//						change = true;
-//					}
-//				}
-//				selectedParametersListview.clearChoices();
-//				selectedParametersListAdapter.notifyDataSetChanged();
-//				if(change) {
-//					saveItem();
-//				}
-//			}
-//		});
-//	}
-
-	private void initSelectedParametersListview(View layout) {
-		selectedParametersListview = (ListView) layout.findViewById(R.id.selected_parameters_list);
-		selectedParametersListview.setAdapter(selectedParametersListAdapter);
-		selectedParametersListview.setOnDragListener(new MyDragEventListener());
+	private void initSelectedParametersListView(View layout) {
+		selectedParametersList = (ListView) layout.findViewById(R.id.selected_parameters_list);
+		selectedParametersList.setAdapter(selectedParametersListAdapter);
+		selectedParametersList.setOnDragListener(new MyDragEventListener());
 		selectedParametersListAdapter.clear();
 		selectedParametersListAdapter.addAll(currentInstance.getParameterValues());
 		selectedParametersListAdapter.notifyDataSetChanged();
-		registerForContextMenu(selectedParametersListview);
+		registerForContextMenu(selectedParametersList);
 	}
 
 	private void initListView(View layout) {
@@ -856,61 +805,54 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	}
 
 	protected class MyDragEventListener implements View.OnDragListener {
-		private Drawable originalDrawable;
+		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
+		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+		private Drawable normalShape = selectedParametersList.getBackground();
 
+		@Override
 		public boolean onDrag(View v, DragEvent event) {
 			final int action = event.getAction();
 
 			switch(action) {
 				case DragEvent.ACTION_DRAG_STARTED:
-					if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-						// As an example of what your application might do,
-						// applies a blue color tint to the View to indicate that it can accept
-						// data.
-						originalDrawable = v.getBackground();
-						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
-								null));
+					if(event.getClipDescription().getLabel().equals(DRAG_ADD_PARAMETER)) {
+						v.setBackground(targetShape);
 						v.invalidate();
-						return true;
+						break;
 					}
 					return false;
 				case DragEvent.ACTION_DRAG_ENTERED:
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-						v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null));
-					}
-					else {
-						v.setBackgroundColor(Color.GREEN);
-					}
+					v.setBackground(hoverShape);
 					v.invalidate();
-					return true;
+					break;
 				case DragEvent.ACTION_DRAG_LOCATION:
-					return true;
+					break;
 				case DragEvent.ACTION_DRAG_EXITED:
-					v.setBackground(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background,
-							null));
+					v.setBackground(targetShape);
 					v.invalidate();
-					return true;
+					break;
 				case DragEvent.ACTION_DROP:
-					ClipData.Item item = event.getClipData().getItemAt(0);
-					CharSequence dragData = item.getText();
-					int position = Integer.valueOf(item.getText().toString());
-					Parameter parameter = parametersListAdapter.getItem(position);
-					selectedParametersListAdapter.add(new ParameterValue(parameter, null));
+					for(int i = 0; i < event.getClipData().getItemCount(); i++) {
+						ClipData.Item item = event.getClipData().getItemAt(i);
+						int position = Integer.valueOf(item.getText().toString());
+						Parameter parameter = parametersListAdapter.getItem(position);
+						ParameterValue parameterValue = new ParameterValue(parameter, null);
+						if (selectedParametersListAdapter.getPosition(parameterValue) == -1) {
+							selectedParametersListAdapter.add(parameterValue);
+						}
+					}
 					selectedParametersListAdapter.notifyDataSetChanged();
-					v.setBackground(originalDrawable);
+					v.setBackground(normalShape);
 					v.invalidate();
-					return true;
+					break;
 				case DragEvent.ACTION_DRAG_ENDED:
-					v.setBackground(originalDrawable);
+					v.setBackground(normalShape);
 					v.invalidate();
 					event.getResult();
-					return true;
-				default:
-					Log.e("DragDrop Example","Unknown action type received by OnDragListener.");
 					break;
 			}
 
-			return false;
+			return true;
 		}
 	}
 
@@ -926,8 +868,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		public void onProvideShadowMetrics (Point size, Point touch) {
 			int width, height;
 
-			width = getView().getWidth() / 2;
-			height = getView().getHeight() / 2;
+			width = getView().getWidth() * 3/4;
+			height = getView().getHeight() * 3/4;
 			shadow.setBounds(0, 0, width, height);
 			size.set(width, height);
 			touch.set(width / 2, height / 2);

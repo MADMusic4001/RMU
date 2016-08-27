@@ -37,6 +37,7 @@
         android:id="@+id/code_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLength="2"
         android:nextFocusDown="@+id/name_edit"
         android:nextFocusRight="@id/name_edit"
         android:nextFocusForward="@id/name_edit"

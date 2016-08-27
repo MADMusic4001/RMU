@@ -28,8 +28,10 @@
     <string name="validation_creature_category_name_required">Please enter a creature category name.</string>
     <string name="validation_creature_type_description_required">Please enter a creature type resultText.</string>
     <string name="validation_creature_type_name_required">Please enter a creature type name.</string>
+    <string name="validation_creature_variety_bonus_required">Please enter a stat bonus.</string>
     <string name="validation_creature_variety_description_required">Please enter a creature variety resultText.</string>
     <string name="validation_creature_variety_name_required">Please enter a creature variety name.</string>
+    <string name="validation_creature_variety_tier_required">Please enter a talent tier.</string>
     <string name="validation_critical_code_required">Please enter a critical code.</string>
     <string name="validation_critical_code_description_required">Please enter a critical code resultText.</string>
     <string name="validation_critical_result_text_required">Please enter the critical result text.</string>
@@ -85,7 +87,7 @@
     <string name="validation_stat_name_required">Please enter a stat name.</string>
     <string name="validation_stunned_required">Please enter the number of rounds the defender is stunned.</string>
     <string name="validation_talent_action_points_required">Please enter the number of Action Points required to use the Talent.</string>
-    <string name="validation_talent_bonus_per_tier_required">Please enter the bonus given per tier for the Talent.</string>
+    <string name="validation_talent_bonus_per_tier_required">Please enter the tier given per tier for the Talent.</string>
     <string name="validation_talent_cost_per_tier_required">Please enter the cost per tier for the Talent.</string>
     <string name="validation_talent_category_description_required">Please enter a talent category resultText.</string>
     <string name="validation_talent_category_name_required">Please enter a talent category name.</string>

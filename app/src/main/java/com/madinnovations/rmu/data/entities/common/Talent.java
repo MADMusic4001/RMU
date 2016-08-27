@@ -34,7 +34,7 @@ public class Talent {
 	private short dpCostPerTier = 0;
 	private short bonusPerTier = 5;
 	private boolean situational = false;
-	private short actionPoints = 10;
+	private short actionPoints = 0;
 	private List<ParameterValue> parameterValues = new ArrayList<>();
 
 	/**

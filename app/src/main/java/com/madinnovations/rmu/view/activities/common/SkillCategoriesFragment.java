@@ -777,7 +777,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, StatSpinnerAdapter adapter, int statIndex) {
 		int position;
 
-		if(stats.size() <= statIndex) {
+		while(stats.size() <= statIndex) {
 			stats.add(null);
 		}
 
