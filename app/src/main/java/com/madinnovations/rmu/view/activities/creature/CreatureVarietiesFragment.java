@@ -38,7 +38,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -76,6 +75,7 @@ import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -589,7 +589,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				ClipData dragData = null;
 
 				SparseBooleanArray checkedItems = talentNamesList.getCheckedItemPositions();
-				View[] checkedViews = new View[talentNamesList.getCheckedItemCount()];
+				List<View> checkedViews = new ArrayList<View>(talentNamesList.getCheckedItemCount());
 				int index = 0;
 				for(int i = 0; i < checkedItems.size(); i++) {
 					int currentPosition = checkedItems.keyAt(i);
@@ -603,7 +603,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 						else {
 							dragData.addItem(clipDataItem);
 						}
-						checkedViews[index++] = getViewByPosition(i, talentNamesList);
+						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), talentNamesList));
 					}
 				}
 				View.DragShadowBuilder myShadow = new TalentTierDragShadowBuilder(checkedViews);
@@ -637,14 +637,13 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 		talentTiersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d("RMU", "In talentTiersList.onLongClick");
 				if(!talentTiersList.isItemChecked(position)) {
 					talentTiersList.setItemChecked(position, true);
 				}
 				ClipData dragData = null;
 
 				SparseBooleanArray checkedItems = talentTiersList.getCheckedItemPositions();
-				View[] checkedViews = new View[talentTiersList.getCheckedItemCount()];
+				List<View> checkedViews = new ArrayList<View>(talentTiersList.getCheckedItemCount());
 				int index = 0;
 				for(int i = 0; i < checkedItems.size(); i++) {
 					int currentPosition = checkedItems.keyAt(i);
@@ -658,17 +657,10 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 						else {
 							dragData.addItem(clipDataItem);
 						}
-						checkedViews[index++] = getViewByPosition(i, talentTiersList);
+						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), talentTiersList));
 					}
 				}
-				View[] finalCheckedViews;
-				if(index < checkedViews.length) {
-					finalCheckedViews = Arrays.copyOf(checkedViews, index);
-				}
-				else {
-					finalCheckedViews = checkedViews;
-				}
-				View.DragShadowBuilder myShadow = new TalentTierDragShadowBuilder(finalCheckedViews);
+				View.DragShadowBuilder myShadow = new TalentTierDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -678,32 +670,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					view.startDrag(dragData, myShadow, null, 0);
 				}
 				return false;
-			}
-		});
-
-		talentTiersList.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				touchPositionX = (int)event.getX();
-				touchPositionY = (int)event.getY();
-				return false;
-			}
-		});
-
-		talentTiersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d("RMU", "In talentTiersList.onItemClick");
-
-//				EditText tiersEdit = (EditText)view.findViewById(R.id.talent_tiers_edit);
-//				if(tiersEdit != null) {
-//					Rect editTextRect = new Rect();
-//					tiersEdit.getHitRect(editTextRect);
-//					if(editTextRect.contains(touchPositionX, touchPositionY)) {
-//						tiersEdit.requestFocus();
-//					}
-//				}
-//				talentTiersList.setItemChecked(position, !talentTiersList.isItemChecked(position));
 			}
 		});
 
@@ -826,14 +792,14 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 			switch(action) {
 				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription().getLabel().equals(DRAG_ADD_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(targetShape);
 						v.invalidate();
 						break;
 					}
 					return false;
 				case DragEvent.ACTION_DRAG_ENTERED:
-					if(event.getClipDescription().getLabel().equals(DRAG_ADD_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(hoverShape);
 						v.invalidate();
 					}
@@ -844,7 +810,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				case DragEvent.ACTION_DRAG_LOCATION:
 					break;
 				case DragEvent.ACTION_DRAG_EXITED:
-					if(event.getClipDescription().getLabel().equals(DRAG_ADD_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(targetShape);
 						v.invalidate();
 					}
@@ -853,9 +819,8 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					}
 					break;
 				case DragEvent.ACTION_DROP:
-					if(event.getClipDescription().getLabel().equals(DRAG_ADD_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
 						boolean changed = false;
-						Log.d("RMU", "item count = " + event.getClipData().getItemCount());
 						for(int i = 0; i < event.getClipData().getItemCount(); i++) {
 							ClipData.Item item = event.getClipData().getItemAt(i);
 							// We just send talent ID but since that is the only field used in the Talent.equals method we can create a
@@ -905,7 +870,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 			switch (action) {
 				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription().getLabel().equals(DRAG_REMOVE_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(targetShape);
 						v.invalidate();
 					}
@@ -914,7 +879,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					}
 					break;
 				case DragEvent.ACTION_DRAG_ENTERED:
-					if(event.getClipDescription().getLabel().equals(DRAG_REMOVE_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(hoverShape);
 						v.invalidate();
 					}
@@ -925,7 +890,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				case DragEvent.ACTION_DRAG_LOCATION:
 					break;
 				case DragEvent.ACTION_DRAG_EXITED:
-					if(event.getClipDescription().getLabel().equals(DRAG_REMOVE_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(targetShape);
 						v.invalidate();
 					}
@@ -934,7 +899,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					}
 					break;
 				case DragEvent.ACTION_DROP:
-					if(event.getClipDescription().getLabel().equals(DRAG_REMOVE_TALENT)) {
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
 						for (int i = 0; i < event.getClipData().getItemCount(); i++) {
 							ClipData.Item item = event.getClipData().getItemAt(i);
 							// We just send talent ID but since that is the only field used in the Talent.equals method and talent is the
@@ -947,7 +912,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 							TalentTier newTalentTier = new TalentTier(newTalent, (short)0);
 							int position = talentTiersListAdapter.getPosition(newTalentTier);
 							TalentTier talentTier = talentTiersListAdapter.getItem(position);
-							Log.d("RMU", "talentTier = " + talentTier);
 							currentInstance.getTalentTiersMap().remove(talentTier.getTalent());
 							talentTiersListAdapter.remove(talentTier);
 						}
@@ -972,11 +936,11 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 	private static class TalentTierDragShadowBuilder extends View.DragShadowBuilder {
 		private Drawable[] shadows;
-		private View[] views;
+		private List<View> views;
 
-		public TalentTierDragShadowBuilder(View[] views) {
+		public TalentTierDragShadowBuilder(List<View> views) {
 			this.views = views;
-			shadows = new Drawable[views.length];
+			shadows = new Drawable[views.size()];
 			for(int i = 0 ; i < shadows.length; i ++) {
 				shadows[i] = new ColorDrawable(Color.LTGRAY);
 			}
@@ -988,19 +952,19 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 			int bottomRightX = 0, bottomRightY = 0;
 			int width, height;
 
-			for(int i = 0; i < views.length; i++) {
-				shadows[i].setBounds(views[i].getLeft(), views[i].getTop(), views[i].getRight(), views[i].getBottom());
-				if(views[i].getLeft() < topLeftX) {
-					topLeftX = views[i].getLeft();
+			for(int i = 0; i < views.size(); i++) {
+				shadows[i].setBounds(views.get(i).getLeft(), views.get(i).getTop(), views.get(i).getRight(), views.get(i).getBottom());
+				if(views.get(i).getLeft() < topLeftX) {
+					topLeftX = views.get(i).getLeft();
 				}
-				if(views[i].getTop() < topLeftY) {
-					topLeftY = views[i].getTop();
+				if(views.get(i).getTop() < topLeftY) {
+					topLeftY = views.get(i).getTop();
 				}
-				if(views[i].getRight() > bottomRightX) {
-					bottomRightX = views[i].getRight();
+				if(views.get(i).getRight() > bottomRightX) {
+					bottomRightX = views.get(i).getRight();
 				}
-				if(views[i].getBottom() > bottomRightY) {
-					bottomRightY = views[i].getBottom();
+				if(views.get(i).getBottom() > bottomRightY) {
+					bottomRightY = views.get(i).getBottom();
 				}
 			}
 

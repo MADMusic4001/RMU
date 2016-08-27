@@ -18,7 +18,6 @@ package com.madinnovations.rmu.view.adapters.common;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,22 +93,19 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			talentNameView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Log.d("RMU", "In talentNameView.onClick");
-//					if(listView != null) {
-//						int position = getPosition(currentInstance);
-//						listView.setItemChecked(position, !listView.isItemChecked(position));
-//					}
+					if(listView != null) {
+						int position = getPosition(currentInstance);
+						listView.setItemChecked(position, !listView.isItemChecked(position));
+					}
 				}
 			});
-//
+
 			talentNameView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-//					Log.d("RMU", "In onLongClick");
-//					if(listView != null) {
-//						return listView.performLongClick();
-//					}
-					Log.d("RMU", "In talentNameView.onLongClick");
+					if(listView != null) {
+						return listView.performLongClick();
+					}
 					return true;
 				}
 			});
@@ -119,21 +115,19 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			tierEdit.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					if(listView != null) {
-//						int position = getPosition(currentInstance);
-//						listView.setItemChecked(position, !listView.isItemChecked(position));
-//					}
-					Log.d("RMU", "In tierEdit.onClick");
+					if(listView != null) {
+						int position = getPosition(currentInstance);
+						listView.setItemChecked(position, !listView.isItemChecked(position));
+					}
 				}
 				});
 
 			tierEdit.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-//					if(listView != null) {
-//						return listView.performLongClick();
-//					}
-					Log.d("RMU", "In tierEdit.onLongClick");
+					if(listView != null) {
+						return listView.performLongClick();
+					}
 					return true;
 			}
 			});
