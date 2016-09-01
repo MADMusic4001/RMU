@@ -15,11 +15,16 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.common;
 
+import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,6 +37,8 @@ import rx.schedulers.Schedulers;
  */
 public class SpecializationRxHandler {
 	private SpecializationDao dao;
+	private SkillDao skillDao;
+	private SkillCategoryDao skillCategoryDao;
 
 	/**
 	 * Creates a new SpecializationRxHandler
@@ -39,8 +46,9 @@ public class SpecializationRxHandler {
 	 * @param dao  a SpecializationDao instance
 	 */
 	@Inject
-	public SpecializationRxHandler(SpecializationDao dao) {
+	public SpecializationRxHandler(SpecializationDao dao, SkillDao skillDao) {
 		this.dao = dao;
+		this.skillDao = skillDao;
 	}
 
 	/**
@@ -180,5 +188,39 @@ public class SpecializationRxHandler {
 					}
 				}
 		).subscribeOn(Schedulers.io());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization instances from
+	 * combat skill categories.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
+	 * instances.
+	 */
+	public Observable<Collection<Specialization>> getAllAttackSpecializations() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Specialization>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Specialization>> subscriber) {
+						try {
+							List<SkillCategory> skillCategories = skillCategoryDao.getCombatCategories();
+							if (skillCategories != null) {
+								List<Skill> skills = new ArrayList<>();
+								for (SkillCategory category : skillCategories) {
+									skills.addAll(skillDao.getSkillsForCategory(category));
+									List<Specialization> specializations = new ArrayList<>();
+									for (Skill skill : skills) {
+										specializations.addAll(dao.getSpecializationsForSkill(skill));
+									}
+									subscriber.onNext(specializations);
+								}
+							}
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		);
 	}
 }

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright (C) 2016 MadInnovations
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <include layout="@layout/list_2_field_header"/>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:choiceMode="singleChoice"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/attack_code_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/input_label_attack_code"/>
+        <EditText
+            android:id="@+id/attack_code_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attack_code_label"
+            android:layout_toEndOf="@id/attack_code_label"
+            android:layout_alignBaseline="@id/attack_code_label"
+            android:hint="@string/hint_attack_code"/>
+        <TextView
+            android:id="@+id/attack_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attack_code_edit"
+            android:layout_toEndOf="@id/attack_code_edit"
+            android:layout_alignBaseline="@id/attack_code_label"
+            android:text="@string/input_label_attack_name"/>
+        <EditText
+            android:id="@+id/name_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attack_name_label"
+            android:layout_toEndOf="@id/attack_name_label"
+            android:layout_alignBaseline="@id/attack_code_label"
+            android:hint="@string/hint_attack_name"/>
+
+        <TextView
+            android:id="@+id/damage_table_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/attack_code_label"
+            android:text="@string/input_label_damage_table"/>
+        <Spinner
+            android:id="@+id/damage_table_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/damage_table_label"
+            android:layout_toEndOf="@id/damage_table_label"
+            android:layout_alignTop="@id/damage_table_label"/>
+        <TextView
+            android:id="@+id/attack_specialization_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/damage_table_spinner"
+            android:layout_toEndOf="@id/damage_table_spinner"
+            android:layout_alignBaseline="@id/damage_table_label"
+            android:text="@string/input_label_attack_specialization"/>
+        <Spinner
+            android:id="@+id/attack_specialization_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attack_specialization_label"
+            android:layout_toEndOf="@id/attack_specialization_label"
+            android:layout_alignTop="@id/damage_table_label"/>
+    </RelativeLayout>
+</LinearLayout>

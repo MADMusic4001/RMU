@@ -15,9 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
-import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 
 /**
@@ -40,7 +38,6 @@ public interface CreatureVarietySchema {
 	public static final String COLUMN_BASE_ENDURANCE = "baseEndurance";
 	public static final String COLUMN_SIZE_ID = "sizeId";
 	public static final String COLUMN_ARMOR_TYPE = "armorType";
-	public static final String COLUMN_CRITICAL_CODE_ID = "criticalCodeId";
 	public static final String COLUMN_BASE_MOVEMENT_RATE = "baseMovementRate";
 	public static final String COLUMN_BASE_CHANNELING_RR = "baseChannelingRR";
 	public static final String COLUMN_BASE_ESSENCE_RR = "baseEssenceRR";
@@ -52,7 +49,7 @@ public interface CreatureVarietySchema {
 	public static final String COLUMN_BASE_STRIDE = "baseStride";
 	public static final String COLUMN_LEFTOVER_DP = "leftoverDP";
 	public static final String COLUMN_OUTLOOK_ID = "outlookId";
-	public static final String COLUMN_PRIMARY_ATTACK_ID = "primaryAttackId";
+	public static final String COLUMN_ATTACK_SEQUENCE = "attackSequence";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -71,7 +68,6 @@ public interface CreatureVarietySchema {
 			+ COLUMN_BASE_ENDURANCE + " INTEGER NOT NULL, "
 			+ COLUMN_SIZE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_ARMOR_TYPE + " INTEGER NOT NULL, "
-			+ COLUMN_CRITICAL_CODE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_BASE_MOVEMENT_RATE + " INTEGER NOT NULL, "
 			+ COLUMN_BASE_CHANNELING_RR + " INTEGER NOT NULL, "
 			+ COLUMN_BASE_ESSENCE_RR + " INTEGER NOT NULL, "
@@ -83,19 +79,19 @@ public interface CreatureVarietySchema {
 			+ COLUMN_BASE_STRIDE + " INTEGER NOT NULL, "
 			+ COLUMN_LEFTOVER_DP + " INTEGER NOT NULL, "
 			+ COLUMN_OUTLOOK_ID + " INTEGER NOT NULL, "
-			+ COLUMN_PRIMARY_ATTACK_ID + " INTEGER NOT NULL, "
+			+ COLUMN_ATTACK_SEQUENCE + " TEXT NOT NULL, "
 			+ "FOREIGN KEY (" + COLUMN_TYPE_ID + ") REFERENCES " + CreatureTypeSchema.TABLE_NAME + "(" + CreatureTypeSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_SIZE_ID + ") REFERENCES " + SizeSchema.TABLE_NAME + "(" + SizeSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_CRITICAL_CODE_ID + ") REFERENCES " + CriticalCodeSchema.TABLE_NAME + "(" + CriticalCodeSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_REALM1_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_REALM2_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_OUTLOOK_ID + ") REFERENCES " + OutlookSchema.TABLE_NAME + "(" + OutlookSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_PRIMARY_ATTACK_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_OUTLOOK_ID + ") REFERENCES " + OutlookSchema.TABLE_NAME + "(" + OutlookSchema.COLUMN_ID + ")"
 			+ ")";
+
+	public static final String DROP_TABLE_V1 = "DROP TABLE " + TABLE_NAME + ";";
 
 	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_TYPE_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_TYPICAL_LEVEL,
 			COLUMN_LEVEL_SPREAD, COLUMN_HEIGHT, COLUMN_LENGTH, COLUMN_WEIGHT, COLUMN_HEALING_RATE, COLUMN_BASE_HITS, COLUMN_BASE_ENDURANCE,
-			COLUMN_SIZE_ID, COLUMN_ARMOR_TYPE, COLUMN_CRITICAL_CODE_ID, COLUMN_BASE_MOVEMENT_RATE, COLUMN_BASE_CHANNELING_RR,
-			COLUMN_BASE_ESSENCE_RR, COLUMN_BASE_MENTALISM_RR, COLUMN_BASE_PHYSICAL_RR, COLUMN_BASE_FEAR_RR, COLUMN_REALM1_ID,
-			COLUMN_REALM2_ID, COLUMN_BASE_STRIDE, COLUMN_LEFTOVER_DP, COLUMN_OUTLOOK_ID, COLUMN_PRIMARY_ATTACK_ID};
+			COLUMN_SIZE_ID, COLUMN_ARMOR_TYPE, COLUMN_BASE_MOVEMENT_RATE, COLUMN_BASE_CHANNELING_RR, COLUMN_BASE_ESSENCE_RR,
+			COLUMN_BASE_MENTALISM_RR, COLUMN_BASE_PHYSICAL_RR, COLUMN_BASE_FEAR_RR, COLUMN_REALM1_ID, COLUMN_REALM2_ID, COLUMN_BASE_STRIDE,
+			COLUMN_LEFTOVER_DP, COLUMN_OUTLOOK_ID, COLUMN_ATTACK_SEQUENCE};
 }

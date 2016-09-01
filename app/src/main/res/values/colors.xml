@@ -18,4 +18,6 @@
   <color name="colorPrimary">#3f51b5</color>
   <color name="colorPrimaryDark">#303f9f</color>
   <color name="colorAccent">#FF4081</color>
+  <color name="list_odd_row_background">#30202020</color>
+  <color name="list_even_row_background">#30404040</color>
 </resources>

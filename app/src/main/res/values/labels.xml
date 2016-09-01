@@ -45,6 +45,7 @@
   <string name="manage_outlooks">Manage Outlooks</string>
 
   <!-- Combat menu labels -->
+  <string name="manage_attacks">Manage Attacks</string>
   <string name="manage_body_parts">Manage Body Parts</string>
   <string name="manage_critical_codes">Manage Critical Codes</string>
   <string name="manage_critical_results">Manage Critical Results</string>
@@ -101,6 +102,8 @@
   <!-- Menu labels -->
   <string name="label_export">Export</string>
   <string name="label_import">Import</string>
+  <string name="label_new_attack">New Attack</string>
+  <string name="label_delete_attack">Delete Attack</string>
   <string name="label_new_body_part">New Body Part</string>
   <string name="label_delete_body_part">Delete Body Part</string>
   <string name="label_new_creature_archetype">New Creature Archetype</string>
@@ -173,13 +176,19 @@
   <string name="label_8">8</string>
   <string name="label_9">9</string>
   <string name="label_10">10</string>
+  <string name="label_attack_bonus">Attack Bonus</string>
+  <string name="label_attack_code">Attack Code</string>
+  <string name="label_attack_name">Attack Name</string>
   <string name="label_available_params">Available Parameters</string>
   <string name="label_bleeding">Bleeding</string>
   <string name="label_body_part">Body Part</string>
   <string name="label_body_part_description">Body Part Description</string>
   <string name="label_body_part_name">Body Part Name</string>
   <string name="label_break">Break</string>
-  <string name="label_choose_talent">Choose Talent</string>
+  <string name="label_choose_attacks">Choose Attacks</string>
+  <string name="label_choose_skills">Choose Skills</string>
+  <string name="label_choose_talents">Choose Talents</string>
+  <string name="label_combat_category">Combat Category</string>
   <string name="label_critical_code">Critical Code</string>
   <string name="label_critical_code_description">Critical Code Description</string>
   <string name="label_critical_result_text">Critical Result Text</string>
@@ -208,6 +217,7 @@
   <string name="label_min_height">Minimum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
   <string name="label_no_parry">No Parry</string>
+  <string name="label_no_realm">No Realm</string>
   <string name="label_no_stats">No Stats</string>
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
@@ -227,6 +237,7 @@
   <string name="label_size_code">Size Code</string>
   <string name="label_size_name">Size Name</string>
   <string name="label_size_examples">Size Examples</string>
+  <string name="label_skill_bonus">Skill Bonus</string>
   <string name="label_skill_description">Skill Description</string>
   <string name="label_skill_name">Skill Name</string>
   <string name="label_skill_category">Skill Category</string>
@@ -250,28 +261,48 @@
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- Input field labels -->
+  <string name="input_label_armor_type">AT:</string>
+  <string name="input_label_attack_code">Attack Code:</string>
+  <string name="input_label_attack_name">Attack Name:</string>
+  <string name="input_label_attack_sequence">Attack Sequence:</string>
+  <string name="input_label_attack_specialization">Attack Specialization:</string>
+  <string name="input_label_base_channeling_rr">Channeling RR:</string>
+  <string name="input_label_base_endurance">Base Endurance:</string>
+  <string name="input_label_base_essence_rr">Essence RR:</string>
+  <string name="input_label_base_fear_rr">Fear RR:</string>
+  <string name="input_label_base_hits">Base Hits:</string>
+  <string name="input_label_base_mentalism_rr">Mentalism RR:</string>
+  <string name="input_label_base_physical_rr">Phyiscal RR:</string>
   <string name="input_label_bleeding">Bleeding:</string>
   <string name="input_label_breakage">Breakage:</string>
   <string name="input_label_category_filter">Category Filter:</string>
+  <string name="input_label_critical_codes">Critical Codes:</string>
   <string name="input_label_critical_type">Critical Type:</string>
   <string name="input_label_critical_severity_filter">Critical Severity Filter:</string>
   <string name="input_label_critical_type_filter">Critical Type Filter:</string>
   <string name="input_label_damage_table">Damage Table:</string>
   <string name="input_label_dazed">Dazed:</string>
   <string name="input_label_fatigue">Fatigue:</string>
+  <string name="input_label_healing_rate">Healing Rate:</string>
   <string name="input_label_height">Height:</string>
   <string name="input_label_hits">Hits:</string>
   <string name="input_label_injury">Injury:</string>
   <string name="input_label_length">Length:</string>
   <string name="input_label_level">Level:</string>
+  <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
+  <string name="input_label_outlook">Outlook:</string>
+  <string name="input_label_realm1">Realm 1:</string>
+  <string name="input_label_realm2">Realm 2:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
+  <string name="input_label_base_stride">Base Stride:</string>
+  <string name="input_label_leftover_dp">Leftover DP:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
   <string name="input_label_weight">Weight:</string>
 
   <!-- Format strings -->
   <string name="hyphen">-</string>
   <string name="min_max_roll_value">%1$2d-%2$3d</string>
-  <string name="size_code_name_string">%1$s - %2$s</string>
+  <string name="code_name_format_string">%1$s - %2$s</string>
 </resources>

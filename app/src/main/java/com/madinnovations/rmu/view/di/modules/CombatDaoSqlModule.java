@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
@@ -23,6 +24,7 @@ import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.combat.impl.AttackDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.BodyPartDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalCodeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalResultDaoDbImpl;
@@ -30,6 +32,7 @@ import com.madinnovations.rmu.data.dao.combat.impl.CriticalTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultRowDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageTableDaoDbImpl;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 
 import javax.inject.Singleton;
 
@@ -41,6 +44,10 @@ import dagger.Provides;
  */
 @Module(includes = ApplicationModule.class)
 public class CombatDaoSqlModule {
+	@Provides @Singleton
+	public AttackDao provideAttackDao(RMUDatabaseHelper helper, DamageTableDao damageTableDao, SpecializationDao specializationDao) {
+		return new AttackDaoDbImpl(helper, damageTableDao, specializationDao);
+	}
 	@Provides @Singleton
 	public BodyPartDao provideBodyPartDao(RMUDatabaseHelper helper) {
 		return new BodyPartDaoDbImpl(helper);

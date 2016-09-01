@@ -65,7 +65,7 @@ public class RacialStatBonusListAdapter extends ArrayAdapter<RacialStatBonus> {
 
 		RacialStatBonus racialStatBonus = getItem(position);
 		holder.currentInstance = racialStatBonus;
-		holder.statNameView.setText(String.format(getContext().getString(R.string.size_code_name_string),
+		holder.statNameView.setText(String.format(getContext().getString(R.string.code_name_format_string),
 				racialStatBonus.getStat().getAbbreviation(), racialStatBonus.getStat().getName()));
 		holder.bonusEdit.setText(String.valueOf(racialStatBonus.getBonus()));
 

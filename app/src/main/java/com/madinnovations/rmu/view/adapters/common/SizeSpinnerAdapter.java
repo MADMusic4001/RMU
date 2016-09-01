@@ -66,7 +66,7 @@ public class SizeSpinnerAdapter extends ArrayAdapter<Size> {
 		}
 
 		Size size = getItem(position);
-		holder.nameView.setText(String.format(getContext().getString(R.string.size_code_name_string), size.getCode(), size.getName()));
+		holder.nameView.setText(String.format(getContext().getString(R.string.code_name_format_string), size.getCode(), size.getName()));
 		return rowView;
 	}
 

@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
@@ -30,12 +31,16 @@ import dagger.Provides;
  */
 @Module
 public class CombatFragmentModule {
+	private AttacksFragment attacksFragment;
 	private BodyPartsFragment bodyPartsFragment;
 	private CriticalCodesFragment criticalCodesFragment;
 	private CriticalResultsFragment criticalResultsFragment;
 	private CriticalTypesFragment criticalTypesFragment;
 	private DamageResultsFragment damageResultsFragment;
 
+	public CombatFragmentModule(AttacksFragment attacksFragment) {
+		this.attacksFragment = attacksFragment;
+	}
 	public CombatFragmentModule(BodyPartsFragment bodyPartsFragment) {
 		this.bodyPartsFragment = bodyPartsFragment;
 	}
@@ -52,6 +57,10 @@ public class CombatFragmentModule {
 		this.damageResultsFragment = damageResultsFragment;
 	}
 
+	@Provides @PerFragment
+	public AttacksFragment provideAttacksFragment() {
+		return this.attacksFragment;
+	}
 	@Provides @PerFragment
 	public BodyPartsFragment provideBodyPartsFragment() {
 		return this.bodyPartsFragment;

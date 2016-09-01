@@ -16,4 +16,12 @@
  * -->
 <resources>
   <string name="app_name">RMU</string>
+
+  <!-- FileSelectorDialogFragment strings -->
+  <string name="alert_fs_title">Choose a %1$s file. Current Path = %2$s</string>
+  <string name="folder_image">Folder Image</string>
+
+  <!-- Database import/export strings -->
+  <string name="toast_db_exported_msg">Database successfully exported to %1$s</string>
+  <string name="toast_db_imported">DB successfully imported!</string>
 </resources>

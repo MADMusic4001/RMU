@@ -16,15 +16,22 @@
 package com.madinnovations.rmu.view.activities.campaign;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportRxHandler;
 import com.madinnovations.rmu.view.RMUApp;
+import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
+import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
@@ -50,12 +57,23 @@ import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
+import javax.inject.Inject;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 /**
  * Activity class for managing the campaign UI.
  */
-public class CampaignActivity extends Activity {
+public class CampaignActivity extends Activity implements FileSelectorDialogFragment.FileSelectorDialogListener {
+	private static final String FILE_SELECTOR_FILTER = "fs_extension_filter";
+	private static final String RMU_FILE_EXTENSION = ".rmu";
+	@Inject
+	ImportExportRxHandler              importExportRxHandler;
 	private ActivityComponent          activityComponent;
 	private AboutFragment              aboutFragment;
+	private AttacksFragment            attacksFragment;
 	private BodyPartsFragment          bodyPartsFragment;
 	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
@@ -79,6 +97,7 @@ public class CampaignActivity extends Activity {
 	private StatsFragment              statsFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
+	private String                     fileName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,11 +130,72 @@ public class CampaignActivity extends Activity {
 		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if(id == R.id.action_export) {
+			importExportRxHandler.exportDatabase("")
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<Boolean>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e("CampaignActivity", "Error occurred exporting database.", e);
+						}
+						@Override
+						public void onNext(Boolean aBoolean) {
+							Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported_msg), ""),
+									Toast.LENGTH_SHORT).show();
+						}
+					});
+			return true;
+		}
+		else if(id == R.id.action_import) {
+			DialogFragment dialogFragment;
+			dialogFragment = new FileSelectorDialogFragment();
+			Bundle bundle = new Bundle();
+			bundle.putString(FILE_SELECTOR_FILTER, RMU_FILE_EXTENSION);
+			dialogFragment.setArguments(bundle);
+			dialogFragment.show(getFragmentManager(), "");
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onFileSelected(String fileName) {
+		importExportRxHandler.importDatabase(fileName)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("CampaignActivity", "Error occurred importing database.", e);
+					}
+					@Override
+					public void onNext(Boolean aBoolean) {
+						Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT).show();
+					}
+				});
+	}
+
 	public void showAbout() {
 		if(aboutFragment == null) {
 			aboutFragment = new AboutFragment();
 		}
 		replaceDetailFragment(aboutFragment);
+	}
+
+	public void showAttacks() {
+		if(attacksFragment == null) {
+			attacksFragment = new AttacksFragment();
+		}
+		replaceDetailFragment(attacksFragment);
 	}
 
 	public void showBodyParts() {

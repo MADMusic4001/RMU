@@ -87,6 +87,41 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
     }
 
     @Override
+    public List<SkillCategory> getCombatCategories() {
+        final String selectionArgs[] = { "1" };
+        final String selection = COLUMN_IS_COMBAT + " = ?";
+        SkillCategory instance;
+        List<SkillCategory> skillCategories = null;
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        boolean newTransaction = !db.inTransaction();
+        if(newTransaction) {
+            db.beginTransaction();
+        }
+        try {
+            Cursor cursor = query(getTableName(), getColumns(), selection,
+                    selectionArgs, getIdColumnName());
+            if (cursor != null) {
+                skillCategories = new ArrayList<>(cursor.getCount());
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    instance = cursorToEntity(cursor);
+                    cursor.moveToNext();
+                    skillCategories.add(instance);
+                }
+                cursor.close();
+            }
+        }
+        finally {
+            if(newTransaction) {
+                db.endTransaction();
+            }
+        }
+
+        return skillCategories;
+    }
+
+    @Override
     protected SkillCategory cursorToEntity(@NonNull Cursor cursor) {
         SkillCategory instance;
 
@@ -94,6 +129,7 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setCombat(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_COMBAT)) != 0);
         instance.setNoStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NO_STATS)) != 0);
         instance.setRealmStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_STATS)) != 0);
         if(!instance.isNoStats()) {
@@ -109,6 +145,7 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
 
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+        initialValues.put(COLUMN_IS_COMBAT, instance.isCombat());
         initialValues.put(COLUMN_NO_STATS, instance.isNoStats());
         initialValues.put(COLUMN_REALM_STATS, instance.isRealmStats());
 

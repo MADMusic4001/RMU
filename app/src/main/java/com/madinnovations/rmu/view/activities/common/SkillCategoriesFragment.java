@@ -77,6 +77,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
+	private CheckBox combatCheckBox;
 	private CheckBox noStatsCheckBox;
 	private CheckBox realmStatsCheckBox;
 	private Spinner stat1Spinner;
@@ -98,6 +99,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
+		initCombatCheckBox(layout);
 		initNoStatsCheckBox(layout);
 		initRealmStatsCheckBox(layout);
 		initStat1Spinner(layout);
@@ -201,6 +203,12 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		if((newString == null && currentInstance.getDescription() != null) ||
 				(newString != null && !newString.equals(currentInstance.getDescription()))) {
 			currentInstance.setDescription(newString);
+			changed = true;
+		}
+
+		boolean newCombat = combatCheckBox.isChecked();
+		if(currentInstance.isCombat() != newCombat) {
+			currentInstance.setCombat(newCombat);
 			changed = true;
 		}
 
@@ -320,6 +328,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
+		combatCheckBox.setChecked(currentInstance.isCombat());
 		noStatsCheckBox.setChecked(currentInstance.isNoStats());
 		if(currentInstance.isNoStats()) {
 			realmStatsCheckBox.setVisibility(View.GONE);
@@ -486,6 +495,20 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 				}
 			}
 		});
+	}
+
+	private void initCombatCheckBox(View layout) {
+		combatCheckBox = (CheckBox)layout.findViewById(R.id.combat_check_box);
+		combatCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if(combatCheckBox.isChecked() != currentInstance.isCombat()) {
+					currentInstance.setCombat(combatCheckBox.isChecked());
+					saveItem();
+				}
+			}
+		});
+
 	}
 
 	private void initNoStatsCheckBox(View layout) {

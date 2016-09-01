@@ -24,6 +24,7 @@ public class SkillCategory {
 	private int id = -1;
 	private String name = null;
 	private String description = null;
+	private boolean combat = false;
 	private boolean noStats = false;
 	private boolean realmStats = false;
 	private List<Stat> stats = null;
@@ -45,6 +46,7 @@ public class SkillCategory {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
+				", combat=" + combat +
 				", noStats=" + noStats +
 				", realmStats=" + realmStats +
 				", stats=" + stats +
@@ -84,6 +86,12 @@ public class SkillCategory {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public boolean isCombat() {
+		return combat;
+	}
+	public void setCombat(boolean combat) {
+		this.combat = combat;
 	}
 	public boolean isNoStats() {
 		return noStats;

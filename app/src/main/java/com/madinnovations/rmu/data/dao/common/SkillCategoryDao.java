@@ -60,4 +60,11 @@ public interface SkillCategoryDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all SkillCategory objects with combat = true from persistent storage.
+	 *
+	 * @return the list of SkillCategory instances with combat = true.
+	 */
+	public List<SkillCategory> getCombatCategories();
 }

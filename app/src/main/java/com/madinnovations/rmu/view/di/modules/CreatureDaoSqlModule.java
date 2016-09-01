@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
@@ -65,9 +66,9 @@ public class CreatureDaoSqlModule {
 	@Provides @Singleton
 	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,
 														CriticalCodeDao criticalCodeDao, RealmDao realmDao, OutlookDao outlookDao,
-														StatDao statDao, SkillDao skillDao, TalentDao talentDao) {
+														StatDao statDao, SkillDao skillDao, TalentDao talentDao, AttackDao attackDao) {
 		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao, sizeDao, criticalCodeDao, realmDao, outlookDao, statDao, skillDao,
-				talentDao);
+				talentDao, attackDao);
 	}
 	@Provides @Singleton
 	public OutlookDao provideOutlookDao(RMUDatabaseHelper helper) {

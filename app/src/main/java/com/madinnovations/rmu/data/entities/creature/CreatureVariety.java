@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -46,7 +47,7 @@ public class CreatureVariety {
 	private short baseEndurance = 0;
 	private Size size = null;
 	private short armorType = 1;
-	private CriticalCode criticalCode = null;
+	private List<CriticalCode> criticalCodes = new ArrayList<>();
 	private short baseMovementRate = 15;
 	private short baseChannellingRR = 0;
 	private short baseEssenceRR = 0;
@@ -59,10 +60,9 @@ public class CreatureVariety {
 	private short leftoverDP = 200;
 	private Outlook outlook = null;
 	private Map<Talent, Short> talentTiersMap = new HashMap<>();
-	private Skill primaryAttack = null;
-	private List<Skill> secondaryAttacks = new ArrayList<>();
-	private List<Skill> primeSkills = new ArrayList<>();
-	private List<Skill> secondarySkills = new ArrayList<>();
+	private Map<Attack, Short> attackBonusesMap = new HashMap<>();
+	private String attackSequence = null;
+	private Map<Skill, Short> skillBonusesMap = new HashMap<>();
 
 	/**
 	 * Checks the validity of the CreatureVariety instance.
@@ -71,7 +71,13 @@ public class CreatureVariety {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && type != null && size != null &&
-				criticalCode != null && realm1 != null && outlook != null;
+				attackSequence != null && realm1 != null && outlook != null;
+	}
+
+	public void initRacialStatBonusList(List<Stat> stats) {
+		for(Stat stat : stats) {
+			racialStatBonuses.put(stat, (short)0);
+		}
 	}
 
 	@Override
@@ -92,7 +98,7 @@ public class CreatureVariety {
 				", baseEndurance=" + baseEndurance +
 				", size=" + size +
 				", armorType=" + armorType +
-				", criticalCode=" + criticalCode +
+				", criticalCodes=" + criticalCodes +
 				", baseMovementRate=" + baseMovementRate +
 				", baseChannellingRR=" + baseChannellingRR +
 				", baseEssenceRR=" + baseEssenceRR +
@@ -105,10 +111,9 @@ public class CreatureVariety {
 				", leftoverDP=" + leftoverDP +
 				", outlook=" + outlook +
 				", talentTiersMap=" + talentTiersMap +
-				", primaryAttack=" + primaryAttack +
-				", secondaryAttacks=" + secondaryAttacks +
-				", primeSkills=" + primeSkills +
-				", secondarySkills=" + secondarySkills +
+				", attackBonusesMap=" + attackBonusesMap +
+				", attackSequence='" + attackSequence + '\'' +
+				", skillBonusesMap=" + skillBonusesMap +
 				'}';
 	}
 
@@ -120,7 +125,6 @@ public class CreatureVariety {
 		CreatureVariety that = (CreatureVariety) o;
 
 		return id == that.id;
-
 	}
 
 	@Override
@@ -219,11 +223,11 @@ public class CreatureVariety {
 	public void setArmorType(short armorType) {
 		this.armorType = armorType;
 	}
-	public CriticalCode getCriticalCode() {
-		return criticalCode;
+	public List<CriticalCode> getCriticalCodes() {
+		return criticalCodes;
 	}
-	public void setCriticalCode(CriticalCode criticalCode) {
-		this.criticalCode = criticalCode;
+	public void setCriticalCodes(List<CriticalCode> criticalCodes) {
+		this.criticalCodes = criticalCodes;
 	}
 	public short getBaseMovementRate() {
 		return baseMovementRate;
@@ -297,28 +301,22 @@ public class CreatureVariety {
 	public void setTalentTiersMap(Map<Talent, Short> talentTiersMap) {
 		this.talentTiersMap = talentTiersMap;
 	}
-	public Skill getPrimaryAttack() {
-		return primaryAttack;
+	public Map<Attack, Short> getAttackBonusesMap() {
+		return attackBonusesMap;
 	}
-	public void setPrimaryAttack(Skill primaryAttack) {
-		this.primaryAttack = primaryAttack;
+	public void setAttackBonusesMap(Map<Attack, Short> attackBonusesMap) {
+		this.attackBonusesMap = attackBonusesMap;
 	}
-	public List<Skill> getSecondaryAttacks() {
-		return secondaryAttacks;
+	public String getAttackSequence() {
+		return attackSequence;
 	}
-	public void setSecondaryAttacks(List<Skill> secondaryAttacks) {
-		this.secondaryAttacks = secondaryAttacks;
+	public void setAttackSequence(String attackSequence) {
+		this.attackSequence = attackSequence;
 	}
-	public List<Skill> getPrimeSkills() {
-		return primeSkills;
+	public Map<Skill, Short> getSkillBonusesMap() {
+		return skillBonusesMap;
 	}
-	public void setPrimeSkills(List<Skill> primeSkills) {
-		this.primeSkills = primeSkills;
-	}
-	public List<Skill> getSecondarySkills() {
-		return secondarySkills;
-	}
-	public void setSecondarySkills(List<Skill> secondarySkills) {
-		this.secondarySkills = secondarySkills;
+	public void setSkillBonusesMap(Map<Skill, Short> skillBonusesMap) {
+		this.skillBonusesMap = skillBonusesMap;
 	}
 }

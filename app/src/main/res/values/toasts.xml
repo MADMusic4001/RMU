@@ -15,6 +15,13 @@
  * limitations under the License.
  * -->
 <resources>
+  <string name="toast_attacks_load_failed">Failed to load Attacks</string>
+  <string name="toast_attacks_loaded">%1$d Attacks loaded.</string>
+  <string name="toast_attack_saved">Attack saved.</string>
+  <string name="toast_attack_save_failed">Attack save failed.</string>
+  <string name="toast_attack_deleted">Attack deleted.</string>
+  <string name="toast_attack_delete_failed">Attack deletion failed.</string>
+
   <string name="toast_body_parts_load_failed">Failed to load Body Parts</string>
   <string name="toast_body_parts_loaded">%1$d Body Parts loaded.</string>
   <string name="toast_body_part_saved">Body Part saved.</string>

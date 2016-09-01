@@ -30,6 +30,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
@@ -58,6 +59,7 @@ import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.VarietyCriticalCodesSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
@@ -76,7 +78,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RMUDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "rmu_db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -96,7 +98,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        Log.d("RMUDatabaseHelper", "Creating database...");
+        Log.i("RMUDatabaseHelper", "Creating database...");
         try {
             sqLiteDatabase.beginTransaction();
             sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
@@ -110,6 +112,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(ProfessionSkillCostSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(RaceLocomotionSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(RaceSchema.TABLE_CREATE);
+            sqLiteDatabase.execSQL(AttackSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(BodyPartSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CriticalCodeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
@@ -137,6 +140,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CreatureTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
+            sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(VarietyStatsSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(VarietySkillsSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(OutlookSchema.TABLE_CREATE);
@@ -151,7 +155,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         finally {
             sqLiteDatabase.endTransaction();
         }
-        Log.d("RMUDatabaseHelper", "Database creation completed. Database located at " + sqLiteDatabase.getPath());
+        Log.i("RMUDatabaseHelper", "Database creation completed. Database located at " + sqLiteDatabase.getPath());
     }
 
     @Override
@@ -164,10 +168,10 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
                     sqLiteDatabase.execSQL("PRAGMA writable_schema = 1;");
                     sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_ALTER_V1_TO_V2);
                     sqLiteDatabase.execSQL("PRAGMA writable_schema = 0;");
-//                    sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_RENAME_V1_TO_V2);
-//                    sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
-//                    sqLiteDatabase.execSQL(CriticalResultSchema.COPY_TABLE_V1_TO_V2);
-//                    sqLiteDatabase.execSQL(CriticalResultSchema.DROP_TABLE_V1);
+                case 2:
+                    sqLiteDatabase.execSQL(CreatureVarietySchema.DROP_TABLE_V1);
+                    sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
+                    sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
             }
             sqLiteDatabase.setTransactionSuccessful();
         }

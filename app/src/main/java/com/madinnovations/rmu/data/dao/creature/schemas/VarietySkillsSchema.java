@@ -25,18 +25,18 @@ public interface VarietySkillsSchema {
 
 	public static final String COLUMN_VARIETY_ID = "varietyId";
 	public static final String COLUMN_SKILL_ID = "skillId";
-	public static final String COLUMN_ATT_PRIME_SECONDARY = "attackPrimeSecondary"; // 0 = attack, 1 = prime, 2 = secondary
+	public static final String COLUMN_SKILL_BONUS = "skillBonus";
 
 	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
-			+ COLUMN_ATT_PRIME_SECONDARY + " INTEGER NOT NULL, "
+			+ COLUMN_SKILL_BONUS + " INTEGER NOT NULL, "
 			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_SKILL_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_VARIETY_ID + ") REFERENCES " + CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + ")"
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_SKILL_ID, COLUMN_ATT_PRIME_SECONDARY};
+	public static final String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_SKILL_ID, COLUMN_SKILL_BONUS};
 }
