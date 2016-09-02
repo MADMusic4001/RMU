@@ -22,6 +22,8 @@
   <string name="folder_image">Folder Image</string>
 
   <!-- Database import/export strings -->
-  <string name="toast_db_exported_msg">Database successfully exported to %1$s</string>
-  <string name="toast_db_imported">DB successfully imported!</string>
+  <string name="toast_db_exported">Database successfully exported to %1$s.</string>
+  <string name="toast_db_export_failed">Database export failed.</string>
+  <string name="toast_db_imported">Database successfully imported.</string>
+  <string name="toast_db_import_failed">Database import failed.</string>
 </resources>

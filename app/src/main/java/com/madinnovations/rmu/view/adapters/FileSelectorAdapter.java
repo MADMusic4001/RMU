@@ -36,7 +36,6 @@ import com.madinnovations.rmu.view.utils.FileInfo;
  * Created 7/25/2015.
  */
 public class FileSelectorAdapter extends ArrayAdapter<FileInfo> {
-//	private static final int LAYOUT_RESOURCE_ID = android.R.layout.select_dialog_singlechoice;
 	private static final int LAYOUT_RESOURCE_ID = R.layout.file_selector_directory;
 
 	private LayoutInflater layoutInflater;
@@ -76,8 +75,6 @@ public class FileSelectorAdapter extends ArrayAdapter<FileInfo> {
 					getContext().getResources(), R.drawable.file_icon, null));
 		}
 		holder.fileNameView.setText(fileInfo.getFileName());
-		Log.d(this.getClass().getName(), fileInfo.getFileName() + " selected = " +
-				fileInfo.isSelected());
 		holder.fileNameView.setChecked(fileInfo.isSelected());
 		return rowView;
 	}

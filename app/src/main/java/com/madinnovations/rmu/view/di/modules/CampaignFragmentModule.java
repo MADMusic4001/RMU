@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -25,16 +26,16 @@ import dagger.Provides;
  * Provides methods to allow the dependency injection engine to inject dependencies into item package Fragment instances.
  */
 @Module
-public class ItemFragmentModule {
-	private ItemsFragment itemsFragment;
+public class CampaignFragmentModule {
+	private FileSelectorDialogFragment fsDialogFragment;
 
-	public ItemFragmentModule(ItemsFragment itemsFragment) {
-		this.itemsFragment = itemsFragment;
+	public CampaignFragmentModule(FileSelectorDialogFragment fsDialogFragment) {
+		this.fsDialogFragment = fsDialogFragment;
 	}
 
 	@Provides
 	@PerFragment
-	public ItemsFragment provideItemsFragment() {
-		return this.itemsFragment;
+	public FileSelectorDialogFragment provideFileSelectorDialogFragment() {
+		return this.fsDialogFragment;
 	}
 }

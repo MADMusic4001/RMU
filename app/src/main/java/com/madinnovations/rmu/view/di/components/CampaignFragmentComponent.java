@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.di.modules;
+package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
+import com.madinnovations.rmu.view.di.modules.CampaignFragmentModule;
+import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 
-import dagger.Module;
-import dagger.Provides;
+import java.io.File;
+
+import dagger.Subcomponent;
 
 /**
- * Provides methods to allow the dependency injection engine to inject dependencies into item package Fragment instances.
+ * The ItemFragmentComponent dependency injection interface.
  */
-@Module
-public class ItemFragmentModule {
-	private ItemsFragment itemsFragment;
-
-	public ItemFragmentModule(ItemsFragment itemsFragment) {
-		this.itemsFragment = itemsFragment;
-	}
-
-	@Provides
-	@PerFragment
-	public ItemsFragment provideItemsFragment() {
-		return this.itemsFragment;
-	}
+@PerFragment
+@Subcomponent(modules = CampaignFragmentModule.class)
+public interface CampaignFragmentComponent {
+	public void injectInto(FileSelectorDialogFragment fsDialogFragment);
 }

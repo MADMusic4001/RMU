@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportRxHandler;
 import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
@@ -57,18 +58,21 @@ import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Activity class for managing the campaign UI.
  */
 public class CampaignActivity extends Activity implements FileSelectorDialogFragment.FileSelectorDialogListener {
+	private static final String EXPORT_FILE_NAME = "export.rmu";
 	private static final String FILE_SELECTOR_FILTER = "fs_extension_filter";
 	private static final String RMU_FILE_EXTENSION = ".rmu";
+	@Inject
+	FileRxHandler                      fileRxHandler;
 	@Inject
 	ImportExportRxHandler              importExportRxHandler;
 	private ActivityComponent          activityComponent;
@@ -97,7 +101,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private StatsFragment              statsFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
-	private String                     fileName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -134,20 +137,22 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_export) {
-			importExportRxHandler.exportDatabase("")
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Boolean>() {
+			File dir = fileRxHandler.getImportExportDir();
+			final File file = new File(dir, EXPORT_FILE_NAME);
+			importExportRxHandler.exportDatabase(file)
+					.subscribe(new Subscriber<Integer>() {
 						@Override
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
 							Log.e("CampaignActivity", "Error occurred exporting database.", e);
+							Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
+										   Toast.LENGTH_SHORT).show();
 						}
 						@Override
-						public void onNext(Boolean aBoolean) {
-							Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported_msg), ""),
-									Toast.LENGTH_SHORT).show();
+						public void onNext(Integer percentComplete) {
+							Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported),
+																		   file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
 						}
 					});
 			return true;
@@ -158,6 +163,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			Bundle bundle = new Bundle();
 			bundle.putString(FILE_SELECTOR_FILTER, RMU_FILE_EXTENSION);
 			dialogFragment.setArguments(bundle);
+			Log.d("RMU", "Preparing to show FileSelectorDialogFragment");
 			dialogFragment.show(getFragmentManager(), "");
 			return true;
 		}
@@ -167,21 +173,26 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 
 	@Override
 	public void onFileSelected(String fileName) {
-		importExportRxHandler.importDatabase(fileName)
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Boolean>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CampaignActivity", "Error occurred importing database.", e);
-					}
-					@Override
-					public void onNext(Boolean aBoolean) {
-						Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT).show();
-					}
-				});
+		if(fileName != null) {
+			importExportRxHandler.importDatabase(fileName)
+					.subscribe(new Subscriber<Integer>() {
+						@Override
+						public void onCompleted() {
+							Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT).show();
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							Log.e("CampaignActivity", "Error occurred importing database.", e);
+							Toast.makeText(getApplication(), getString(R.string.toast_db_import_failed), Toast.LENGTH_SHORT)
+									.show();
+						}
+
+						@Override
+						public void onNext(Integer percentComplete) {
+						}
+					});
+		}
 	}
 
 	public void showAbout() {
