@@ -21,15 +21,15 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
  * Database schema data for the profession_skill_costs table
  */
 public interface ProfessionSkillCostSchema {
-	public static final String TABLE_NAME = "profession_skill_costs";
+	String TABLE_NAME = "profession_skill_costs";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_PROFESSION_ID = "professionId";
-	public static final String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
-	public static final String COLUMN_FIRST_COST = "firstCost";
-	public static final String COLUMN_SECOND_COST = "secondCost";
+	String COLUMN_ID = "id";
+	String COLUMN_PROFESSION_ID = "professionId";
+	String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
+	String COLUMN_FIRST_COST = "firstCost";
+	String COLUMN_SECOND_COST = "secondCost";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -42,6 +42,6 @@ public interface ProfessionSkillCostSchema {
 			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_FIRST_COST,
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_FIRST_COST,
 			COLUMN_SECOND_COST};
 }

@@ -19,13 +19,13 @@ package com.madinnovations.rmu.data.dao.combat.schemas;
  * Database schema data for the critical_codes table
  */
 public interface CriticalCodeSchema {
-	public static final String TABLE_NAME = "critical_codes";
+	String TABLE_NAME = "critical_codes";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CODE = "code";
-	public static final String COLUMN_DESCRIPTION = "description";
+	String COLUMN_ID = "id";
+	String COLUMN_CODE = "code";
+	String COLUMN_DESCRIPTION = "description";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -33,6 +33,6 @@ public interface CriticalCodeSchema {
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID,
+	String[] COLUMNS = new String[] { COLUMN_ID,
 			COLUMN_CODE, COLUMN_DESCRIPTION};
 }

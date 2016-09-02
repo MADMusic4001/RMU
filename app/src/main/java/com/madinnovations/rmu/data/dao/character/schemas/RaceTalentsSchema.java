@@ -21,13 +21,13 @@ import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
  * Database schema data for the race_talents table
  */
 public interface RaceTalentsSchema {
-	public static final String TABLE_NAME = "race_talents";
+	String TABLE_NAME = "race_talents";
 
-	public static final String COLUMN_RACE_ID = "raceId";
-	public static final String COLUMN_TALENT_ID = "talentId";
-	public static final String COLUMN_TIERS = "tiers";
+	String COLUMN_RACE_ID = "raceId";
+	String COLUMN_TALENT_ID = "talentId";
+	String COLUMN_TIERS = "tiers";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_RACE_ID + " INTEGER NOT NULL, "
@@ -38,5 +38,5 @@ public interface RaceTalentsSchema {
 			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
+	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
 }

@@ -19,29 +19,29 @@ package com.madinnovations.rmu.data.dao.combat.schemas;
  * Database schema data for the body_parts table
  */
 public interface CriticalResultSchema {
-    public static final String TABLE_NAME = "critical_results";
+    String TABLE_NAME = "critical_results";
 
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_SEVERITY_CODE = "severityCode";
-    public static final String COLUMN_RESULT_TEXT = "resultText";
-    public static final String COLUMN_MIN_ROLL = "minRoll";
-    public static final String COLUMN_MAX_ROLL = "maxRoll";
-    public static final String COLUMN_BODY_PART_ID = "bodyPartId";
-    public static final String COLUMN_HITS = "hits";
-    public static final String COLUMN_BLEEDING = "bleeding";
-    public static final String COLUMN_FATIGUE = "fatigue";
-    public static final String COLUMN_BREAKAGE = "breakage";
-    public static final String COLUMN_INJURY = "injury";
-    public static final String COLUMN_DAZED = "dazed";
-    public static final String COLUMN_STUNNED = "stunned";
-    public static final String COLUMN_NO_PARRY = "noParry";
-    public static final String COLUMN_STAGGERED = "staggered";
-    public static final String COLUMN_KNOCK_BACK = "knockBack";
-    public static final String COLUMN_PRONE = "prone";
-    public static final String COLUMN_GRAPPLED = "grappled";
-    public static final String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
+    String COLUMN_ID = "id";
+    String COLUMN_SEVERITY_CODE = "severityCode";
+    String COLUMN_RESULT_TEXT = "resultText";
+    String COLUMN_MIN_ROLL = "minRoll";
+    String COLUMN_MAX_ROLL = "maxRoll";
+    String COLUMN_BODY_PART_ID = "bodyPartId";
+    String COLUMN_HITS = "hits";
+    String COLUMN_BLEEDING = "bleeding";
+    String COLUMN_FATIGUE = "fatigue";
+    String COLUMN_BREAKAGE = "breakage";
+    String COLUMN_INJURY = "injury";
+    String COLUMN_DAZED = "dazed";
+    String COLUMN_STUNNED = "stunned";
+    String COLUMN_NO_PARRY = "noParry";
+    String COLUMN_STAGGERED = "staggered";
+    String COLUMN_KNOCK_BACK = "knockBack";
+    String COLUMN_PRONE = "prone";
+    String COLUMN_GRAPPLED = "grappled";
+    String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
 
-    public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+    String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -67,10 +67,10 @@ public interface CriticalResultSchema {
             + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
             + ")";
 
-    public static final String TABLE_ALTER_V1_TO_V2 = "UPDATE SQLITE_MASTER SET SQL = '"
+    String TABLE_ALTER_V1_TO_V2 = "UPDATE SQLITE_MASTER SET SQL = '"
             + TABLE_CREATE + "' WHERE NAME = '" + TABLE_NAME + "';";
 
-    public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SEVERITY_CODE, COLUMN_RESULT_TEXT, COLUMN_MIN_ROLL,
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SEVERITY_CODE, COLUMN_RESULT_TEXT, COLUMN_MIN_ROLL,
             COLUMN_MAX_ROLL, COLUMN_BODY_PART_ID, COLUMN_HITS, COLUMN_BLEEDING, COLUMN_FATIGUE, COLUMN_BREAKAGE, COLUMN_INJURY,
             COLUMN_DAZED, COLUMN_STUNNED, COLUMN_NO_PARRY, COLUMN_STAGGERED, COLUMN_KNOCK_BACK, COLUMN_PRONE, COLUMN_GRAPPLED,
             COLUMN_CRITICAL_TYPE_ID};

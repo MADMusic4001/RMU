@@ -21,13 +21,13 @@ import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
  * Database schema data for the variety_stats table
  */
 public interface VarietyAttacksSchema {
-	public static final String TABLE_NAME = "variety_stats";
+	String TABLE_NAME = "variety_stats";
 
-	public static final String COLUMN_VARIETY_ID = "varietyId";
-	public static final String COLUMN_ATTACK_ID = "attackId";
-	public static final String COLUMN_ATTACK_BONUS = "attackBonus";
+	String COLUMN_VARIETY_ID = "varietyId";
+	String COLUMN_ATTACK_ID = "attackId";
+	String COLUMN_ATTACK_BONUS = "attackBonus";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
@@ -38,5 +38,5 @@ public interface VarietyAttacksSchema {
 			+ "FOREIGN KEY (" + COLUMN_ATTACK_ID + ") REFERENCES " + AttackSchema.TABLE_NAME + "(" + AttackSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_ATTACK_ID, COLUMN_ATTACK_BONUS};
+	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_ATTACK_ID, COLUMN_ATTACK_BONUS};
 }

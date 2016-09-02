@@ -21,14 +21,14 @@ import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
  * Database schema data for the character_stats table
  */
 public interface CharacterStatsSchema {
-    public static final String TABLE_NAME = "character_stats";
+    String TABLE_NAME = "character_stats";
 
-    public static final String COLUMN_CHARACTER_ID = "characterId";
-    public static final String COLUMN_STAT_ID = "statId";
-    public static final String COLUMN_CURRENT_VALUE = "currentValue";
-    public static final String COLUMN_POTENTIAL_VALUE = "potentialValue";
+    String COLUMN_CHARACTER_ID = "characterId";
+    String COLUMN_STAT_ID = "statId";
+    String COLUMN_CURRENT_VALUE = "currentValue";
+    String COLUMN_POTENTIAL_VALUE = "potentialValue";
 
-    public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+    String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL, "
@@ -40,5 +40,5 @@ public interface CharacterStatsSchema {
             + "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
             + ")";
 
-    public static final String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_STAT_ID, COLUMN_CURRENT_VALUE, COLUMN_POTENTIAL_VALUE};
+    String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_STAT_ID, COLUMN_CURRENT_VALUE, COLUMN_POTENTIAL_VALUE};
 }

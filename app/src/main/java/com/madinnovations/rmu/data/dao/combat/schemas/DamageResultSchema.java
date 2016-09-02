@@ -19,14 +19,14 @@ package com.madinnovations.rmu.data.dao.combat.schemas;
  * Database schema data for the damage_results table
  */
 public interface DamageResultSchema {
-    public static final String TABLE_NAME = "damage_results";
+    String TABLE_NAME = "damage_results";
 
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_HITS = "hits";
-    public static final String COLUMN_CRITICAL_SEVERITY = "criticalSeverity";
-    public static final String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
+    String COLUMN_ID = "id";
+    String COLUMN_HITS = "hits";
+    String COLUMN_CRITICAL_SEVERITY = "criticalSeverity";
+    String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
 
-    public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+    String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -36,5 +36,5 @@ public interface DamageResultSchema {
             + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
             + ")";
 
-    public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_HITS, COLUMN_CRITICAL_SEVERITY, COLUMN_CRITICAL_TYPE_ID};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_HITS, COLUMN_CRITICAL_SEVERITY, COLUMN_CRITICAL_TYPE_ID};
 }

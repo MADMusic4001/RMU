@@ -19,36 +19,36 @@ package com.madinnovations.rmu.data.dao.character.schemas;
  * Database schema data for the races table
  */
 public interface RaceSchema {
-	public static final String TABLE_NAME = "races";
+	String TABLE_NAME = "races";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_BONUS_DEVELOPMENT_POINTS = "bonusDevelopmentPoints";
-	public static final String COLUMN_AGILITY_MODIFIER = "agilityModifier";
-	public static final String COLUMN_CONSTITUTION_MODIFIER = "constitutionModifier";
-	public static final String COLUMN_EMPATHY_MODIFIER = "empathyModifier";
-	public static final String COLUMN_INTUITION_MODIFIER = "intuitionModifier";
-	public static final String COLUMN_MEMORY_MODIFIER = "memoryModifier";
-	public static final String COLUMN_PRESENCE_MODIFIER = "presenceModifier";
-	public static final String COLUMN_QUICKNESS_MODIFIER = "quicknessModifier";
-	public static final String COLUMN_REASONING_MODIFIER = "reasoningModifier";
-	public static final String COLUMN_SELF_DISCIPLINE_MODIFIER = "selfDisciplineModifier";
-	public static final String COLUMN_STRENGTH_MODIFIER = "strengthModifier";
-	public static final String COLUMN_CHANNELING_RESISTANCE_MODIFIER = "channelingResistanceModifier";
-	public static final String COLUMN_ESSENCE_RESISTANCE_MODIFIER = "essenceResistanceModifier";
-	public static final String COLUMN_MENTALISM_RESISTANCE_MODIFIER = "mentalismResistanceModifier";
-	public static final String COLUMN_PHYSICAL_RESISTANCE_MODIFIER = "physicalResistanceModifier";
-	public static final String COLUMN_ENDURANCE_MODIFIER = "enduranceModifier";
-	public static final String COLUMN_BASE_HITS = "baseHits";
-	public static final String COLUMN_RECOVERY_MULTIPLIER = "recoveryMultiplier";
-	public static final String COLUMN_SIZE_ID = "sizeId";
-	public static final String COLUMN_STRIDE_MODIFIER = "strideModifier";
-	public static final String COLUMN_AVERAGE_HEIGHT = "averageHeight";
-	public static final String COLUMN_AVERAGE_WEIGHT = "averageWeight";
-	public static final String COLUMN_POUNDS_PER_INCH = "poundsPerInch";
+	String COLUMN_ID = "id";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_BONUS_DEVELOPMENT_POINTS = "bonusDevelopmentPoints";
+	String COLUMN_AGILITY_MODIFIER = "agilityModifier";
+	String COLUMN_CONSTITUTION_MODIFIER = "constitutionModifier";
+	String COLUMN_EMPATHY_MODIFIER = "empathyModifier";
+	String COLUMN_INTUITION_MODIFIER = "intuitionModifier";
+	String COLUMN_MEMORY_MODIFIER = "memoryModifier";
+	String COLUMN_PRESENCE_MODIFIER = "presenceModifier";
+	String COLUMN_QUICKNESS_MODIFIER = "quicknessModifier";
+	String COLUMN_REASONING_MODIFIER = "reasoningModifier";
+	String COLUMN_SELF_DISCIPLINE_MODIFIER = "selfDisciplineModifier";
+	String COLUMN_STRENGTH_MODIFIER = "strengthModifier";
+	String COLUMN_CHANNELING_RESISTANCE_MODIFIER = "channelingResistanceModifier";
+	String COLUMN_ESSENCE_RESISTANCE_MODIFIER = "essenceResistanceModifier";
+	String COLUMN_MENTALISM_RESISTANCE_MODIFIER = "mentalismResistanceModifier";
+	String COLUMN_PHYSICAL_RESISTANCE_MODIFIER = "physicalResistanceModifier";
+	String COLUMN_ENDURANCE_MODIFIER = "enduranceModifier";
+	String COLUMN_BASE_HITS = "baseHits";
+	String COLUMN_RECOVERY_MULTIPLIER = "recoveryMultiplier";
+	String COLUMN_SIZE_ID = "sizeId";
+	String COLUMN_STRIDE_MODIFIER = "strideModifier";
+	String COLUMN_AVERAGE_HEIGHT = "averageHeight";
+	String COLUMN_AVERAGE_WEIGHT = "averageWeight";
+	String COLUMN_POUNDS_PER_INCH = "poundsPerInch";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -79,7 +79,7 @@ public interface RaceSchema {
 			+ COLUMN_POUNDS_PER_INCH + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID,
+	String[] COLUMNS = new String[] { COLUMN_ID,
 			COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_BONUS_DEVELOPMENT_POINTS,
 			COLUMN_AGILITY_MODIFIER, COLUMN_CONSTITUTION_MODIFIER, COLUMN_EMPATHY_MODIFIER,
 			COLUMN_INTUITION_MODIFIER, COLUMN_MEMORY_MODIFIER, COLUMN_PRESENCE_MODIFIER,

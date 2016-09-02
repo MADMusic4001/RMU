@@ -19,13 +19,13 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the skill_category_stats table
  */
 public interface SkillCategoryStatsSchema {
-	public static final String TABLE_NAME = "skill_category_stats";
+	String TABLE_NAME = "skill_category_stats";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
-	public static final String COLUMN_STAT_ID = "statId";
+	String COLUMN_ID = "id";
+	String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
+	String COLUMN_STAT_ID = "statId";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -35,5 +35,5 @@ public interface SkillCategoryStatsSchema {
 			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_STAT_ID};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_STAT_ID};
 }

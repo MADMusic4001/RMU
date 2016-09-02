@@ -21,13 +21,13 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
  * Database schema data for the character_skills table
  */
 public interface CharacterSkillsSchema {
-    public static final String TABLE_NAME = "character_skills";
+    String TABLE_NAME = "character_skills";
 
-    public static final String COLUMN_CHARACTER_ID = "characterId";
-    public static final String COLUMN_SKILL_ID = "skillId";
-    public static final String COLUMN_RANKS = "ranks";
+    String COLUMN_CHARACTER_ID = "characterId";
+    String COLUMN_SKILL_ID = "skillId";
+    String COLUMN_RANKS = "ranks";
 
-    public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+    String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL, "
@@ -38,5 +38,5 @@ public interface CharacterSkillsSchema {
             + "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
             + ")";
 
-    public static final String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_RANKS};
+    String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_RANKS};
 }

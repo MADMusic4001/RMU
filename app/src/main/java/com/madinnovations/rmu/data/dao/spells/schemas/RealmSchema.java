@@ -21,14 +21,14 @@ import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
  * Database schema data for the realms table
  */
 public interface RealmSchema {
-	public static final String TABLE_NAME = "realms";
+	String TABLE_NAME = "realms";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_STAT_ID = "statId";
+	String COLUMN_ID = "id";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_STAT_ID = "statId";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -38,5 +38,5 @@ public interface RealmSchema {
 			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT_ID};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT_ID};
 }

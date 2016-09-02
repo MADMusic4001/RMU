@@ -19,14 +19,14 @@ package com.madinnovations.rmu.data.dao.character.schemas;
  * Database schema data for the cultures table
  */
 public interface CultureSchema {
-	public static final String TABLE_NAME = "cultures";
+	String TABLE_NAME = "cultures";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_TRADES_AND_CRAFTS_RANKS = "tradesAndCraftsRanks";
+	String COLUMN_ID = "id";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_TRADES_AND_CRAFTS_RANKS = "tradesAndCraftsRanks";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -35,5 +35,5 @@ public interface CultureSchema {
 			+ COLUMN_TRADES_AND_CRAFTS_RANKS + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_TRADES_AND_CRAFTS_RANKS};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_TRADES_AND_CRAFTS_RANKS};
 }

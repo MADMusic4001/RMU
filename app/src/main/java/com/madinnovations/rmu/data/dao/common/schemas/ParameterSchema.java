@@ -19,17 +19,17 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the parameters table
  */
 public interface ParameterSchema {
-	public static final String TABLE_NAME = "parameters";
+	String TABLE_NAME = "parameters";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_BASE_VALUE = "baseValue";
-	public static final String COLUMN_PER_VALUE = "perValue";
-	public static final String COLUMN_PER_LEVEL = "perLevel";
-	public static final String COLUMN_PER_TIER = "perTier";
+	String COLUMN_ID = "id";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_BASE_VALUE = "baseValue";
+	String COLUMN_PER_VALUE = "perValue";
+	String COLUMN_PER_LEVEL = "perLevel";
+	String COLUMN_PER_TIER = "perTier";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -41,6 +41,6 @@ public interface ParameterSchema {
 			+ COLUMN_PER_TIER + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_BASE_VALUE, COLUMN_PER_VALUE,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_BASE_VALUE, COLUMN_PER_VALUE,
 			COLUMN_PER_LEVEL, COLUMN_PER_TIER};
 }

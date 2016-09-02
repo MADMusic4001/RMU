@@ -19,15 +19,15 @@ package com.madinnovations.rmu.data.dao.creature.schemas;
  * Database schema data for the creatures table
  */
 public interface CreatureSchema {
-	public static final String TABLE_NAME = "creatures";
+	String TABLE_NAME = "creatures";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CREATURE_VARIETY_ID = "creatureVarietyId";
-	public static final String COLUMN_LEVEL = "level";
-	public static final String COLUMN_MAX_HITS = "maxHits";
-	public static final String COLUMN_CURRENT_HITS = "currentHits";
+	String COLUMN_ID = "id";
+	String COLUMN_CREATURE_VARIETY_ID = "creatureVarietyId";
+	String COLUMN_LEVEL = "level";
+	String COLUMN_MAX_HITS = "maxHits";
+	String COLUMN_CURRENT_HITS = "currentHits";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -37,6 +37,6 @@ public interface CreatureSchema {
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_VARIETY_ID, COLUMN_LEVEL, COLUMN_MAX_HITS,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_VARIETY_ID, COLUMN_LEVEL, COLUMN_MAX_HITS,
 			COLUMN_CURRENT_HITS};
 }

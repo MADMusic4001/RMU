@@ -21,12 +21,12 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
  * Database schema data for the archetype_spells table
  */
 public interface ArchetypeSpellsSchema {
-	public static final String TABLE_NAME = "archetype_spells";
+	String TABLE_NAME = "archetype_spells";
 
-	public static final String COLUMN_ARCHETYPE_ID = "archetypeId";
-	public static final String COLUMN_SPELL_ID = "spellId";
+	String COLUMN_ARCHETYPE_ID = "archetypeId";
+	String COLUMN_SPELL_ID = "spellId";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ARCHETYPE_ID + " INTEGER NOT NULL, "
@@ -36,5 +36,5 @@ public interface ArchetypeSpellsSchema {
 			+ "FOREIGN KEY (" + COLUMN_SPELL_ID + ") REFERENCES " + SpellSchema.TABLE_NAME + "(" + SpellSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_ARCHETYPE_ID, COLUMN_SPELL_ID};
+	String[] COLUMNS = new String[] {COLUMN_ARCHETYPE_ID, COLUMN_SPELL_ID};
 }

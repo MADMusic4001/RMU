@@ -20,13 +20,13 @@ import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 /**
  * Database schema data for the variety_critical_codes table
  */
-public class VarietyCriticalCodesSchema {
-	public static final String TABLE_NAME = "variety_critical_codes";
+public interface VarietyCriticalCodesSchema {
+	String TABLE_NAME = "variety_critical_codes";
 
-	public static final String COLUMN_VARIETY_ID = "varietyId";
-	public static final String COLUMN_CRITICAL_CODE_ID = "skillId";
+	String COLUMN_VARIETY_ID = "varietyId";
+	String COLUMN_CRITICAL_CODE_ID = "skillId";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
@@ -36,5 +36,5 @@ public class VarietyCriticalCodesSchema {
 			+ "FOREIGN KEY (" + COLUMN_CRITICAL_CODE_ID + ") REFERENCES " + CriticalCodeSchema.TABLE_NAME + "(" + CriticalCodeSchema.COLUMN_ID + ")"
 			+ ");";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_CRITICAL_CODE_ID};
+	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_CRITICAL_CODE_ID};
 }

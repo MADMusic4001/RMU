@@ -22,36 +22,36 @@ import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
  * Database schema data for the creature_varieties table
  */
 public interface CreatureVarietySchema {
-	public static final String TABLE_NAME = "creature_varieties";
+	String TABLE_NAME = "creature_varieties";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_TYPE_ID = "typeId";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_TYPICAL_LEVEL = "typicalLevel";
-	public static final String COLUMN_LEVEL_SPREAD = "levelSpread";
-	public static final String COLUMN_HEIGHT = "height";
-	public static final String COLUMN_LENGTH = "length";
-	public static final String COLUMN_WEIGHT = "weight";
-	public static final String COLUMN_HEALING_RATE = "healingRate";
-	public static final String COLUMN_BASE_HITS = "baseHits";
-	public static final String COLUMN_BASE_ENDURANCE = "baseEndurance";
-	public static final String COLUMN_SIZE_ID = "sizeId";
-	public static final String COLUMN_ARMOR_TYPE = "armorType";
-	public static final String COLUMN_BASE_MOVEMENT_RATE = "baseMovementRate";
-	public static final String COLUMN_BASE_CHANNELING_RR = "baseChannelingRR";
-	public static final String COLUMN_BASE_ESSENCE_RR = "baseEssenceRR";
-	public static final String COLUMN_BASE_MENTALISM_RR = "baseMentalismRR";
-	public static final String COLUMN_BASE_PHYSICAL_RR = "basePhysicalRR";
-	public static final String COLUMN_BASE_FEAR_RR = "baseFearRR";
-	public static final String COLUMN_REALM1_ID = "realm1Id";
-	public static final String COLUMN_REALM2_ID = "realm2Id";
-	public static final String COLUMN_BASE_STRIDE = "baseStride";
-	public static final String COLUMN_LEFTOVER_DP = "leftoverDP";
-	public static final String COLUMN_OUTLOOK_ID = "outlookId";
-	public static final String COLUMN_ATTACK_SEQUENCE = "attackSequence";
+	String COLUMN_ID = "id";
+	String COLUMN_TYPE_ID = "typeId";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_TYPICAL_LEVEL = "typicalLevel";
+	String COLUMN_LEVEL_SPREAD = "levelSpread";
+	String COLUMN_HEIGHT = "height";
+	String COLUMN_LENGTH = "length";
+	String COLUMN_WEIGHT = "weight";
+	String COLUMN_HEALING_RATE = "healingRate";
+	String COLUMN_BASE_HITS = "baseHits";
+	String COLUMN_BASE_ENDURANCE = "baseEndurance";
+	String COLUMN_SIZE_ID = "sizeId";
+	String COLUMN_ARMOR_TYPE = "armorType";
+	String COLUMN_BASE_MOVEMENT_RATE = "baseMovementRate";
+	String COLUMN_BASE_CHANNELING_RR = "baseChannelingRR";
+	String COLUMN_BASE_ESSENCE_RR = "baseEssenceRR";
+	String COLUMN_BASE_MENTALISM_RR = "baseMentalismRR";
+	String COLUMN_BASE_PHYSICAL_RR = "basePhysicalRR";
+	String COLUMN_BASE_FEAR_RR = "baseFearRR";
+	String COLUMN_REALM1_ID = "realm1Id";
+	String COLUMN_REALM2_ID = "realm2Id";
+	String COLUMN_BASE_STRIDE = "baseStride";
+	String COLUMN_LEFTOVER_DP = "leftoverDP";
+	String COLUMN_OUTLOOK_ID = "outlookId";
+	String COLUMN_ATTACK_SEQUENCE = "attackSequence";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -87,9 +87,9 @@ public interface CreatureVarietySchema {
 			+ "FOREIGN KEY (" + COLUMN_OUTLOOK_ID + ") REFERENCES " + OutlookSchema.TABLE_NAME + "(" + OutlookSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String DROP_TABLE_V1 = "DROP TABLE " + TABLE_NAME + ";";
+	String DROP_TABLE_V1 = "DROP TABLE " + TABLE_NAME + ";";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_TYPE_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_TYPICAL_LEVEL,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_TYPE_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_TYPICAL_LEVEL,
 			COLUMN_LEVEL_SPREAD, COLUMN_HEIGHT, COLUMN_LENGTH, COLUMN_WEIGHT, COLUMN_HEALING_RATE, COLUMN_BASE_HITS, COLUMN_BASE_ENDURANCE,
 			COLUMN_SIZE_ID, COLUMN_ARMOR_TYPE, COLUMN_BASE_MOVEMENT_RATE, COLUMN_BASE_CHANNELING_RR, COLUMN_BASE_ESSENCE_RR,
 			COLUMN_BASE_MENTALISM_RR, COLUMN_BASE_PHYSICAL_RR, COLUMN_BASE_FEAR_RR, COLUMN_REALM1_ID, COLUMN_REALM2_ID, COLUMN_BASE_STRIDE,

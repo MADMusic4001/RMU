@@ -19,17 +19,17 @@ package com.madinnovations.rmu.data.dao.combat.schemas;
  * Database schema data for the damage_table table
  */
 public interface DamageTableSchema {
-    public static final String TABLE_NAME = "damage_table";
+    String TABLE_NAME = "damage_table";
 
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_NAME = "name";
+    String COLUMN_ID = "id";
+    String COLUMN_NAME = "name";
 
-    public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+    String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
             + COLUMN_NAME  + " TEXT NOT NULL"
             + ")";
 
-    public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME};
 }

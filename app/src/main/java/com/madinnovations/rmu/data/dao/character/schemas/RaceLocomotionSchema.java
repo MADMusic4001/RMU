@@ -21,13 +21,13 @@ import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
  * Database schema data for the race_movements table
  */
 public interface RaceLocomotionSchema {
-	public static final String TABLE_NAME = "race_locomotion_types";
+	String TABLE_NAME = "race_locomotion_types";
 
-	public static final String COLUMN_LOCOMOTION_TYPE_ID = "locomotionTypeId";
-	public static final String COLUMN_RACE_ID = "raceId";
-	public static final String COLUMN_RATE = "rate";
+	String COLUMN_LOCOMOTION_TYPE_ID = "locomotionTypeId";
+	String COLUMN_RACE_ID = "raceId";
+	String COLUMN_RATE = "rate";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_LOCOMOTION_TYPE_ID + " INTEGER NOT NULL, "
@@ -38,5 +38,5 @@ public interface RaceLocomotionSchema {
 			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_LOCOMOTION_TYPE_ID, COLUMN_RACE_ID, COLUMN_RATE};
+	String[] COLUMNS = new String[] {COLUMN_LOCOMOTION_TYPE_ID, COLUMN_RACE_ID, COLUMN_RATE};
 }

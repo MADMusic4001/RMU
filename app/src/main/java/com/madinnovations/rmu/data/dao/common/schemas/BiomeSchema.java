@@ -19,16 +19,16 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the biomes table
  */
 public interface BiomeSchema {
-	public static final String TABLE_NAME = "biomes";
+	String TABLE_NAME = "biomes";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CODE = "code";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_HUMIDITY = "humidity";
-	public static final String COLUMN_FLORA = "flora";
-	public static final String COLUMN_FAUNA = "fauna";
+	String COLUMN_ID = "id";
+	String COLUMN_CODE = "code";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_HUMIDITY = "humidity";
+	String COLUMN_FLORA = "flora";
+	String COLUMN_FAUNA = "fauna";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -39,6 +39,6 @@ public interface BiomeSchema {
 			+ COLUMN_FAUNA + " TEXT NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CODE, COLUMN_DESCRIPTION, COLUMN_HUMIDITY, COLUMN_FLORA,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CODE, COLUMN_DESCRIPTION, COLUMN_HUMIDITY, COLUMN_FLORA,
 			COLUMN_FAUNA};
 }

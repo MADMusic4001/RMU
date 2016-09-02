@@ -19,13 +19,13 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the talent_parameters table
  */
 public interface TalentParametersSchema {
-	public static final String TABLE_NAME = "talent_parameters";
+	String TABLE_NAME = "talent_parameters";
 
-	public static final String COLUMN_TALENT_ID = "talentId";
-	public static final String COLUMN_PARAMETER_ID = "parameterId";
-	public static final String COLUMN_VALUE = "value";
+	String COLUMN_TALENT_ID = "talentId";
+	String COLUMN_PARAMETER_ID = "parameterId";
+	String COLUMN_VALUE = "value";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
@@ -36,5 +36,5 @@ public interface TalentParametersSchema {
 			+ "FOREIGN KEY (" + COLUMN_PARAMETER_ID + ") REFERENCES " + ParameterSchema.TABLE_NAME + "(" + ParameterSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_PARAMETER_ID, COLUMN_VALUE};
+	String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_PARAMETER_ID, COLUMN_VALUE};
 }

@@ -19,15 +19,15 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the specializations table
  */
 public interface SpecializationSchema {
-	public static final String TABLE_NAME = "specializations";
+	String TABLE_NAME = "specializations";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_SKILL_ID = "skillId";
-	public static final String COLUMN_SKILL_STATS = "skillStats";
+	String COLUMN_ID = "id";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_SKILL_ID = "skillId";
+	String COLUMN_SKILL_STATS = "skillStats";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -38,5 +38,5 @@ public interface SpecializationSchema {
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SKILL_ID, COLUMN_SKILL_STATS};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SKILL_ID, COLUMN_SKILL_STATS};
 }

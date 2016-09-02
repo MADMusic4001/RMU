@@ -21,14 +21,14 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
  * Database schema data for the culture_skill_costs table
  */
 public interface CultureSkillRanksSchema {
-	public static final String TABLE_NAME = "culture_skill_ranks";
+	String TABLE_NAME = "culture_skill_ranks";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CULTURE_ID = "cultureId";
-	public static final String COLUMN_SKILL_ID = "skillId";
-	public static final String COLUMN_SKILL_RANKS = "skillRanks";
+	String COLUMN_ID = "id";
+	String COLUMN_CULTURE_ID = "cultureId";
+	String COLUMN_SKILL_ID = "skillId";
+	String COLUMN_SKILL_RANKS = "skillRanks";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -40,5 +40,5 @@ public interface CultureSkillRanksSchema {
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_CULTURE_ID, COLUMN_SKILL_ID, COLUMN_SKILL_RANKS};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_CULTURE_ID, COLUMN_SKILL_ID, COLUMN_SKILL_RANKS};
 }

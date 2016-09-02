@@ -19,14 +19,14 @@ package com.madinnovations.rmu.data.dao.creature.schemas;
  * Database schema data for the creature_types table
  */
 public interface CreatureTypeSchema {
-	public static final String TABLE_NAME = "creature_types";
+	String TABLE_NAME = "creature_types";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CATEGORY_ID = "categoryId";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
+	String COLUMN_ID = "id";
+	String COLUMN_CATEGORY_ID = "categoryId";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -35,5 +35,5 @@ public interface CreatureTypeSchema {
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CATEGORY_ID, COLUMN_NAME, COLUMN_DESCRIPTION};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CATEGORY_ID, COLUMN_NAME, COLUMN_DESCRIPTION};
 }

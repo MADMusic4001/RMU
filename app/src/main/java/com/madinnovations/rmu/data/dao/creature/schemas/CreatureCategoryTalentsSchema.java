@@ -18,14 +18,14 @@ package com.madinnovations.rmu.data.dao.creature.schemas;
 /**
  * Database schema data for the creature_category_talents table
  */
-public class CreatureCategoryTalentsSchema {
-	public static final String TABLE_NAME = "creature_category_talents";
+public interface CreatureCategoryTalentsSchema {
+	String TABLE_NAME = "creature_category_talents";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CATEGORY_ID = "categoryId";
-	public static final String COLUMN_TALENT_ID = "talentId";
+	String COLUMN_ID = "id";
+	String COLUMN_CATEGORY_ID = "categoryId";
+	String COLUMN_TALENT_ID = "talentId";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -33,5 +33,5 @@ public class CreatureCategoryTalentsSchema {
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CATEGORY_ID, COLUMN_TALENT_ID};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CATEGORY_ID, COLUMN_TALENT_ID};
 }

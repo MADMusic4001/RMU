@@ -19,13 +19,13 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the specialization_stats table
  */
 public interface SpecializationStatsSchema {
-	public static final String TABLE_NAME = "specialization_stats";
+	String TABLE_NAME = "specialization_stats";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_SPECIALIZATION_ID = "specializationId";
-	public static final String COLUMN_STAT_ID = "statId";
+	String COLUMN_ID = "id";
+	String COLUMN_SPECIALIZATION_ID = "specializationId";
+	String COLUMN_STAT_ID = "statId";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -35,5 +35,5 @@ public interface SpecializationStatsSchema {
 			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SPECIALIZATION_ID, COLUMN_STAT_ID};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SPECIALIZATION_ID, COLUMN_STAT_ID};
 }

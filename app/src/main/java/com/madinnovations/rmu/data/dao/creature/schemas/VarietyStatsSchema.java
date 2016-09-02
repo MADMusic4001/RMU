@@ -21,13 +21,13 @@ import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
  * Database schema data for the variety_stats table
  */
 public interface VarietyStatsSchema {
-	public static final String TABLE_NAME = "variety_stats";
+	String TABLE_NAME = "variety_stats";
 
-	public static final String COLUMN_VARIETY_ID = "varietyId";
-	public static final String COLUMN_STAT_ID = "statId";
-	public static final String COLUMN_BONUS = "bonus";
+	String COLUMN_VARIETY_ID = "varietyId";
+	String COLUMN_STAT_ID = "statId";
+	String COLUMN_BONUS = "bonus";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
@@ -38,5 +38,5 @@ public interface VarietyStatsSchema {
 			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_STAT_ID, COLUMN_BONUS};
+	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_STAT_ID, COLUMN_BONUS};
 }

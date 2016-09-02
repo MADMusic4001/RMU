@@ -19,18 +19,18 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the sizes table
  */
 public interface SizeSchema {
-	public static final String TABLE_NAME = "sizes";
+	String TABLE_NAME = "sizes";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CODE = "code";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_EXAMPLES = "examples";
-	public static final String COLUMN_MIN_WEIGHT = "minWeight";
-	public static final String COLUMN_MAX_WEIGHT = "maxWeight";
-	public static final String COLUMN_MIN_HEIGHT = "minHeight";
-	public static final String COLUMN_MAX_HEIGHT = "maxHeight";
+	String COLUMN_ID = "id";
+	String COLUMN_CODE = "code";
+	String COLUMN_NAME = "name";
+	String COLUMN_EXAMPLES = "examples";
+	String COLUMN_MIN_WEIGHT = "minWeight";
+	String COLUMN_MAX_WEIGHT = "maxWeight";
+	String COLUMN_MIN_HEIGHT = "minHeight";
+	String COLUMN_MAX_HEIGHT = "maxHeight";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -43,6 +43,6 @@ public interface SizeSchema {
 			+ COLUMN_MAX_HEIGHT + " INTEGER"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CODE, COLUMN_NAME, COLUMN_EXAMPLES, COLUMN_MIN_WEIGHT,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CODE, COLUMN_NAME, COLUMN_EXAMPLES, COLUMN_MIN_WEIGHT,
 			COLUMN_MAX_WEIGHT, COLUMN_MIN_HEIGHT, COLUMN_MAX_HEIGHT};
 }

@@ -19,23 +19,23 @@ package com.madinnovations.rmu.data.dao.common.schemas;
  * Database schema data for the talents table
  */
 public interface TalentSchema {
-	public static final String TABLE_NAME = "talents";
+	String TABLE_NAME = "talents";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_CATEGORY_ID = "categoryId";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_IS_FLAW = "isFlaw";
-	public static final String COLUMN_AFFECTED_SKILL_ID = "affectedSkillId";
-	public static final String COLUMN_TIER = "tier";
-	public static final String COLUMN_MAX_TIERS = "maxTiers";
-	public static final String COLUMN_DP_COST = "dpCost";
-	public static final String COLUMN_DP_COST_PER_TIER = "dpCcostPerTier";
-	public static final String COLUMN_BONUS_PER_TIER = "bonusPerTier";
-	public static final String COLUMN_IS_SITUATIONAL = "isSituational";
-	public static final String COLUMN_ACTION_POINTS = "actionPoints";
+	String COLUMN_ID = "id";
+	String COLUMN_CATEGORY_ID = "categoryId";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_IS_FLAW = "isFlaw";
+	String COLUMN_AFFECTED_SKILL_ID = "affectedSkillId";
+	String COLUMN_TIER = "tier";
+	String COLUMN_MAX_TIERS = "maxTiers";
+	String COLUMN_DP_COST = "dpCost";
+	String COLUMN_DP_COST_PER_TIER = "dpCcostPerTier";
+	String COLUMN_BONUS_PER_TIER = "bonusPerTier";
+	String COLUMN_IS_SITUATIONAL = "isSituational";
+	String COLUMN_ACTION_POINTS = "actionPoints";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
@@ -55,7 +55,7 @@ public interface TalentSchema {
 			+ "FOREIGN KEY (" + COLUMN_AFFECTED_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CATEGORY_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_IS_FLAW,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CATEGORY_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_IS_FLAW,
 			COLUMN_AFFECTED_SKILL_ID, COLUMN_TIER, COLUMN_MAX_TIERS, COLUMN_DP_COST, COLUMN_DP_COST_PER_TIER, COLUMN_BONUS_PER_TIER,
 			COLUMN_IS_SITUATIONAL, COLUMN_ACTION_POINTS};
 }

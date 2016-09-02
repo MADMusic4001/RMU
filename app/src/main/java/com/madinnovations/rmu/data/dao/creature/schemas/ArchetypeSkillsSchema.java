@@ -21,13 +21,13 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
  * Database schema data for the archetype_skills table
  */
 public interface ArchetypeSkillsSchema {
-	public static final String TABLE_NAME = "archetype_skills";
+	String TABLE_NAME = "archetype_skills";
 
-	public static final String COLUMN_ARCHETYPE_ID = "archetypeId";
-	public static final String COLUMN_SKILL_ID = "skillId";
-	public static final String COLUMN_PRIORITY = "priority"; // 0 = primary, 1 = secondary, 2 = tertiary
+	String COLUMN_ARCHETYPE_ID = "archetypeId";
+	String COLUMN_SKILL_ID = "skillId";
+	String COLUMN_PRIORITY = "priority"; // 0 = primary, 1 = secondary, 2 = tertiary
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ARCHETYPE_ID + " INTEGER NOT NULL, "
@@ -38,5 +38,5 @@ public interface ArchetypeSkillsSchema {
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] {COLUMN_ARCHETYPE_ID, COLUMN_SKILL_ID, COLUMN_PRIORITY };
+	String[] COLUMNS = new String[] {COLUMN_ARCHETYPE_ID, COLUMN_SKILL_ID, COLUMN_PRIORITY };
 }
