@@ -19,37 +19,39 @@ package com.madinnovations.rmu.data.dao.character.schemas;
  * Database schema data for the characters table
  */
 public interface CharacterSchema {
-	public static final String TABLE_NAME = "characters";
+	String TABLE_NAME = "characters";
 
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_RACE_ID = "raceId";
-	public static final String COLUMN_HEIGHT = "height";
-	public static final String COLUMN_WEIGHT = "weight";
-	public static final String COLUMN_STRIDE = "stride";
-	public static final String COLUMN_CURRENT_HITS = "currentHits";
-	public static final String COLUMN_MAX_HITS = "maxHits";
-	public static final String COLUMN_CURRENT_DEVELOPMENT_POINTS = "currentDevelopmentPoints";
+	String COLUMN_ID = "id";
+	String COLUMN_NAME = "name";
+	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_RACE_ID = "raceId";
+	String COLUMN_PROFESSION_ID = "professionId";
+	String COLUMN_HEIGHT = "height";
+	String COLUMN_WEIGHT = "weight";
+	String COLUMN_STRIDE = "stride";
+	String COLUMN_CURRENT_HITS = "currentHits";
+	String COLUMN_MAX_HITS = "maxHits";
+	String COLUMN_CURRENT_DEVELOPMENT_POINTS = "currentDevelopmentPoints";
 
-	public static final String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
+	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ COLUMN_NAME  + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_RACE_ID  + " INTEGER NOT NULL, "
+			+ COLUMN_PROFESSION_ID  + " INTEGER NOT NULL, "
 			+ COLUMN_HEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_WEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_STRIDE + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_MAX_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_DEVELOPMENT_POINTS + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + ")"
 			+ ")";
 
-	public static final String[] COLUMNS = new String[] { COLUMN_ID,
-			COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_RACE_ID,
-			COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_STRIDE,
-			COLUMN_CURRENT_HITS, COLUMN_MAX_HITS, COLUMN_CURRENT_DEVELOPMENT_POINTS};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_RACE_ID,
+			COLUMN_PROFESSION_ID, COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_STRIDE, COLUMN_CURRENT_HITS, COLUMN_MAX_HITS, 
+			COLUMN_CURRENT_DEVELOPMENT_POINTS};
 }
