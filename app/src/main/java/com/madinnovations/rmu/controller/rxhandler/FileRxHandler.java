@@ -16,8 +16,12 @@
 package com.madinnovations.rmu.controller.rxhandler;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.madinnovations.rmu.view.RMUAppException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +32,8 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Creates reactive observable for requesting File operations.
@@ -80,18 +86,17 @@ public class FileRxHandler {
 					}
 				}
 			}
-		);
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
-	public Observable<Boolean> writeFile(final String fileName, final String data) {
+	public Observable<Boolean> writeFile(@NonNull final File file, @NonNull final String data) {
 		return Observable.create(
 			new Observable.OnSubscribe<Boolean>() {
 				@Override
 				public void call(Subscriber<? super Boolean> subscriber) {
 					FileOutputStream outputStream = null;
 					try {
-						File dir = getImportExportDir();
-						File file = new File(dir, fileName);
 						outputStream = new FileOutputStream(file);
 						outputStream.write(data.getBytes());
 						outputStream.close();
@@ -111,14 +116,34 @@ public class FileRxHandler {
 					}
 				}
 			}
-		);
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
-	private File getImportExportDir() {
-		File dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "RMU");
+	public Observable<Boolean> writeFile(@NonNull final String fileName, @NonNull final String data) {
+		File dir = getImportExportDir();
+		File file = new File(dir, fileName);
+		return writeFile(file, data);
+	}
+
+	/**
+	 * Gets the RMU import/export directory to use. ExternalFiles/Documents/RMU for KITKAT and above.
+	 * ExternalFiles/Downloads/RMU for below KitKat.
+	 *
+	 * @return the File representing the directory or n
+	 */
+	public File getImportExportDir() {
+		File dir;
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "RMU");
+		}
+		else {
+			dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "RMU");
+		}
 		if(!dir.exists()) {
 			if (!dir.mkdirs()) {
 				Log.e("RMU", "Directory not created");
+				throw new RMUAppException("Error creating output directory");
 			}
 		}
 		return dir;

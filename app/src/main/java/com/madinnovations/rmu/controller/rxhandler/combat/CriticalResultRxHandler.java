@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -63,7 +64,8 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
 	/**
@@ -86,7 +88,8 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
 	/**
@@ -110,7 +113,8 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
 	/**
@@ -132,7 +136,8 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
 	/**
@@ -156,7 +161,8 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
 	/**
@@ -179,7 +185,8 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 
 	public Observable<Collection<CriticalResult>> getCriticalResultTableRows(final CriticalType criticalType, final char severityCode) {
@@ -196,6 +203,7 @@ public class CriticalResultRxHandler {
 						}
 					}
 				}
-		).subscribeOn(Schedulers.io());
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 }
