@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Spell list type attributes
  */
@@ -34,11 +37,11 @@ public class SpellListType {
 
 	@Override
 	public String toString() {
-		return "SpellListType{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.toString();
 	}
 
 	@Override

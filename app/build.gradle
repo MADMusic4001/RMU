@@ -34,4 +34,5 @@ dependencies {
 	compile 'org.glassfish:javax.annotation:10.0-b28'
 	compile 'io.reactivex:rxandroid:1.2.1'
 	compile 'io.reactivex:rxjava:1.1.7'
+	compile 'org.apache.commons:commons-lang3:3.4'
 }

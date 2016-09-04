@@ -23,6 +23,9 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,39 +85,39 @@ public class CreatureVariety {
 
 	@Override
 	public String toString() {
-		return "CreatureVariety{" +
-				"id=" + id +
-				", type=" + type +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", typicalLevel=" + typicalLevel +
-				", levelSpread=" + levelSpread +
-				", racialStatBonuses=" + racialStatBonuses +
-				", height=" + height +
-				", length=" + length +
-				", weight=" + weight +
-				", healingRate=" + healingRate +
-				", baseHits=" + baseHits +
-				", baseEndurance=" + baseEndurance +
-				", size=" + size +
-				", armorType=" + armorType +
-				", criticalCodes=" + criticalCodes +
-				", baseMovementRate=" + baseMovementRate +
-				", baseChannellingRR=" + baseChannellingRR +
-				", baseEssenceRR=" + baseEssenceRR +
-				", baseMentalismRR=" + baseMentalismRR +
-				", basePhysicalRR=" + basePhysicalRR +
-				", baseFearRR=" + baseFearRR +
-				", realm1=" + realm1 +
-				", realm2=" + realm2 +
-				", baseStride=" + baseStride +
-				", leftoverDP=" + leftoverDP +
-				", outlook=" + outlook +
-				", talentTiersMap=" + talentTiersMap +
-				", attackBonusesMap=" + attackBonusesMap +
-				", attackSequence='" + attackSequence + '\'' +
-				", skillBonusesMap=" + skillBonusesMap +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("type", type)
+				.append("name", name)
+				.append("description", description)
+				.append("typicalLevel", typicalLevel)
+				.append("levelSpread", levelSpread)
+				.append("racialStatBonuses", racialStatBonuses)
+				.append("height", height)
+				.append("length", length)
+				.append("weight", weight)
+				.append("healingRate", healingRate)
+				.append("baseHits", baseHits)
+				.append("baseEndurance", baseEndurance)
+				.append("size", size)
+				.append("armorType", armorType)
+				.append("criticalCodes", criticalCodes)
+				.append("baseMovementRate", baseMovementRate)
+				.append("baseChannellingRR", baseChannellingRR)
+				.append("baseEssenceRR", baseEssenceRR)
+				.append("baseMentalismRR", baseMentalismRR)
+				.append("basePhysicalRR", basePhysicalRR)
+				.append("baseFearRR", baseFearRR)
+				.append("realm1", realm1)
+				.append("realm2", realm2)
+				.append("baseStride", baseStride)
+				.append("leftoverDP", leftoverDP)
+				.append("outlook", outlook)
+				.append("talentTiersMap", talentTiersMap)
+				.append("attackBonusesMap", attackBonusesMap)
+				.append("attackSequence", attackSequence)
+				.append("skillBonusesMap", skillBonusesMap)
+				.toString();
 	}
 
 	@Override

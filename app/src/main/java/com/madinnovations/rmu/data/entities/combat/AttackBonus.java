@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Attack bonus attributes
  */
@@ -35,10 +38,10 @@ public class AttackBonus {
 
 	@Override
 	public String toString() {
-		return "AttackBonus{" +
-				"attack=" + attack +
-				", bonus=" + bonus +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("attack", attack)
+				.append("bonus", bonus)
+				.toString();
 	}
 
 	@Override

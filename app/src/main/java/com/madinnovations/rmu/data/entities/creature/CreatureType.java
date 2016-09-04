@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Class containing Creature Type attributes.
  */
@@ -35,12 +38,12 @@ public class CreatureType {
 
 	@Override
 	public String toString() {
-		return "CreatureType{" +
-				"id=" + id +
-				", category=" + category +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("category", category)
+				.append("name", name)
+				.append("description", description)
+				.toString();
 	}
 
 	@Override
@@ -51,7 +54,6 @@ public class CreatureType {
 		CreatureType that = (CreatureType) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

@@ -97,7 +97,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 				instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
 			}
 		}
-		instance.setProfessionSkillCategoryCosts(getSkillCostMap(instance));
+		instance.setSkillCategoryCosts(getSkillCostMap(instance));
 
 		return instance;
 	}
@@ -140,7 +140,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(ProfessionSkillCategoryCost skillCategoryCost : instance.getProfessionSkillCategoryCosts()) {
+		for(ProfessionSkillCategoryCost skillCategoryCost : instance.getSkillCategoryCosts()) {
 			result &= (db.insert(ProfessionSkillCostSchema.TABLE_NAME, null, getProfessionSkillCostContentValues(instance.getId(),
 					skillCategoryCost.getSkillCategory().getId(), skillCategoryCost.getSkillCost())) != -1);
 		}

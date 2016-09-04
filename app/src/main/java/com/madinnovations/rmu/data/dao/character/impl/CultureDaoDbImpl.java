@@ -86,6 +86,7 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        instance.setTradesAndCraftsRanks(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_TRADES_AND_CRAFTS_RANKS)));
         instance.setSkillRanks(getSkillRanks(instance.getId()));
 
         return instance;
@@ -97,6 +98,7 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
 
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+		initialValues.put(COLUMN_TRADES_AND_CRAFTS_RANKS, instance.getTradesAndCraftsRanks());
 
         return initialValues;
 	}

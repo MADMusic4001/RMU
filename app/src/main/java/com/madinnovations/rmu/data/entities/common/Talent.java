@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,22 +51,22 @@ public class Talent {
 
 	@Override
 	public String toString() {
-		return "Talent{" +
-				"id=" + id +
-				", category=" + category +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", flaw=" + flaw +
-				", affectedSkill=" + affectedSkill +
-				", tier=" + tier +
-				", maxTiers=" + maxTiers +
-				", dpCost=" + dpCost +
-				", dpCostPerTier=" + dpCostPerTier +
-				", bonusPerTier=" + bonusPerTier +
-				", situational=" + situational +
-				", actionPoints=" + actionPoints +
-				", parameters=" + parameterValues +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("category", category)
+				.append("name", name)
+				.append("description", description)
+				.append("flaw", flaw)
+				.append("affectedSkill", affectedSkill)
+				.append("tier", tier)
+				.append("maxTiers", maxTiers)
+				.append("dpCost", dpCost)
+				.append("dpCostPerTier", dpCostPerTier)
+				.append("bonusPerTier", bonusPerTier)
+				.append("situational", situational)
+				.append("actionPoints", actionPoints)
+				.append("parameterValues", parameterValues)
+				.toString();
 	}
 
 	@Override
@@ -74,7 +77,6 @@ public class Talent {
 		Talent talent = (Talent) o;
 
 		return id == talent.id;
-
 	}
 
 	@Override

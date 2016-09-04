@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Creature attributes
  */
@@ -36,13 +39,13 @@ public class Creature {
 
 	@Override
 	public String toString() {
-		return "Creature{" +
-				"id=" + id +
-				", creatureVariety=" + creatureVariety +
-				", level=" + level +
-				", maxHits=" + maxHits +
-				", currentHits=" + currentHits +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("creatureVariety", creatureVariety)
+				.append("level", level)
+				.append("maxHits", maxHits)
+				.append("currentHits", currentHits)
+				.toString();
 	}
 
 	@Override

@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,11 +40,11 @@ public class DamageTable {
 
     @Override
     public String toString() {
-        return "DamageTable{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", resultRows=" + resultRows +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", id)
+                .append("name", name)
+                .append("resultRows", resultRows)
+                .toString();
     }
 
     @Override

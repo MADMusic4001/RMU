@@ -18,6 +18,9 @@ package com.madinnovations.rmu.data.entities.character;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Container class for associating SkillCost to SkillCategory
  */
@@ -49,12 +52,12 @@ public class ProfessionSkillCategoryCost {
 
 	@Override
 	public String toString() {
-		return "ProfessionSkillCategoryCost{" +
-				"id=" + id +
-				", profession=" + profession +
-				", skillCategory=" + skillCategory +
-				", skillCost=" + skillCost +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("profession", profession)
+				.append("skillCategory", skillCategory)
+				.append("skillCost", skillCost)
+				.toString();
 	}
 
 	@Override

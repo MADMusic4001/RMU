@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.Skill;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.Map;
 
 /**
@@ -40,13 +43,13 @@ public class Culture {
 
 	@Override
 	public String toString() {
-		return "Culture{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", tradesAndCraftsRanks=" + tradesAndCraftsRanks +
-				", skillRanks=" + skillRanks +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("tradesAndCraftsRanks", tradesAndCraftsRanks)
+				.append("skillRanks", skillRanks)
+				.toString();
 	}
 
 	@Override
@@ -82,6 +85,12 @@ public class Culture {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public short getTradesAndCraftsRanks() {
+		return tradesAndCraftsRanks;
+	}
+	public void setTradesAndCraftsRanks(short tradesAndCraftsRanks) {
+		this.tradesAndCraftsRanks = tradesAndCraftsRanks;
 	}
 	public Map<Skill, Short> getSkillRanks() {
 		return skillRanks;

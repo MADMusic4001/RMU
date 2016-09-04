@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Critical code attributes
  */
@@ -34,11 +37,11 @@ public class CriticalCode {
 
 	@Override
 	public String toString() {
-		return "CriticalCode{" +
-				"id=" + id +
-				", code='" + code + '\'' +
-				", description='" + description + '\'' +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("code", code)
+				.append("description", description)
+				.toString();
 	}
 
 	@Override
@@ -49,7 +52,6 @@ public class CriticalCode {
 		CriticalCode that = (CriticalCode) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Class containing a creature outlook description.
  */
@@ -29,11 +32,11 @@ public class Outlook {
 
 	@Override
 	public String toString() {
-		return "Outlook{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.toString();
 	}
 
 	@Override
@@ -44,7 +47,6 @@ public class Outlook {
 		Outlook outlook = (Outlook) o;
 
 		return id == outlook.id;
-
 	}
 
 	@Override

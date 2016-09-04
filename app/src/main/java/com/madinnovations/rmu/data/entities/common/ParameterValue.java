@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Utility entity for holding parameter name and value for use in a list adapter
  */
@@ -28,15 +31,25 @@ public class ParameterValue {
 	}
 
 	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("parameter", parameter)
+				.append("value", value)
+				.toString();
+	}
+
+	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
 		ParameterValue that = (ParameterValue) o;
 
-		if (!parameter.equals(that.parameter)) return false;
-		return value != null ? value.equals(that.value) : that.value == null;
-
+		return parameter.equals(that.parameter) && (value != null ? value.equals(that.value) : that.value == null);
 	}
 
 	@Override

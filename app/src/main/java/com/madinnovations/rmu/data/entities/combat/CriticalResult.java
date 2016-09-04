@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import android.support.annotation.NonNull;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -78,7 +81,7 @@ public class CriticalResult {
                                                                                @NonNull Collection<BodyPart> bodyParts) {
         Collection<CriticalResult> allRows;
         CriticalResult currentRow;
-        BodyPart currentBodyPart = null;
+        BodyPart currentBodyPart;
 
         if(currentRows.size() == rangeStarts.length - 1) {
             allRows = currentRows;
@@ -87,7 +90,7 @@ public class CriticalResult {
             allRows = new ArrayList<>(rangeStarts.length - 1);
             for(int i = 0; i < rangeStarts.length - 1; i++) {
                 currentRow = null;
-                if(currentRows != null && !currentRows.isEmpty()) {
+                if(!currentRows.isEmpty()) {
                     for (CriticalResult criticalResult : currentRows) {
                         if (criticalResult.getMinRoll() == rangeStarts[i]) {
                             currentRow = criticalResult;
@@ -124,27 +127,27 @@ public class CriticalResult {
 
     @Override
     public String toString() {
-        return "CriticalResult{" +
-                "id=" + id +
-                ", severityCode=" + severityCode +
-                ", resultText='" + resultText + '\'' +
-                ", minRoll=" + minRoll +
-                ", maxRoll=" + maxRoll +
-                ", bodyPart=" + bodyPart +
-                ", hits=" + hits +
-                ", bleeding=" + bleeding +
-                ", fatigue=" + fatigue +
-                ", breakage=" + breakage +
-                ", injury=" + injury +
-                ", dazed=" + dazed +
-                ", stunned=" + stunned +
-                ", noParry=" + noParry +
-                ", staggered=" + staggered +
-                ", knockBack=" + knockBack +
-                ", prone=" + prone +
-                ", grappled=" + grappled +
-                ", criticalType=" + criticalType +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", id)
+                .append("severityCode", severityCode)
+                .append("resultText", resultText)
+                .append("minRoll", minRoll)
+                .append("maxRoll", maxRoll)
+                .append("bodyPart", bodyPart)
+                .append("hits", hits)
+                .append("bleeding", bleeding)
+                .append("fatigue", fatigue)
+                .append("breakage", breakage)
+                .append("injury", injury)
+                .append("dazed", dazed)
+                .append("stunned", stunned)
+                .append("noParry", noParry)
+                .append("staggered", staggered)
+                .append("knockBack", knockBack)
+                .append("prone", prone)
+                .append("grappled", grappled)
+                .append("criticalType", criticalType)
+                .toString();
     }
 
     @Override

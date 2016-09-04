@@ -19,6 +19,9 @@ import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,36 +69,36 @@ public class Race {
 
 	@Override
 	public String toString() {
-		return "Race{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", bonusDevelopmentPoints=" + bonusDevelopmentPoints +
-				", agilityModifier=" + agilityModifier +
-				", constitutionModifier=" + constitutionModifier +
-				", empathyModifier=" + empathyModifier +
-				", intuitionModifier=" + intuitionModifier +
-				", memoryModifier=" + memoryModifier +
-				", presenceModifier=" + presenceModifier +
-				", quicknessModifier=" + quicknessModifier +
-				", reasoningModifier=" + reasoningModifier +
-				", selfDisciplineModifier=" + selfDisciplineModifier +
-				", strengthModifier=" + strengthModifier +
-				", channelingResistanceModifier=" + channelingResistanceModifier +
-				", essenceResistanceModifier=" + essenceResistanceModifier +
-				", mentalismResistanceModifier=" + mentalismResistanceModifier +
-				", physicalResistanceModifier=" + physicalResistanceModifier +
-				", enduranceModifier=" + enduranceModifier +
-				", baseHits=" + baseHits +
-				", recoveryMultiplier=" + recoveryMultiplier +
-				", talentsAndFlawsTiersMap=" + talentsAndFlawsTiersMap +
-				", size=" + size +
-				", locomotionTypeRatesMap=" + locomotionTypeRatesMap +
-				", strideModifier=" + strideModifier +
-				", averageHeight=" + averageHeight +
-				", averageWeight=" + averageWeight +
-				", poundsPerInch=" + poundsPerInch +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("bonusDevelopmentPoints", bonusDevelopmentPoints)
+				.append("agilityModifier", agilityModifier)
+				.append("constitutionModifier", constitutionModifier)
+				.append("empathyModifier", empathyModifier)
+				.append("intuitionModifier", intuitionModifier)
+				.append("memoryModifier", memoryModifier)
+				.append("presenceModifier", presenceModifier)
+				.append("quicknessModifier", quicknessModifier)
+				.append("reasoningModifier", reasoningModifier)
+				.append("selfDisciplineModifier", selfDisciplineModifier)
+				.append("strengthModifier", strengthModifier)
+				.append("channelingResistanceModifier", channelingResistanceModifier)
+				.append("essenceResistanceModifier", essenceResistanceModifier)
+				.append("mentalismResistanceModifier", mentalismResistanceModifier)
+				.append("physicalResistanceModifier", physicalResistanceModifier)
+				.append("enduranceModifier", enduranceModifier)
+				.append("baseHits", baseHits)
+				.append("recoveryMultiplier", recoveryMultiplier)
+				.append("talentsAndFlawsTiersMap", talentsAndFlawsTiersMap)
+				.append("size", size)
+				.append("locomotionTypeRatesMap", locomotionTypeRatesMap)
+				.append("strideModifier", strideModifier)
+				.append("averageHeight", averageHeight)
+				.append("averageWeight", averageWeight)
+				.append("poundsPerInch", poundsPerInch)
+				.toString();
 	}
 
 	@Override
@@ -106,7 +109,6 @@ public class Race {
 		Race race = (Race) o;
 
 		return id == race.id;
-
 	}
 
 	@Override

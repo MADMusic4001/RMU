@@ -15,12 +15,15 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Cost of improving a skill
  */
 public class SkillCost {
-	private int firstCost = 0;
-	private int additionalCost = 0;
+	private short firstCost = 0;
+	private short additionalCost = 0;
 
 	/**
 	 * Checks the validity of the SkillCost instance.
@@ -33,22 +36,24 @@ public class SkillCost {
 
 	@Override
 	public String toString() {
-		return "SkillCost{" +
-				"firstCost=" + firstCost +
-				", additionalCost=" + additionalCost +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("firstCost", firstCost)
+				.append("additionalCost", additionalCost)
+				.toString();
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
 		SkillCost skillCost = (SkillCost) o;
 
-		if (firstCost != skillCost.firstCost) return false;
-		return additionalCost == skillCost.additionalCost;
-
+		return firstCost == skillCost.firstCost && additionalCost == skillCost.additionalCost;
 	}
 
 	@Override
@@ -59,16 +64,16 @@ public class SkillCost {
 	}
 
 	// Getters and setters
-	public int getFirstCost() {
+	public short getFirstCost() {
 		return firstCost;
 	}
-	public void setFirstCost(int firstCost) {
+	public void setFirstCost(short firstCost) {
 		this.firstCost = firstCost;
 	}
-	public int getAdditionalCost() {
+	public short getAdditionalCost() {
 		return additionalCost;
 	}
-	public void setAdditionalCost(int additionalCost) {
+	public void setAdditionalCost(short additionalCost) {
 		this.additionalCost = additionalCost;
 	}
 }

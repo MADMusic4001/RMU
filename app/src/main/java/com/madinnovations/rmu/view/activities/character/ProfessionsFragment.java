@@ -193,8 +193,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		descriptionEdit.setText(currentInstance.getDescription());
 		addMissingCosts();
 		categoryCostListAdapter.clear();
-		if(currentInstance.getProfessionSkillCategoryCosts() != null) {
-			categoryCostListAdapter.addAll(currentInstance.getProfessionSkillCategoryCosts());
+		if(currentInstance.getSkillCategoryCosts() != null) {
+			categoryCostListAdapter.addAll(currentInstance.getSkillCategoryCosts());
 		}
 		categoryCostListAdapter.notifyDataSetChanged();
 
@@ -348,7 +348,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		ListView categoryCostListView = (ListView) layout.findViewById(R.id.category_costs_list);
 		categoryCostListView.setAdapter(categoryCostListAdapter);
 
-		if(currentInstance.getProfessionSkillCategoryCosts() == null || currentInstance.getProfessionSkillCategoryCosts().isEmpty()) {
+		if(currentInstance.getSkillCategoryCosts() == null || currentInstance.getSkillCategoryCosts().isEmpty()) {
 			skillCategoryRxHandler.getAll()
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -356,7 +356,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 						@Override
 						public void onCompleted() {
 							categoryCostListAdapter.clear();
-							categoryCostListAdapter.addAll(currentInstance.getProfessionSkillCategoryCosts());
+							categoryCostListAdapter.addAll(currentInstance.getSkillCategoryCosts());
 							categoryCostListAdapter.notifyDataSetChanged();
 						}
 						@Override
@@ -373,15 +373,15 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	}
 
 	private void addMissingCosts() {
-		List<ProfessionSkillCategoryCost> skillCategoryCosts = currentInstance.getProfessionSkillCategoryCosts();
+		List<ProfessionSkillCategoryCost> skillCategoryCosts = currentInstance.getSkillCategoryCosts();
 		if(skillCategoryCosts == null) {
 			skillCategoryCosts = new ArrayList<>();
-			currentInstance.setProfessionSkillCategoryCosts(skillCategoryCosts);
+			currentInstance.setSkillCategoryCosts(skillCategoryCosts);
 		}
 		if(skillCategories != null) {
 			for (SkillCategory skillCategory : skillCategories) {
 				boolean newCost = true;
-				for (ProfessionSkillCategoryCost pscc : currentInstance.getProfessionSkillCategoryCosts()) {
+				for (ProfessionSkillCategoryCost pscc : currentInstance.getSkillCategoryCosts()) {
 					if (skillCategory.equals(pscc.getSkillCategory())) {
 						newCost = false;
 						break;

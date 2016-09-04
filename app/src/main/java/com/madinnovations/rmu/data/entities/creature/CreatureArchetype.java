@@ -18,6 +18,9 @@ package com.madinnovations.rmu.data.entities.creature;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,18 +70,18 @@ public class CreatureArchetype {
 
 	@Override
 	public String toString() {
-		return "CreatureArchetype{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", stat1=" + stat1 +
-				", stat2=" + stat2 +
-				", primarySkills=" + primarySkills +
-				", secondarySkills=" + secondarySkills +
-				", tertiarySkills=" + tertiarySkills +
-				", spells='" + spells + '\'' +
-				", roles='" + roles + '\'' +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("stat1", stat1)
+				.append("stat2", stat2)
+				.append("primarySkills", primarySkills)
+				.append("secondarySkills", secondarySkills)
+				.append("tertiarySkills", tertiarySkills)
+				.append("spells", spells)
+				.append("roles", roles)
+				.toString();
 	}
 
 	@Override
@@ -89,7 +92,6 @@ public class CreatureArchetype {
 		CreatureArchetype that = (CreatureArchetype) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

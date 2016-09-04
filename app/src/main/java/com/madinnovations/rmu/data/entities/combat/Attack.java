@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Attack attributes
  */
@@ -38,13 +41,13 @@ public class Attack {
 
 	@Override
 	public String toString() {
-		return "Attack{" +
-				"id=" + id +
-				", code='" + code + '\'' +
-				", name='" + name + '\'' +
-				", damageTable=" + damageTable +
-				", specialization=" + specialization +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("code", code)
+				.append("name", name)
+				.append("damageTable", damageTable)
+				.append("specialization", specialization)
+				.toString();
 	}
 
 	@Override

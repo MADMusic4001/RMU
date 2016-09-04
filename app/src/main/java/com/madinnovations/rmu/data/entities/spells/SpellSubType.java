@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Spell sub type attributes
  */
@@ -35,12 +38,12 @@ public class SpellSubType {
 
 	@Override
 	public String toString() {
-		return "SpellSubType{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", spellType=" + spellType +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("spellType", spellType)
+				.toString();
 	}
 
 	@Override
@@ -51,7 +54,6 @@ public class SpellSubType {
 		SpellSubType that = (SpellSubType) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.common.Stat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Stat bonus attributes
  */
@@ -37,10 +40,10 @@ public class RacialStatBonus {
 
 	@Override
 	public String toString() {
-		return "StatBonus{" +
-				"stat=" + stat +
-				", bonus=" + bonus +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("stat", stat)
+				.append("bonus", bonus)
+				.toString();
 	}
 
 	@Override

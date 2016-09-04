@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.common.Talent;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,12 +43,12 @@ public class CreatureCategory {
 
 	@Override
 	public String toString() {
-		return "CreatureCategory{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", talents=" + talents +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("talents", talents)
+				.toString();
 	}
 
 	@Override
@@ -56,7 +59,6 @@ public class CreatureCategory {
 		CreatureCategory that = (CreatureCategory) o;
 
 		return id == that.id;
-
 	}
 
 	@Override
@@ -82,5 +84,11 @@ public class CreatureCategory {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public List<Talent> getTalents() {
+		return talents;
+	}
+	public void setTalents(List<Talent> talents) {
+		this.talents = talents;
 	}
 }

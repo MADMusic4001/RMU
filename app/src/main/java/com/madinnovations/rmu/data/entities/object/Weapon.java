@@ -18,6 +18,9 @@ package com.madinnovations.rmu.data.entities.object;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Skill;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Weapon attributes
  */
@@ -36,10 +39,10 @@ public class Weapon extends Item {
 
     @Override
     public String toString() {
-        return "Weapon{" +
-                "combatSkill=" + combatSkill +
-                ", damageTable=" + damageTable +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("combatSkill", combatSkill)
+                .append("damageTable", damageTable)
+                .toString();
     }
 
     // Getters and setters

@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.spells;
 
 import com.madinnovations.rmu.data.entities.character.Profession;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Spell list attributes
  */
@@ -36,19 +39,20 @@ public class SpellList {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && realm != null && spellListType != null;
+
 	}
 
 	@Override
 	public String toString() {
-		return "SpellList{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", realm=" + realm +
-				", realm2=" + realm2 +
-				", profession=" + profession +
-				", spellListType=" + spellListType +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("realm", realm)
+				.append("realm2", realm2)
+				.append("profession", profession)
+				.append("spellListType", spellListType)
+				.toString();
 	}
 
 	@Override

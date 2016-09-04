@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Representation of a biome (habitat)
  */
@@ -32,14 +35,14 @@ public class Biome {
 
 	@Override
 	public String toString() {
-		return "Biome{" +
-				"id=" + id +
-				", code=" + code +
-				", description='" + description + '\'' +
-				", humidity='" + humidity + '\'' +
-				", flora='" + flora + '\'' +
-				", fauna='" + fauna + '\'' +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("code", code)
+				.append("description", description)
+				.append("humidity", humidity)
+				.append("flora", flora)
+				.append("fauna", fauna)
+				.toString();
 	}
 
 	@Override
@@ -50,7 +53,6 @@ public class Biome {
 		Biome biome = (Biome) o;
 
 		return id == biome.id;
-
 	}
 
 	@Override

@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Skill bonus attributes
  */
@@ -35,10 +38,10 @@ public class SkillBonus {
 
 	@Override
 	public String toString() {
-		return "SkillBonus{" +
-				"skill=" + skill +
-				", bonus=" + bonus +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("skill", skill)
+				.append("bonus", bonus)
+				.toString();
 	}
 
 	@Override

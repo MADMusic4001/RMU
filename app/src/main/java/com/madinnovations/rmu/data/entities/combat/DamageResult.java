@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Damage result attributes
@@ -37,12 +39,12 @@ public class DamageResult {
 
     @Override
     public String toString() {
-        return "DamageResult{" +
-                "id=" + id +
-                ", hits=" + hits +
-                ", criticalSeverity='" + criticalSeverity + '\'' +
-                ", criticalType=" + criticalType +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", id)
+                .append("hits", hits)
+                .append("criticalSeverity", criticalSeverity)
+                .append("criticalType", criticalType)
+                .toString();
     }
 
     @Override

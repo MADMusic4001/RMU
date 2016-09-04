@@ -24,6 +24,7 @@ import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
@@ -32,6 +33,7 @@ import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
@@ -125,6 +127,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
+		instance.setSkillCosts(getSkillCosts(instance.getId()));
 		instance.setTalentTiers(getTalentTiers(instance.getId()));
 		setStatValues(instance);
 
@@ -162,6 +165,31 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 			Skill instance = skillDao.getById(mappedId);
 			if(instance != null) {
 				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_RANKS)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private Map<Skill, SkillCost> getSkillCosts(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterSkillCostsSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterSkillCostsSchema.TABLE_NAME, CharacterSkillCostsSchema.COLUMNS, selection,
+									selectionArgs, CharacterSkillCostsSchema.COLUMN_SKILL_ID);
+		Map<Skill, SkillCost> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSkillCostsSchema.COLUMN_SKILL_ID));
+			Skill instance = skillDao.getById(mappedId);
+			SkillCost skillCost = new SkillCost();
+			skillCost.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillCostsSchema.COLUMN_FIRST_COST)));
+			skillCost.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(
+					CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST)));
+			if(instance != null) {
+				map.put(instance, skillCost);
 			}
 			cursor.moveToNext();
 		}

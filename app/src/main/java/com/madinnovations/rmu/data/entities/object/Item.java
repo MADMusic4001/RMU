@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Item attributes
  */
@@ -35,12 +38,12 @@ public class Item {
 
     @Override
     public String toString() {
-        return "Item{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", weight=" + weight +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", id)
+                .append("name", name)
+                .append("description", description)
+                .append("weight", weight)
+                .toString();
     }
 
     @Override
@@ -51,7 +54,6 @@ public class Item {
         Item item = (Item) o;
 
         return id == item.id;
-
     }
 
     @Override

@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Representation of talent effect parameters.
  */
@@ -38,15 +41,15 @@ public class Parameter {
 
 	@Override
 	public String toString() {
-		return "Parameter{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", baseValue='" + baseValue + '\'' +
-				", valuePerLevelOrTier='" + valuePerLevelOrTier + '\'' +
-				", perLevel=" + perLevel +
-				", perTier=" + perTier +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("baseValue", baseValue)
+				.append("valuePerLevelOrTier", valuePerLevelOrTier)
+				.append("perLevel", perLevel)
+				.append("perTier", perTier)
+				.toString();
 	}
 
 	@Override
@@ -57,7 +60,6 @@ public class Parameter {
 		Parameter parameter = (Parameter) o;
 
 		return id == parameter.id;
-
 	}
 
 	@Override

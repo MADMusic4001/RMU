@@ -15,22 +15,31 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Profession attributes
  */
 public class Profession {
-	private int id = -1;
-	private String name = null;
-	private String description = null;
-	private Realm realm1 = null;
-	private Realm realm2 = null;
-	private List<ProfessionSkillCategoryCost> professionSkillCategoryCosts = null;
-	private List<SkillCategory> professionalSkillCategories = null;
+	private int                           id                          = -1;
+	private String                        name                        = null;
+	private String                        description                 = null;
+	private Realm                         realm1                      = null;
+	private Realm                         realm2                      = null;
+	private Map<SkillCategory, SkillCost> skillCategoryCosts          = new HashMap<>();
+	private Map<Skill, SkillCost>         skillCosts                  = new HashMap<>();
+	private Map<SkillCategory, List<SkillCost>> assignableSkillCosts  = new HashMap<>();
+	private List<SkillCategory>           professionalSkillCategories = null;
 
 	/**
 	 * Checks the validity of the Profession instance.
@@ -43,15 +52,17 @@ public class Profession {
 
 	@Override
 	public String toString() {
-		return "Profession{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", realm1=" + realm1 +
-				", realm2=" + realm2 +
-				", professionSkillCategoryCosts=" + professionSkillCategoryCosts +
-				", professionalSkillCategories=" + professionalSkillCategories +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("realm1", realm1)
+				.append("realm2", realm2)
+				.append("skillCategoryCosts", skillCategoryCosts)
+				.append("skillCosts", skillCosts)
+				.append("assignableSkillCosts", assignableSkillCosts)
+				.append("professionalSkillCategories", professionalSkillCategories)
+				.toString();
 	}
 
 	@Override
@@ -62,7 +73,6 @@ public class Profession {
 		Profession that = (Profession) o;
 
 		return id == that.id;
-
 	}
 
 	@Override
@@ -101,11 +111,23 @@ public class Profession {
 	public void setRealm2(Realm realm2) {
 		this.realm2 = realm2;
 	}
-	public List<ProfessionSkillCategoryCost> getProfessionSkillCategoryCosts() {
-		return professionSkillCategoryCosts;
+	public Map<SkillCategory, SkillCost> getSkillCategoryCosts() {
+		return skillCategoryCosts;
 	}
-	public void setProfessionSkillCategoryCosts(List<ProfessionSkillCategoryCost> professionSkillCategoryCosts) {
-		this.professionSkillCategoryCosts = professionSkillCategoryCosts;
+	public void setSkillCategoryCosts(Map<SkillCategory, SkillCost> skillCategoryCosts) {
+		this.skillCategoryCosts = skillCategoryCosts;
+	}
+	public Map<Skill, SkillCost> getSkillCosts() {
+		return skillCosts;
+	}
+	public void setSkillCosts(Map<Skill, SkillCost> skillCosts) {
+		this.skillCosts = skillCosts;
+	}
+	public Map<SkillCategory, List<SkillCost>> getAssignableSkillCosts() {
+		return assignableSkillCosts;
+	}
+	public void setAssignableSkillCosts(Map<SkillCategory, List<SkillCost>> assignableSkillCosts) {
+		this.assignableSkillCosts = assignableSkillCosts;
 	}
 	public List<SkillCategory> getProfessionalSkillCategories() {
 		return professionalSkillCategories;

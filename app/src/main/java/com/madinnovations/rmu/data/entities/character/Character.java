@@ -16,8 +16,12 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Map;
 
@@ -28,18 +32,31 @@ public class Character {
 	private int id = -1;
 	private String name;
 	private String description;
-	private Race race;
-	private Profession profession;
-	private short height;
-	private short weight;
-	private short stride;
-	private short currentHits;
-	private short maxHits;
-	private short currentDevelopmentPoints;
-	private Map<Skill, Short> skillRanks;
-	private Map<Talent, Short> talentTiers;
-	private Map<Stat, Short> statTemps;
-	private Map<Stat, Short> statPotentials;
+	private String hairColor;
+	private String hairStyle;
+	private String eyeColor;
+	private String                skinComplexion;
+	private String                facialFeatures;
+	private String                identifyingMarks;
+	private String                clothing;
+	private String                personality;
+	private String                mannerisms;
+	private String                hometown;
+	private String                familyInfo;
+	private Race                  race;
+	private Culture               culture;
+	private Profession            profession;
+	private short                 height;
+	private short                 weight;
+	private short                 stride;
+	private short                 currentHits;
+	private short                 maxHits;
+	private short                 currentDevelopmentPoints;
+	private Map<Skill, SkillCost> skillCosts;
+	private Map<Skill, Short>     skillRanks;
+	private Map<Talent, Short>    talentTiers;
+	private Map<Stat, Short>      statTemps;
+	private Map<Stat, Short>      statPotentials;
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -52,23 +69,36 @@ public class Character {
 
 	@Override
 	public String toString() {
-		return "Character{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", race=" + race +
-				", profession=" + profession +
-				", height=" + height +
-				", weight=" + weight +
-				", stride=" + stride +
-				", currentHits=" + currentHits +
-				", maxHits=" + maxHits +
-				", currentDevelopmentPoints=" + currentDevelopmentPoints +
-				", skillRanks=" + skillRanks +
-				", talentTiers=" + talentTiers +
-				", statTemps=" + statTemps +
-				", statPotentials=" + statPotentials +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("hairColor", hairColor)
+				.append("hairStyle", hairStyle)
+				.append("eyeColor", eyeColor)
+				.append("skinComplexion", skinComplexion)
+				.append("facialFeatures", facialFeatures)
+				.append("identifyingMarks", identifyingMarks)
+				.append("clothing", clothing)
+				.append("personality", personality)
+				.append("mannerisms", mannerisms)
+				.append("hometown", hometown)
+				.append("familyInfo", familyInfo)
+				.append("race", race)
+				.append("culture", culture)
+				.append("profession", profession)
+				.append("height", height)
+				.append("weight", weight)
+				.append("stride", stride)
+				.append("currentHits", currentHits)
+				.append("maxHits", maxHits)
+				.append("currentDevelopmentPoints", currentDevelopmentPoints)
+				.append("skillCosts", skillCosts)
+				.append("skillRanks", skillRanks)
+				.append("talentTiers", talentTiers)
+				.append("statTemps", statTemps)
+				.append("statPotentials", statPotentials)
+				.toString();
 	}
 
 	@Override
@@ -79,7 +109,6 @@ public class Character {
 		Character character = (Character) o;
 
 		return id == character.id;
-
 	}
 
 	@Override
@@ -106,11 +135,83 @@ public class Character {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public String getHairColor() {
+		return hairColor;
+	}
+	public void setHairColor(String hairColor) {
+		this.hairColor = hairColor;
+	}
+	public String getHairStyle() {
+		return hairStyle;
+	}
+	public void setHairStyle(String hairStyle) {
+		this.hairStyle = hairStyle;
+	}
+	public String getEyeColor() {
+		return eyeColor;
+	}
+	public void setEyeColor(String eyeColor) {
+		this.eyeColor = eyeColor;
+	}
+	public String getSkinComplexion() {
+		return skinComplexion;
+	}
+	public void setSkinComplexion(String skinComplexion) {
+		this.skinComplexion = skinComplexion;
+	}
+	public String getFacialFeatures() {
+		return facialFeatures;
+	}
+	public void setFacialFeatures(String facialFeatures) {
+		this.facialFeatures = facialFeatures;
+	}
+	public String getIdentifyingMarks() {
+		return identifyingMarks;
+	}
+	public void setIdentifyingMarks(String identifyingMarks) {
+		this.identifyingMarks = identifyingMarks;
+	}
+	public String getClothing() {
+		return clothing;
+	}
+	public void setClothing(String clothing) {
+		this.clothing = clothing;
+	}
+	public String getPersonality() {
+		return personality;
+	}
+	public void setPersonality(String personality) {
+		this.personality = personality;
+	}
+	public String getMannerisms() {
+		return mannerisms;
+	}
+	public void setMannerisms(String mannerisms) {
+		this.mannerisms = mannerisms;
+	}
+	public String getHometown() {
+		return hometown;
+	}
+	public void setHometown(String hometown) {
+		this.hometown = hometown;
+	}
+	public String getFamilyInfo() {
+		return familyInfo;
+	}
+	public void setFamilyInfo(String familyInfo) {
+		this.familyInfo = familyInfo;
+	}
 	public Race getRace() {
 		return race;
 	}
 	public void setRace(Race race) {
 		this.race = race;
+	}
+	public Culture getCulture() {
+		return culture;
+	}
+	public void setCulture(Culture culture) {
+		this.culture = culture;
 	}
 	public Profession getProfession() {
 		return profession;
@@ -153,6 +254,12 @@ public class Character {
 	}
 	public void setCurrentDevelopmentPoints(short currentDevelopmentPoints) {
 		this.currentDevelopmentPoints = currentDevelopmentPoints;
+	}
+	public Map<Skill, SkillCost> getSkillCosts() {
+		return skillCosts;
+	}
+	public void setSkillCosts(Map<Skill, SkillCost> skillCosts) {
+		this.skillCosts = skillCosts;
 	}
 	public Map<Skill, Short> getSkillRanks() {
 		return skillRanks;

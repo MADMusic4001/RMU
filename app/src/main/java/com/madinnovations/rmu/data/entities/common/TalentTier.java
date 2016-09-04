@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Talent tier attributes
  */
@@ -35,10 +38,10 @@ public class TalentTier {
 
 	@Override
 	public String toString() {
-		return "TalentTier{" +
-				"talent=" + talent +
-				", tier=" + tier +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("talent", talent)
+				.append("tier", tier)
+				.toString();
 	}
 
 	@Override

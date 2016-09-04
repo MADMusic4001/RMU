@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Representation of a method of locomotion for creatures and characters.
  */
@@ -35,12 +38,12 @@ public class LocomotionType {
 
 	@Override
 	public String toString() {
-		return "LocomotionType{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", defaultRate=" + defaultRate +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("defaultRate", defaultRate)
+				.toString();
 	}
 
 	@Override
@@ -51,7 +54,6 @@ public class LocomotionType {
 		LocomotionType that = (LocomotionType) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

@@ -19,6 +19,9 @@ import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.Map;
 
 /**
@@ -59,29 +62,29 @@ public class CreatureTemplate {
 
 	@Override
 	public String toString() {
-		return "CreatureTemplate{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", archetype=" + archetype +
-				", level=" + level +
-				", levelSpread=" + levelSpread +
-				", variety=" + variety +
-				", stats=" + stats +
-				", height=" + height +
-				", length=" + length +
-				", weight=" + weight +
-				", healingRate=" + healingRate +
-				", baseHits=" + baseHits +
-				", baseEndurance=" + baseEndurance +
-				", size=" + size +
-				", armorType=" + armorType +
-				", criticalCode=" + criticalCode +
-				", baseMovementRate=" + baseMovementRate +
-				", defensiveBonus=" + defensiveBonus +
-				", endurance=" + endurance +
-				", offensiveBonus=" + offensiveBonus +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("archetype", archetype)
+				.append("level", level)
+				.append("levelSpread", levelSpread)
+				.append("variety", variety)
+				.append("stats", stats)
+				.append("height", height)
+				.append("length", length)
+				.append("weight", weight)
+				.append("healingRate", healingRate)
+				.append("baseHits", baseHits)
+				.append("baseEndurance", baseEndurance)
+				.append("size", size)
+				.append("armorType", armorType)
+				.append("criticalCode", criticalCode)
+				.append("baseMovementRate", baseMovementRate)
+				.append("defensiveBonus", defensiveBonus)
+				.append("endurance", endurance)
+				.append("offensiveBonus", offensiveBonus)
+				.toString();
 	}
 
 	@Override
@@ -92,7 +95,6 @@ public class CreatureTemplate {
 		CreatureTemplate that = (CreatureTemplate) o;
 
 		return id == that.id;
-
 	}
 
 	@Override

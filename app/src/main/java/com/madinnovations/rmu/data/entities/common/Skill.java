@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,15 +45,15 @@ public class Skill {
 
 	@Override
 	public String toString() {
-		return "Skill{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", category=" + category +
-				", requiresSpecialization=" + requiresSpecialization +
-				", useCategoryStats=" + useCategoryStats +
-				", stats=" + stats +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("category", category)
+				.append("requiresSpecialization", requiresSpecialization)
+				.append("useCategoryStats", useCategoryStats)
+				.append("stats", stats)
+				.toString();
 	}
 
 	@Override

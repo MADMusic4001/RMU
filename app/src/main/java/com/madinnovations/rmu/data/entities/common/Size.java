@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Creature size class
  */
@@ -35,23 +38,23 @@ public class Size {
 	 */
 	public boolean isValid() {
 		boolean isValid = code != null && !code.isEmpty() && name != null && !name.isEmpty() && examples != null && !examples.isEmpty();
-		isValid &= minHeight == null || maxHeight == null || minHeight.intValue() <= maxHeight.intValue();
-		isValid &= minWeight == null || maxWeight == null || minWeight.intValue() <= maxWeight.intValue();
+		isValid &= minHeight == null || maxHeight == null || minHeight <= maxHeight;
+		isValid &= minWeight == null || maxWeight == null || minWeight <= maxWeight;
 		return isValid;
 	}
 
 	@Override
 	public String toString() {
-		return "Size{" +
-				"id=" + id +
-				", code='" + code + '\'' +
-				", name='" + name + '\'' +
-				", examples='" + examples + '\'' +
-				", minWeight=" + minWeight +
-				", maxWeight=" + maxWeight +
-				", minHeight=" + minHeight +
-				", maxHeight=" + maxHeight +
-				'}';
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("code", code)
+				.append("name", name)
+				.append("examples", examples)
+				.append("minWeight", minWeight)
+				.append("maxWeight", maxWeight)
+				.append("minHeight", minHeight)
+				.append("maxHeight", maxHeight)
+				.toString();
 	}
 
 	@Override
@@ -62,7 +65,6 @@ public class Size {
 		Size size = (Size) o;
 
 		return id == size.id;
-
 	}
 
 	@Override
