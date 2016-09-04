@@ -72,6 +72,7 @@ import rx.schedulers.Schedulers;
  */
 public class CreatureVarietyAttackPageFragment extends Fragment implements AttackBonusListAdapter.SetAttackBonus,
 		SkillBonusListAdapter.SetSkillBonus {
+	private static final String LOG_TAG = "CVAttackPageFragment";
 	private static final String DRAG_ADD_ATTACK = "add-attack";
 	private static final String DRAG_REMOVE_ATTACK = "remove-attack";
 	private static final String DRAG_ADD_SKILL = "add-skill";
@@ -135,63 +136,72 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		Map<Skill, Short> newSkillMap;
 		SkillBonus newSkillBonus;
 
-		newAttackMap = new HashMap<>(attackBonusesListAdapter.getCount());
-		for(int i = 0; i < attackBonusesListAdapter.getCount(); i++) {
-			newAttackBonus = attackBonusesListAdapter.getItem(i);
-			if(varietiesFragment.getCurrentInstance().getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
-				if(!varietiesFragment.getCurrentInstance().getAttackBonusesMap().get(newAttackBonus.getAttack()).equals(newAttackBonus.getBonus())) {
+		if(this.getView() != null) {
+			newAttackMap = new HashMap<>(attackBonusesListAdapter.getCount());
+			for (int i = 0; i < attackBonusesListAdapter.getCount(); i++) {
+				newAttackBonus = attackBonusesListAdapter.getItem(i);
+				if (varietiesFragment.getCurrentInstance().getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
+					if (!varietiesFragment.getCurrentInstance()
+							.getAttackBonusesMap()
+							.get(newAttackBonus.getAttack())
+							.equals(newAttackBonus.getBonus())) {
+						changed = true;
+					}
+					varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(newAttackBonus.getAttack());
+				}
+				else {
 					changed = true;
 				}
-				varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(newAttackBonus.getAttack());
+				newAttackMap.put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
+			}
+			if (!varietiesFragment.getCurrentInstance().getAttackBonusesMap().isEmpty() && !newAttackMap.isEmpty()) {
+				changed = true;
+			}
+			varietiesFragment.getCurrentInstance().setAttackBonusesMap(newAttackMap);
+
+			newSkillMap = new HashMap<>(skillBonusesListAdapter.getCount());
+			for (int i = 0; i < skillBonusesListAdapter.getCount(); i++) {
+				newSkillBonus = skillBonusesListAdapter.getItem(i);
+				if (varietiesFragment.getCurrentInstance().getSkillBonusesMap().containsKey(newSkillBonus.getSkill())) {
+					if (!varietiesFragment.getCurrentInstance()
+							.getSkillBonusesMap()
+							.get(newSkillBonus.getSkill())
+							.equals(newSkillBonus.getBonus())) {
+						changed = true;
+					}
+					varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(newSkillBonus.getSkill());
+				}
+				else {
+					changed = true;
+				}
+				newSkillMap.put(newSkillBonus.getSkill(), newSkillBonus.getBonus());
+			}
+			if (!varietiesFragment.getCurrentInstance().getSkillBonusesMap().isEmpty() && !newSkillMap.isEmpty()) {
+				changed = true;
+			}
+			varietiesFragment.getCurrentInstance().setSkillBonusesMap(newSkillMap);
+
+			checkedItemPositions = criticalCodesList.getCheckedItemPositions();
+			if (checkedItemPositions != null) {
+				newCriticalCodesList = new ArrayList<>(checkedItemPositions.size());
+				for (int i = 0; i < checkedItemPositions.size(); i++) {
+					newCriticalCode = criticalCodesListAdapter.getItem(checkedItemPositions.keyAt(i));
+					if (!varietiesFragment.getCurrentInstance().getCriticalCodes().contains(newCriticalCode)) {
+						changed = true;
+					}
+					else {
+						varietiesFragment.getCurrentInstance().getCriticalCodes().remove(newCriticalCode);
+					}
+					newCriticalCodesList.add(newCriticalCode);
+				}
+				if (!varietiesFragment.getCurrentInstance().getCriticalCodes().isEmpty() && !newCriticalCodesList.isEmpty()) {
+					changed = true;
+				}
+				varietiesFragment.getCurrentInstance().setCriticalCodes(newCriticalCodesList);
 			}
 			else {
-				changed = true;
+				varietiesFragment.getCurrentInstance().getCriticalCodes().clear();
 			}
-			newAttackMap.put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
-		}
-		if(!varietiesFragment.getCurrentInstance().getAttackBonusesMap().isEmpty() && !newAttackMap.isEmpty()) {
-			changed = true;
-		}
-		varietiesFragment.getCurrentInstance().setAttackBonusesMap(newAttackMap);
-
-		newSkillMap = new HashMap<>(skillBonusesListAdapter.getCount());
-		for(int i = 0; i < skillBonusesListAdapter.getCount(); i++) {
-			newSkillBonus = skillBonusesListAdapter.getItem(i);
-			if(varietiesFragment.getCurrentInstance().getSkillBonusesMap().containsKey(newSkillBonus.getSkill())) {
-				if(!varietiesFragment.getCurrentInstance().getSkillBonusesMap().get(newSkillBonus.getSkill()).equals(newSkillBonus.getBonus())) {
-					changed = true;
-				}
-				varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(newSkillBonus.getSkill());
-			}
-			else {
-				changed = true;
-			}
-			newSkillMap.put(newSkillBonus.getSkill(), newSkillBonus.getBonus());
-		}
-		if(!varietiesFragment.getCurrentInstance().getSkillBonusesMap().isEmpty() && !newSkillMap.isEmpty()) {
-			changed = true;
-		}
-		varietiesFragment.getCurrentInstance().setSkillBonusesMap(newSkillMap);
-
-		checkedItemPositions = criticalCodesList.getCheckedItemPositions();
-		if(checkedItemPositions != null) {
-			newCriticalCodesList = new ArrayList<>(checkedItemPositions.size());
-			for (int i = 0; i < checkedItemPositions.size(); i++) {
-				newCriticalCode = criticalCodesListAdapter.getItem(checkedItemPositions.keyAt(i));
-				if (!varietiesFragment.getCurrentInstance().getCriticalCodes().contains(newCriticalCode)) {
-					changed = true;
-				} else {
-					varietiesFragment.getCurrentInstance().getCriticalCodes().remove(newCriticalCode);
-				}
-				newCriticalCodesList.add(newCriticalCode);
-			}
-			if (!varietiesFragment.getCurrentInstance().getCriticalCodes().isEmpty() && !newCriticalCodesList.isEmpty()) {
-				changed = true;
-			}
-			varietiesFragment.getCurrentInstance().setCriticalCodes(newCriticalCodesList);
-		}
-		else {
-			varietiesFragment.getCurrentInstance().getCriticalCodes().clear();
 		}
 
 		return changed;
@@ -232,7 +242,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag",
+						Log.e(LOG_TAG,
 							  "Exception caught loading all Attack instances in initSecondaryAttacksList", e);
 					}
 					@Override
@@ -377,7 +387,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag",
+						Log.e(LOG_TAG,
 							  "Exception caught loading all Skill instances in initSecondaryAttacksList", e);
 					}
 					@Override
@@ -494,7 +504,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught loading all CriticalCode instances", e);
+						Log.e(LOG_TAG, "Exception caught loading all CriticalCode instances", e);
 					}
 					@Override
 					public void onNext(Collection<CriticalCode> criticalCodes) {

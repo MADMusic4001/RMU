@@ -16,8 +16,10 @@
 package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -38,7 +40,6 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureVarietyRxHan
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.creature.CreatureVarietyFragmentPagerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.Collection;
@@ -53,11 +54,14 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietiesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureVariety> {
+	private static final String LOG_TAG = "CreatureVarietiesFrag";
 	@Inject
 	protected CreatureVarietyRxHandler           creatureVarietyRxHandler;
 	private TwoFieldListAdapter<CreatureVariety> listAdapter;
-	private CreatureVarietyFragmentPagerAdapter  pagerAdapter;
+	private CreatureVarietyMainPageFragment      mainPageFragment = null;
+	private CreatureVarietyAttackPageFragment    attackPageFragment = null;
 	private ListView                             listView;
+	CreatureVarietyFragmentPagerAdapter          pagerAdapter = null;
 	private CreatureVariety currentInstance = new CreatureVariety();
 	private boolean         isNew           = true;
 
@@ -83,6 +87,14 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	public void onPause() {
 		if(copyViewsToItem()) {
 			saveItem();
+		}
+		if(mainPageFragment != null) {
+			getFragmentManager().beginTransaction().remove(mainPageFragment).commit();
+			mainPageFragment = null;
+		}
+		if(attackPageFragment != null) {
+			getFragmentManager().beginTransaction().remove(attackPageFragment).commit();
+			mainPageFragment = null;
 		}
 		super.onPause();
 	}
@@ -147,12 +159,10 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
-		CreatureVarietyMainPageFragment mainPageFragment = (CreatureVarietyMainPageFragment)pagerAdapter.getItem(0);
 		if(mainPageFragment != null) {
 			changed = mainPageFragment.copyViewsToItem();
 		}
 
-		CreatureVarietyAttackPageFragment attackPageFragment = (CreatureVarietyAttackPageFragment)pagerAdapter.getItem(1);
 		if(attackPageFragment != null) {
 			changed |= attackPageFragment.copyViewsToItem();
 		}
@@ -161,12 +171,10 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	}
 
 	private void copyItemToViews() {
-		CreatureVarietyMainPageFragment mainPageFragment = (CreatureVarietyMainPageFragment)pagerAdapter.getItem(0);
 		if(mainPageFragment != null) {
 			mainPageFragment.copyItemToViews();
 		}
 
-		CreatureVarietyAttackPageFragment attackPageFragment = (CreatureVarietyAttackPageFragment)pagerAdapter.getItem(1);
 		if(attackPageFragment != null) {
 			attackPageFragment.copyItemToViews();
 		}
@@ -184,7 +192,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("CreatureVarietiesFrag", "Exception saving new CreatureVariety: " + currentInstance, e);
+							Log.e(LOG_TAG, "Exception saving new CreatureVariety: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_creature_variety_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -222,7 +230,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_creature_variety_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -253,7 +261,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 	private void initViewPager(View layout) {
 		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
-		pagerAdapter = new CreatureVarietyFragmentPagerAdapter(getFragmentManager(), this);
+		pagerAdapter = new CreatureVarietyFragmentPagerAdapter(getFragmentManager());
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(0);
 	}
@@ -279,7 +287,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag",
+						Log.e(LOG_TAG,
 								"Exception caught getting all CreatureVariety instances in initListView", e);
 						Toast.makeText(CreatureVarietiesFragment.this.getActivity(),
 								getString(R.string.toast_creature_varieties_load_failed),
@@ -327,5 +335,80 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 	public CreatureVariety getCurrentInstance() {
 		return this.currentInstance;
+	}
+
+	/**
+	 * Manages the page fragments for a ViewPager
+	 */
+	private class CreatureVarietyFragmentPagerAdapter extends FragmentPagerAdapter {
+		public CreatureVarietyFragmentPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			Fragment fragment = null;
+
+			switch (position) {
+				case 0:
+					fragment = Fragment.instantiate(getActivity(), CreatureVarietyMainPageFragment.class.getName());
+					((CreatureVarietyMainPageFragment)fragment).setVarietiesFragment(CreatureVarietiesFragment.this);
+					Log.d(LOG_TAG, "In getItem. CreatureVarietyMainPageFragment = " + fragment);
+					break;
+				case 1:
+					fragment = Fragment.instantiate(getActivity(), CreatureVarietyAttackPageFragment.class.getName());
+					((CreatureVarietyAttackPageFragment)fragment).setVarietiesFragment(CreatureVarietiesFragment.this);
+					break;
+			}
+			return fragment;
+		}
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			String title = null;
+
+			switch (position) {
+				case 0:
+					title = getString(R.string.title_creature_variety_main_page);
+					break;
+				case 1:
+					title = getString(R.string.title_creature_variety_attacks_page);
+					break;
+			}
+			return title;
+		}
+
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			Fragment createdFragment = (Fragment)super.instantiateItem(container, position);
+			switch (position) {
+				case 0:
+					mainPageFragment = (CreatureVarietyMainPageFragment)createdFragment;
+					break;
+				case 1:
+					attackPageFragment = (CreatureVarietyAttackPageFragment)createdFragment;
+					break;
+			}
+
+			return createdFragment;
+		}
+
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			super.destroyItem(container, position, object);
+			switch (position) {
+				case 0:
+					mainPageFragment = null;
+					break;
+				case 1:
+					attackPageFragment = null;
+					break;
+			}
+		}
 	}
 }

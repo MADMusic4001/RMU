@@ -84,6 +84,7 @@ import rx.schedulers.Schedulers;
  */
 public class CreatureVarietyMainPageFragment extends Fragment implements RacialStatBonusListAdapter.SetRacialStatBonus,
 		TalentTierListAdapter.SetTalentTier{
+	private static final String LOG_TAG = "CVMainPageFragment";
 	private static final String DRAG_ADD_TALENT = "add-talent";
 	private static final String DRAG_REMOVE_TALENT = "remove-talent";
 	@Inject
@@ -183,6 +184,12 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		super.onPause();
 	}
 
+	@Override
+	public void onResume() {
+		Log.d(LOG_TAG, "In onResume");
+		super.onResume();
+	}
+
 	public boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
@@ -199,236 +206,250 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		Realm newRealm;
 		Outlook newOutlook;
 
-		newString = nameEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && varietiesFragment.getCurrentInstance().getName() != null) ||
-				(newString != null && !newString.equals(varietiesFragment.getCurrentInstance().getName()))) {
-			varietiesFragment.getCurrentInstance().setName(newString);
-			changed = true;
-		}
-
-		newString = descriptionEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && varietiesFragment.getCurrentInstance().getDescription() != null) ||
-				(newString != null && !newString.equals(varietiesFragment.getCurrentInstance().getDescription()))) {
-			varietiesFragment.getCurrentInstance().setDescription(newString);
-			changed = true;
-		}
-
-		position = creatureTypeSpinner.getSelectedItemPosition();
-		if(position != -1) {
-			newType = creatureTypeSpinnerAdapter.getItem(position);
-			if(!newType.equals(varietiesFragment.getCurrentInstance().getType())) {
-				varietiesFragment.getCurrentInstance().setType(newType);
-				changed = true;
-			}
-		}
-
-		if(typicalLevelEdit.length() > 0) {
-			newShort = Short.valueOf(typicalLevelEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getTypicalLevel() != newShort) {
-				varietiesFragment.getCurrentInstance().setTypicalLevel(newShort);
-				changed = true;
-			}
-		}
-
-		position = levelSpreadSpinner.getSelectedItemPosition();
-		if(position != -1) {
-			newLevelSpread = levelSpreadSpinnerAdapter.getItem(position);
-			if(newLevelSpread != varietiesFragment.getCurrentInstance().getLevelSpread()) {
-				varietiesFragment.getCurrentInstance().setLevelSpread(newLevelSpread);
-				changed = true;
-			}
-		}
-
-		position = sizeSpinner.getSelectedItemPosition();
-		if(position != -1) {
-			newSize = sizeSpinnerAdapter.getItem(position);
-			if(!newSize.equals(varietiesFragment.getCurrentInstance().getSize())) {
-				varietiesFragment.getCurrentInstance().setSize(newSize);
-				changed = true;
-			}
-		}
-
-		if(heightEdit.length() > 0) {
-			newShort = Short.valueOf(heightEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getHeight() != newShort) {
-				varietiesFragment.getCurrentInstance().setHeight(newShort);
-				changed = true;
-			}
-		}
-
-		if(lengthEdit.length() > 0) {
-			newShort = Short.valueOf(lengthEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getLength() != newShort) {
-				varietiesFragment.getCurrentInstance().setLength(newShort);
-				changed = true;
-			}
-		}
-
-		if(weightEdit.length() > 0) {
-			newShort = Short.valueOf(weightEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getWeight() != newShort) {
-				varietiesFragment.getCurrentInstance().setWeight(newShort);
-				changed = true;
-			}
-		}
-
-		if(healingRateEdit.length() > 0) {
-			newShort = Short.valueOf(healingRateEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getHealingRate() != newShort) {
-				varietiesFragment.getCurrentInstance().setHealingRate(newShort);
-				changed = true;
-			}
-		}
-
-		if(baseHitsEdit.length() > 0) {
-			newShort = Short.valueOf(baseHitsEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBaseHits() != newShort) {
-				varietiesFragment.getCurrentInstance().setBaseHits(newShort);
-				changed = true;
-			}
-		}
-
-		if(baseEnduranceEdit.length() > 0) {
-			newShort = Short.valueOf(baseEnduranceEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBaseEndurance() != newShort) {
-				varietiesFragment.getCurrentInstance().setBaseEndurance(newShort);
-				changed = true;
-			}
-		}
-
-		if(armorTypeEdit.length() > 0) {
-			newShort = Short.valueOf(armorTypeEdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getArmorType() != newShort) {
-				varietiesFragment.getCurrentInstance().setArmorType(newShort);
-				changed = true;
-			}
-		}
-
-		if(channelingRREdit.length() > 0) {
-			newShort = Short.valueOf(channelingRREdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBaseChannellingRR() != newShort) {
-				varietiesFragment.getCurrentInstance().setBaseChannellingRR(newShort);
-				changed = true;
-			}
-		}
-
-		if(essenceRREdit.length() > 0) {
-			newShort = Short.valueOf(essenceRREdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBaseEssenceRR() != newShort) {
-				varietiesFragment.getCurrentInstance().setBaseEssenceRR(newShort);
-				changed = true;
-			}
-		}
-
-		if(mentalismRREdit.length() > 0) {
-			newShort = Short.valueOf(mentalismRREdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBaseMentalismRR() != newShort) {
-				varietiesFragment.getCurrentInstance().setBaseMentalismRR(newShort);
-				changed = true;
-			}
-		}
-
-		if(physicalRREdit.length() > 0) {
-			newShort = Short.valueOf(physicalRREdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBasePhysicalRR() != newShort) {
-				varietiesFragment.getCurrentInstance().setBasePhysicalRR(newShort);
-				changed = true;
-			}
-		}
-
-		if(fearRREdit.length() > 0) {
-			newShort = Short.valueOf(fearRREdit.getText().toString());
-			if(varietiesFragment.getCurrentInstance().getBaseFearRR() != newShort) {
-				varietiesFragment.getCurrentInstance().setBaseFearRR(newShort);
-				changed = true;
-			}
-		}
-
-		position = realm1Spinner.getSelectedItemPosition();
-		if(position != -1) {
-			newRealm = realm1SpinnerAdapter.getItem(position);
-			if(!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
-				varietiesFragment.getCurrentInstance().setRealm1(newRealm);
-				changed = true;
-			}
-		}
-
-		position = realm2Spinner.getSelectedItemPosition();
-		if(position != -1) {
-			newRealm = realm2SpinnerAdapter.getItem(position);
-			if(!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
-				if(newRealm.getId() == -1) {
-					varietiesFragment.getCurrentInstance().setRealm2(null);
+		if(this.getView() != null) {
+			if (nameEdit != null) {
+				newString = nameEdit.getText().toString();
+				if (newString.isEmpty()) {
+					newString = null;
 				}
-				else {
-					varietiesFragment.getCurrentInstance().setRealm2(newRealm);
+				if ((newString == null && varietiesFragment.getCurrentInstance().getName() != null) ||
+						(newString != null && !newString.equals(varietiesFragment.getCurrentInstance().getName()))) {
+					varietiesFragment.getCurrentInstance().setName(newString);
+					changed = true;
 				}
-				changed = true;
 			}
-		}
 
-		position = outlookSpinner.getSelectedItemPosition();
-		if(position != -1) {
-			newOutlook = outlookSpinnerAdapter.getItem(position);
-			if (!newOutlook.equals(varietiesFragment.getCurrentInstance().getOutlook())) {
-				varietiesFragment.getCurrentInstance().setOutlook(newOutlook);
-				changed = true;
+			if (descriptionEdit != null) {
+				newString = descriptionEdit.getText().toString();
+				if (newString.isEmpty()) {
+					newString = null;
+				}
+				if ((newString == null && varietiesFragment.getCurrentInstance().getDescription() != null) ||
+						(newString != null && !newString.equals(varietiesFragment.getCurrentInstance().getDescription()))) {
+					varietiesFragment.getCurrentInstance().setDescription(newString);
+					changed = true;
+				}
 			}
-		}
 
-		checkedItemPositions = racialStatBonusList.getCheckedItemPositions();
-		if(checkedItemPositions != null) {
-			newStatBonusMap = new HashMap<>(checkedItemPositions.size());
-			for (int i = 0; i < checkedItemPositions.size(); i++) {
-				racialStatBonus = racialStatBonusListAdapter.getItem(checkedItemPositions.keyAt(i));
-				if (varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
-					if (!varietiesFragment.getCurrentInstance().getRacialStatBonuses().get(racialStatBonus.getStat()).equals(racialStatBonus.getBonus())) {
+			position = creatureTypeSpinner.getSelectedItemPosition();
+			if (position != -1) {
+				newType = creatureTypeSpinnerAdapter.getItem(position);
+				if (!newType.equals(varietiesFragment.getCurrentInstance().getType())) {
+					varietiesFragment.getCurrentInstance().setType(newType);
+					changed = true;
+				}
+			}
+
+			if (typicalLevelEdit.length() > 0) {
+				newShort = Short.valueOf(typicalLevelEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getTypicalLevel() != newShort) {
+					varietiesFragment.getCurrentInstance().setTypicalLevel(newShort);
+					changed = true;
+				}
+			}
+
+			position = levelSpreadSpinner.getSelectedItemPosition();
+			if (position != -1) {
+				newLevelSpread = levelSpreadSpinnerAdapter.getItem(position);
+				if (newLevelSpread != varietiesFragment.getCurrentInstance().getLevelSpread()) {
+					varietiesFragment.getCurrentInstance().setLevelSpread(newLevelSpread);
+					changed = true;
+				}
+			}
+
+			position = sizeSpinner.getSelectedItemPosition();
+			if (position != -1) {
+				newSize = sizeSpinnerAdapter.getItem(position);
+				if (!newSize.equals(varietiesFragment.getCurrentInstance().getSize())) {
+					varietiesFragment.getCurrentInstance().setSize(newSize);
+					changed = true;
+				}
+			}
+
+			if (heightEdit.length() > 0) {
+				newShort = Short.valueOf(heightEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getHeight() != newShort) {
+					varietiesFragment.getCurrentInstance().setHeight(newShort);
+					changed = true;
+				}
+			}
+
+			if (lengthEdit.length() > 0) {
+				newShort = Short.valueOf(lengthEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getLength() != newShort) {
+					varietiesFragment.getCurrentInstance().setLength(newShort);
+					changed = true;
+				}
+			}
+
+			if (weightEdit.length() > 0) {
+				newShort = Short.valueOf(weightEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getWeight() != newShort) {
+					varietiesFragment.getCurrentInstance().setWeight(newShort);
+					changed = true;
+				}
+			}
+
+			if (healingRateEdit.length() > 0) {
+				newShort = Short.valueOf(healingRateEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getHealingRate() != newShort) {
+					varietiesFragment.getCurrentInstance().setHealingRate(newShort);
+					changed = true;
+				}
+			}
+
+			if (baseHitsEdit.length() > 0) {
+				newShort = Short.valueOf(baseHitsEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBaseHits() != newShort) {
+					varietiesFragment.getCurrentInstance().setBaseHits(newShort);
+					changed = true;
+				}
+			}
+
+			if (baseEnduranceEdit.length() > 0) {
+				newShort = Short.valueOf(baseEnduranceEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBaseEndurance() != newShort) {
+					varietiesFragment.getCurrentInstance().setBaseEndurance(newShort);
+					changed = true;
+				}
+			}
+
+			if (armorTypeEdit.length() > 0) {
+				newShort = Short.valueOf(armorTypeEdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getArmorType() != newShort) {
+					varietiesFragment.getCurrentInstance().setArmorType(newShort);
+					changed = true;
+				}
+			}
+
+			if (channelingRREdit.length() > 0) {
+				newShort = Short.valueOf(channelingRREdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBaseChannellingRR() != newShort) {
+					varietiesFragment.getCurrentInstance().setBaseChannellingRR(newShort);
+					changed = true;
+				}
+			}
+
+			if (essenceRREdit.length() > 0) {
+				newShort = Short.valueOf(essenceRREdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBaseEssenceRR() != newShort) {
+					varietiesFragment.getCurrentInstance().setBaseEssenceRR(newShort);
+					changed = true;
+				}
+			}
+
+			if (mentalismRREdit.length() > 0) {
+				newShort = Short.valueOf(mentalismRREdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBaseMentalismRR() != newShort) {
+					varietiesFragment.getCurrentInstance().setBaseMentalismRR(newShort);
+					changed = true;
+				}
+			}
+
+			if (physicalRREdit.length() > 0) {
+				newShort = Short.valueOf(physicalRREdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBasePhysicalRR() != newShort) {
+					varietiesFragment.getCurrentInstance().setBasePhysicalRR(newShort);
+					changed = true;
+				}
+			}
+
+			if (fearRREdit.length() > 0) {
+				newShort = Short.valueOf(fearRREdit.getText().toString());
+				if (varietiesFragment.getCurrentInstance().getBaseFearRR() != newShort) {
+					varietiesFragment.getCurrentInstance().setBaseFearRR(newShort);
+					changed = true;
+				}
+			}
+
+			position = realm1Spinner.getSelectedItemPosition();
+			if (position != -1) {
+				newRealm = realm1SpinnerAdapter.getItem(position);
+				if (!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
+					varietiesFragment.getCurrentInstance().setRealm1(newRealm);
+					changed = true;
+				}
+			}
+
+			position = realm2Spinner.getSelectedItemPosition();
+			if (position != -1) {
+				newRealm = realm2SpinnerAdapter.getItem(position);
+				if (!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
+					if (newRealm.getId() == -1) {
+						varietiesFragment.getCurrentInstance().setRealm2(null);
+					}
+					else {
+						varietiesFragment.getCurrentInstance().setRealm2(newRealm);
+					}
+					changed = true;
+				}
+			}
+
+			position = outlookSpinner.getSelectedItemPosition();
+			if (position != -1) {
+				newOutlook = outlookSpinnerAdapter.getItem(position);
+				if (!newOutlook.equals(varietiesFragment.getCurrentInstance().getOutlook())) {
+					varietiesFragment.getCurrentInstance().setOutlook(newOutlook);
+					changed = true;
+				}
+			}
+
+			checkedItemPositions = racialStatBonusList.getCheckedItemPositions();
+			if (checkedItemPositions != null) {
+				newStatBonusMap = new HashMap<>(checkedItemPositions.size());
+				for (int i = 0; i < checkedItemPositions.size(); i++) {
+					racialStatBonus = racialStatBonusListAdapter.getItem(checkedItemPositions.keyAt(i));
+					if (varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
+						if (!varietiesFragment.getCurrentInstance()
+								.getRacialStatBonuses()
+								.get(racialStatBonus.getStat())
+								.equals(racialStatBonus.getBonus())) {
+							changed = true;
+						}
+						varietiesFragment.getCurrentInstance().getRacialStatBonuses().remove(racialStatBonus.getStat());
+					}
+					else {
 						changed = true;
 					}
-					varietiesFragment.getCurrentInstance().getRacialStatBonuses().remove(racialStatBonus.getStat());
-				} else {
+					newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
+				}
+				if (!varietiesFragment.getCurrentInstance().getRacialStatBonuses().isEmpty() && !newStatBonusMap.isEmpty()) {
 					changed = true;
 				}
-				newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
-			}
-			if (!varietiesFragment.getCurrentInstance().getRacialStatBonuses().isEmpty() && !newStatBonusMap.isEmpty()) {
-				changed = true;
-			}
-			varietiesFragment.getCurrentInstance().setRacialStatBonuses(newStatBonusMap);
-		}
-		else {
-			varietiesFragment.getCurrentInstance().getRacialStatBonuses().clear();
-		}
-
-		newTalentTiersMap = new HashMap<>(talentTiersListAdapter.getCount());
-		for(int i = 0; i < talentTiersListAdapter.getCount(); i++) {
-			newTalentTier = talentTiersListAdapter.getItem(i);
-			if(varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(newTalentTier.getTalent())) {
-				if(!varietiesFragment.getCurrentInstance().getTalentTiersMap().get(newTalentTier.getTalent()).equals(newTalentTier.getTier())) {
-					changed = true;
-				}
-				varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(newTalentTier.getTalent());
+				varietiesFragment.getCurrentInstance().setRacialStatBonuses(newStatBonusMap);
 			}
 			else {
+				varietiesFragment.getCurrentInstance().getRacialStatBonuses().clear();
+			}
+
+			newTalentTiersMap = new HashMap<>(talentTiersListAdapter.getCount());
+			for (int i = 0; i < talentTiersListAdapter.getCount(); i++) {
+				newTalentTier = talentTiersListAdapter.getItem(i);
+				if (varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(newTalentTier.getTalent())) {
+					if (!varietiesFragment.getCurrentInstance()
+							.getTalentTiersMap()
+							.get(newTalentTier.getTalent())
+							.equals(newTalentTier.getTier())) {
+						changed = true;
+					}
+					varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(newTalentTier.getTalent());
+				}
+				else {
+					changed = true;
+				}
+				newTalentTiersMap.put(newTalentTier.getTalent(), newTalentTier.getTier());
+			}
+			if (!varietiesFragment.getCurrentInstance().getTalentTiersMap().isEmpty() && !newTalentTiersMap.isEmpty()) {
 				changed = true;
 			}
-			newTalentTiersMap.put(newTalentTier.getTalent(), newTalentTier.getTier());
+			varietiesFragment.getCurrentInstance().setTalentTiersMap(newTalentTiersMap);
 		}
-		if(!varietiesFragment.getCurrentInstance().getTalentTiersMap().isEmpty() && !newTalentTiersMap.isEmpty()) {
-			changed = true;
-		}
-		varietiesFragment.getCurrentInstance().setTalentTiersMap(newTalentTiersMap);
 
 		return changed;
 	}
 
 	public void copyItemToViews() {
+		Log.d(LOG_TAG, "In copyItemToViews. CreatureVarietyMainPageFragment = " + this);
 		nameEdit.setText(varietiesFragment.getCurrentInstance().getName());
 		creatureTypeSpinner.setSelection(creatureTypeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getType()));
 		typicalLevelEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getTypicalLevel()));
@@ -547,7 +568,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught getting all CreatureType instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all CreatureType instances", e);
 					}
 					@Override
 					public void onNext(Collection<CreatureType> items) {
@@ -638,7 +659,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught getting all Size instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all Size instances", e);
 					}
 					@Override
 					public void onNext(Collection<Size> items) {
@@ -1038,7 +1059,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught getting all Realm instances in initRealm1Spinner", e);
+						Log.e(LOG_TAG, "Exception caught getting all Realm instances in initRealm1Spinner", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
@@ -1077,7 +1098,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught getting all Realm instances in initRealm2Spinner", e);
+						Log.e(LOG_TAG, "Exception caught getting all Realm instances in initRealm2Spinner", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
@@ -1125,7 +1146,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught getting all Outlook instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all Outlook instances", e);
 					}
 					@Override
 					public void onNext(Collection<Outlook> outlooks) {
@@ -1164,7 +1185,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag",
+						Log.e(LOG_TAG,
 							  "Exception caught getting all Stat instances in initRacialStatBonusList", e);
 					}
 					@Override
@@ -1197,7 +1218,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureVarietiesFrag", "Exception caught getting all Talent instances in initTalentNamesList", e);
+						Log.e(LOG_TAG, "Exception caught getting all Talent instances in initTalentNamesList", e);
 					}
 					@Override
 					public void onNext(Collection<Talent> talents) {
