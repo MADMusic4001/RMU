@@ -19,6 +19,8 @@ import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragmen
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietyAttackPageFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietyMainPageFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
@@ -35,5 +37,7 @@ public interface CreatureFragmentComponent {
 	public void injectInto(CreatureCategoriesFragment creatureCategoriesFragment);
 	public void injectInto(CreatureTypesFragment creatureTypesFragment);
 	public void injectInto(CreatureVarietiesFragment creatureVarietiesFragment);
+	public void injectInto(CreatureVarietyAttackPageFragment creatureVarietyAttackPageFragment);
+	public void injectInto(CreatureVarietyMainPageFragment creatureVarietyMainPageFragment);
 	public void injectInto(OutlooksFragment outlooksFragment);
 }

@@ -305,4 +305,7 @@
   <string name="hyphen">-</string>
   <string name="min_max_roll_value">%1$2d-%2$3d</string>
   <string name="code_name_format_string">%1$s - %2$s</string>
+  <!-- ViewPager title strings -->
+  <string name="title_creature_variety_main_page">General Attributes</string>
+  <string name="title_creature_variety_attacks_page">Attacks and Skills</string>
 </resources>

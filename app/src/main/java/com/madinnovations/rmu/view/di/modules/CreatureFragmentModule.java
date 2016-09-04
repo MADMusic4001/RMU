@@ -19,6 +19,8 @@ import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragmen
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietyAttackPageFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietyMainPageFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -34,6 +36,8 @@ public class CreatureFragmentModule {
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 	private CreatureTypesFragment      creatureTypesFragment;
 	private CreatureVarietiesFragment  creatureVarietiesFragment;
+	private CreatureVarietyAttackPageFragment creatureVarietyAttackPageFragment;
+	private CreatureVarietyMainPageFragment creatureVarietyMainPageFragment;
 	private OutlooksFragment           outlooksFragment;
 
 	public CreatureFragmentModule(CreatureArchetypesFragment creatureArchetypesFragment) {
@@ -47,6 +51,12 @@ public class CreatureFragmentModule {
 	}
 	public CreatureFragmentModule(CreatureVarietiesFragment creatureVarietiesFragment) {
 		this.creatureVarietiesFragment = creatureVarietiesFragment;
+	}
+	public CreatureFragmentModule(CreatureVarietyAttackPageFragment creatureVarietyAttackPageFragment) {
+		this.creatureVarietyAttackPageFragment = creatureVarietyAttackPageFragment;
+	}
+	public CreatureFragmentModule(CreatureVarietyMainPageFragment creatureVarietyMainPageFragment) {
+		this.creatureVarietyMainPageFragment = creatureVarietyMainPageFragment;
 	}
 	public CreatureFragmentModule(OutlooksFragment outlooksFragment) {
 		this.outlooksFragment = outlooksFragment;
@@ -67,6 +77,14 @@ public class CreatureFragmentModule {
 	@Provides @PerFragment
 	public CreatureVarietiesFragment provideCreatureVarietiesFragment() {
 		return this.creatureVarietiesFragment;
+	}
+	@Provides @PerFragment
+	public CreatureVarietyAttackPageFragment provideCreatureVarietyAttackPageFragment() {
+		return this.creatureVarietyAttackPageFragment;
+	}
+	@Provides @PerFragment
+	public CreatureVarietyMainPageFragment provideCreatureVarietyMainPageFragment() {
+		return this.creatureVarietyMainPageFragment;
 	}
 	@Provides @PerFragment
 	public OutlooksFragment provideOutlooksFragment() {
