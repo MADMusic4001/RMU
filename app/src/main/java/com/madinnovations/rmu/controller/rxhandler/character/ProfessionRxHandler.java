@@ -17,7 +17,6 @@ package com.madinnovations.rmu.controller.rxhandler.character;
 
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.entities.character.Profession;
-import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
 
 import java.util.Collection;
 
@@ -157,25 +156,6 @@ public class ProfessionRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
-							subscriber.onError(e);
-						}
-					}
-				}
-		).subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread());
-	}
-
-	public Observable<ProfessionSkillCategoryCost> saveSkillCategoryCost(final ProfessionSkillCategoryCost professionSkillCategoryCost) {
-		return Observable.create(
-				new Observable.OnSubscribe<ProfessionSkillCategoryCost>() {
-					@Override
-					public void call(Subscriber<? super ProfessionSkillCategoryCost> subscriber) {
-						try {
-							dao.saveSkillCategoryCost(professionSkillCategoryCost);
-							subscriber.onNext(professionSkillCategoryCost);
-							subscriber.onCompleted();
-						}
-						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}

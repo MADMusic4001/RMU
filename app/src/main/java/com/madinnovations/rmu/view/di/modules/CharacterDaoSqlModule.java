@@ -54,8 +54,9 @@ public class CharacterDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	public ProfessionDao provideProfessionDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, RealmDao realmDao) {
-		return new ProfessionDaoDbImpl(helper, skillCategoryDao, realmDao);
+	public ProfessionDao provideProfessionDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, RealmDao realmDao,
+											  SkillDao skillDao) {
+		return new ProfessionDaoDbImpl(helper, skillCategoryDao, realmDao, skillDao);
 	}
 
 	@Provides @Singleton

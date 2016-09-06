@@ -61,12 +61,4 @@ public interface ProfessionDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
-
-	/**
-	 * Saves a SkillCategoryCost for a Profession
-	 *
-	 * @param professionSkillCategoryCost  the {@link ProfessionSkillCategoryCost} instance to save.
-	 * @return true if successful, otherwise false.
-	 */
-	public boolean saveSkillCategoryCost(ProfessionSkillCategoryCost professionSkillCategoryCost);
 }

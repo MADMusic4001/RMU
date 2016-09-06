@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.DragEvent;
@@ -44,10 +45,12 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
-	public AttackBonusListAdapter(Context context, SetAttackBonus setAttackBonusHandler) {
+	public AttackBonusListAdapter(@NonNull Context context, @NonNull SetAttackBonus setAttackBonusHandler,
+								  @NonNull ListView listView) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.setAttackBonusHandler = setAttackBonusHandler;
+		this.listView = listView;
 	}
 
 	@Override
@@ -55,9 +58,6 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 		View rowView;
 		ViewHolder holder;
 
-		if(listView == null && parent instanceof ListView) {
-			listView = (ListView)parent;
-		}
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder((TextView) rowView.findViewById(R.id.attack_name_view),
@@ -93,20 +93,15 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 			attackNameView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(listView != null) {
-						int position = getPosition(currentInstance);
-						listView.setItemChecked(position, !listView.isItemChecked(position));
-					}
+					int position = getPosition(currentInstance);
+					listView.setItemChecked(position, !listView.isItemChecked(position));
 				}
 			});
 
 			attackNameView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					if(listView != null) {
-						return listView.performLongClick();
-					}
-					return true;
+					return listView.performLongClick();
 				}
 			});
 		}
@@ -125,11 +120,8 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 			bonusEdit.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					if(listView != null) {
-						return listView.performLongClick();
-					}
-					return true;
-			}
+					return listView.performLongClick();
+				}
 			});
 			bonusEdit.setOnDragListener(new View.OnDragListener() {
 				@Override
@@ -149,7 +141,6 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 					}
 					else {
 						try {
-							Short.valueOf(bonusEdit.getText().toString());
 							bonusEdit.setError(null);
 						}
 						catch (NumberFormatException ex) {
@@ -187,6 +178,6 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 		 *
 		 * @param attackBonus  a AttackBonus instance
 		 */
-		public void setAttackBonus(AttackBonus attackBonus);
+		void setAttackBonus(AttackBonus attackBonus);
 	}
 }

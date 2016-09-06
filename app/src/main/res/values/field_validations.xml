@@ -64,7 +64,7 @@
     <string name="validation_grappled_required">Please enter the percent the defender is grappled.</string>
     <string name="validation_hits_required">Please enter the number of additional hit point damage done.</string>
     <string name="validation_initial_cost_required">Please enter an initial cost baseValue.</string>
-    <string name="validation_initial_cost_gt_additional_code">Initial cost must be &lt;= additional cost</string>
+    <string name="validation_initial_cost_gt_additional_cost">Initial cost must be &lt;= additional cost</string>
     <string name="validation_injury_required">Please enter the amount of injury penalty.</string>
     <string name="validation_item_description_required">Please enter an item resultText.</string>
     <string name="validation_item_name_required">Please enter an item name.</string>

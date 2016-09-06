@@ -151,6 +151,7 @@
   <string name="label_delete_talent_category">Delete Talent Category</string>
 
   <!-- ListView header labels -->
+  <string name="label_assignable">Is Assignable?</string>
   <string name="label_examples">Examples</string>
   <string name="label_initial_cost">Initial Cost</string>
   <string name="label_additional_cost">Additional Cost</string>

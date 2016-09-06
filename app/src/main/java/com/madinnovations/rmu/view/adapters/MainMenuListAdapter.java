@@ -32,7 +32,7 @@ import java.util.Map;
  * Populates an expandable list view with menu items
  */
 public class MainMenuListAdapter extends BaseExpandableListAdapter {
-	private Context context;
+	private LayoutInflater layoutInflater;
 	private List<String> groupHeaders;
 	private Map<String, List<String>> groupItems;
 
@@ -44,9 +44,9 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 	 * @param groupItems  a map with the group header strings as the keys and a list of group item strings as the values
 	 */
 	public MainMenuListAdapter(Context context, List<String> groupHeaders, Map<String, List<String>> groupItems) {
-		this.context = context;
 		this.groupHeaders = groupHeaders;
 		this.groupItems = groupItems;
+		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
@@ -88,9 +88,7 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		String headerTitle = (String) getGroup(groupPosition);
 		if (convertView == null) {
-			LayoutInflater infalInflater = (LayoutInflater) this.context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.list_expandable_group_row, null);
+			convertView = layoutInflater.inflate(R.layout.list_expandable_group_row, parent, false);
 		}
 
 		TextView lblListHeader = (TextView) convertView.findViewById(R.id.group_header);
@@ -105,8 +103,7 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 		final String childText = (String) getChild(groupPosition, childPosition);
 
 		if (convertView == null) {
-			LayoutInflater infalInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.list_expandable_item_row, null);
+			convertView = layoutInflater.inflate(R.layout.list_expandable_item_row, parent, false);
 		}
 
 		TextView txtListChild = (TextView) convertView

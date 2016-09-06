@@ -16,17 +16,16 @@
 package com.madinnovations.rmu.data.dao.character.schemas;
 
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
- * Database schema data for the profession_skill_costs table
+ * Database schema data for the profession_skill_category_costs table
  */
-public interface ProfessionSkillCostSchema {
-	String TABLE_NAME = "profession_skill_costs";
+public interface ProfessionSkillCategoryCostSchema {
+	String TABLE_NAME = "profession_skill_category_costs";
 
 	String COLUMN_ID = "id";
 	String COLUMN_PROFESSION_ID = "professionId";
-	String COLUMN_SKILL_ID = "skillId";
+	String COLUMN_SKILL_CATEGORY_ID = "skillCategoryId";
 	String COLUMN_FIRST_COST = "firstCost";
 	String COLUMN_SECOND_COST = "secondCost";
 
@@ -35,13 +34,14 @@ public interface ProfessionSkillCostSchema {
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_PROFESSION_ID + " INTEGER NOT NULL, "
-			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
+			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_FIRST_COST + " INTEGER NOT NULL, "
 			+ COLUMN_SECOND_COST + " INTEGER NOT NULL, "
-			+ "CONSTRAINT unique_profession_skill_category UNIQUE(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_ID + "), "
+			+ "CONSTRAINT unique_profession_skill_category UNIQUE(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_PROFESSION_ID, COLUMN_SKILL_ID, COLUMN_FIRST_COST, COLUMN_SECOND_COST};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID, COLUMN_FIRST_COST,
+			COLUMN_SECOND_COST};
 }

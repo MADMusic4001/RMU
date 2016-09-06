@@ -15,89 +15,89 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import android.support.annotation.NonNull;
+
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Container class for associating SkillCost to SkillCategory
  */
 public class ProfessionSkillCategoryCost {
-	private int id = -1;
-	private Profession profession = null;
-	private SkillCategory skillCategory = null;
-	private SkillCost skillCost = null;
-
-	public ProfessionSkillCategoryCost() {
-	}
-
-	public ProfessionSkillCategoryCost(int id, Profession profession, SkillCategory skillCategory, SkillCost skillCost) {
-		this.id = id;
-		this.profession = profession;
-		this.skillCategory = skillCategory;
-		this.skillCost = skillCost;
-	}
+	private SkillCategory skillCategory;
+	private List<ProfessionSkillCost> skillCosts           = new ArrayList<>();
+	private SkillCost                 skillCategoryCost    = new SkillCost();
+	private boolean                   assignable           = false;
+	private List<SkillCost>           assignableSkillCosts = new ArrayList<>();
 
 	/**
-	 * Checks the validity of the ProfessionSkillCategoryCost instance.
+	 * Creates a new ProfessionSkillCategoryCost instance
 	 *
-	 * @return true if the ProfessionSkillCategoryCost instance is valid, otherwise false.
+	 * @param skillCategory  a SkillCategory instance
+	 * @param skillCosts  a list of Skill costs for the skills in this category
+	 * @param skillCategoryCost  the development point costs for this SkillCategory
+	 * @param assignable  true if characters can assign each skill in the category a different cost
+	 * @param assignableSkillCosts  the list of SkillCosts to be assigned to individual skills when assignable is true
 	 */
-	public boolean isValid() {
-		return profession != null && skillCategory != null && skillCost != null &&
-				skillCost.getFirstCost() <= skillCost.getAdditionalCost();
+	public ProfessionSkillCategoryCost(@NonNull SkillCategory skillCategory,
+									   @NonNull List<ProfessionSkillCost> skillCosts,
+									   @NonNull SkillCost skillCategoryCost,
+									   boolean assignable,
+									   @NonNull List<SkillCost> assignableSkillCosts) {
+		this.skillCategory = skillCategory;
+		this.skillCosts = skillCosts;
+		this.skillCategoryCost = skillCategoryCost;
+		this.assignable = assignable;
+		this.assignableSkillCosts = assignableSkillCosts;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("profession", profession)
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
 				.append("skillCategory", skillCategory)
-				.append("skillCost", skillCost)
+				.append("skillCosts", skillCosts)
+				.append("skillCategoryCost", skillCategoryCost)
+				.append("assignable", assignable)
+				.append("assignableSkillCosts", assignableSkillCosts)
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		ProfessionSkillCategoryCost that = (ProfessionSkillCategoryCost) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public Profession getProfession() {
-		return profession;
-	}
-	public void setProfession(Profession profession) {
-		this.profession = profession;
-	}
 	public SkillCategory getSkillCategory() {
 		return skillCategory;
 	}
 	public void setSkillCategory(SkillCategory skillCategory) {
 		this.skillCategory = skillCategory;
 	}
-	public SkillCost getSkillCost() {
-		return skillCost;
+	public List<ProfessionSkillCost> getSkillCosts() {
+		return skillCosts;
 	}
-	public void setSkillCost(SkillCost skillCost) {
-		this.skillCost = skillCost;
+	public void setSkillCosts(List<ProfessionSkillCost> skillCosts) {
+		this.skillCosts = skillCosts;
+	}
+	public SkillCost getSkillCategoryCost() {
+		return skillCategoryCost;
+	}
+	public void setSkillCategoryCost(SkillCost skillCategoryCost) {
+		this.skillCategoryCost = skillCategoryCost;
+	}
+	public boolean isAssignable() {
+		return assignable;
+	}
+	public void setAssignable(boolean assignable) {
+		this.assignable = assignable;
+	}
+	public List<SkillCost> getAssignableSkillCosts() {
+		return assignableSkillCosts;
+	}
+	public void setAssignableSkillCosts(List<SkillCost> assignableSkillCosts) {
+		this.assignableSkillCosts = assignableSkillCosts;
 	}
 }

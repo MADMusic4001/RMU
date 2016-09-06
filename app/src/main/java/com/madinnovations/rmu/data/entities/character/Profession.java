@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.entities.spells.Realm;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class Profession {
 	private Map<SkillCategory, SkillCost> skillCategoryCosts          = new HashMap<>();
 	private Map<Skill, SkillCost>         skillCosts                  = new HashMap<>();
 	private Map<SkillCategory, List<SkillCost>> assignableSkillCosts  = new HashMap<>();
-	private List<SkillCategory>           professionalSkillCategories = null;
+	private List<SkillCategory>           professionalSkillCategories = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Profession instance.

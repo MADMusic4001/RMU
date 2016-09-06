@@ -297,7 +297,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 	private void initAttackBonusesList(View layout) {
 		attackBonusesList = (ListView) layout.findViewById(R.id.attack_bonuses_list);
-		attackBonusesListAdapter = new AttackBonusListAdapter(this.getActivity(), this);
+		attackBonusesListAdapter = new AttackBonusListAdapter(this.getActivity(), this, attackBonusesList);
 		attackBonusesList.setAdapter(attackBonusesListAdapter);
 
 		attackBonusesListAdapter.clear();
@@ -442,7 +442,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 	private void initSkillBonusesList(View layout) {
 		skillBonusesList = (ListView) layout.findViewById(R.id.skill_bonuses_list);
-		skillBonusesListAdapter = new SkillBonusListAdapter(this.getActivity(), this);
+		skillBonusesListAdapter = new SkillBonusListAdapter(this.getActivity(), this, skillBonusesList);
 		skillBonusesList.setAdapter(skillBonusesListAdapter);
 
 		skillBonusesListAdapter.clear();
@@ -625,12 +625,14 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							Attack newAttack = new Attack();
 							newAttack.setId(attackId);
 							int position = attacksListAdapter.getPosition(newAttack);
-							Attack attack = attacksListAdapter.getItem(position);
-							AttackBonus attackBonus = new AttackBonus(attack, (short) 0);
-							if (attackBonusesListAdapter.getPosition(attackBonus) == -1) {
-								attackBonusesListAdapter.add(attackBonus);
-								varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attack, (short)0);
-								changed = true;
+							if(position != -1) {
+								Attack attack = attacksListAdapter.getItem(position);
+								AttackBonus attackBonus = new AttackBonus(attack, (short) 0);
+								if (attackBonusesListAdapter.getPosition(attackBonus) == -1) {
+									attackBonusesListAdapter.add(attackBonus);
+									varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attack, (short) 0);
+									changed = true;
+								}
 							}
 						}
 						if(changed) {
@@ -706,9 +708,11 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							newAttack.setId(attackId);
 							AttackBonus newAttackBonus = new AttackBonus(newAttack, (short)0);
 							int position = attackBonusesListAdapter.getPosition(newAttackBonus);
-							AttackBonus attackBonus = attackBonusesListAdapter.getItem(position);
-							varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(attackBonus.getAttack());
-							attackBonusesListAdapter.remove(attackBonus);
+							if(position != -1) {
+								AttackBonus attackBonus = attackBonusesListAdapter.getItem(position);
+								varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(attackBonus.getAttack());
+								attackBonusesListAdapter.remove(attackBonus);
+							}
 						}
 						varietiesFragment.saveItem();
 						attackBonusesList.clearChoices();
@@ -778,12 +782,14 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							Skill newSkill = new Skill();
 							newSkill.setId(skillId);
 							int position = skillsListAdapter.getPosition(newSkill);
-							Skill skill = skillsListAdapter.getItem(position);
-							SkillBonus skillBonus = new SkillBonus(skill, (short) 0);
-							if (skillBonusesListAdapter.getPosition(skillBonus) == -1) {
-								skillBonusesListAdapter.add(skillBonus);
-								varietiesFragment.getCurrentInstance().getSkillBonusesMap().put(skill, (short)0);
-								changed = true;
+							if(position != -1) {
+								Skill skill = skillsListAdapter.getItem(position);
+								SkillBonus skillBonus = new SkillBonus(skill, (short) 0);
+								if (skillBonusesListAdapter.getPosition(skillBonus) == -1) {
+									skillBonusesListAdapter.add(skillBonus);
+									varietiesFragment.getCurrentInstance().getSkillBonusesMap().put(skill, (short) 0);
+									changed = true;
+								}
 							}
 						}
 						if(changed) {
@@ -859,9 +865,11 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							newSkill.setId(skillId);
 							SkillBonus newSkillBonus = new SkillBonus(newSkill, (short)0);
 							int position = skillBonusesListAdapter.getPosition(newSkillBonus);
-							SkillBonus skillBonus =skillBonusesListAdapter.getItem(position);
-							varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(skillBonus.getSkill());
-							skillBonusesListAdapter.remove(skillBonus);
+							if(position != -1) {
+								SkillBonus skillBonus = skillBonusesListAdapter.getItem(position);
+								varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(skillBonus.getSkill());
+								skillBonusesListAdapter.remove(skillBonus);
+							}
 						}
 						varietiesFragment.saveItem();
 						skillBonusesList.clearChoices();

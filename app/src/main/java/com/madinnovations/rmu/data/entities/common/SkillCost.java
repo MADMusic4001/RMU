@@ -22,8 +22,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Cost of improving a skill
  */
 public class SkillCost {
-	private short firstCost = 0;
-	private short additionalCost = 0;
+	private Short firstCost = null;
+	private Short additionalCost = null;
 
 	/**
 	 * Checks the validity of the SkillCost instance.
@@ -53,27 +53,30 @@ public class SkillCost {
 
 		SkillCost skillCost = (SkillCost) o;
 
-		return firstCost == skillCost.firstCost && additionalCost == skillCost.additionalCost;
+		return getFirstCost() != null ? getFirstCost().equals(skillCost.getFirstCost())
+									  : skillCost.getFirstCost() == null && (getAdditionalCost() != null
+																			 ? getAdditionalCost().equals(
+											  skillCost.getAdditionalCost()) : skillCost.getAdditionalCost() == null);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = firstCost;
-		result = 31 * result + additionalCost;
+		int result = getFirstCost() != null ? getFirstCost().hashCode() : 0;
+		result = 31 * result + (getAdditionalCost() != null ? getAdditionalCost().hashCode() : 0);
 		return result;
 	}
 
 	// Getters and setters
-	public short getFirstCost() {
+	public Short getFirstCost() {
 		return firstCost;
 	}
-	public void setFirstCost(short firstCost) {
+	public void setFirstCost(Short firstCost) {
 		this.firstCost = firstCost;
 	}
-	public short getAdditionalCost() {
+	public Short getAdditionalCost() {
 		return additionalCost;
 	}
-	public void setAdditionalCost(short additionalCost) {
+	public void setAdditionalCost(Short additionalCost) {
 		this.additionalCost = additionalCost;
 	}
 }

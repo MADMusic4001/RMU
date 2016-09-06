@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,8 +39,11 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
+import com.madinnovations.rmu.data.entities.character.ProfessionSkillCost;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -49,7 +53,9 @@ import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -60,18 +66,22 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Profession> {
+public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Profession>,
+		ProfessionCategoryCostListAdapter.ProfessionCostsCallbacks {
+	private static final String LOG_TAG = "ProfessionsFragment";
 	@Inject
-	protected ProfessionRxHandler professionRxHandler;
+	protected ProfessionRxHandler               professionRxHandler;
 	@Inject
-	protected SkillCategoryRxHandler skillCategoryRxHandler;
+	protected SkillRxHandler                    skillRxHandler;
 	@Inject
+	protected SkillCategoryRxHandler            skillCategoryRxHandler;
 	protected ProfessionCategoryCostListAdapter categoryCostListAdapter;
-	private TwoFieldListAdapter<Profession> listAdapter;
-	private ListView                  listView;
-	private EditText                  nameEdit;
-	private EditText                  descriptionEdit;
+	private   TwoFieldListAdapter<Profession>   listAdapter;
+	private   ListView                          listView;
+	private   EditText                          nameEdit;
+	private   EditText                          descriptionEdit;
 	private Collection<SkillCategory> skillCategories = null;
+	private Collection<Skill> skills = null;
 	private Profession currentInstance = new Profession();
 	private boolean isNew = true;
 
@@ -119,6 +129,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			}
 			currentInstance = new Profession();
 			isNew = true;
+			addMissingCosts();
 			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
@@ -162,6 +173,21 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public CharSequence getField1Value(Profession profession) {
+		return profession.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Profession profession) {
+		return profession.getDescription();
+	}
+
+	@Override
+	public Profession getProfessionInstance() {
+		return currentInstance;
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
@@ -193,9 +219,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		descriptionEdit.setText(currentInstance.getDescription());
 		addMissingCosts();
 		categoryCostListAdapter.clear();
-		if(currentInstance.getSkillCategoryCosts() != null) {
-			categoryCostListAdapter.addAll(currentInstance.getSkillCategoryCosts());
-		}
+		categoryCostListAdapter.addAll(createCostList());
 		categoryCostListAdapter.notifyDataSetChanged();
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
@@ -215,7 +239,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("ProfessionFragment", "Exception when deleting: ", e);
+					Log.e(LOG_TAG, "Exception when deleting: ", e);
 					Toast.makeText(getActivity(), getString(R.string.toast_profession_delete_failed), Toast.LENGTH_SHORT).show();
 				}
 				@Override
@@ -243,7 +267,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			});
 	}
 
-	private void saveItem() {
+	@Override
+	public void saveItem() {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;
@@ -255,7 +280,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("ProfessionsFragment", "Exception saving Profession", e);
+						Log.e(LOG_TAG, "Exception saving Profession", e);
 						String toastString = getString(R.string.toast_profession_save_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -345,53 +370,38 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	}
 
 	private void initCategoryCostListView(View layout) {
-		ListView categoryCostListView = (ListView) layout.findViewById(R.id.category_costs_list);
+		ExpandableListView categoryCostListView = (ExpandableListView) layout.findViewById(R.id.costs_list);
+		categoryCostListAdapter = new ProfessionCategoryCostListAdapter(getActivity(), this, categoryCostListView);
 		categoryCostListView.setAdapter(categoryCostListAdapter);
-
-		if(currentInstance.getSkillCategoryCosts() == null || currentInstance.getSkillCategoryCosts().isEmpty()) {
-			skillCategoryRxHandler.getAll()
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Collection<SkillCategory>>() {
-						@Override
-						public void onCompleted() {
-							categoryCostListAdapter.clear();
-							categoryCostListAdapter.addAll(currentInstance.getSkillCategoryCosts());
-							categoryCostListAdapter.notifyDataSetChanged();
-						}
-						@Override
-						public void onError(Throwable e) {
-							Log.e("ProfessionsFragment", "Failed to load SkillCategory instances", e);
-						}
-						@Override
-						public void onNext(Collection<SkillCategory> skillCategories) {
-							ProfessionsFragment.this.skillCategories = skillCategories;
-							addMissingCosts();
-						}
-					});
-		}
-	}
-
-	private void addMissingCosts() {
-		List<ProfessionSkillCategoryCost> skillCategoryCosts = currentInstance.getSkillCategoryCosts();
-		if(skillCategoryCosts == null) {
-			skillCategoryCosts = new ArrayList<>();
-			currentInstance.setSkillCategoryCosts(skillCategoryCosts);
-		}
-		if(skillCategories != null) {
-			for (SkillCategory skillCategory : skillCategories) {
-				boolean newCost = true;
-				for (ProfessionSkillCategoryCost pscc : currentInstance.getSkillCategoryCosts()) {
-					if (skillCategory.equals(pscc.getSkillCategory())) {
-						newCost = false;
-						break;
+		categoryCostListAdapter.addAll(createCostList());
+		categoryCostListAdapter.notifyDataSetChanged();
+		Log.d(LOG_TAG, "categoryCostListView.getTranscriptMode() = " + categoryCostListView.getTranscriptMode());
+		skillCategoryRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<SkillCategory>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception caught loading all SkillCategory instances.", e);
 					}
-				}
-				if (newCost) {
-					skillCategoryCosts.add(new ProfessionSkillCategoryCost(-1, currentInstance, skillCategory, new SkillCost()));
-				}
-			}
-		}
+					@Override
+					public void onNext(Collection<SkillCategory> skillCategories) {
+						ProfessionsFragment.this.skillCategories = skillCategories;
+					}
+				});
+		skillRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<Skill>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception caught getting all Skill instances.", e);
+					}
+					@Override
+					public void onNext(Collection<Skill> skills) {
+						ProfessionsFragment.this.skills = skills;
+					}
+				});
 	}
 
 	private void initListView(View layout) {
@@ -411,12 +421,15 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 						listView.setSelection(0);
 						listView.setItemChecked(0, true);
 						listAdapter.notifyDataSetChanged();
-						copyItemToViews();
 					}
+					else {
+						addMissingCosts();
+					}
+					copyItemToViews();
 				}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("ProfessionsFragment", "Exception caught getting all Profession instances", e);
+					Log.e(LOG_TAG, "Exception caught getting all Profession instances", e);
 					Toast.makeText(ProfessionsFragment.this.getActivity(),
 							getString(R.string.toast_professions_load_failed),
 							Toast.LENGTH_SHORT).show();
@@ -457,13 +470,54 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		registerForContextMenu(listView);
 	}
 
-	@Override
-	public CharSequence getField1Value(Profession profession) {
-		return profession.getName();
+	private void addMissingCosts() {
+		Map<SkillCategory, SkillCost> skillCategoryCosts = currentInstance.getSkillCategoryCosts();
+		if(skillCategoryCosts == null || skillCategoryCosts.isEmpty()) {
+			skillCategoryCosts = new HashMap<>(skillCategories.size());
+			currentInstance.setSkillCategoryCosts(skillCategoryCosts);
+		}
+		for(SkillCategory skillCategory : skillCategories) {
+			if(!skillCategoryCosts.containsKey(skillCategory)) {
+				skillCategoryCosts.put(skillCategory, new SkillCost());
+			}
+		}
+		Map<Skill, SkillCost> skillCosts = currentInstance.getSkillCosts();
+		if(skillCosts == null) {
+			skillCosts = new HashMap<>(skills.size());
+			currentInstance.setSkillCosts(skillCosts);
+		}
+		for(Skill skill : skills) {
+			if(!skillCosts.containsKey(skill)) {
+				skillCosts.put(skill, new SkillCost());
+			}
+		}
 	}
 
-	@Override
-	public CharSequence getField2Value(Profession profession) {
-		return profession.getDescription();
+	private List<ProfessionSkillCategoryCost> createCostList() {
+		List<ProfessionSkillCategoryCost> costList = new ArrayList<>(currentInstance.getSkillCategoryCosts().size());
+		for(Map.Entry<SkillCategory, SkillCost> entry : currentInstance.getSkillCategoryCosts().entrySet()) {
+			List<ProfessionSkillCost> professionSkillCostList = new ArrayList<>();
+			for(Map.Entry<Skill, SkillCost> skillCostEntry : currentInstance.getSkillCosts().entrySet()) {
+				if(skillCostEntry.getKey().getCategory().equals(entry.getKey())) {
+					ProfessionSkillCost professionSkillCost = new ProfessionSkillCost(
+							skillCostEntry.getKey(),
+							skillCostEntry.getValue());
+					professionSkillCostList.add(professionSkillCost);
+				}
+			}
+			List<SkillCost> assignableCostList = currentInstance.getAssignableSkillCosts().get(entry.getKey());
+			if(assignableCostList == null) {
+				assignableCostList = new ArrayList<>();
+				currentInstance.getAssignableSkillCosts().put(entry.getKey(), assignableCostList);
+			}
+			ProfessionSkillCategoryCost professionSkillCategoryCost = new ProfessionSkillCategoryCost(
+					entry.getKey(),
+					professionSkillCostList,
+					entry.getValue(),
+					!assignableCostList.isEmpty(),
+					assignableCostList);
+			costList.add(professionSkillCategoryCost);
+		}
+		return costList;
 	}
 }

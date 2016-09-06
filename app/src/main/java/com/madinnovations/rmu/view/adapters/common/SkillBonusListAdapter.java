@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.DragEvent;
@@ -44,10 +45,12 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
-	public SkillBonusListAdapter(Context context, SetSkillBonus setSkillBonusHandler) {
+	public SkillBonusListAdapter(@NonNull Context context, @NonNull SetSkillBonus setSkillBonusHandler,
+								 @NonNull ListView listView) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.setSkillBonusHandler = setSkillBonusHandler;
+		this.listView = listView;
 	}
 
 	@Override
@@ -55,9 +58,6 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 		View rowView;
 		ViewHolder holder;
 
-		if(listView == null && parent instanceof ListView) {
-			listView = (ListView)parent;
-		}
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder((TextView) rowView.findViewById(R.id.skill_name_view),
@@ -103,10 +103,7 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 			skillNameView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					if(listView != null) {
-						return listView.performLongClick();
-					}
-					return true;
+					return listView.performLongClick();
 				}
 			});
 		}
@@ -125,10 +122,7 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 			bonusEdit.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					if(listView != null) {
-						return listView.performLongClick();
-					}
-					return true;
+					return listView.performLongClick();
 			}
 			});
 			bonusEdit.setOnDragListener(new View.OnDragListener() {
@@ -149,7 +143,6 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 					}
 					else {
 						try {
-							Short.valueOf(bonusEdit.getText().toString());
 							bonusEdit.setError(null);
 						}
 						catch (NumberFormatException ex) {
@@ -187,6 +180,6 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 		 *
 		 * @param skillBonus  a SkillBonus instance
 		 */
-		public void setSkillBonus(SkillBonus skillBonus);
+		void setSkillBonus(SkillBonus skillBonus);
 	}
 }

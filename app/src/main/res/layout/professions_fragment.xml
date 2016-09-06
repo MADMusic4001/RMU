@@ -62,9 +62,14 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="@string/label_additional_cost"/>
+          <TextView
+              android:layout_width="0dp"
+              android:layout_weight="1"
+              android:layout_height="wrap_content"
+              android:text="@string/label_assignable"/>
         </LinearLayout>
-        <ListView
-            android:id="@+id/category_costs_list"
+        <ExpandableListView
+            android:id="@+id/costs_list"
             android:layout_width="match_parent"
             android:layout_height="120dp"/>
     </LinearLayout>
