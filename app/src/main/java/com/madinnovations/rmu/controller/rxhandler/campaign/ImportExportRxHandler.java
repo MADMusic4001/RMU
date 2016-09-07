@@ -24,9 +24,20 @@ import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.serializers.CharacterSerializer;
+import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
+import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
+import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
+import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
+import com.madinnovations.rmu.data.dao.common.ParameterDao;
+import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.StatDao;
+import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.serializers.SkillCategorySerializer;
+import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
+import com.madinnovations.rmu.data.dao.creature.OutlookDao;
+import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
@@ -45,25 +56,51 @@ import rx.schedulers.Schedulers;
  * Creates reactive observables for importing and exporting the database
  */
 public class ImportExportRxHandler {
-	private CharacterDao characterDao;
-	private CultureDao cultureDao;
-	private ProfessionDao professionDao;
-	private RaceDao raceDao;
-	private SkillDao skillDao;
-	private SkillCategoryDao skillCategoryDao;
+	private BodyPartDao         bodyPartDao;
+	private CharacterDao        characterDao;
+	private CreatureCategoryDao creatureCategoryDao;
+	private CriticalCodeDao     criticalCodeDao;
+	private CriticalTypeDao     criticalTypeDao;
+	private CultureDao          cultureDao;
+	private ItemDao             itemDao;
+	private LocomotionTypeDao   locomotionTypeDao;
+	private OutlookDao          outlookDao;
+	private ParameterDao        parameterDao;
+	private ProfessionDao       professionDao;
+	private RaceDao             raceDao;
+	private SizeDao             sizeDao;
+	private SkillDao            skillDao;
+	private SkillCategoryDao    skillCategoryDao;
+	private StatDao             statDao;
+	private TalentCategoryDao   talentCategoryDao;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	public ImportExportRxHandler(CharacterDao characterDao, CultureDao cultureDao, ProfessionDao professionDao, RaceDao raceDao,
-								 SkillDao skillDao, SkillCategoryDao skillCategoryDao) {
+	public ImportExportRxHandler(BodyPartDao bodyPartDao, CharacterDao characterDao, CreatureCategoryDao creatureCategoryDao,
+								 CriticalCodeDao criticalCodeDao, CriticalTypeDao criticalTypeDao, CultureDao cultureDao,
+								 ItemDao itemDao, LocomotionTypeDao locomotionTypeDao, OutlookDao outlookDao,
+								 ParameterDao parameterDao, ProfessionDao professionDao, RaceDao raceDao, SizeDao sizeDao,
+								 SkillDao skillDao, SkillCategoryDao skillCategoryDao, StatDao statDao,
+								 TalentCategoryDao talentCategoryDao) {
+		this.bodyPartDao = bodyPartDao;
 		this.characterDao = characterDao;
+		this.creatureCategoryDao = creatureCategoryDao;
+		this.criticalCodeDao = criticalCodeDao;
+		this.criticalTypeDao = criticalTypeDao;
 		this.cultureDao = cultureDao;
+		this.itemDao = itemDao;
+		this.locomotionTypeDao = locomotionTypeDao;
+		this.outlookDao = outlookDao;
+		this.parameterDao = parameterDao;
 		this.professionDao = professionDao;
 		this.raceDao = raceDao;
+		this.sizeDao = sizeDao;
 		this.skillDao = skillDao;
 		this.skillCategoryDao = skillCategoryDao;
+		this.statDao = statDao;
+		this.talentCategoryDao = talentCategoryDao;
 	}
 
 	/**
@@ -109,6 +146,17 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Character.class, new CharacterSerializer());
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, new SkillCategorySerializer());
 							final Gson gson = gsonBuilder.create();
+							gson.toJson(statDao.getAll(), writer);
+							gson.toJson(locomotionTypeDao.getAll(), writer);
+							gson.toJson(parameterDao.getAll(), writer);
+							gson.toJson(sizeDao.getAll(), writer);
+							gson.toJson(talentCategoryDao.getAll(), writer);
+							gson.toJson(itemDao.getAll(), writer);
+							gson.toJson(bodyPartDao.getAll(), writer);
+							gson.toJson(criticalCodeDao.getAll(), writer);
+							gson.toJson(criticalTypeDao.getAll(), writer);
+							gson.toJson(creatureCategoryDao.getAll(), writer);
+							gson.toJson(outlookDao.getAll(), writer);
 //							gson.toJson(characterDao.getAll(), writer);
 							subscriber.onNext(1);
 							gson.toJson(professionDao.getAll(), writer);
