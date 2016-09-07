@@ -33,6 +33,21 @@ public class Culture {
 	private Map<Skill, Short> skillRanks;
 
 	/**
+	 * Default constructor
+	 */
+	public Culture() {
+	}
+
+	/**
+	 * Create a new Culture instance wit the given ID
+	 *
+	 * @param id
+	 */
+	public Culture(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Culture instance.
 	 *
 	 * @return true if the Culture instance is valid, otherwise false.

@@ -22,7 +22,7 @@ import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
@@ -111,7 +111,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.beginTransaction();
             sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterSkillCostsSchema.TABLE_CREATE);
-            sqLiteDatabase.execSQL(CharacterSkillsSchema.TABLE_CREATE);
+            sqLiteDatabase.execSQL(CharacterSkillRanksSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterTalentsSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CultureSchema.TABLE_CREATE);

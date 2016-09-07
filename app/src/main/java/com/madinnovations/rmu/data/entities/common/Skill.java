@@ -34,6 +34,21 @@ public class Skill {
 	private List<Stat>    stats                  = new ArrayList<>();
 
 	/**
+	 * Creates a new empty Skill instance.
+	 */
+	public Skill() {
+	}
+
+	/**
+	 * Creates a new skill instance with the given id.
+	 *
+	 * @param id  the id for this new instance
+	 */
+	public Skill(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Skill instance.
 	 *
 	 * @return true if the Skill instance is valid, otherwise false.

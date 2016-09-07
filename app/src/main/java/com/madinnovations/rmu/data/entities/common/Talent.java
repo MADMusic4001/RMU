@@ -41,6 +41,21 @@ public class Talent {
 	private List<ParameterValue> parameterValues = new ArrayList<>();
 
 	/**
+	 * Default no-arg constructor
+	 */
+	public Talent() {
+	}
+
+	/**
+	 * Constructor for setting just the id (PK)
+	 *
+	 * @param id  the ID of the talend
+	 */
+	public Talent(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Talent instance.
 	 *
 	 * @return true if the Talent instance is valid, otherwise false.

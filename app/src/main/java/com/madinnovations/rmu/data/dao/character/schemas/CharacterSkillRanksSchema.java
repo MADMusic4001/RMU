@@ -20,8 +20,8 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 /**
  * Database schema data for the character_skills table
  */
-public interface CharacterSkillsSchema {
-    String TABLE_NAME = "character_skills";
+public interface CharacterSkillRanksSchema {
+    String TABLE_NAME = "character_skill_ranks";
 
     String COLUMN_CHARACTER_ID = "characterId";
     String COLUMN_SKILL_ID = "skillId";

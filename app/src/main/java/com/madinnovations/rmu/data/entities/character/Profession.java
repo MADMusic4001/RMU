@@ -43,6 +43,21 @@ public class Profession {
 	private List<SkillCategory>           professionalSkillCategories = new ArrayList<>();
 
 	/**
+	 * Default constructor
+	 */
+	public Profession() {
+	}
+
+	/**
+	 * ID constructor
+	 *
+	 * @param id  the id of the Profession instance
+	 */
+	public Profession(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Profession instance.
 	 *
 	 * @return true if the Profession instance is valid, otherwise false.

@@ -28,6 +28,21 @@ public class Stat {
 	private String description;
 
 	/**
+	 * Creates a new Stat instance.
+	 */
+	public Stat() {
+	}
+
+	/**
+	 * Creates a new Stat instance with the given id.
+	 *
+	 * @param id  the id of the given stat instance
+	 */
+	public Stat(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Stat instance.
 	 *
 	 * @return true if the Stat instance is valid, otherwise false.

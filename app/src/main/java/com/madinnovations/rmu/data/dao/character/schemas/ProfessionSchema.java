@@ -41,6 +41,5 @@ public interface ProfessionSchema {
 			+ "FOREIGN KEY (" + COLUMN_REALM2_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID,
-			COLUMN_NAME, COLUMN_DESCRIPTION};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_REALM1_ID, COLUMN_REALM2_ID};
 }

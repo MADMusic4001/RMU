@@ -18,58 +18,17 @@ package com.madinnovations.rmu.controller.rxhandler.campaign;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CultureSkillRanksSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.CriticalTypeSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.ParameterSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.TalentCategorySchema;
-import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSpellsSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategorySchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.VarietyCriticalCodesSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
-import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
-import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
-import com.madinnovations.rmu.data.dao.spells.schemas.SpellListTypeSchema;
-import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
+import com.madinnovations.rmu.data.dao.character.serializers.CharacterSerializer;
+import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.serializers.SkillCategorySerializer;
+import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -90,16 +49,21 @@ public class ImportExportRxHandler {
 	private CultureDao cultureDao;
 	private ProfessionDao professionDao;
 	private RaceDao raceDao;
+	private SkillDao skillDao;
+	private SkillCategoryDao skillCategoryDao;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	public ImportExportRxHandler(CharacterDao characterDao, CultureDao cultureDao, ProfessionDao professionDao, RaceDao raceDao) {
+	public ImportExportRxHandler(CharacterDao characterDao, CultureDao cultureDao, ProfessionDao professionDao, RaceDao raceDao,
+								 SkillDao skillDao, SkillCategoryDao skillCategoryDao) {
 		this.characterDao = characterDao;
 		this.cultureDao = cultureDao;
 		this.professionDao = professionDao;
 		this.raceDao = raceDao;
+		this.skillDao = skillDao;
+		this.skillCategoryDao = skillCategoryDao;
 	}
 
 	/**
@@ -141,9 +105,16 @@ public class ImportExportRxHandler {
 					public void call(Subscriber<? super Integer> subscriber) {
 						try {
 							BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile));
-							Gson gson = new Gson();
-							gson.toJson(characterDao.getAll(), writer);
+							final GsonBuilder gsonBuilder = new GsonBuilder();
+							gsonBuilder.registerTypeAdapter(Character.class, new CharacterSerializer());
+							gsonBuilder.registerTypeAdapter(SkillCategory.class, new SkillCategorySerializer());
+							final Gson gson = gsonBuilder.create();
+//							gson.toJson(characterDao.getAll(), writer);
 							subscriber.onNext(1);
+							gson.toJson(professionDao.getAll(), writer);
+							subscriber.onNext(2);
+							gson.toJson(skillCategoryDao.getAll(), writer);
+							subscriber.onNext(3);
 //							sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
 //							sqLiteDatabase.execSQL(CharacterSkillsSchema.TABLE_CREATE);
 //							sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
@@ -194,6 +165,8 @@ public class ImportExportRxHandler {
 //							sqLiteDatabase.execSQL(SpellListTypeSchema.TABLE_CREATE);
 //							sqLiteDatabase.execSQL(SpellSchema.TABLE_CREATE);
 							subscriber.onNext(100);
+							writer.flush();
+							writer.close();
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

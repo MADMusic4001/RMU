@@ -25,7 +25,7 @@ import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
@@ -154,17 +154,17 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 
 	private Map<Skill, Short> getSkillRanks(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = CharacterSkillsSchema.COLUMN_CHARACTER_ID + " = ?";
+		final String selection = CharacterSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
 
-		Cursor cursor = super.query(CharacterSkillsSchema.TABLE_NAME, CharacterSkillsSchema.COLUMNS, selection,
-				selectionArgs, CharacterSkillsSchema.COLUMN_SKILL_ID);
+		Cursor cursor = super.query(CharacterSkillRanksSchema.TABLE_NAME, CharacterSkillRanksSchema.COLUMNS, selection,
+									selectionArgs, CharacterSkillRanksSchema.COLUMN_SKILL_ID);
 		Map<Skill, Short> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_SKILL_ID));
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSkillRanksSchema.COLUMN_SKILL_ID));
 			Skill instance = skillDao.getById(mappedId);
 			if(instance != null) {
-				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillsSchema.COLUMN_RANKS)));
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillRanksSchema.COLUMN_RANKS)));
 			}
 			cursor.moveToNext();
 		}

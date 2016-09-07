@@ -26,6 +26,23 @@ public class SkillCost {
 	private Short additionalCost = null;
 
 	/**
+	 * Creates a new empty SkillCost instance
+	 */
+	public SkillCost() {
+	}
+
+	/**
+	 * Creates a new SkillCost instance with the given firstCost and additionalCost values
+	 *
+	 * @param firstCost  the dp cost to increase this skill by 1 rank in a level
+	 * @param additionalCost  the gp cost to increase this skill by 1 rank a second and subsequent times in a level
+	 */
+	public SkillCost(Short firstCost, Short additionalCost) {
+		this.firstCost = firstCost;
+		this.additionalCost = additionalCost;
+	}
+
+	/**
 	 * Checks the validity of the SkillCost instance.
 	 *
 	 * @return true if the SkillCost instance is valid, otherwise false.

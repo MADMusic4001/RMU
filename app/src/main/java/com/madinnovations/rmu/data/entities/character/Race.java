@@ -59,6 +59,19 @@ public class Race {
 	private short poundsPerInch = 0;
 
 	/**
+	 * Default constructor
+	 */
+	public Race() {
+	}
+
+	/**
+	 * ID constructor
+	 */
+		public Race(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Profession instance.
 	 *
 	 * @return true if the Profession instance is valid, otherwise false.
