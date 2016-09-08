@@ -24,22 +24,58 @@ import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.serializers.CharacterSerializer;
+import com.madinnovations.rmu.data.dao.character.serializers.CultureSerializer;
+import com.madinnovations.rmu.data.dao.character.serializers.ProfessionSerializer;
+import com.madinnovations.rmu.data.dao.character.serializers.RaceSerializer;
+import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
+import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
+import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.combat.serializers.AttackSerializer;
+import com.madinnovations.rmu.data.dao.combat.serializers.CriticalResultSerializer;
+import com.madinnovations.rmu.data.dao.combat.serializers.DamageResultRowSerializer;
+import com.madinnovations.rmu.data.dao.combat.serializers.DamageTableSerializer;
 import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
 import com.madinnovations.rmu.data.dao.common.ParameterDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
+import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.common.serializers.SkillCategorySerializer;
+import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
+import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
+import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.creature.OutlookDao;
+import com.madinnovations.rmu.data.dao.creature.serializers.CreatureArchetypeSerializer;
+import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.spells.RealmDao;
+import com.madinnovations.rmu.data.dao.spells.SpellListDao;
+import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.character.Culture;
+import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
+import com.madinnovations.rmu.data.entities.creature.CreatureType;
+import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
+import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
+import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -56,50 +92,104 @@ import rx.schedulers.Schedulers;
  * Creates reactive observables for importing and exporting the database
  */
 public class ImportExportRxHandler {
-	private BodyPartDao         bodyPartDao;
-	private CharacterDao        characterDao;
-	private CreatureCategoryDao creatureCategoryDao;
-	private CriticalCodeDao     criticalCodeDao;
-	private CriticalTypeDao     criticalTypeDao;
-	private CultureDao          cultureDao;
-	private ItemDao             itemDao;
-	private LocomotionTypeDao   locomotionTypeDao;
-	private OutlookDao          outlookDao;
-	private ParameterDao        parameterDao;
-	private ProfessionDao       professionDao;
-	private RaceDao             raceDao;
-	private SizeDao             sizeDao;
-	private SkillDao            skillDao;
-	private SkillCategoryDao    skillCategoryDao;
-	private StatDao             statDao;
-	private TalentCategoryDao   talentCategoryDao;
+	private AttackDao                   attackDao;
+	private AttackSerializer            attackSerializer;
+	private BodyPartDao                 bodyPartDao;
+	private CharacterDao                characterDao;
+	private CreatureArchetypeDao        creatureArchetypeDao;
+	private CreatureArchetypeSerializer creatureArchetypeSerializer;
+	private CreatureCategoryDao       creatureCategoryDao;
+	private CreatureTypeDao           creatureTypeDao;
+	private CreatureTypeSerializer    creatureTypeSerializer;
+	private CreatureVarietyDao        creatureVarietyDao;
+	private CriticalCodeDao           criticalCodeDao;
+	private CriticalResultDao         criticalResultDao;
+	private CriticalResultSerializer  criticalResultSerializer;
+	private CriticalTypeDao           criticalTypeDao;
+	private CultureDao                cultureDao;
+	private CultureSerializer         cultureSerializer;
+	private DamageResultDao           damageResultDao;
+	private DamageResultRowDao        damageResultRowDao;
+	private DamageResultRowSerializer damageResultRowSerializer;
+	private DamageTableDao            damageTableDao;
+	private DamageTableSerializer     damageTableSerializer;
+	private ItemDao                   itemDao;
+	private LocomotionTypeDao         locomotionTypeDao;
+	private OutlookDao                outlookDao;
+	private ParameterDao              parameterDao;
+	private ProfessionDao             professionDao;
+	private ProfessionSerializer      professionSerializer;
+	private RaceDao                   raceDao;
+	private RaceSerializer            raceSerializer;
+	private RealmDao                  realmDao;
+	private SizeDao                   sizeDao;
+	private SkillDao                  skillDao;
+	private SkillCategoryDao          skillCategoryDao;
+	private SpecializationDao         specializationDao;
+	private SpellListDao              spellListDao;
+	private SpellListTypeDao          spellListTypeDao;
+	private StatDao                   statDao;
+	private TalentDao                 talentDao;
+	private TalentCategoryDao         talentCategoryDao;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	public ImportExportRxHandler(BodyPartDao bodyPartDao, CharacterDao characterDao, CreatureCategoryDao creatureCategoryDao,
-								 CriticalCodeDao criticalCodeDao, CriticalTypeDao criticalTypeDao, CultureDao cultureDao,
-								 ItemDao itemDao, LocomotionTypeDao locomotionTypeDao, OutlookDao outlookDao,
-								 ParameterDao parameterDao, ProfessionDao professionDao, RaceDao raceDao, SizeDao sizeDao,
-								 SkillDao skillDao, SkillCategoryDao skillCategoryDao, StatDao statDao,
-								 TalentCategoryDao talentCategoryDao) {
+	public ImportExportRxHandler(AttackDao attackDao, AttackSerializer attackSerializer, BodyPartDao bodyPartDao,
+								 CharacterDao characterDao, CreatureArchetypeDao creatureArchetypeDao,
+								 CreatureArchetypeSerializer creatureArchetypeSerializer, CreatureCategoryDao creatureCategoryDao,
+								 CreatureTypeDao creatureTypeDao, CreatureTypeSerializer creatureTypeSerializer,
+								 CreatureVarietyDao creatureVarietyDao, CriticalCodeDao criticalCodeDao,
+								 CriticalResultDao criticalResultDao, CriticalResultSerializer criticalResultSerializer,
+								 CriticalTypeDao criticalTypeDao, CultureDao cultureDao, CultureSerializer cultureSerializer,
+								 DamageResultDao damageResultDao, DamageResultRowDao damageResultRowDao,
+								 DamageResultRowSerializer damageResultRowSerializer, DamageTableDao damageTableDao,
+								 DamageTableSerializer damageTableSerializer, ItemDao itemDao,
+								 LocomotionTypeDao locomotionTypeDao, OutlookDao outlookDao, ParameterDao parameterDao,
+								 ProfessionDao professionDao, ProfessionSerializer professionSerializer, RaceDao raceDao,
+								 RaceSerializer raceSerializer, RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao,
+								 SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
+								 SpellListDao spellListDao, SpellListTypeDao spellListTypeDao, StatDao statDao,
+								 TalentDao talentDao, TalentCategoryDao talentCategoryDao) {
+		this.attackDao = attackDao;
+		this.attackSerializer = attackSerializer;
 		this.bodyPartDao = bodyPartDao;
 		this.characterDao = characterDao;
+		this.creatureArchetypeDao = creatureArchetypeDao;
+		this.creatureArchetypeSerializer = creatureArchetypeSerializer;
 		this.creatureCategoryDao = creatureCategoryDao;
+		this.creatureTypeDao = creatureTypeDao;
+		this.creatureTypeSerializer = creatureTypeSerializer;
+		this.creatureVarietyDao = creatureVarietyDao;
 		this.criticalCodeDao = criticalCodeDao;
+		this.criticalResultDao = criticalResultDao;
+		this.criticalResultSerializer = criticalResultSerializer;
 		this.criticalTypeDao = criticalTypeDao;
 		this.cultureDao = cultureDao;
+		this.cultureSerializer = cultureSerializer;
+		this.damageResultDao = damageResultDao;
+		this.damageResultRowDao = damageResultRowDao;
+		this.damageResultRowSerializer = damageResultRowSerializer;
+		this.damageTableDao = damageTableDao;
+		this.damageTableSerializer = damageTableSerializer;
 		this.itemDao = itemDao;
 		this.locomotionTypeDao = locomotionTypeDao;
 		this.outlookDao = outlookDao;
 		this.parameterDao = parameterDao;
 		this.professionDao = professionDao;
+		this.professionSerializer = professionSerializer;
 		this.raceDao = raceDao;
+		this.raceSerializer = raceSerializer;
+		this.realmDao = realmDao;
 		this.sizeDao = sizeDao;
 		this.skillDao = skillDao;
 		this.skillCategoryDao = skillCategoryDao;
+		this.specializationDao = specializationDao;
+		this.spellListDao = spellListDao;
+		this.spellListTypeDao = spellListTypeDao;
 		this.statDao = statDao;
+		this.talentDao = talentDao;
 		this.talentCategoryDao = talentCategoryDao;
 	}
 
@@ -143,75 +233,83 @@ public class ImportExportRxHandler {
 						try {
 							BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
+							gsonBuilder.registerTypeAdapter(Attack.class, attackSerializer);
 							gsonBuilder.registerTypeAdapter(Character.class, new CharacterSerializer());
+							gsonBuilder.registerTypeAdapter(CreatureArchetype.class, creatureArchetypeSerializer);
+							gsonBuilder.registerTypeAdapter(CreatureType.class, creatureTypeSerializer);
+							gsonBuilder.registerTypeAdapter(CreatureVariety.class, new CreatureVarietySerializer());
+							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);
+							gsonBuilder.registerTypeAdapter(Culture.class, cultureSerializer);
+							gsonBuilder.registerTypeAdapter(DamageResultRow.class, damageResultRowSerializer);
+							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
+							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
+							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
+							gsonBuilder.registerTypeAdapter(Realm.class, new RealmSerializer());
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, new SkillCategorySerializer());
+							gsonBuilder.registerTypeAdapter(Specialization.class, new SpecializationSerializer());
+							gsonBuilder.registerTypeAdapter(SpellList.class, new SpellListSerializer());
+							gsonBuilder.registerTypeAdapter(SpellListType.class, new SpellListTypeSerializer());
 							final Gson gson = gsonBuilder.create();
+
 							gson.toJson(statDao.getAll(), writer);
-							gson.toJson(locomotionTypeDao.getAll(), writer);
-							gson.toJson(parameterDao.getAll(), writer);
-							gson.toJson(sizeDao.getAll(), writer);
-							gson.toJson(talentCategoryDao.getAll(), writer);
-							gson.toJson(itemDao.getAll(), writer);
-							gson.toJson(bodyPartDao.getAll(), writer);
-							gson.toJson(criticalCodeDao.getAll(), writer);
-							gson.toJson(criticalTypeDao.getAll(), writer);
-							gson.toJson(creatureCategoryDao.getAll(), writer);
-							gson.toJson(outlookDao.getAll(), writer);
-//							gson.toJson(characterDao.getAll(), writer);
-							subscriber.onNext(1);
-							gson.toJson(professionDao.getAll(), writer);
-							subscriber.onNext(2);
-							gson.toJson(skillCategoryDao.getAll(), writer);
 							subscriber.onNext(3);
-//							sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CharacterSkillsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CharacterTalentsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CultureSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CultureSkillRanksSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CultureSkillRanksSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(ProfessionSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(ProfessionSkillCostSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(RaceLocomotionSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(RaceSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(AttackSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(BodyPartSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CriticalCodeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CriticalTypeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(DamageResultSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(DamageResultRowSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(DamageTableSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(LocomotionTypeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(ParameterSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SizeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SkillCategorySchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SkillCategoryStatsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SkillSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SkillStatsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SpecializationSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SpecializationStatsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(StatSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(TalentCategorySchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(TalentParametersSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(TalentSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(ArchetypeSkillsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(ArchetypeSpellsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CreatureArchetypeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CreatureCategorySchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CreatureTypeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(VarietyStatsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(VarietySkillsSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(OutlookSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(ItemSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(WeaponSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(RealmSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SpellListSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SpellListTypeSchema.TABLE_CREATE);
-//							sqLiteDatabase.execSQL(SpellSchema.TABLE_CREATE);
+							gson.toJson(locomotionTypeDao.getAll(), writer);
+							subscriber.onNext(6);
+							gson.toJson(parameterDao.getAll(), writer);
+							subscriber.onNext(10);
+							gson.toJson(sizeDao.getAll(), writer);
+							subscriber.onNext(13);
+							gson.toJson(talentCategoryDao.getAll(), writer);
+							subscriber.onNext(16);
+							gson.toJson(talentDao.getAll(), writer);
+							subscriber.onNext(20);
+							gson.toJson(itemDao.getAll(), writer);
+							subscriber.onNext(23);
+							gson.toJson(bodyPartDao.getAll(), writer);
+							subscriber.onNext(26);
+							gson.toJson(criticalCodeDao.getAll(), writer);
+							subscriber.onNext(30);
+							gson.toJson(criticalTypeDao.getAll(), writer);
+							subscriber.onNext(33);
+							gson.toJson(criticalResultDao.getAll(), writer);
+							subscriber.onNext(36);
+							gson.toJson(damageResultDao.getAll(), writer);
+							subscriber.onNext(40);
+							gson.toJson(damageResultRowDao.getAll(), writer);
+							subscriber.onNext(43);
+							gson.toJson(damageTableDao.getAll(), writer);
+							subscriber.onNext(46);
+							gson.toJson(creatureCategoryDao.getAll(), writer);
+							subscriber.onNext(50);
+							gson.toJson(creatureTypeDao.getAll(), writer);
+							subscriber.onNext(53);
+							gson.toJson(outlookDao.getAll(), writer);
+							subscriber.onNext(56);
+							gson.toJson(skillCategoryDao.getAll(), writer);
+							subscriber.onNext(60);
+							gson.toJson(skillDao.getAll(), writer);
+							subscriber.onNext(63);
+							gson.toJson(professionDao.getAll(), writer);
+							subscriber.onNext(66);
+							gson.toJson(cultureDao.getAll(), writer);
+							subscriber.onNext(70);
+							gson.toJson(raceDao.getAll(), writer);
+							subscriber.onNext(73);
+							gson.toJson(specializationDao.getAll(), writer);
+							subscriber.onNext(76);
+							gson.toJson(attackDao.getAll(), writer);
+							subscriber.onNext(80);
+							gson.toJson(creatureArchetypeDao.getAll(), writer);
+							subscriber.onNext(83);
+							gson.toJson(realmDao.getAll(), writer);
+							subscriber.onNext(86);
+							gson.toJson(spellListDao.getAll(), writer);
+							subscriber.onNext(90);
+							gson.toJson(spellListTypeDao.getAll(), writer);
+							subscriber.onNext(93);
+							gson.toJson(characterDao.getAll(), writer);
+							subscriber.onNext(96);
+							gson.toJson(creatureVarietyDao.getAll(), writer);
 							subscriber.onNext(100);
 							writer.flush();
 							writer.close();

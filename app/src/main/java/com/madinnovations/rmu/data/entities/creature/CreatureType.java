@@ -23,9 +23,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class CreatureType {
 	private int              id = -1;
-	private CreatureCategory category;
-	private String           name;
-	private String           description;
+	private CreatureCategory category = null;
+	private String           name = null;
+	private String           description = null;
 
 	/**
 	 * Checks the validity of the CreatureType instance.

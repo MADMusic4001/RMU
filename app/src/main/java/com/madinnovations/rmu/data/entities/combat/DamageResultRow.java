@@ -18,17 +18,15 @@ package com.madinnovations.rmu.data.entities.combat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Arrays;
-
 /**
- * Daamage result row attributes
+ * Damage result row attributes
  */
 public class DamageResultRow {
-	public int id = -1;
-	public DamageTable damageTable = null;
-	public short rangeLowValue = 65;
-	public short rangeHighValue = 67;
-	public DamageResult[] damageResults = new DamageResult[10];
+	private int id = -1;
+	private DamageTable damageTable = null;
+	private short rangeLowValue = 65;
+	private short rangeHighValue = 67;
+	private DamageResult[] damageResults = new DamageResult[10];
 
 	/**
 	 * Checks the validity of the DamageResultRow instance.

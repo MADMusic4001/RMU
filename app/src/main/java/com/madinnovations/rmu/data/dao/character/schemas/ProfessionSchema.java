@@ -28,6 +28,7 @@ public interface ProfessionSchema {
 	String COLUMN_DESCRIPTION = "description";
 	String COLUMN_REALM1_ID = "realm1Id";
 	String COLUMN_REALM2_ID = "realm2Id";
+	String COLUMN_COST_ARRAY = "costArray";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME

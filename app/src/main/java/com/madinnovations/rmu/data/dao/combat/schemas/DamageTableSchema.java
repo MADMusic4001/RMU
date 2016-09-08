@@ -23,6 +23,7 @@ public interface DamageTableSchema {
 
     String COLUMN_ID = "id";
     String COLUMN_NAME = "name";
+    String COLUMN_RESULT_ROWS = "resultRows";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME

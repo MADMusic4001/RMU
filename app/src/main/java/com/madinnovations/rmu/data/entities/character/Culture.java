@@ -27,8 +27,8 @@ import java.util.Map;
  */
 public class Culture {
 	private int id = -1;
-	private String name;
-	private String description;
+	private String name = null;
+	private String description = null;
 	private short tradesAndCraftsRanks = 0;
 	private Map<Skill, Short> skillRanks;
 
