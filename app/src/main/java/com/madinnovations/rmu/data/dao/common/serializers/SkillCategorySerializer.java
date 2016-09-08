@@ -31,19 +31,10 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import java.lang.reflect.Type;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 9/7/2016.
+ * Json serializer and deserializer for the {@link SkillCategory} entities
  */
 public class SkillCategorySerializer implements JsonSerializer<SkillCategory>, JsonDeserializer<SkillCategory>,
 		SkillCategorySchema {
-	@Override
-	public SkillCategory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-	throws JsonParseException {
-		return null;
-	}
-
 	@Override
 	public JsonElement serialize(SkillCategory src, Type typeOfSrc, JsonSerializationContext context) {
 		final JsonObject jsonObject = new JsonObject();
@@ -61,5 +52,11 @@ public class SkillCategorySerializer implements JsonSerializer<SkillCategory>, J
 		}
 		jsonObject.add(SkillCategoryStatsSchema.TABLE_NAME, stats);
 		return jsonObject;
+	}
+
+	@Override
+	public SkillCategory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+	throws JsonParseException {
+		return null;
 	}
 }

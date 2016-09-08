@@ -49,6 +49,7 @@ import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.common.serializers.SkillCategorySerializer;
+import com.madinnovations.rmu.data.dao.common.serializers.SpecializationSerializer;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
@@ -58,8 +59,12 @@ import com.madinnovations.rmu.data.dao.creature.serializers.CreatureArchetypeSer
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
+import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
+import com.madinnovations.rmu.data.dao.spells.serializers.RealmSerializer;
+import com.madinnovations.rmu.data.dao.spells.serializers.SpellListSerializer;
+import com.madinnovations.rmu.data.dao.spells.serializers.SpellSerializer;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
@@ -74,8 +79,8 @@ import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.Spell;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
-import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -122,11 +127,16 @@ public class ImportExportRxHandler {
 	private RaceDao                   raceDao;
 	private RaceSerializer            raceSerializer;
 	private RealmDao                  realmDao;
+	private RealmSerializer           realmSerializer;
 	private SizeDao                   sizeDao;
 	private SkillDao                  skillDao;
 	private SkillCategoryDao          skillCategoryDao;
 	private SpecializationDao         specializationDao;
+	private SpecializationSerializer specializationSerializer;
+	private SpellDao                  spellDao;
+	private SpellSerializer           spellSerializer;
 	private SpellListDao              spellListDao;
+	private SpellListSerializer       spellListSerializer;
 	private SpellListTypeDao          spellListTypeDao;
 	private StatDao                   statDao;
 	private TalentDao                 talentDao;
@@ -148,9 +158,11 @@ public class ImportExportRxHandler {
 								 DamageTableSerializer damageTableSerializer, ItemDao itemDao,
 								 LocomotionTypeDao locomotionTypeDao, OutlookDao outlookDao, ParameterDao parameterDao,
 								 ProfessionDao professionDao, ProfessionSerializer professionSerializer, RaceDao raceDao,
-								 RaceSerializer raceSerializer, RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao,
-								 SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
-								 SpellListDao spellListDao, SpellListTypeDao spellListTypeDao, StatDao statDao,
+								 RaceSerializer raceSerializer, RealmDao realmDao, RealmSerializer realmSerializer,
+								 SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
+								 SpecializationDao specializationDao, SpecializationSerializer specializationSerializer,
+								 SpellDao spellDao, SpellSerializer spellSerializer, SpellListDao spellListDao,
+								 SpellListSerializer spellListSerializer, SpellListTypeDao spellListTypeDao, StatDao statDao,
 								 TalentDao talentDao, TalentCategoryDao talentCategoryDao) {
 		this.attackDao = attackDao;
 		this.attackSerializer = attackSerializer;
@@ -182,11 +194,16 @@ public class ImportExportRxHandler {
 		this.raceDao = raceDao;
 		this.raceSerializer = raceSerializer;
 		this.realmDao = realmDao;
+		this.realmSerializer = realmSerializer;
 		this.sizeDao = sizeDao;
 		this.skillDao = skillDao;
 		this.skillCategoryDao = skillCategoryDao;
 		this.specializationDao = specializationDao;
+		this.specializationSerializer = specializationSerializer;
+		this.spellDao = spellDao;
+		this.spellSerializer = spellSerializer;
 		this.spellListDao = spellListDao;
+		this.spellListSerializer = spellListSerializer;
 		this.spellListTypeDao = spellListTypeDao;
 		this.statDao = statDao;
 		this.talentDao = talentDao;
@@ -244,11 +261,11 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
 							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
-							gsonBuilder.registerTypeAdapter(Realm.class, new RealmSerializer());
+							gsonBuilder.registerTypeAdapter(Realm.class, realmSerializer);
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, new SkillCategorySerializer());
-							gsonBuilder.registerTypeAdapter(Specialization.class, new SpecializationSerializer());
-							gsonBuilder.registerTypeAdapter(SpellList.class, new SpellListSerializer());
-							gsonBuilder.registerTypeAdapter(SpellListType.class, new SpellListTypeSerializer());
+							gsonBuilder.registerTypeAdapter(Specialization.class, specializationSerializer);
+							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
+							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
 							final Gson gson = gsonBuilder.create();
 
 							gson.toJson(statDao.getAll(), writer);
@@ -280,32 +297,34 @@ public class ImportExportRxHandler {
 							gson.toJson(damageTableDao.getAll(), writer);
 							subscriber.onNext(46);
 							gson.toJson(creatureCategoryDao.getAll(), writer);
-							subscriber.onNext(50);
+							subscriber.onNext(49);
 							gson.toJson(creatureTypeDao.getAll(), writer);
-							subscriber.onNext(53);
+							subscriber.onNext(52);
 							gson.toJson(outlookDao.getAll(), writer);
-							subscriber.onNext(56);
+							subscriber.onNext(55);
 							gson.toJson(skillCategoryDao.getAll(), writer);
-							subscriber.onNext(60);
+							subscriber.onNext(59);
 							gson.toJson(skillDao.getAll(), writer);
-							subscriber.onNext(63);
+							subscriber.onNext(62);
 							gson.toJson(professionDao.getAll(), writer);
-							subscriber.onNext(66);
+							subscriber.onNext(65);
 							gson.toJson(cultureDao.getAll(), writer);
-							subscriber.onNext(70);
+							subscriber.onNext(69);
 							gson.toJson(raceDao.getAll(), writer);
-							subscriber.onNext(73);
+							subscriber.onNext(72);
 							gson.toJson(specializationDao.getAll(), writer);
-							subscriber.onNext(76);
+							subscriber.onNext(75);
 							gson.toJson(attackDao.getAll(), writer);
-							subscriber.onNext(80);
+							subscriber.onNext(78);
 							gson.toJson(creatureArchetypeDao.getAll(), writer);
-							subscriber.onNext(83);
+							subscriber.onNext(81);
 							gson.toJson(realmDao.getAll(), writer);
-							subscriber.onNext(86);
+							subscriber.onNext(84);
 							gson.toJson(spellListDao.getAll(), writer);
-							subscriber.onNext(90);
+							subscriber.onNext(87);
 							gson.toJson(spellListTypeDao.getAll(), writer);
+							subscriber.onNext(90);
+							gson.toJson(spellDao.getAll(), writer);
 							subscriber.onNext(93);
 							gson.toJson(characterDao.getAll(), writer);
 							subscriber.onNext(96);
