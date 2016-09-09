@@ -27,7 +27,7 @@ import java.util.Collection;
 public class DamageTable {
     private int id = -1;
     private String name = null;
-    private Collection<DamageResultRow> resultRows = null;
+    private Collection<DamageResultRow> resultRows = new ArrayList<>();
 
     /**
      * Checks the validity of the DamageTable instance.

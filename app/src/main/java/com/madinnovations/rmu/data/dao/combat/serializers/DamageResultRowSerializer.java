@@ -15,33 +15,23 @@
  */
 package com.madinnovations.rmu.data.dao.combat.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
-import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
-import com.madinnovations.rmu.data.entities.creature.Outlook;
+import com.madinnovations.rmu.view.RMUAppException;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link DamageResultRow} entities
  */
-public class DamageResultRowSerializer implements TypeAdapter<DamageResultRow>, DamageResultRowSchema {
+public class DamageResultRowSerializer extends TypeAdapter<DamageResultRow> implements DamageResultRowSchema {
 	DamageResultDao damageResultDao;
 	DamageTableDao  damageTableDao;
 
@@ -61,36 +51,53 @@ public class DamageResultRowSerializer implements TypeAdapter<DamageResultRow>, 
 		out.name(COLUMN_RANGE_LOW_VALUE).value(value.getRangeLowValue());
 		out.name(COLUMN_RANGE_HIGH_VALUE).value(value.getRangeHighValue());
 		out.name(COLUMN_DAMAGE_TABLE_ID).value(value.getDamageTable().getId());
+		out.name(COLUMN_AT_RESULTS);
 		out.beginArray();
-		for(DamageResult damageResult : value.getDamageResults()) {
-			out.name(damageResult).value()
-		}
-		final JsonArray skillRanksArray = new JsonArray();
-		for(int i = 0; i < value.getDamageResults().length; i++) {
-			JsonObject atResult = new JsonObject();
+		for(int i = 0; i < value.getDamageResults().length; i++ ) {
 			if(value.getDamageResults()[i] != null) {
-				atResult.addProperty(COLUMN_AT_RESULT_IDS[i], value.getDamageResults()[i].getId());
-				skillRanksArray.add(atResult);
+				out.beginObject();
+				out.name(COLUMN_AT_RESULT_IDS[i]).value(value.getDamageResults()[i].getId());
+				out.endObject();
 			}
 		}
-		jsonObject.add(COLUMN_AT_RESULTS, skillRanksArray);
-
-		return jsonObject;
+		out.endArray();
+		out.endObject();
+		out.flush();
 	}
 
 	@Override
 	public DamageResultRow read(JsonReader in) throws IOException {
 		DamageResultRow damageResultRow = new DamageResultRow();
-		JsonObject jsonObject = json.getAsJsonObject();
-		damageResultRow.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		damageResultRow.setRangeLowValue(jsonObject.get(COLUMN_RANGE_LOW_VALUE).getAsShort());
-		damageResultRow.setRangeHighValue(jsonObject.get(COLUMN_RANGE_HIGH_VALUE).getAsShort());
-		damageResultRow.setDamageTable(damageTableDao.getById(jsonObject.get(COLUMN_DAMAGE_TABLE_ID).getAsInt()));
-		JsonArray atResults = jsonObject.getAsJsonArray(COLUMN_AT_RESULTS);
-		for(int i = 0; i < atResults.size(); i++) {
-			JsonObject atResult = atResults.get(i).getAsJsonObject();
-			damageResultRow.getDamageResults()[i] = damageResultDao.getById(atResult.get(COLUMN_AT_RESULT_IDS[i]).getAsInt());
+		in.beginObject();
+		if(!in.nextName().equals(COLUMN_ID)) {
+			throw new RMUAppException("Missing " + COLUMN_ID + " in json input");
 		}
+		damageResultRow.setId(in.nextInt());
+		if(!in.nextName().equals(COLUMN_RANGE_LOW_VALUE)) {
+			throw new RMUAppException("Missing " + COLUMN_RANGE_LOW_VALUE + " in json input");
+		}
+		damageResultRow.setRangeLowValue((short)in.nextInt());
+		if(!in.nextName().equals(COLUMN_RANGE_HIGH_VALUE)) {
+			throw new RMUAppException("Missing " + COLUMN_RANGE_HIGH_VALUE + " in json input");
+		}
+		damageResultRow.setRangeHighValue((short)in.nextInt());
+		if(!in.nextName().equals(COLUMN_DAMAGE_TABLE_ID)) {
+			throw new RMUAppException("Missing " + COLUMN_DAMAGE_TABLE_ID + " in json input");
+		}
+		damageResultRow.setDamageTable(damageTableDao.getById(in.nextInt()));
+
+		if(!in.nextName().equals(COLUMN_AT_RESULTS)) {
+			throw new RMUAppException("Missing " + COLUMN_AT_RESULTS + " in json input");
+		}
+		in.beginArray();
+		for(int i = 0; i < 10; i++) {
+			if(!in.nextName().equals(COLUMN_AT_RESULT_IDS[i])) {
+				throw new RMUAppException("Missing " + COLUMN_AT_RESULT_IDS[i] + " in json input");
+			}
+			damageResultRow.getDamageResults()[i] = damageResultDao.getById(in.nextInt());
+		}
+		in.endArray();
+		in.endObject();
 
 		return damageResultRow;
 	}

@@ -309,6 +309,7 @@ public class ImportExportRxHandler {
 								LocomotionType locomotionType = gson.fromJson(reader, LocomotionType.class);
 							}
 							jsonReader.endArray();
+							Log.d("RMU", "locomotionTypes = " + locomotionTypes);
 							subscriber.onNext(6);
 
 							List<Parameter> parameters = new ArrayList<>();

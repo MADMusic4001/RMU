@@ -15,27 +15,22 @@
  */
 package com.madinnovations.rmu.data.dao.combat.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link DamageTable} entities
  */
-public class DamageTableSerializer implements JsonSerializer<DamageTable>, JsonDeserializer<DamageTable>, DamageTableSchema {
+public class DamageTableSerializer extends TypeAdapter<DamageTable> implements DamageTableSchema {
 	DamageResultRowDao damageResultRowDao;
 
 	/**
@@ -47,31 +42,35 @@ public class DamageTableSerializer implements JsonSerializer<DamageTable>, JsonD
 	}
 
 	@Override
-	public JsonElement serialize(DamageTable src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-
-		JsonArray resultRows = new JsonArray();
-		for(DamageResultRow resultRow : src.getResultRows()) {
-			resultRows.add(resultRow.getId());
+	public void write(JsonWriter out, DamageTable value) throws IOException {
+		out.beginObject()
+				.name(COLUMN_ID).value(value.getId())
+				.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_RESULT_ROWS).beginArray();
+		for(DamageResultRow resultRow : value.getResultRows()) {
+			out.value(resultRow.getId());
 		}
-		jsonObject.add(COLUMN_RESULT_ROWS, resultRows);
-
-		return jsonObject;
+		out.endArray();
+		out.endObject();
 	}
 
 	@Override
-	public DamageTable deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public DamageTable read(JsonReader in) throws IOException {
 		DamageTable damageTable = new DamageTable();
-		JsonObject jsonObject = json.getAsJsonObject();
-		damageTable.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		damageTable.setName(jsonObject.get(COLUMN_NAME).getAsString());
 
-		JsonArray jsonArray = jsonObject.getAsJsonArray(COLUMN_RESULT_ROWS);
-		for(JsonElement element : jsonArray) {
-			damageTable.getResultRows().add(damageResultRowDao.getById(element.getAsInt()));
+		in.beginObject();
+		in.nextName();
+		damageTable.setId(in.nextInt());
+		in.nextName();
+		damageTable.setName(in.nextString());
+
+		in.nextName();
+		in.beginArray();
+		while (in.hasNext()) {
+			damageTable.getResultRows().add(damageResultRowDao.getById(in.nextInt()));
 		}
+		in.endArray();
+		in.endObject();
 
 		return damageTable;
 	}
