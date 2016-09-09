@@ -23,11 +23,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+import com.madinnovations.rmu.data.entities.creature.Outlook;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 import javax.inject.Inject;
@@ -35,8 +41,7 @@ import javax.inject.Inject;
 /**
  * Json serializer and deserializer for the {@link DamageResultRow} entities
  */
-public class DamageResultRowSerializer implements JsonSerializer<DamageResultRow>, JsonDeserializer<DamageResultRow>,
-		DamageResultRowSchema {
+public class DamageResultRowSerializer implements TypeAdapter<DamageResultRow>, DamageResultRowSchema {
 	DamageResultDao damageResultDao;
 	DamageTableDao  damageTableDao;
 
@@ -50,18 +55,23 @@ public class DamageResultRowSerializer implements JsonSerializer<DamageResultRow
 	}
 
 	@Override
-	public JsonElement serialize(DamageResultRow src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_RANGE_LOW_VALUE, src.getRangeLowValue());
-		jsonObject.addProperty(COLUMN_RANGE_HIGH_VALUE, src.getRangeHighValue());
-		jsonObject.addProperty(COLUMN_DAMAGE_TABLE_ID, src.getDamageTable().getId());
-
+	public void write(JsonWriter out, DamageResultRow value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_RANGE_LOW_VALUE).value(value.getRangeLowValue());
+		out.name(COLUMN_RANGE_HIGH_VALUE).value(value.getRangeHighValue());
+		out.name(COLUMN_DAMAGE_TABLE_ID).value(value.getDamageTable().getId());
+		out.beginArray();
+		for(DamageResult damageResult : value.getDamageResults()) {
+			out.name(damageResult).value()
+		}
 		final JsonArray skillRanksArray = new JsonArray();
-		for(int i = 0; i < src.getDamageResults().length; i++) {
+		for(int i = 0; i < value.getDamageResults().length; i++) {
 			JsonObject atResult = new JsonObject();
-			atResult.addProperty(COLUMN_AT_RESULT_IDS[i], src.getDamageResults()[i].getId());
-			skillRanksArray.add(atResult);
+			if(value.getDamageResults()[i] != null) {
+				atResult.addProperty(COLUMN_AT_RESULT_IDS[i], value.getDamageResults()[i].getId());
+				skillRanksArray.add(atResult);
+			}
 		}
 		jsonObject.add(COLUMN_AT_RESULTS, skillRanksArray);
 
@@ -69,7 +79,7 @@ public class DamageResultRowSerializer implements JsonSerializer<DamageResultRow
 	}
 
 	@Override
-	public DamageResultRow deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public DamageResultRow read(JsonReader in) throws IOException {
 		DamageResultRow damageResultRow = new DamageResultRow();
 		JsonObject jsonObject = json.getAsJsonObject();
 		damageResultRow.setId(jsonObject.get(COLUMN_ID).getAsInt());

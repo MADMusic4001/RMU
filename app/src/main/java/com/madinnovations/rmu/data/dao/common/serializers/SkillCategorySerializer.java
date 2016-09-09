@@ -23,18 +23,34 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link SkillCategory} entities
  */
 public class SkillCategorySerializer implements JsonSerializer<SkillCategory>, JsonDeserializer<SkillCategory>,
 		SkillCategorySchema {
+StatDao statDao;
+
+	/**
+	 * Creates a new SkillCategorySerializer instance
+	 */
+	@Inject
+	public SkillCategorySerializer(StatDao statDao) {
+		this.statDao = statDao;
+	}
+
 	@Override
 	public JsonElement serialize(SkillCategory src, Type typeOfSrc, JsonSerializationContext context) {
 		final JsonObject jsonObject = new JsonObject();
@@ -44,19 +60,36 @@ public class SkillCategorySerializer implements JsonSerializer<SkillCategory>, J
 		jsonObject.addProperty(COLUMN_IS_COMBAT, src.isCombat());
 		jsonObject.addProperty(COLUMN_NO_STATS, src.isNoStats());
 		jsonObject.addProperty(COLUMN_REALM_STATS, src.isRealmStats());
+
 		JsonArray stats = new JsonArray();
 		for(Stat stat : src.getStats()) {
-			JsonObject statValue = new JsonObject();
-			statValue.addProperty(SkillCategoryStatsSchema.COLUMN_STAT_ID, stat.getId());
-			stats.add(statValue);
+			stats.add(stat.getId());
 		}
 		jsonObject.add(SkillCategoryStatsSchema.TABLE_NAME, stats);
+
 		return jsonObject;
 	}
 
 	@Override
 	public SkillCategory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 	throws JsonParseException {
-		return null;
+		SkillCategory skillCategory = new SkillCategory();
+		JsonObject jsonObject = json.getAsJsonObject();
+
+		skillCategory.setId(jsonObject.get(COLUMN_ID).getAsInt());
+		skillCategory.setName(jsonObject.get(COLUMN_NAME).getAsString());
+		skillCategory.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
+		skillCategory.setCombat(jsonObject.get(COLUMN_IS_COMBAT).getAsBoolean());
+		skillCategory.setNoStats(jsonObject.get(COLUMN_NO_STATS).getAsBoolean());
+		skillCategory.setRealmStats(jsonObject.get(COLUMN_REALM_STATS).getAsBoolean());
+
+		JsonArray jsonArray = jsonObject.getAsJsonArray(SpecializationStatsSchema.TABLE_NAME);
+		List<Stat> stats = new ArrayList<>(jsonArray.size());
+		for(JsonElement jsonElement : jsonArray) {
+			stats.add(statDao.getById(jsonElement.getAsInt()));
+		}
+		skillCategory.setStats(stats);
+
+		return skillCategory;
 	}
 }

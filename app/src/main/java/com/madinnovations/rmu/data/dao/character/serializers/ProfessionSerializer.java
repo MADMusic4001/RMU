@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * Json serializer and deserializer for the {@link Profession} entities
  */
@@ -52,6 +54,7 @@ public class ProfessionSerializer implements JsonSerializer<Profession>, JsonDes
 	/**
 	 * Creates a new CharacterSerializer instance.
 	 */
+	@Inject
 	public ProfessionSerializer(RealmDao realmDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao) {
 		this.realmDao = realmDao;
 		this.skillDao = skillDao;

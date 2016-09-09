@@ -23,15 +23,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.madinnovations.rmu.data.dao.character.CultureDao;
+import com.madinnovations.rmu.data.dao.character.ProfessionDao;
+import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.StatDao;
+import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.character.Character;
-import com.madinnovations.rmu.data.entities.character.Culture;
-import com.madinnovations.rmu.data.entities.character.Profession;
-import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
@@ -41,15 +44,31 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * Json serializer and deserializer for the {@link Character} entities
  */
 public class CharacterSerializer implements JsonSerializer<Character>, JsonDeserializer<Character>, CharacterSchema {
+	CultureDao    cultureDao;
+	ProfessionDao professionDao;
+	RaceDao       raceDao;
+	SkillDao      skillDao;
+	StatDao       statDao;
+	TalentDao     talentDao;
 
 	/**
 	 * Creates a new CharacterSerializer instance.
 	 */
-	public CharacterSerializer() {
+	@Inject
+	public CharacterSerializer(CultureDao cultureDao, ProfessionDao professionDao, RaceDao raceDao, SkillDao skillDao,
+							   StatDao statDao, TalentDao talentDao) {
+		this.cultureDao = cultureDao;
+		this.professionDao = professionDao;
+		this.raceDao = raceDao;
+		this.skillDao = skillDao;
+		this.statDao = statDao;
+		this.talentDao = talentDao;
 	}
 
 	@Override
@@ -137,9 +156,9 @@ public class CharacterSerializer implements JsonSerializer<Character>, JsonDeser
 		character.setMannerisms(jsonObject.get(COLUMN_MANNERISMS).getAsString());
 		character.setHometown(jsonObject.get(COLUMN_HOMETOWN).getAsString());
 		character.setFamilyInfo(jsonObject.get(COLUMN_FAMILY_INFO).getAsString());
-		character.setRace(new Race(jsonObject.get(COLUMN_RACE_ID).getAsInt()));
-		character.setCulture(new Culture(jsonObject.get(COLUMN_CULTURE_ID).getAsInt()));
-		character.setProfession(new Profession(jsonObject.get(COLUMN_PROFESSION_ID).getAsInt()));
+		character.setRace(raceDao.getById(jsonObject.get(COLUMN_RACE_ID).getAsInt()));
+		character.setCulture(cultureDao.getById(jsonObject.get(COLUMN_CULTURE_ID).getAsInt()));
+		character.setProfession(professionDao.getById(jsonObject.get(COLUMN_PROFESSION_ID).getAsInt()));
 		character.setHeight(jsonObject.get(COLUMN_HEIGHT).getAsShort());
 		character.setWeight(jsonObject.get(COLUMN_WEIGHT).getAsShort());
 		character.setStride(jsonObject.get(COLUMN_STRIDE).getAsShort());
@@ -147,11 +166,11 @@ public class CharacterSerializer implements JsonSerializer<Character>, JsonDeser
 		character.setMaxHits(jsonObject.get(COLUMN_MAX_HITS).getAsShort());
 		character.setCurrentDevelopmentPoints(jsonObject.get(COLUMN_CURRENT_DEVELOPMENT_POINTS).getAsShort());
 
-		JsonArray skillCosts = jsonObject.getAsJsonArray(CharacterSkillCostsSchema.TABLE_NAME);
-		Map<Skill, SkillCost> skillCostsMap = new HashMap<>(skillCosts.size());
-		for(int i = 0; i < skillCosts.size(); i ++ ) {
-			final JsonObject skillCostObject = skillCosts.get(i).getAsJsonObject();
-			Skill newSkill = new Skill(skillCostObject.get(COLUMN_ID).getAsInt());
+		JsonArray jsonArray = jsonObject.getAsJsonArray(CharacterSkillCostsSchema.TABLE_NAME);
+		Map<Skill, SkillCost> skillCostsMap = new HashMap<>(jsonArray.size());
+		for(JsonElement jsonElement : jsonArray) {
+			final JsonObject skillCostObject = jsonElement.getAsJsonObject();
+			Skill newSkill = skillDao.getById(skillCostObject.get(COLUMN_ID).getAsInt());
 			SkillCost skillCost = new SkillCost(skillCostObject.get(CharacterSkillCostsSchema.COLUMN_FIRST_COST).getAsShort(),
 												skillCostObject.get(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST)
 														.getAsShort());
@@ -159,32 +178,32 @@ public class CharacterSerializer implements JsonSerializer<Character>, JsonDeser
 		}
 		character.setSkillCosts(skillCostsMap);
 
-		JsonArray skillRanks = jsonObject.getAsJsonArray(CharacterSkillRanksSchema.TABLE_NAME);
-		Map<Skill, Short> skillRanksMap = new HashMap<>(skillRanks.size());
-		for(int i = 0; i < skillRanks.size(); i ++ ) {
-			final JsonObject skillRankObject = skillRanks.get(i).getAsJsonObject();
-			Skill newSkill = new Skill(skillRankObject.get(CharacterSkillRanksSchema.COLUMN_SKILL_ID).getAsInt());
+		jsonArray = jsonObject.getAsJsonArray(CharacterSkillRanksSchema.TABLE_NAME);
+		Map<Skill, Short> skillRanksMap = new HashMap<>(jsonArray.size());
+		for(JsonElement jsonElement : jsonArray) {
+			final JsonObject skillRankObject = jsonElement.getAsJsonObject();
+			Skill newSkill = skillDao.getById(skillRankObject.get(CharacterSkillRanksSchema.COLUMN_SKILL_ID).getAsInt());
 			Short ranks = skillRankObject.get(CharacterSkillRanksSchema.COLUMN_RANKS).getAsShort();
 			skillRanksMap.put(newSkill, ranks);
 		}
 		character.setSkillRanks(skillRanksMap);
 
-		JsonArray talentTiers = jsonObject.getAsJsonArray(CharacterTalentsSchema.TABLE_NAME);
-		Map<Talent, Short> talentTiersMap = new HashMap<>(talentTiers.size());
-		for(int i = 0; i < talentTiers.size(); i ++ ) {
-			final JsonObject talentTierObject = talentTiers.get(i).getAsJsonObject();
-			Talent newTalent = new Talent(talentTierObject.get(CharacterTalentsSchema.COLUMN_TALENT_ID).getAsInt());
+		jsonArray = jsonObject.getAsJsonArray(CharacterTalentsSchema.TABLE_NAME);
+		Map<Talent, Short> talentTiersMap = new HashMap<>(jsonArray.size());
+		for(JsonElement jsonElement : jsonArray) {
+			final JsonObject talentTierObject = jsonElement.getAsJsonObject();
+			Talent newTalent = talentDao.getById(talentTierObject.get(CharacterTalentsSchema.COLUMN_TALENT_ID).getAsInt());
 			Short tiers = talentTierObject.get(CharacterTalentsSchema.COLUMN_TIERS).getAsShort();
 			talentTiersMap.put(newTalent, tiers);
 		}
 		character.setTalentTiers(talentTiersMap);
 
-		JsonArray statValues = jsonObject.getAsJsonArray(CharacterStatsSchema.TABLE_NAME);
-		Map<Stat, Short> tempValuesMap = new HashMap<>(statValues.size());
-		Map<Stat, Short> potentialValuesMap = new HashMap<>(statValues.size());
-		for(int i = 0; i < statValues.size(); i ++ ) {
-			final JsonObject statValueObject = statValues.get(i).getAsJsonObject();
-			Stat newStat = new Stat(statValueObject.get(CharacterStatsSchema.COLUMN_STAT_ID).getAsInt());
+		jsonArray = jsonObject.getAsJsonArray(CharacterStatsSchema.TABLE_NAME);
+		Map<Stat, Short> tempValuesMap = new HashMap<>(jsonArray.size());
+		Map<Stat, Short> potentialValuesMap = new HashMap<>(jsonArray.size());
+		for(JsonElement jsonElement : jsonArray) {
+			final JsonObject statValueObject = jsonElement.getAsJsonObject();
+			Stat newStat = statDao.getById(statValueObject.get(CharacterStatsSchema.COLUMN_STAT_ID).getAsInt());
 			Short temp = statValueObject.get(CharacterStatsSchema.COLUMN_CURRENT_VALUE).getAsShort();
 			Short potential = statValueObject.get(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE).getAsShort();
 			tempValuesMap.put(newStat, temp);

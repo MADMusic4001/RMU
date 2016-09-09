@@ -23,40 +23,41 @@ import com.madinnovations.rmu.data.entities.common.Talent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Character attributes
  */
 public class Character {
-	private int id = -1;
-	private String name;
-	private String description;
-	private String hairColor;
-	private String hairStyle;
-	private String eyeColor;
-	private String                skinComplexion;
-	private String                facialFeatures;
-	private String                identifyingMarks;
-	private String                clothing;
-	private String                personality;
-	private String                mannerisms;
-	private String                hometown;
-	private String                familyInfo;
-	private Race                  race;
-	private Culture               culture;
-	private Profession            profession;
+	private int                   id = -1;
+	private String                name = null;
+	private String                description = null;
+	private String                hairColor = null;
+	private String                hairStyle = null;
+	private String                eyeColor = null;
+	private String                skinComplexion = null;
+	private String                facialFeatures = null;
+	private String                identifyingMarks = null;
+	private String                clothing = null;
+	private String                personality = null;
+	private String                mannerisms = null;
+	private String                hometown = null;
+	private String                familyInfo = null;
+	private Race                  race = null;
+	private Culture               culture = null;
+	private Profession            profession = null;
 	private short                 height;
 	private short                 weight;
 	private short                 stride;
 	private short                 currentHits;
 	private short                 maxHits;
 	private short                 currentDevelopmentPoints;
-	private Map<Skill, SkillCost> skillCosts;
-	private Map<Skill, Short>     skillRanks;
-	private Map<Talent, Short>    talentTiers;
-	private Map<Stat, Short>      statTemps;
-	private Map<Stat, Short>      statPotentials;
+	private Map<Skill, SkillCost> skillCosts = new HashMap<>();
+	private Map<Skill, Short>     skillRanks = new HashMap<>();
+	private Map<Talent, Short>    talentTiers = new HashMap<>();
+	private Map<Stat, Short>      statTemps = new HashMap<>();
+	private Map<Stat, Short>      statPotentials = new HashMap<>();
 
 	/**
 	 * Checks the validity of the Character instance.

@@ -36,6 +36,8 @@ import com.madinnovations.rmu.data.entities.common.Talent;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * Json serializer and deserializer for the {@link Race} entities
  */
@@ -47,6 +49,7 @@ public class RaceSerializer implements JsonSerializer<Race>, JsonDeserializer<Ra
 	/**
 	 * Creates a new RaceSerializer instance.
 	 */
+	@Inject
 	public RaceSerializer(LocomotionTypeDao locomotionTypeDao, SizeDao sizeDao, TalentDao talentDao) {
 		this.locomotionTypeDao = locomotionTypeDao;
 		this.sizeDao = sizeDao;

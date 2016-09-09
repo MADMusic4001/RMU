@@ -47,6 +47,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * Json serializer and deserializer for the {@link CreatureArchetype} entities
  */
@@ -58,6 +60,7 @@ public class CreatureArchetypeSerializer implements JsonSerializer<CreatureArche
 	/**
 	 * Creates a new CharacterSerializer instance.
 	 */
+	@Inject
 	public CreatureArchetypeSerializer(SkillCategoryDao skillCategoryDao, StatDao statDao) {
 		this.skillCategoryDao = skillCategoryDao;
 		this.statDao = statDao;

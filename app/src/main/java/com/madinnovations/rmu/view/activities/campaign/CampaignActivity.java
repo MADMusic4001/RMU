@@ -141,18 +141,38 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			final File file = new File(dir, EXPORT_FILE_NAME);
 			importExportRxHandler.exportDatabase(file)
 					.subscribe(new Subscriber<Integer>() {
+						Toast toast = null;
 						@Override
-						public void onCompleted() {}
+						public void onStart() {
+							request(1);
+						}
+						@Override
+						public void onCompleted() {
+							if(toast != null) {
+								toast.cancel();
+							}
+							Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported),
+																		   file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
+						}
 						@Override
 						public void onError(Throwable e) {
 							Log.e("CampaignActivity", "Error occurred exporting database.", e);
+							if(toast != null) {
+								toast.cancel();
+							}
 							Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
 										   Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Integer percentComplete) {
-							Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported),
-																		   file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getApplication(),
+												   String.format(getString(R.string.export_status), percentComplete),
+												   Toast.LENGTH_SHORT);
+							toast.show();
+							request(1);
 						}
 					});
 			return true;
@@ -176,20 +196,33 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 		if(fileName != null) {
 			importExportRxHandler.importDatabase(fileName)
 					.subscribe(new Subscriber<Integer>() {
+						Toast toast = null;
 						@Override
 						public void onCompleted() {
+							if(toast != null) {
+								toast.cancel();
+							}
 							Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT).show();
 						}
-
 						@Override
 						public void onError(Throwable e) {
 							Log.e("CampaignActivity", "Error occurred importing database.", e);
+							if(toast != null) {
+								toast.cancel();
+							}
 							Toast.makeText(getApplication(), getString(R.string.toast_db_import_failed), Toast.LENGTH_SHORT)
 									.show();
 						}
-
 						@Override
 						public void onNext(Integer percentComplete) {
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getApplication(),
+												   String.format(getString(R.string.export_status), percentComplete),
+												   Toast.LENGTH_SHORT);
+							toast.show();
+							request(1);
 						}
 					});
 		}

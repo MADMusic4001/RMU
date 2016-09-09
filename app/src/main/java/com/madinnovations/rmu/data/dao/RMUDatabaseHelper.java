@@ -86,7 +86,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RMUDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "rmu_db";
-    private static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 1;
 
     /**
      * Creates a new RMUDatabaseHelper instance

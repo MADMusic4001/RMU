@@ -33,6 +33,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * Json serializer and deserializer for the {@link Culture} entities
  */
@@ -42,6 +44,7 @@ public class CultureSerializer implements JsonSerializer<Culture>, JsonDeseriali
 	/**
 	 * Creates a new CultureSerializer instance.
 	 */
+	@Inject
 	public CultureSerializer(SkillDao skillDao) {
 		this.skillDao = skillDao;
 	}
