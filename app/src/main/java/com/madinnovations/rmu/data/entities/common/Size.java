@@ -32,6 +32,21 @@ public class Size {
 	private Integer maxHeight;
 
 	/**
+	 * Creates a new Size instance
+	 */
+	public Size() {
+	}
+
+	/**
+	 * Creates a new Size instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public Size(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Size instance.
 	 *
 	 * @return true if the Size instance is valid, otherwise false.

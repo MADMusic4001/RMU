@@ -33,6 +33,21 @@ public class SkillCategory {
 	private List<Stat> stats = null;
 
 	/**
+	 * Creates a new SkillCategory instance
+	 */
+	public SkillCategory() {
+	}
+
+	/**
+	 * Creates a new SkillCategory instance with the given id
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public SkillCategory(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the SkillCategory instance.
 	 *
 	 * @return true if the SkillCategory instance is valid, otherwise false.

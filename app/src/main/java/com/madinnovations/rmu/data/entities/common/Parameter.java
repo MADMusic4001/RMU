@@ -31,6 +31,21 @@ public class Parameter {
 	private boolean perTier = false;
 
 	/**
+	 * Creates a new Parameter instance
+	 */
+	public Parameter() {
+	}
+
+	/**
+	 * Creates a new Parameter instance with the given id
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public Parameter(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Parameter instance.
 	 *
 	 * @return true if the Parameter instance is valid, otherwise false.

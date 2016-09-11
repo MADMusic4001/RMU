@@ -26,6 +26,21 @@ public class BodyPart {
     private String name = null;
     private String description = null;
 
+	/**
+     * Creates a new BodyPart instance
+     */
+    public BodyPart() {
+    }
+
+	/**
+	 * Creates a new BodyPart instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+    public BodyPart(int id) {
+        this.id = id;
+    }
+
     /**
      * Checks the validity of the BodyPart instance.
      *

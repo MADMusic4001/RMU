@@ -22,7 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Class representing a Rolemaster stat.
  */
 public class Stat {
-	private transient int id = -1;
+	private int id = -1;
 	private String abbreviation;
 	private String name;
 	private String description;

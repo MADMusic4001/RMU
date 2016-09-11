@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.common;
 
 import com.madinnovations.rmu.data.entities.common.Size;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface SizeDao {
 	 * @return  a List containing all Size objects currently in persistent storage.
 	 */
 	public List<Size> getAll();
+
+	/**
+	 * Saves a collection of Size instances to persistent storage.
+	 *
+	 * @param instance  the collection of Size instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Size> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Size instances to persistent storage.
+	 *
+	 * @param instance  the collection of Size instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Size> instance);
 
 	/**
 	 * Saves a Size object to persistent storage.

@@ -33,6 +33,21 @@ public class SpellList {
 	private SpellListType spellListType = null;
 
 	/**
+	 * Creates a new SpellList instance
+	 */
+	public SpellList() {
+	}
+
+	/**
+	 * Creates a new SpellList instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public SpellList(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the SpellList instance.
 	 *
 	 * @return true if the SpellList instance is valid, otherwise false.

@@ -31,6 +31,21 @@ public class Specialization {
 	private boolean useSkillStats = true;
 	private List<Stat> stats = null;
 
+	/**
+	 * Creates a new Specialization instance
+	 */
+	public Specialization() {
+	}
+
+	/**
+	 * Creates a new Specialization instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public Specialization(int id) {
+		this.id = id;
+	}
+
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && skill != null &&
 				(useSkillStats || (stats != null && stats.size() == 3));

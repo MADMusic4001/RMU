@@ -21,7 +21,7 @@ import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
  * Database schema data for the variety_stats table
  */
 public interface VarietyAttacksSchema {
-	String TABLE_NAME = "variety_stats";
+	String TABLE_NAME = "variety_attacks";
 
 	String COLUMN_VARIETY_ID = "varietyId";
 	String COLUMN_ATTACK_ID = "attackId";

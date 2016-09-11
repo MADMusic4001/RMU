@@ -28,6 +28,21 @@ public class CreatureType {
 	private String           description = null;
 
 	/**
+	 * Creates a new CreatureType instance
+	 */
+	public CreatureType() {
+	}
+
+	/**
+	 * Creates a new CreatureType instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public CreatureType(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the CreatureType instance.
 	 *
 	 * @return true if the CreatureType instance is valid, otherwise false.

@@ -40,7 +40,16 @@ public interface StatDao {
     public List<Stat> getAll();
 
     /**
-     * Saves a collection of Stat instance to persistent storage.
+     * Saves a collection of Stat instances to persistent storage.
+     *
+     * @param instance  the collection of Stat instances to be saved
+     * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<Stat> instance, boolean isNew);
+
+    /**
+     * Saves a collection of Stat instances to persistent storage.
      *
      * @param instance  the collection of Stat instances to be saved
      * @return true if successful, otherwise false.
@@ -51,11 +60,20 @@ public interface StatDao {
      * Saves a Stat object to persistent storage.
      *
      * @param instance  the Stat object to be saved
+	 * @param isNew  set to true if the instances has a valid ID but should be inserted instead of updated.
      * @return true if successful, otherwise false.
      */
-    public boolean save(Stat instance);
+    public boolean save(Stat instance, boolean isNew);
 
-    /**
+	/**
+	 * Saves a Stat object to persistent storage.
+	 *
+	 * @param instance  the Stat object to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Stat instance);
+
+	/**
      * Delete the Stat object with the given id from persistent storage.
      *
      * @param id  the id of the Stat object to delete

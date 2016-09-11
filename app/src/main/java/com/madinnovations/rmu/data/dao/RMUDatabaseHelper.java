@@ -194,4 +194,68 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.endTransaction();
         }
     }
+
+	/**
+	 * Deletes all the data in the database. The caller is responsible for managing the transaction if desired.
+	 */
+    public void clearDatabase() {
+		SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+		sqLiteDatabase.delete(CharacterSkillCostsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterSkillRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterTalentsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CultureSkillRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellListSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ProfessionAssignableSkillCostSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ProfessionSkillCostSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ProfessionSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(RaceLocomotionSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(RaceTalentsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(VarietyAttacksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(AttackSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CriticalResultSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(DamageResultSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(VarietyTalentTiersSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(TalentSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ArchetypeSkillsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ArchetypeSpellsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureArchetypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SkillStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(VarietySkillsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(WeaponSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SkillSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SkillCategoryStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(VarietyCriticalCodesSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(VarietyStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureVarietySchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(RealmSchema.TABLE_NAME, null, null);
+
+		sqLiteDatabase.delete(BiomeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(BodyPartSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureCategorySchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureCategoryTalentsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureTypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CriticalCodeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CriticalTypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CultureSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(DamageTableSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(LocomotionTypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(OutlookSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ParameterSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(RaceSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SizeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SkillCategorySchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellListTypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(StatSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(TalentCategorySchema.TABLE_NAME, null, null);
+	}
 }

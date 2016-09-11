@@ -15,77 +15,70 @@
  */
 package com.madinnovations.rmu.data.dao.common.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link Specialization} entities
  */
-public class SpecializationSerializer implements JsonSerializer<Specialization>, JsonDeserializer<Specialization>,
-		SpecializationSchema {
-	SkillDao skillDao;
-	StatDao statDao;
-
-	/**
-	 * Creates a new SpecializationSerializer instance.
-	 *
-	 * @param skillDao  a {@link SkillDao} instance
-	 * @param statDao  a {@link StatDao} instance
-	 */
-	@Inject
-	public SpecializationSerializer(SkillDao skillDao, StatDao statDao) {
-		this.skillDao = skillDao;
-		this.statDao = statDao;
-	}
-
+public class SpecializationSerializer extends TypeAdapter<Specialization> implements SpecializationSchema {
 	@Override
-	public JsonElement serialize(Specialization src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_SKILL_STATS, src.isUseSkillStats());
-		jsonObject.addProperty(COLUMN_SKILL_ID, src.getSkill().getId());
+	public void write(JsonWriter out, Specialization value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_SKILL_STATS).value(value.isUseSkillStats());
+		out.name(COLUMN_SKILL_ID).value(value.getSkill().getId());
 
-		JsonArray stats = new JsonArray();
-		for(Stat stat : src.getStats()) {
-			stats.add(stat.getId());
+		out.name(SpecializationStatsSchema.TABLE_NAME).beginArray();
+		for(Stat stat : value.getStats()) {
+			out.value(stat.getId());
 		}
-		jsonObject.add(SpecializationStatsSchema.TABLE_NAME, stats);
-		return jsonObject;
+		out.endArray();
+
+		out.endObject().flush();
 	}
 
 	@Override
-	public Specialization deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-	throws JsonParseException {
+	public Specialization read(JsonReader in) throws IOException {
 		Specialization specialization = new Specialization();
-		JsonObject jsonObject = json.getAsJsonObject();
-
-		specialization.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		specialization.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		specialization.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		specialization.setUseSkillStats(jsonObject.get(COLUMN_SKILL_STATS).getAsBoolean());
-		specialization.setSkill(skillDao.getById(jsonObject.get(COLUMN_SKILL_ID).getAsInt()));
-		JsonArray jsonArray = jsonObject.getAsJsonArray(SpecializationStatsSchema.TABLE_NAME);
-		for(JsonElement jsonElement : jsonArray) {
-			specialization.getStats().add(statDao.getById(jsonElement.getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					specialization.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					specialization.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					specialization.setDescription(in.nextString());
+					break;
+				case COLUMN_SKILL_STATS:
+					specialization.setUseSkillStats(in.nextBoolean());
+					break;
+				case COLUMN_SKILL_ID:
+					specialization.setSkill(new Skill(in.nextInt()));
+					break;
+				case SpecializationStatsSchema.TABLE_NAME:
+					in.beginArray();
+					while (in.hasNext()) {
+						specialization.getStats().add(new Stat(in.nextInt()));
+					}
+					in.endArray();
+					break;
+			}
 		}
+		in.endObject();
 
 		return specialization;
 	}

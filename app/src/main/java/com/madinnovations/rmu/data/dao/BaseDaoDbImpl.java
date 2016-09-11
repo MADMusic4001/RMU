@@ -217,10 +217,21 @@ public abstract class BaseDaoDbImpl<T> {
 	/**
 	 * Saves a collection of T instances to persistent storage.
 	 *
-	 * @param collection  the collection of T instanes to be saved
+	 * @param collection  the collection of T instances to be saved
 	 * @return true if successful, otherwise false.
 	 */
 	public boolean save(Collection<T> collection) {
+		return save(collection, false);
+	}
+
+	/**
+	 * Saves a collection of T instances to persistent storage.
+	 *
+	 * @param collection  the collection of T instances to be saved
+	 * @param isNew  true if the instances should be treated as new regardless of their ID values
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<T> collection, boolean isNew) {
 		boolean result = true;
 
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -230,7 +241,7 @@ public abstract class BaseDaoDbImpl<T> {
 		}
 		try {
 			for(T t : collection) {
-				result &= save(t);
+				result &= save(t, isNew);
 			}
 			if(result && newTransaction) {
 				db.setTransactionSuccessful();
@@ -251,6 +262,17 @@ public abstract class BaseDaoDbImpl<T> {
 	 * @return true if successful, otherwise false.
 	 */
 	public boolean save(T instance) {
+		return save(instance, false);
+	}
+
+	/**
+	 * Saves a T object to persistent storage.
+	 *
+	 * @param instance  the T object to be saved
+	 * @param isNew  true if the instances should be treated as new regardless of their ID values
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(T instance, boolean isNew) {
 		final String selectionArgs[] = { String.valueOf(getId(instance)) };
 		final String selection = getIdColumnName() + " = ?";
 		ContentValues contentValues = getContentValues(instance);
@@ -263,7 +285,7 @@ public abstract class BaseDaoDbImpl<T> {
 			db.beginTransaction();
 		}
 		try {
-			if(getId(instance) == -1) {
+			if(getId(instance) == -1 || isNew) {
 				setId(instance, (int)db.insert(getTableName(), null, contentValues));
 				result = (getId(instance) != -1);
 			}

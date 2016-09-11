@@ -29,6 +29,21 @@ public class DamageTable {
     private String name = null;
     private Collection<DamageResultRow> resultRows = new ArrayList<>();
 
+	/**
+     * Creates a new DamageTable instance
+     */
+    public DamageTable() {
+    }
+
+	/**
+	 * Creates a new DamageTable instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+    public DamageTable(int id) {
+        this.id = id;
+    }
+
     /**
      * Checks the validity of the DamageTable instance.
      *

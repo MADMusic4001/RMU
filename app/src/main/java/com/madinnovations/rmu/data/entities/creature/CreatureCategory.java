@@ -33,6 +33,21 @@ public class CreatureCategory {
 	private List<Talent> talents = new ArrayList<>();
 
 	/**
+	 * Creates a new CreatureCategory instance
+	 */
+	public CreatureCategory() {
+	}
+
+	/**
+	 * Creates a new CreatureCategory instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public CreatureCategory(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the CreatureCategory instance.
 	 *
 	 * @return true if the CreatureCategory instance is valid, otherwise false.

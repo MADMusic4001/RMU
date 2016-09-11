@@ -15,203 +15,293 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.character.CultureDao;
-import com.madinnovations.rmu.data.dao.character.ProfessionDao;
-import com.madinnovations.rmu.data.dao.character.RaceDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
-import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.character.Culture;
+import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link Character} entities
  */
-public class CharacterSerializer implements JsonSerializer<Character>, JsonDeserializer<Character>, CharacterSchema {
-	CultureDao    cultureDao;
-	ProfessionDao professionDao;
-	RaceDao       raceDao;
-	SkillDao      skillDao;
-	StatDao       statDao;
-	TalentDao     talentDao;
+public class CharacterSerializer extends TypeAdapter<Character> implements CharacterSchema {
+	@Override
+	public void write(JsonWriter out, Character value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_HAIR_COLOR).value(value.getHairColor());
+		out.name(COLUMN_HAIR_STYLE).value(value.getHairStyle());
+		out.name(COLUMN_EYE_COLOR).value(value.getEyeColor());
+		out.name(COLUMN_SKIN_COMPLEXION).value(value.getSkinComplexion());
+		out.name(COLUMN_FACIAL_FEATURES).value(value.getFacialFeatures());
+		out.name(COLUMN_IDENTIFYING_MARKS).value(value.getIdentifyingMarks());
+		out.name(COLUMN_CLOTHING).value(value.getClothing());
+		out.name(COLUMN_PERSONALITY).value(value.getPersonality());
+		out.name(COLUMN_MANNERISMS).value(value.getMannerisms());
+		out.name(COLUMN_HOMETOWN).value(value.getHometown());
+		out.name(COLUMN_FAMILY_INFO).value(value.getFamilyInfo());
+		out.name(COLUMN_RACE_ID).value(value.getRace().getId());
+		out.name(COLUMN_CULTURE_ID).value(value.getCulture().getId());
+		out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
+		out.name(COLUMN_HEIGHT).value(value.getHeight());
+		out.name(COLUMN_WEIGHT).value(value.getWeight());
+		out.name(COLUMN_STRIDE).value(value.getStride());
+		out.name(COLUMN_CURRENT_HITS).value(value.getCurrentHits());
+		out.name(COLUMN_MAX_HITS).value(value.getMaxHits());
+		out.name(COLUMN_CURRENT_DEVELOPMENT_POINTS).value(value.getCurrentDevelopmentPoints());
 
-	/**
-	 * Creates a new CharacterSerializer instance.
-	 */
-	@Inject
-	public CharacterSerializer(CultureDao cultureDao, ProfessionDao professionDao, RaceDao raceDao, SkillDao skillDao,
-							   StatDao statDao, TalentDao talentDao) {
-		this.cultureDao = cultureDao;
-		this.professionDao = professionDao;
-		this.raceDao = raceDao;
-		this.skillDao = skillDao;
-		this.statDao = statDao;
-		this.talentDao = talentDao;
+		out.name(CharacterSkillCostsSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Skill, SkillCost> entry : value.getSkillCosts().entrySet()) {
+			out.beginObject();
+			out.name(CharacterSkillCostsSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
+			out.name(CharacterSkillCostsSchema.COLUMN_FIRST_COST).value(entry.getValue().getFirstCost());
+			out.name(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST).value(entry.getValue().getAdditionalCost());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterSkillRanksSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Skill, Short> entry : value.getSkillRanks().entrySet()) {
+			out.beginObject();
+			out.name(CharacterSkillRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
+			out.name(CharacterSkillRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterTalentsSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Talent, Short> entry : value.getTalentTiers().entrySet()) {
+			out.beginObject();
+			out.name(CharacterTalentsSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
+			out.name(CharacterTalentsSchema.COLUMN_TIERS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterStatsSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Stat, Short> entry : value.getStatTemps().entrySet()) {
+			out.beginObject();
+			out.name(CharacterStatsSchema.COLUMN_STAT_ID).value(entry.getKey().getId());
+			out.name(CharacterStatsSchema.COLUMN_CURRENT_VALUE).value(entry.getValue());
+			out.name(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE).value(value.getStatPotentials().get(entry.getKey()));
+			out.endObject();
+		}
+		out.endArray();
+
+		out.endObject();
+		out.flush();
 	}
 
 	@Override
-	public JsonElement serialize(Character src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_HAIR_COLOR, src.getHairColor());
-		jsonObject.addProperty(COLUMN_HAIR_STYLE, src.getHairStyle());
-		jsonObject.addProperty(COLUMN_EYE_COLOR, src.getEyeColor());
-		jsonObject.addProperty(COLUMN_SKIN_COMPLEXION, src.getSkinComplexion());
-		jsonObject.addProperty(COLUMN_FACIAL_FEATURES, src.getFacialFeatures());
-		jsonObject.addProperty(COLUMN_IDENTIFYING_MARKS, src.getIdentifyingMarks());
-		jsonObject.addProperty(COLUMN_CLOTHING, src.getClothing());
-		jsonObject.addProperty(COLUMN_PERSONALITY, src.getPersonality());
-		jsonObject.addProperty(COLUMN_MANNERISMS, src.getMannerisms());
-		jsonObject.addProperty(COLUMN_HOMETOWN, src.getHometown());
-		jsonObject.addProperty(COLUMN_FAMILY_INFO, src.getFamilyInfo());
-		jsonObject.addProperty(COLUMN_RACE_ID, src.getRace().getId());
-		jsonObject.addProperty(COLUMN_CULTURE_ID, src.getCulture().getId());
-		jsonObject.addProperty(COLUMN_PROFESSION_ID, src.getProfession().getId());
-		jsonObject.addProperty(COLUMN_HEIGHT, src.getHeight());
-		jsonObject.addProperty(COLUMN_WEIGHT, src.getWeight());
-		jsonObject.addProperty(COLUMN_STRIDE, src.getStride());
-		jsonObject.addProperty(COLUMN_CURRENT_HITS, src.getCurrentHits());
-		jsonObject.addProperty(COLUMN_MAX_HITS, src.getMaxHits());
-		jsonObject.addProperty(COLUMN_CURRENT_DEVELOPMENT_POINTS, src.getCurrentDevelopmentPoints());
-		final JsonArray skillCostsArray = new JsonArray();
-		for(Map.Entry<Skill, SkillCost> entry : src.getSkillCosts().entrySet()) {
-			JsonObject skillCostEntry = new JsonObject();
-			skillCostEntry.addProperty(COLUMN_ID, entry.getKey().getId());
-			skillCostEntry.addProperty(CharacterSkillCostsSchema.COLUMN_FIRST_COST, entry.getValue().getFirstCost());
-			skillCostEntry.addProperty(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST, entry.getValue().getAdditionalCost());
-			skillCostsArray.add(skillCostEntry);
-		}
-		jsonObject.add(CharacterSkillCostsSchema.TABLE_NAME, skillCostsArray);
-
-		final JsonArray skillRanksArray = new JsonArray();
-		for(Map.Entry<Skill, Short> entry : src.getSkillRanks().entrySet()) {
-			JsonObject skillRankEntry = new JsonObject();
-			skillRankEntry.addProperty(COLUMN_ID, entry.getKey().getId());
-			skillRankEntry.addProperty(CharacterSkillRanksSchema.COLUMN_RANKS, entry.getValue());
-			skillRanksArray.add(skillRankEntry);
-		}
-		jsonObject.add(CharacterSkillRanksSchema.TABLE_NAME, skillRanksArray);
-
-		final JsonArray talentTiersArray = new JsonArray();
-		for(Map.Entry<Talent, Short> entry : src.getTalentTiers().entrySet()) {
-			JsonObject talentTierEntry = new JsonObject();
-			talentTierEntry.addProperty(CharacterTalentsSchema.COLUMN_TALENT_ID, entry.getKey().getId());
-			talentTierEntry.addProperty(CharacterTalentsSchema.COLUMN_TIERS, entry.getValue());
-			talentTiersArray.add(talentTierEntry);
-		}
-		jsonObject.add(CharacterTalentsSchema.TABLE_NAME, talentTiersArray);
-
-		final JsonArray statTempsArray = new JsonArray();
-		for(Map.Entry<Stat, Short> entry : src.getStatTemps().entrySet()) {
-			JsonObject statTempEntry = new JsonObject();
-			statTempEntry.addProperty(CharacterStatsSchema.COLUMN_STAT_ID, entry.getKey().getId());
-			statTempEntry.addProperty(CharacterStatsSchema.COLUMN_CURRENT_VALUE, entry.getValue());
-			statTempEntry.addProperty(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE, src.getStatPotentials().get(entry.getKey()));
-			statTempsArray.add(statTempEntry);
-		}
-		jsonObject.add(CharacterStatsSchema.TABLE_NAME, statTempsArray);
-
-		return jsonObject;
-	}
-
-	@Override
-	public Character deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Character read(JsonReader in) throws IOException {
 		Character character = new Character();
-		JsonObject jsonObject = json.getAsJsonObject();
-		character.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		character.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		character.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		character.setHairColor(jsonObject.get(COLUMN_HAIR_COLOR).getAsString());
-		character.setHairStyle(jsonObject.get(COLUMN_HAIR_STYLE).getAsString());
-		character.setEyeColor(jsonObject.get(COLUMN_EYE_COLOR).getAsString());
-		character.setSkinComplexion(jsonObject.get(COLUMN_SKIN_COMPLEXION).getAsString());
-		character.setFacialFeatures(jsonObject.get(COLUMN_FACIAL_FEATURES).getAsString());
-		character.setIdentifyingMarks(jsonObject.get(COLUMN_IDENTIFYING_MARKS).getAsString());
-		character.setClothing(jsonObject.get(COLUMN_CLOTHING).getAsString());
-		character.setPersonality(jsonObject.get(COLUMN_PERSONALITY).getAsString());
-		character.setMannerisms(jsonObject.get(COLUMN_MANNERISMS).getAsString());
-		character.setHometown(jsonObject.get(COLUMN_HOMETOWN).getAsString());
-		character.setFamilyInfo(jsonObject.get(COLUMN_FAMILY_INFO).getAsString());
-		character.setRace(raceDao.getById(jsonObject.get(COLUMN_RACE_ID).getAsInt()));
-		character.setCulture(cultureDao.getById(jsonObject.get(COLUMN_CULTURE_ID).getAsInt()));
-		character.setProfession(professionDao.getById(jsonObject.get(COLUMN_PROFESSION_ID).getAsInt()));
-		character.setHeight(jsonObject.get(COLUMN_HEIGHT).getAsShort());
-		character.setWeight(jsonObject.get(COLUMN_WEIGHT).getAsShort());
-		character.setStride(jsonObject.get(COLUMN_STRIDE).getAsShort());
-		character.setCurrentHits(jsonObject.get(COLUMN_CURRENT_HITS).getAsShort());
-		character.setMaxHits(jsonObject.get(COLUMN_MAX_HITS).getAsShort());
-		character.setCurrentDevelopmentPoints(jsonObject.get(COLUMN_CURRENT_DEVELOPMENT_POINTS).getAsShort());
-
-		JsonArray jsonArray = jsonObject.getAsJsonArray(CharacterSkillCostsSchema.TABLE_NAME);
-		Map<Skill, SkillCost> skillCostsMap = new HashMap<>(jsonArray.size());
-		for(JsonElement jsonElement : jsonArray) {
-			final JsonObject skillCostObject = jsonElement.getAsJsonObject();
-			Skill newSkill = skillDao.getById(skillCostObject.get(COLUMN_ID).getAsInt());
-			SkillCost skillCost = new SkillCost(skillCostObject.get(CharacterSkillCostsSchema.COLUMN_FIRST_COST).getAsShort(),
-												skillCostObject.get(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST)
-														.getAsShort());
-			skillCostsMap.put(newSkill, skillCost);
+		in.beginObject();
+		while(in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					character.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					character.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					character.setDescription(in.nextString());
+					break;
+				case COLUMN_HAIR_COLOR:
+					character.setHairColor(in.nextString());
+					break;
+				case COLUMN_HAIR_STYLE:
+					character.setHairStyle(in.nextString());
+					break;
+				case COLUMN_EYE_COLOR:
+					character.setEyeColor(in.nextString());
+					break;
+				case COLUMN_SKIN_COMPLEXION:
+					character.setSkinComplexion(in.nextString());
+					break;
+				case COLUMN_FACIAL_FEATURES:
+					character.setFacialFeatures(in.nextString());
+					break;
+				case COLUMN_IDENTIFYING_MARKS:
+					character.setIdentifyingMarks(in.nextString());
+					break;
+				case COLUMN_CLOTHING:
+					character.setClothing(in.nextString());
+					break;
+				case COLUMN_PERSONALITY:
+					character.setPersonality(in.nextString());
+					break;
+				case COLUMN_MANNERISMS:
+					character.setMannerisms(in.nextString());
+					break;
+				case COLUMN_HOMETOWN:
+					character.setHometown(in.nextString());
+					break;
+				case COLUMN_FAMILY_INFO:
+					character.setFamilyInfo(in.nextString());
+					break;
+				case COLUMN_RACE_ID:
+					character.setRace(new Race(in.nextInt()));
+					break;
+				case COLUMN_CULTURE_ID:
+					character.setCulture(new Culture(in.nextInt()));
+					break;
+				case COLUMN_PROFESSION_ID:
+					character.setProfession(new Profession(in.nextInt()));
+					break;
+				case COLUMN_HEIGHT:
+					character.setHeight((short)in.nextInt());
+					break;
+				case COLUMN_WEIGHT:
+					character.setWeight((short)in.nextInt());
+					break;
+				case COLUMN_STRIDE:
+					character.setStride((short)in.nextInt());
+					break;
+				case COLUMN_CURRENT_HITS:
+					character.setCurrentHits((short)in.nextInt());
+					break;
+				case COLUMN_MAX_HITS:
+					character.setMaxHits((short)in.nextInt());
+					break;
+				case COLUMN_CURRENT_DEVELOPMENT_POINTS:
+					character.setCurrentDevelopmentPoints((short)in.nextInt());
+					break;
+				case CharacterSkillCostsSchema.TABLE_NAME:
+					readSkillCosts(in, character);
+					break;
+				case CharacterSkillRanksSchema.TABLE_NAME:
+					readSkillRanks(in, character);
+					break;
+				case CharacterTalentsSchema.TABLE_NAME:
+					readTalentTiers(in, character);
+					break;
+				case CharacterStatsSchema.TABLE_NAME:
+					readStats(in, character);
+					break;
+			}
 		}
-		character.setSkillCosts(skillCostsMap);
-
-		jsonArray = jsonObject.getAsJsonArray(CharacterSkillRanksSchema.TABLE_NAME);
-		Map<Skill, Short> skillRanksMap = new HashMap<>(jsonArray.size());
-		for(JsonElement jsonElement : jsonArray) {
-			final JsonObject skillRankObject = jsonElement.getAsJsonObject();
-			Skill newSkill = skillDao.getById(skillRankObject.get(CharacterSkillRanksSchema.COLUMN_SKILL_ID).getAsInt());
-			Short ranks = skillRankObject.get(CharacterSkillRanksSchema.COLUMN_RANKS).getAsShort();
-			skillRanksMap.put(newSkill, ranks);
-		}
-		character.setSkillRanks(skillRanksMap);
-
-		jsonArray = jsonObject.getAsJsonArray(CharacterTalentsSchema.TABLE_NAME);
-		Map<Talent, Short> talentTiersMap = new HashMap<>(jsonArray.size());
-		for(JsonElement jsonElement : jsonArray) {
-			final JsonObject talentTierObject = jsonElement.getAsJsonObject();
-			Talent newTalent = talentDao.getById(talentTierObject.get(CharacterTalentsSchema.COLUMN_TALENT_ID).getAsInt());
-			Short tiers = talentTierObject.get(CharacterTalentsSchema.COLUMN_TIERS).getAsShort();
-			talentTiersMap.put(newTalent, tiers);
-		}
-		character.setTalentTiers(talentTiersMap);
-
-		jsonArray = jsonObject.getAsJsonArray(CharacterStatsSchema.TABLE_NAME);
-		Map<Stat, Short> tempValuesMap = new HashMap<>(jsonArray.size());
-		Map<Stat, Short> potentialValuesMap = new HashMap<>(jsonArray.size());
-		for(JsonElement jsonElement : jsonArray) {
-			final JsonObject statValueObject = jsonElement.getAsJsonObject();
-			Stat newStat = statDao.getById(statValueObject.get(CharacterStatsSchema.COLUMN_STAT_ID).getAsInt());
-			Short temp = statValueObject.get(CharacterStatsSchema.COLUMN_CURRENT_VALUE).getAsShort();
-			Short potential = statValueObject.get(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE).getAsShort();
-			tempValuesMap.put(newStat, temp);
-			potentialValuesMap.put(newStat, potential);
-		}
-		character.setStatTemps(tempValuesMap);
-		character.setStatPotentials(potentialValuesMap);
-
+		in.endObject();
 		return character;
+	}
+
+	private void readSkillCosts(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Skill newSkill = null;
+			SkillCost skillCost = new SkillCost();
+			in.beginObject();
+			while(in.hasNext()) {
+				switch(in.nextName()) {
+					case CharacterSkillCostsSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CharacterSkillCostsSchema.COLUMN_FIRST_COST:
+						skillCost.setFirstCost((short)in.nextInt());
+						break;
+					case CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST:
+						skillCost.setAdditionalCost((short)in.nextInt());
+						break;
+				}
+			}
+			if(newSkill != null) {
+				character.getSkillCosts().put(newSkill, skillCost);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readSkillRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Skill newSkill = null;
+			Short ranks = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterSkillRanksSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CharacterSkillRanksSchema.COLUMN_RANKS:
+						ranks = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newSkill != null) {
+				character.getSkillRanks().put(newSkill, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readTalentTiers(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Talent newTalent = null;
+			Short tiers = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterTalentsSchema.COLUMN_TALENT_ID:
+						newTalent = new Talent(in.nextInt());
+						break;
+					case CharacterTalentsSchema.COLUMN_TIERS:
+						tiers = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newTalent != null) {
+				character.getTalentTiers().put(newTalent, tiers);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readStats(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Stat newStat = null;
+			Short tempValue = null;
+			Short potentialValue = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch(in.nextName()) {
+					case CharacterStatsSchema.COLUMN_STAT_ID:
+						newStat = new Stat(in.nextInt());
+						break;
+					case CharacterStatsSchema.COLUMN_CURRENT_VALUE:
+						tempValue = (short)in.nextInt();
+						break;
+					case CharacterStatsSchema.COLUMN_POTENTIAL_VALUE:
+						potentialValue = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newStat != null) {
+				character.getStatTemps().put(newStat, tempValue);
+				character.getStatPotentials().put(newStat, potentialValue);
+			}
+			in.endObject();
+		}
+		in.endArray();
 	}
 }

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.common;
 
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,32 @@ public interface LocomotionTypeDao {
 	 * @return  a List containing all LocomotionType objects currently in persistent storage.
 	 */
 	public List<LocomotionType> getAll();
+
+	/**
+	 * Saves a collection of LocomotionType instances to persistent storage.
+	 *
+	 * @param instance  the collection of LocomotionType instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<LocomotionType> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of LocomotionType instances to persistent storage.
+	 *
+	 * @param instance  the collection of LocomotionType instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<LocomotionType> instance);
+
+	/**
+	 * Saves a LocomotionType object to persistent storage.
+	 *
+	 * @param instance  the LocomotionType object to be saved
+	 * @param isNew  set to true if the instances has a valid ID but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(LocomotionType instance, boolean isNew);
 
 	/**
 	 * Saves a LocomotionType object to persistent storage.

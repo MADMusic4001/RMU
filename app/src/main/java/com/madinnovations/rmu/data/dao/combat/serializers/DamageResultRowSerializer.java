@@ -18,31 +18,18 @@ package com.madinnovations.rmu.data.dao.combat.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
-import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
-import com.madinnovations.rmu.view.RMUAppException;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.io.IOException;
-
-import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link DamageResultRow} entities
  */
 public class DamageResultRowSerializer extends TypeAdapter<DamageResultRow> implements DamageResultRowSchema {
-	DamageResultDao damageResultDao;
-	DamageTableDao  damageTableDao;
-
-	/**
-	 * Creates a new AttackSerializer instance.
-	 */
-	@Inject
-	public DamageResultRowSerializer(DamageResultDao damageResultDao, DamageTableDao damageTableDao) {
-		this.damageResultDao = damageResultDao;
-		this.damageTableDao = damageTableDao;
-	}
+	private static final String INDEX = "index";
 
 	@Override
 	public void write(JsonWriter out, DamageResultRow value) throws IOException {
@@ -56,7 +43,8 @@ public class DamageResultRowSerializer extends TypeAdapter<DamageResultRow> impl
 		for(int i = 0; i < value.getDamageResults().length; i++ ) {
 			if(value.getDamageResults()[i] != null) {
 				out.beginObject();
-				out.name(COLUMN_AT_RESULT_IDS[i]).value(value.getDamageResults()[i].getId());
+				out.name(INDEX).value(i);
+				out.name(COLUMN_AT_RESULT_ID).value(value.getDamageResults()[i].getId());
 				out.endObject();
 			}
 		}
@@ -69,36 +57,51 @@ public class DamageResultRowSerializer extends TypeAdapter<DamageResultRow> impl
 	public DamageResultRow read(JsonReader in) throws IOException {
 		DamageResultRow damageResultRow = new DamageResultRow();
 		in.beginObject();
-		if(!in.nextName().equals(COLUMN_ID)) {
-			throw new RMUAppException("Missing " + COLUMN_ID + " in json input");
-		}
-		damageResultRow.setId(in.nextInt());
-		if(!in.nextName().equals(COLUMN_RANGE_LOW_VALUE)) {
-			throw new RMUAppException("Missing " + COLUMN_RANGE_LOW_VALUE + " in json input");
-		}
-		damageResultRow.setRangeLowValue((short)in.nextInt());
-		if(!in.nextName().equals(COLUMN_RANGE_HIGH_VALUE)) {
-			throw new RMUAppException("Missing " + COLUMN_RANGE_HIGH_VALUE + " in json input");
-		}
-		damageResultRow.setRangeHighValue((short)in.nextInt());
-		if(!in.nextName().equals(COLUMN_DAMAGE_TABLE_ID)) {
-			throw new RMUAppException("Missing " + COLUMN_DAMAGE_TABLE_ID + " in json input");
-		}
-		damageResultRow.setDamageTable(damageTableDao.getById(in.nextInt()));
-
-		if(!in.nextName().equals(COLUMN_AT_RESULTS)) {
-			throw new RMUAppException("Missing " + COLUMN_AT_RESULTS + " in json input");
-		}
-		in.beginArray();
-		for(int i = 0; i < 10; i++) {
-			if(!in.nextName().equals(COLUMN_AT_RESULT_IDS[i])) {
-				throw new RMUAppException("Missing " + COLUMN_AT_RESULT_IDS[i] + " in json input");
+		while(in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					damageResultRow.setId(in.nextInt());
+					break;
+				case COLUMN_RANGE_LOW_VALUE:
+					damageResultRow.setRangeLowValue((short) in.nextInt());
+					break;
+				case COLUMN_RANGE_HIGH_VALUE:
+					damageResultRow.setRangeHighValue((short) in.nextInt());
+					break;
+				case COLUMN_DAMAGE_TABLE_ID:
+					damageResultRow.setDamageTable(new DamageTable(in.nextInt()));
+					break;
+				case COLUMN_AT_RESULTS:
+					readDamageResults(in, damageResultRow);
+					break;
 			}
-			damageResultRow.getDamageResults()[i] = damageResultDao.getById(in.nextInt());
 		}
-		in.endArray();
 		in.endObject();
 
 		return damageResultRow;
+	}
+
+	private void readDamageResults(JsonReader in, DamageResultRow damageResultRow) throws IOException {
+		in.beginArray();
+		while(in.hasNext()) {
+			DamageResult damageResult = null;
+			Integer index = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case INDEX:
+						index = in.nextInt();
+						break;
+					case COLUMN_AT_RESULT_ID:
+						damageResult = new DamageResult(in.nextInt());
+						break;
+				}
+			}
+			if(damageResult != null && index != null) {
+				damageResultRow.getDamageResults()[index] = damageResult;
+			}
+			in.endObject();
+		}
+		in.endArray();
 	}
 }

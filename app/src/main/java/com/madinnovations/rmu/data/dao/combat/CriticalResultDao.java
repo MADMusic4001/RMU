@@ -41,6 +41,23 @@ public interface CriticalResultDao {
     public List<CriticalResult> getAll();
 
     /**
+     * Saves a collection of CriticalResult instances to persistent storage.
+     *
+     * @param instance  the collection of CriticalResult instances to be saved
+     * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<CriticalResult> instance, boolean isNew);
+
+    /**
+     * Saves a collection of CriticalResult instances to persistent storage.
+     *
+     * @param instance  the collection of CriticalResult instances to be saved
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<CriticalResult> instance);
+
+    /**
      * Saves a CriticalResult object to persistent storage.
      *
      * @param instance  the CriticalResult object to be saved

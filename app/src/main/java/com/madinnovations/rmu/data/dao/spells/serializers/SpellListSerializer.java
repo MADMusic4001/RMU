@@ -15,77 +15,69 @@
  */
 package com.madinnovations.rmu.data.dao.spells.serializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.character.ProfessionDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
-import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
+import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
+import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link SpellList} entities
  */
-public class SpellListSerializer implements JsonSerializer<SpellList>, JsonDeserializer<SpellList>, SpellListSchema {
-	ProfessionDao    professionDao;
-	RealmDao         realmDao;
-	SpellListTypeDao spellListTypeDao;
+public class SpellListSerializer extends TypeAdapter<SpellList> implements SpellListSchema {
+	@Override
+	public void write(JsonWriter out, SpellList value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
+		if(value.getRealm2() != null) {
+			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
+		}
+		if(value.getProfession() != null) {
+			out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
+		}
+		out.name(COLUMN_SPELL_LIST_TYPE_ID).value(value.getSpellListType().getId());
 
-	/**
-	 * Creates a new SpellListSerializer instance.
-	 */
-	@Inject
-	public SpellListSerializer(ProfessionDao professionDao, RealmDao realmDao, SpellListTypeDao spellListTypeDao) {
-		this.professionDao = professionDao;
-		this.realmDao = realmDao;
-		this.spellListTypeDao = spellListTypeDao;
+		out.endObject().flush();
 	}
 
 	@Override
-	public JsonElement serialize(SpellList src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_REALM_ID, src.getRealm().getId());
-		if(src.getRealm2() != null) {
-			jsonObject.addProperty(COLUMN_REALM2_ID, src.getRealm2().getId());
-		}
-		if(src.getProfession() != null) {
-			jsonObject.addProperty(COLUMN_PROFESSION_ID, src.getProfession().getId());
-		}
-		jsonObject.addProperty(COLUMN_SPELL_LIST_TYPE_ID, src.getSpellListType().getId());
-
-		return jsonObject;
-	}
-
-	@Override
-	public SpellList deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public SpellList read(JsonReader in) throws IOException {
 		SpellList spellList = new SpellList();
-		JsonObject jsonObject = json.getAsJsonObject();
-
-		spellList.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		spellList.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		spellList.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		spellList.setRealm(realmDao.getById(jsonObject.get(COLUMN_REALM_ID).getAsInt()));
-		JsonElement element = jsonObject.get(COLUMN_REALM2_ID);
-		if(element != null) {
-			spellList.setRealm2(realmDao.getById(element.getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					spellList.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					spellList.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					spellList.setDescription(in.nextString());
+					break;
+				case COLUMN_REALM_ID:
+					spellList.setRealm(new Realm(in.nextInt()));
+					break;
+				case COLUMN_REALM2_ID:
+					spellList.setRealm2(new Realm(in.nextInt()));
+					break;
+				case COLUMN_PROFESSION_ID:
+					spellList.setProfession(new Profession(in.nextInt()));
+					break;
+				case COLUMN_SPELL_LIST_TYPE_ID:
+					spellList.setSpellListType(new SpellListType(in.nextInt()));
+					break;
+			}
 		}
-		element = jsonObject.get(COLUMN_PROFESSION_ID);
-		if(element != null) {
-			spellList.setProfession(professionDao.getById(element.getAsInt()));
-		}
-		spellList.setSpellListType(spellListTypeDao.getById(jsonObject.get(COLUMN_SPELL_LIST_TYPE_ID).getAsInt()));
+		in.endObject();
 
 		return spellList;
 	}

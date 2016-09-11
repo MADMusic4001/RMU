@@ -26,6 +26,21 @@ public class CriticalType {
     private char Code = 'A';
     private String name = null;
 
+	/**
+	 * Creates a new CriticalType instance
+	 */
+	public CriticalType() {
+    }
+
+	/**
+	 * Creates a new CriticalType instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+    public CriticalType(int id) {
+        this.id = id;
+    }
+
     /**
      * Checks the validity of the CriticalType instance.
      *

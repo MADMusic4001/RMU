@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.combat;
 
 import com.madinnovations.rmu.data.entities.combat.Attack;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface AttackDao {
 	 * @return  a List containing all Attack objects currently in persistent storage.
 	 */
 	public List<Attack> getAll();
+
+	/**
+	 * Saves a collection of Attack instances to persistent storage.
+	 *
+	 * @param instance  the collection of Attack instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Attack> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Attack instances to persistent storage.
+	 *
+	 * @param instance  the collection of Attack instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Attack> instance);
 
 	/**
 	 * Saves a Attack object to persistent storage.

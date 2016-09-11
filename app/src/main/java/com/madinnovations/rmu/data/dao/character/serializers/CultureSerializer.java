@@ -15,79 +15,89 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSkillRanksSchema;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.common.Skill;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link Culture} entities
  */
-public class CultureSerializer implements JsonSerializer<Culture>, JsonDeserializer<Culture>, CultureSchema {
-	SkillDao skillDao;
-
-	/**
-	 * Creates a new CultureSerializer instance.
-	 */
-	@Inject
-	public CultureSerializer(SkillDao skillDao) {
-		this.skillDao = skillDao;
-	}
-
+public class CultureSerializer extends TypeAdapter<Culture> implements CultureSchema {
 	@Override
-	public JsonElement serialize(Culture src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_TRADES_AND_CRAFTS_RANKS, src.getTradesAndCraftsRanks());
-
-		final JsonArray skillRanksArray = new JsonArray();
-		for(Map.Entry<Skill, Short> entry : src.getSkillRanks().entrySet()) {
-			JsonObject skillRankEntry = new JsonObject();
-			skillRankEntry.addProperty(CultureSkillRanksSchema.COLUMN_SKILL_ID, entry.getKey().getId());
-			skillRankEntry.addProperty(CultureSkillRanksSchema.COLUMN_SKILL_RANKS, entry.getValue());
-			skillRanksArray.add(skillRankEntry);
+	public void write(JsonWriter out, Culture value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_TRADES_AND_CRAFTS_RANKS).value(value.getTradesAndCraftsRanks());
+		if(value.getSkillRanks() != null &&!value.getSkillRanks().isEmpty()) {
+			out.name(CultureSkillRanksSchema.TABLE_NAME);
+			out.beginArray();
+			for(Map.Entry<Skill, Short> entry : value.getSkillRanks().entrySet()) {
+				out.beginObject();
+				out.name(CultureSkillRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
+				out.name(CultureSkillRanksSchema.COLUMN_SKILL_RANKS).value(entry.getValue());
+				out.endObject();
+			}
+			out.endArray();
 		}
-		jsonObject.add(CultureSkillRanksSchema.TABLE_NAME, skillRanksArray);
-
-		return jsonObject;
+		out.endObject();
+		out.flush();
 	}
 
 	@Override
-	public Culture deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Culture read(JsonReader in) throws IOException {
 		Culture culture = new Culture();
-		JsonObject jsonObject = json.getAsJsonObject();
-		culture.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		culture.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		culture.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		culture.setTradesAndCraftsRanks(jsonObject.get(COLUMN_TRADES_AND_CRAFTS_RANKS).getAsShort());
-
-		JsonArray skillRanks = jsonObject.getAsJsonArray(CultureSkillRanksSchema.TABLE_NAME);
-		Map<Skill, Short> skillRanksMap = new HashMap<>(skillRanks.size());
-		for(JsonElement skillRankElement : skillRanks) {
-			final JsonObject skillRankObject = skillRankElement.getAsJsonObject();
-			Skill newSkill = new Skill(skillRankObject.get(CultureSkillRanksSchema.COLUMN_SKILL_ID).getAsInt());
-			Short ranks = skillRankObject.get(CultureSkillRanksSchema.COLUMN_SKILL_RANKS).getAsShort();
-			skillRanksMap.put(newSkill, ranks);
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					culture.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					culture.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					culture.setDescription(in.nextString());
+					break;
+				case COLUMN_TRADES_AND_CRAFTS_RANKS:
+					culture.setTradesAndCraftsRanks((short)in.nextInt());
+					break;
+				case CultureSkillRanksSchema.TABLE_NAME:
+					readSkillRanks(in, culture);
+					break;
+			}
 		}
-		culture.setSkillRanks(skillRanksMap);
-
 		return culture;
+	}
+
+	private void readSkillRanks(JsonReader in, Culture culture) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Skill newSkill = null;
+			short ranks = 0;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case CultureSkillRanksSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CultureSkillRanksSchema.COLUMN_SKILL_RANKS:
+						ranks = (short) in.nextInt();
+				}
+			}
+			if (newSkill != null) {
+				culture.getSkillRanks().put(newSkill, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
 	}
 }

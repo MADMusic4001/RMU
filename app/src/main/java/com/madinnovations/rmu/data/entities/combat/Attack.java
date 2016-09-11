@@ -31,6 +31,21 @@ public class Attack {
 	private Specialization specialization = null;
 
 	/**
+	 * Create a new Attack instance
+	 */
+	public Attack() {
+	}
+
+	/**
+	 * Create a new Attack instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public Attack(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Attack instance.
 	 *
 	 * @return true if the Attack instance is valid, otherwise false.

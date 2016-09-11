@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.creature;
 
 import com.madinnovations.rmu.data.entities.creature.Outlook;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface OutlookDao {
 	 * @return  a List containing all Outlook objects currently in persistent storage.
 	 */
 	public List<Outlook> getAll();
+
+	/**
+	 * Saves a collection of Outlook instances to persistent storage.
+	 *
+	 * @param instance  the collection of Outlook instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Outlook> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Outlook instances to persistent storage.
+	 *
+	 * @param instance  the collection of Outlook instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Outlook> instance);
 
 	/**
 	 * Saves a Outlook object to persistent storage.

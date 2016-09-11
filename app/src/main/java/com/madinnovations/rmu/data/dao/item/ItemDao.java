@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.item;
 
 import com.madinnovations.rmu.data.entities.object.Item;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface ItemDao {
      * @return  a List containing all Item objects currently in persistent storage.
      */
     public List<Item> getAll();
+
+    /**
+     * Saves a collection of Item instances to persistent storage.
+     *
+     * @param instance  the collection of Item instances to be saved
+     * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<Item> instance, boolean isNew);
+
+    /**
+     * Saves a collection of Item instances to persistent storage.
+     *
+     * @param instance  the collection of Item instances to be saved
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<Item> instance);
 
     /**
      * Saves a Item object to persistent storage.

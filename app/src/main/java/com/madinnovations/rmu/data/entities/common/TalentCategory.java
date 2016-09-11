@@ -27,6 +27,21 @@ public class TalentCategory {
 	private String description;
 
 	/**
+	 * Creates a new TalentCategory instance
+	 */
+	public TalentCategory() {
+	}
+
+	/**
+	 * Creates a new TalentCategory instance with the given id
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public TalentCategory(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the TalentCategory instance.
 	 *
 	 * @return true if the TalentCategory instance is valid, otherwise false.

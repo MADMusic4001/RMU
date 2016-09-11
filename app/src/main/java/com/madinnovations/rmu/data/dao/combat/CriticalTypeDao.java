@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.combat;
 
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface CriticalTypeDao {
      * @return  a List containing all CriticalType objects currently in persistent storage.
      */
     public List<CriticalType> getAll();
+
+    /**
+     * Saves a collection of CriticalType instances to persistent storage.
+     *
+     * @param instance  the collection of CriticalType instances to be saved
+     * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<CriticalType> instance, boolean isNew);
+
+    /**
+     * Saves a collection of CriticalType instances to persistent storage.
+     *
+     * @param instance  the collection of CriticalType instances to be saved
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<CriticalType> instance);
 
     /**
      * Saves a CriticalType object to persistent storage.

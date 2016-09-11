@@ -15,59 +15,54 @@
  */
 package com.madinnovations.rmu.data.dao.combat.serializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
-import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link Attack} entities
  */
-public class AttackSerializer implements JsonSerializer<Attack>, JsonDeserializer<Attack>, AttackSchema {
-	DamageTableDao damageTableDao;
-	SpecializationDao specializationDao;
-
-	/**
-	 * Creates a new AttackSerializer instance.
-	 */
-	@Inject
-	public AttackSerializer(DamageTableDao damageTableDao, SpecializationDao specializationDao) {
-		this.damageTableDao = damageTableDao;
-		this.specializationDao = specializationDao;
+public class AttackSerializer extends TypeAdapter<Attack> implements AttackSchema {
+	@Override
+	public void write(JsonWriter out, Attack value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_CODE).value(value.getCode());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DAMAGE_TABLE_ID).value(value.getDamageTable().getId());
+		out.name(COLUMN_SPECIALIZATION_ID).value(value.getSpecialization().getId());
+		out.endObject();
 	}
 
 	@Override
-	public JsonElement serialize(Attack src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_CODE, src.getCode());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DAMAGE_TABLE_ID, src.getDamageTable().getId());
-		jsonObject.addProperty(COLUMN_SPECIALIZATION_ID, src.getSpecialization().getId());
-
-		return jsonObject;
-	}
-
-	@Override
-	public Attack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Attack read(JsonReader in) throws IOException {
 		Attack attack = new Attack();
-		JsonObject jsonObject = json.getAsJsonObject();
-		attack.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		attack.setCode(jsonObject.get(COLUMN_CODE).getAsString());
-		attack.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		attack.setDamageTable(damageTableDao.getById(jsonObject.get(COLUMN_DAMAGE_TABLE_ID).getAsInt()));
-		attack.setSpecialization(specializationDao.getById(jsonObject.get(COLUMN_SPECIALIZATION_ID).getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					attack.setId(in.nextInt());
+					break;
+				case COLUMN_CODE:
+					attack.setCode(in.nextString());
+					break;
+				case COLUMN_NAME:
+					attack.setName(in.nextString());
+					break;
+				case COLUMN_DAMAGE_TABLE_ID:
+					attack.setDamageTable(new DamageTable(in.nextInt()));
+					break;
+				case COLUMN_SPECIALIZATION_ID:
+					attack.setSpecialization(new Specialization(in.nextInt()));
+					break;
+			}
+		}
 		return attack;
 	}
 }

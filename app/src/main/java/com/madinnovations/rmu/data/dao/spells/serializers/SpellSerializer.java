@@ -15,55 +15,51 @@
  */
 package com.madinnovations.rmu.data.dao.spells.serializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.spells.SpellListDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.entities.spells.Spell;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link Spell} entities
  */
-public class SpellSerializer implements JsonSerializer<Spell>, JsonDeserializer<Spell>, SpellSchema {
-	SpellListDao spellListDao;
+public class SpellSerializer extends TypeAdapter<Spell> implements SpellSchema {
+	@Override
+	public void write(JsonWriter out, Spell value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_SPELL_LIST_ID).value(value.getSpellList().getId());
 
-	/**
-	 * Creates a new SpellSerializer instance.
-	 */
-	@Inject
-	public SpellSerializer(SpellListDao spellListDao) {
-		this.spellListDao = spellListDao;
+		out.endObject().flush();
 	}
 
 	@Override
-	public JsonElement serialize(Spell src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_SPELL_LIST_ID, src.getSpellList().getId());
-
-		return jsonObject;
-	}
-
-	@Override
-	public Spell deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Spell read(JsonReader in) throws IOException {
 		Spell spell = new Spell();
-		JsonObject jsonObject = json.getAsJsonObject();
-
-		spell.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		spell.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		spell.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		spell.setSpellList(spellListDao.getById(jsonObject.get(COLUMN_SPELL_LIST_ID).getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					spell.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					spell.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					spell.setDescription(in.nextString());
+					break;
+				case COLUMN_SPELL_LIST_ID:
+					spell.setSpellList(new SpellList(in.nextInt()));
+					break;
+			}
+		}
+		in.endObject();
 
 		return spell;
 	}

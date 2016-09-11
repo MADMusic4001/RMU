@@ -18,65 +18,67 @@ package com.madinnovations.rmu.data.dao.common.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
 import java.io.IOException;
 
 /**
- * Json serializer and deserializer for the {@link SkillCategory} entities
+ * Json serializer and deserializer for the {@link Skill} entities
  */
-public class SkillCategorySerializer extends TypeAdapter<SkillCategory> implements SkillCategorySchema {
+public class SkillSerializer extends TypeAdapter<Skill> implements SkillSchema {
 	@Override
-	public void write(JsonWriter out, SkillCategory value) throws IOException {
+	public void write(JsonWriter out, Skill value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
-		out.name(COLUMN_IS_COMBAT).value(value.isCombat());
-		out.name(COLUMN_NO_STATS).value(value.isNoStats());
-		out.name(COLUMN_REALM_STATS).value(value.isRealmStats());
+		out.name(COLUMN_CATEGORY_ID).value(value.getCategory().getId());
+		out.name(COLUMN_REQUIRES_SPECIALIZATION).value(value.isRequiresSpecialization());
+		out.name(COLUMN_USE_CATEGORY_STATS).value(value.isUseCategoryStats());
 
-		out.name(SkillCategoryStatsSchema.TABLE_NAME).beginArray();
-		for(Stat stat : value.getStats()) {
-			out.value(stat.getId());
+		if(value.getStats() != null && !value.getStats().isEmpty()) {
+			out.name(SkillStatsSchema.TABLE_NAME).beginArray();
+			for (Stat stat : value.getStats()) {
+				out.value(stat.getId());
+			}
+			out.endArray();
 		}
-		out.endArray();
 
 		out.endObject().flush();
 	}
 
 	@Override
-	public SkillCategory read(JsonReader in) throws IOException {
-		SkillCategory skillCategory = new SkillCategory();
+	public Skill read(JsonReader in) throws IOException {
+		Skill skill = new Skill();
 		in.beginObject();
 		while (in.hasNext()) {
 			switch (in.nextName()) {
 				case COLUMN_ID:
-					skillCategory.setId(in.nextInt());
+					skill.setId(in.nextInt());
 					break;
 				case COLUMN_NAME:
-					skillCategory.setName(in.nextString());
+					skill.setName(in.nextString());
 					break;
 				case COLUMN_DESCRIPTION:
-					skillCategory.setDescription(in.nextString());
+					skill.setDescription(in.nextString());
 					break;
-				case COLUMN_IS_COMBAT:
-					skillCategory.setCombat(in.nextBoolean());
+				case COLUMN_CATEGORY_ID:
+					skill.setCategory(new SkillCategory(in.nextInt()));
 					break;
-				case COLUMN_NO_STATS:
-					skillCategory.setNoStats(in.nextBoolean());
+				case COLUMN_REQUIRES_SPECIALIZATION:
+					skill.setRequiresSpecialization(in.nextBoolean());
 					break;
-				case COLUMN_REALM_STATS:
-					skillCategory.setRealmStats(in.nextBoolean());
+				case COLUMN_USE_CATEGORY_STATS:
+					skill.setUseCategoryStats(in.nextBoolean());
 					break;
-				case SpecializationStatsSchema.TABLE_NAME:
+				case SkillStatsSchema.TABLE_NAME:
 					in.beginArray();
 					while (in.hasNext()) {
-						skillCategory.getStats().add(new Stat(in.nextInt()));
+						skill.getStats().add(new Stat(in.nextInt()));
 					}
 					in.endArray();
 					break;
@@ -84,6 +86,6 @@ public class SkillCategorySerializer extends TypeAdapter<SkillCategory> implemen
 		}
 		in.endObject();
 
-		return skillCategory;
+		return skill;
 	}
 }

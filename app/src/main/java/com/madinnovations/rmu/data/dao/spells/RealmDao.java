@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.spells;
 
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface RealmDao {
 	 * @return  a List containing all Realm objects currently in persistent storage.
 	 */
 	public List<Realm> getAll();
+
+	/**
+	 * Saves a collection of Realm instances to persistent storage.
+	 *
+	 * @param instance  the collection of Realm instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Realm> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Realm instances to persistent storage.
+	 *
+	 * @param instance  the collection of Realm instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Realm> instance);
 
 	/**
 	 * Saves a Realm object to persistent storage.

@@ -15,58 +15,51 @@
  */
 package com.madinnovations.rmu.data.dao.creature.serializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
-import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
-import com.madinnovations.rmu.data.dao.common.SpecializationDao;
-import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
-import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link CreatureType} entities
  */
-public class CreatureTypeSerializer implements JsonSerializer<CreatureType>, JsonDeserializer<CreatureType>, CreatureTypeSchema {
-	CreatureCategoryDao creatureCategoryDao;
-
-	/**
-	 * Creates a new CreatureTypeSerializer instance.
-	 */
-	@Inject
-	public CreatureTypeSerializer(CreatureCategoryDao creatureCategoryDao) {
-		this.creatureCategoryDao = creatureCategoryDao;
+public class CreatureTypeSerializer extends TypeAdapter<CreatureType> implements CreatureTypeSchema {
+	@Override
+	public void write(JsonWriter out, CreatureType value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_CATEGORY_ID).value(value.getCategory().getId());
+		out.endObject();
+		out.flush();
 	}
 
 	@Override
-	public JsonElement serialize(CreatureType src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_CATEGORY_ID, src.getCategory().getId());
-
-		return jsonObject;
-	}
-
-	@Override
-	public CreatureType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public CreatureType read(JsonReader in) throws IOException {
 		CreatureType creatureType = new CreatureType();
-		JsonObject jsonObject = json.getAsJsonObject();
-		creatureType.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		creatureType.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		creatureType.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		creatureType.setCategory(creatureCategoryDao.getById(jsonObject.get(COLUMN_CATEGORY_ID).getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch(in.nextName()) {
+				case COLUMN_ID:
+					creatureType.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					creatureType.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					creatureType.setDescription(in.nextString());
+					break;
+				case COLUMN_CATEGORY_ID:
+					creatureType.setCategory(new CreatureCategory(in.nextInt()));
+					break;
+			}
+		}
+		in.endObject();
 		return creatureType;
 	}
 }

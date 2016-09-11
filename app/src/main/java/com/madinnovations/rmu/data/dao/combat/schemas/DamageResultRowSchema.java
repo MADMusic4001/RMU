@@ -26,6 +26,7 @@ public interface DamageResultRowSchema {
     String COLUMN_RANGE_LOW_VALUE = "rangeLowValue";
     String COLUMN_RANGE_HIGH_VALUE = "rangeHighValue";
     String COLUMN_AT_RESULTS = "atResults";
+    String COLUMN_AT_RESULT_ID = "atResultId";
     String[] COLUMN_AT_RESULT_IDS = {"at1ResultId", "at2ResultId", "at3ResultId", "at4ResultId", "at5ResultId",
             "at6ResultId", "at7ResultId", "at8ResultId", "at9ResultId", "at10ResultId"};
 

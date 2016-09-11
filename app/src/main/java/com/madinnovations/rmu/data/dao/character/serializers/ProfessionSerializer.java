@@ -15,173 +15,225 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.character.schemas.ProfessionAssignableSkillCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCategoryCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionalSkillCategoriesSchema;
-import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Json serializer and deserializer for the {@link Profession} entities
  */
-public class ProfessionSerializer implements JsonSerializer<Profession>, JsonDeserializer<Profession>, ProfessionSchema {
-	private RealmDao         realmDao;
-	private SkillDao         skillDao;
-	private SkillCategoryDao skillCategoryDao;
-
-	/**
-	 * Creates a new CharacterSerializer instance.
-	 */
-	@Inject
-	public ProfessionSerializer(RealmDao realmDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao) {
-		this.realmDao = realmDao;
-		this.skillDao = skillDao;
-		this.skillCategoryDao = skillCategoryDao;
-	}
+public class ProfessionSerializer extends TypeAdapter<Profession> implements ProfessionSchema {
+	private static final String ASSIGNABLE_SKILL_COST_LIST = "assignableSkillCostList";
 
 	@Override
-	public JsonElement serialize(Profession src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		if(src.getRealm1() != null) {
-			jsonObject.addProperty(COLUMN_REALM1_ID, src.getRealm1().getId());
+	public void write(JsonWriter out, Profession value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		if(value.getRealm1() != null) {
+			out.name(COLUMN_REALM1_ID).value(value.getRealm1().getId());
 		}
-		if(src.getRealm2() != null) {
-			jsonObject.addProperty(COLUMN_REALM2_ID, src.getRealm2().getId());
+		if(value.getRealm2() != null) {
+			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
 		}
 
-		final JsonArray skillCategoryCostsArray = new JsonArray();
-		for(Map.Entry<SkillCategory, SkillCost> entry : src.getSkillCategoryCosts().entrySet()) {
-			JsonObject skillCategoryCostEntry = new JsonObject();
-			skillCategoryCostEntry.addProperty(ProfessionSkillCategoryCostSchema.COLUMN_ID, entry.getKey().getId());
-			skillCategoryCostEntry.addProperty(ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST, entry.getValue().getFirstCost());
-			skillCategoryCostEntry.addProperty(ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST, entry.getValue().getAdditionalCost());
-			skillCategoryCostsArray.add(skillCategoryCostEntry);
+		out.name(ProfessionSkillCategoryCostSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<SkillCategory, SkillCost> entry : value.getSkillCategoryCosts().entrySet()) {
+			out.beginObject();
+			out.name(ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID).value(entry.getKey().getId());
+			out.name(ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST).value(entry.getValue().getFirstCost());
+			out.name(ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST).value(entry.getValue().getAdditionalCost());
+			out.endObject();
 		}
-		jsonObject.add(ProfessionSkillCategoryCostSchema.TABLE_NAME, skillCategoryCostsArray);
+		out.endArray();
 
-		final JsonArray skillCostsArray = new JsonArray();
-		for(Map.Entry<Skill, SkillCost> entry : src.getSkillCosts().entrySet()) {
-			JsonObject skillCostEntry = new JsonObject();
-			skillCostEntry.addProperty(ProfessionSkillCostSchema.COLUMN_ID, entry.getKey().getId());
-			skillCostEntry.addProperty(ProfessionSkillCostSchema.COLUMN_FIRST_COST, entry.getValue().getFirstCost());
-			skillCostEntry.addProperty(ProfessionSkillCostSchema.COLUMN_SECOND_COST, entry.getValue().getAdditionalCost());
-			skillCostsArray.add(skillCostEntry);
+		out.name(ProfessionSkillCostSchema.TABLE_NAME).beginObject();
+		for(Map.Entry<Skill, SkillCost> entry : value.getSkillCosts().entrySet()) {
+			out.beginObject();
+			out.name(ProfessionSkillCostSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
+			out.name(ProfessionSkillCostSchema.COLUMN_FIRST_COST).value(entry.getValue().getFirstCost());
+			out.name(ProfessionSkillCostSchema.COLUMN_SECOND_COST).value(entry.getValue().getAdditionalCost());
+			out.endObject();
 		}
-		jsonObject.add(ProfessionSkillCostSchema.TABLE_NAME, skillCostsArray);
+		out.endArray();
 
-		final JsonArray assignableCostsArray = new JsonArray();
-		for(Map.Entry<SkillCategory, List<SkillCost>> entry : src.getAssignableSkillCosts().entrySet()) {
-			JsonObject assignableCostEntry = new JsonObject();
-			assignableCostEntry.addProperty(ProfessionSkillCategoryCostSchema.COLUMN_ID, entry.getKey().getId());
-			JsonArray costsArray = new JsonArray();
+		out.name(ProfessionAssignableSkillCostSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<SkillCategory, List<SkillCost>> entry : value.getAssignableSkillCosts().entrySet()) {
+			out.beginObject();
+			out.name(ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID).value(entry.getKey().getId());
+			out.name(ASSIGNABLE_SKILL_COST_LIST).beginArray();
 			for(SkillCost skillCost : entry.getValue()) {
-				JsonObject skillCostObject = new JsonObject();
-				skillCostObject.addProperty(ProfessionSkillCostSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
-				skillCostObject.addProperty(ProfessionSkillCostSchema.COLUMN_SECOND_COST, skillCost.getAdditionalCost());
-				costsArray.add(skillCostObject);
+				out.beginObject();
+				out.name(ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST).value(skillCost.getFirstCost());
+				out.name(ProfessionAssignableSkillCostSchema.COLUMN_SECOND_COST).value(skillCost.getAdditionalCost());
+				out.endObject();
 			}
-			assignableCostEntry.add(COLUMN_COST_ARRAY, costsArray);
-			assignableCostsArray.add(assignableCostEntry);
+			out.endArray();
+			out.endObject();
 		}
-		jsonObject.add(ProfessionSkillCategoryCostSchema.TABLE_NAME, assignableCostsArray);
+		out.endArray();
 
-		final JsonArray professionalSkillCategories = new JsonArray();
-		for(SkillCategory category : src.getProfessionalSkillCategories()) {
-			professionalSkillCategories.add(category.getId());
+		out.name(ProfessionalSkillCategoriesSchema.TABLE_NAME).beginArray();
+		for(SkillCategory category : value.getProfessionalSkillCategories()) {
+			out.value(category.getId());
 		}
-		jsonObject.add(ProfessionalSkillCategoriesSchema.TABLE_NAME, professionalSkillCategories);
+		out.endArray();
 
-		return jsonObject;
+		out.endObject().flush();
 	}
 
 	@Override
-	public Profession deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Profession read(JsonReader in) throws IOException {
 		Profession profession = new Profession();
-		JsonObject jsonObject = json.getAsJsonObject();
-		profession.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		profession.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		profession.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		JsonElement element = jsonObject.get(COLUMN_REALM1_ID);
-		if(element != null) {
-			profession.setRealm1(realmDao.getById(element.getAsInt()));
-		}
-		element = jsonObject.get(COLUMN_REALM2_ID);
-		if(element != null) {
-			profession.setRealm2(realmDao.getById(element.getAsInt()));
-		}
-
-		JsonArray skillCategoryCosts = jsonObject.getAsJsonArray(ProfessionSkillCategoryCostSchema.TABLE_NAME);
-		for(int i = 0; i < skillCategoryCosts.size(); i ++ ) {
-			final JsonObject skillCostObject = skillCategoryCosts.get(i).getAsJsonObject();
-			SkillCategory newSkillCategory = skillCategoryDao
-					.getById(skillCostObject.get(ProfessionSkillCategoryCostSchema.COLUMN_ID).getAsInt());
-			SkillCost skillCost = new SkillCost(
-					skillCostObject.get(ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST).getAsShort(),
-					skillCostObject.get(ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST).getAsShort());
-			profession.getSkillCategoryCosts().put(newSkillCategory, skillCost);
-		}
-
-		JsonArray skillCosts = jsonObject.getAsJsonArray(ProfessionSkillCostSchema.TABLE_NAME);
-		for(int i = 0; i < skillCosts.size(); i ++ ) {
-			final JsonObject skillCostObject = skillCosts.get(i).getAsJsonObject();
-			Skill newSkill = skillDao
-					.getById(skillCostObject.get(ProfessionSkillCostSchema.COLUMN_ID).getAsInt());
-			SkillCost skillCost = new SkillCost(
-					skillCostObject.get(ProfessionSkillCostSchema.COLUMN_FIRST_COST).getAsShort(),
-					skillCostObject.get(ProfessionSkillCostSchema.COLUMN_SECOND_COST).getAsShort());
-			profession.getSkillCosts().put(newSkill, skillCost);
-		}
-
-		JsonArray assignableSkillCosts = jsonObject.getAsJsonArray(ProfessionSkillCategoryCostSchema.TABLE_NAME);
-		for(int i = 0; i < assignableSkillCosts.size(); i ++ ) {
-			final JsonObject skillRankObject = assignableSkillCosts.get(i).getAsJsonObject();
-			SkillCategory newSkillCategory = skillCategoryDao
-					.getById(skillRankObject.get(CharacterSkillRanksSchema.COLUMN_SKILL_ID).getAsInt());
-			JsonArray skillCostsList = skillRankObject.getAsJsonArray(COLUMN_COST_ARRAY);
-			List<SkillCost> skillCostList = new ArrayList<>(skillCostsList.size());
-			for(int j = 0; j < skillCostsList.size(); j++) {
-				JsonObject skillCostObject = skillCostsList.getAsJsonObject();
-				SkillCost skillCost = new SkillCost(
-						skillCostObject.get(ProfessionSkillCostSchema.COLUMN_FIRST_COST).getAsShort(),
-						skillCostObject.get(ProfessionSkillCostSchema.COLUMN_SECOND_COST).getAsShort());
-				skillCostList.add(skillCost);
+		in.beginObject();
+		while(in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					profession.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					profession.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					profession.setDescription(in.nextString());
+					break;
+				case COLUMN_REALM1_ID:
+					profession.setRealm1(new Realm(in.nextInt()));
+					break;
+				case COLUMN_REALM2_ID:
+					profession.setRealm2(new Realm(in.nextInt()));
+					break;
+				case ProfessionSkillCategoryCostSchema.TABLE_NAME:
+					readSkillCategoryCosts(in, profession);
+					break;
+				case ProfessionSkillCostSchema.TABLE_NAME:
+					readSkillCosts(in, profession);
+					break;
+				case ProfessionAssignableSkillCostSchema.TABLE_NAME:
+					readAssignableSkillCosts(in, profession);
+					break;
+				case ProfessionalSkillCategoriesSchema.TABLE_NAME:
+					in.beginArray();
+					while (in.hasNext()) {
+						SkillCategory skillCategory = new SkillCategory(in.nextInt());
+						profession.getProfessionalSkillCategories().add(skillCategory);
+					}
+					in.endArray();
+					break;
 			}
-			profession.getAssignableSkillCosts().put(newSkillCategory, skillCostList);
 		}
-
-		JsonArray professionSkillCategories = jsonObject.getAsJsonArray(ProfessionalSkillCategoriesSchema.TABLE_NAME);
-		for(int i = 0; i < professionSkillCategories.size(); i ++ ) {
-			final JsonObject skillCategoryObject = professionSkillCategories.get(i).getAsJsonObject();
-			SkillCategory skillCategory = skillCategoryDao.getById(
-					skillCategoryObject.get(ProfessionalSkillCategoriesSchema.COLUMN_SKILL_CATEGORY_ID).getAsInt());
-			profession.getProfessionalSkillCategories().add(skillCategory);
-		}
-
+		in.endObject();
 		return profession;
+	}
+
+	private void readSkillCategoryCosts(JsonReader in, Profession profession) throws IOException {
+		in.beginArray();
+		while(in.hasNext()) {
+			SkillCategory newSkillCategory = null;
+			SkillCost skillCost = new SkillCost();
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case ProfessionSkillCostSchema.COLUMN_SKILL_ID:
+						newSkillCategory = new SkillCategory(in.nextInt());
+						break;
+					case ProfessionSkillCostSchema.COLUMN_FIRST_COST:
+						skillCost.setFirstCost((short)in.nextInt());
+						break;
+					case ProfessionSkillCostSchema.COLUMN_SECOND_COST:
+						skillCost.setAdditionalCost((short)in.nextInt());
+						break;
+				}
+			}
+			if(newSkillCategory != null) {
+				profession.getSkillCategoryCosts().put(newSkillCategory, skillCost);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readSkillCosts(JsonReader in, Profession profession) throws IOException {
+		in.beginArray();
+		while(in.hasNext()) {
+			Skill newSkill = null;
+			SkillCost skillCost = new SkillCost();
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case ProfessionSkillCostSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case ProfessionSkillCostSchema.COLUMN_FIRST_COST:
+						skillCost.setFirstCost((short)in.nextInt());
+						break;
+					case ProfessionSkillCostSchema.COLUMN_SECOND_COST:
+						skillCost.setAdditionalCost((short)in.nextInt());
+						break;
+				}
+			}
+			if(newSkill != null) {
+				profession.getSkillCosts().put(newSkill, skillCost);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readAssignableSkillCosts(JsonReader in, Profession profession) throws IOException {
+		in.beginArray();
+		while(in.hasNext()) {
+			SkillCategory newSkillCategory = null;
+			List<SkillCost> skillCostList = new ArrayList<>();
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID:
+						newSkillCategory = new SkillCategory(in.nextInt());
+						break;
+					case ASSIGNABLE_SKILL_COST_LIST:
+						in.beginArray();
+						while (in.hasNext()) {
+							SkillCost skillCost = new SkillCost();
+							in.beginObject();
+							while (in.hasNext()) {
+								switch (in.nextName()) {
+									case ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST:
+										skillCost.setFirstCost((short) in.nextInt());
+										break;
+									case ProfessionAssignableSkillCostSchema.COLUMN_SECOND_COST:
+										skillCost.setAdditionalCost((short) in.nextInt());
+										break;
+								}
+							}
+							skillCostList.add(skillCost);
+							in.endObject();
+						}
+						in.endArray();
+						break;
+				}
+			}
+			if(newSkillCategory != null) {
+				profession.getAssignableSkillCosts().put(newSkillCategory, skillCostList);
+			}
+			in.endObject();
+		}
+		in.endArray();
 	}
 }

@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.dao.item.schemas;
 
+import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
+
 /**
  * Database schema data for the weapons table
  */
@@ -30,7 +33,8 @@ public interface WeaponSchema {
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
             + COLUMN_SKILL_ID + " INTEGER NOT NULL, "
-            + COLUMN_DAMAGE_TABLE_ID + " INTEGER NOT NULL"
+            + COLUMN_DAMAGE_TABLE_ID + " INTEGER NOT NULL, "
+            + "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
             + ")";
 
     String[] COLUMNS = new String[]{COLUMN_ID,

@@ -27,6 +27,21 @@ public class CriticalCode {
 	private String description = null;
 
 	/**
+	 * Creates a new CriticalCode instance
+	 */
+	public CriticalCode() {
+	}
+
+	/**
+	 * Creates a new CriticalCode instance with the given id
+	 *
+	 * @param id  the id for the new instance
+ 	 */
+	public CriticalCode(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the CriticalCode instance.
 	 *
 	 * @return true if the CriticalCode instance is valid, otherwise false.

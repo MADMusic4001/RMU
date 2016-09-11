@@ -26,6 +26,26 @@ public class Outlook {
 	private String name = null;
 	private String description = null;
 
+	/**
+	 * Creates a new Outlook instance
+	 */
+	public Outlook() {
+	}
+
+	/**
+	 * Creates a new Outlook instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public Outlook(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * Checks the validity of the Outlook instance.
+	 *
+	 * @return true if the Outlook instance is valid, otherwise false.
+	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
 	}

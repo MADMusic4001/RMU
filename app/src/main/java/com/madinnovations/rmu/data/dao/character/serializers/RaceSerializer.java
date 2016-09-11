@@ -15,146 +15,213 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
-import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
-import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
+import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 /**
  * Json serializer and deserializer for the {@link Race} entities
  */
-public class RaceSerializer implements JsonSerializer<Race>, JsonDeserializer<Race>, RaceSchema {
-	LocomotionTypeDao locomotionTypeDao;
-	SizeDao           sizeDao;
-	TalentDao         talentDao;
+public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
+	@Override
+	public void write(JsonWriter out, Race value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_BONUS_DEVELOPMENT_POINTS).value(value.getBonusDevelopmentPoints());
+		out.name(COLUMN_AGILITY_MODIFIER).value(value.getAgilityModifier());
+		out.name(COLUMN_CONSTITUTION_MODIFIER).value(value.getConstitutionModifier());
+		out.name(COLUMN_EMPATHY_MODIFIER).value(value.getEmpathyModifier());
+		out.name(COLUMN_INTUITION_MODIFIER).value(value.getIntuitionModifier());
+		out.name(COLUMN_MEMORY_MODIFIER).value(value.getMemoryModifier());
+		out.name(COLUMN_PRESENCE_MODIFIER).value(value.getPresenceModifier());
+		out.name(COLUMN_QUICKNESS_MODIFIER).value(value.getQuicknessModifier());
+		out.name(COLUMN_REASONING_MODIFIER).value(value.getReasoningModifier());
+		out.name(COLUMN_SELF_DISCIPLINE_MODIFIER).value(value.getSelfDisciplineModifier());
+		out.name(COLUMN_STRENGTH_MODIFIER).value(value.getStrengthModifier());
+		out.name(COLUMN_CHANNELING_RESISTANCE_MODIFIER).value(value.getChannelingResistanceModifier());
+		out.name(COLUMN_ESSENCE_RESISTANCE_MODIFIER).value(value.getEssenceResistanceModifier());
+		out.name(COLUMN_MENTALISM_RESISTANCE_MODIFIER).value(value.getMentalismResistanceModifier());
+		out.name(COLUMN_PHYSICAL_RESISTANCE_MODIFIER).value(value.getPhysicalResistanceModifier());
+		out.name(COLUMN_ENDURANCE_MODIFIER).value(value.getEnduranceModifier());
+		out.name(COLUMN_BASE_HITS).value(value.getBaseHits());
+		out.name(COLUMN_RECOVERY_MULTIPLIER).value(value.getRecoveryMultiplier());
+		out.name(COLUMN_STRENGTH_MODIFIER).value(value.getStrideModifier());
+		out.name(COLUMN_AVERAGE_HEIGHT).value(value.getAverageHeight());
+		out.name(COLUMN_AVERAGE_WEIGHT).value(value.getAverageWeight());
+		out.name(COLUMN_POUNDS_PER_INCH).value(value.getPoundsPerInch());
+		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
 
-	/**
-	 * Creates a new RaceSerializer instance.
-	 */
-	@Inject
-	public RaceSerializer(LocomotionTypeDao locomotionTypeDao, SizeDao sizeDao, TalentDao talentDao) {
-		this.locomotionTypeDao = locomotionTypeDao;
-		this.sizeDao = sizeDao;
-		this.talentDao = talentDao;
+		out.name(RaceTalentsSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Talent, Short> entry : value.getTalentsAndFlawsTiersMap().entrySet()) {
+			out.beginObject();
+			out.name(RaceTalentsSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
+			out.name(RaceTalentsSchema.COLUMN_TIERS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(RaceLocomotionSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<LocomotionType, Short> entry : value.getLocomotionTypeRatesMap().entrySet()) {
+			out.beginObject();
+			out.name(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID).value(entry.getKey().getId());
+			out.name(RaceLocomotionSchema.COLUMN_RATE).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.endObject().flush();
 	}
 
 	@Override
-	public JsonElement serialize(Race src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_BONUS_DEVELOPMENT_POINTS, src.getBonusDevelopmentPoints());
-		jsonObject.addProperty(COLUMN_AGILITY_MODIFIER, src.getAgilityModifier());
-		jsonObject.addProperty(COLUMN_CONSTITUTION_MODIFIER, src.getConstitutionModifier());
-		jsonObject.addProperty(COLUMN_EMPATHY_MODIFIER, src.getEmpathyModifier());
-		jsonObject.addProperty(COLUMN_INTUITION_MODIFIER, src.getIntuitionModifier());
-		jsonObject.addProperty(COLUMN_MEMORY_MODIFIER, src.getMemoryModifier());
-		jsonObject.addProperty(COLUMN_PRESENCE_MODIFIER, src.getPresenceModifier());
-		jsonObject.addProperty(COLUMN_QUICKNESS_MODIFIER, src.getQuicknessModifier());
-		jsonObject.addProperty(COLUMN_REASONING_MODIFIER, src.getReasoningModifier());
-		jsonObject.addProperty(COLUMN_SELF_DISCIPLINE_MODIFIER, src.getSelfDisciplineModifier());
-		jsonObject.addProperty(COLUMN_STRENGTH_MODIFIER, src.getStrengthModifier());
-		jsonObject.addProperty(COLUMN_CHANNELING_RESISTANCE_MODIFIER, src.getChannelingResistanceModifier());
-		jsonObject.addProperty(COLUMN_ESSENCE_RESISTANCE_MODIFIER, src.getEssenceResistanceModifier());
-		jsonObject.addProperty(COLUMN_MENTALISM_RESISTANCE_MODIFIER, src.getMentalismResistanceModifier());
-		jsonObject.addProperty(COLUMN_PHYSICAL_RESISTANCE_MODIFIER, src.getPhysicalResistanceModifier());
-		jsonObject.addProperty(COLUMN_ENDURANCE_MODIFIER, src.getEnduranceModifier());
-		jsonObject.addProperty(COLUMN_BASE_HITS, src.getBaseHits());
-		jsonObject.addProperty(COLUMN_RECOVERY_MULTIPLIER, src.getRecoveryMultiplier());
-		jsonObject.addProperty(COLUMN_STRENGTH_MODIFIER, src.getStrideModifier());
-		jsonObject.addProperty(COLUMN_AVERAGE_HEIGHT, src.getAverageHeight());
-		jsonObject.addProperty(COLUMN_AVERAGE_WEIGHT, src.getAverageWeight());
-		jsonObject.addProperty(COLUMN_POUNDS_PER_INCH, src.getPoundsPerInch());
-		jsonObject.addProperty(COLUMN_SIZE_ID, src.getSize().getId());
-
-		final JsonArray talentShortMap = new JsonArray();
-		for(Map.Entry<Talent, Short> entry : src.getTalentsAndFlawsTiersMap().entrySet()) {
-			JsonObject talentTierEntry = new JsonObject();
-			talentTierEntry.addProperty(RaceTalentsSchema.COLUMN_TALENT_ID, entry.getKey().getId());
-			talentTierEntry.addProperty(RaceTalentsSchema.COLUMN_TIERS, entry.getValue());
-			talentShortMap.add(talentTierEntry);
-		}
-		jsonObject.add(RaceTalentsSchema.TABLE_NAME, talentShortMap);
-
-		final JsonArray locomotionTypeShortMap = new JsonArray();
-		for(Map.Entry<LocomotionType, Short> entry : src.getLocomotionTypeRatesMap().entrySet()) {
-			JsonObject locomotionTypeRateEntry = new JsonObject();
-			locomotionTypeRateEntry.addProperty(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID, entry.getKey().getId());
-			locomotionTypeRateEntry.addProperty(RaceLocomotionSchema.COLUMN_RATE, entry.getValue());
-			talentShortMap.add(locomotionTypeRateEntry);
-		}
-		jsonObject.add(RaceLocomotionSchema.TABLE_NAME, locomotionTypeShortMap);
-
-		return jsonObject;
-	}
-
-	@Override
-	public Race deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Race read(JsonReader in) throws IOException {
 		Race race = new Race();
-		JsonObject jsonObject = json.getAsJsonObject();
-		race.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		race.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		race.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		race.setBonusDevelopmentPoints(jsonObject.get(COLUMN_BONUS_DEVELOPMENT_POINTS).getAsShort());
-		race.setAgilityModifier(jsonObject.get(COLUMN_AGILITY_MODIFIER).getAsShort());
-		race.setConstitutionModifier(jsonObject.get(COLUMN_CONSTITUTION_MODIFIER).getAsShort());
-		race.setEmpathyModifier(jsonObject.get(COLUMN_EMPATHY_MODIFIER).getAsShort());
-		race.setIntuitionModifier(jsonObject.get(COLUMN_INTUITION_MODIFIER).getAsShort());
-		race.setMemoryModifier(jsonObject.get(COLUMN_MEMORY_MODIFIER).getAsShort());
-		race.setPresenceModifier(jsonObject.get(COLUMN_PRESENCE_MODIFIER).getAsShort());
-		race.setQuicknessModifier(jsonObject.get(COLUMN_QUICKNESS_MODIFIER).getAsShort());
-		race.setReasoningModifier(jsonObject.get(COLUMN_REASONING_MODIFIER).getAsShort());
-		race.setSelfDisciplineModifier(jsonObject.get(COLUMN_SELF_DISCIPLINE_MODIFIER).getAsShort());
-		race.setStrengthModifier(jsonObject.get(COLUMN_STRENGTH_MODIFIER).getAsShort());
-		race.setChannelingResistanceModifier(jsonObject.get(COLUMN_CHANNELING_RESISTANCE_MODIFIER).getAsShort());
-		race.setEssenceResistanceModifier(jsonObject.get(COLUMN_ESSENCE_RESISTANCE_MODIFIER).getAsShort());
-		race.setMentalismResistanceModifier(jsonObject.get(COLUMN_MENTALISM_RESISTANCE_MODIFIER).getAsShort());
-		race.setPhysicalResistanceModifier(jsonObject.get(COLUMN_PHYSICAL_RESISTANCE_MODIFIER).getAsShort());
-		race.setEnduranceModifier(jsonObject.get(COLUMN_MENTALISM_RESISTANCE_MODIFIER).getAsShort());
-		race.setBaseHits(jsonObject.get(COLUMN_BASE_HITS).getAsShort());
-		race.setRecoveryMultiplier(jsonObject.get(COLUMN_RECOVERY_MULTIPLIER).getAsFloat());
-		race.setStrideModifier(jsonObject.get(COLUMN_STRIDE_MODIFIER).getAsShort());
-		race.setAverageHeight(jsonObject.get(COLUMN_AVERAGE_HEIGHT).getAsShort());
-		race.setAverageWeight(jsonObject.get(COLUMN_AVERAGE_WEIGHT).getAsShort());
-		race.setPoundsPerInch(jsonObject.get(COLUMN_POUNDS_PER_INCH).getAsShort());
-		race.setSize(sizeDao.getById(jsonObject.get(COLUMN_SIZE_ID).getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					race.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					race.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					race.setDescription(in.nextString());
+					break;
+				case COLUMN_BONUS_DEVELOPMENT_POINTS:
+					race.setBonusDevelopmentPoints((short)in.nextInt());
+					break;
+				case COLUMN_AGILITY_MODIFIER:
+					race.setAgilityModifier((short)in.nextInt());
+					break;
+				case COLUMN_CONSTITUTION_MODIFIER:
+					race.setConstitutionModifier((short)in.nextInt());
+					break;
+				case COLUMN_EMPATHY_MODIFIER:
+					race.setEmpathyModifier((short)in.nextInt());
+					break;
+				case COLUMN_INTUITION_MODIFIER:
+					race.setIntuitionModifier((short)in.nextInt());
+					break;
+				case COLUMN_MEMORY_MODIFIER:
+					race.setMemoryModifier((short)in.nextInt());
+					break;
+				case COLUMN_PRESENCE_MODIFIER:
+					race.setPresenceModifier((short)in.nextInt());
+					break;
+				case COLUMN_QUICKNESS_MODIFIER:
+					race.setQuicknessModifier((short)in.nextInt());
+					break;
+				case COLUMN_REASONING_MODIFIER:
+					race.setReasoningModifier((short)in.nextInt());
+					break;
+				case COLUMN_SELF_DISCIPLINE_MODIFIER:
+					race.setSelfDisciplineModifier((short)in.nextInt());
+					break;
+				case COLUMN_STRENGTH_MODIFIER:
+					race.setStrengthModifier((short)in.nextInt());
+					break;
+				case COLUMN_CHANNELING_RESISTANCE_MODIFIER:
+					race.setChannelingResistanceModifier((short)in.nextInt());
+					break;
+				case COLUMN_ESSENCE_RESISTANCE_MODIFIER:
+					race.setEssenceResistanceModifier((short)in.nextInt());
+					break;
+				case COLUMN_MENTALISM_RESISTANCE_MODIFIER:
+					race.setMentalismResistanceModifier((short)in.nextInt());
+					break;
+				case COLUMN_PHYSICAL_RESISTANCE_MODIFIER:
+					race.setPhysicalResistanceModifier((short)in.nextInt());
+					break;
+				case COLUMN_ENDURANCE_MODIFIER:
+					race.setEnduranceModifier((short)in.nextInt());
+					break;
+				case COLUMN_BASE_HITS:
+					race.setBaseHits((short)in.nextInt());
+					break;
+				case COLUMN_RECOVERY_MULTIPLIER:
+					race.setRecoveryMultiplier((float)in.nextDouble());
+					break;
+				case COLUMN_STRIDE_MODIFIER:
+					race.setStrideModifier((short)in.nextInt());
+					break;
+				case COLUMN_AVERAGE_HEIGHT:
+					race.setAverageHeight((short)in.nextInt());
+					break;
+				case COLUMN_AVERAGE_WEIGHT:
+					race.setAverageWeight((short)in.nextInt());
+					break;
+				case COLUMN_POUNDS_PER_INCH:
+					race.setPoundsPerInch((short)in.nextInt());
+					break;
+				case COLUMN_SIZE_ID:
+					race.setSize(new Size(in.nextInt()));
+					break;
+				case RaceTalentsSchema.TABLE_NAME:
+					readTalentsAndFlawsTiers(in, race);
+					break;
+				case RaceLocomotionSchema.TABLE_NAME:
+					readLocomotions(in, race);
+					break;
 
-		JsonArray talentTiers = jsonObject.getAsJsonArray(RaceTalentsSchema.TABLE_NAME);
-		for(JsonElement talentTierElement : talentTiers) {
-			final JsonObject talentTierObject = talentTierElement.getAsJsonObject();
-			Talent newTalent = talentDao.getById(talentTierObject.get(RaceTalentsSchema.COLUMN_TALENT_ID).getAsInt());
-			Short tiers = talentTierObject.get(RaceTalentsSchema.COLUMN_TIERS).getAsShort();
-			race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
+			}
 		}
-
-		JsonArray locomotionMap = jsonObject.getAsJsonArray(RaceLocomotionSchema.TABLE_NAME);
-		for(JsonElement locomotionElement : locomotionMap) {
-			final JsonObject locomotionObject = locomotionElement.getAsJsonObject();
-			LocomotionType newLocomotionType = locomotionTypeDao.getById(
-					locomotionObject.get(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID).getAsInt());
-			Short rate = locomotionObject.get(RaceLocomotionSchema.COLUMN_RATE).getAsShort();
-			race.getLocomotionTypeRatesMap().put(newLocomotionType, rate);
-		}
-
+		in.endObject();
 		return race;
+	}
+
+	private void readTalentsAndFlawsTiers(JsonReader in, Race race) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Talent newTalent = null;
+			Short tiers = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case RaceTalentsSchema.COLUMN_TALENT_ID:
+						newTalent = new Talent(in.nextInt());
+						tiers = (short)in.nextInt();
+						race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
+				}
+			}
+			if(newTalent != null) {
+				race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readLocomotions(JsonReader in, Race race) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			LocomotionType newLocomotionType = null;
+			Short rate = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID:
+						newLocomotionType = new LocomotionType(in.nextInt());
+						break;
+					case RaceLocomotionSchema.COLUMN_RATE:
+						rate = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newLocomotionType != null) {
+				race.getLocomotionTypeRatesMap().put(newLocomotionType, rate);
+			}
+		}
 	}
 }

@@ -27,6 +27,21 @@ public class DamageResult {
     private Character criticalSeverity = null;
     private CriticalType criticalType = null;
 
+	/**
+	 * Creates a new DamageResult instance
+	 */
+	public DamageResult() {
+    }
+
+	/**
+	 * Creates a new DamageResult instance with the given id
+	 *
+	 * @param id  the id of the new instance
+	 */
+    public DamageResult(int id) {
+        this.id = id;
+    }
+
     /**
      * Checks the validity of the DamageResult instance.
      *

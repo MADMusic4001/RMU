@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -38,6 +39,23 @@ public interface SkillDao {
 	 * @return  a List containing all Skill objects currently in persistent storage.
 	 */
 	public List<Skill> getAll();
+
+	/**
+	 * Saves a collection of Skill instances to persistent storage.
+	 *
+	 * @param instance  the collection of Skill instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Skill> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Skill instances to persistent storage.
+	 *
+	 * @param instance  the collection of Skill instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Skill> instance);
 
 	/**
 	 * Saves a Skill object to persistent storage.

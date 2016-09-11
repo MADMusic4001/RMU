@@ -18,28 +18,16 @@ package com.madinnovations.rmu.data.dao.combat.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
 /**
  * Json serializer and deserializer for the {@link DamageTable} entities
  */
 public class DamageTableSerializer extends TypeAdapter<DamageTable> implements DamageTableSchema {
-	DamageResultRowDao damageResultRowDao;
-
-	/**
-	 * Creates a new DamageTableSerializer instance.
-	 */
-	@Inject
-	public DamageTableSerializer(DamageResultRowDao damageResultRowDao) {
-		this.damageResultRowDao = damageResultRowDao;
-	}
 
 	@Override
 	public void write(JsonWriter out, DamageTable value) throws IOException {
@@ -59,17 +47,25 @@ public class DamageTableSerializer extends TypeAdapter<DamageTable> implements D
 		DamageTable damageTable = new DamageTable();
 
 		in.beginObject();
-		in.nextName();
-		damageTable.setId(in.nextInt());
-		in.nextName();
-		damageTable.setName(in.nextString());
-
-		in.nextName();
-		in.beginArray();
-		while (in.hasNext()) {
-			damageTable.getResultRows().add(damageResultRowDao.getById(in.nextInt()));
+		while(in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					damageTable.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					damageTable.setName(in.nextString());
+					break;
+				case COLUMN_RESULT_ROWS:
+					in.beginArray();
+					while (in.hasNext()) {
+						DamageResultRow damageResultRow = new DamageResultRow();
+						damageResultRow.setId(in.nextInt());
+						damageTable.getResultRows().add(damageResultRow);
+					}
+					in.endArray();
+					break;
+			}
 		}
-		in.endArray();
 		in.endObject();
 
 		return damageTable;

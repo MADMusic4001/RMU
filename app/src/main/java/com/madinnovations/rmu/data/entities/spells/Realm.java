@@ -30,6 +30,21 @@ public class Realm {
 	private Stat   stat;
 
 	/**
+	 * Creates a new Realm instance
+	 */
+	public Realm() {
+	}
+
+	/**
+	 * Creates a new CreatureCategory instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public Realm(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Realm instance.
 	 *
 	 * @return true if the Realm instance is valid, otherwise false.

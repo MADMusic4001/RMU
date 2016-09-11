@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.combat;
 
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface DamageResultDao {
      * @return  a List containing all DamageResult objects currently in persistent storage.
      */
     public List<DamageResult> getAll();
+
+    /**
+     * Saves a collection of DamageResult instances to persistent storage.
+     *
+     * @param instance  the collection of DamageResult instances to be saved
+     * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<DamageResult> instance, boolean isNew);
+
+    /**
+     * Saves a collection of DamageResult instances to persistent storage.
+     *
+     * @param instance  the collection of DamageResult instances to be saved
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<DamageResult> instance);
 
     /**
      * Saves a DamageResult object to persistent storage.

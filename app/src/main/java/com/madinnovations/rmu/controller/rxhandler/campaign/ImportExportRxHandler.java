@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.campaign;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -42,6 +43,7 @@ import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.serializers.AttackSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.CriticalResultSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.DamageResultRowSerializer;
+import com.madinnovations.rmu.data.dao.combat.serializers.DamageResultSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.DamageTableSerializer;
 import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
 import com.madinnovations.rmu.data.dao.common.ParameterDao;
@@ -53,7 +55,9 @@ import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.common.serializers.SkillCategorySerializer;
+import com.madinnovations.rmu.data.dao.common.serializers.SkillSerializer;
 import com.madinnovations.rmu.data.dao.common.serializers.SpecializationSerializer;
+import com.madinnovations.rmu.data.dao.common.serializers.TalentSerializer;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
@@ -122,127 +126,107 @@ import rx.schedulers.Schedulers;
  * Creates reactive observables for importing and exporting the database
  */
 public class ImportExportRxHandler {
+	private static final String LOG_TAG = "ImportExportRxHandler";
 	private static final String VERSION = "version";
 	private AttackDao                   attackDao;
-	private AttackSerializer            attackSerializer;
+	private AttackSerializer            attackSerializer = new AttackSerializer();
 	private BodyPartDao                 bodyPartDao;
 	private CharacterDao                characterDao;
-	private CharacterSerializer         characterSerializer;
+	private CharacterSerializer         characterSerializer = new CharacterSerializer();
 	private CreatureArchetypeDao        creatureArchetypeDao;
-	private CreatureArchetypeSerializer creatureArchetypeSerializer;
+	private CreatureArchetypeSerializer creatureArchetypeSerializer = new CreatureArchetypeSerializer();
 	private CreatureCategoryDao         creatureCategoryDao;
 	private CreatureTypeDao             creatureTypeDao;
-	private CreatureTypeSerializer      creatureTypeSerializer;
+	private CreatureTypeSerializer      creatureTypeSerializer = new CreatureTypeSerializer();
 	private CreatureVarietyDao          creatureVarietyDao;
-	private CreatureVarietySerializer   creatureVarietySerializer;
+	private CreatureVarietySerializer   creatureVarietySerializer = new CreatureVarietySerializer();
 	private CriticalCodeDao             criticalCodeDao;
 	private CriticalResultDao           criticalResultDao;
-	private CriticalResultSerializer    criticalResultSerializer;
+	private CriticalResultSerializer    criticalResultSerializer = new CriticalResultSerializer();
 	private CriticalTypeDao             criticalTypeDao;
 	private CultureDao                  cultureDao;
-	private CultureSerializer           cultureSerializer;
+	private CultureSerializer           cultureSerializer= new CultureSerializer();
 	private DamageResultDao             damageResultDao;
+	private DamageResultSerializer      damageResultSerializer = new DamageResultSerializer();
 	private DamageResultRowDao          damageResultRowDao;
-	private DamageResultRowSerializer   damageResultRowSerializer;
+	private DamageResultRowSerializer   damageResultRowSerializer =  new DamageResultRowSerializer();
 	private DamageTableDao              damageTableDao;
-	private DamageTableSerializer       damageTableSerializer;
+	private DamageTableSerializer       damageTableSerializer = new DamageTableSerializer();
 	private ItemDao                     itemDao;
 	private LocomotionTypeDao           locomotionTypeDao;
 	private OutlookDao                  outlookDao;
 	private ParameterDao                parameterDao;
 	private ProfessionDao               professionDao;
-	private ProfessionSerializer        professionSerializer;
+	private ProfessionSerializer        professionSerializer = new ProfessionSerializer();
 	private RaceDao                     raceDao;
-	private RaceSerializer              raceSerializer;
+	private RaceSerializer              raceSerializer =  new RaceSerializer();
 	private RealmDao                    realmDao;
-	private RealmSerializer             realmSerializer;
+	private RealmSerializer             realmSerializer = new RealmSerializer();
 	private SizeDao                     sizeDao;
 	private SkillDao                    skillDao;
+	private SkillSerializer             skillSerializer = new SkillSerializer();
 	private SkillCategoryDao            skillCategoryDao;
-	private SkillCategorySerializer     skillCategorySerializer;
+	private SkillCategorySerializer     skillCategorySerializer = new SkillCategorySerializer();
 	private SpecializationDao           specializationDao;
-	private SpecializationSerializer    specializationSerializer;
+	private SpecializationSerializer    specializationSerializer = new SpecializationSerializer();
 	private SpellDao                    spellDao;
-	private SpellSerializer             spellSerializer;
+	private SpellSerializer             spellSerializer = new SpellSerializer();
 	private SpellListDao                spellListDao;
-	private SpellListSerializer         spellListSerializer;
+	private SpellListSerializer         spellListSerializer = new SpellListSerializer();
 	private SpellListTypeDao            spellListTypeDao;
 	private StatDao                     statDao;
 	private TalentDao                   talentDao;
+	private TalentSerializer            talentSerializer = new TalentSerializer();
 	private TalentCategoryDao           talentCategoryDao;
+	private RMUDatabaseHelper           helper;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	public ImportExportRxHandler(AttackDao attackDao, AttackSerializer attackSerializer, BodyPartDao bodyPartDao,
-								 CharacterDao characterDao, CharacterSerializer characterSerializer,
-								 CreatureArchetypeDao creatureArchetypeDao,
-								 CreatureArchetypeSerializer creatureArchetypeSerializer, CreatureCategoryDao 
-											 creatureCategoryDao,
-								 CreatureTypeDao creatureTypeDao, CreatureTypeSerializer creatureTypeSerializer,
-								 CreatureVarietyDao creatureVarietyDao, CreatureVarietySerializer creatureVarietySerializer,
+	public ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CharacterDao characterDao,
+								 CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
+								 CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
 								 CriticalCodeDao criticalCodeDao, CriticalResultDao criticalResultDao,
-								 CriticalResultSerializer criticalResultSerializer, CriticalTypeDao criticalTypeDao,
-								 CultureDao cultureDao, CultureSerializer cultureSerializer, DamageResultDao damageResultDao,
-								 DamageResultRowDao damageResultRowDao, DamageResultRowSerializer damageResultRowSerializer,
-								 DamageTableDao damageTableDao, DamageTableSerializer damageTableSerializer, ItemDao itemDao,
+								 CriticalTypeDao criticalTypeDao, CultureDao cultureDao, DamageResultDao damageResultDao,
+								 DamageResultRowDao damageResultRowDao, DamageTableDao damageTableDao, ItemDao itemDao,
 								 LocomotionTypeDao locomotionTypeDao, OutlookDao outlookDao, ParameterDao parameterDao,
-								 ProfessionDao professionDao, ProfessionSerializer professionSerializer, RaceDao raceDao,
-								 RaceSerializer raceSerializer, RealmDao realmDao, RealmSerializer realmSerializer,
-								 SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
-								 SkillCategorySerializer skillCategorySerializer, SpecializationDao specializationDao,
-								 SpecializationSerializer specializationSerializer, SpellDao spellDao,
-								 SpellSerializer spellSerializer, SpellListDao spellListDao,
-								 SpellListSerializer spellListSerializer, SpellListTypeDao spellListTypeDao, StatDao statDao,
-								 TalentDao talentDao, TalentCategoryDao talentCategoryDao) {
+								 ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao, SizeDao sizeDao,
+								 SkillDao skillDao, SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
+								 SpellDao spellDao, SpellListDao spellListDao, SpellListTypeDao spellListTypeDao, StatDao statDao,
+								 TalentDao talentDao, TalentCategoryDao talentCategoryDao, RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
-		this.attackSerializer = attackSerializer;
 		this.bodyPartDao = bodyPartDao;
 		this.characterDao = characterDao;
-		this.characterSerializer = characterSerializer;
 		this.creatureArchetypeDao = creatureArchetypeDao;
-		this.creatureArchetypeSerializer = creatureArchetypeSerializer;
 		this.creatureCategoryDao = creatureCategoryDao;
 		this.creatureTypeDao = creatureTypeDao;
-		this.creatureTypeSerializer = creatureTypeSerializer;
 		this.creatureVarietyDao = creatureVarietyDao;
-		this.creatureVarietySerializer = creatureVarietySerializer;
 		this.criticalCodeDao = criticalCodeDao;
 		this.criticalResultDao = criticalResultDao;
-		this.criticalResultSerializer = criticalResultSerializer;
 		this.criticalTypeDao = criticalTypeDao;
 		this.cultureDao = cultureDao;
-		this.cultureSerializer = cultureSerializer;
 		this.damageResultDao = damageResultDao;
 		this.damageResultRowDao = damageResultRowDao;
-		this.damageResultRowSerializer = damageResultRowSerializer;
 		this.damageTableDao = damageTableDao;
-		this.damageTableSerializer = damageTableSerializer;
 		this.itemDao = itemDao;
 		this.locomotionTypeDao = locomotionTypeDao;
 		this.outlookDao = outlookDao;
 		this.parameterDao = parameterDao;
 		this.professionDao = professionDao;
-		this.professionSerializer = professionSerializer;
 		this.raceDao = raceDao;
-		this.raceSerializer = raceSerializer;
 		this.realmDao = realmDao;
-		this.realmSerializer = realmSerializer;
 		this.sizeDao = sizeDao;
 		this.skillDao = skillDao;
 		this.skillCategoryDao = skillCategoryDao;
-		this.skillCategorySerializer = skillCategorySerializer;
 		this.specializationDao = specializationDao;
-		this.specializationSerializer = specializationSerializer;
 		this.spellDao = spellDao;
-		this.spellSerializer = spellSerializer;
 		this.spellListDao = spellListDao;
-		this.spellListSerializer = spellListSerializer;
 		this.spellListTypeDao = spellListTypeDao;
 		this.statDao = statDao;
 		this.talentDao = talentDao;
 		this.talentCategoryDao = talentCategoryDao;
+		this.helper = helper;
 	}
 
 	/**
@@ -258,6 +242,7 @@ public class ImportExportRxHandler {
 				new Observable.OnSubscribe<Integer>() {
 					@Override
 					public void call(Subscriber<? super Integer> subscriber) {
+						SQLiteDatabase db = null;
 						try {
 							BufferedReader reader = new BufferedReader(new FileReader(fileName));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
@@ -268,15 +253,18 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(CreatureVariety.class, creatureVarietySerializer);
 							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);
 							gsonBuilder.registerTypeAdapter(Culture.class, cultureSerializer);
+							gsonBuilder.registerTypeAdapter(DamageResult.class, damageResultSerializer);
 							gsonBuilder.registerTypeAdapter(DamageResultRow.class, damageResultRowSerializer);
 							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
 							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
 							gsonBuilder.registerTypeAdapter(Realm.class, realmSerializer);
+							gsonBuilder.registerTypeAdapter(Skill.class, skillSerializer);
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, skillCategorySerializer);
 							gsonBuilder.registerTypeAdapter(Specialization.class, specializationSerializer);
 							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
 							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
+							gsonBuilder.registerTypeAdapter(Talent.class, talentSerializer);
 							gsonBuilder.setLenient();
 							final Gson gson = gsonBuilder.create();
 
@@ -293,255 +281,372 @@ public class ImportExportRxHandler {
 							}
 							jsonReader.endObject();
 
-							List<Stat> stats = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Stat stat = gson.fromJson(jsonReader, Stat.class);
-								stats.add(stat);
-							}
-							jsonReader.endArray();
-							Log.d("RMU", "stats = " + stats);
-							subscriber.onNext(3);
+							try {
+								db = helper.getWritableDatabase();
+								db.beginTransaction();
+								helper.clearDatabase();
 
-							List<LocomotionType> locomotionTypes = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								LocomotionType locomotionType = gson.fromJson(reader, LocomotionType.class);
-							}
-							jsonReader.endArray();
-							Log.d("RMU", "locomotionTypes = " + locomotionTypes);
-							subscriber.onNext(6);
+								List<Stat> stats = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Stat stat = gson.fromJson(jsonReader, Stat.class);
+									stats.add(stat);
+								}
+								jsonReader.endArray();
+								statDao.save(stats, true);
+								Log.d("RMU", "Loaded " + stats.size() + " stats.");
+								stats = null;
 
-							List<Parameter> parameters = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Parameter parameter = gson.fromJson(reader, Parameter.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(10);
+								List<LocomotionType> locomotionTypes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									LocomotionType locomotionType = gson.fromJson(jsonReader, LocomotionType.class);
+									locomotionTypes.add(locomotionType);
+								}
+								jsonReader.endArray();
+								locomotionTypeDao.save(locomotionTypes, true);
+								Log.d("RMU", "locomotionTypes.size = " + locomotionTypes.size());
+								locomotionTypes = null;
 
-							List<Size> sizes = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Size size = gson.fromJson(reader, Size.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(13);
+								List<Parameter> parameters = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Parameter parameter = gson.fromJson(jsonReader, Parameter.class);
+									parameters.add(parameter);
+								}
+								jsonReader.endArray();
+								parameterDao.save(parameters, true);
+								Log.d("RMU", "parameters.size = " + parameters.size());
+								subscriber.onNext(10);
+								parameters = null;
 
-							List<TalentCategory> talentCategories = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								TalentCategory talentCategory = gson.fromJson(reader, TalentCategory.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(16);
+								List<Size> sizes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Size size = gson.fromJson(jsonReader, Size.class);
+									sizes.add(size);
+								}
+								jsonReader.endArray();
+								sizeDao.save(sizes, true);
+								Log.d("RMU", "sizes.size = " + sizes.size());
+								sizes = null;
 
-							List<Talent> talents = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Talent talent = gson.fromJson(reader, Talent.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(20);
+								List<SkillCategory> skillCategories = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									SkillCategory skillCategory = gson.fromJson(jsonReader, SkillCategory.class);
+									skillCategories.add(skillCategory);
+								}
+								jsonReader.endArray();
+								skillCategoryDao.save(skillCategories, true);
+								Log.d("RMU", "skillCategories.size = " + skillCategories.size());
+								skillCategories = null;
 
-							List<Item> items = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Item item = gson.fromJson(reader, Item.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(23);
+								List<Skill> skills = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Skill skill = gson.fromJson(jsonReader, Skill.class);
+									skills.add(skill);
+								}
+								jsonReader.endArray();
+								skillDao.save(skills, true);
+								Log.d("RMU", "skills.size = " + skills.size());
+								subscriber.onNext(20);
+								skills = null;
 
-							List<BodyPart> bodyParts = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								BodyPart bodyPart = gson.fromJson(reader, BodyPart.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(26);
+								List<TalentCategory> talentCategories = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									TalentCategory talentCategory = gson.fromJson(jsonReader, TalentCategory.class);
+									talentCategories.add(talentCategory);
+								}
+								jsonReader.endArray();
+								talentCategoryDao.save(talentCategories, true);
+								Log.d("RMU", "talentCategories.size = " + talentCategories.size());
+								talentCategories = null;
 
-							List<CriticalCode> criticalCodeList = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CriticalCode criticalCode = gson.fromJson(reader, CriticalCode.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(30);
+								List<Talent> talents = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Talent talent = gson.fromJson(jsonReader, Talent.class);
+									talents.add(talent);
+								}
+								jsonReader.endArray();
+								talentDao.save(talents, true);
+								Log.d("RMU", "talents.size = " + talents.size());
+								talents = null;
 
-							List<CriticalType> criticalTypes = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CriticalType criticalType = gson.fromJson(reader, CriticalType.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(33);
+								List<Item> items = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Item item = gson.fromJson(jsonReader, Item.class);
+									items.add(item);
+								}
+								jsonReader.endArray();
+								itemDao.save(items, true);
+								Log.d("RMU", "items.size = " + items.size());
+								subscriber.onNext(30);
+								items = null;
 
-							List<CriticalResult> criticalResults = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CriticalResult criticalResult = gson.fromJson(reader, CriticalResult.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(36);
+								List<BodyPart> bodyParts = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									BodyPart bodyPart = gson.fromJson(jsonReader, BodyPart.class);
+									bodyParts.add(bodyPart);
+								}
+								jsonReader.endArray();
+								bodyPartDao.save(bodyParts, true);
+								Log.d("RMU", "bodyParts.size = " + bodyParts.size());
+								bodyParts = null;
 
-							List<DamageResult> damageResults = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								DamageResult damageResult = gson.fromJson(reader, DamageResult.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(40);
+								List<CriticalCode> criticalCodes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CriticalCode criticalCode = gson.fromJson(jsonReader, CriticalCode.class);
+									criticalCodes.add(criticalCode);
+								}
+								jsonReader.endArray();
+								criticalCodeDao.save(criticalCodes, true);
+								Log.d("RMU", "criticalCodes.size = " + criticalCodes.size());
+								criticalCodes = null;
 
-							List<DamageResultRow> damageResultRows = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								DamageResultRow damageResultRow = gson.fromJson(reader, DamageResultRow.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(43);
+								List<CriticalType> criticalTypes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CriticalType criticalType = gson.fromJson(jsonReader, CriticalType.class);
+									criticalTypes.add(criticalType);
+								}
+								jsonReader.endArray();
+								criticalTypeDao.save(criticalTypes, true);
+								Log.d("RMU", "criticalTypes.size = " + criticalTypes.size());
+								subscriber.onNext(40);
+								criticalTypes = null;
 
-							List<DamageTable> damageTables = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								DamageTable damageTable = gson.fromJson(reader, DamageTable.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(46);
+								List<CriticalResult> criticalResults = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CriticalResult criticalResult = gson.fromJson(jsonReader, CriticalResult.class);
+									criticalResults.add(criticalResult);
+								}
+								jsonReader.endArray();
+								criticalResultDao.save(criticalResults, true);
+								Log.d("RMU", "criticalResults.size = " + criticalResults.size());
+								criticalResults = null;
 
-							List<CreatureCategory> creatureCategories = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CreatureCategory creatureCategory = gson.fromJson(reader, CreatureCategory.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(49);
+								List<DamageResult> damageResults = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
+									damageResults.add(damageResult);
+								}
+								damageResultSerializer = null;
+								jsonReader.endArray();
+								damageResultDao.save(damageResults, true);
+								Log.d("RMU", "damageResults.size = " + damageResults.size());
+								damageResults = null;
 
-							List<CreatureType> creatureTypes = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CreatureType creatureType = gson.fromJson(reader, CreatureType.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(52);
+								List<DamageTable> damageTables = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									DamageTable damageTable = gson.fromJson(jsonReader, DamageTable.class);
+									damageTables.add(damageTable);
+								}
+								jsonReader.endArray();
+								damageTableDao.save(damageTables, true);
+								Log.d("RMU", "damageTables.size = " + damageTables.size());
+								damageTables = null;
 
-							List<Outlook> outlooks = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Outlook outlook = gson.fromJson(reader, Outlook.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(55);
+								List<DamageResultRow> damageResultRows = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									DamageResultRow damageResultRow = gson.fromJson(jsonReader, DamageResultRow.class);
+									damageResultRows.add(damageResultRow);
+								}
+								jsonReader.endArray();
+								damageResultRowDao.save(damageResultRows, true);
+								Log.d("RMU", "damageResultRows.size = " + damageResultRows.size());
+								damageResultRows = null;
+								subscriber.onNext(50);
 
-							List<SkillCategory> skillCategories = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								SkillCategory skillCategory = gson.fromJson(reader, SkillCategory.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(59);
+								List<CreatureCategory> creatureCategories = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CreatureCategory creatureCategory = gson.fromJson(jsonReader, CreatureCategory.class);
+									creatureCategories.add(creatureCategory);
+								}
+								jsonReader.endArray();
+								creatureCategoryDao.save(creatureCategories, true);
+								Log.d("RMU", "creatureCategories.size = " + creatureCategories.size());
+								creatureCategories = null;
 
-							List<Skill> skills = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Skill skill = gson.fromJson(reader, Skill.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(62);
+								List<CreatureType> creatureTypes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CreatureType creatureType = gson.fromJson(jsonReader, CreatureType.class);
+									creatureTypes.add(creatureType);
+								}
+								jsonReader.endArray();
+								creatureTypeDao.save(creatureTypes, true);
+								Log.d("RMU", "creatureTypes.size = " + creatureTypes.size());
+								creatureTypes = null;
 
-							List<Profession> professions = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Profession profession = gson.fromJson(reader, Profession.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(65);
+								List<Outlook> outlooks = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Outlook outlook = gson.fromJson(jsonReader, Outlook.class);
+									outlooks.add(outlook);
+								}
+								jsonReader.endArray();
+								outlookDao.save(outlooks, true);
+								Log.d("RMU", "outlooks.size = " + outlooks.size());
+								outlooks = null;
+								subscriber.onNext(60);
 
-							List<Culture> cultures = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Culture culture = gson.fromJson(reader, Culture.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(69);
+								List<Realm> realms = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Realm realm = gson.fromJson(jsonReader, Realm.class);
+									realms.add(realm);
+								}
+								jsonReader.endArray();
+								realmDao.save(realms, true);
+								Log.d("RMU", "realms.size = " + realms.size());
+								realms = null;
 
-							List<Race> races = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Race race = gson.fromJson(reader, Race.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(72);
+								List<Profession> professions = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Profession profession = gson.fromJson(jsonReader, Profession.class);
+									professions.add(profession);
+								}
+								jsonReader.endArray();
+								professionDao.save(professions, true);
+								Log.d("RMU", "professions.size = " + professions.size());
+								professions = null;
 
-							List<Specialization> specializations = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Specialization specialization = gson.fromJson(reader, Specialization.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(75);
+								List<Culture> cultures = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Culture culture = gson.fromJson(jsonReader, Culture.class);
+									cultures.add(culture);
+								}
+								jsonReader.endArray();
+								cultureDao.save(cultures, true);
+								Log.d("RMU", "cultures.size = " + cultures.size());
+								cultures = null;
+								subscriber.onNext(70);
 
-							List<Attack> attacks = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Attack attack = gson.fromJson(reader, Attack.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(78);
+								List<Race> races = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Race race = gson.fromJson(jsonReader, Race.class);
+									races.add(race);
+								}
+								jsonReader.endArray();
+								raceDao.save(races, true);
+								Log.d("RMU", "races.size = " + races.size());
+								races = null;
 
-							List<CreatureArchetype> creatureArchetypes = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CreatureArchetype creatureArchetype = gson.fromJson(reader, CreatureArchetype.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(81);
+								List<Specialization> specializations = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Specialization specialization = gson.fromJson(jsonReader, Specialization.class);
+									specializations.add(specialization);
+								}
+								jsonReader.endArray();
+								specializationDao.save(specializations, true);
+								Log.d("RMU", "specializations.size = " + specializations.size());
+								specializations = null;
 
-							List<Realm> realms = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Realm realm = gson.fromJson(reader, Realm.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(84);
+								List<Attack> attacks = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Attack attack = gson.fromJson(jsonReader, Attack.class);
+									attacks.add(attack);
+								}
+								jsonReader.endArray();
+								attackDao.save(attacks, true);
+								Log.d("RMU", "attacks.size = " + attacks.size());
+								attacks = null;
+								subscriber.onNext(80);
 
-							List<SpellList> spellLists = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								SpellList spellList = gson.fromJson(reader, SpellList.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(87);
+								List<CreatureArchetype> creatureArchetypes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CreatureArchetype creatureArchetype = gson.fromJson(jsonReader, CreatureArchetype.class);
+									creatureArchetypes.add(creatureArchetype);
+								}
+								jsonReader.endArray();
+								creatureArchetypeDao.save(creatureArchetypes, true);
+								Log.d("RMU", "creatureArchetypes.size = " + creatureArchetypes.size());
+								creatureArchetypes = null;
 
-							List<SpellListType> spellListTypes = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								SpellListType spellListType = gson.fromJson(reader, SpellListType.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(90);
+								List<SpellListType> spellListTypes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									SpellListType spellListType = gson.fromJson(jsonReader, SpellListType.class);
+									spellListTypes.add(spellListType);
+								}
+								jsonReader.endArray();
+								spellListTypeDao.save(spellListTypes, true);
+								Log.d("RMU", "spellListTypes.size = " + spellListTypes.size());
+								spellListTypes = null;
 
-							List<Spell> spells = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Spell spell = gson.fromJson(reader, Spell.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(93);
+								List<SpellList> spellLists = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									SpellList spellList = gson.fromJson(jsonReader, SpellList.class);
+									spellLists.add(spellList);
+								}
+								jsonReader.endArray();
+								spellListDao.save(spellLists, true);
+								Log.d("RMU", "spellLists.size = " + spellLists.size());
+								spellLists = null;
+								subscriber.onNext(90);
 
-							List<Character> characters = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								Character character = gson.fromJson(reader, Character.class);
-							}
-							jsonReader.endArray();
-							subscriber.onNext(96);
+								List<Spell> spells = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Spell spell = gson.fromJson(jsonReader, Spell.class);
+									spells.add(spell);
+								}
+								jsonReader.endArray();
+								spellDao.save(spells, true);
+								Log.d("RMU", "spells.size = " + spells.size());
+								spells = null;
 
-							List<CreatureVariety> creatureVarieties = new ArrayList<>();
-							jsonReader.beginArray();
-							while (jsonReader.hasNext()) {
-								CreatureVariety creatureVariety = gson.fromJson(reader, CreatureVariety.class);
+								List<Character> characters = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									Character character = gson.fromJson(jsonReader, Character.class);
+									characters.add(character);
+								}
+								jsonReader.endArray();
+								characterDao.save(characters, true);
+								Log.d("RMU", "characters = " + characters);
+								characters = null;
+
+								List<CreatureVariety> creatureVarieties = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									CreatureVariety creatureVariety = gson.fromJson(jsonReader, CreatureVariety.class);
+									creatureVarieties.add(creatureVariety);
+								}
+								jsonReader.endArray();
+								creatureVarietyDao.save(creatureVarieties, true);
+								Log.d("RMU", "creatureVarieties = " + creatureVarieties);
+								creatureVarieties = null;
+								db.setTransactionSuccessful();
 							}
-							jsonReader.endArray();
+							catch(Exception e) {
+								Log.e(LOG_TAG, "Caught exception", e);
+								throw new RMUAppException(e);
+							}
+							finally {
+								if(db != null) {
+									db.endTransaction();
+								}
+							}
 							subscriber.onNext(100);
 
 							reader.close();
@@ -579,15 +684,18 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(CreatureVariety.class, creatureVarietySerializer);
 							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);
 							gsonBuilder.registerTypeAdapter(Culture.class, cultureSerializer);
+							gsonBuilder.registerTypeAdapter(DamageResult.class, damageResultSerializer);
 							gsonBuilder.registerTypeAdapter(DamageResultRow.class, damageResultRowSerializer);
 							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
 							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
 							gsonBuilder.registerTypeAdapter(Realm.class, realmSerializer);
+							gsonBuilder.registerTypeAdapter(Skill.class, skillSerializer);
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, skillCategorySerializer);
 							gsonBuilder.registerTypeAdapter(Specialization.class, specializationSerializer);
 							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
 							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
+							gsonBuilder.registerTypeAdapter(Talent.class, talentSerializer);
 							final Gson gson = gsonBuilder.create();
 
 							JsonWriter jsonWriter = gson.newJsonWriter(writer);
@@ -597,65 +705,44 @@ public class ImportExportRxHandler {
 									.endObject()
 									.flush();
 							gson.toJson(statDao.getAll(), writer);
-							subscriber.onNext(3);
 							gson.toJson(locomotionTypeDao.getAll(), writer);
-							subscriber.onNext(6);
 							gson.toJson(parameterDao.getAll(), writer);
 							subscriber.onNext(10);
 							gson.toJson(sizeDao.getAll(), writer);
-							subscriber.onNext(13);
-							gson.toJson(talentCategoryDao.getAll(), writer);
-							subscriber.onNext(16);
-							gson.toJson(talentDao.getAll(), writer);
-							subscriber.onNext(20);
-							gson.toJson(itemDao.getAll(), writer);
-							subscriber.onNext(23);
-							gson.toJson(bodyPartDao.getAll(), writer);
-							subscriber.onNext(26);
-							gson.toJson(criticalCodeDao.getAll(), writer);
-							subscriber.onNext(30);
-							gson.toJson(criticalTypeDao.getAll(), writer);
-							subscriber.onNext(33);
-							gson.toJson(criticalResultDao.getAll(), writer);
-							subscriber.onNext(36);
-							gson.toJson(damageResultDao.getAll(), writer);
-							subscriber.onNext(40);
-							gson.toJson(damageResultRowDao.getAll(), writer);
-							subscriber.onNext(43);
-							gson.toJson(damageTableDao.getAll(), writer);
-							subscriber.onNext(46);
-							gson.toJson(creatureCategoryDao.getAll(), writer);
-							subscriber.onNext(49);
-							gson.toJson(creatureTypeDao.getAll(), writer);
-							subscriber.onNext(52);
-							gson.toJson(outlookDao.getAll(), writer);
-							subscriber.onNext(55);
 							gson.toJson(skillCategoryDao.getAll(), writer);
-							subscriber.onNext(59);
 							gson.toJson(skillDao.getAll(), writer);
-							subscriber.onNext(62);
-							gson.toJson(professionDao.getAll(), writer);
-							subscriber.onNext(65);
-							gson.toJson(cultureDao.getAll(), writer);
-							subscriber.onNext(69);
-							gson.toJson(raceDao.getAll(), writer);
-							subscriber.onNext(72);
-							gson.toJson(specializationDao.getAll(), writer);
-							subscriber.onNext(75);
-							gson.toJson(attackDao.getAll(), writer);
-							subscriber.onNext(78);
-							gson.toJson(creatureArchetypeDao.getAll(), writer);
-							subscriber.onNext(81);
+							subscriber.onNext(20);
+							gson.toJson(talentCategoryDao.getAll(), writer);
+							gson.toJson(talentDao.getAll(), writer);
+							gson.toJson(itemDao.getAll(), writer);
+							subscriber.onNext(30);
+							gson.toJson(bodyPartDao.getAll(), writer);
+							gson.toJson(criticalCodeDao.getAll(), writer);
+							gson.toJson(criticalTypeDao.getAll(), writer);
+							subscriber.onNext(40);
+							gson.toJson(criticalResultDao.getAll(), writer);
+							gson.toJson(damageResultDao.getAll(), writer);
+							gson.toJson(damageTableDao.getAll(), writer);
+							gson.toJson(damageResultRowDao.getAll(), writer);
+							subscriber.onNext(50);
+							gson.toJson(creatureCategoryDao.getAll(), writer);
+							gson.toJson(creatureTypeDao.getAll(), writer);
+							gson.toJson(outlookDao.getAll(), writer);
+							subscriber.onNext(60);
 							gson.toJson(realmDao.getAll(), writer);
-							subscriber.onNext(84);
-							gson.toJson(spellListDao.getAll(), writer);
-							subscriber.onNext(87);
+							gson.toJson(professionDao.getAll(), writer);
+							gson.toJson(cultureDao.getAll(), writer);
+							subscriber.onNext(70);
+							gson.toJson(raceDao.getAll(), writer);
+							gson.toJson(specializationDao.getAll(), writer);
+							gson.toJson(attackDao.getAll(), writer);
+							subscriber.onNext(80);
+							gson.toJson(creatureArchetypeDao.getAll(), writer);
 							gson.toJson(spellListTypeDao.getAll(), writer);
+							gson.toJson(spellListDao.getAll(), writer);
 							subscriber.onNext(90);
 							gson.toJson(spellDao.getAll(), writer);
-							subscriber.onNext(93);
 							gson.toJson(characterDao.getAll(), writer);
-							subscriber.onNext(96);
 							gson.toJson(creatureVarietyDao.getAll(), writer);
 							subscriber.onNext(100);
 							writer.flush();

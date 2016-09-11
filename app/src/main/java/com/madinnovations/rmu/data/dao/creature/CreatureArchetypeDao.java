@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.creature;
 
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface CreatureArchetypeDao {
 	 * @return  a List containing all CreatureArchetype objects currently in persistent storage.
 	 */
 	public List<CreatureArchetype> getAll();
+
+	/**
+	 * Saves a collection of CreatureArchetype instances to persistent storage.
+	 *
+	 * @param instance  the collection of CreatureArchetype instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<CreatureArchetype> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of CreatureArchetype instances to persistent storage.
+	 *
+	 * @param instance  the collection of CreatureArchetype instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<CreatureArchetype> instance);
 
 	/**
 	 * Saves a CreatureArchetype object to persistent storage.

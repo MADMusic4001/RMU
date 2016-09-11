@@ -18,10 +18,10 @@ package com.madinnovations.rmu.data.dao.creature.schemas;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
- * Database schema data for the variety_stats table
+ * Database schema data for the variety_skills table
  */
 public interface VarietySkillsSchema {
-	String TABLE_NAME = "variety_stats";
+	String TABLE_NAME = "variety_skills";
 
 	String COLUMN_VARIETY_ID = "varietyId";
 	String COLUMN_SKILL_ID = "skillId";

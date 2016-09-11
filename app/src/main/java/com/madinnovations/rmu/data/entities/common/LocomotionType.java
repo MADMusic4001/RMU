@@ -28,6 +28,21 @@ public class LocomotionType {
 	private int defaultRate = 20;
 
 	/**
+	 * Creates a new LocomotionType instance
+	 */
+	public LocomotionType() {
+	}
+
+	/**
+	 * Creates a new LocomotionType instance with the given id
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public LocomotionType(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the LocomotionType instance.
 	 *
 	 * @return true if the LocomotionType instance is valid, otherwise false.

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.common;
 
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface TalentCategoryDao {
 	 * @return  a List containing all TalentCategory objects currently in persistent storage.
 	 */
 	public List<TalentCategory> getAll();
+
+	/**
+	 * Saves a collection of TalentCategory instances to persistent storage.
+	 *
+	 * @param instance  the collection of TalentCategory instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<TalentCategory> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of TalentCategory instances to persistent storage.
+	 *
+	 * @param instance  the collection of TalentCategory instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<TalentCategory> instance);
 
 	/**
 	 * Saves a TalentCategory object to persistent storage.

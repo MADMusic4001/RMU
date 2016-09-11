@@ -16,8 +16,8 @@
 package com.madinnovations.rmu.data.dao.character;
 
 import com.madinnovations.rmu.data.entities.character.Profession;
-import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -38,6 +38,23 @@ public interface ProfessionDao {
 	 * @return  a List containing all Profession objects currently in persistent storage.
 	 */
 	public List<Profession> getAll();
+
+	/**
+	 * Saves a collection of Profession instances to persistent storage.
+	 *
+	 * @param instance  the collection of Profession instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Profession> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Profession instances to persistent storage.
+	 *
+	 * @param instance  the collection of Profession instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Profession> instance);
 
 	/**
 	 * Saves a Profession object to persistent storage.

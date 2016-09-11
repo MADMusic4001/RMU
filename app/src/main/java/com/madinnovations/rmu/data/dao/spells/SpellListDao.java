@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.spells;
 
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface SpellListDao {
 	 * @return  a List containing all SpellList objects currently in persistent storage.
 	 */
 	public List<SpellList> getAll();
+
+	/**
+	 * Saves a collection of SpellList instances to persistent storage.
+	 *
+	 * @param instance  the collection of SpellList instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<SpellList> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of SpellList instances to persistent storage.
+	 *
+	 * @param instance  the collection of SpellList instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<SpellList> instance);
 
 	/**
 	 * Saves a SpellList object to persistent storage.

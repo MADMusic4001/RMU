@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.character;
 
 import com.madinnovations.rmu.data.entities.character.Character;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface CharacterDao {
 	 * @return  a List containing all Character objects currently in persistent storage.
 	 */
 	public List<Character> getAll();
+
+	/**
+	 * Saves a collection of Character instances to persistent storage.
+	 *
+	 * @param instance  the collection of Character instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Character> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Character instances to persistent storage.
+	 *
+	 * @param instance  the collection of Character instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Character> instance);
 
 	/**
 	 * Saves a Character object to persistent storage.

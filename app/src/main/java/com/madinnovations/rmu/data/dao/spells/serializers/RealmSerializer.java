@@ -15,56 +15,49 @@
  */
 package com.madinnovations.rmu.data.dao.spells.serializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.common.StatDao;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link Realm} entities
  */
-public class RealmSerializer implements JsonSerializer<Realm>, JsonDeserializer<Realm>, RealmSchema {
-	StatDao           statDao;
-
-	/**
-	 * Creates a new RealmSerializer instance.
-	 *
-	 * @param statDao  a {@link StatDao} instance
-	 */
-	@Inject
-	public RealmSerializer(StatDao statDao) {
-		this.statDao = statDao;
+public class RealmSerializer extends TypeAdapter<Realm> implements RealmSchema {
+	@Override
+	public void write(JsonWriter out, Realm value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_STAT_ID).value(value.getStat().getId());
+		out.endObject().flush();
 	}
 
 	@Override
-	public JsonElement serialize(Realm src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		jsonObject.addProperty(COLUMN_STAT_ID, src.getStat().getId());
-
-		return jsonObject;
-	}
-
-	@Override
-	public Realm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Realm read(JsonReader in) throws IOException {
 		Realm realm = new Realm();
-		JsonObject jsonObject = json.getAsJsonObject();
-		realm.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		realm.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		realm.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		realm.setStat(statDao.getById(jsonObject.get(COLUMN_STAT_ID).getAsInt()));
+		in.beginObject();
+		while (in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					realm.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					realm.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					realm.setDescription(in.nextString());
+					break;
+				case COLUMN_STAT_ID:
+					realm.setStat(new Stat(in.nextInt()));
+					break;
+			}
+		}
 		return realm;
 	}
 }

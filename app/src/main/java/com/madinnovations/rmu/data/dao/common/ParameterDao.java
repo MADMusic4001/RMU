@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.common;
 
 import com.madinnovations.rmu.data.entities.common.Parameter;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,23 @@ public interface ParameterDao {
 	 * @return  a List containing all Parameter objects currently in persistent storage.
 	 */
 	public List<Parameter> getAll();
+
+	/**
+	 * Saves a collection of Parameter instances to persistent storage.
+	 *
+	 * @param instance  the collection Parameter Stat instances to be saved
+	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Parameter> instance, boolean isNew);
+
+	/**
+	 * Saves a collection of Parameter instances to persistent storage.
+	 *
+	 * @param instance  the collection of Parameter instances to be saved
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Collection<Parameter> instance);
 
 	/**
 	 * Saves a Parameter object to persistent storage.

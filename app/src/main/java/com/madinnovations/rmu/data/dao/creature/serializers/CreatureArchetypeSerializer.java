@@ -15,124 +15,106 @@
  */
 package com.madinnovations.rmu.data.dao.creature.serializers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
-import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
-import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
-import com.madinnovations.rmu.data.entities.character.Character;
-import com.madinnovations.rmu.data.entities.character.Culture;
-import com.madinnovations.rmu.data.entities.character.Profession;
-import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
-import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * Json serializer and deserializer for the {@link CreatureArchetype} entities
  */
-public class CreatureArchetypeSerializer implements JsonSerializer<CreatureArchetype>, JsonDeserializer<CreatureArchetype>,
-		CreatureArchetypeSchema {
-	SkillCategoryDao skillCategoryDao;
-	StatDao statDao;
+public class CreatureArchetypeSerializer extends TypeAdapter<CreatureArchetype> implements CreatureArchetypeSchema {
+	private static final String PRIMARY_SKILLS = "primary_skills";
+	private static final String SECONDARY_SKILLS = "secondary_skills";
+	private static final String TERTIARY_SKILLS = "tertiary_skills";
 
-	/**
-	 * Creates a new CharacterSerializer instance.
-	 */
-	@Inject
-	public CreatureArchetypeSerializer(SkillCategoryDao skillCategoryDao, StatDao statDao) {
-		this.skillCategoryDao = skillCategoryDao;
-		this.statDao = statDao;
+	@Override
+	public void write(JsonWriter out, CreatureArchetype value) throws IOException {
+		out.beginObject();
+		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		if(value.getStat1() != null) {
+			out.name(COLUMN_STAT1_ID).value(value.getStat1().getId());
+		}
+		if(value.getStat2() != null) {
+			out.name(COLUMN_STAT2_ID).value(value.getStat2().getId());
+		}
+		out.name(COLUMN_SPELLS).value(value.getSpells());
+		out.name(COLUMN_ROLES).value(value.getRoles());
+
+		out.name(PRIMARY_SKILLS).beginArray();
+		for(SkillCategory skillCategory : value.getPrimarySkills()) {
+			out.value(skillCategory.getId());
+		}
+		out.endArray();
+
+		out.name(SECONDARY_SKILLS).beginArray();
+		for(SkillCategory skillCategory : value.getSecondarySkills()) {
+			out.value(skillCategory.getId());
+		}
+		out.endArray();
+
+		out.name(TERTIARY_SKILLS).beginArray();
+		for(SkillCategory skillCategory : value.getTertiarySkills()) {
+			out.value(skillCategory.getId());
+		}
+		out.endArray();
+
+		out.endObject();
+		out.flush();
 	}
 
 	@Override
-	public JsonElement serialize(CreatureArchetype src, Type typeOfSrc, JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(COLUMN_ID, src.getId());
-		jsonObject.addProperty(COLUMN_NAME, src.getName());
-		jsonObject.addProperty(COLUMN_DESCRIPTION, src.getDescription());
-		if(src.getStat1() != null) {
-			jsonObject.addProperty(COLUMN_STAT1_ID, src.getStat1().getId());
-		}
-		if(src.getStat2() != null) {
-			jsonObject.addProperty(COLUMN_STAT2_ID, src.getStat2().getId());
-		}
-		jsonObject.addProperty(COLUMN_SPELLS, src.getSpells());
-		jsonObject.addProperty(COLUMN_ROLES, src.getRoles());
-
-		final JsonArray primarySkillsArray = new JsonArray();
-		for(SkillCategory skillCategory : src.getPrimarySkills()) {
-			primarySkillsArray.add(skillCategory.getId());
-		}
-		jsonObject.add("primary_skills", primarySkillsArray);
-
-		final JsonArray secondarySkillsArray = new JsonArray();
-		for(SkillCategory skillCategory : src.getSecondarySkills()) {
-			secondarySkillsArray.add(skillCategory.getId());
-		}
-		jsonObject.add("secondary_skills", secondarySkillsArray);
-
-		final JsonArray tertiarySkillsArray = new JsonArray();
-		for(SkillCategory skillCategory : src.getTertiarySkills()) {
-			tertiarySkillsArray.add(skillCategory.getId());
-		}
-		jsonObject.add("tertiary_skills", tertiarySkillsArray);
-
-		return jsonObject;
-	}
-
-	@Override
-	public CreatureArchetype deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public CreatureArchetype read(JsonReader in) throws IOException {
 		CreatureArchetype creatureArchetype = new CreatureArchetype();
-		JsonObject jsonObject = json.getAsJsonObject();
-		creatureArchetype.setId(jsonObject.get(COLUMN_ID).getAsInt());
-		creatureArchetype.setName(jsonObject.get(COLUMN_NAME).getAsString());
-		creatureArchetype.setDescription(jsonObject.get(COLUMN_DESCRIPTION).getAsString());
-		JsonElement stat1 = jsonObject.get(COLUMN_STAT1_ID);
-		if(stat1 != null) {
-			creatureArchetype.setStat1(statDao.getById(stat1.getAsInt()));
+		in.beginObject();
+		while(in.hasNext()) {
+			switch (in.nextName()) {
+				case COLUMN_ID:
+					creatureArchetype.setId(in.nextInt());
+					break;
+				case COLUMN_NAME:
+					creatureArchetype.setName(in.nextString());
+					break;
+				case COLUMN_DESCRIPTION:
+					creatureArchetype.setDescription(in.nextString());
+					break;
+				case COLUMN_STAT1_ID:
+					creatureArchetype.setStat1(new Stat(in.nextInt()));
+					break;
+				case COLUMN_STAT2_ID:
+					creatureArchetype.setStat2(new Stat(in.nextInt()));
+					break;
+				case PRIMARY_SKILLS:
+					in.beginArray();
+					while(in.hasNext()) {
+						creatureArchetype.getPrimarySkills().add(new SkillCategory(in.nextInt()));
+					}
+					in.endArray();
+					break;
+				case SECONDARY_SKILLS:
+					in.beginArray();
+					while(in.hasNext()) {
+						creatureArchetype.getSecondarySkills().add(new SkillCategory(in.nextInt()));
+					}
+					in.endArray();
+					break;
+				case TERTIARY_SKILLS:
+					in.beginArray();
+					while(in.hasNext()) {
+						creatureArchetype.getTertiarySkills().add(new SkillCategory(in.nextInt()));
+					}
+					in.endArray();
+					break;
+			}
 		}
-		JsonElement stat2 = jsonObject.get(COLUMN_STAT2_ID);
-		if(stat2 != null) {
-			creatureArchetype.setStat2(statDao.getById(stat2.getAsInt()));
-		}
-
-		JsonArray skillsArray = jsonObject.getAsJsonArray("primary_skills");
-		for(JsonElement element : skillsArray) {
-			creatureArchetype.getPrimarySkills().add(skillCategoryDao.getById(element.getAsInt()));
-		}
-
-		skillsArray = jsonObject.getAsJsonArray("secondary_skills");
-		for(JsonElement element : skillsArray) {
-			creatureArchetype.getSecondarySkills().add(skillCategoryDao.getById(element.getAsInt()));
-		}
-
-		skillsArray = jsonObject.getAsJsonArray("tertiary_skills");
-		for(JsonElement element : skillsArray) {
-			creatureArchetype.getTertiarySkills().add(skillCategoryDao.getById(element.getAsInt()));
-		}
-
+		in.endObject();
 		return creatureArchetype;
 	}
 }
