@@ -240,6 +240,7 @@ public class ImportExportRxHandler {
 	public Observable<Integer> importDatabase(@NonNull final String fileName) {
 		return Observable.create(
 				new Observable.OnSubscribe<Integer>() {
+					@SuppressWarnings("UnusedAssignment")
 					@Override
 					public void call(Subscriber<? super Integer> subscriber) {
 						SQLiteDatabase db = null;
@@ -294,7 +295,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								statDao.save(stats, true);
-								Log.d("RMU", "Loaded " + stats.size() + " stats.");
+								Log.d(LOG_TAG, "Loaded " + stats.size() + " stats.");
 								stats = null;
 
 								List<LocomotionType> locomotionTypes = new ArrayList<>();
@@ -305,7 +306,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								locomotionTypeDao.save(locomotionTypes, true);
-								Log.d("RMU", "locomotionTypes.size = " + locomotionTypes.size());
+								Log.d(LOG_TAG, "Loaded " + locomotionTypes.size() + " locomotionTypes.");
 								locomotionTypes = null;
 
 								List<Parameter> parameters = new ArrayList<>();
@@ -316,7 +317,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								parameterDao.save(parameters, true);
-								Log.d("RMU", "parameters.size = " + parameters.size());
+								Log.d(LOG_TAG, "Loaded " + parameters.size() + " parameters.");
 								subscriber.onNext(10);
 								parameters = null;
 
@@ -328,7 +329,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								sizeDao.save(sizes, true);
-								Log.d("RMU", "sizes.size = " + sizes.size());
+								Log.d(LOG_TAG, "Loaded " + sizes.size() + " sizes.");
 								sizes = null;
 
 								List<SkillCategory> skillCategories = new ArrayList<>();
@@ -339,7 +340,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								skillCategoryDao.save(skillCategories, true);
-								Log.d("RMU", "skillCategories.size = " + skillCategories.size());
+								Log.d(LOG_TAG, "Loaded " + skillCategories.size() + " skillCategories.");
 								skillCategories = null;
 
 								List<Skill> skills = new ArrayList<>();
@@ -350,7 +351,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								skillDao.save(skills, true);
-								Log.d("RMU", "skills.size = " + skills.size());
+								Log.d(LOG_TAG, "Loaded " + skills.size() + " skills.");
 								subscriber.onNext(20);
 								skills = null;
 
@@ -362,7 +363,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								talentCategoryDao.save(talentCategories, true);
-								Log.d("RMU", "talentCategories.size = " + talentCategories.size());
+								Log.d(LOG_TAG, "Loaded " + talentCategories.size() + " talentCategories.");
 								talentCategories = null;
 
 								List<Talent> talents = new ArrayList<>();
@@ -373,7 +374,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								talentDao.save(talents, true);
-								Log.d("RMU", "talents.size = " + talents.size());
+								Log.d(LOG_TAG, "Loaded " + talents.size() + " talents.");
 								talents = null;
 
 								List<Item> items = new ArrayList<>();
@@ -384,7 +385,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								itemDao.save(items, true);
-								Log.d("RMU", "items.size = " + items.size());
+								Log.d(LOG_TAG, "Loaded " + items.size() + " items.");
 								subscriber.onNext(30);
 								items = null;
 
@@ -396,7 +397,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								bodyPartDao.save(bodyParts, true);
-								Log.d("RMU", "bodyParts.size = " + bodyParts.size());
+								Log.d(LOG_TAG, "Loaded " + bodyParts.size() + " bodyParts.");
 								bodyParts = null;
 
 								List<CriticalCode> criticalCodes = new ArrayList<>();
@@ -407,7 +408,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								criticalCodeDao.save(criticalCodes, true);
-								Log.d("RMU", "criticalCodes.size = " + criticalCodes.size());
+								Log.d(LOG_TAG, "Loaded " + criticalCodes.size() + " criticalCodes.");
 								criticalCodes = null;
 
 								List<CriticalType> criticalTypes = new ArrayList<>();
@@ -418,7 +419,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								criticalTypeDao.save(criticalTypes, true);
-								Log.d("RMU", "criticalTypes.size = " + criticalTypes.size());
+								Log.d(LOG_TAG, "Loaded " + criticalTypes.size() + " criticalTypes.");
 								subscriber.onNext(40);
 								criticalTypes = null;
 
@@ -430,7 +431,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								criticalResultDao.save(criticalResults, true);
-								Log.d("RMU", "criticalResults.size = " + criticalResults.size());
+								Log.d(LOG_TAG, "Loaded " + criticalResults.size() + " criticalResults.");
 								criticalResults = null;
 
 								List<DamageResult> damageResults = new ArrayList<>();
@@ -442,7 +443,7 @@ public class ImportExportRxHandler {
 								damageResultSerializer = null;
 								jsonReader.endArray();
 								damageResultDao.save(damageResults, true);
-								Log.d("RMU", "damageResults.size = " + damageResults.size());
+								Log.d(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
 								damageResults = null;
 
 								List<DamageTable> damageTables = new ArrayList<>();
@@ -453,7 +454,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								damageTableDao.save(damageTables, true);
-								Log.d("RMU", "damageTables.size = " + damageTables.size());
+								Log.d(LOG_TAG, "Loaded " + damageTables.size() + " damageTables.");
 								damageTables = null;
 
 								List<DamageResultRow> damageResultRows = new ArrayList<>();
@@ -464,7 +465,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								damageResultRowDao.save(damageResultRows, true);
-								Log.d("RMU", "damageResultRows.size = " + damageResultRows.size());
+								Log.d(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
 								damageResultRows = null;
 								subscriber.onNext(50);
 
@@ -476,7 +477,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								creatureCategoryDao.save(creatureCategories, true);
-								Log.d("RMU", "creatureCategories.size = " + creatureCategories.size());
+								Log.d(LOG_TAG, "Loaded " + creatureCategories.size() + " creatureCategories.");
 								creatureCategories = null;
 
 								List<CreatureType> creatureTypes = new ArrayList<>();
@@ -487,7 +488,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								creatureTypeDao.save(creatureTypes, true);
-								Log.d("RMU", "creatureTypes.size = " + creatureTypes.size());
+								Log.d(LOG_TAG, "Loaded " + creatureTypes.size() + " creatureTypes.");
 								creatureTypes = null;
 
 								List<Outlook> outlooks = new ArrayList<>();
@@ -498,7 +499,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								outlookDao.save(outlooks, true);
-								Log.d("RMU", "outlooks.size = " + outlooks.size());
+								Log.d(LOG_TAG, "Loaded " + outlooks.size() + " outlooks.");
 								outlooks = null;
 								subscriber.onNext(60);
 
@@ -510,7 +511,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								realmDao.save(realms, true);
-								Log.d("RMU", "realms.size = " + realms.size());
+								Log.d(LOG_TAG, "Loaded " + realms.size() + " realms.");
 								realms = null;
 
 								List<Profession> professions = new ArrayList<>();
@@ -521,7 +522,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								professionDao.save(professions, true);
-								Log.d("RMU", "professions.size = " + professions.size());
+								Log.d(LOG_TAG, "Loaded " + professions.size() + " professions.");
 								professions = null;
 
 								List<Culture> cultures = new ArrayList<>();
@@ -532,7 +533,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								cultureDao.save(cultures, true);
-								Log.d("RMU", "cultures.size = " + cultures.size());
+								Log.d(LOG_TAG, "Loaded " + cultures.size() + " cultures.");
 								cultures = null;
 								subscriber.onNext(70);
 
@@ -544,7 +545,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								raceDao.save(races, true);
-								Log.d("RMU", "races.size = " + races.size());
+								Log.d(LOG_TAG, "Loaded " + races.size() + " races.");
 								races = null;
 
 								List<Specialization> specializations = new ArrayList<>();
@@ -555,7 +556,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								specializationDao.save(specializations, true);
-								Log.d("RMU", "specializations.size = " + specializations.size());
+								Log.d(LOG_TAG, "Loaded " + specializations.size() + " specializations.");
 								specializations = null;
 
 								List<Attack> attacks = new ArrayList<>();
@@ -566,7 +567,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								attackDao.save(attacks, true);
-								Log.d("RMU", "attacks.size = " + attacks.size());
+								Log.d(LOG_TAG, "Loaded " + attacks.size() + " attacks.");
 								attacks = null;
 								subscriber.onNext(80);
 
@@ -578,7 +579,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								creatureArchetypeDao.save(creatureArchetypes, true);
-								Log.d("RMU", "creatureArchetypes.size = " + creatureArchetypes.size());
+								Log.d(LOG_TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
 								creatureArchetypes = null;
 
 								List<SpellListType> spellListTypes = new ArrayList<>();
@@ -589,7 +590,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								spellListTypeDao.save(spellListTypes, true);
-								Log.d("RMU", "spellListTypes.size = " + spellListTypes.size());
+								Log.d(LOG_TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
 								spellListTypes = null;
 
 								List<SpellList> spellLists = new ArrayList<>();
@@ -600,7 +601,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								spellListDao.save(spellLists, true);
-								Log.d("RMU", "spellLists.size = " + spellLists.size());
+								Log.d(LOG_TAG, "Loaded " + spellLists.size() + " spellLists.");
 								spellLists = null;
 								subscriber.onNext(90);
 
@@ -612,7 +613,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								spellDao.save(spells, true);
-								Log.d("RMU", "spells.size = " + spells.size());
+								Log.d(LOG_TAG, "Loaded " + spells.size() + " spells.");
 								spells = null;
 
 								List<Character> characters = new ArrayList<>();
@@ -623,7 +624,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								characterDao.save(characters, true);
-								Log.d("RMU", "characters = " + characters);
+								Log.d(LOG_TAG, "characters = " + characters);
 								characters = null;
 
 								List<CreatureVariety> creatureVarieties = new ArrayList<>();
@@ -634,7 +635,7 @@ public class ImportExportRxHandler {
 								}
 								jsonReader.endArray();
 								creatureVarietyDao.save(creatureVarieties, true);
-								Log.d("RMU", "creatureVarieties = " + creatureVarieties);
+								Log.d(LOG_TAG, "creatureVarieties = " + creatureVarieties);
 								creatureVarieties = null;
 								db.setTransactionSuccessful();
 							}

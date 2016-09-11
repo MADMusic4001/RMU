@@ -111,7 +111,7 @@ public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> imp
             db.beginTransaction();
         }
         try {
-            Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+            Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_RANGE_HIGH_VALUE + " DESC");
 
             if (cursor != null) {
                 cursor.moveToFirst();
