@@ -1,29 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  * Copyright (C) 2016 MadInnovations
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * -->
-<resources>
-  <string name="app_name">RMU</string>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
 
-  <!-- FileSelectorDialogFragment strings -->
-  <string name="alert_fs_title">Choose a %1$s file:\nCurrent Path = %2$s</string>
-  <string name="folder_image">Folder Image</string>
-
-  <!-- Database import/export strings -->
-  <string name="toast_db_exported">Database successfully exported to %1$s.</string>
-  <string name="toast_db_export_failed">Database export failed.</string>
-  <string name="toast_db_imported">Database successfully imported.</string>
-  <string name="toast_db_import_failed">Database import failed.</string>
-</resources>
+    <TextView
+        android:id="@+id/name_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

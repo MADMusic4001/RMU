@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.entities.common;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class SkillCategory {
 	private boolean combat = false;
 	private boolean noStats = false;
 	private boolean realmStats = false;
-	private List<Stat> stats = null;
+	private List<Stat> stats = new ArrayList<>();
 
 	/**
 	 * Creates a new SkillCategory instance

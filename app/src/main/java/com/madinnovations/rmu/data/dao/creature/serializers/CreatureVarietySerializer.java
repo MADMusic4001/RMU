@@ -236,6 +236,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 					break;
 			}
 		}
+		in.endObject();
 		return creatureVariety;
 	}
 

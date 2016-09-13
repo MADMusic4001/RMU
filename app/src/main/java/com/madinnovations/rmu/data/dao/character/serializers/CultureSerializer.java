@@ -75,6 +75,7 @@ public class CultureSerializer extends TypeAdapter<Culture> implements CultureSc
 					break;
 			}
 		}
+		in.endObject();
 		return culture;
 	}
 

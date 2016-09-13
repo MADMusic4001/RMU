@@ -29,7 +29,6 @@ import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Json serializer and deserializer for the {@link Talent} entities

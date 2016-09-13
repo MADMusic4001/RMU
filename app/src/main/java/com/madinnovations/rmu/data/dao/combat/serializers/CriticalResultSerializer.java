@@ -123,6 +123,7 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 					break;
 			}
 		}
+		in.endObject();
 		return criticalResult;
 	}
 }

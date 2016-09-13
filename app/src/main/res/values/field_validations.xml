@@ -56,6 +56,9 @@
     <string name="validation_critical_result_text_required">Please enter the critical result text.</string>
     <string name="validation_critical_type_code_required">Please enter a critical type code.</string>
     <string name="validation_critical_type_name_required">Please enter a critical type name.</string>
+    <string name="validation_culture_description_required">Please enter a culture description.</string>
+    <string name="validation_culture_name_required">Please enter a culture name.</string>
+    <string name="validation_culture_trades_ranks_required">Please enter the number of trade and crafts ranks.</string>
     <string name="validation_damage_results_format_invalid">Invalid entry.</string>
     <string name="validation_damage_table_name_required">Please enter a damage table name.</string>
     <string name="validation_dazed_required">Please enter the number of rounds the defender is dazed.</string>
@@ -82,6 +85,7 @@
     <string name="validation_parameter_name_required">Please enter a parameter name.</string>
     <string name="validation_profession_description_required">Please enter a profession resultText.</string>
     <string name="validation_profession_name_required">Please enter a profession name.</string>
+    <string name="validation_ranks_required">Please enter the number of ranks for this skill.</string>
     <string name="validation_realm_description_required">Please enter a realm resultText.</string>
     <string name="validation_realm_name_required">Please enter a realm name.</string>
     <string name="validation_roles_required">Please enter roles instructions.</string>

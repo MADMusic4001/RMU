@@ -111,6 +111,8 @@
   <string name="label_new_creature_category">New Creature Category</string>
   <string name="label_delete_creature_category">Delete Creature Category</string>
   <string name="label_new_creature_type">New Creature Type</string>
+  <string name="label_new_culture">New Culture</string>
+  <string name="label_delete_culture">Delete Culture</string>
   <string name="label_new_damage_table">New Damage Table</string>
   <string name="label_delete_creature_type">Delete Creature Type</string>
   <string name="label_new_creature_variety">New Creature Variety</string>
@@ -203,6 +205,8 @@
   <string name="label_creature_type_name">Creature Type Name</string>
   <string name="label_creature_variety_description">Creature Variety Description</string>
   <string name="label_creature_variety_name">Creature Variety Name</string>
+  <string name="label_culture_name">Culture Name</string>
+  <string name="label_culture_description">Culture Description</string>
   <string name="label_dazed">Dazed</string>
   <string name="label_fatigue">Fatigue</string>
   <string name="label_grapple">Grapple</string>
@@ -231,6 +235,7 @@
   <string name="label_primary_skills">Primary Skills</string>
   <string name="label_prone">Prone</string>
   <string name="label_racial_stat_bonuses">Racial Stat Bonuses</string>
+  <string name="label_ranks">Ranks</string>
   <string name="label_realm_stats">Realm Stats</string>
   <string name="label_requires_specialization">Requires Specialization</string>
   <string name="label_roll">Roll</string>

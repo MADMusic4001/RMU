@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
@@ -27,5 +28,6 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = CharacterFragmentModule.class)
 public interface CharacterFragmentComponent {
+	public void injectInto(CulturesFragment culturesFragment);
 	public void injectInto(ProfessionsFragment professionsFragment);
 }

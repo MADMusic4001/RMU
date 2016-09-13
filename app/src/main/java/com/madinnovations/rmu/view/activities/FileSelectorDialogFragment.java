@@ -21,20 +21,15 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
-import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.FileSelectorAdapter;
-import com.madinnovations.rmu.view.di.modules.ActivityModule;
 import com.madinnovations.rmu.view.di.modules.CampaignFragmentModule;
-import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.FileInfo;
 
 import java.io.File;
@@ -48,6 +43,7 @@ import javax.inject.Inject;
  */
 public class FileSelectorDialogFragment extends DialogFragment {
 	private static final String FILE_SELECTOR_FILTER = "fs_extension_filter";
+	private static final String PARENT_DIR = "..";
 	private String						extension = ".rmu";
 	private ArrayList<FileInfo>			fileList;
 	private File 						path;
@@ -72,22 +68,31 @@ public class FileSelectorDialogFragment extends DialogFragment {
 		}
 		filesListAdapter.notifyDataSetChanged();
 
-		return builder.setTitle(String.format(getString(R.string.alert_fs_title),
-											  extension,
-											  path.getAbsolutePath()))
+		final TextView titleView = new TextView(getActivity());
+		titleView.setText(String.format(getString(R.string.alert_fs_title),
+										extension,
+										path.getAbsolutePath()));
+
+		return builder.setCustomTitle(titleView)
 				.setSingleChoiceItems(filesListAdapter,
 									  -1,
 									  new DialogInterface.OnClickListener() {
 										  @Override
 										  public void onClick(DialogInterface dialogInterface, int which) {
 											  FileInfo fileInfo = fileList.get(which);
-											  File file = new File(path + File.separator + fileInfo.getFileName());
+											  File file;
+											  if(fileInfo.getFileName().equals(PARENT_DIR)) {
+												  file = path.getParentFile();
+											  }
+											  else {
+												  file = new File(path + File.separator + fileInfo.getFileName());
+											  }
 											  if (file.isDirectory()) {
 												  path = file;
-												  FileSelectorDialogFragment.this.getDialog().setTitle(
-														  String.format(getString(R.string.alert_fs_title),
-																		FileSelectorDialogFragment.this.extension,
-																		path.getAbsolutePath()));
+												  titleView.setText(String.format(getString(R.string.alert_fs_title),
+																				  FileSelectorDialogFragment.this.extension,
+																				  path.getAbsolutePath()));
+												  titleView.invalidate();
 												  loadFileList();
 												  filesListAdapter.clear();
 												  filesListAdapter.addAll(fileList);

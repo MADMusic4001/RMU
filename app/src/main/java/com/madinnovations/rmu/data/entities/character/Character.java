@@ -19,6 +19,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -47,6 +48,7 @@ public class Character {
 	private Race                  race = null;
 	private Culture               culture = null;
 	private Profession            profession = null;
+	private Realm                 realm = null;
 	private short                 height;
 	private short                 weight;
 	private short                 stride;
@@ -88,6 +90,7 @@ public class Character {
 				.append("race", race)
 				.append("culture", culture)
 				.append("profession", profession)
+				.append("realm", realm)
 				.append("height", height)
 				.append("weight", weight)
 				.append("stride", stride)
@@ -219,6 +222,12 @@ public class Character {
 	}
 	public void setProfession(Profession profession) {
 		this.profession = profession;
+	}
+	public Realm getRealm() {
+		return realm;
+	}
+	public void setRealm(Realm realm) {
+		this.realm = realm;
 	}
 	public short getHeight() {
 		return height;

@@ -31,6 +31,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.io.IOException;
 import java.util.Map;
@@ -59,6 +60,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_RACE_ID).value(value.getRace().getId());
 		out.name(COLUMN_CULTURE_ID).value(value.getCulture().getId());
 		out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
+		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
 		out.name(COLUMN_HEIGHT).value(value.getHeight());
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
 		out.name(COLUMN_STRIDE).value(value.getStride());
@@ -164,6 +166,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case COLUMN_PROFESSION_ID:
 					character.setProfession(new Profession(in.nextInt()));
+					break;
+				case COLUMN_REALM_ID:
+					character.setRealm(new Realm(in.nextInt()));
 					break;
 				case COLUMN_HEIGHT:
 					character.setHeight((short)in.nextInt());

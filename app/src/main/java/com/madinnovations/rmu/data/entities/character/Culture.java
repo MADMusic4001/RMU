@@ -20,6 +20,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,7 +31,7 @@ public class Culture {
 	private String name = null;
 	private String description = null;
 	private short tradesAndCraftsRanks = 0;
-	private Map<Skill, Short> skillRanks;
+	private Map<Skill, Short> skillRanks = new HashMap<>();
 
 	/**
 	 * Default constructor

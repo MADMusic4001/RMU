@@ -58,6 +58,7 @@ public class RealmSerializer extends TypeAdapter<Realm> implements RealmSchema {
 					break;
 			}
 		}
+		in.endObject();
 		return realm;
 	}
 }

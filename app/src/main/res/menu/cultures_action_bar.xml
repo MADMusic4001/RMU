@@ -14,16 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * -->
-<resources>
-  <string name="app_name">RMU</string>
-
-  <!-- FileSelectorDialogFragment strings -->
-  <string name="alert_fs_title">Choose a %1$s file:\nCurrent Path = %2$s</string>
-  <string name="folder_image">Folder Image</string>
-
-  <!-- Database import/export strings -->
-  <string name="toast_db_exported">Database successfully exported to %1$s.</string>
-  <string name="toast_db_export_failed">Database export failed.</string>
-  <string name="toast_db_imported">Database successfully imported.</string>
-  <string name="toast_db_import_failed">Database import failed.</string>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_new_culture"
+        android:title="@string/label_new_culture"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="ifRoom"/>
+</menu>

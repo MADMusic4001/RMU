@@ -18,8 +18,12 @@
     <!-- EditText hints -->
 
     <!-- Character -->
+    <string name="hint_culture_description">Culture Description</string>
+    <string name="hint_culture_name">Culture Name</string>
     <string name="hint_profession_description">Profession Description</string>
     <string name="hint_profession_name">Profession Name</string>
+    <string name="hint_ranks">Ranks</string>
+    <string name="hint_trades_ranks">Trades/Crafts Ranks</string>
 
     <!-- Combat -->
     <string name="hint_bleeding">Bleeding per round</string>

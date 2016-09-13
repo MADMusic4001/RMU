@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
+import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
+
 /**
  * Database schema data for the characters table
  */
@@ -38,6 +40,7 @@ public interface CharacterSchema {
 	String COLUMN_RACE_ID = "raceId";
 	String COLUMN_CULTURE_ID = "cultureId";
 	String COLUMN_PROFESSION_ID = "professionId";
+	String COLUMN_REALM_ID = "realmId";
 	String COLUMN_HEIGHT = "height";
 	String COLUMN_WEIGHT = "weight";
 	String COLUMN_STRIDE = "stride";
@@ -65,6 +68,7 @@ public interface CharacterSchema {
 			+ COLUMN_RACE_ID  + " INTEGER NOT NULL, "
 			+ COLUMN_CULTURE_ID  + " INTEGER NOT NULL, "
 			+ COLUMN_PROFESSION_ID  + " INTEGER NOT NULL, "
+			+ COLUMN_REALM_ID  + " INTEGER, "
 			+ COLUMN_HEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_WEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_STRIDE + " INTEGER NOT NULL, "
@@ -73,12 +77,13 @@ public interface CharacterSchema {
 			+ COLUMN_CURRENT_DEVELOPMENT_POINTS + " INTEGER NOT NULL, "
 			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_CULTURE_ID + ") REFERENCES " + CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAIR_COLOR, COLUMN_HAIR_STYLE,
 			COLUMN_EYE_COLOR, COLUMN_SKIN_COMPLEXION, COLUMN_FACIAL_FEATURES, COLUMN_IDENTIFYING_MARKS, COLUMN_CLOTHING,
 			COLUMN_PERSONALITY, COLUMN_MANNERISMS, COLUMN_HOMETOWN, COLUMN_FAMILY_INFO, COLUMN_RACE_ID, COLUMN_CULTURE_ID,
-			COLUMN_PROFESSION_ID, COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_STRIDE, COLUMN_CURRENT_HITS, COLUMN_MAX_HITS,
-			COLUMN_CURRENT_DEVELOPMENT_POINTS};
+			COLUMN_PROFESSION_ID, COLUMN_REALM_ID, COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_STRIDE, COLUMN_CURRENT_HITS,
+			COLUMN_MAX_HITS, COLUMN_CURRENT_DEVELOPMENT_POINTS};
 }

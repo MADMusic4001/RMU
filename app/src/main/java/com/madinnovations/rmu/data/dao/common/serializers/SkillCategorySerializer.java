@@ -20,7 +20,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 
@@ -73,7 +72,7 @@ public class SkillCategorySerializer extends TypeAdapter<SkillCategory> implemen
 				case COLUMN_REALM_STATS:
 					skillCategory.setRealmStats(in.nextBoolean());
 					break;
-				case SpecializationStatsSchema.TABLE_NAME:
+				case SkillCategoryStatsSchema.TABLE_NAME:
 					in.beginArray();
 					while (in.hasNext()) {
 						skillCategory.getStats().add(new Stat(in.nextInt()));

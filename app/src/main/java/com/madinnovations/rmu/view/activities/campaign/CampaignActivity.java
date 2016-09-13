@@ -31,6 +31,7 @@ import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportRxHandler;
 import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
+import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
@@ -86,6 +87,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private CriticalCodesFragment      criticalCodesFragment;
 	private CriticalResultsFragment    criticalResultsFragment;
 	private CriticalTypesFragment      criticalTypesFragment;
+	private CulturesFragment           culturesFragment;
 	private DamageResultsFragment      damageResultsFragment;
 	private ItemsFragment              itemsFragment;
 	private LocomotionTypesFragment    locomotionTypesFragment;
@@ -296,6 +298,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			criticalTypesFragment = new CriticalTypesFragment();
 		}
 		replaceDetailFragment(criticalTypesFragment);
+	}
+
+	public void showCultures() {
+		if(culturesFragment == null) {
+			culturesFragment = new CulturesFragment();
+		}
+		replaceDetailFragment(culturesFragment);
 	}
 
 	public void showDamageResults() {

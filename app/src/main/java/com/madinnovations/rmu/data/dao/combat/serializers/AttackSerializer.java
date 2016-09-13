@@ -63,6 +63,7 @@ public class AttackSerializer extends TypeAdapter<Attack> implements AttackSchem
 					break;
 			}
 		}
+		in.endObject();
 		return attack;
 	}
 }

@@ -78,6 +78,13 @@
   <string name="toast_critical_type_deleted">Critical Type deleted.</string>
   <string name="toast_critical_type_delete_failed">Critical Type deletion failed.</string>
 
+  <string name="toast_cultures_load_failed">Failed to load Cultures</string>
+  <string name="toast_cultures_loaded">%1$d Cultures loaded.</string>
+  <string name="toast_culture_saved">Culture saved.</string>
+  <string name="toast_culture_save_failed">Culture save failed.</string>
+  <string name="toast_culture_deleted">Culture deleted.</string>
+  <string name="toast_culture_delete_failed">Culture deletion failed.</string>
+
   <string name="toast_damage_result_saved">Damage Result saved.</string>
   <string name="toast_damage_result_save_failed">Damage Result save failed.</string>
   <string name="toast_damage_result_deleted">Damage Result deleted.</string>

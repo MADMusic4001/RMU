@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  * Copyright (C) 2016 MadInnovations
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,45 +26,32 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
         android:choiceMode="singleChoice"/>
+
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/form_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal">
         <EditText
             android:id="@+id/name_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="30"
-            android:hint="@string/hint_profession_name"/>
+            android:hint="@string/hint_culture_name"/>
         <EditText
             android:id="@+id/description_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:hint="@string/hint_profession_description"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-          <TextView
-              android:id="@+id/realm1_label"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="@string/input_label_realm1"/>
-          <Spinner
-              android:id="@+id/realm1_spinner"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"/>
-          <TextView
-              android:id="@+id/realm2_label"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="@string/input_label_realm2"/>
-          <Spinner
-              android:id="@+id/realm2_spinner"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:hint="@string/hint_culture_description"/>
+      <EditText
+          android:id="@+id/trades_ranks_edit"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:hint="@string/hint_trades_ranks"/>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -73,26 +60,16 @@
                 android:layout_width="0dp"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
-                android:text="@string/label_skill_category"/>
+                android:text="@string/label_skill_name"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="@string/label_initial_cost"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="@string/label_additional_cost"/>
-          <TextView
-              android:layout_width="0dp"
-              android:layout_weight="1"
-              android:layout_height="wrap_content"
-              android:text="@string/label_assignable"/>
+                android:text="@string/label_ranks"/>
         </LinearLayout>
         <ExpandableListView
-            android:id="@+id/costs_list"
+            android:id="@+id/skill_ranks_list_view"
             android:layout_width="match_parent"
-            android:layout_height="120dp"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </LinearLayout>
