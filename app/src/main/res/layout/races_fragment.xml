@@ -92,6 +92,39 @@
           android:inputType="textMultiLine"
           android:hint="@string/hint_race_description"/>
 
+        <LinearLayout
+            android:id="@+id/stat_mods"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/description_view">
+            <TextView
+                android:id="@+id/stat_mods_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_stat_mods"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/stat_mod_labels_row"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/stat_mods">
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/stat_mod_edits_row"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/stat_mod_labels_row">
+        </LinearLayout>
+
       <LinearLayout
           android:id="@+id/rr_mods"
           android:orientation="horizontal"
@@ -99,7 +132,7 @@
           android:layout_height="wrap_content"
           android:layout_alignParentLeft="true"
           android:layout_alignParentStart="true"
-          android:layout_below="@id/description_view">
+          android:layout_below="@id/stat_mod_edits_row">
         <TextView
             android:id="@+id/rr_mods_view"
             android:layout_width="match_parent"

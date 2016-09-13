@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.spells.Realm;
@@ -62,11 +63,15 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	protected RaceRxHandler                raceRxHandler;
 	@Inject
 	protected RealmRxHandler               realmRxHandler;
-	private   TwoFieldListAdapter<Race> listAdapter;
+	@Inject
+	protected StatRxHandler                statRxHandler;
+	private   TwoFieldListAdapter<Race>    listAdapter;
 	private   ListView                     listView;
 	private   EditText                     nameEdit;
 	private   EditText                     descriptionEdit;
 	private   EditText                     devPointsEdit;
+	private   TextView[]                   statTextViews;
+	private   EditText[]                   statEditViews;
 	private   TextView[]                   rrTextViews;
 	private   EditText[]                   rrEditViews;
 	private   Collection<Realm> realms          = null;
@@ -348,6 +353,52 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		});
 	}
 
+	private void initStatMods(View layout) {
+		final LinearLayout statModLabels = (LinearLayout)layout.findViewById(R.id.stat_mod_labels_row);
+		final LinearLayout statModEdits = (LinearLayout)layout.findViewById(R.id.stat_mod_edits_row);
+
+		statRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<Realm>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception caught getting all Stat instances", e);
+					}
+					@Override
+					public void onNext(Collection<Realm> realms) {
+						rrTextViews = new TextView[realms.size()];
+						rrEditViews = new EditText[realms.size()];
+						int index = 0;
+						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT,
+								1f);
+						TextView textView;
+						EditText editText;
+						for(Realm realm : realms) {
+							textView = new TextView(getActivity());
+							textView.setLayoutParams(params);
+							textView.setText(realm.getName());
+							rrModLabels.addView(textView);
+							rrTextViews[index] = textView;
+							editText = new EditText(getActivity());
+							editText.setHint(getString(R.string.hint_race_rr_mod));
+							editText.setLayoutParams(params);
+							rrModEdits.addView(editText);
+							rrEditViews[index] = editText;
+							index++;
+						}
+						textView = new TextView(getActivity());
+						textView.setLayoutParams(params);
+						textView.setText(getString(R.string.label_physical_rr));
+						rrModLabels.addView(textView);
+						editText = new EditText(getActivity());
+						editText.setLayoutParams(params);
+						editText.setHint(getString(R.string.hint_race_physical_rr));
+						rrModEdits.addView(editText);
+					}
+				});
+	}
+
 	private void initRRMods(View layout) {
 		final LinearLayout rrModLabels = (LinearLayout)layout.findViewById(R.id.rr_mod_labels_row);
 		final LinearLayout rrModEdits = (LinearLayout)layout.findViewById(R.id.rr_mod_edits_row);
@@ -395,6 +446,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					}
 				});
 	}
+
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
