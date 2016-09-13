@@ -17,7 +17,9 @@ package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Size;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -29,23 +31,12 @@ import java.util.Map;
  * Racial attributes
  */
 public class Race {
-	private int id = -1;
-	private String name = null;
-	private String description = null;
-	private short bonusDevelopmentPoints = 0;
-	private short agilityModifier = 0;
-	private short constitutionModifier = 0;
-	private short empathyModifier = 0;
-	private short intuitionModifier = 0;
-	private short memoryModifier = 0;
-	private short presenceModifier = 0;
-	private short quicknessModifier = 0;
-	private short reasoningModifier = 0;
-	private short selfDisciplineModifier = 0;
-	private short strengthModifier = 0;
-	private short channelingResistanceModifier = 0;
-	private short essenceResistanceModifier = 0;
-	private short mentalismResistanceModifier = 0;
+	private int              id                           = -1;
+	private String           name                         = null;
+	private String           description                  = null;
+	private short            bonusDevelopmentPoints       = 0;
+	private Map<Stat, Short> statModifiers                = new HashMap<>();
+	private Map<Realm, Short> realmResistancesModifiers   = new HashMap<>();
 	private short physicalResistanceModifier = 0;
 	private short enduranceModifier = 0;
 	private short baseHits = 0;
@@ -87,19 +78,8 @@ public class Race {
 				.append("name", name)
 				.append("description", description)
 				.append("bonusDevelopmentPoints", bonusDevelopmentPoints)
-				.append("agilityModifier", agilityModifier)
-				.append("constitutionModifier", constitutionModifier)
-				.append("empathyModifier", empathyModifier)
-				.append("intuitionModifier", intuitionModifier)
-				.append("memoryModifier", memoryModifier)
-				.append("presenceModifier", presenceModifier)
-				.append("quicknessModifier", quicknessModifier)
-				.append("reasoningModifier", reasoningModifier)
-				.append("selfDisciplineModifier", selfDisciplineModifier)
-				.append("strengthModifier", strengthModifier)
-				.append("channelingResistanceModifier", channelingResistanceModifier)
-				.append("essenceResistanceModifier", essenceResistanceModifier)
-				.append("mentalismResistanceModifier", mentalismResistanceModifier)
+				.append("statModifiers", statModifiers)
+				.append("realmResistancesModifiers", realmResistancesModifiers)
 				.append("physicalResistanceModifier", physicalResistanceModifier)
 				.append("enduranceModifier", enduranceModifier)
 				.append("baseHits", baseHits)
@@ -154,83 +134,18 @@ public class Race {
 	public void setBonusDevelopmentPoints(short bonusDevelopmentPoints) {
 		this.bonusDevelopmentPoints = bonusDevelopmentPoints;
 	}
-	public short getAgilityModifier() {
-		return agilityModifier;
+	public Map<Stat, Short> getStatModifiers() {
+		return statModifiers;
 	}
-	public void setAgilityModifier(short agilityModifier) {
-		this.agilityModifier = agilityModifier;
+	public void setStatModifiers(Map<Stat, Short> statModifiers) {
+		this.statModifiers = statModifiers;
 	}
-	public short getConstitutionModifier() {
-		return constitutionModifier;
+	public Map<Realm, Short> getRealmResistancesModifiers() {
+		return realmResistancesModifiers;
 	}
-	public void setConstitutionModifier(short constitutionModifier) {
-		this.constitutionModifier = constitutionModifier;
-	}
-	public short getEmpathyModifier() {
-		return empathyModifier;
-	}
-	public void setEmpathyModifier(short empathyModifier) {
-		this.empathyModifier = empathyModifier;
-	}
-	public short getIntuitionModifier() {
-		return intuitionModifier;
-	}
-	public void setIntuitionModifier(short intuitionModifier) {
-		this.intuitionModifier = intuitionModifier;
-	}
-	public short getMemoryModifier() {
-		return memoryModifier;
-	}
-	public void setMemoryModifier(short memoryModifier) {
-		this.memoryModifier = memoryModifier;
-	}
-	public short getPresenceModifier() {
-		return presenceModifier;
-	}
-	public void setPresenceModifier(short presenceModifier) {
-		this.presenceModifier = presenceModifier;
-	}
-	public short getQuicknessModifier() {
-		return quicknessModifier;
-	}
-	public void setQuicknessModifier(short quicknessModifier) {
-		this.quicknessModifier = quicknessModifier;
-	}
-	public short getReasoningModifier() {
-		return reasoningModifier;
-	}
-	public void setReasoningModifier(short reasoningModifier) {
-		this.reasoningModifier = reasoningModifier;
-	}
-	public short getSelfDisciplineModifier() {
-		return selfDisciplineModifier;
-	}
-	public void setSelfDisciplineModifier(short selfDisciplineModifier) {
-		this.selfDisciplineModifier = selfDisciplineModifier;
-	}
-	public short getStrengthModifier() {
-		return strengthModifier;
-	}
-	public void setStrengthModifier(short strengthModifier) {
-		this.strengthModifier = strengthModifier;
-	}
-	public short getChannelingResistanceModifier() {
-		return channelingResistanceModifier;
-	}
-	public void setChannelingResistanceModifier(short channelingResistanceModifier) {
-		this.channelingResistanceModifier = channelingResistanceModifier;
-	}
-	public short getEssenceResistanceModifier() {
-		return essenceResistanceModifier;
-	}
-	public void setEssenceResistanceModifier(short essenceResistanceModifier) {
-		this.essenceResistanceModifier = essenceResistanceModifier;
-	}
-	public short getMentalismResistanceModifier() {
-		return mentalismResistanceModifier;
-	}
-	public void setMentalismResistanceModifier(short mentalismResistanceModifier) {
-		this.mentalismResistanceModifier = mentalismResistanceModifier;
+	public void setRealmResistancesModifiers(
+			Map<Realm, Short> realmResistancesModifiers) {
+		this.realmResistancesModifiers = realmResistancesModifiers;
 	}
 	public short getPhysicalResistanceModifier() {
 		return physicalResistanceModifier;

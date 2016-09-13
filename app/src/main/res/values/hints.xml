@@ -20,8 +20,13 @@
     <!-- Character -->
     <string name="hint_culture_description">Culture Description</string>
     <string name="hint_culture_name">Culture Name</string>
+    <string name="hint_dev_points">Dev Points</string>
     <string name="hint_profession_description">Profession Description</string>
     <string name="hint_profession_name">Profession Name</string>
+    <string name="hint_race_description">Race Description</string>
+    <string name="hint_race_name">Race Name</string>
+    <string name="hint_race_physical_rr">Physical RR Mod Value</string>
+    <string name="hint_race_rr_mod">RR Mod Value</string>
     <string name="hint_ranks">Ranks</string>
     <string name="hint_trades_ranks">Trades/Crafts Ranks</string>
 

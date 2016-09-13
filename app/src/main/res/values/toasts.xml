@@ -142,6 +142,13 @@
   <string name="toast_profession_category_skill_cost_saved">Profession skill category cost saved.</string>
   <string name="toast_profession_category_skill_cost_save_failed">Profession skill category cost save failed.</string>
 
+  <string name="toast_races_load_failed">Failed to load Races</string>
+  <string name="toast_races_loaded">%1$d Races loaded.</string>
+  <string name="toast_race_saved">Race saved.</string>
+  <string name="toast_race_save_failed">Race save failed.</string>
+  <string name="toast_race_deleted">Race deleted.</string>
+  <string name="toast_race_delete_failed">Race deletion failed.</string>
+
   <string name="toast_realms_load_failed">Failed to load Realms</string>
   <string name="toast_realms_loaded">%1$d Realms loaded.</string>
   <string name="toast_realm_saved">Realm saved.</string>

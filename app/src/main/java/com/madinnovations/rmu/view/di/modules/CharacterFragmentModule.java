@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
+import com.madinnovations.rmu.view.activities.character.RacesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -29,12 +30,16 @@ import dagger.Provides;
 public class CharacterFragmentModule {
 	private CulturesFragment    culturesFragment;
 	private ProfessionsFragment professionsFragment;
+	private RacesFragment       racesFragment;
 
 	public CharacterFragmentModule(CulturesFragment culturesFragment) {
 		this.culturesFragment = culturesFragment;
 	}
 	public CharacterFragmentModule(ProfessionsFragment professionsFragment) {
 		this.professionsFragment = professionsFragment;
+	}
+	public CharacterFragmentModule(RacesFragment racesFragment) {
+		this.racesFragment = racesFragment;
 	}
 
 	@Provides
@@ -46,5 +51,10 @@ public class CharacterFragmentModule {
 	@PerFragment
 	public ProfessionsFragment provideProfessionsFragment() {
 		return this.professionsFragment;
+	}
+	@Provides
+	@PerFragment
+	public RacesFragment provideRacesFragment() {
+		return this.racesFragment;
 	}
 }

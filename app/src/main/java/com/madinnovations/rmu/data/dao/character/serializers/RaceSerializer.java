@@ -19,12 +19,16 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Size;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.io.IOException;
 import java.util.Map;
@@ -40,19 +44,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_BONUS_DEVELOPMENT_POINTS).value(value.getBonusDevelopmentPoints());
-		out.name(COLUMN_AGILITY_MODIFIER).value(value.getAgilityModifier());
-		out.name(COLUMN_CONSTITUTION_MODIFIER).value(value.getConstitutionModifier());
-		out.name(COLUMN_EMPATHY_MODIFIER).value(value.getEmpathyModifier());
-		out.name(COLUMN_INTUITION_MODIFIER).value(value.getIntuitionModifier());
-		out.name(COLUMN_MEMORY_MODIFIER).value(value.getMemoryModifier());
-		out.name(COLUMN_PRESENCE_MODIFIER).value(value.getPresenceModifier());
-		out.name(COLUMN_QUICKNESS_MODIFIER).value(value.getQuicknessModifier());
-		out.name(COLUMN_REASONING_MODIFIER).value(value.getReasoningModifier());
-		out.name(COLUMN_SELF_DISCIPLINE_MODIFIER).value(value.getSelfDisciplineModifier());
-		out.name(COLUMN_STRENGTH_MODIFIER).value(value.getStrengthModifier());
-		out.name(COLUMN_CHANNELING_RESISTANCE_MODIFIER).value(value.getChannelingResistanceModifier());
-		out.name(COLUMN_ESSENCE_RESISTANCE_MODIFIER).value(value.getEssenceResistanceModifier());
-		out.name(COLUMN_MENTALISM_RESISTANCE_MODIFIER).value(value.getMentalismResistanceModifier());
 		out.name(COLUMN_PHYSICAL_RESISTANCE_MODIFIER).value(value.getPhysicalResistanceModifier());
 		out.name(COLUMN_ENDURANCE_MODIFIER).value(value.getEnduranceModifier());
 		out.name(COLUMN_BASE_HITS).value(value.getBaseHits());
@@ -62,6 +53,22 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.name(COLUMN_AVERAGE_WEIGHT).value(value.getAverageWeight());
 		out.name(COLUMN_POUNDS_PER_INCH).value(value.getPoundsPerInch());
 		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
+
+		out.name(RaceRealmRRModSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Realm, Short> entry : value.getRealmResistancesModifiers().entrySet()) {
+			out.beginObject();
+			out.name(RaceRealmRRModSchema.COLUMN_REALM_ID).value(entry.getKey().getId());
+			out.name(RaceRealmRRModSchema.COLUMN_MODIFIER).value(entry.getValue());
+			out.endObject();
+		}
+
+		out.name(RaceStatModSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Stat, Short> entry : value.getStatModifiers().entrySet()) {
+			out.beginObject();
+			out.name(RaceStatModSchema.COLUMN_STAT_ID).value(entry.getKey().getId());
+			out.name(RaceStatModSchema.COLUMN_MODIFIER).value(entry.getValue());
+			out.endObject();
+		}
 
 		out.name(RaceTalentsSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Talent, Short> entry : value.getTalentsAndFlawsTiersMap().entrySet()) {
@@ -102,45 +109,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				case COLUMN_BONUS_DEVELOPMENT_POINTS:
 					race.setBonusDevelopmentPoints((short)in.nextInt());
 					break;
-				case COLUMN_AGILITY_MODIFIER:
-					race.setAgilityModifier((short)in.nextInt());
-					break;
-				case COLUMN_CONSTITUTION_MODIFIER:
-					race.setConstitutionModifier((short)in.nextInt());
-					break;
-				case COLUMN_EMPATHY_MODIFIER:
-					race.setEmpathyModifier((short)in.nextInt());
-					break;
-				case COLUMN_INTUITION_MODIFIER:
-					race.setIntuitionModifier((short)in.nextInt());
-					break;
-				case COLUMN_MEMORY_MODIFIER:
-					race.setMemoryModifier((short)in.nextInt());
-					break;
-				case COLUMN_PRESENCE_MODIFIER:
-					race.setPresenceModifier((short)in.nextInt());
-					break;
-				case COLUMN_QUICKNESS_MODIFIER:
-					race.setQuicknessModifier((short)in.nextInt());
-					break;
-				case COLUMN_REASONING_MODIFIER:
-					race.setReasoningModifier((short)in.nextInt());
-					break;
-				case COLUMN_SELF_DISCIPLINE_MODIFIER:
-					race.setSelfDisciplineModifier((short)in.nextInt());
-					break;
-				case COLUMN_STRENGTH_MODIFIER:
-					race.setStrengthModifier((short)in.nextInt());
-					break;
-				case COLUMN_CHANNELING_RESISTANCE_MODIFIER:
-					race.setChannelingResistanceModifier((short)in.nextInt());
-					break;
-				case COLUMN_ESSENCE_RESISTANCE_MODIFIER:
-					race.setEssenceResistanceModifier((short)in.nextInt());
-					break;
-				case COLUMN_MENTALISM_RESISTANCE_MODIFIER:
-					race.setMentalismResistanceModifier((short)in.nextInt());
-					break;
 				case COLUMN_PHYSICAL_RESISTANCE_MODIFIER:
 					race.setPhysicalResistanceModifier((short)in.nextInt());
 					break;
@@ -168,6 +136,12 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				case COLUMN_SIZE_ID:
 					race.setSize(new Size(in.nextInt()));
 					break;
+				case RaceRealmRRModSchema.TABLE_NAME:
+					readRaceRealmRRMods(in, race);
+					break;
+				case RaceStatModSchema.TABLE_NAME:
+					readRaceStatMods(in, race);
+					break;
 				case RaceTalentsSchema.TABLE_NAME:
 					readTalentsAndFlawsTiers(in, race);
 					break;
@@ -179,6 +153,50 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		}
 		in.endObject();
 		return race;
+	}
+
+	private void readRaceRealmRRMods(JsonReader in, Race race) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Realm newRealm = null;
+			Short mods = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case RaceRealmRRModSchema.COLUMN_REALM_ID:
+						newRealm = new Realm(in.nextInt());
+						mods = (short)in.nextInt();
+						race.getRealmResistancesModifiers().put(newRealm, mods);
+				}
+			}
+			if(newRealm != null) {
+				race.getRealmResistancesModifiers().put(newRealm, mods);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readRaceStatMods(JsonReader in, Race race) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Stat newStat = null;
+			Short mods = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case RaceStatModSchema.COLUMN_STAT_ID:
+						newStat = new Stat(in.nextInt());
+						mods = (short)in.nextInt();
+						race.getStatModifiers().put(newStat, mods);
+				}
+			}
+			if(newStat != null) {
+				race.getStatModifiers().put(newStat, mods);
+			}
+			in.endObject();
+		}
+		in.endArray();
 	}
 
 	private void readTalentsAndFlawsTiers(JsonReader in, Race race) throws IOException {

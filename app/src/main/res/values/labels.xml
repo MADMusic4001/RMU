@@ -94,7 +94,9 @@
   <string name="label_name">Name</string>
   <string name="label_per_level">Per Level</string>
   <string name="label_per_tier">Per Tier</string>
+  <string name="label_physical_rr">Physical</string>
   <string name="label_range">Range</string>
+  <string name="label_rr_mods">Resistance Roll Modifications</string>
   <string name="label_situational">Situational</string>
   <string name="label_use_category_stats">Use Category Stats</string>
   <string name="label_value">Value</string>
@@ -133,6 +135,8 @@
   <string name="label_delete_parameter">Delete Parameter</string>
   <string name="label_new_profession">New Profession</string>
   <string name="label_delete_profession">Delete Profession</string>
+  <string name="label_delete_race">Delete Race</string>
+  <string name="label_new_race">New Race</string>
   <string name="label_delete_realm">Delete Realm</string>
   <string name="label_new_realm">New Realm</string>
   <string name="label_new_size">New Size</string>
@@ -234,6 +238,8 @@
   <string name="label_ph_field3">Field 3</string>
   <string name="label_primary_skills">Primary Skills</string>
   <string name="label_prone">Prone</string>
+  <string name="label_race_name">Race Name</string>
+  <string name="label_race_description">Race Description</string>
   <string name="label_racial_stat_bonuses">Racial Stat Bonuses</string>
   <string name="label_ranks">Ranks</string>
   <string name="label_realm_stats">Realm Stats</string>
@@ -288,6 +294,8 @@
   <string name="input_label_critical_type_filter">Critical Type Filter:</string>
   <string name="input_label_damage_table">Damage Table:</string>
   <string name="input_label_dazed">Dazed:</string>
+  <string name="input_label_description">Description:</string>
+  <string name="input_label_dev_points">Dev Points:</string>
   <string name="input_label_fatigue">Fatigue:</string>
   <string name="input_label_healing_rate">Healing Rate:</string>
   <string name="input_label_height">Height:</string>
@@ -298,6 +306,7 @@
   <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
   <string name="input_label_outlook">Outlook:</string>
+  <string name="input_label_race_name">Race Name:</string>
   <string name="input_label_realm1">Realm 1:</string>
   <string name="input_label_realm2">Realm 2:</string>
   <string name="input_label_size">Size:</string>

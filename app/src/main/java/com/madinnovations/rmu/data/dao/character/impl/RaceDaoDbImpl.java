@@ -24,14 +24,20 @@ import android.support.annotation.NonNull;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
+import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
+import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.LocomotionType;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +52,9 @@ import javax.inject.Singleton;
 public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceSchema {
     TalentDao talentDao;
     LocomotionTypeDao locomotionTypeDao;
+	RealmDao realmDao;
 	SizeDao sizeDao;
+	StatDao statDao;
 
     /**
      * Creates a new instance of RaceDaoDbImpl
@@ -54,11 +62,14 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, LocomotionTypeDao locomotionTypeDao, SizeDao sizeDao) {
+    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, LocomotionTypeDao locomotionTypeDao, RealmDao realmDao,
+						 SizeDao sizeDao, StatDao statDao) {
         super(helper);
         this.talentDao = talentDao;
         this.locomotionTypeDao = locomotionTypeDao;
+		this.realmDao = realmDao;
 		this.sizeDao = sizeDao;
+		this.statDao = statDao;
     }
 
     @Override
@@ -115,19 +126,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 		instance.setBonusDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_DEVELOPMENT_POINTS)));
-		instance.setAgilityModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AGILITY_MODIFIER)));
-		instance.setConstitutionModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CONSTITUTION_MODIFIER)));
-		instance.setEmpathyModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_EMPATHY_MODIFIER)));
-		instance.setIntuitionModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INTUITION_MODIFIER)));
-		instance.setMemoryModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MEMORY_MODIFIER)));
-		instance.setPresenceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PRESENCE_MODIFIER)));
-		instance.setQuicknessModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_QUICKNESS_MODIFIER)));
-		instance.setReasoningModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_REASONING_MODIFIER)));
-		instance.setSelfDisciplineModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SELF_DISCIPLINE_MODIFIER)));
-		instance.setStrengthModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRENGTH_MODIFIER)));
-		instance.setChannelingResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CHANNELING_RESISTANCE_MODIFIER)));
-		instance.setEssenceResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ESSENCE_RESISTANCE_MODIFIER)));
-		instance.setMentalismResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MENTALISM_RESISTANCE_MODIFIER)));
+		instance.setStatModifiers(getStatModifiers(instance.getId()));
+		instance.setRealmResistancesModifiers(getRealmResistanceModifiers(instance.getId()));
 		instance.setPhysicalResistanceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PHYSICAL_RESISTANCE_MODIFIER)));
 		instance.setEnduranceModifier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ENDURANCE_MODIFIER)));
 		instance.setBaseHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_HITS)));
@@ -149,19 +149,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 		values.put(COLUMN_BONUS_DEVELOPMENT_POINTS, instance.getBonusDevelopmentPoints());
-		values.put(COLUMN_AGILITY_MODIFIER, instance.getAgilityModifier());
-		values.put(COLUMN_CONSTITUTION_MODIFIER, instance.getConstitutionModifier());
-		values.put(COLUMN_EMPATHY_MODIFIER, instance.getEmpathyModifier());
-		values.put(COLUMN_INTUITION_MODIFIER, instance.getIntuitionModifier());
-		values.put(COLUMN_MEMORY_MODIFIER, instance.getMemoryModifier());
-		values.put(COLUMN_PRESENCE_MODIFIER, instance.getPresenceModifier());
-		values.put(COLUMN_QUICKNESS_MODIFIER, instance.getQuicknessModifier());
-		values.put(COLUMN_REASONING_MODIFIER, instance.getReasoningModifier());
-		values.put(COLUMN_SELF_DISCIPLINE_MODIFIER, instance.getSelfDisciplineModifier());
-		values.put(COLUMN_STRENGTH_MODIFIER, instance.getStrengthModifier());
-		values.put(COLUMN_CHANNELING_RESISTANCE_MODIFIER, instance.getChannelingResistanceModifier());
-		values.put(COLUMN_ESSENCE_RESISTANCE_MODIFIER, instance.getEssenceResistanceModifier());
-		values.put(COLUMN_MENTALISM_RESISTANCE_MODIFIER, instance.getMentalismResistanceModifier());
 		values.put(COLUMN_PHYSICAL_RESISTANCE_MODIFIER, instance.getPhysicalResistanceModifier());
 		values.put(COLUMN_ENDURANCE_MODIFIER, instance.getEnduranceModifier());
 		values.put(COLUMN_BASE_HITS, instance.getBaseHits());
@@ -180,6 +167,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 	protected boolean saveRelationships(SQLiteDatabase db, Race instance) {
 		boolean result = saveTalentsAndFlaws(db, instance.getId(), instance.getTalentsAndFlawsTiersMap());
 		result &= saveLocomotionTypes(db, instance.getId(), instance.getLocomotionTypeRatesMap());
+		result &= saveSatMods(db, instance.getId(), instance.getStatModifiers());
+		result &= saveRealmRRMods(db, instance.getId(), instance.getRealmResistancesModifiers());
 		return result;
 	}
 
@@ -214,6 +203,32 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
 		for(Map.Entry<LocomotionType, Short> entry : locomotionTypeRatesMap.entrySet()) {
 			result &= (db.insert(RaceLocomotionSchema.TABLE_NAME, null, getLocomotionTypeValues(raceId, entry)) != -1);
+		}
+		return result;
+	}
+
+	private boolean saveSatMods(SQLiteDatabase db, int raceId, Map<Stat, Short> statMods) {
+		boolean result = true;
+		final String selectionArgs[] = {String.valueOf(raceId) };
+		final String selection = RaceStatModSchema.COLUMN_RACE_ID + " = ?";
+
+		db.delete(RaceStatModSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Stat, Short> entry : statMods.entrySet()) {
+			result &= (db.insert(RaceStatModSchema.TABLE_NAME, null, getRaceStatModValues(raceId, entry)) != -1);
+		}
+		return result;
+	}
+
+	private boolean saveRealmRRMods(SQLiteDatabase db, int raceId, Map<Realm, Short> realmRRMods) {
+		boolean result = true;
+		final String selectionArgs[] = {String.valueOf(raceId) };
+		final String selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
+
+		db.delete(RaceRealmRRModSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Realm, Short> entry : realmRRMods.entrySet()) {
+			result &= (db.insert(RaceRealmRRModSchema.TABLE_NAME, null, getRaceRealmRRModValues(raceId, entry)) != -1);
 		}
 		return result;
 	}
@@ -267,4 +282,62 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
         return locomotionTypeRatesMap;
     }
+
+	private Map<Stat, Short> getStatModifiers(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = RaceStatModSchema.COLUMN_RACE_ID + " = ?";
+
+		Cursor cursor = super.query(RaceStatModSchema.TABLE_NAME, RaceStatModSchema.COLUMNS, selection,
+									selectionArgs, RaceStatModSchema.COLUMN_STAT_ID);
+		Map<Stat, Short> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceStatModSchema.COLUMN_STAT_ID));
+			Stat instance = statDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceStatModSchema.COLUMN_MODIFIER)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private Map<Realm, Short> getRealmResistanceModifiers(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
+
+		Cursor cursor = super.query(RaceRealmRRModSchema.TABLE_NAME, RaceRealmRRModSchema.COLUMNS, selection,
+									selectionArgs, RaceRealmRRModSchema.COLUMN_REALM_ID);
+		Map<Realm, Short> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_REALM_ID));
+			Realm instance = realmDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_MODIFIER)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private ContentValues getRaceStatModValues(int raceId, Map.Entry<Stat, Short> statModEntry) {
+		ContentValues values = new ContentValues();
+		values.put(RaceStatModSchema.COLUMN_RACE_ID, raceId);
+		values.put(RaceStatModSchema.COLUMN_STAT_ID, statModEntry.getKey().getId());
+		values.put(RaceStatModSchema.COLUMN_MODIFIER, statModEntry.getValue());
+		return values;
+	}
+
+	private ContentValues getRaceRealmRRModValues(int raceId, Map.Entry<Realm, Short> realmModEntry) {
+		ContentValues values = new ContentValues();
+		values.put(RaceRealmRRModSchema.COLUMN_RACE_ID, raceId);
+		values.put(RaceRealmRRModSchema.COLUMN_REALM_ID, realmModEntry.getKey().getId());
+		values.put(RaceRealmRRModSchema.COLUMN_MODIFIER, realmModEntry.getValue());
+		return values;
+	}
 }

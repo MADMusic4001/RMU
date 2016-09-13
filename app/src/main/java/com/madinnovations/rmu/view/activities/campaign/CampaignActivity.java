@@ -33,6 +33,7 @@ import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
+import com.madinnovations.rmu.view.activities.character.RacesFragment;
 import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
@@ -91,9 +92,10 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private DamageResultsFragment      damageResultsFragment;
 	private ItemsFragment              itemsFragment;
 	private LocomotionTypesFragment    locomotionTypesFragment;
+	private OutlooksFragment           outlooksFragment;
 	private ParametersFragment         parametersFragment;
 	private ProfessionsFragment        professionsFragment;
-	private OutlooksFragment           outlooksFragment;
+	private RacesFragment              racesFragment;
 	private RealmsFragment             realmsFragment;
 	private SizesFragment              sizesFragment;
 	private SkillCategoriesFragment    skillCategoriesFragment;
@@ -347,6 +349,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			professionsFragment = new ProfessionsFragment();
 		}
 		replaceDetailFragment(professionsFragment);
+	}
+
+	public void showRaces() {
+		if(racesFragment == null) {
+			racesFragment = new RacesFragment();
+		}
+		replaceDetailFragment(racesFragment);
 	}
 
 	public void showRealms() {
