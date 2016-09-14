@@ -279,6 +279,8 @@
   <string name="input_label_attack_name">Attack Name:</string>
   <string name="input_label_attack_sequence">Attack Sequence:</string>
   <string name="input_label_attack_specialization">Attack Specialization:</string>
+  <string name="input_label_avg_height">Avg. Height:</string>
+  <string name="input_label_avg_weight">Avg. Weight:</string>
   <string name="input_label_base_channeling_rr">Channeling RR:</string>
   <string name="input_label_base_endurance">Base Endurance:</string>
   <string name="input_label_base_essence_rr">Essence RR:</string>
@@ -297,6 +299,7 @@
   <string name="input_label_dazed">Dazed:</string>
   <string name="input_label_description">Description:</string>
   <string name="input_label_dev_points">Dev Points:</string>
+  <string name="input_label_endurance_mod">Endurance Mod.:</string>
   <string name="input_label_fatigue">Fatigue:</string>
   <string name="input_label_healing_rate">Healing Rate:</string>
   <string name="input_label_height">Height:</string>
@@ -307,12 +310,15 @@
   <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
   <string name="input_label_outlook">Outlook:</string>
+  <string name="input_label_pounds_per_inch">Pounds per Inch:</string>
   <string name="input_label_race_name">Race Name:</string>
   <string name="input_label_realm1">Realm 1:</string>
   <string name="input_label_realm2">Realm 2:</string>
+  <string name="input_label_recovery_mult">Recovery Mult.:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_base_stride">Base Stride:</string>
+  <string name="input_label_stride_mod">Stride Mod.:</string>
   <string name="input_label_leftover_dp">Leftover DP:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
   <string name="input_label_weight">Weight:</string>

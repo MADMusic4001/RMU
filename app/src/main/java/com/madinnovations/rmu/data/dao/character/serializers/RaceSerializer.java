@@ -48,7 +48,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.name(COLUMN_ENDURANCE_MODIFIER).value(value.getEnduranceModifier());
 		out.name(COLUMN_BASE_HITS).value(value.getBaseHits());
 		out.name(COLUMN_RECOVERY_MULTIPLIER).value(value.getRecoveryMultiplier());
-		out.name(COLUMN_STRENGTH_MODIFIER).value(value.getStrideModifier());
 		out.name(COLUMN_AVERAGE_HEIGHT).value(value.getAverageHeight());
 		out.name(COLUMN_AVERAGE_WEIGHT).value(value.getAverageWeight());
 		out.name(COLUMN_POUNDS_PER_INCH).value(value.getPoundsPerInch());

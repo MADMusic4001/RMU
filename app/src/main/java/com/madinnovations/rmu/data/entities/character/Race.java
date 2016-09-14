@@ -68,7 +68,8 @@ public class Race {
 	 * @return true if the Profession instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty()
+				&& size != null;
 	}
 
 	@Override

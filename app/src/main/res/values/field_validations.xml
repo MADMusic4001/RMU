@@ -85,8 +85,16 @@
     <string name="validation_parameter_name_required">Please enter a parameter name.</string>
     <string name="validation_profession_description_required">Please enter a profession resultText.</string>
     <string name="validation_profession_name_required">Please enter a profession name.</string>
+    <string name="validation_race_avg_height_required">Please enter an average height.</string>
+    <string name="validation_race_avg_weight_required">Please enter an average weight.</string>
+    <string name="validation_race_base_hits_required">Please enter the number of base hits.</string>
     <string name="validation_race_description_required">Please enter a race description.</string>
+    <string name="validation_race_dev_points_required">Please enter the number of bonus development points.</string>
+    <string name="validation_race_endurance_mod_required">Please enter an endurance modification value.</string>
     <string name="validation_race_name_required">Please enter a race name.</string>
+    <string name="validation_race_pounds_per_inch_required">Please enter the number of pounds per inch.</string>
+    <string name="validation_race_recovery_mult_required">Please enter a recovery multiplier.</string>
+    <string name="validation_race_stride_mod_required">Please enter a stride modifier.</string>
     <string name="validation_ranks_required">Please enter the number of ranks for this skill.</string>
     <string name="validation_realm_description_required">Please enter a realm resultText.</string>
     <string name="validation_realm_name_required">Please enter a realm name.</string>
