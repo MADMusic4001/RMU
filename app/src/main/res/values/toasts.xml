@@ -198,6 +198,13 @@
   <string name="toast_spell_sub_type_deleted">Spell Sub Type deleted.</string>
   <string name="toast_spell_sub_type_delete_failed">Spell Sub Type deletion failed.</string>
 
+  <string name="toast_spell_types_load_failed">Failed to load Spell Types</string>
+  <string name="toast_spell_types_loaded">%1$d Spell Types loaded.</string>
+  <string name="toast_spell_type_saved">Spell Type saved.</string>
+  <string name="toast_spell_type_save_failed">Spell Type save failed.</string>
+  <string name="toast_spell_type_deleted">Spell Type deleted.</string>
+  <string name="toast_spell_type_delete_failed">Spell Type deletion failed.</string>
+
   <string name="toast_stats_load_failed">Failed to load Stats</string>
   <string name="toast_stats_loaded">%1$d Stats loaded.</string>
   <string name="toast_stat_saved">Stat saved.</string>
