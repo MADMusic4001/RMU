@@ -116,6 +116,9 @@
     <string name="validation_spells_required">Please enter spells instructions.</string>
     <string name="validation_spell_list_type_description_required">Please enter a resultText for the spell list type.</string>
     <string name="validation_spell_list_type_name_required">Please enter a spell list type name.</string>
+    <string name="validation_spell_sub_type_code_required">Please enter a code for the spell sub type.</string>
+    <string name="validation_spell_sub_type_description_required">Please enter a description for the spell sub type.</string>
+    <string name="validation_spell_sub_type_name_required">Please enter a spell sub type name.</string>
     <string name="validation_stat_description_required">Please enter a stat resultText.</string>
     <string name="validation_stat_name_required">Please enter a stat name.</string>
     <string name="validation_stunned_required">Please enter the number of rounds the defender is stunned.</string>

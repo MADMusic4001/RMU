@@ -188,7 +188,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showSpellListTypes();
 								break;
 							case 4:
-//								((CampaignActivity)getActivity()).showSpellSubTypes();
+								((CampaignActivity)getActivity()).showSpellSubTypes();
 								break;
 							case 5:
 //								((CampaignActivity)getActivity()).showSpellTypes();

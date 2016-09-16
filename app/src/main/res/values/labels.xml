@@ -150,6 +150,8 @@
   <string name="label_delete_specialization">Delete Specialization</string>
   <string name="label_new_spell_list_type">New Spell List Type</string>
   <string name="label_delete_spell_list_type">Delete Spell List Type</string>
+  <string name="label_new_spell_sub_type">New Spell Sub Type</string>
+  <string name="label_delete_spell_sub_type">Delete Sub List Type</string>
   <string name="label_new_stat">New Stat</string>
   <string name="label_delete_stat">Delete Stat</string>
   <string name="label_new_talent">New Talent</string>
@@ -259,7 +261,10 @@
   <string name="label_specialization_description">Specialization Description</string>
   <string name="label_specialization_name">Specialization Name</string>
   <string name="label_spell_list_type_description">Spell List Type Description</string>
-  <string name="label_spell_list_type_name">Spell List Type Name</string>
+  <string name="label_spell_list_type_name">Spell Sub Type Name</string>
+  <string name="label_spell_sub_type_code">Spell Sub Type Code</string>
+  <string name="label_spell_sub_type_description">Spell Sub Type Description</string>
+  <string name="label_spell_sub_type_name">Spell List Type Name</string>
   <string name="label_stagger">Stagger</string>
   <string name="label_stat_bonus">Stat Bonus</string>
   <string name="label_stat_description">Stat Description</string>
@@ -288,6 +293,7 @@
   <string name="input_label_base_hits">Base Hits:</string>
   <string name="input_label_base_mentalism_rr">Mentalism RR:</string>
   <string name="input_label_base_physical_rr">Phyiscal RR:</string>
+  <string name="input_label_base_stride">Base Stride:</string>
   <string name="input_label_bleeding">Bleeding:</string>
   <string name="input_label_breakage">Breakage:</string>
   <string name="input_label_category_filter">Category Filter:</string>
@@ -305,6 +311,7 @@
   <string name="input_label_height">Height:</string>
   <string name="input_label_hits">Hits:</string>
   <string name="input_label_injury">Injury:</string>
+  <string name="input_label_leftover_dp">Leftover DP:</string>
   <string name="input_label_length">Length:</string>
   <string name="input_label_level">Level:</string>
   <string name="input_label_movement_rate">Movement Rate:</string>
@@ -317,10 +324,9 @@
   <string name="input_label_recovery_mult">Recovery Mult.:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
-  <string name="input_label_base_stride">Base Stride:</string>
   <string name="input_label_stride_mod">Stride Mod.:</string>
-  <string name="input_label_leftover_dp">Leftover DP:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
+  <string name="input_label_trades_ranks">Trades &amp; Crafts Ranks:</string>
   <string name="input_label_weight">Weight:</string>
 
   <!-- Format strings -->

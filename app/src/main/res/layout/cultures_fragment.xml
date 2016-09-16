@@ -47,11 +47,22 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:hint="@string/hint_culture_description"/>
-      <EditText
-          android:id="@+id/trades_ranks_edit"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:hint="@string/hint_trades_ranks"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/trades_ranks_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/input_label_trades_ranks"/>
+            <EditText
+                android:id="@+id/trades_ranks_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="@string/hint_trades_ranks"/>
+        </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

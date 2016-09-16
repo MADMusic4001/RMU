@@ -78,6 +78,7 @@ import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -168,6 +169,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(RealmSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SpellListSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SpellListTypeSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(SpellSubTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SpellSchema.TABLE_CREATE);
             sqLiteDatabase.setTransactionSuccessful();
         }
@@ -261,6 +263,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(SizeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillCategorySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellListTypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellSubTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(StatSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentCategorySchema.TABLE_NAME, null, null);
 	}

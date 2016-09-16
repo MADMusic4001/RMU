@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.combat.impl;
+package com.madinnovations.rmu.data.dao.spells.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,37 +23,37 @@ import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.CacheConfig;
-import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
-import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
+import com.madinnovations.rmu.data.dao.spells.SpellSubTypeDao;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
+import com.madinnovations.rmu.data.entities.spells.SpellSubType;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Methods for managing {@link BodyPart} objects in a SQLite database.
+ * Methods for managing {@link SpellSubType} objects in a SQLite database.
  */
 @Singleton
-public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPartDao, BodyPartSchema {
-    private LruCache<Integer, BodyPart> bodyPartsCache = new LruCache<>(CacheConfig.BODY_PART_CACHE_SIZE);
+public class SpellSubTypeDaoDbImpl extends BaseDaoDbImpl<SpellSubType> implements SpellSubTypeDao, SpellSubTypeSchema {
+    private LruCache<Integer, SpellSubType> bodyPartsCache = new LruCache<>(CacheConfig.BODY_PART_CACHE_SIZE);
 
     /**
-     * Creates a new instance of BodyPartDaoDbImpl
+     * Creates a new instance of SpellSubTypeDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public BodyPartDaoDbImpl(SQLiteOpenHelper helper) {
+    public SpellSubTypeDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
     }
 
     @Override
-    public BodyPart getById(int id) {
+    public SpellSubType getById(int id) {
         return super.getById(id);
     }
 
     @Override
-    public boolean save(BodyPart instance) {
+    public boolean save(SpellSubType instance) {
         return super.save(instance);
     }
 
@@ -83,36 +83,40 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPa
     }
 
     @Override
-    protected int getId(BodyPart instance) {
+    protected int getId(SpellSubType instance) {
         return instance.getId();
     }
 
     @Override
-    protected void setId(BodyPart instance, int id) {
+    protected void setId(SpellSubType instance, int id) {
         instance.setId(id);
     }
 
     @Override
-    protected LruCache<Integer, BodyPart> getCache() {
+    protected LruCache<Integer, SpellSubType> getCache() {
         return bodyPartsCache;
     }
 
     @Override
-    protected BodyPart cursorToEntity(@NonNull Cursor cursor) {
-        BodyPart instance = new BodyPart();
+    protected SpellSubType cursorToEntity(@NonNull Cursor cursor) {
+        SpellSubType instance = new SpellSubType();
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)).charAt(0));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 
         return instance;
     }
 
 	@Override
-	protected ContentValues getContentValues(BodyPart instance) {
-		ContentValues initialValues = new ContentValues();
+	protected ContentValues getContentValues(SpellSubType instance) {
+		ContentValues initialValues = new ContentValues(3);
+
 		initialValues.put(COLUMN_NAME, instance.getName());
+        initialValues.put(COLUMN_CODE, instance.getCode().toString());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+
 		return initialValues;
 	}
 }

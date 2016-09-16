@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -29,12 +30,16 @@ import dagger.Provides;
 public class SpellFragmentModule {
 	private RealmsFragment realmsFragment;
 	private SpellListTypesFragment spellListTypesFragment;
+	private SpellSubTypesFragment spellSubTypesFragment;
 
 	public SpellFragmentModule(RealmsFragment realmsFragment) {
 		this.realmsFragment = realmsFragment;
 	}
 	public SpellFragmentModule(SpellListTypesFragment spellListTypesFragment) {
 		this.spellListTypesFragment = spellListTypesFragment;
+	}
+	public SpellFragmentModule(SpellSubTypesFragment spellSubTypesFragment) {
+		this.spellSubTypesFragment = spellSubTypesFragment;
 	}
 
 	@Provides
@@ -46,5 +51,10 @@ public class SpellFragmentModule {
 	@PerFragment
 	public SpellListTypesFragment provideSpellListTypesFragment() {
 		return this.spellListTypesFragment;
+	}
+	@Provides
+	@PerFragment
+	public SpellSubTypesFragment provideSpellSubTypesFragment() {
+		return this.spellSubTypesFragment;
 	}
 }

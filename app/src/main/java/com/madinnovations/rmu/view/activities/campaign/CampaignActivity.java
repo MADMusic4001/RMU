@@ -57,6 +57,7 @@ import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
@@ -102,6 +103,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private SkillsFragment             skillsFragment;
 	private SpecializationsFragment    specializationsFragment;
 	private SpellListTypesFragment     spellListTypesFragment;
+	private SpellSubTypesFragment      spellSubTypesFragment;
 	private StatsFragment              statsFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
@@ -398,6 +400,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			spellListTypesFragment = new SpellListTypesFragment();
 		}
 		replaceDetailFragment(spellListTypesFragment);
+	}
+
+	public void showSpellSubTypes() {
+		if(spellSubTypesFragment == null) {
+			spellSubTypesFragment = new SpellSubTypesFragment();
+		}
+		replaceDetailFragment(spellSubTypesFragment);
 	}
 
 	public void showStats() {
