@@ -369,13 +369,27 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 								toastString = getString(R.string.toast_specialization_saved);
 								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
-								int position = listAdapter.getPosition(currentInstance);
-								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.row_field1);
-									textView.setText(currentInstance.getName());
-									textView = (TextView) v.findViewById(R.id.row_field2);
-									textView.setText(currentInstance.getDescription());
+								int position = listAdapter.getPosition(savedSpecialization);
+								Skill skill = skillFilterSpinnerAdapter.getItem(skillFilterSpinner.getSelectedItemPosition());
+								if(position >= 0) {
+									if (!skill.getName().equals(savedSpecialization.getSkill().getName()) &&
+											skill.getId() != -1) {
+										listAdapter.remove(savedSpecialization);
+										listAdapter.notifyDataSetChanged();
+									}
+									else {
+										LinearLayout v = (LinearLayout) listView.getChildAt(
+												position - listView.getFirstVisiblePosition());
+										if (v != null) {
+											TextView textView = (TextView) v.findViewById(R.id.row_field1);
+											textView.setText(currentInstance.getName());
+											textView = (TextView) v.findViewById(R.id.row_field2);
+											textView.setText(currentInstance.getDescription());
+										}
+									}
+								} else if (skill == savedSpecialization.getSkill() && skill.getId() != -1) {
+									listAdapter.add(savedSpecialization);
+									listAdapter.notifyDataSetChanged();
 								}
 							}
 						}

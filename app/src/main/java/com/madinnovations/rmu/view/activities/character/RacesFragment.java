@@ -573,7 +573,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	}
 
 	private void initRecoveryMultEdit(View layout) {
-		recoveryMultEdit = (EditText)layout.findViewById(R.id.base_hits_edit);
+		recoveryMultEdit = (EditText)layout.findViewById(R.id.recovery_mult_edit);
 		recoveryMultEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

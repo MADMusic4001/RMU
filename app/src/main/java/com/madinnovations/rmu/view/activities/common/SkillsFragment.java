@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -53,6 +54,7 @@ import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -378,12 +380,27 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(currentInstance);
-								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-								if (v != null) {
-									TextView textView = (TextView) v.findViewById(R.id.row_field1);
-									textView.setText(currentInstance.getName());
-									textView = (TextView) v.findViewById(R.id.row_field2);
-									textView.setText(currentInstance.getDescription());
+								SkillCategory skillCategory = skillCategoryFilterSpinnerAdapter.getItem
+										(skillCategoryFilterSpinner.getSelectedItemPosition());
+								if(position >= 0 ) {
+									if (!skillCategory.getName().equals(savedSkill.getCategory().getName())
+											&& skillCategory.getId() !=    -1) {
+										listAdapter.remove(savedSkill);
+										listAdapter.notifyDataSetChanged();
+									}
+									else {
+										LinearLayout v = (LinearLayout) listView.getChildAt(
+												position - listView.getFirstVisiblePosition());
+										if (v != null) {
+											TextView textView = (TextView) v.findViewById(R.id.row_field1);
+											textView.setText(currentInstance.getName());
+											textView = (TextView) v.findViewById(R.id.row_field2);
+											textView.setText(currentInstance.getDescription());
+										}
+									}
+								} else if (skillCategory == savedSkill.getCategory() && skillCategory.getId() != -1) {
+									listAdapter.add(savedSkill);
+									listAdapter.notifyDataSetChanged();
 								}
 							}
 						}

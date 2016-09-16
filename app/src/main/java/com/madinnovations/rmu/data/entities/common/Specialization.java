@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.entities.common;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class Specialization {
 	private String description = null;
 	private Skill skill = null;
 	private boolean useSkillStats = true;
-	private List<Stat> stats = null;
+	private List<Stat> stats = new ArrayList<>();
 
 	/**
 	 * Creates a new Specialization instance

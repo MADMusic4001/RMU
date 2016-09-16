@@ -60,6 +60,7 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			out.name(RaceRealmRRModSchema.COLUMN_MODIFIER).value(entry.getValue());
 			out.endObject();
 		}
+		out.endArray();
 
 		out.name(RaceStatModSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Stat, Short> entry : value.getStatModifiers().entrySet()) {
@@ -68,6 +69,7 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			out.name(RaceStatModSchema.COLUMN_MODIFIER).value(entry.getValue());
 			out.endObject();
 		}
+		out.endArray();
 
 		out.name(RaceTalentsSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Talent, Short> entry : value.getTalentsAndFlawsTiersMap().entrySet()) {
