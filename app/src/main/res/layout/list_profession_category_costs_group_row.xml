@@ -42,9 +42,15 @@
         android:maxLength="2"
         android:background="@null"
         android:hint="@string/hint_additional_cost"/>
-    <CheckBox
-        android:id="@+id/assignable_check_box"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/assignable_check_box"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:button="@null"
+            android:background="?android:attr/listChoiceIndicatorMultiple"/>
+    </FrameLayout>
 </LinearLayout>
