@@ -241,6 +241,8 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			if(newLocomotionType != null) {
 				race.getLocomotionTypeRatesMap().put(newLocomotionType, rate);
 			}
+			in.endObject();
 		}
+		in.endArray();
 	}
 }

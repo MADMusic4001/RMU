@@ -137,11 +137,13 @@
     <!-- Spell -->
     <string name="hint_realm_description">Realm Description</string>
     <string name="hint_realm_name">Realm Name</string>
-    <string name="hint_spell_list_type_name">Spell List Type Name</string>
+    <string name="hint_spell_list_description">Spell Type Description</string>
+    <string name="hint_spell_list_name">Spell List Name</string>
     <string name="hint_spell_list_type_description">Spell List Type Description</string>
+    <string name="hint_spell_list_type_name">Spell List Type Name</string>
     <string name="hint_spell_sub_type_code">Spell Sub Type Code</string>
-    <string name="hint_spell_sub_type_name">Spell Sub Type Name</string>
     <string name="hint_spell_sub_type_description">Spell Sub Type Description</string>
-    <string name="hint_spell_type_name">Spell Type Name</string>
+    <string name="hint_spell_sub_type_name">Spell Sub Type Name</string>
     <string name="hint_spell_type_description">Spell Type Description</string>
+    <string name="hint_spell_type_name">Spell Type Name</string>
 </resources>

@@ -23,11 +23,13 @@ import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
 import com.madinnovations.rmu.data.dao.spells.SpellSubTypeDao;
+import com.madinnovations.rmu.data.dao.spells.SpellTypeDao;
 import com.madinnovations.rmu.data.dao.spells.impl.RealmDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellListDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellListTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellSubTypeDaoDbImpl;
+import com.madinnovations.rmu.data.dao.spells.impl.SpellTypeDaoDbImpl;
 
 import javax.inject.Singleton;
 
@@ -59,5 +61,9 @@ public class SpellDaoSqlModule {
 	@Provides @Singleton
 	public SpellSubTypeDao provideSpellSubTypeDao(RMUDatabaseHelper helper) {
 		return new SpellSubTypeDaoDbImpl(helper);
+	}
+	@Provides @Singleton
+	public SpellTypeDao provideSpellTypeDao(RMUDatabaseHelper helper, SpellSubTypeDao spellSubTypeDao) {
+		return new SpellTypeDaoDbImpl(helper);
 	}
 }

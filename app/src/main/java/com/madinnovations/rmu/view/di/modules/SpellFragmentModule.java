@@ -17,7 +17,9 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -28,12 +30,17 @@ import dagger.Provides;
  */
 @Module
 public class SpellFragmentModule {
-	private RealmsFragment realmsFragment;
+	private RealmsFragment         realmsFragment;
+	private SpellListsFragment     spellListsFragment;
 	private SpellListTypesFragment spellListTypesFragment;
-	private SpellSubTypesFragment spellSubTypesFragment;
+	private SpellSubTypesFragment  spellSubTypesFragment;
+	private SpellTypesFragment     spellTypesFragment;
 
 	public SpellFragmentModule(RealmsFragment realmsFragment) {
 		this.realmsFragment = realmsFragment;
+	}
+	public SpellFragmentModule(SpellListsFragment spellListsFragment) {
+		this.spellListsFragment = spellListsFragment;
 	}
 	public SpellFragmentModule(SpellListTypesFragment spellListTypesFragment) {
 		this.spellListTypesFragment = spellListTypesFragment;
@@ -41,11 +48,19 @@ public class SpellFragmentModule {
 	public SpellFragmentModule(SpellSubTypesFragment spellSubTypesFragment) {
 		this.spellSubTypesFragment = spellSubTypesFragment;
 	}
+	public SpellFragmentModule(SpellTypesFragment spellTypesFragment) {
+		this.spellTypesFragment = spellTypesFragment;
+	}
 
 	@Provides
 	@PerFragment
 	public RealmsFragment provideRealmsFragment() {
 		return this.realmsFragment;
+	}
+	@Provides
+	@PerFragment
+	public SpellListsFragment provideSpellListsFragment() {
+		return this.spellListsFragment;
 	}
 	@Provides
 	@PerFragment
@@ -56,5 +71,9 @@ public class SpellFragmentModule {
 	@PerFragment
 	public SpellSubTypesFragment provideSpellSubTypesFragment() {
 		return this.spellSubTypesFragment;
+	}
+	@PerFragment
+	public SpellTypesFragment provideSpellTypesFragment() {
+		return this.spellTypesFragment;
 	}
 }

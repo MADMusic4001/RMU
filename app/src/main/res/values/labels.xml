@@ -148,6 +148,8 @@
   <string name="label_delete_skill_category">Delete Skill Category</string>
   <string name="label_new_specialization">New Specialization</string>
   <string name="label_delete_specialization">Delete Specialization</string>
+  <string name="label_new_spell_list">New Spell List</string>
+  <string name="label_delete_spell_list">Delete Spell List</string>
   <string name="label_new_spell_list_type">New Spell List Type</string>
   <string name="label_delete_spell_list_type">Delete Spell List Type</string>
   <string name="label_new_spell_sub_type">New Spell Sub Type</string>
@@ -231,6 +233,7 @@
   <string name="label_min_height">Minimum Height</string>
   <string name="label_min_weight">Minimum Weight</string>
   <string name="label_no_parry">No Parry</string>
+  <string name="label_no_profession">No Profession</string>
   <string name="label_no_realm">No Realm</string>
   <string name="label_no_sub_type">No Spell Sub Type</string>
   <string name="label_no_stats">No Stats</string>
@@ -263,11 +266,15 @@
   <string name="label_skill_category_name">Skill Category Name</string>
   <string name="label_specialization_description">Specialization Description</string>
   <string name="label_specialization_name">Specialization Name</string>
+  <string name="label_spell_list_description">Spell List Description</string>
+  <string name="label_spell_list_name">Spell List Name</string>
   <string name="label_spell_list_type_description">Spell List Type Description</string>
-  <string name="label_spell_list_type_name">Spell Sub Type Name</string>
+  <string name="label_spell_list_type_name">Spell List Type Name</string>
   <string name="label_spell_sub_type_code">Spell Sub Type Code</string>
   <string name="label_spell_sub_type_description">Spell Sub Type Description</string>
-  <string name="label_spell_sub_type_name">Spell List Type Name</string>
+  <string name="label_spell_sub_type_name">Spell Sub Type Name</string>
+  <string name="label_spell_type_description">Spell Type Description</string>
+  <string name="label_spell_type_name">Spell Type Name</string>
   <string name="label_stagger">Stagger</string>
   <string name="label_stat_bonus">Stat Bonus</string>
   <string name="label_stat_description">Stat Description</string>
@@ -327,6 +334,7 @@
   <string name="input_label_recovery_mult">Recovery Mult.:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
+  <string name="input_label_spell_list_type">Spell List Type:</string>
   <string name="input_label_spell_sub_type">Spell Sub Type:</string>
   <string name="input_label_stride_mod">Stride Mod.:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>

@@ -79,6 +79,7 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -170,6 +171,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(SpellListSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SpellListTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellSubTypeSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(SpellTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SpellSchema.TABLE_CREATE);
             sqLiteDatabase.setTransactionSuccessful();
         }
@@ -244,6 +246,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(VarietyStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureVarietySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RealmSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellTypeSchema.TABLE_NAME, null, null);
 
 		sqLiteDatabase.delete(BiomeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(BodyPartSchema.TABLE_NAME, null, null);

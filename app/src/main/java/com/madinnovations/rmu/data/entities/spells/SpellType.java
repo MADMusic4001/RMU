@@ -25,7 +25,6 @@ public class 	SpellType {
 	private int id = -1;
 	private String name = null;
 	private String description = null;
-	private SpellSubType spellSubType = null;
 
 	/**
 	 * Checks the validity of the SpellType instance.
@@ -42,7 +41,6 @@ public class 	SpellType {
 				.append("id", id)
 				.append("name", name)
 				.append("description", description)
-				.append("spellSubType", spellSubType)
 				.toString();
 	}
 
@@ -79,11 +77,5 @@ public class 	SpellType {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	public SpellSubType getSpellSubType() {
-		return spellSubType;
-	}
-	public void setSpellSubType(SpellSubType spellSubType) {
-		this.spellSubType = spellSubType;
 	}
 }

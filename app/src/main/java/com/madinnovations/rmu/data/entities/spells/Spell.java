@@ -26,6 +26,11 @@ public class Spell {
 	private SpellList spellList = null;
 	private String name = null;
 	private String description = null;
+	private AreaOfEffect areaOfEffect = null;
+	private Duration duration = null;
+	private Range range = null;
+	private SpellType spellType = null;
+	private SpellSubType spellSubType = null;
 
 	/**
 	 * Checks the validity of the Spell instance.
@@ -43,6 +48,11 @@ public class Spell {
 				.append("spellList", spellList)
 				.append("name", name)
 				.append("description", description)
+				.append("areaOfEffect", areaOfEffect)
+				.append("duration", duration)
+				.append("range", range)
+				.append("spellType", spellType)
+				.append("spellSubType", spellSubType)
 				.toString();
 	}
 
@@ -85,5 +95,35 @@ public class Spell {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public AreaOfEffect getAreaOfEffect() {
+		return areaOfEffect;
+	}
+	public void setAreaOfEffect(AreaOfEffect areaOfEffect) {
+		this.areaOfEffect = areaOfEffect;
+	}
+	public Duration getDuration() {
+		return duration;
+	}
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+	public Range getRange() {
+		return range;
+	}
+	public void setRange(Range range) {
+		this.range = range;
+	}
+	public SpellType getSpellType() {
+		return spellType;
+	}
+	public void setSpellType(SpellType spellType) {
+		this.spellType = spellType;
+	}
+	public SpellSubType getSpellSubType() {
+		return spellSubType;
+	}
+	public void setSpellSubType(SpellSubType spellSubType) {
+		this.spellSubType = spellSubType;
 	}
 }

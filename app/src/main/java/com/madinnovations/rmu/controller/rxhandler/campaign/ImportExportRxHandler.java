@@ -72,6 +72,7 @@ import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
 import com.madinnovations.rmu.data.dao.spells.SpellSubTypeDao;
+import com.madinnovations.rmu.data.dao.spells.SpellTypeDao;
 import com.madinnovations.rmu.data.dao.spells.serializers.RealmSerializer;
 import com.madinnovations.rmu.data.dao.spells.serializers.SpellListSerializer;
 import com.madinnovations.rmu.data.dao.spells.serializers.SpellSerializer;
@@ -107,6 +108,7 @@ import com.madinnovations.rmu.data.entities.spells.Spell;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
 import com.madinnovations.rmu.data.entities.spells.SpellSubType;
+import com.madinnovations.rmu.data.entities.spells.SpellType;
 import com.madinnovations.rmu.view.RMUAppException;
 
 import java.io.BufferedReader;
@@ -177,6 +179,7 @@ public class ImportExportRxHandler {
 	private SpellListSerializer         spellListSerializer = new SpellListSerializer();
 	private SpellListTypeDao            spellListTypeDao;
 	private SpellSubTypeDao             spellSubTypeDao;
+	private SpellTypeDao                spellTypeDao;
 	private StatDao                     statDao;
 	private TalentDao                   talentDao;
 	private TalentSerializer            talentSerializer = new TalentSerializer();
@@ -197,8 +200,8 @@ public class ImportExportRxHandler {
 								 ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao, SizeDao sizeDao,
 								 SkillDao skillDao, SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
 								 SpellDao spellDao, SpellListDao spellListDao, SpellListTypeDao spellListTypeDao,
-								 SpellSubTypeDao spellSubTypeDao, StatDao statDao,TalentDao talentDao, TalentCategoryDao talentCategoryDao,
-								 RMUDatabaseHelper helper) {
+								 SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao, StatDao statDao, TalentDao talentDao,
+								 TalentCategoryDao talentCategoryDao,RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
 		this.characterDao = characterDao;
@@ -228,6 +231,7 @@ public class ImportExportRxHandler {
 		this.spellListDao = spellListDao;
 		this.spellListTypeDao = spellListTypeDao;
 		this.spellSubTypeDao = spellSubTypeDao;
+		this.spellTypeDao = spellTypeDao;
 		this.statDao = statDao;
 		this.talentDao = talentDao;
 		this.talentCategoryDao = talentCategoryDao;
@@ -392,7 +396,6 @@ public class ImportExportRxHandler {
 								itemDao.save(items, true);
 								Log.d(LOG_TAG, "Loaded " + items.size() + " items.");
 								items = null;
-								subscriber.onNext(30);
 
 								List<BodyPart> bodyParts = new ArrayList<>();
 								jsonReader.beginArray();
@@ -404,6 +407,7 @@ public class ImportExportRxHandler {
 								bodyPartDao.save(bodyParts, true);
 								Log.d(LOG_TAG, "Loaded " + bodyParts.size() + " bodyParts.");
 								bodyParts = null;
+								subscriber.onNext(30);
 
 								List<CriticalCode> criticalCodes = new ArrayList<>();
 								jsonReader.beginArray();
@@ -506,7 +510,6 @@ public class ImportExportRxHandler {
 								outlookDao.save(outlooks, true);
 								Log.d(LOG_TAG, "Loaded " + outlooks.size() + " outlooks.");
 								outlooks = null;
-								subscriber.onNext(60);
 
 								List<Realm> realms = new ArrayList<>();
 								jsonReader.beginArray();
@@ -518,6 +521,7 @@ public class ImportExportRxHandler {
 								realmDao.save(realms, true);
 								Log.d(LOG_TAG, "Loaded " + realms.size() + " realms.");
 								realms = null;
+								subscriber.onNext(60);
 
 								List<Profession> professions = new ArrayList<>();
 								jsonReader.beginArray();
@@ -585,7 +589,6 @@ public class ImportExportRxHandler {
 								creatureArchetypeDao.save(creatureArchetypes, true);
 								Log.d(LOG_TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
 								creatureArchetypes = null;
-								subscriber.onNext(80);
 
 								List<SpellListType> spellListTypes = new ArrayList<>();
 								jsonReader.beginArray();
@@ -597,6 +600,7 @@ public class ImportExportRxHandler {
 								spellListTypeDao.save(spellListTypes, true);
 								Log.d(LOG_TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
 								spellListTypes = null;
+								subscriber.onNext(80);
 
 								List<SpellSubType> spellSubTypes = new ArrayList<>();
 								jsonReader.beginArray();
@@ -608,6 +612,17 @@ public class ImportExportRxHandler {
 								spellSubTypeDao.save(spellSubTypes, true);
 								Log.d(LOG_TAG, "Loaded " + spellSubTypes.size() + " spellSubTypes.");
 								spellSubTypes = null;
+
+								List<SpellType> spellTypes = new ArrayList<>();
+								jsonReader.beginArray();
+								while (jsonReader.hasNext()) {
+									SpellType spellType = gson.fromJson(jsonReader, SpellType.class);
+									spellTypes.add(spellType);
+								}
+								jsonReader.endArray();
+								spellTypeDao.save(spellTypes, true);
+								Log.d(LOG_TAG, "Loaded " + spellTypes.size() + " spellTypes.");
+								spellTypes = null;
 
 								List<SpellList> spellLists = new ArrayList<>();
 								jsonReader.beginArray();
@@ -732,8 +747,8 @@ public class ImportExportRxHandler {
 							gson.toJson(talentCategoryDao.getAll(), writer);
 							gson.toJson(talentDao.getAll(), writer);
 							gson.toJson(itemDao.getAll(), writer);
-							subscriber.onNext(30);
 							gson.toJson(bodyPartDao.getAll(), writer);
+							subscriber.onNext(30);
 							gson.toJson(criticalCodeDao.getAll(), writer);
 							gson.toJson(criticalTypeDao.getAll(), writer);
 							gson.toJson(criticalResultDao.getAll(), writer);
@@ -745,8 +760,8 @@ public class ImportExportRxHandler {
 							gson.toJson(creatureCategoryDao.getAll(), writer);
 							gson.toJson(creatureTypeDao.getAll(), writer);
 							gson.toJson(outlookDao.getAll(), writer);
-							subscriber.onNext(60);
 							gson.toJson(realmDao.getAll(), writer);
+							subscriber.onNext(60);
 							gson.toJson(professionDao.getAll(), writer);
 							gson.toJson(cultureDao.getAll(), writer);
 							gson.toJson(raceDao.getAll(), writer);
@@ -754,9 +769,10 @@ public class ImportExportRxHandler {
 							gson.toJson(specializationDao.getAll(), writer);
 							gson.toJson(attackDao.getAll(), writer);
 							gson.toJson(creatureArchetypeDao.getAll(), writer);
-							subscriber.onNext(80);
 							gson.toJson(spellListTypeDao.getAll(), writer);
+							subscriber.onNext(80);
 							gson.toJson(spellSubTypeDao.getAll(), writer);
+							gson.toJson(spellTypeDao.getAll(), writer);
 							gson.toJson(spellListDao.getAll(), writer);
 							subscriber.onNext(90);
 							gson.toJson(spellDao.getAll(), writer);

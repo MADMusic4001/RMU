@@ -182,7 +182,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showSpells();
 								break;
 							case 2:
-//								((CampaignActivity)getActivity()).showSpellLists();
+								((CampaignActivity)getActivity()).showSpellLists();
 								break;
 							case 3:
 								((CampaignActivity)getActivity()).showSpellListTypes();
@@ -191,7 +191,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showSpellSubTypes();
 								break;
 							case 5:
-//								((CampaignActivity)getActivity()).showSpellTypes();
+								((CampaignActivity)getActivity()).showSpellTypes();
 								break;
 						}
 						break;

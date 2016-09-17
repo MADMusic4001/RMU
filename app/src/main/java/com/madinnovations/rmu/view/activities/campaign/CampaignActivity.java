@@ -57,7 +57,9 @@ import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
@@ -102,8 +104,10 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private SkillCategoriesFragment    skillCategoriesFragment;
 	private SkillsFragment             skillsFragment;
 	private SpecializationsFragment    specializationsFragment;
+	private SpellListsFragment         spellListsFragment;
 	private SpellListTypesFragment     spellListTypesFragment;
 	private SpellSubTypesFragment      spellSubTypesFragment;
+	private SpellTypesFragment         spellTypesFragment;
 	private StatsFragment              statsFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
@@ -395,6 +399,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 		replaceDetailFragment(specializationsFragment);
 	}
 
+	public void showSpellLists() {
+		if(spellListsFragment == null) {
+			spellListsFragment = new SpellListsFragment();
+		}
+		replaceDetailFragment(spellListsFragment);
+	}
+
 	public void showSpellListTypes() {
 		if(spellListTypesFragment == null) {
 			spellListTypesFragment = new SpellListTypesFragment();
@@ -407,6 +418,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			spellSubTypesFragment = new SpellSubTypesFragment();
 		}
 		replaceDetailFragment(spellSubTypesFragment);
+	}
+
+	public void showSpellTypes() {
+		if(spellTypesFragment == null) {
+			spellTypesFragment = new SpellTypesFragment();
+		}
+		replaceDetailFragment(spellTypesFragment);
 	}
 
 	public void showStats() {

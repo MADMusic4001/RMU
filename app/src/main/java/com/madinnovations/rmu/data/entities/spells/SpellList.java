@@ -53,8 +53,8 @@ public class SpellList {
 	 * @return true if the SpellList instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && realm != null && spellListType != null;
-
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && realm != null &&
+				spellListType != null;
 	}
 
 	@Override
