@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.adapters.character;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -183,7 +182,6 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 				@Override
 				public void onClick(View v) {
 					int position = listData.indexOf(skillCategoryRanks);
-					Log.d("RMU", "In onClick. position = " + position);
 					if(listView.isGroupExpanded(position)) {
 						listView.collapseGroup(position);
 					}

@@ -72,6 +72,11 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
     }
 
     @Override
+    protected String getSortString() {
+        return COLUMN_NAME;
+    }
+
+    @Override
     protected int getId(SkillCategory instance) {
         return instance.getId();
     }
@@ -162,7 +167,9 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
 
         if(instance.getStats() != null) {
             for (Stat stat : instance.getStats()) {
-                result &= (db.insert(SkillCategoryStatsSchema.TABLE_NAME, null, getSkillCategoryStat(instance.getId(), stat.getId())) != -1);
+                result &= (db.insertWithOnConflict(SkillCategoryStatsSchema.TABLE_NAME, null,
+												   getSkillCategoryStat(instance.getId(), stat.getId()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
             }
         }
         return result;

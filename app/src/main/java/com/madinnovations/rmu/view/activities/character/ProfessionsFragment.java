@@ -28,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -57,7 +58,7 @@ import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,8 +93,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	private   EditText                          descriptionEdit;
 	private   Spinner                           realm1Spinner;
 	private   Spinner                           realm2Spinner;
-	private Collection<SkillCategory> skillCategories = null;
-	private Collection<Skill> skills = null;
+	private Collection<SkillCategory> skillCategories = new ArrayList<>();
+	private Collection<Skill> skills = new ArrayList<>();
 	private Profession currentInstance = new Profession();
 	private boolean isNew = true;
 
@@ -343,10 +344,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_profession_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-
+							Toast.makeText(getActivity(), getString(R.string.toast_profession_saved), Toast.LENGTH_SHORT).show();
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 							if (v != null) {
@@ -503,9 +501,9 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		ExpandableListView categoryCostListView = (ExpandableListView) layout.findViewById(R.id.costs_list);
 		categoryCostListAdapter = new ProfessionCategoryCostListAdapter(getActivity(), this, categoryCostListView);
 		categoryCostListView.setAdapter(categoryCostListAdapter);
+		categoryCostListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		categoryCostListAdapter.addAll(createCostList());
 		categoryCostListAdapter.notifyDataSetChanged();
-		Log.d(LOG_TAG, "categoryCostListView.getTranscriptMode() = " + categoryCostListView.getTranscriptMode());
 		skillCategoryRxHandler.getAll()
 				.subscribe(new Subscriber<Collection<SkillCategory>>() {
 					@Override
@@ -603,7 +601,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	private void addMissingCosts() {
 		Map<SkillCategory, SkillCost> skillCategoryCosts = currentInstance.getSkillCategoryCosts();
 		if(skillCategoryCosts == null || skillCategoryCosts.isEmpty()) {
-			skillCategoryCosts = new HashMap<>(skillCategories.size());
+			skillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
 			currentInstance.setSkillCategoryCosts(skillCategoryCosts);
 		}
 		for(SkillCategory skillCategory : skillCategories) {
@@ -613,7 +611,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		}
 		Map<Skill, SkillCost> skillCosts = currentInstance.getSkillCosts();
 		if(skillCosts == null) {
-			skillCosts = new HashMap<>(skills.size());
+			skillCosts = new LinkedHashMap<>(skills.size());
 			currentInstance.setSkillCosts(skillCosts);
 		}
 		for(Skill skill : skills) {

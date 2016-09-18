@@ -75,6 +75,8 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellAreaOfEffectParamSchema;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellDurationParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
@@ -173,6 +175,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(SpellSubTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellTypeSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(SpellSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(SpellAreaOfEffectParamSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(SpellDurationParamSchema.TABLE_CREATE);
             sqLiteDatabase.setTransactionSuccessful();
         }
         finally {
@@ -214,6 +218,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CharacterTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CultureSkillRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellAreaOfEffectParamSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpellDurationParamSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellListSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionAssignableSkillCostSchema.TABLE_NAME, null, null);

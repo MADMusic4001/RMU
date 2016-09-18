@@ -121,18 +121,21 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		db.delete(ArchetypeSkillsSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(SkillCategory skillCategory : instance.getPrimarySkills()) {
-			result &= (db.insert(ArchetypeSkillsSchema.TABLE_NAME, null, getArchetypeSkillCategorysValues(instance.getId(),
-					skillCategory.getId(), 0)) != -1);
+			result &= (db.insertWithOnConflict(ArchetypeSkillsSchema.TABLE_NAME, null,
+											   getArchetypeSkillCategorysValues(instance.getId(), skillCategory.getId(), 0),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		for(SkillCategory skillCategory : instance.getSecondarySkills()) {
-			result &= (db.insert(ArchetypeSkillsSchema.TABLE_NAME, null, getArchetypeSkillCategorysValues(instance.getId(),
-					skillCategory.getId(), 1)) != -1);
+			result &= (db.insertWithOnConflict(ArchetypeSkillsSchema.TABLE_NAME, null,
+											   getArchetypeSkillCategorysValues(instance.getId(), skillCategory.getId(), 1),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		for(SkillCategory skillCategory : instance.getTertiarySkills()) {
-			result &= (db.insert(ArchetypeSkillsSchema.TABLE_NAME, null, getArchetypeSkillCategorysValues(instance.getId(),
-					skillCategory.getId(), 2)) != -1);
+			result &= (db.insertWithOnConflict(ArchetypeSkillsSchema.TABLE_NAME, null,
+											   getArchetypeSkillCategorysValues(instance.getId(), skillCategory.getId(), 2),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		return result;

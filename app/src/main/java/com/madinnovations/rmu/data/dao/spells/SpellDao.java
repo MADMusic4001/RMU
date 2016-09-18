@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.spells;
 
 import com.madinnovations.rmu.data.entities.spells.Spell;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,4 +79,12 @@ public interface SpellDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all Spell objects that reference the given SpellList from persistent storage.
+	 *
+	 * @param filter  a SpellList instance whose ID will be used to filter the Spell objects returned by the query
+	 * @return  a List containing all Spell objects that reference the given SpellList currently in persistent storage.
+	 */
+	public List<Spell> getSpellsForList(SpellList filter);
 }

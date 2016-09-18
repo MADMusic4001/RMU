@@ -150,9 +150,9 @@ public class SpellListTypeRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<SpellListType>> subscriber) {
 						try {
-							Collection<SpellListType> SpellListTypesDeleted = dao.getAll();
+							Collection<SpellListType> spellListTypesDeleted = dao.getAll();
 							dao.deleteAll();
-							subscriber.onNext(SpellListTypesDeleted);
+							subscriber.onNext(spellListTypesDeleted);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

@@ -72,7 +72,12 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
         return COLUMN_ID;
     }
 
-    @Override
+	@Override
+	protected String getSortString() {
+		return COLUMN_NAME;
+	}
+
+	@Override
     protected int getId(Skill instance) {
         return instance.getId();
     }
@@ -110,7 +115,9 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 
 		if(instance.getStats() != null) {
 			for (Stat stat : instance.getStats()) {
-				result &= (db.insert(SkillStatsSchema.TABLE_NAME, null, getSkillStat(instance.getId(), stat.getId())) != -1);
+				result &= (db.insertWithOnConflict(SkillStatsSchema.TABLE_NAME, null,
+												   getSkillStat(instance.getId(), stat.getId()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 

@@ -37,7 +37,7 @@
         android:layout_gravity="center_horizontal">
         <EditText
             android:id="@+id/name_edit"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="30"
             android:hint="@string/hint_spell_list_name"/>
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:hint="@string/hint_spell_list_description"/>
+            android:hint="@string/hint_spell_list_notes"/>
         <RelativeLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

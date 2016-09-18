@@ -19,7 +19,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -235,7 +234,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 				@Override
 				public void onClick(View v) {
 					int position = listData.indexOf(skillCategoryCost);
-					Log.d("RMU", "In onClick. position = " + position);
 					if(listView.isGroupExpanded(position)) {
 						listView.collapseGroup(position);
 					}

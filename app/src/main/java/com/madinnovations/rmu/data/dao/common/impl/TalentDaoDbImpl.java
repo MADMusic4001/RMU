@@ -173,7 +173,8 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         for(ParameterValue parameterValue : instance.getParameterValues()) {
             contentValues.put(TalentParametersSchema.COLUMN_PARAMETER_ID, parameterValue.getParameter().getId());
             contentValues.put(TalentParametersSchema.COLUMN_VALUE, parameterValue.getValue());
-            result &= (db.insert(TalentParametersSchema.TABLE_NAME, null, contentValues) != -1);
+            result &= (db.insertWithOnConflict(TalentParametersSchema.TABLE_NAME, null, contentValues,
+                                               SQLiteDatabase.CONFLICT_NONE) != -1);
         }
         return result;
     }

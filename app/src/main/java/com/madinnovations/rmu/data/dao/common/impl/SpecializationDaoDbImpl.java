@@ -110,7 +110,9 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
 
         if(instance.getStats() != null){
             for (Stat stat : instance.getStats()) {
-                result &= (db.insert(SpecializationStatsSchema.TABLE_NAME, null, getSpecializationStat(instance.getId(), stat.getId())) != -1);
+                result &= (db.insertWithOnConflict(SpecializationStatsSchema.TABLE_NAME, null,
+												   getSpecializationStat(instance.getId(), stat.getId()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
             }
         }
         return result;

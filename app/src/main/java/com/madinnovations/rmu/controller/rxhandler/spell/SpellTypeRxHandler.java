@@ -94,17 +94,17 @@ public class SpellTypeRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a SpellType instance to persistent storage.
 	 *
-	 * @param bodyPart  the SpellType instance to be saved
+	 * @param spellType  the SpellType instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the SpellType instance.
 	 */
-	public Observable<SpellType> save(final SpellType bodyPart) {
+	public Observable<SpellType> save(final SpellType spellType) {
 		return Observable.create(
 				new Observable.OnSubscribe<SpellType>() {
 					@Override
 					public void call(Subscriber<? super SpellType> subscriber) {
 						try {
-							dao.save(bodyPart);
-							subscriber.onNext(bodyPart);
+							dao.save(spellType);
+							subscriber.onNext(spellType);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
@@ -150,9 +150,9 @@ public class SpellTypeRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<SpellType>> subscriber) {
 						try {
-							Collection<SpellType> bodyPartsDeleted = dao.getAll();
+							Collection<SpellType> spellTypesDeleted = dao.getAll();
 							dao.deleteAll();
-							subscriber.onNext(bodyPartsDeleted);
+							subscriber.onNext(spellTypesDeleted);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

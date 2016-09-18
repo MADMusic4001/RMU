@@ -24,6 +24,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class 	SpellType {
 	private int id = -1;
 	private String name = null;
+	private Character code = null;
 	private String description = null;
 
 	/**
@@ -32,7 +33,7 @@ public class 	SpellType {
 	 * @return true if the SpellType instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+		return name != null && !name.isEmpty() && code != null && description != null && !description.isEmpty();
 	}
 
 	@Override
@@ -40,6 +41,7 @@ public class 	SpellType {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
 				.append("name", name)
+				.append("code", code)
 				.append("description", description)
 				.toString();
 	}
@@ -71,6 +73,12 @@ public class 	SpellType {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Character getCode() {
+		return code;
+	}
+	public void setCode(Character code) {
+		this.code = code;
 	}
 	public String getDescription() {
 		return description;

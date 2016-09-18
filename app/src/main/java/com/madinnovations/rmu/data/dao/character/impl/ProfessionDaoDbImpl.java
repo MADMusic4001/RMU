@@ -150,18 +150,25 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Skill, SkillCost> entry : instance.getSkillCosts().entrySet()) {
-			result &= (db.insert(ProfessionSkillCostSchema.TABLE_NAME, null,
-								 getProfessionSkillCostContentValues(instance.getId(), entry.getKey().getId(),
-																	 entry.getValue())) != -1);
+			if(entry.getValue().getFirstCost() != null && entry.getValue().getAdditionalCost() != null) {
+				result &= (db.insertWithOnConflict(ProfessionSkillCostSchema.TABLE_NAME, null,
+												   getProfessionSkillCostContentValues(instance.getId(), entry.getKey().getId(),
+																					   entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
 		}
 
 		selection = ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID + " = ?";
 		db.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<SkillCategory, SkillCost> entry : instance.getSkillCategoryCosts().entrySet()) {
-			result &= (db.insert(ProfessionSkillCategoryCostSchema.TABLE_NAME, null,
-								 getProfessionSkillCategoryCostContentValues(instance.getId(), entry.getKey().getId(),
-																	 entry.getValue())) != -1);
+			if(entry.getValue().getFirstCost() != null && entry.getValue().getAdditionalCost() != null) {
+				result &= (db.insertWithOnConflict(ProfessionSkillCategoryCostSchema.TABLE_NAME, null,
+												   getProfessionSkillCategoryCostContentValues(instance.getId(),
+																							   entry.getKey().getId(),
+																							   entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
 		}
 
 		selection = ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
@@ -169,9 +176,10 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		for(Map.Entry<SkillCategory, List<SkillCost>> entry : instance.getAssignableSkillCosts().entrySet()) {
 			for(SkillCost skillCost : entry.getValue()) {
-				result &= (db.insert(ProfessionAssignableSkillCostSchema.TABLE_NAME, null,
-									 getProfessionAssignableCostContentValues(instance.getId(), entry.getKey().getId(),
-																		 skillCost)) != -1);
+				result &= (db.insertWithOnConflict(ProfessionAssignableSkillCostSchema.TABLE_NAME, null,
+												   getProfessionAssignableCostContentValues(instance.getId(),
+																							entry.getKey().getId(), skillCost),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 		return result;

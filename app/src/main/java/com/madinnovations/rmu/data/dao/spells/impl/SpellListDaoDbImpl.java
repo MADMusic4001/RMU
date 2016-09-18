@@ -88,7 +88,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_NOTES))) {
+			instance.setNotes(null);
+		}
+		else {
+			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTES)));
+		}
 		instance.setRealm(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
 			instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
@@ -106,7 +111,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 		ContentValues initialValues = new ContentValues(7);
 
 		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+		if(instance.getNotes() == null) {
+			initialValues.putNull(COLUMN_NOTES);
+		}
+		else {
+			initialValues.put(COLUMN_NOTES, instance.getNotes());
+		}
 		initialValues.put(COLUMN_REALM_ID, instance.getRealm().getId());
 		initialValues.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
 		initialValues.put(COLUMN_PROFESSION_ID, instance.getProfession() != null ? instance.getProfession().getId() : null);

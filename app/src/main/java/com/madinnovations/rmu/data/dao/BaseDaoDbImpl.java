@@ -82,6 +82,15 @@ public abstract class BaseDaoDbImpl<T> {
 	protected abstract String getIdColumnName();
 
 	/**
+	 * Gets the sort string to use when executing queries.
+	 *
+	 * @return  the string that will be passed to the query method for sorting results.
+	 */
+	protected String getSortString() {
+		return getIdColumnName();
+	}
+
+	/**
 	 * Gets the value of the id for a T instance.
 	 *
 	 * @param instance  a T instance
@@ -153,7 +162,7 @@ public abstract class BaseDaoDbImpl<T> {
 		}
 		try {
 			Cursor cursor = query(getTableName(), getColumns(), selection,
-					selectionArgs, getIdColumnName());
+					selectionArgs, getSortString());
 			if (cursor != null) {
 				cursor.moveToFirst();
 				while (!cursor.isAfterLast()) {
@@ -190,7 +199,7 @@ public abstract class BaseDaoDbImpl<T> {
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), null, null, getIdColumnName());
+			Cursor cursor = query(getTableName(), getColumns(), null, null, getSortString());
 
 			if (cursor != null) {
 				cursor.moveToFirst();
@@ -286,7 +295,7 @@ public abstract class BaseDaoDbImpl<T> {
 		}
 		try {
 			if(getId(instance) == -1 || isNew) {
-				setId(instance, (int)db.insert(getTableName(), null, contentValues));
+				setId(instance, (int)db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE));
 				result = (getId(instance) != -1);
 			}
 			else {
@@ -387,7 +396,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 */
 	public long insert(String tableName, ContentValues values) {
 		SQLiteDatabase db = helper.getWritableDatabase();
-		return db.insert(tableName, null, values);
+		return db.insertWithOnConflict(tableName, null, values, SQLiteDatabase.CONFLICT_NONE);
 	}
 
 	/**

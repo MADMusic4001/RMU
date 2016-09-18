@@ -16,24 +16,25 @@
 package com.madinnovations.rmu.data.dao.spells.schemas;
 
 /**
- * Database schema data for the spell_types table
+ * Database schema data for the spell_duration_params table
  */
-public interface SpellTypeSchema {
-    String TABLE_NAME = "spell_types";
+public interface SpellDurationParamSchema {
+    String TABLE_NAME = "spell_duration_params";
 
     String COLUMN_ID = "id";
-    String COLUMN_NAME = "name";
-    String COLUMN_CODE = "code";
-    String COLUMN_DESCRIPTION = "description";
+    String COLUMN_SPELL_ID = "spellId";
+    String COLUMN_PARAM_INDEX = "paramIndex";
+    String COLUMN_PARAM_VALUE = "paramValue";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
-            + COLUMN_NAME  + " TEXT NOT NULL, "
-            + COLUMN_CODE + " TEXT NOT NULL, "
-            + COLUMN_DESCRIPTION + " TEXT NOT NULL"
+            + COLUMN_SPELL_ID + " INTEGER NOT NULL, "
+            + COLUMN_PARAM_INDEX + " INTEGER NOT NULL, "
+            + COLUMN_PARAM_VALUE + " INTEGER NOT NULL, "
+			+ "FOREIGN KEY (" + COLUMN_SPELL_ID + ") REFERENCES " + SpellSchema.TABLE_NAME + "(" + SpellSchema.COLUMN_ID + ")"
             + ")";
 
-    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_CODE, COLUMN_DESCRIPTION};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SPELL_ID, COLUMN_PARAM_INDEX, COLUMN_PARAM_VALUE};
 }

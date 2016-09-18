@@ -27,8 +27,11 @@ public class Spell {
 	private String name = null;
 	private String description = null;
 	private AreaOfEffect areaOfEffect = null;
+	private int[] areaOfEffectParams = new int[0];
 	private Duration duration = null;
+	private int[] durationParams = new int[0];
 	private Range range = null;
+	private Integer rangeParam = null;
 	private SpellType spellType = null;
 	private SpellSubType spellSubType = null;
 
@@ -38,7 +41,8 @@ public class Spell {
 	 * @return true if the Spell instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && spellList != null;
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && spellList != null &&
+				spellType != null && areaOfEffect != null && duration != null && range != null;
 	}
 
 	@Override
@@ -49,8 +53,11 @@ public class Spell {
 				.append("name", name)
 				.append("description", description)
 				.append("areaOfEffect", areaOfEffect)
+				.append("areaOfEffectParams", areaOfEffectParams)
 				.append("duration", duration)
+				.append("durationParams", durationParams)
 				.append("range", range)
+				.append("rangeParam", rangeParam)
 				.append("spellType", spellType)
 				.append("spellSubType", spellSubType)
 				.toString();
@@ -102,17 +109,35 @@ public class Spell {
 	public void setAreaOfEffect(AreaOfEffect areaOfEffect) {
 		this.areaOfEffect = areaOfEffect;
 	}
+	public int[] getAreaOfEffectParams() {
+		return areaOfEffectParams;
+	}
+	public void setAreaOfEffectParams(int[] areaOfEffectParams) {
+		this.areaOfEffectParams = areaOfEffectParams;
+	}
 	public Duration getDuration() {
 		return duration;
 	}
 	public void setDuration(Duration duration) {
 		this.duration = duration;
 	}
+	public int[] getDurationParams() {
+		return durationParams;
+	}
+	public void setDurationParams(int[] durationParams) {
+		this.durationParams = durationParams;
+	}
 	public Range getRange() {
 		return range;
 	}
 	public void setRange(Range range) {
 		this.range = range;
+	}
+	public Integer getRangeParam() {
+		return rangeParam;
+	}
+	public void setRangeParam(Integer rangeParams) {
+		this.rangeParam = rangeParams;
 	}
 	public SpellType getSpellType() {
 		return spellType;

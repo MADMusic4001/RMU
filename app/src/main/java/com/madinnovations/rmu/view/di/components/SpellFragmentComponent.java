@@ -20,6 +20,7 @@ import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
@@ -34,6 +35,7 @@ public interface SpellFragmentComponent {
 	public void injectInto(RealmsFragment realmsFragment);
 	public void injectInto(SpellListsFragment spellListsFragment);
 	public void injectInto(SpellListTypesFragment spellListTypesFragment);
+	public void injectInto(SpellsFragment spellsFragment);
 	public void injectInto(SpellSubTypesFragment spellSubTypesFragment);
 	public void injectInto(SpellTypesFragment spellTypesFragment);
 }

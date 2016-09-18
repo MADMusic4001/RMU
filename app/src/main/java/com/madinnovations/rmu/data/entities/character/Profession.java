@@ -25,8 +25,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Profession attributes
@@ -37,9 +39,9 @@ public class Profession {
 	private String                        description                 = null;
 	private Realm                         realm1                      = null;
 	private Realm                         realm2                      = null;
-	private Map<SkillCategory, SkillCost> skillCategoryCosts          = new HashMap<>();
-	private Map<Skill, SkillCost>         skillCosts                  = new HashMap<>();
-	private Map<SkillCategory, List<SkillCost>> assignableSkillCosts  = new HashMap<>();
+	private Map<SkillCategory, SkillCost> skillCategoryCosts          = new LinkedHashMap<>();
+	private Map<Skill, SkillCost>         skillCosts                  = new LinkedHashMap<>();
+	private Map<SkillCategory, List<SkillCost>> assignableSkillCosts  = new LinkedHashMap<>();
 	private List<SkillCategory>           professionalSkillCategories = new ArrayList<>();
 
 	/**

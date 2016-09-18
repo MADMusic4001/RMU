@@ -148,6 +148,8 @@
   <string name="label_delete_skill_category">Delete Skill Category</string>
   <string name="label_new_specialization">New Specialization</string>
   <string name="label_delete_specialization">Delete Specialization</string>
+  <string name="label_new_spell">New Spell</string>
+  <string name="label_delete_spell">Delete Spell</string>
   <string name="label_new_spell_list">New Spell List</string>
   <string name="label_delete_spell_list">Delete Spell List</string>
   <string name="label_new_spell_list_type">New Spell List Type</string>
@@ -178,6 +180,7 @@
   <string name="label_all_critical_types">All Critical Types</string>
   <string name="label_all_skill_categories">All Skill Categories</string>
   <string name="label_all_skills">All Skills</string>
+  <string name="label_all_spell_lists">All Spell Lists</string>
 
   <!-- TextView labels -->
   <string name="label_1">1</string>
@@ -266,6 +269,8 @@
   <string name="label_skill_category_name">Skill Category Name</string>
   <string name="label_specialization_description">Specialization Description</string>
   <string name="label_specialization_name">Specialization Name</string>
+  <string name="label_spell_description">Spell Description</string>
+  <string name="label_spell_name">Spell Name</string>
   <string name="label_spell_list_description">Spell List Description</string>
   <string name="label_spell_list_name">Spell List Name</string>
   <string name="label_spell_list_type_description">Spell List Type Description</string>
@@ -273,6 +278,7 @@
   <string name="label_spell_sub_type_code">Spell Sub Type Code</string>
   <string name="label_spell_sub_type_description">Spell Sub Type Description</string>
   <string name="label_spell_sub_type_name">Spell Sub Type Name</string>
+  <string name="label_spell_type_code">Spell Type Code</string>
   <string name="label_spell_type_description">Spell Type Description</string>
   <string name="label_spell_type_name">Spell Type Name</string>
   <string name="label_stagger">Stagger</string>
@@ -289,6 +295,7 @@
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- Input field labels -->
+  <string name="input_label_area_of_effect">Area of Effect:</string>
   <string name="input_label_armor_type">AT:</string>
   <string name="input_label_attack_code">Attack Code:</string>
   <string name="input_label_attack_name">Attack Name:</string>
@@ -315,6 +322,7 @@
   <string name="input_label_dazed">Dazed:</string>
   <string name="input_label_description">Description:</string>
   <string name="input_label_dev_points">Dev Points:</string>
+  <string name="input_label_duration">Duration:</string>
   <string name="input_label_endurance_mod">Endurance Mod.:</string>
   <string name="input_label_fatigue">Fatigue:</string>
   <string name="input_label_healing_rate">Healing Rate:</string>
@@ -329,13 +337,17 @@
   <string name="input_label_outlook">Outlook:</string>
   <string name="input_label_pounds_per_inch">Pounds per Inch:</string>
   <string name="input_label_race_name">Race Name:</string>
+  <string name="input_label_range">Range:</string>
   <string name="input_label_realm1">Realm 1:</string>
   <string name="input_label_realm2">Realm 2:</string>
   <string name="input_label_recovery_mult">Recovery Mult.:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
+  <string name="input_label_spell_list">Spell List:</string>
+  <string name="input_label_spell_list_filter">Spell List Filter:</string>
   <string name="input_label_spell_list_type">Spell List Type:</string>
   <string name="input_label_spell_sub_type">Spell Sub Type:</string>
+  <string name="input_label_spell_type">Spell Type:</string>
   <string name="input_label_stride_mod">Stride Mod.:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
   <string name="input_label_trades_ranks">Trades &amp; Crafts Ranks:</string>
@@ -345,6 +357,7 @@
   <string name="hyphen">-</string>
   <string name="min_max_roll_value">%1$2d-%2$3d</string>
   <string name="code_name_format_string">%1$s - %2$s</string>
+  <string name="spell_list_format_string">%1$s (%2$s %3$s)</string>
   <string name="export_status">Export %1$d%% complete.</string>
   <string name="import_status">Import %1$d%% complete.</string>
   <!-- ViewPager title strings -->

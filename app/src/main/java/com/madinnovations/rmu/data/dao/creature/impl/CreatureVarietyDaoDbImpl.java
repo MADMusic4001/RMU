@@ -221,7 +221,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 			values.put(VarietyStatsSchema.COLUMN_VARIETY_ID, creatureVarietyId);
 			values.put(VarietyStatsSchema.COLUMN_STAT_ID, entry.getKey().getId());
 			values.put(VarietyStatsSchema.COLUMN_BONUS, entry.getValue());
-			result &= (db.insert(VarietyStatsSchema.TABLE_NAME, null, values) != -1);
+			result &= (db.insertWithOnConflict(VarietyStatsSchema.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -237,7 +237,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		for(CriticalCode criticalCode : criticalCodeList) {
 			values.put(VarietyCriticalCodesSchema.COLUMN_VARIETY_ID, creatureVarietyId);
 			values.put(VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID, criticalCode.getId());
-			result &= (db.insert(VarietyCriticalCodesSchema.TABLE_NAME, null, values) != -1);
+			result &= (db.insertWithOnConflict(VarietyCriticalCodesSchema.TABLE_NAME, null, values,
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -254,7 +255,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 			values.put(VarietyTalentTiersSchema.COLUMN_VARIETY_ID, creatureVarietyId);
 			values.put(VarietyTalentTiersSchema.COLUMN_TALENT_ID, entry.getKey().getId());
 			values.put(VarietyTalentTiersSchema.COLUMN_TIERS, entry.getValue());
-			result &= (db.insert(VarietyTalentTiersSchema.TABLE_NAME, null, values) != -1);
+			result &= (db.insertWithOnConflict(VarietyTalentTiersSchema.TABLE_NAME, null, values,
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -271,7 +273,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 			values.put(VarietyAttacksSchema.COLUMN_VARIETY_ID, creatureVarietyId);
 			values.put(VarietyAttacksSchema.COLUMN_ATTACK_ID, entry.getKey().getId());
 			values.put(VarietyAttacksSchema.COLUMN_ATTACK_BONUS, entry.getValue());
-			result &= (db.insert(VarietyAttacksSchema.TABLE_NAME, null, values) != -1);
+			result &= (db.insertWithOnConflict(VarietyAttacksSchema.TABLE_NAME, null, values,
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -288,7 +291,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 			values.put(VarietySkillsSchema.COLUMN_VARIETY_ID, creatureVarietyId);
 			values.put(VarietySkillsSchema.COLUMN_SKILL_ID, entry.getKey().getId());
 			values.put(VarietySkillsSchema.COLUMN_SKILL_BONUS, entry.getValue());
-			result &= (db.insert(VarietySkillsSchema.TABLE_NAME, null, values) != -1);
+			result &= (db.insertWithOnConflict(VarietySkillsSchema.TABLE_NAME, null, values,
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}

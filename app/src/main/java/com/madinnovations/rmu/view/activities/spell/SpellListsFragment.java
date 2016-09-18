@@ -84,7 +84,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	private   TwoFieldListAdapter<SpellList> listAdapter;
 	private   ListView                       listView;
 	private   EditText                       nameEdit;
-	private   EditText                       descriptionEdit;
+	private   EditText                       notesEdit;
 	private   Spinner                        realm1Spinner;
 	private   Spinner                        realm2Spinner;
 	private   Spinner                        professionSpinner;
@@ -195,7 +195,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	@Override
 	public CharSequence getField2Value(SpellList spellList) {
-		return spellList.getDescription();
+		return spellList.getNotes();
 	}
 
 	private boolean copyViewsToItem() {
@@ -216,13 +216,13 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			changed = true;
 		}
 
-		stringValue = descriptionEdit.getText().toString();
+		stringValue = notesEdit.getText().toString();
 		if(stringValue.isEmpty()) {
 			stringValue = null;
 		}
-		if((stringValue == null && currentInstance.getDescription() != null) ||
-				(stringValue != null && !stringValue.equals(currentInstance.getDescription()))) {
-			currentInstance.setDescription(stringValue);
+		if((stringValue == null && currentInstance.getNotes() != null) ||
+				(stringValue != null && !stringValue.equals(currentInstance.getNotes()))) {
+			currentInstance.setNotes(stringValue);
 			changed = true;
 		}
 
@@ -275,7 +275,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
-		descriptionEdit.setText(currentInstance.getDescription());
+		notesEdit.setText(currentInstance.getNotes());
 		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(currentInstance.getRealm()));
 		if(currentInstance.getRealm2() == null) {
 			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealm));
@@ -294,8 +294,8 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
 		}
-		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
-			descriptionEdit.setError(null);
+		if(currentInstance.getNotes() != null && !currentInstance.getNotes().isEmpty()) {
+			notesEdit.setError(null);
 		}
 	}
 
@@ -373,7 +373,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 								TextView textView = (TextView) v.findViewById(R.id.row_field1);
 								textView.setText(currentInstance.getName());
 								textView = (TextView) v.findViewById(R.id.row_field2);
-								textView.setText(currentInstance.getDescription());
+								textView.setText(currentInstance.getNotes());
 							}
 						}
 					}
@@ -410,26 +410,26 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	}
 
 	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
+		notesEdit = (EditText)layout.findViewById(R.id.description_edit);
+		notesEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_spell_list_description_required));
+				if (editable.length() == 0 && notesEdit != null) {
+					notesEdit.setError(getString(R.string.validation_spell_list_description_required));
 				}
 			}
 		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		notesEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
+					final String newDescription = notesEdit.getText().toString();
+					if (currentInstance != null && !newDescription.equals(currentInstance.getNotes())) {
+						currentInstance.setNotes(newDescription);
 						saveItem();
 					}
 				}

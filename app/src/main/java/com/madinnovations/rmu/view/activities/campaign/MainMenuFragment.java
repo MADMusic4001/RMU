@@ -179,7 +179,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showRealms();
 								break;
 							case 1:
-//								((CampaignActivity)getActivity()).showSpells();
+								((CampaignActivity)getActivity()).showSpells();
 								break;
 							case 2:
 								((CampaignActivity)getActivity()).showSpellLists();

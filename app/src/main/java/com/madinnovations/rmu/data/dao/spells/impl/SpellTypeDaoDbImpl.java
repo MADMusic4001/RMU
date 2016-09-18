@@ -103,6 +103,7 @@ public class SpellTypeDaoDbImpl extends BaseDaoDbImpl<SpellType> implements Spel
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+        instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)).charAt(0));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 
         return instance;
@@ -113,6 +114,7 @@ public class SpellTypeDaoDbImpl extends BaseDaoDbImpl<SpellType> implements Spel
 		ContentValues initialValues = new ContentValues(3);
 
 		initialValues.put(COLUMN_NAME, instance.getName());
+		initialValues.put(COLUMN_CODE, instance.getCode().toString());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
 
 		return initialValues;

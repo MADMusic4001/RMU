@@ -35,7 +35,7 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
-		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_NOTES).value(value.getNotes());
 		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
 		if(value.getRealm2() != null) {
 			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
@@ -60,8 +60,8 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 				case COLUMN_NAME:
 					spellList.setName(in.nextString());
 					break;
-				case COLUMN_DESCRIPTION:
-					spellList.setDescription(in.nextString());
+				case COLUMN_NOTES:
+					spellList.setNotes(in.nextString());
 					break;
 				case COLUMN_REALM_ID:
 					spellList.setRealm(new Realm(in.nextInt()));

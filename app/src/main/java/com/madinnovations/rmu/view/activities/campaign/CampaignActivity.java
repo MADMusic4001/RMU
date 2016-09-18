@@ -60,6 +60,7 @@ import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
+import com.madinnovations.rmu.view.activities.spell.SpellsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
@@ -106,6 +107,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private SpecializationsFragment    specializationsFragment;
 	private SpellListsFragment         spellListsFragment;
 	private SpellListTypesFragment     spellListTypesFragment;
+	private SpellsFragment             spellsFragment;
 	private SpellSubTypesFragment      spellSubTypesFragment;
 	private SpellTypesFragment         spellTypesFragment;
 	private StatsFragment              statsFragment;
@@ -411,6 +413,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			spellListTypesFragment = new SpellListTypesFragment();
 		}
 		replaceDetailFragment(spellListTypesFragment);
+	}
+
+	public void showSpells() {
+		if(spellsFragment == null) {
+			spellsFragment = new SpellsFragment();
+		}
+		replaceDetailFragment(spellsFragment);
 	}
 
 	public void showSpellSubTypes() {

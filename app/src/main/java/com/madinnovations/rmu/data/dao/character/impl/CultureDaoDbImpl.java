@@ -116,8 +116,8 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
         db.delete(CultureSkillRanksSchema.TABLE_NAME, selection, selectionArgs);
 
         for(Map.Entry<Skill, Short> entry : rankMap.entrySet()) {
-            result &= (db.insert(CultureSkillRanksSchema.TABLE_NAME, null, getCultureSkillRanksValues(cultureId,
-                    entry.getKey(), entry.getValue())) != -1);
+            result &= (db.insertWithOnConflict(CultureSkillRanksSchema.TABLE_NAME, null, getCultureSkillRanksValues(cultureId,
+                    entry.getKey(), entry.getValue()), SQLiteDatabase.CONFLICT_NONE) != -1);
         }
         return result;
     }

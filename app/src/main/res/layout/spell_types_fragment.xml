@@ -19,7 +19,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <include layout="@layout/list_2_field_header"/>
+    <include layout="@layout/list_3_field_header"/>
 
     <ListView
         android:id="@+id/list_view"
@@ -41,6 +41,13 @@
             android:layout_height="wrap_content"
             android:maxLength="30"
             android:hint="@string/hint_spell_type_name"/>
+        <EditText
+            android:id="@+id/code_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="1"
+            android:hint="@string/hint_spell_type_code"/>
         <EditText
             android:id="@+id/description_edit"
             android:layout_width="match_parent"

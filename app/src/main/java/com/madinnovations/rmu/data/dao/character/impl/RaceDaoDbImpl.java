@@ -180,8 +180,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		db.delete(RaceTalentsSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Talent, Short> entry : talentTiersMap.entrySet()) {
-			result &= (db.insert(RaceTalentsSchema.TABLE_NAME, null, getTalentTiersValues(raceId,
-					entry.getKey(), entry.getValue())) != -1);
+			result &= (db.insertWithOnConflict(RaceTalentsSchema.TABLE_NAME, null, getTalentTiersValues(raceId,
+					entry.getKey(), entry.getValue()), SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -202,7 +202,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		db.delete(RaceLocomotionSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<LocomotionType, Short> entry : locomotionTypeRatesMap.entrySet()) {
-			result &= (db.insert(RaceLocomotionSchema.TABLE_NAME, null, getLocomotionTypeValues(raceId, entry)) != -1);
+			result &= (db.insertWithOnConflict(RaceLocomotionSchema.TABLE_NAME, null, getLocomotionTypeValues(raceId, entry),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -215,7 +216,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		db.delete(RaceStatModSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Stat, Short> entry : statMods.entrySet()) {
-			result &= (db.insert(RaceStatModSchema.TABLE_NAME, null, getRaceStatModValues(raceId, entry)) != -1);
+			result &= (db.insertWithOnConflict(RaceStatModSchema.TABLE_NAME, null, getRaceStatModValues(raceId, entry),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -228,7 +230,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		db.delete(RaceRealmRRModSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Realm, Short> entry : realmRRMods.entrySet()) {
-			result &= (db.insert(RaceRealmRRModSchema.TABLE_NAME, null, getRaceRealmRRModValues(raceId, entry)) != -1);
+			result &= (db.insertWithOnConflict(RaceRealmRRModSchema.TABLE_NAME, null, getRaceRealmRRModValues(raceId, entry),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}

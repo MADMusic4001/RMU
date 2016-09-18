@@ -24,12 +24,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Spell list attributes
  */
 public class SpellList {
-	private int id = -1;
-	private String name = null;
-	private String description = null;
-	private Realm realm = null;
-	private Realm realm2 = null;
-	private Profession profession = null;
+	private int           id            = -1;
+	private String        name          = null;
+	private String        notes         = null;
+	private Realm         realm         = null;
+	private Realm         realm2        = null;
+	private Profession    profession    = null;
 	private SpellListType spellListType = null;
 
 	/**
@@ -53,8 +53,7 @@ public class SpellList {
 	 * @return true if the SpellList instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && realm != null &&
-				spellListType != null;
+		return name != null && !name.isEmpty() && realm != null && spellListType != null;
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class SpellList {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
 				.append("name", name)
-				.append("description", description)
+				.append("notes", notes)
 				.append("realm", realm)
 				.append("realm2", realm2)
 				.append("profession", profession)
@@ -98,11 +97,11 @@ public class SpellList {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getDescription() {
-		return description;
+	public String getNotes() {
+		return notes;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 	public Realm getRealm() {
 		return realm;

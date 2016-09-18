@@ -23,12 +23,12 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 public interface SpellListSchema {
 	String TABLE_NAME = "spell_lists";
 
-	String COLUMN_ID = "id";
-	String COLUMN_NAME = "name";
-	String COLUMN_DESCRIPTION = "description";
-	String COLUMN_REALM_ID = "realmId";
-	String COLUMN_REALM2_ID = "realm2Id";
-	String COLUMN_PROFESSION_ID = "professionId";
+	String COLUMN_ID                 = "id";
+	String COLUMN_NAME               = "name";
+	String COLUMN_NOTES              = "notes";
+	String COLUMN_REALM_ID           = "realmId";
+	String COLUMN_REALM2_ID          = "realm2Id";
+	String COLUMN_PROFESSION_ID      = "professionId";
 	String COLUMN_SPELL_LIST_TYPE_ID = "spellListTypeId";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
@@ -36,7 +36,7 @@ public interface SpellListSchema {
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
-			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
+			+ COLUMN_NOTES + " TEXT, "
 			+ COLUMN_REALM_ID + " INTEGER NOT NULL, "
 			+ COLUMN_REALM2_ID + " INTEGER, "
 			+ COLUMN_PROFESSION_ID + " INTEGER, "
@@ -47,6 +47,6 @@ public interface SpellListSchema {
 			+ "FOREIGN KEY (" + COLUMN_SPELL_LIST_TYPE_ID + ") REFERENCES " + SpellListTypeSchema.TABLE_NAME + "(" + SpellListTypeSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_REALM_ID, COLUMN_REALM2_ID,
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_NOTES, COLUMN_REALM_ID, COLUMN_REALM2_ID,
 			COLUMN_PROFESSION_ID, COLUMN_SPELL_LIST_TYPE_ID};
 }
