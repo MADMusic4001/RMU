@@ -26,7 +26,9 @@ public interface CreatureArchetypeSchema {
 	String COLUMN_ID = "id";
 	String COLUMN_NAME = "name";
 	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_STAT1_IS_REALM = "stat1IsRealm";
 	String COLUMN_STAT1_ID = "stat1Id";
+	String COLUMN_STAT2_IS_REALM = "stat2IsRealm";
 	String COLUMN_STAT2_ID = "stat2Id";
 	String COLUMN_SPELLS = "spells";
 	String COLUMN_ROLES = "roles";
@@ -37,7 +39,9 @@ public interface CreatureArchetypeSchema {
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
+			+ COLUMN_STAT1_IS_REALM + " INTEGER NOT NULL, "
 			+ COLUMN_STAT1_ID + " INTEGER, "
+			+ COLUMN_STAT2_IS_REALM + " INTEGER NOT NULL, "
 			+ COLUMN_STAT2_ID + " INTEGER, "
 			+ COLUMN_SPELLS + " TEXT NOT NULL,"
 			+ COLUMN_ROLES + " TEXT NOT NULL, "
@@ -45,6 +49,6 @@ public interface CreatureArchetypeSchema {
 			+ "FOREIGN KEY (" + COLUMN_STAT2_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT1_ID, COLUMN_STAT2_ID,
-			COLUMN_SPELLS, COLUMN_ROLES};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT1_IS_REALM, COLUMN_STAT1_ID,
+			COLUMN_STAT2_IS_REALM, COLUMN_STAT2_ID, COLUMN_SPELLS, COLUMN_ROLES};
 }

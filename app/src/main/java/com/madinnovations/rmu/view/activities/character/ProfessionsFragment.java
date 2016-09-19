@@ -61,6 +61,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -501,7 +502,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		ExpandableListView categoryCostListView = (ExpandableListView) layout.findViewById(R.id.costs_list);
 		categoryCostListAdapter = new ProfessionCategoryCostListAdapter(getActivity(), this, categoryCostListView);
 		categoryCostListView.setAdapter(categoryCostListAdapter);
-		categoryCostListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+		categoryCostListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 		categoryCostListAdapter.addAll(createCostList());
 		categoryCostListAdapter.notifyDataSetChanged();
 		skillCategoryRxHandler.getAll()
@@ -599,16 +600,21 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	}
 
 	private void addMissingCosts() {
-		Map<SkillCategory, SkillCost> skillCategoryCosts = currentInstance.getSkillCategoryCosts();
-		if(skillCategoryCosts == null || skillCategoryCosts.isEmpty()) {
-			skillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
-			currentInstance.setSkillCategoryCosts(skillCategoryCosts);
+		Map<SkillCategory, SkillCost> oldSkillCategoryCosts = currentInstance.getSkillCategoryCosts();
+		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
+		if(oldSkillCategoryCosts == null) {
+			oldSkillCategoryCosts = new LinkedHashMap<>(0);
 		}
 		for(SkillCategory skillCategory : skillCategories) {
-			if(!skillCategoryCosts.containsKey(skillCategory)) {
-				skillCategoryCosts.put(skillCategory, new SkillCost());
+			if(!oldSkillCategoryCosts.containsKey(skillCategory)) {
+				newSkillCategoryCosts.put(skillCategory, new SkillCost());
+			}
+			else {
+				newSkillCategoryCosts.put(skillCategory, oldSkillCategoryCosts.get(skillCategory));
 			}
 		}
+		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
+
 		Map<Skill, SkillCost> skillCosts = currentInstance.getSkillCosts();
 		if(skillCosts == null) {
 			skillCosts = new LinkedHashMap<>(skills.size());

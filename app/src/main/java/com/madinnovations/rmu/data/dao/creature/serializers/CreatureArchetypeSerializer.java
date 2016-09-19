@@ -39,9 +39,11 @@ public class CreatureArchetypeSerializer extends TypeAdapter<CreatureArchetype> 
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
+		out.name(COLUMN_STAT1_IS_REALM).value(value.isRealmStat1());
 		if(value.getStat1() != null) {
 			out.name(COLUMN_STAT1_ID).value(value.getStat1().getId());
 		}
+		out.name(COLUMN_STAT2_IS_REALM).value(value.isRealmStat2());
 		if(value.getStat2() != null) {
 			out.name(COLUMN_STAT2_ID).value(value.getStat2().getId());
 		}
@@ -85,11 +87,23 @@ public class CreatureArchetypeSerializer extends TypeAdapter<CreatureArchetype> 
 				case COLUMN_DESCRIPTION:
 					creatureArchetype.setDescription(in.nextString());
 					break;
+				case COLUMN_STAT1_IS_REALM:
+					creatureArchetype.setRealmStat1(in.nextBoolean());
+					break;
 				case COLUMN_STAT1_ID:
 					creatureArchetype.setStat1(new Stat(in.nextInt()));
 					break;
+				case COLUMN_STAT2_IS_REALM:
+					creatureArchetype.setRealmStat2(in.nextBoolean());
+					break;
 				case COLUMN_STAT2_ID:
 					creatureArchetype.setStat2(new Stat(in.nextInt()));
+					break;
+				case COLUMN_SPELLS:
+					creatureArchetype.setSpells(in.nextString());
+					break;
+				case COLUMN_ROLES:
+					creatureArchetype.setRoles(in.nextString());
 					break;
 				case PRIMARY_SKILLS:
 					in.beginArray();

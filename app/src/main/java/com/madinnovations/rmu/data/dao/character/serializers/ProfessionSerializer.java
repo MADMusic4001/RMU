@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
+import android.util.Log;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -63,7 +65,7 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 		}
 		out.endArray();
 
-		out.name(ProfessionSkillCostSchema.TABLE_NAME).beginObject();
+		out.name(ProfessionSkillCostSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Skill, SkillCost> entry : value.getSkillCosts().entrySet()) {
 			out.beginObject();
 			out.name(ProfessionSkillCostSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
@@ -150,13 +152,13 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case ProfessionSkillCostSchema.COLUMN_SKILL_ID:
+					case ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID:
 						newSkillCategory = new SkillCategory(in.nextInt());
 						break;
-					case ProfessionSkillCostSchema.COLUMN_FIRST_COST:
+					case ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST:
 						skillCost.setFirstCost((short)in.nextInt());
 						break;
-					case ProfessionSkillCostSchema.COLUMN_SECOND_COST:
+					case ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST:
 						skillCost.setAdditionalCost((short)in.nextInt());
 						break;
 				}

@@ -89,8 +89,20 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		instance.setStat1(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))));
-		instance.setStat2(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))));
+		instance.setRealmStat1(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_IS_REALM)) == 1);
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))) {
+			instance.setStat1(null);
+		}
+		else {
+			instance.setStat1(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))));
+		}
+		instance.setRealmStat2(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_IS_REALM)) == 1);
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))) {
+			instance.setStat2(null);
+		}
+		else {
+			instance.setStat2(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))));
+		}
 		setSkillCategories(instance);
 		instance.setSpells(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SPELLS)));
 		instance.setRoles(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLES)));
@@ -100,12 +112,24 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 
 	@Override
 	protected ContentValues getContentValues(CreatureArchetype instance) {
-		ContentValues initialValues = new ContentValues(7);
+		ContentValues initialValues = new ContentValues(8);
 
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_STAT1_ID, instance.getStat1().getId());
-		initialValues.put(COLUMN_STAT2_ID, instance.getStat2().getId());
+		initialValues.put(COLUMN_STAT1_IS_REALM, instance.isRealmStat1());
+		if(instance.getStat1() == null) {
+			initialValues.putNull(COLUMN_STAT1_ID);
+		}
+		else {
+			initialValues.put(COLUMN_STAT1_ID, instance.getStat1().getId());
+		}
+		initialValues.put(COLUMN_STAT2_IS_REALM, instance.isRealmStat2());
+		if(instance.getStat2() == null) {
+			initialValues.putNull(COLUMN_STAT2_ID);
+		}
+		else {
+			initialValues.put(COLUMN_STAT2_ID, instance.getStat2().getId());
+		}
 		initialValues.put(COLUMN_SPELLS, instance.getSpells());
 		initialValues.put(COLUMN_ROLES, instance.getRoles());
 
@@ -122,26 +146,26 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 
 		for(SkillCategory skillCategory : instance.getPrimarySkills()) {
 			result &= (db.insertWithOnConflict(ArchetypeSkillsSchema.TABLE_NAME, null,
-											   getArchetypeSkillCategorysValues(instance.getId(), skillCategory.getId(), 0),
+											   getArchetypeSkillCategoryValues(instance.getId(), skillCategory.getId(), 0),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		for(SkillCategory skillCategory : instance.getSecondarySkills()) {
 			result &= (db.insertWithOnConflict(ArchetypeSkillsSchema.TABLE_NAME, null,
-											   getArchetypeSkillCategorysValues(instance.getId(), skillCategory.getId(), 1),
+											   getArchetypeSkillCategoryValues(instance.getId(), skillCategory.getId(), 1),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		for(SkillCategory skillCategory : instance.getTertiarySkills()) {
 			result &= (db.insertWithOnConflict(ArchetypeSkillsSchema.TABLE_NAME, null,
-											   getArchetypeSkillCategorysValues(instance.getId(), skillCategory.getId(), 2),
+											   getArchetypeSkillCategoryValues(instance.getId(), skillCategory.getId(), 2),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		return result;
 	}
 
-	private ContentValues getArchetypeSkillCategorysValues(int archetypeId, int skillCategoryId, int priority) {
+	private ContentValues getArchetypeSkillCategoryValues(int archetypeId, int skillCategoryId, int priority) {
 		ContentValues values = new ContentValues(3);
 
 		values.put(ArchetypeSkillsSchema.COLUMN_ARCHETYPE_ID, archetypeId);

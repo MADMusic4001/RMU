@@ -31,6 +31,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,6 +47,7 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxH
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
+import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
@@ -85,7 +88,9 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private ListView                     listView;
 	private EditText                     nameEdit;
 	private EditText                     descriptionEdit;
+	private CheckBox                     stat1IsRealmCheckBox;
 	private Spinner                      stat1Spinner;
+	private CheckBox                     stat2IsRealmCheckBox;
 	private Spinner                      stat2Spinner;
 	private ListView                     primarySkillCategoriesList;
 	private ListView                     secondarySkillCategoriesList;
@@ -95,12 +100,15 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private CreatureArchetype currentInstance = new CreatureArchetype();
 	private boolean          isNew            = true;
 	private List<SkillCategory> newSkillCategoriesList = new ArrayList<>();
+	private Stat realmStat = new Stat();
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
+
+		realmStat.setName(getString(R.string.label_non_realm_stat));
 
 		View layout = inflater.inflate(R.layout.creature_archetypes_fragment, container, false);
 
@@ -110,7 +118,9 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
+		initStat1IsRealmCheckBox(layout);
 		initStat1Spinner(layout);
+		initStat2IsRealmCheckBox(layout);
 		initStat2Spinner(layout);
 		initPrimarySkillCategoriesList(layout);
 		initSecondarySkillCategoriesList(layout);
@@ -215,19 +225,37 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 			changed = true;
 		}
 
+		if(currentInstance.isRealmStat1() != stat1IsRealmCheckBox.isChecked()) {
+			currentInstance.setRealmStat1(stat1IsRealmCheckBox.isChecked());
+			changed = true;
+		}
+
 		position = stat1Spinner.getSelectedItemPosition();
 		if(position != -1) {
 			newStat = stat1SpinnerAdapter.getItem(position);
-			if(!newStat.equals(currentInstance.getStat1())) {
+			if(newStat.equals(realmStat) && currentInstance.getStat1() != null) {
+				currentInstance.setStat1(null);
+				changed = true;
+			}
+			else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
 				currentInstance.setStat1(newStat);
 				changed = true;
 			}
 		}
 
+		if(currentInstance.isRealmStat2() != stat2IsRealmCheckBox.isChecked()) {
+			currentInstance.setRealmStat2(stat2IsRealmCheckBox.isChecked());
+			changed = true;
+		}
+
 		position = stat2Spinner.getSelectedItemPosition();
 		if(position != -1) {
 			newStat = stat2SpinnerAdapter.getItem(position);
-			if(!newStat.equals(currentInstance.getStat2())) {
+			if(newStat.equals(realmStat) && currentInstance.getStat2() != null) {
+				currentInstance.setStat2(null);
+				changed = true;
+			}
+			else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
 				currentInstance.setStat2(newStat);
 				changed = true;
 			}
@@ -283,7 +311,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		selectedSkillCategories.clear();
 		if(checkedSkillCategories != null) {
 			for (int i = 0; i < checkedSkillCategories.size(); i++) {
-				if (checkedSkillCategories.valueAt(i)) {
+				if (checkedSkillCategories.valueAt(i) && checkedSkillCategories.keyAt(i) != -1) {
 					selectedSkillCategories.add(sourceAdapter.getItem(checkedSkillCategories.keyAt(i)));
 				}
 			}
@@ -312,8 +340,20 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-		stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat1()));
-		stat2Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat2()));
+		stat1IsRealmCheckBox.setChecked(currentInstance.isRealmStat1());
+		if(currentInstance.getStat1() == null) {
+			stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(realmStat));
+		}
+		else {
+			stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat1()));
+		}
+		stat2IsRealmCheckBox.setChecked(currentInstance.isRealmStat2());
+		if(currentInstance.getStat2() == null) {
+			stat2Spinner.setSelection(stat2SpinnerAdapter.getPosition(realmStat));
+		}
+		else {
+			stat2Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat2()));
+		}
 		primarySkillCategoriesList.clearChoices();
 		for(SkillCategory skillCategory : currentInstance.getPrimarySkills()) {
 			primarySkillCategoriesList.setItemChecked(primarySkillCategoriesListAdapter.getPosition(skillCategory), true);
@@ -358,7 +398,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("CreatureArchetypesFrag", "Exception saving new CreatureArchetype: " + currentInstance, e);
+							Log.e("CreatureArchetypesFrag", "Exception saving new CreatureArchetype.", e);
 							Toast.makeText(getActivity(), getString(R.string.toast_creature_archetype_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -481,6 +521,22 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		});
 	}
 
+	private void initStat1IsRealmCheckBox(View layout) {
+		stat1IsRealmCheckBox = (CheckBox)layout.findViewById(R.id.stat1_is_realm_check_box);
+
+		stat1IsRealmCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				currentInstance.setRealmStat1(stat1IsRealmCheckBox.isChecked());
+				stat1Spinner.setEnabled(!stat1IsRealmCheckBox.isChecked());
+				if(stat1IsRealmCheckBox.isChecked()) {
+					currentInstance.setStat1(null);
+				}
+				saveItem();
+			}
+		});
+	}
+
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
@@ -497,6 +553,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 					@Override
 					public void onNext(Collection<Stat> items) {
 						stat1SpinnerAdapter.clear();
+						stat1SpinnerAdapter.add(realmStat);
 						stat1SpinnerAdapter.addAll(items);
 						stat1SpinnerAdapter.notifyDataSetChanged();
 					}
@@ -505,8 +562,13 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getStat1() == null || stat1SpinnerAdapter.getPosition(currentInstance.getStat1()) != position) {
-					currentInstance.setStat1(stat1SpinnerAdapter.getItem(position));
+				Stat newStat = stat1SpinnerAdapter.getItem(position);
+				if(newStat.equals(realmStat) && currentInstance.getStat1() != null) {
+					currentInstance.setStat1(null);
+					saveItem();
+				}
+				else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
+					currentInstance.setStat1(newStat);
 					saveItem();
 				}
 			}
@@ -516,6 +578,22 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 					currentInstance.setStat1(null);
 					saveItem();
 				}
+			}
+		});
+	}
+
+	private void initStat2IsRealmCheckBox(View layout) {
+		stat2IsRealmCheckBox = (CheckBox)layout.findViewById(R.id.stat2_is_realm_check_box);
+
+		stat2IsRealmCheckBox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				currentInstance.setRealmStat2(stat2IsRealmCheckBox.isChecked());
+				stat2Spinner.setEnabled(!stat2IsRealmCheckBox.isChecked());
+				if(stat2IsRealmCheckBox.isChecked()) {
+					currentInstance.setStat2(null);
+				}
+				saveItem();
 			}
 		});
 	}
@@ -536,6 +614,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 					@Override
 					public void onNext(Collection<Stat> items) {
 						stat2SpinnerAdapter.clear();
+						stat2SpinnerAdapter.add(realmStat);
 						stat2SpinnerAdapter.addAll(items);
 						stat2SpinnerAdapter.notifyDataSetChanged();
 					}
@@ -544,8 +623,13 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getStat2() == null || stat2SpinnerAdapter.getPosition(currentInstance.getStat2()) != position) {
-					currentInstance.setStat2(stat2SpinnerAdapter.getItem(position));
+				Stat newStat = stat2SpinnerAdapter.getItem(position);
+				if(newStat.equals(realmStat) && currentInstance.getStat2() != null) {
+					currentInstance.setStat2(null);
+					saveItem();
+				}
+				else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
+					currentInstance.setStat2(newStat);
 					saveItem();
 				}
 			}

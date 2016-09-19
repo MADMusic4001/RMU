@@ -28,16 +28,18 @@ import java.util.List;
  * Class containing Creature Archetype attributes.
  */
 public class CreatureArchetype {
-	private int id = -1;
-	private String name = null;
-	private String description = null;
-	private Stat stat1 = null;
-	private Stat stat2 = null;
-	private List<SkillCategory> primarySkills = new ArrayList<>();
+	private int                 id              = -1;
+	private String              name            = null;
+	private String              description     = null;
+	private boolean             realmStat1      = false;
+	private Stat                stat1           = null;
+	private boolean             realmStat2      = false;
+	private Stat                stat2           = null;
+	private List<SkillCategory> primarySkills   = new ArrayList<>();
 	private List<SkillCategory> secondarySkills = new ArrayList<>();
-	private List<SkillCategory> tertiarySkills = new ArrayList<>();
-	private String spells = null;
-	private String roles = null;
+	private List<SkillCategory> tertiarySkills  = new ArrayList<>();
+	private String              spells          = null;
+	private String              roles           = null;
 
 	/**
 	 * Checks the validity of the CreatureArchetype instance.
@@ -45,8 +47,8 @@ public class CreatureArchetype {
 	 * @return true if the CreatureArchetype instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat1 != null && stat2 != null &&
-				spells !=null && roles != null && checkValidCategories();
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && spells != null &&
+				roles != null && checkValidCategories();
 	}
 
 	private boolean checkValidCategories() {
@@ -74,7 +76,9 @@ public class CreatureArchetype {
 				.append("id", id)
 				.append("name", name)
 				.append("description", description)
+				.append("realmStat1", realmStat1)
 				.append("stat1", stat1)
+				.append("realmStat2", realmStat2)
 				.append("stat2", stat2)
 				.append("primarySkills", primarySkills)
 				.append("secondarySkills", secondarySkills)
@@ -118,11 +122,23 @@ public class CreatureArchetype {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public boolean isRealmStat1() {
+		return realmStat1;
+	}
+	public void setRealmStat1(boolean realmStat1) {
+		this.realmStat1 = realmStat1;
+	}
 	public Stat getStat1() {
 		return stat1;
 	}
 	public void setStat1(Stat stat1) {
 		this.stat1 = stat1;
+	}
+	public boolean isRealmStat2() {
+		return realmStat2;
+	}
+	public void setRealmStat2(boolean realmStat2) {
+		this.realmStat2 = realmStat2;
 	}
 	public Stat getStat2() {
 		return stat2;

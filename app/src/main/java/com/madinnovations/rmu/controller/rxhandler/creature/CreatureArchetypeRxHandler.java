@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.creature;
 
+import android.util.Log;
+
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 
