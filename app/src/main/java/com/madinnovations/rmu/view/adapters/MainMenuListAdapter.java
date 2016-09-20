@@ -88,7 +88,7 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		String headerTitle = (String) getGroup(groupPosition);
 		if (convertView == null) {
-			convertView = layoutInflater.inflate(R.layout.list_expandable_group_row, parent, false);
+			convertView = layoutInflater.inflate(R.layout.main_menu_group_row, parent, false);
 		}
 
 		TextView lblListHeader = (TextView) convertView.findViewById(R.id.group_header);
@@ -103,7 +103,7 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 		final String childText = (String) getChild(groupPosition, childPosition);
 
 		if (convertView == null) {
-			convertView = layoutInflater.inflate(R.layout.list_expandable_item_row, parent, false);
+			convertView = layoutInflater.inflate(R.layout.main_menu_item_row, parent, false);
 		}
 
 		TextView txtListChild = (TextView) convertView

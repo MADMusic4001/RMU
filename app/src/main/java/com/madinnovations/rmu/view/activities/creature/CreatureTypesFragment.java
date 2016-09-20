@@ -16,13 +16,20 @@
 package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -38,16 +46,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureTypeRxHandler;
+import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
+import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
+import com.madinnovations.rmu.view.adapters.common.ExpandableTalentsListAdapter;
+import com.madinnovations.rmu.view.adapters.common.TalentNamesListAdapter;
 import com.madinnovations.rmu.view.adapters.creature.CreatureCategorySpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -59,17 +78,29 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature types.
  */
 public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureType> {
+	private static final String LOG_TAG = "CreatureTypeFragment";
+	private static final String DRAG_ADD_TALENT = "add-talent";
+	private static final String DRAG_REMOVE_TALENT = "remove-talent";
 	@Inject
-	protected CreatureTypeRxHandler   creatureTypeRxHandler;
+	protected CreatureTypeRxHandler             creatureTypeRxHandler;
 	@Inject
-	protected CreatureCategoryRxHandler creatureCategoryRxHandler;
+	protected CreatureCategoryRxHandler         creatureCategoryRxHandler;
 	@Inject
-	protected CreatureCategorySpinnerAdapter creatureCategorySpinnerAdapter;
+	protected CreatureCategorySpinnerAdapter    creatureCategorySpinnerAdapter;
+	@Inject
+	protected TalentCategoryRxHandler           talentCategoryRxHandler;
+	@Inject
+	protected TalentRxHandler                   talentRxHandler;
 	private   TwoFieldListAdapter<CreatureType> listAdapter;
-	private   ListView                    listView;
-	private   EditText                    nameEdit;
-	private   EditText                    descriptionEdit;
-	private   Spinner                     creatureCategorySpinner;
+	private   ExpandableTalentsListAdapter      expandableTalentsListAdapter;
+	@Inject
+	protected TalentNamesListAdapter            selectedTalentsListAdapter;
+	private   ListView                          listView;
+	private   EditText                          nameEdit;
+	private   EditText                          descriptionEdit;
+	private   Spinner                           creatureCategorySpinner;
+	private   ExpandableListView                talentsListView;
+	private   ListView                          selectedTalentsListView;
 	private CreatureType currentInstance = new CreatureType();
 	private boolean          isNew            = true;
 
@@ -87,6 +118,8 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initCretureCategorySpinner(layout);
+		initTalentsList(layout);
+		initSelectedTalentsList(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -159,6 +192,16 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public CharSequence getField1Value(CreatureType creatureType) {
+		return creatureType.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(CreatureType creatureType) {
+		return creatureType.getDescription();
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newValue;
@@ -194,6 +237,27 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 			}
 		}
 
+		int size = currentInstance.getTalents().size() > selectedTalentsListAdapter.getCount() ?
+				   currentInstance.getTalents().size() :
+				   selectedTalentsListAdapter.getCount();
+		List<Talent> finalTalents = new ArrayList<>(size);
+		for(Talent talent : currentInstance.getTalents()) {
+			if(selectedTalentsListAdapter.getPosition(talent) == -1) {
+				changed = true;
+			}
+			else {
+				finalTalents.add(talent);
+			}
+		}
+		for(int i = 0; i < selectedTalentsListAdapter.getCount(); i++) {
+			Talent talent = selectedTalentsListAdapter.getItem(i);
+			if(!currentInstance.getTalents().contains(talent)) {
+				finalTalents.add(talent);
+				changed = true;
+			}
+		}
+		currentInstance.setTalents(finalTalents);
+
 		return changed;
 	}
 
@@ -208,6 +272,12 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
 			descriptionEdit.setError(null);
 		}
+
+		selectedTalentsListAdapter.clear();
+		for(Talent talent : currentInstance.getTalents()) {
+			selectedTalentsListAdapter.add(talent);
+		}
+		selectedTalentsListAdapter.notifyDataSetChanged();
 	}
 
 	private void saveItem() {
@@ -222,7 +292,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("CreatureTypesFrag", "Exception saving new CreatureType: " + currentInstance, e);
+							Log.e(LOG_TAG, "Exception saving new CreatureType: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_creature_type_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -260,7 +330,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureTypesFrag", "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_creature_type_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -356,7 +426,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureTypesFrag", "Exception caught getting all CreatureCategory instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all CreatureCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<CreatureCategory> items) {
@@ -384,6 +454,156 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		});
 	}
 
+	private void initTalentsList(View layout) {
+		talentsListView = (ExpandableListView)layout.findViewById(R.id.talents_list);
+		expandableTalentsListAdapter = new ExpandableTalentsListAdapter(getActivity(), null, null);
+
+		talentCategoryRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception caught getting all TalentCategory instances.", e);
+					}
+					@Override
+					public void onNext(Collection<TalentCategory> talentCategories) {
+						expandableTalentsListAdapter.setGroupData(talentCategories.toArray(
+								new TalentCategory[talentCategories.size()]));
+						expandableTalentsListAdapter.notifyDataSetChanged();
+						talentsListView.setAdapter(expandableTalentsListAdapter);
+					}
+				});
+
+		talentRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<Talent>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception caught getting all Talent instances.", e);
+					}
+					@Override
+					public void onNext(Collection<Talent> talents) {
+						Map<TalentCategory, List<Talent>> talentMap = new HashMap<>();
+						for(Talent talent : talents) {
+							List<Talent> talentList = talentMap.get(talent.getCategory());
+							if(talentList == null) {
+								talentList = new ArrayList<>();
+								talentMap.put(talent.getCategory(), talentList);
+							}
+							talentList.add(talent);
+						}
+						Talent[][] talentsArray = new Talent[talentMap.size()][];
+						int categoryIndex = 0;
+						for(Map.Entry<TalentCategory, List<Talent>> entry : talentMap.entrySet()) {
+							talentsArray[categoryIndex++] = entry.getValue().toArray(new Talent[entry.getValue().size()]);
+						}
+						expandableTalentsListAdapter.setChildData(talentsArray);
+						expandableTalentsListAdapter.notifyDataSetChanged();
+						talentsListView.setAdapter(expandableTalentsListAdapter);
+					}
+				});
+
+		talentsListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+				long packedPosition = ExpandableListView.getPackedPositionForChild(groupPosition, childPosition);
+				int flatPosition = talentsListView.getFlatListPosition(packedPosition);
+				talentsListView.setItemChecked(flatPosition, !talentsListView.isItemChecked(flatPosition));
+				return true;
+			}
+		});
+
+		talentsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+				if(!talentsListView.isItemChecked(position) && ExpandableListView.getPackedPositionChild(id) != -1) {
+					talentsListView.setItemChecked(position, true);
+				}
+				ClipData dragData = null;
+
+				SparseBooleanArray checkedItems = talentsListView.getCheckedItemPositions();
+				List<View> checkedViews = new ArrayList<>(talentsListView.getCheckedItemCount());
+				for(int i = 0; i < checkedItems.size(); i++) {
+					int currentFlatPosition = checkedItems.keyAt(i);
+					long packedPosition = talentsListView.getExpandableListPosition(currentFlatPosition);
+					int groupId = ExpandableListView.getPackedPositionGroup(packedPosition);
+					int childId = ExpandableListView.getPackedPositionChild(packedPosition);
+					Talent talent = (Talent)expandableTalentsListAdapter.getChild(groupId, childId);
+					if(talent != null) {
+						String talentIdString = String.valueOf(talent.getId());
+						ClipData.Item clipDataItem = new ClipData.Item(talentIdString);
+						if(dragData == null) {
+							dragData = new ClipData(DRAG_ADD_TALENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+													clipDataItem);
+						}
+						else {
+							dragData.addItem(clipDataItem);
+						}
+						checkedViews.add(getViewByPosition(currentFlatPosition, talentsListView));
+					}
+				}
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					view.startDragAndDrop(dragData, myShadow, null, 0);
+				}
+				else {
+					//noinspection deprecation
+					view.startDrag(dragData, myShadow, null, 0);
+				}
+				return false;
+			}
+		});
+		talentsListView.setOnDragListener(new RemoveTalentDragListener());
+	}
+
+	private void initSelectedTalentsList(View layout) {
+		selectedTalentsListView = (ListView)layout.findViewById(R.id.selected_talents_list);
+		selectedTalentsListView.setAdapter(selectedTalentsListAdapter);
+
+		selectedTalentsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if(!selectedTalentsListView.isItemChecked(position)) {
+					selectedTalentsListView.setItemChecked(position, true);
+				}
+				ClipData dragData = null;
+
+				SparseBooleanArray checkedItems = selectedTalentsListView.getCheckedItemPositions();
+				List<View> checkedViews = new ArrayList<>(selectedTalentsListView.getCheckedItemCount());
+				for(int i = 0; i < checkedItems.size(); i++) {
+					int currentPosition = checkedItems.keyAt(i);
+					Talent talent = selectedTalentsListAdapter.getItem(currentPosition);
+					if(talent != null) {
+						String talentIdString = String.valueOf(talent.getId());
+						ClipData.Item clipDataItem = new ClipData.Item(talentIdString);
+						if(dragData == null) {
+							dragData = new ClipData(DRAG_REMOVE_TALENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+													clipDataItem);
+						}
+						else {
+							dragData.addItem(clipDataItem);
+						}
+						checkedViews.add(getViewByPosition(currentPosition, selectedTalentsListView));
+					}
+				}
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					view.startDragAndDrop(dragData, myShadow, null, 0);
+				}
+				else {
+					//noinspection deprecation
+					view.startDrag(dragData, myShadow, null, 0);
+				}
+				return false;
+			}
+		});
+		selectedTalentsListView.setOnDragListener(new AddTalentDragListener());
+	}
+
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
@@ -405,8 +625,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureTypesFrag",
-								"Exception caught getting all CreatureType instances in onCreateView", e);
+						Log.e(LOG_TAG, "Exception caught getting all CreatureType instances in onCreateView", e);
 						Toast.makeText(CreatureTypesFragment.this.getActivity(),
 								getString(R.string.toast_creature_types_load_failed),
 								Toast.LENGTH_SHORT).show();
@@ -441,13 +660,170 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		registerForContextMenu(listView);
 	}
 
-	@Override
-	public CharSequence getField1Value(CreatureType creatureType) {
-		return creatureType.getName();
+	protected class AddTalentDragListener implements View.OnDragListener {
+		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
+		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+		private Drawable normalShape = selectedTalentsListView.getBackground();
+
+		@Override
+		public boolean onDrag(View v, DragEvent event) {
+			final int action = event.getAction();
+
+			switch(action) {
+				case DragEvent.ACTION_DRAG_STARTED:
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(targetShape);
+						v.invalidate();
+						break;
+					}
+					return false;
+				case DragEvent.ACTION_DRAG_ENTERED:
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(hoverShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_LOCATION:
+					break;
+				case DragEvent.ACTION_DRAG_EXITED:
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(targetShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DROP:
+					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+						boolean changed = false;
+						for(int i = 0; i < event.getClipData().getItemCount(); i++) {
+							ClipData.Item item = event.getClipData().getItemAt(i);
+							// We just send attack ID but since that is the only field used in the Attack.equals method we can create a
+							// temporary attack and set its id field then use the new Attack to find the position of the actual Attack
+							// instance in the adapter
+							int talentId = Integer.valueOf(item.getText().toString());
+							Talent newTalent = new Talent();
+							newTalent.setId(talentId);
+							long position = expandableTalentsListAdapter.getPosition(newTalent);
+							if(position != -1) {
+								Talent talent = expandableTalentsListAdapter.getItem(position);
+								if (selectedTalentsListAdapter.getPosition(talent) == -1) {
+									selectedTalentsListAdapter.add(talent);
+									currentInstance.getTalents().add(talent);
+									changed = true;
+								}
+							}
+						}
+						if(changed) {
+							saveItem();
+							selectedTalentsListAdapter.notifyDataSetChanged();
+						}
+						v.setBackground(normalShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_ENDED:
+					v.setBackground(normalShape);
+					v.invalidate();
+					break;
+			}
+
+			return true;
+		}
 	}
 
-	@Override
-	public CharSequence getField2Value(CreatureType creatureType) {
-		return creatureType.getDescription();
+	protected class RemoveTalentDragListener implements View.OnDragListener {
+		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
+		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+		private Drawable normalShape = talentsListView.getBackground();
+
+		@Override
+		public boolean onDrag(View v, DragEvent event) {
+			final int action = event.getAction();
+
+			switch (action) {
+				case DragEvent.ACTION_DRAG_STARTED:
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(targetShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_ENTERED:
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(hoverShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_LOCATION:
+					break;
+				case DragEvent.ACTION_DRAG_EXITED:
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(targetShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DROP:
+					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+						for (int i = 0; i < event.getClipData().getItemCount(); i++) {
+							ClipData.Item item = event.getClipData().getItemAt(i);
+							// We just send attack ID but since that is the only field used in the Attack.equals method and attack is the
+							// only field used in the AttackBonus.equals method we can create a temporary Attack and set its id field then
+							// create a new AttackBonus and set its attack field then use the new AttackBonus to find the position of the
+							// complete AttackBonus instance in the adapter
+							int attackId = Integer.valueOf(item.getText().toString());
+							Talent newTalent = new Talent();
+							newTalent.setId(attackId);
+							int position = selectedTalentsListAdapter.getPosition(newTalent);
+							if(position != -1) {
+								Talent talent = selectedTalentsListAdapter.getItem(position);
+								currentInstance.getTalents().remove(talent);
+								selectedTalentsListAdapter.remove(talent);
+							}
+						}
+						saveItem();
+						selectedTalentsListView.clearChoices();
+						selectedTalentsListAdapter.notifyDataSetChanged();
+						v.setBackground(normalShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_ENDED:
+					v.setBackground(normalShape);
+					v.invalidate();
+					break;
+			}
+			return true;
+		}
+	}
+
+	private View getViewByPosition(int pos, ListView listView) {
+		final int firstListItemPosition = listView.getFirstVisiblePosition();
+		final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+		if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+			return listView.getAdapter().getView(pos, null, listView);
+		} else {
+			final int childIndex = pos - firstListItemPosition;
+			return listView.getChildAt(childIndex);
+		}
 	}
 }

@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.creature.schemas;
-
-import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
+package com.madinnovations.rmu.data.dao.common.schemas;
 
 /**
- * Database schema data for the creature_category_talents table
+ * Database schema data for the talent_resistances table
  */
-public interface CreatureCategoryTalentsSchema {
-	String TABLE_NAME = "creature_category_talents";
+public interface TalentResistancesSchema {
+	String TABLE_NAME = "talent_resistances";
 
-	String COLUMN_ID                   = "id";
-	String COLUMN_CREATURE_CATEGORY_ID = "creatureCategoryId";
-	String COLUMN_TALENT_ID            = "talentId";
+	String COLUMN_TALENT_ID = "talentId";
+	String COLUMN_RESISTANCE = "resistance";
+	String COLUMN_VALUE = "value";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_CREATURE_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_CREATURE_CATEGORY_ID + ") REFERENCES " + CreatureCategorySchema.TABLE_NAME
-				+ "(" + CreatureCategorySchema.COLUMN_ID + "), "
+			+ COLUMN_RESISTANCE + " TEXT NOT NULL, "
+			+ COLUMN_VALUE + " INTEGER NOT NULL, "
+			+ "PRIMARY KEY(" + COLUMN_TALENT_ID + "," + COLUMN_RESISTANCE + "), "
 			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_CATEGORY_ID, COLUMN_TALENT_ID};
+	String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_RESISTANCE, COLUMN_VALUE};
 }

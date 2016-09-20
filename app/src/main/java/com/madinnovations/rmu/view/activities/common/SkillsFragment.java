@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,8 +47,6 @@ import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillCategorySpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.ArrayList;
@@ -65,22 +64,18 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for skills.
  */
 public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Skill> {
+	private static final String LOG_TAG = "SkillsFragment";
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler      skillCategoryRxHandler;
 	@Inject
 	protected StatRxHandler               statRxHandler;
-	@Inject
-	protected SkillCategorySpinnerAdapter skillCategoryFilterSpinnerAdapter;
-	@Inject
-	protected SkillCategorySpinnerAdapter skillCategorySpinnerAdapter;
-	@Inject
-	protected StatSpinnerAdapter          stat1SpinnerAdapter;
-	@Inject
-	protected StatSpinnerAdapter          stat2SpinnerAdapter;
-	@Inject
-	protected StatSpinnerAdapter          stat3SpinnerAdapter;
+	private   ArrayAdapter<SkillCategory> skillCategoryFilterSpinnerAdapter;
+	private   ArrayAdapter<SkillCategory> skillCategorySpinnerAdapter;
+	protected ArrayAdapter<Stat>          stat1SpinnerAdapter;
+	protected ArrayAdapter<Stat>          stat2SpinnerAdapter;
+	protected ArrayAdapter<Stat>          stat3SpinnerAdapter;
 	private   TwoFieldListAdapter<Skill>  listAdapter;
 	private   Spinner                     skillCategoryFilterSpinner;
 	private   ListView                    listView;
@@ -318,7 +313,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillFragment", "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 						Toast.makeText(getActivity(), getString(R.string.toast_skill_delete_failed), Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -358,7 +353,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("SkillsFragment", "Exception saving Skill", e);
+							Log.e(LOG_TAG, "Exception saving Skill", e);
 							String toastString = getString(R.string.toast_skill_save_failed);
 							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 						}
@@ -408,6 +403,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSkillCategoryFilterSpinner(View layout) {
 		skillCategoryFilterSpinner = (Spinner)layout.findViewById(R.id.skill_category_filter_spinner);
+		skillCategoryFilterSpinnerAdapter = new ArrayAdapter<SkillCategory>(getActivity(), R.layout.spinner_row);
 		skillCategoryFilterSpinner.setAdapter(skillCategoryFilterSpinnerAdapter);
 
 		final SkillCategory allSkillCategories = new SkillCategory();
@@ -421,7 +417,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillsFragment", "Exception caught getting all SkillCategory instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> skillCategories) {
@@ -501,6 +497,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSkillCategorySpinner(View layout) {
 		skillCategorySpinner = (Spinner)layout.findViewById(R.id.skill_category_spinner);
+		skillCategorySpinnerAdapter = new ArrayAdapter<SkillCategory>(getActivity(), R.layout.spinner_row);
 		skillCategorySpinner.setAdapter(skillCategorySpinnerAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -511,7 +508,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillsFragment", "Exception caught getting all SkillCategory instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> skillCategories) {
@@ -700,7 +697,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all Stat instances", e);
 					}
 					@Override
 					public void onNext(Collection<Stat> items) {
@@ -731,7 +728,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		currentInstance.setStats(stats);
 	}
 
-	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, StatSpinnerAdapter adapter, int statIndex) {
+	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, ArrayAdapter<Stat> adapter, int statIndex) {
 		int position;
 
 		if(stats.size() <= statIndex) {
@@ -780,7 +777,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SkillsFragment", "Exception caught getting all Skill instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all Skill instances", e);
 						Toast.makeText(SkillsFragment.this.getActivity(),
 								getString(R.string.toast_skills_load_failed),
 								Toast.LENGTH_SHORT).show();

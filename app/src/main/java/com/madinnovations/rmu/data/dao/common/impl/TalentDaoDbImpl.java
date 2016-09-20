@@ -99,17 +99,17 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
         instance.setFlaw(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_FLAW)) != 0);
-        if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))) {
-            instance.setAffectedSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))));
-        }
+//        if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))) {
+//            instance.setAffectedSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AFFECTED_SKILL_ID))));
+//        }
         instance.setTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_TIER)));
         instance.setMaxTiers(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_TIERS)));
         instance.setDpCost(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DP_COST)));
         instance.setDpCostPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DP_COST_PER_TIER)));
-        instance.setBonusPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_PER_TIER)));
+//        instance.setBonusPerTier(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS_PER_TIER)));
         instance.setSituational(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_SITUATIONAL)) != 0);
         instance.setActionPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ACTION_POINTS)));
-        instance.setParameterValues(getParameters(instance.getId()));
+//        instance.setParameterValues(getParameters(instance.getId()));
 
         return instance;
     }
@@ -122,13 +122,13 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         initialValues.put(COLUMN_NAME, instance.getName());
         initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
         initialValues.put(COLUMN_IS_FLAW, instance.isFlaw());
-        initialValues.put(COLUMN_AFFECTED_SKILL_ID, instance.getAffectedSkill() != null ?
-                instance.getAffectedSkill().getId() : null);
+//        initialValues.put(COLUMN_AFFECTED_SKILL_ID, instance.getAffectedSkill() != null ?
+//                instance.getAffectedSkill().getId() : null);
         initialValues.put(COLUMN_TIER, instance.getTier());
         initialValues.put(COLUMN_MAX_TIERS, instance.getMaxTiers());
         initialValues.put(COLUMN_DP_COST, instance.getDpCost());
         initialValues.put(COLUMN_DP_COST_PER_TIER, instance.getDpCostPerTier());
-        initialValues.put(COLUMN_BONUS_PER_TIER, instance.getBonusPerTier());
+//        initialValues.put(COLUMN_BONUS_PER_TIER, instance.getBonusPerTier());
         initialValues.put(COLUMN_IS_SITUATIONAL, instance.isSituational());
         initialValues.put(COLUMN_ACTION_POINTS, instance.getActionPoints());
 

@@ -18,25 +18,25 @@ package com.madinnovations.rmu.data.dao.creature.schemas;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 
 /**
- * Database schema data for the creature_category_talents table
+ * Database schema data for the creature_type_talents table
  */
-public interface CreatureCategoryTalentsSchema {
-	String TABLE_NAME = "creature_category_talents";
+public interface CreatureTypeTalentsSchema {
+	String TABLE_NAME = "creature_type_talents";
 
-	String COLUMN_ID                   = "id";
-	String COLUMN_CREATURE_CATEGORY_ID = "creatureCategoryId";
-	String COLUMN_TALENT_ID            = "talentId";
+	String COLUMN_ID = "id";
+	String COLUMN_CREATURE_TYPE_ID = "creatureTypeId";
+	String COLUMN_TALENT_ID = "talentId";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_CREATURE_CATEGORY_ID + " INTEGER NOT NULL, "
+			+ COLUMN_CREATURE_TYPE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_CREATURE_CATEGORY_ID + ") REFERENCES " + CreatureCategorySchema.TABLE_NAME
-				+ "(" + CreatureCategorySchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_CREATURE_TYPE_ID + ") REFERENCES " + CreatureTypeSchema.TABLE_NAME
+				+ "(" + CreatureTypeSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_CATEGORY_ID, COLUMN_TALENT_ID};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_TYPE_ID, COLUMN_TALENT_ID};
 }

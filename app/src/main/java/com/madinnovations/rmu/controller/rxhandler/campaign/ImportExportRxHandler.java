@@ -64,6 +64,7 @@ import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.creature.OutlookDao;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureArchetypeSerializer;
+import com.madinnovations.rmu.data.dao.creature.serializers.CreatureCategorySerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureVarietySerializer;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
@@ -140,6 +141,7 @@ public class ImportExportRxHandler {
 	private CreatureArchetypeDao        creatureArchetypeDao;
 	private CreatureArchetypeSerializer creatureArchetypeSerializer = new CreatureArchetypeSerializer();
 	private CreatureCategoryDao         creatureCategoryDao;
+	private CreatureCategorySerializer  creatureCategorySerializer = new CreatureCategorySerializer();
 	private CreatureTypeDao             creatureTypeDao;
 	private CreatureTypeSerializer      creatureTypeSerializer = new CreatureTypeSerializer();
 	private CreatureVarietyDao          creatureVarietyDao;
@@ -259,6 +261,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Attack.class, attackSerializer);
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
 							gsonBuilder.registerTypeAdapter(CreatureArchetype.class, creatureArchetypeSerializer);
+							gsonBuilder.registerTypeAdapter(CreatureCategory.class, creatureCategorySerializer);
 							gsonBuilder.registerTypeAdapter(CreatureType.class, creatureTypeSerializer);
 							gsonBuilder.registerTypeAdapter(CreatureVariety.class, creatureVarietySerializer);
 							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);
@@ -712,6 +715,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Attack.class, attackSerializer);
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
 							gsonBuilder.registerTypeAdapter(CreatureArchetype.class, creatureArchetypeSerializer);
+							gsonBuilder.registerTypeAdapter(CreatureCategory.class, creatureCategorySerializer);
 							gsonBuilder.registerTypeAdapter(CreatureType.class, creatureTypeSerializer);
 							gsonBuilder.registerTypeAdapter(CreatureVariety.class, creatureVarietySerializer);
 							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);

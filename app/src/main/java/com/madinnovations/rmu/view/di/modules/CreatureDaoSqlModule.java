@@ -52,16 +52,17 @@ public class CreatureDaoSqlModule {
 		return new CreatureArchetypeDaoDbImpl(helper, statDao, skillCategoryDao);
 	}
 	@Provides @Singleton
-	public CreatureCategoryDao provideCreatureCategoryDao(RMUDatabaseHelper helper) {
-		return new CreatureCategoryDaoDbImpl(helper);
+	public CreatureCategoryDao provideCreatureCategoryDao(RMUDatabaseHelper helper, TalentDao talentDao) {
+		return new CreatureCategoryDaoDbImpl(helper, talentDao);
 	}
 	@Provides @Singleton
 	public CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CreatureVarietyDao creatureVarietyDao) {
 		return new CreatureDaoDbImpl(helper, creatureVarietyDao);
 	}
 	@Provides @Singleton
-	public CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao) {
-		return new CreatureTypeDaoDbImpl(helper, creatureCategoryDao);
+	public CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao,
+												  TalentDao talentDao) {
+		return new CreatureTypeDaoDbImpl(helper, creatureCategoryDao, talentDao);
 	}
 	@Provides @Singleton
 	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,

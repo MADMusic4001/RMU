@@ -18,10 +18,6 @@ package com.madinnovations.rmu.view.activities.creature;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,6 +43,7 @@ import com.madinnovations.rmu.data.entities.combat.AttackBonus;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
+import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.AttackBonusListAdapter;
 import com.madinnovations.rmu.view.adapters.combat.AttacksAdapter;
@@ -279,7 +276,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), attacksList));
 					}
 				}
-				View.DragShadowBuilder myShadow = new CustomDragShadowBuilder(checkedViews);
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -331,7 +328,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), attackBonusesList));
 					}
 				}
-				View.DragShadowBuilder myShadow = new CustomDragShadowBuilder(checkedViews);
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -424,7 +421,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), skillsList));
 					}
 				}
-				View.DragShadowBuilder myShadow = new CustomDragShadowBuilder(checkedViews);
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -476,7 +473,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), skillBonusesList));
 					}
 				}
-				View.DragShadowBuilder myShadow = new CustomDragShadowBuilder(checkedViews);
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -887,54 +884,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					break;
 			}
 			return true;
-		}
-	}
-
-	private static class CustomDragShadowBuilder extends View.DragShadowBuilder {
-		private Drawable[] shadows;
-		private List<View> views;
-
-		public CustomDragShadowBuilder(List<View> views) {
-			this.views = views;
-			shadows = new Drawable[views.size()];
-			for(int i = 0 ; i < shadows.length; i ++) {
-				shadows[i] = new ColorDrawable(Color.LTGRAY);
-			}
-		}
-
-		@Override
-		public void onProvideShadowMetrics (Point size, Point touch) {
-			int topLeftX = Integer.MAX_VALUE, topLeftY = Integer.MAX_VALUE;
-			int bottomRightX = 0, bottomRightY = 0;
-			int width, height;
-
-			for(int i = 0; i < views.size(); i++) {
-				shadows[i].setBounds(views.get(i).getLeft(), views.get(i).getTop(), views.get(i).getRight(), views.get(i).getBottom());
-				if(views.get(i).getLeft() < topLeftX) {
-					topLeftX = views.get(i).getLeft();
-				}
-				if(views.get(i).getTop() < topLeftY) {
-					topLeftY = views.get(i).getTop();
-				}
-				if(views.get(i).getRight() > bottomRightX) {
-					bottomRightX = views.get(i).getRight();
-				}
-				if(views.get(i).getBottom() > bottomRightY) {
-					bottomRightY = views.get(i).getBottom();
-				}
-			}
-
-			width = bottomRightX - topLeftX;
-			height = bottomRightY - topLeftY;
-			size.set(width, height);
-			touch.set(width / 2, height / 2);
-		}
-
-		@Override
-		public void onDrawShadow(Canvas canvas) {
-			for(Drawable shadow : shadows) {
-				shadow.draw(canvas);
-			}
 		}
 	}
 

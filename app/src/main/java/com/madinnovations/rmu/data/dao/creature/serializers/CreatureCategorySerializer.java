@@ -18,27 +18,25 @@ package com.madinnovations.rmu.data.dao.creature.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeTalentsSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategorySchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategoryTalentsSchema;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
-import com.madinnovations.rmu.data.entities.creature.CreatureType;
 
 import java.io.IOException;
 
 /**
- * Json serializer and deserializer for the {@link CreatureType} entities
+ * Json serializer and deserializer for the {@link CreatureCategory} entities
  */
-public class CreatureTypeSerializer extends TypeAdapter<CreatureType> implements CreatureTypeSchema {
+public class CreatureCategorySerializer extends TypeAdapter<CreatureCategory> implements CreatureCategorySchema {
 	@Override
-	public void write(JsonWriter out, CreatureType value) throws IOException {
+	public void write(JsonWriter out, CreatureCategory value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
-		out.name(COLUMN_CATEGORY_ID).value(value.getCategory().getId());
 
-		out.name(CreatureTypeTalentsSchema.TABLE_NAME).beginArray();
+		out.name(CreatureCategoryTalentsSchema.TABLE_NAME).beginArray();
 		for(Talent talent : value.getTalents()) {
 			out.value(talent.getId());
 		}
@@ -48,33 +46,30 @@ public class CreatureTypeSerializer extends TypeAdapter<CreatureType> implements
 	}
 
 	@Override
-	public CreatureType read(JsonReader in) throws IOException {
-		CreatureType creatureType = new CreatureType();
+	public CreatureCategory read(JsonReader in) throws IOException {
+		CreatureCategory creatureCategory = new CreatureCategory();
 		in.beginObject();
 		while (in.hasNext()) {
 			switch(in.nextName()) {
 				case COLUMN_ID:
-					creatureType.setId(in.nextInt());
+					creatureCategory.setId(in.nextInt());
 					break;
 				case COLUMN_NAME:
-					creatureType.setName(in.nextString());
+					creatureCategory.setName(in.nextString());
 					break;
 				case COLUMN_DESCRIPTION:
-					creatureType.setDescription(in.nextString());
+					creatureCategory.setDescription(in.nextString());
 					break;
-				case COLUMN_CATEGORY_ID:
-					creatureType.setCategory(new CreatureCategory(in.nextInt()));
-					break;
-				case CreatureTypeTalentsSchema.TABLE_NAME:
+				case CreatureCategoryTalentsSchema.TABLE_NAME:
 					in.beginArray();
 					while (in.hasNext()) {
-						creatureType.getTalents().add(new Talent(in.nextInt()));
+						creatureCategory.getTalents().add(new Talent(in.nextInt()));
 					}
 					in.endArray();
 					break;
 			}
 		}
 		in.endObject();
-		return creatureType;
+		return creatureCategory;
 	}
 }

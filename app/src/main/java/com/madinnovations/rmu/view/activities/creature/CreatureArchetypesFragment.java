@@ -31,8 +31,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -47,10 +47,8 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxH
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
-import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.creature.ArchetypeSkillCategoryListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
@@ -69,24 +67,22 @@ import rx.schedulers.Schedulers;
  */
 public class CreatureArchetypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureArchetype> {
 	@Inject
-	protected CreatureArchetypeRxHandler creatureArchetypeRxHandler;
+	protected CreatureArchetypeRxHandler             creatureArchetypeRxHandler;
 	@Inject
-	protected StatRxHandler statRxHandler;
+	protected StatRxHandler                          statRxHandler;
 	@Inject
-	protected SkillCategoryRxHandler skillCategoryRxHandler;
+	protected SkillCategoryRxHandler                 skillCategoryRxHandler;
+	private   ArrayAdapter<Stat>                     stat1SpinnerAdapter;
+	private   ArrayAdapter<Stat>                     stat2SpinnerAdapter;
 	@Inject
-	protected StatSpinnerAdapter stat1SpinnerAdapter;
+	protected ArchetypeSkillCategoryListAdapter      primarySkillCategoriesListAdapter;
 	@Inject
-	protected StatSpinnerAdapter stat2SpinnerAdapter;
+	protected ArchetypeSkillCategoryListAdapter      secondarySkillCategoriesListAdapter;
 	@Inject
-	protected ArchetypeSkillCategoryListAdapter primarySkillCategoriesListAdapter;
-	@Inject
-	protected ArchetypeSkillCategoryListAdapter secondarySkillCategoriesListAdapter;
-	@Inject
-	protected ArchetypeSkillCategoryListAdapter tertiarySkillCategoriesListAdapter;
-	private TwoFieldListAdapter<CreatureArchetype> listAdapter;
-	private ListView                     listView;
-	private EditText                     nameEdit;
+	protected ArchetypeSkillCategoryListAdapter      tertiarySkillCategoriesListAdapter;
+	private   TwoFieldListAdapter<CreatureArchetype> listAdapter;
+	private   ListView                               listView;
+	private   EditText                               nameEdit;
 	private EditText                     descriptionEdit;
 	private CheckBox                     stat1IsRealmCheckBox;
 	private Spinner                      stat1Spinner;

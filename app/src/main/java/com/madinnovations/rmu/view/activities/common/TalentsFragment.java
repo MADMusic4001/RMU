@@ -32,6 +32,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextThemeWrapper;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,10 +41,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +57,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.ParameterRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
+import com.madinnovations.rmu.data.entities.common.Effect;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.ParameterValue;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -90,17 +95,18 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	ParameterRxHandler parameterRxHandler;
 	@Inject
 	protected TalentCategorySpinnerAdapter categorySpinnerAdapter;
-	@Inject
-	protected SkillSpinnerAdapter affectedSkillSpinnerAdapter;
+	private ArrayAdapter<Skill> affectedSkillSpinnerAdapter;
 	@Inject
 	protected DragParameterListAdapter parametersListAdapter;
 	@Inject
 	protected TalentParameterListAdapter selectedParametersListAdapter;
 	private TwoFieldListAdapter<Talent> listAdapter;
+	private ArrayAdapter<Effect> effectArrayAdapter;
 	private ListView listView;
 	private Spinner  categorySpinner;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
+	private Spinner  effectsSpinner;
 	private Spinner  affectedSkillSpinner;
 	private EditText initialCostEdit;
 	private EditText costPerTierEdit;
@@ -133,6 +139,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initFlawCheckbox(layout);
 		initSituationalCheckbox(layout);
 		initActionPointsEdit(layout);
+		initEffectsViews(layout, inflater);
 		initParametersListView(layout);
 		initSelectedParametersListView(layout);
 		initListView(layout);
@@ -248,14 +255,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 
-		if(affectedSkillSpinner.getSelectedItemPosition() != -1) {
-			Skill newSkill = affectedSkillSpinnerAdapter.getItem(affectedSkillSpinner.getSelectedItemPosition());
-			if ((newSkill == null && currentInstance.getAffectedSkill() != null) ||
-					(newSkill != null && !newSkill.equals(currentInstance.getAffectedSkill()))) {
-				currentInstance.setAffectedSkill(newSkill);
-				changed = true;
-			}
-		}
+//		if(affectedSkillSpinner.getSelectedItemPosition() != -1) {
+//			Skill newSkill = affectedSkillSpinnerAdapter.getItem(affectedSkillSpinner.getSelectedItemPosition());
+//			if ((newSkill == null && currentInstance.getAffectedSkill() != null) ||
+//					(newSkill != null && !newSkill.equals(currentInstance.getAffectedSkill()))) {
+//				currentInstance.setAffectedSkill(newSkill);
+//				changed = true;
+//			}
+//		}
 
 		if(initialCostEdit.getText().length() > 0) {
 			newShort = Short.valueOf(initialCostEdit.getText().toString());
@@ -273,13 +280,13 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 
-		if(bonusPerTierEdit.getText().length() > 0) {
-			newShort = Short.valueOf(bonusPerTierEdit.getText().toString());
-			if(newShort != currentInstance.getBonusPerTier()) {
-				currentInstance.setBonusPerTier(newShort);
-				changed = true;
-			}
-		}
+//		if(bonusPerTierEdit.getText().length() > 0) {
+//			newShort = Short.valueOf(bonusPerTierEdit.getText().toString());
+//			if(newShort != currentInstance.getBonusPerTier()) {
+//				currentInstance.setBonusPerTier(newShort);
+//				changed = true;
+//			}
+//		}
 
 		if(situationalCheckbox.isChecked() != currentInstance.isSituational()) {
 			currentInstance.setSituational(situationalCheckbox.isChecked());
@@ -294,25 +301,25 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 
-		boolean updateParameters = false;
-		if(selectedParametersListAdapter.getCount() != currentInstance.getParameterValues().size()) {
-			updateParameters = true;
-		}
-		else {
-			for(ParameterValue parameterValue : currentInstance.getParameterValues()) {
-				if(selectedParametersListAdapter.getPosition(parameterValue) == -1) {
-					updateParameters = true;
-					break;
-				}
-			}
-		}
-		if(updateParameters) {
-			currentInstance.getParameterValues().clear();
-			for(int i = 0; i < selectedParametersListAdapter.getCount(); i++) {
-				currentInstance.getParameterValues().add(selectedParametersListAdapter.getItem(i));
-			}
-			changed = true;
-		}
+//		boolean updateParameters = false;
+//		if(selectedParametersListAdapter.getCount() != currentInstance.getParameterValues().size()) {
+//			updateParameters = true;
+//		}
+//		else {
+//			for(ParameterValue parameterValue : currentInstance.getParameterValues()) {
+//				if(selectedParametersListAdapter.getPosition(parameterValue) == -1) {
+//					updateParameters = true;
+//					break;
+//				}
+//			}
+//		}
+//		if(updateParameters) {
+//			currentInstance.getParameterValues().clear();
+//			for(int i = 0; i < selectedParametersListAdapter.getCount(); i++) {
+//				currentInstance.getParameterValues().add(selectedParametersListAdapter.getItem(i));
+//			}
+//			changed = true;
+//		}
 
 		return changed;
 	}
@@ -321,10 +328,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		categorySpinner.setSelection(categorySpinnerAdapter.getPosition(currentInstance.getCategory()));
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-		affectedSkillSpinner.setSelection(affectedSkillSpinnerAdapter.getPosition(currentInstance.getAffectedSkill()));
+//		affectedSkillSpinner.setSelection(affectedSkillSpinnerAdapter.getPosition(currentInstance.getAffectedSkill()));
 		initialCostEdit.setText(String.valueOf(currentInstance.getDpCost()));
 		costPerTierEdit.setText(String.valueOf(currentInstance.getDpCostPerTier()));
-		bonusPerTierEdit.setText(String.valueOf(currentInstance.getBonusPerTier()));
+//		bonusPerTierEdit.setText(String.valueOf(currentInstance.getBonusPerTier()));
 		flawCheckbox.setChecked(currentInstance.isFlaw());
 		situationalCheckbox.setChecked(currentInstance.isSituational());
 		actionPointsEdit.setText(String.valueOf(currentInstance.getActionPoints()));
@@ -516,6 +523,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initAffectedSkillSpinner(View layout) {
 		affectedSkillSpinner = (Spinner)layout.findViewById(R.id.affected_skill_spinner);
+		affectedSkillSpinnerAdapter = new ArrayAdapter<Skill>(getActivity(), R.layout.spinner_row);
 		affectedSkillSpinner.setAdapter(affectedSkillSpinnerAdapter);
 
 		skillRxHandler.getAll()
@@ -538,17 +546,17 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		affectedSkillSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(currentInstance.getCategory() == null || affectedSkillSpinnerAdapter.getPosition(currentInstance.getAffectedSkill()) != position) {
-					currentInstance.setAffectedSkill(affectedSkillSpinnerAdapter.getItem(position));
-					saveItem();
-				}
+//				if(currentInstance.getCategory() == null || affectedSkillSpinnerAdapter.getPosition(currentInstance.getAffectedSkill()) != position) {
+//					currentInstance.setAffectedSkill(affectedSkillSpinnerAdapter.getItem(position));
+//					saveItem();
+//				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getAffectedSkill() != null) {
-					currentInstance.setAffectedSkill(null);
-					saveItem();
-				}
+//				if(currentInstance.getAffectedSkill() != null) {
+//					currentInstance.setAffectedSkill(null);
+//					saveItem();
+//				}
 			}
 		});
 	}
@@ -633,10 +641,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				if(!hasFocus) {
 					if(bonusPerTierEdit.getText().length() > 0) {
 						short newHits = Short.valueOf(bonusPerTierEdit.getText().toString());
-						if (newHits != currentInstance.getBonusPerTier()) {
-							currentInstance.setBonusPerTier(newHits);
-							saveItem();
-						}
+//						if (newHits != currentInstance.getBonusPerTier()) {
+//							currentInstance.setBonusPerTier(newHits);
+//							saveItem();
+//						}
 					}
 				}
 			}
@@ -693,6 +701,37 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				}
 			}
 		});
+	}
+
+	private void initEffectsViews(View layout, LayoutInflater inflater) {
+		LinearLayout effectsList = (LinearLayout)layout.findViewById(R.id.effects_list);
+		View effectRow = (View)inflater.inflate(R.layout.talent_effect_row, null);
+		Spinner spinner = (Spinner)effectRow.findViewById(R.id.effect_spinner);
+		ArrayAdapter<Effect> adapter = new ArrayAdapter<Effect>(getActivity(), R.layout.spinner_row);
+		adapter.clear();
+		adapter.addAll(Effect.values());
+		adapter.notifyDataSetChanged();
+		spinner.setAdapter(adapter);
+		EditText editText = (EditText)effectRow.findViewById(R.id.value_edit);
+		editText.setText("5");
+		effectsList.addView(effectRow);
+		effectRow = (View)inflater.inflate(R.layout.talent_effect_row, null);
+		editText = (EditText)effectRow.findViewById(R.id.value_edit);
+		editText.setText("10");
+		effectsList.addView(effectRow);
+		editText.setVisibility(View.GONE);
+		TextView textView = (TextView)effectRow.findViewById(R.id.value_label);
+		textView.setVisibility(View.GONE);
+
+		textView = (TextView)effectRow.findViewById(R.id.skill_label);
+		textView.setVisibility(View.VISIBLE);
+		spinner = (Spinner)effectRow.findViewById(R.id.skill_spinner);
+		spinner.setVisibility(View.VISIBLE);
+		textView = (TextView)effectRow.findViewById(R.id.skill_bonus_label);
+		textView.setVisibility(View.VISIBLE);
+		editText = (EditText)effectRow.findViewById(R.id.skill_bonus_edit);
+		editText.setVisibility(View.VISIBLE);
+		editText.setText("2");
 	}
 
 	private void initParametersListView(View layout) {

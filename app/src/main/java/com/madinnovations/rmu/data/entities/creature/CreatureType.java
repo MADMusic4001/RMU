@@ -15,17 +15,23 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.common.Talent;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class containing Creature Type attributes.
  */
 public class CreatureType {
-	private int              id = -1;
-	private CreatureCategory category = null;
-	private String           name = null;
+	private int              id          = -1;
+	private CreatureCategory category    = null;
+	private String           name        = null;
 	private String           description = null;
+	private List<Talent>     talents     = new ArrayList<>();
 
 	/**
 	 * Creates a new CreatureType instance
@@ -58,6 +64,7 @@ public class CreatureType {
 				.append("category", category)
 				.append("name", name)
 				.append("description", description)
+				.append("talents", talents)
 				.toString();
 	}
 
@@ -100,5 +107,11 @@ public class CreatureType {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public List<Talent> getTalents() {
+		return talents;
+	}
+	public void setTalents(List<Talent> talents) {
+		this.talents = talents;
 	}
 }

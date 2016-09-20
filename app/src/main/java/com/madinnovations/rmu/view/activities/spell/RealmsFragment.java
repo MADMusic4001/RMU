@@ -31,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,7 +46,6 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import java.util.Collection;
@@ -61,16 +61,15 @@ import rx.schedulers.Schedulers;
  */
 public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Realm> {
 	@Inject
-	protected RealmRxHandler realmRxHandler;
+	protected RealmRxHandler             realmRxHandler;
 	@Inject
-	protected StatRxHandler statRxHandler;
-	@Inject
-	protected StatSpinnerAdapter statSpinnerAdapter;
-	private TwoFieldListAdapter<Realm> listAdapter;
-	private ListView listView;
-	private EditText nameEdit;
-	private EditText descriptionEdit;
-	private Spinner statSpinner;
+	protected StatRxHandler              statRxHandler;
+	private   ArrayAdapter<Stat>         statSpinnerAdapter;
+	private   TwoFieldListAdapter<Realm> listAdapter;
+	private   ListView                   listView;
+	private   EditText                   nameEdit;
+	private   EditText                   descriptionEdit;
+	private   Spinner                    statSpinner;
 	private Realm currentInstance = new Realm();
 	private boolean isNew = true;
 
@@ -350,6 +349,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStatSpinner(View layout) {
 		statSpinner = (Spinner)layout.findViewById(R.id.stat_spinner);
+		statSpinnerAdapter = new ArrayAdapter<Stat>(getActivity(), R.layout.spinner_row);
 		statSpinner.setAdapter(statSpinnerAdapter);
 
 		statRxHandler.getAll()

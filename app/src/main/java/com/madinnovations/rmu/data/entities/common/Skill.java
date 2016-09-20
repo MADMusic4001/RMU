@@ -60,15 +60,7 @@ public class Skill {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("description", description)
-				.append("category", category)
-				.append("requiresSpecialization", requiresSpecialization)
-				.append("useCategoryStats", useCategoryStats)
-				.append("stats", stats)
-				.toString();
+		return name;
 	}
 
 	@Override

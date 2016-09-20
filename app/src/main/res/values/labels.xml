@@ -86,6 +86,7 @@
 
   <!-- Field name labels -->
   <string name="label_abbreviation">Abbreviation</string>
+  <string name="label_add_effect">Add Effect</string>
   <string name="label_code">Code</string>
   <string name="label_description">Description</string>
   <string name="label_flaw">Flaw</string>
@@ -313,6 +314,7 @@
   <string name="input_label_base_physical_rr">Phyiscal RR:</string>
   <string name="input_label_base_stride">Base Stride:</string>
   <string name="input_label_bleeding">Bleeding:</string>
+  <string name="input_label_bonus">Bonus:</string>
   <string name="input_label_breakage">Breakage:</string>
   <string name="input_label_category_filter">Category Filter:</string>
   <string name="input_label_critical_codes">Critical Codes:</string>
@@ -324,6 +326,7 @@
   <string name="input_label_description">Description:</string>
   <string name="input_label_dev_points">Dev Points:</string>
   <string name="input_label_duration">Duration:</string>
+  <string name="input_label_effect">Effect:</string>
   <string name="input_label_endurance_mod">Endurance Mod.:</string>
   <string name="input_label_fatigue">Fatigue:</string>
   <string name="input_label_healing_rate">Healing Rate:</string>
@@ -342,18 +345,22 @@
   <string name="input_label_realm1">Realm 1:</string>
   <string name="input_label_realm2">Realm 2:</string>
   <string name="input_label_recovery_mult">Recovery Mult.:</string>
+  <string name="input_label_resistance">Resistance:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
+  <string name="input_label_skill">Skill:</string>
   <string name="input_label_spell_list">Spell List:</string>
   <string name="input_label_spell_list_filter">Spell List Filter:</string>
   <string name="input_label_spell_list_type">Spell List Type:</string>
   <string name="input_label_spell_sub_type">Spell Sub Type:</string>
   <string name="input_label_spell_type">Spell Type:</string>
+  <string name="input_label_stat">Stat:</string>
   <string name="input_label_stat1_is_realm">Stat 1 Is Realm?</string>
   <string name="input_label_stat2_is_realm">Stat 2 Is Realm?</string>
   <string name="input_label_stride_mod">Stride Mod.:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
   <string name="input_label_trades_ranks">Trades &amp; Crafts Ranks:</string>
+  <string name="input_label_value">Value:</string>
   <string name="input_label_weight">Weight:</string>
 
   <!-- Format strings -->

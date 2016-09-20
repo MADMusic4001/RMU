@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,8 +47,6 @@ import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.StatSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
 import java.util.ArrayList;
@@ -66,25 +65,20 @@ import rx.schedulers.Schedulers;
  */
 public class SpecializationsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Specialization> {
 	@Inject
-	protected SpecializationRxHandler specializationRxHandler;
+	protected SpecializationRxHandler             specializationRxHandler;
 	@Inject
-	protected SkillRxHandler              skillRxHandler;
+	protected SkillRxHandler                      skillRxHandler;
 	@Inject
-	protected StatRxHandler               statRxHandler;
-	@Inject
-	protected SkillSpinnerAdapter         skillFilterSpinnerAdapter;
-	@Inject
-	protected SkillSpinnerAdapter         skillSpinnerAdapter;
-	@Inject
-	protected StatSpinnerAdapter          stat1SpinnerAdapter;
-	@Inject
-	protected StatSpinnerAdapter          stat2SpinnerAdapter;
-	@Inject
-	protected StatSpinnerAdapter          stat3SpinnerAdapter;
-	private TwoFieldListAdapter<Specialization> listAdapter;
-	private   Spinner                     skillFilterSpinner;
-	private   ListView                    listView;
-	private   EditText                    nameEdit;
+	protected StatRxHandler                       statRxHandler;
+	private   ArrayAdapter<Skill>                 skillFilterSpinnerAdapter;
+	private   ArrayAdapter<Skill>                 skillSpinnerAdapter;
+	private   ArrayAdapter<Stat>                  stat1SpinnerAdapter;
+	private   ArrayAdapter<Stat>                  stat2SpinnerAdapter;
+	private   ArrayAdapter<Stat>                  stat3SpinnerAdapter;
+	private   TwoFieldListAdapter<Specialization> listAdapter;
+	private   Spinner                             skillFilterSpinner;
+	private   ListView                            listView;
+	private   EditText                            nameEdit;
 	private   EditText                    descriptionEdit;
 	private   Spinner                     skillSpinner;
 	private   CheckBox                    useSkillStatsCheckBox;
@@ -399,6 +393,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initSkillFilterSpinner(View layout) {
 		skillFilterSpinner = (Spinner)layout.findViewById(R.id.skill_filter_spinner);
+		skillFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		skillFilterSpinner.setAdapter(skillFilterSpinnerAdapter);
 
 		final Skill allSkills = new Skill();
@@ -492,6 +487,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initSkillSpinner(View layout) {
 		skillSpinner = (Spinner)layout.findViewById(R.id.skill_spinner);
+		skillSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		skillSpinner.setAdapter(skillSpinnerAdapter);
 
 		skillRxHandler.getSpecializationSkills()
@@ -557,6 +553,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
+		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -589,6 +586,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initStat2Spinner(View layout) {
 		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
+		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -619,6 +617,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initStat3Spinner(View layout) {
 		stat3Spinner = (Spinner)layout.findViewById(R.id.stat3_spinner);
+		stat3SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat3Spinner.setAdapter(stat3SpinnerAdapter);
 
 		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -709,7 +708,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 		currentInstance.setStats(stats);
 	}
 
-	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, StatSpinnerAdapter adapter, int statIndex) {
+	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, ArrayAdapter<Stat> adapter, int statIndex) {
 		int position;
 
 		if(stats.size() <= statIndex) {

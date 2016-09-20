@@ -65,6 +65,7 @@ import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategorySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategoryTalentsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeTalentsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyAttacksSchema;
@@ -160,6 +161,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(CreatureCategoryTalentsSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CreatureTypeSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureTypeTalentsSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(OutlookSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(VarietyAttacksSchema.TABLE_CREATE);
@@ -239,6 +241,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyTalentTiersSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureCategoryTalentsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureTypeTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ArchetypeSkillsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ArchetypeSpellsSchema.TABLE_NAME, null, null);
@@ -258,7 +262,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(BodyPartSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureCategorySchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(CreatureCategoryTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CriticalCodeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CriticalTypeSchema.TABLE_NAME, null, null);

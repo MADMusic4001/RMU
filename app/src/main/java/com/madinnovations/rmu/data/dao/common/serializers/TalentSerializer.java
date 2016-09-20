@@ -41,15 +41,15 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		out.name(COLUMN_CATEGORY_ID).value(value.getCategory().getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
-		out.name(COLUMN_IS_FLAW).value(value.getName());
-		if(value.getAffectedSkill() != null) {
-			out.name(COLUMN_AFFECTED_SKILL_ID).value(value.getAffectedSkill().getId());
-		}
+		out.name(COLUMN_IS_FLAW).value(value.isFlaw());
+//		if(value.getAffectedSkill() != null) {
+//			out.name(COLUMN_AFFECTED_SKILL_ID).value(value.getAffectedSkill().getId());
+//		}
 		out.name(COLUMN_TIER).value(value.getTier());
 		out.name(COLUMN_MAX_TIERS).value(value.getMaxTiers());
 		out.name(COLUMN_DP_COST).value(value.getDpCost());
 		out.name(COLUMN_DP_COST_PER_TIER).value(value.getDpCostPerTier());
-		out.name(COLUMN_BONUS_PER_TIER).value(value.getBonusPerTier());
+//		out.name(COLUMN_BONUS_PER_TIER).value(value.getBonusPerTier());
 		out.name(COLUMN_IS_SITUATIONAL).value(value.isSituational());
 		out.name(COLUMN_ACTION_POINTS).value(value.getActionPoints());
 		out.name(TalentParametersSchema.TABLE_NAME);
@@ -88,7 +88,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 					talent.setFlaw(in.nextBoolean());
 					break;
 				case COLUMN_AFFECTED_SKILL_ID:
-					talent.setAffectedSkill(new Skill(in.nextInt()));
+//					talent.setAffectedSkill(new Skill(in.nextInt()));
 					break;
 				case COLUMN_TIER:
 					talent.setTier((short) in.nextInt());
@@ -103,7 +103,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 					talent.setDpCostPerTier((short) in.nextInt());
 					break;
 				case COLUMN_BONUS_PER_TIER:
-					talent.setBonusPerTier((short) in.nextInt());
+//					talent.setBonusPerTier((short) in.nextInt());
 					break;
 				case COLUMN_IS_SITUATIONAL:
 					talent.setSituational(in.nextBoolean());
@@ -137,7 +137,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 				}
 			}
 			ParameterValue parameterValue = new ParameterValue(newParameter, newValue);
-			talent.getParameterValues().add(parameterValue);
+//			talent.getParameterValues().add(parameterValue);
 			in.endObject();
 		}
 		in.endArray();

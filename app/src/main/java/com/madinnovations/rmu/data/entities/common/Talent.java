@@ -18,9 +18,6 @@ package com.madinnovations.rmu.data.entities.common;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Talent data
  */
@@ -30,15 +27,21 @@ public class Talent {
 	private String name = null;
 	private String description = null;
 	private boolean flaw = false;
-	private Skill affectedSkill = null;
+	private Effect[] effects = new Effect[0];
+	private short[] effectValues = new short[0];
+	private Skill[] affectedSkills = new Skill[0];
+	private short[] skillBonuses = new short[0];
+	private Resistance[] affectedResistances = new Resistance[0];
+	private short[] resistBonuses = new short[0];
+	private Stat[] affectedStats = new Stat[0];
+	private short[] statBonuses = new short[0];
 	private short tier = 1;
 	private short maxTiers = 1;
-	private short dpCost = 15;
+	private short dpCost = 5;
 	private short dpCostPerTier = 0;
-	private short bonusPerTier = 5;
 	private boolean situational = false;
 	private short actionPoints = 0;
-	private List<ParameterValue> parameterValues = new ArrayList<>();
+	private ParameterValue[] parameterValues = new ParameterValue[0];
 
 	/**
 	 * Default no-arg constructor
@@ -49,7 +52,7 @@ public class Talent {
 	/**
 	 * Constructor for setting just the id (PK)
 	 *
-	 * @param id  the ID of the talend
+	 * @param id  the ID of the talent
 	 */
 	public Talent(int id) {
 		this.id = id;
@@ -72,12 +75,18 @@ public class Talent {
 				.append("name", name)
 				.append("description", description)
 				.append("flaw", flaw)
-				.append("affectedSkill", affectedSkill)
+				.append("effects", effects)
+				.append("effectValues", effectValues)
+				.append("affectedSkills", affectedSkills)
+				.append("skillBonuses", skillBonuses)
+				.append("affectedResistances", affectedResistances)
+				.append("resistBonuses", resistBonuses)
+				.append("affectedStats", affectedStats)
+				.append("statBonuses", statBonuses)
 				.append("tier", tier)
 				.append("maxTiers", maxTiers)
 				.append("dpCost", dpCost)
 				.append("dpCostPerTier", dpCostPerTier)
-				.append("bonusPerTier", bonusPerTier)
 				.append("situational", situational)
 				.append("actionPoints", actionPoints)
 				.append("parameterValues", parameterValues)
@@ -130,11 +139,53 @@ public class Talent {
 	public void setFlaw(boolean flaw) {
 		this.flaw = flaw;
 	}
-	public Skill getAffectedSkill() {
-		return affectedSkill;
+	public Effect[] getEffects() {
+		return effects;
 	}
-	public void setAffectedSkill(Skill affectedSkill) {
-		this.affectedSkill = affectedSkill;
+	public void setEffects(Effect[] effects) {
+		this.effects = effects;
+	}
+	public short[] getEffectValues() {
+		return effectValues;
+	}
+	public void setEffectValues(short[] effectValues) {
+		this.effectValues = effectValues;
+	}
+	public Skill[] getAffectedSkills() {
+		return affectedSkills;
+	}
+	public void setAffectedSkills(Skill[] affectedSkills) {
+		this.affectedSkills = affectedSkills;
+	}
+	public short[] getSkillBonuses() {
+		return skillBonuses;
+	}
+	public void setSkillBonuses(short[] skillBonuses) {
+		this.skillBonuses = skillBonuses;
+	}
+	public Resistance[] getAffectedResistances() {
+		return affectedResistances;
+	}
+	public void setAffectedResistances(Resistance[] affectedResistances) {
+		this.affectedResistances = affectedResistances;
+	}
+	public short[] getResistBonuses() {
+		return resistBonuses;
+	}
+	public void setResistBonuses(short[] resistBonuses) {
+		this.resistBonuses = resistBonuses;
+	}
+	public Stat[] getAffectedStats() {
+		return affectedStats;
+	}
+	public void setAffectedStats(Stat[] affectedStats) {
+		this.affectedStats = affectedStats;
+	}
+	public short[] getStatBonuses() {
+		return statBonuses;
+	}
+	public void setStatBonuses(short[] statBonuses) {
+		this.statBonuses = statBonuses;
 	}
 	public short getTier() {
 		return tier;
@@ -160,12 +211,6 @@ public class Talent {
 	public void setDpCostPerTier(short dpCostPerTier) {
 		this.dpCostPerTier = dpCostPerTier;
 	}
-	public short getBonusPerTier() {
-		return bonusPerTier;
-	}
-	public void setBonusPerTier(short bonusPerTier) {
-		this.bonusPerTier = bonusPerTier;
-	}
 	public boolean isSituational() {
 		return situational;
 	}
@@ -178,10 +223,10 @@ public class Talent {
 	public void setActionPoints(short actionPoints) {
 		this.actionPoints = actionPoints;
 	}
-	public List<ParameterValue> getParameterValues() {
+	public ParameterValue[] getParameterValues() {
 		return parameterValues;
 	}
-	public void setParameterValues(List<ParameterValue> parameterValues) {
+	public void setParameterValues(ParameterValue[] parameterValues) {
 		this.parameterValues = parameterValues;
 	}
 }
