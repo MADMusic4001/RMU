@@ -211,7 +211,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 		if(skillCategorySpinner.getSelectedItemPosition() != -1) {
 			SkillCategory skillCategory = skillCategorySpinnerAdapter.getItem(skillCategorySpinner.getSelectedItemPosition());
-			if(!skillCategory.equals(currentInstance.getCategory())) {
+			if(skillCategory != null && !skillCategory.equals(currentInstance.getCategory())) {
 				currentInstance.setCategory(skillCategory);
 				changed = true;
 			}
@@ -375,25 +375,28 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								int position = listAdapter.getPosition(currentInstance);
 								SkillCategory skillCategory = skillCategoryFilterSpinnerAdapter.getItem
 										(skillCategoryFilterSpinner.getSelectedItemPosition());
-								if(position >= 0 ) {
-									if (!skillCategory.getName().equals(savedSkill.getCategory().getName())
-											&& skillCategory.getId() !=    -1) {
-										listAdapter.remove(savedSkill);
-										listAdapter.notifyDataSetChanged();
-									}
-									else {
-										LinearLayout v = (LinearLayout) listView.getChildAt(
-												position - listView.getFirstVisiblePosition());
-										if (v != null) {
-											TextView textView = (TextView) v.findViewById(R.id.row_field1);
-											textView.setText(currentInstance.getName());
-											textView = (TextView) v.findViewById(R.id.row_field2);
-											textView.setText(currentInstance.getDescription());
+								if(skillCategory != null) {
+									if (position >= 0) {
+										if (!skillCategory.getName().equals(savedSkill.getCategory().getName())
+												&& skillCategory.getId() != -1) {
+											listAdapter.remove(savedSkill);
+											listAdapter.notifyDataSetChanged();
+										}
+										else {
+											LinearLayout v = (LinearLayout) listView.getChildAt(
+													position - listView.getFirstVisiblePosition());
+											if (v != null) {
+												TextView textView = (TextView) v.findViewById(R.id.row_field1);
+												textView.setText(currentInstance.getName());
+												textView = (TextView) v.findViewById(R.id.row_field2);
+												textView.setText(currentInstance.getDescription());
+											}
 										}
 									}
-								} else if (skillCategory == savedSkill.getCategory() && skillCategory.getId() != -1) {
-									listAdapter.add(savedSkill);
-									listAdapter.notifyDataSetChanged();
+									else if (skillCategory.equals(savedSkill.getCategory()) && skillCategory.getId() != -1) {
+										listAdapter.add(savedSkill);
+										listAdapter.notifyDataSetChanged();
+									}
 								}
 							}
 						}
@@ -403,7 +406,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSkillCategoryFilterSpinner(View layout) {
 		skillCategoryFilterSpinner = (Spinner)layout.findViewById(R.id.skill_category_filter_spinner);
-		skillCategoryFilterSpinnerAdapter = new ArrayAdapter<SkillCategory>(getActivity(), R.layout.spinner_row);
+		skillCategoryFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		skillCategoryFilterSpinner.setAdapter(skillCategoryFilterSpinnerAdapter);
 
 		final SkillCategory allSkillCategories = new SkillCategory();
@@ -497,7 +500,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSkillCategorySpinner(View layout) {
 		skillCategorySpinner = (Spinner)layout.findViewById(R.id.skill_category_spinner);
-		skillCategorySpinnerAdapter = new ArrayAdapter<SkillCategory>(getActivity(), R.layout.spinner_row);
+		skillCategorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		skillCategorySpinner.setAdapter(skillCategorySpinnerAdapter);
 
 		skillCategoryRxHandler.getAll()

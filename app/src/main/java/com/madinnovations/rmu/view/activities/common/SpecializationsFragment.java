@@ -208,7 +208,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 		if(skillSpinner.getSelectedItemPosition() != -1) {
 			Skill skill = skillSpinnerAdapter.getItem(skillSpinner.getSelectedItemPosition());
-			if(!skill.equals(currentInstance.getSkill())) {
+			if(skill != null && !skill.equals(currentInstance.getSkill())) {
 				currentInstance.setSkill(skill);
 				changed = true;
 			}
@@ -365,25 +365,28 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 								int position = listAdapter.getPosition(savedSpecialization);
 								Skill skill = skillFilterSpinnerAdapter.getItem(skillFilterSpinner.getSelectedItemPosition());
-								if(position >= 0) {
-									if (!skill.getName().equals(savedSpecialization.getSkill().getName()) &&
-											skill.getId() != -1) {
-										listAdapter.remove(savedSpecialization);
-										listAdapter.notifyDataSetChanged();
-									}
-									else {
-										LinearLayout v = (LinearLayout) listView.getChildAt(
-												position - listView.getFirstVisiblePosition());
-										if (v != null) {
-											TextView textView = (TextView) v.findViewById(R.id.row_field1);
-											textView.setText(currentInstance.getName());
-											textView = (TextView) v.findViewById(R.id.row_field2);
-											textView.setText(currentInstance.getDescription());
+								if(skill != null) {
+									if (position >= 0) {
+										if (!skill.getName().equals(savedSpecialization.getSkill().getName()) &&
+												skill.getId() != -1) {
+											listAdapter.remove(savedSpecialization);
+											listAdapter.notifyDataSetChanged();
+										}
+										else {
+											LinearLayout v = (LinearLayout) listView.getChildAt(
+													position - listView.getFirstVisiblePosition());
+											if (v != null) {
+												TextView textView = (TextView) v.findViewById(R.id.row_field1);
+												textView.setText(currentInstance.getName());
+												textView = (TextView) v.findViewById(R.id.row_field2);
+												textView.setText(currentInstance.getDescription());
+											}
 										}
 									}
-								} else if (skill == savedSpecialization.getSkill() && skill.getId() != -1) {
-									listAdapter.add(savedSpecialization);
-									listAdapter.notifyDataSetChanged();
+									else if (skill == savedSpecialization.getSkill() && skill.getId() != -1) {
+										listAdapter.add(savedSpecialization);
+										listAdapter.notifyDataSetChanged();
+									}
 								}
 							}
 						}

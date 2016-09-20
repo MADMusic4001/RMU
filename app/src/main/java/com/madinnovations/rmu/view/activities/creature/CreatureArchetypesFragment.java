@@ -100,6 +100,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
 
+		realmStat.setAbbreviation("-");
 		realmStat.setName(getString(R.string.label_non_realm_stat));
 
 		View layout = inflater.inflate(R.layout.creature_archetypes_fragment, container, false);

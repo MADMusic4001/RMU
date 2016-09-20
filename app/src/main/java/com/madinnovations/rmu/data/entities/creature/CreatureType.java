@@ -17,9 +17,6 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.common.Talent;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,13 +56,7 @@ public class CreatureType {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("category", category)
-				.append("name", name)
-				.append("description", description)
-				.append("talents", talents)
-				.toString();
+		return name;
 	}
 
 	@Override

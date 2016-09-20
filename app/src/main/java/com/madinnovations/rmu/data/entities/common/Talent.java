@@ -15,9 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Talent data
  */
@@ -69,28 +66,7 @@ public class Talent {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("category", category)
-				.append("name", name)
-				.append("description", description)
-				.append("flaw", flaw)
-				.append("effects", effects)
-				.append("effectValues", effectValues)
-				.append("affectedSkills", affectedSkills)
-				.append("skillBonuses", skillBonuses)
-				.append("affectedResistances", affectedResistances)
-				.append("resistBonuses", resistBonuses)
-				.append("affectedStats", affectedStats)
-				.append("statBonuses", statBonuses)
-				.append("tier", tier)
-				.append("maxTiers", maxTiers)
-				.append("dpCost", dpCost)
-				.append("dpCostPerTier", dpCostPerTier)
-				.append("situational", situational)
-				.append("actionPoints", actionPoints)
-				.append("parameterValues", parameterValues)
-				.toString();
+		return name;
 	}
 
 	@Override
