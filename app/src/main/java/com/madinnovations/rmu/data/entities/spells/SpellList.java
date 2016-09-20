@@ -15,10 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Profession;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Spell list attributes
@@ -58,15 +57,30 @@ public class SpellList {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("notes", notes)
-				.append("realm", realm)
-				.append("realm2", realm2)
-				.append("profession", profession)
-				.append("spellListType", spellListType)
-				.toString();
+		String formatString = RMUApp.getResourceUtils().getString(R.string.spell_list_format_string);
+		String result = null;
+
+		if(profession != null) {
+			if(spellListType != null) {
+				result = String.format(formatString, name, spellListType.getName(), profession.getName());
+			}
+			else {
+				result = String.format(formatString, name, profession.getName(), "");
+			}
+		}
+		else if (realm != null) {
+			if(spellListType != null) {
+				result = String.format(formatString, name, getSpellListType().getName(), realm.getName());
+			}
+			else {
+				result = String.format(formatString, name, realm.getName(), "");
+			}
+		}
+		else {
+			result = name;
+		}
+
+		return result;
 	}
 
 	@Override

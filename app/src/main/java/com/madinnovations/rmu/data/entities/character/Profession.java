@@ -20,15 +20,10 @@ import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Profession attributes
@@ -70,17 +65,7 @@ public class Profession {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("description", description)
-				.append("realm1", realm1)
-				.append("realm2", realm2)
-				.append("skillCategoryCosts", skillCategoryCosts)
-				.append("skillCosts", skillCosts)
-				.append("assignableSkillCosts", assignableSkillCosts)
-				.append("professionalSkillCategories", professionalSkillCategories)
-				.toString();
+		return name;
 	}
 
 	@Override

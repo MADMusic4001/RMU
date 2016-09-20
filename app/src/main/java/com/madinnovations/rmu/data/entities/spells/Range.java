@@ -35,6 +35,11 @@ public enum Range {
 		this.parameterCount = parameterCount;
 	}
 
+	@Override
+	public String toString() {
+		return text;
+	}
+
 	// Getters
 	public String getText() {
 		return text;

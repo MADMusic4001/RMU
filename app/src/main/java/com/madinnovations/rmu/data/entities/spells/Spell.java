@@ -15,9 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Spell attributes
  */
@@ -47,20 +44,7 @@ public class Spell {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("spellList", spellList)
-				.append("name", name)
-				.append("description", description)
-				.append("areaOfEffect", areaOfEffect)
-				.append("areaOfEffectParams", areaOfEffectParams)
-				.append("duration", duration)
-				.append("durationParams", durationParams)
-				.append("range", range)
-				.append("rangeParam", rangeParam)
-				.append("spellType", spellType)
-				.append("spellSubType", spellSubType)
-				.toString();
+		return name;
 	}
 
 	@Override

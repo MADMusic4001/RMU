@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -49,7 +50,6 @@ import com.madinnovations.rmu.view.adapters.combat.AttackBonusListAdapter;
 import com.madinnovations.rmu.view.adapters.combat.AttacksAdapter;
 import com.madinnovations.rmu.view.adapters.combat.CriticalCodesListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillBonusListAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.ArrayList;
@@ -82,8 +82,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	protected SkillRxHandler           skillRxHandler;
 	@Inject
 	protected AttacksAdapter           attacksListAdapter;
-	@Inject
-	protected SkillSpinnerAdapter      skillsListAdapter;
+	protected ArrayAdapter<Skill>      skillsListAdapter;
 	@Inject
 	protected CriticalCodesListAdapter criticalCodesListAdapter;
 	protected AttackBonusListAdapter   attackBonusesListAdapter;
@@ -137,19 +136,20 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			newAttackMap = new HashMap<>(attackBonusesListAdapter.getCount());
 			for (int i = 0; i < attackBonusesListAdapter.getCount(); i++) {
 				newAttackBonus = attackBonusesListAdapter.getItem(i);
-				if (varietiesFragment.getCurrentInstance().getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
-					if (!varietiesFragment.getCurrentInstance()
-							.getAttackBonusesMap()
-							.get(newAttackBonus.getAttack())
-							.equals(newAttackBonus.getBonus())) {
+				if(newAttackBonus != null) {
+					if (varietiesFragment.getCurrentInstance().getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
+						if (!varietiesFragment.getCurrentInstance()
+								.getAttackBonusesMap()
+								.get(newAttackBonus.getAttack())
+								.equals(newAttackBonus.getBonus())) {
+							changed = true;
+						}
+						varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(newAttackBonus.getAttack());
+					} else {
 						changed = true;
 					}
-					varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(newAttackBonus.getAttack());
+					newAttackMap.put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
 				}
-				else {
-					changed = true;
-				}
-				newAttackMap.put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
 			}
 			if (!varietiesFragment.getCurrentInstance().getAttackBonusesMap().isEmpty() && !newAttackMap.isEmpty()) {
 				changed = true;
@@ -159,19 +159,21 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			newSkillMap = new HashMap<>(skillBonusesListAdapter.getCount());
 			for (int i = 0; i < skillBonusesListAdapter.getCount(); i++) {
 				newSkillBonus = skillBonusesListAdapter.getItem(i);
-				if (varietiesFragment.getCurrentInstance().getSkillBonusesMap().containsKey(newSkillBonus.getSkill())) {
-					if (!varietiesFragment.getCurrentInstance()
-							.getSkillBonusesMap()
-							.get(newSkillBonus.getSkill())
-							.equals(newSkillBonus.getBonus())) {
+				if(newSkillBonus != null) {
+					if (varietiesFragment.getCurrentInstance().getSkillBonusesMap().containsKey(
+							newSkillBonus.getSkill())) {
+						if (!varietiesFragment.getCurrentInstance()
+								.getSkillBonusesMap()
+								.get(newSkillBonus.getSkill())
+								.equals(newSkillBonus.getBonus())) {
+							changed = true;
+						}
+						varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(newSkillBonus.getSkill());
+					} else {
 						changed = true;
 					}
-					varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(newSkillBonus.getSkill());
+					newSkillMap.put(newSkillBonus.getSkill(), newSkillBonus.getBonus());
 				}
-				else {
-					changed = true;
-				}
-				newSkillMap.put(newSkillBonus.getSkill(), newSkillBonus.getBonus());
 			}
 			if (!varietiesFragment.getCurrentInstance().getSkillBonusesMap().isEmpty() && !newSkillMap.isEmpty()) {
 				changed = true;
@@ -374,6 +376,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 	private void initSkillsList(View layout) {
 		skillsList = (ListView) layout.findViewById(R.id.skills_list);
+		skillsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		skillsList.setAdapter(skillsListAdapter);
 
 		skillRxHandler.getAll()
@@ -707,8 +710,10 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							int position = attackBonusesListAdapter.getPosition(newAttackBonus);
 							if(position != -1) {
 								AttackBonus attackBonus = attackBonusesListAdapter.getItem(position);
-								varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(attackBonus.getAttack());
-								attackBonusesListAdapter.remove(attackBonus);
+								if(attackBonus != null) {
+									varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(attackBonus.getAttack());
+									attackBonusesListAdapter.remove(attackBonus);
+								}
 							}
 						}
 						varietiesFragment.saveItem();
@@ -864,8 +869,10 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							int position = skillBonusesListAdapter.getPosition(newSkillBonus);
 							if(position != -1) {
 								SkillBonus skillBonus = skillBonusesListAdapter.getItem(position);
-								varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(skillBonus.getSkill());
-								skillBonusesListAdapter.remove(skillBonus);
+								if(skillBonus != null) {
+									varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(skillBonus.getSkill());
+									skillBonusesListAdapter.remove(skillBonus);
+								}
 							}
 						}
 						varietiesFragment.saveItem();

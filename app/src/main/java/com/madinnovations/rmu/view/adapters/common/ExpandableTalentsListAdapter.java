@@ -98,7 +98,7 @@ public class ExpandableTalentsListAdapter extends BaseExpandableListAdapter {
 	public int getChildrenCount(int groupPosition) {
 		int result = 0;
 
-		if(childData != null) {
+		if(childData != null && childData.length > groupPosition) {
 			result = childData[groupPosition].length;
 		}
 

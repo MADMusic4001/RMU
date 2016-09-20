@@ -37,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
@@ -58,8 +59,6 @@ import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.ExpandableTalentsListAdapter;
-import com.madinnovations.rmu.view.adapters.common.TalentNamesListAdapter;
-import com.madinnovations.rmu.view.adapters.creature.CreatureCategorySpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.ArrayList;
@@ -85,16 +84,14 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 	protected CreatureTypeRxHandler             creatureTypeRxHandler;
 	@Inject
 	protected CreatureCategoryRxHandler         creatureCategoryRxHandler;
-	@Inject
-	protected CreatureCategorySpinnerAdapter    creatureCategorySpinnerAdapter;
+	private   ArrayAdapter<CreatureCategory>    creatureCategorySpinnerAdapter;
 	@Inject
 	protected TalentCategoryRxHandler           talentCategoryRxHandler;
 	@Inject
 	protected TalentRxHandler                   talentRxHandler;
 	private   TwoFieldListAdapter<CreatureType> listAdapter;
 	private   ExpandableTalentsListAdapter      expandableTalentsListAdapter;
-	@Inject
-	protected TalentNamesListAdapter            selectedTalentsListAdapter;
+	private   ArrayAdapter<Talent>              selectedTalentsListAdapter;
 	private   ListView                          listView;
 	private   EditText                          nameEdit;
 	private   EditText                          descriptionEdit;
@@ -231,7 +228,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		position = creatureCategorySpinner.getSelectedItemPosition();
 		if(position != -1) {
 			newCategory = creatureCategorySpinnerAdapter.getItem(position);
-			if(!newCategory.equals(currentInstance.getCategory())) {
+			if(newCategory != null && !newCategory.equals(currentInstance.getCategory())) {
 				currentInstance.setCategory(newCategory);
 				changed = true;
 			}
@@ -417,6 +414,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 
 	private void initCretureCategorySpinner(View layout) {
 		creatureCategorySpinner = (Spinner)layout.findViewById(R.id.creature_category_spinner);
+		creatureCategorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		creatureCategorySpinner.setAdapter(creatureCategorySpinnerAdapter);
 
 		creatureCategoryRxHandler.getAll()
@@ -561,6 +559,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 
 	private void initSelectedTalentsList(View layout) {
 		selectedTalentsListView = (ListView)layout.findViewById(R.id.selected_talents_list);
+		selectedTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		selectedTalentsListView.setAdapter(selectedTalentsListAdapter);
 
 		selectedTalentsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

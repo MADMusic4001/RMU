@@ -251,7 +251,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 				position = stat1Spinner.getSelectedItemPosition();
 				if(position != -1) {
 					newStat = stat1SpinnerAdapter.getItem(position);
-					if(stats.isEmpty() || !newStat.equals(stats.get(0))) {
+					if(stats.isEmpty() || (newStat != null && !newStat.equals(stats.get(0)))) {
 						stats.add(0, newStat);
 						changed = true;
 					}
@@ -272,21 +272,21 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 
 				newStat = null;
 				position = stat1Spinner.getSelectedItemPosition();
-				if (position >= 0) {
+				if (position >= 0 && position < stat1SpinnerAdapter.getCount()) {
 					newStat = stat1SpinnerAdapter.getItem(position);
 				}
 				changed |= setStat(stats, newStat, currentIndex++);
 
 				newStat = null;
 				position = stat2Spinner.getSelectedItemPosition();
-				if (position >= 0) {
+				if (position >= 0 && position < stat2SpinnerAdapter.getCount()) {
 					newStat = stat2SpinnerAdapter.getItem(position);
 				}
 				changed |= setStat(stats, newStat, currentIndex++);
 
 				newStat = null;
 				position = stat3Spinner.getSelectedItemPosition();
-				if (position >= 0) {
+				if (position >= 0 && position < stat3SpinnerAdapter.getCount()) {
 					newStat = stat3SpinnerAdapter.getItem(position);
 				}
 				changed |= setStat(stats, newStat, currentIndex);
@@ -768,10 +768,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		}
 		else {
 			position = spinner.getSelectedItemPosition();
-			if (position >= 0) {
-
-
-
+			if (position >= 0 && position < adapter.getCount()) {
 				newStat = adapter.getItem(position);
 			}
 			if (stats.size() >= statIndex + 1 && stats.get(statIndex) != null) {

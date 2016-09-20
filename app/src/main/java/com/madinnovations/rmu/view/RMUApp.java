@@ -20,17 +20,21 @@ import android.app.Application;
 import com.madinnovations.rmu.view.di.components.ApplicationComponent;
 import com.madinnovations.rmu.view.di.components.DaggerApplicationComponent;
 import com.madinnovations.rmu.view.di.modules.ApplicationModule;
+import com.madinnovations.rmu.view.utils.AndroidResourceUtils;
+import com.madinnovations.rmu.view.utils.ResourceUtils;
 
 /**
  * The Android Application class
  */
 public class RMUApp extends Application {
 	private ApplicationComponent applicationComponent;
+	private static ResourceUtils resourceUtils;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		this.initializeInjector();
+		resourceUtils = new AndroidResourceUtils(this);
 	}
 
 	private void initializeInjector() {
@@ -41,5 +45,14 @@ public class RMUApp extends Application {
 
 	public ApplicationComponent getApplicationComponent() {
 		return this.applicationComponent;
+	}
+
+	/**
+	 * Gets the ResourceUtils instance.
+	 *
+	 * @return  the ResourceUtils instance.
+	 */
+	public static ResourceUtils getResourceUtils() {
+		return resourceUtils;
 	}
 }

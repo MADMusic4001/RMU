@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,8 +46,6 @@ import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.combat.DamageTableSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.SpecializationAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -62,21 +61,19 @@ import rx.schedulers.Schedulers;
  */
 public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack> {
 	@Inject
-	protected AttackRxHandler           attackRxHandler;
+	protected AttackRxHandler              attackRxHandler;
 	@Inject
-	protected DamageTableRxHandler      damageTableRxHandler;
+	protected DamageTableRxHandler         damageTableRxHandler;
 	@Inject
-	protected SpecializationRxHandler   specializationRxHandler;
-	@Inject
-	protected DamageTableSpinnerAdapter damageTableAdapter;
-	@Inject
-	protected SpecializationAdapter     specializationAdapter;
-	private TwoFieldListAdapter<Attack> listAdapter;
-	private ListView                    listView;
-	private EditText                    codeEdit;
-	private EditText                    nameEdit;
-	private Spinner                     damageTableSpinner;
-	private Spinner                     specializationSpinner;
+	protected SpecializationRxHandler      specializationRxHandler;
+	private   ArrayAdapter<DamageTable>    damageTableAdapter;
+	private   ArrayAdapter<Specialization> specializationAdapter;
+	private   TwoFieldListAdapter<Attack>  listAdapter;
+	private ListView                       listView;
+	private EditText                       codeEdit;
+	private EditText                       nameEdit;
+	private Spinner                        damageTableSpinner;
+	private Spinner                        specializationSpinner;
 	private Attack currentInstance = new Attack();
 	private boolean isNew = true;
 	private Specialization noSpecialization = new Specialization();
@@ -378,6 +375,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initDamageTableSpinner(View layout) {
 		damageTableSpinner = (Spinner)layout.findViewById(R.id.damage_table_spinner);
+		damageTableAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		damageTableSpinner.setAdapter(damageTableAdapter);
 
 		damageTableRxHandler.getAll()

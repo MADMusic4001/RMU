@@ -49,7 +49,6 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.creature.ArchetypeSkillCategoryListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.ArrayList;
@@ -74,12 +73,9 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	protected SkillCategoryRxHandler                 skillCategoryRxHandler;
 	private   ArrayAdapter<Stat>                     stat1SpinnerAdapter;
 	private   ArrayAdapter<Stat>                     stat2SpinnerAdapter;
-	@Inject
-	protected ArchetypeSkillCategoryListAdapter      primarySkillCategoriesListAdapter;
-	@Inject
-	protected ArchetypeSkillCategoryListAdapter      secondarySkillCategoriesListAdapter;
-	@Inject
-	protected ArchetypeSkillCategoryListAdapter      tertiarySkillCategoriesListAdapter;
+	private   ArrayAdapter<SkillCategory>            primarySkillCategoriesListAdapter;
+	private   ArrayAdapter<SkillCategory>            secondarySkillCategoriesListAdapter;
+	private   ArrayAdapter<SkillCategory>            tertiarySkillCategoriesListAdapter;
 	private   TwoFieldListAdapter<CreatureArchetype> listAdapter;
 	private   ListView                               listView;
 	private   EditText                               nameEdit;
@@ -229,11 +225,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		position = stat1Spinner.getSelectedItemPosition();
 		if(position != -1) {
 			newStat = stat1SpinnerAdapter.getItem(position);
-			if(newStat.equals(realmStat) && currentInstance.getStat1() != null) {
+			if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat1() != null) {
 				currentInstance.setStat1(null);
 				changed = true;
 			}
-			else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
+			else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
 				currentInstance.setStat1(newStat);
 				changed = true;
 			}
@@ -247,11 +243,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		position = stat2Spinner.getSelectedItemPosition();
 		if(position != -1) {
 			newStat = stat2SpinnerAdapter.getItem(position);
-			if(newStat.equals(realmStat) && currentInstance.getStat2() != null) {
+			if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat2() != null) {
 				currentInstance.setStat2(null);
 				changed = true;
 			}
-			else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
+			else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
 				currentInstance.setStat2(newStat);
 				changed = true;
 			}
@@ -297,7 +293,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		return changed;
 	}
 
-	private boolean updateSkillCategoriesList(ListView sourceListView, ArchetypeSkillCategoryListAdapter sourceAdapter,
+	private boolean updateSkillCategoriesList(ListView sourceListView, ArrayAdapter<SkillCategory> sourceAdapter,
 											  List<SkillCategory> currentList) {
 		boolean changed = false;
 		SparseBooleanArray checkedSkillCategories;
@@ -535,6 +531,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
+		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
 		statRxHandler.getAll()
@@ -559,11 +556,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Stat newStat = stat1SpinnerAdapter.getItem(position);
-				if(newStat.equals(realmStat) && currentInstance.getStat1() != null) {
+				if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat1() != null) {
 					currentInstance.setStat1(null);
 					saveItem();
 				}
-				else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
+				else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
 					currentInstance.setStat1(newStat);
 					saveItem();
 				}
@@ -596,6 +593,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initStat2Spinner(View layout) {
 		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
+		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
 		statRxHandler.getAll()
@@ -620,11 +618,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Stat newStat = stat2SpinnerAdapter.getItem(position);
-				if(newStat.equals(realmStat) && currentInstance.getStat2() != null) {
+				if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat2() != null) {
 					currentInstance.setStat2(null);
 					saveItem();
 				}
-				else if(!newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
+				else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
 					currentInstance.setStat2(newStat);
 					saveItem();
 				}
@@ -641,7 +639,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initPrimarySkillCategoriesList(View layout) {
 		primarySkillCategoriesList = (ListView) layout.findViewById(R.id.primary_skills_list);
-
+		primarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		primarySkillCategoriesList.setAdapter(primarySkillCategoriesListAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -680,7 +678,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initSecondarySkillCategoriesList(View layout) {
 		secondarySkillCategoriesList = (ListView) layout.findViewById(R.id.secondary_skills_list);
-
+		secondarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		secondarySkillCategoriesList.setAdapter(secondarySkillCategoriesListAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -719,7 +717,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initTertiarySkillCategoriesList(View layout) {
 		tertiarySkillCategoriesList = (ListView) layout.findViewById(R.id.tertiary_skills_list);
-
+		tertiarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		tertiarySkillCategoriesList.setAdapter(tertiarySkillCategoriesListAdapter);
 
 		skillCategoryRxHandler.getAll()

@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -47,9 +48,6 @@ import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.character.ProfessionSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.RealmSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.SpellListTypeSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import java.util.Collection;
@@ -73,14 +71,10 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	protected SpellListTypeRxHandler         spellListTypeRxHandler;
 	@Inject
 	protected SpellListRxHandler             spellTypeRxHandler;
-	@Inject
-	protected ProfessionSpinnerAdapter       professionSpinnerAdapter;
-	@Inject
-	protected RealmSpinnerAdapter            realm1SpinnerAdapter;
-	@Inject
-	protected RealmSpinnerAdapter            realm2SpinnerAdapter;
-	@Inject
-	protected SpellListTypeSpinnerAdapter    spellListTypeSpinnerAdapter;
+	private   ArrayAdapter<Profession>       professionSpinnerAdapter;
+	private   ArrayAdapter<Realm>            realm1SpinnerAdapter;
+	private   ArrayAdapter<Realm>            realm2SpinnerAdapter;
+	private   ArrayAdapter<SpellListType>    spellListTypeSpinnerAdapter;
 	private   TwoFieldListAdapter<SpellList> listAdapter;
 	private   ListView                       listView;
 	private   EditText                       nameEdit;
@@ -229,7 +223,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		position = realm1Spinner.getSelectedItemPosition();
 		if(position != -1) {
 			realm = realm1SpinnerAdapter.getItem(position);
-			if (!realm.equals(currentInstance.getRealm())) {
+			if (realm != null && !realm.equals(currentInstance.getRealm())) {
 				currentInstance.setRealm(realm);
 				changed = true;
 			}
@@ -238,33 +232,35 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		position = realm2Spinner.getSelectedItemPosition();
 		if(position != -1) {
 			realm = realm2SpinnerAdapter.getItem(position);
-			if(realm.getId() == -1 && currentInstance.getRealm2() != null) {
-				currentInstance.setRealm2(null);
-				changed = true;
-			}
-			else if (realm.getId() != -1 && !realm.equals(currentInstance.getRealm2())) {
-				currentInstance.setRealm2(realm);
-				changed = true;
+			if(realm != null) {
+				if (realm.getId() == -1 && currentInstance.getRealm2() != null) {
+					currentInstance.setRealm2(null);
+					changed = true;
+				} else if (realm.getId() != -1 && !realm.equals(currentInstance.getRealm2())) {
+					currentInstance.setRealm2(realm);
+					changed = true;
+				}
 			}
 		}
 
 		position = professionSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			profession = professionSpinnerAdapter.getItem(position);
-			if(profession.getId() == -1 && currentInstance.getProfession() != null) {
-				currentInstance.setProfession(null);
-				changed = true;
-			}
-			else if (profession.getId() != -1 && !profession.equals(currentInstance.getProfession())) {
-				currentInstance.setProfession(profession);
-				changed = true;
+			if(profession != null) {
+				if (profession.getId() == -1 && currentInstance.getProfession() != null) {
+					currentInstance.setProfession(null);
+					changed = true;
+				} else if (profession.getId() != -1 && !profession.equals(currentInstance.getProfession())) {
+					currentInstance.setProfession(profession);
+					changed = true;
+				}
 			}
 		}
 
 		position = spellListTypeSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			spellListType = spellListTypeSpinnerAdapter.getItem(position);
-			if (!spellListType.equals(currentInstance.getSpellListType())) {
+			if (spellListType != null && !spellListType.equals(currentInstance.getSpellListType())) {
 				currentInstance.setSpellListType(spellListType);
 				changed = true;
 			}
@@ -439,6 +435,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
+		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
 		if(realms != null) {
@@ -469,7 +466,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Realm newRealm = realm1SpinnerAdapter.getItem(position);
-				if(!newRealm.equals(currentInstance.getRealm())) {
+				if(newRealm != null && !newRealm.equals(currentInstance.getRealm())) {
 					currentInstance.setRealm(newRealm);
 					saveItem();
 				}
@@ -481,6 +478,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initRealm2Spinner(View layout) {
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
+		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
 		if(realms != null) {
@@ -513,7 +511,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Realm newRealm = realm2SpinnerAdapter.getItem(position);
-				if(!newRealm.equals(currentInstance.getRealm2())) {
+				if(newRealm != null && !newRealm.equals(currentInstance.getRealm2())) {
 					currentInstance.setRealm2(newRealm);
 					saveItem();
 				}
@@ -525,6 +523,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initProfessionSpinner(View layout) {
 		professionSpinner = (Spinner)layout.findViewById(R.id.profession_spinner);
+		professionSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		professionSpinner.setAdapter(professionSpinnerAdapter);
 
 		professionRxHandler.getAll()
@@ -548,7 +547,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Profession newProfession = professionSpinnerAdapter.getItem(position);
-				if(!newProfession.equals(currentInstance.getProfession())) {
+				if(newProfession != null && !newProfession.equals(currentInstance.getProfession())) {
 					currentInstance.setProfession(newProfession);
 					saveItem();
 				}
@@ -560,6 +559,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initSpellListTypeSpinner(View layout) {
 		spellListTypeSpinner = (Spinner)layout.findViewById(R.id.spell_list_type_spinner);
+		spellListTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		spellListTypeSpinner.setAdapter(spellListTypeSpinnerAdapter);
 
 		spellListTypeRxHandler.getAll()
@@ -582,7 +582,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				SpellListType newSpellListType = spellListTypeSpinnerAdapter.getItem(position);
-				if(!newSpellListType.equals(currentInstance.getSpellListType())) {
+				if(newSpellListType != null && !newSpellListType.equals(currentInstance.getSpellListType())) {
 					currentInstance.setSpellListType(newSpellListType);
 					saveItem();
 				}

@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -48,7 +49,6 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.common.SizeSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.Collection;
@@ -72,8 +72,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	protected SizeRxHandler                sizeRxHandler;
 	@Inject
 	protected StatRxHandler                statRxHandler;
-	@Inject
-	protected SizeSpinnerAdapter           sizeSpinnerAdapter;
+	private   ArrayAdapter<Size>           sizeSpinnerAdapter;
 	private   TwoFieldListAdapter<Race>    listAdapter;
 	private   ListView                     listView;
 	private   EditText                     nameEdit;
@@ -263,7 +262,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 		if(sizeSpinner.getSelectedItemPosition() >= 0) {
 			newSize = sizeSpinnerAdapter.getItem(sizeSpinner.getSelectedItemPosition());
-			if (!newSize.equals(currentInstance.getSize())) {
+			if (newSize != null && !newSize.equals(currentInstance.getSize())) {
 				currentInstance.setSize(newSize);
 				changed = true;
 			}
@@ -604,6 +603,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 	private void initSizeSpinner(View layout) {
 		sizeSpinner = (Spinner)layout.findViewById(R.id.size_spinner);
+		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		sizeSpinner.setAdapter(sizeSpinnerAdapter);
 
 		sizeRxHandler.getAll()
@@ -625,7 +625,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Size newSize = sizeSpinnerAdapter.getItem(position);
-				if(!newSize.equals(currentInstance.getSize())) {
+				if(newSize != null && !newSize.equals(currentInstance.getSize())) {
 					currentInstance.setSize(newSize);
 					saveItem();
 				}

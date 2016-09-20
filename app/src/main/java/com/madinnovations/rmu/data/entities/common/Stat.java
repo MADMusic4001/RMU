@@ -15,8 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Class representing a Rolemaster stat.
@@ -54,12 +54,7 @@ public class Stat {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("abbreviation", abbreviation)
-				.append("name", name)
-				.append("description", description)
-				.toString();
+		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), abbreviation, name);
 	}
 
 	@Override

@@ -15,9 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Talent category attributes
  */
@@ -52,11 +49,7 @@ public class TalentCategory {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("description", description)
-				.toString();
+		return name;
 	}
 
 	@Override

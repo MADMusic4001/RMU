@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -50,11 +51,10 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_critical_result_row;
 	private LayoutInflater layoutInflater;
 	@Inject
-	protected BodyPartRxHandler       bodyPartRxHandler;
+	BodyPartRxHandler       bodyPartRxHandler;
+	private   ArrayAdapter<BodyPart>  bodyPartSpinnerAdapter;
 	@Inject
-	protected BodyPartSpinnerAdapter  bodyPartSpinnerAdapter;
-	@Inject
-	protected CriticalResultRxHandler criticalResultRxHandler;
+	CriticalResultRxHandler criticalResultRxHandler;
 
 	/**
 	 * Creates a new CriticalResultListAdapter instance.
@@ -62,13 +62,14 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public CriticalResultListAdapter(Context context) {
+	CriticalResultListAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 
@@ -101,34 +102,35 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 		holder.currentInstance = criticalResult;
 
 		String rollString;
-		if(criticalResult.getMinRoll() == criticalResult.getMaxRoll()) {
-			rollString = String.valueOf(criticalResult.getMinRoll());
+		if(criticalResult != null) {
+			if (criticalResult.getMinRoll() == criticalResult.getMaxRoll()) {
+				rollString = String.valueOf(criticalResult.getMinRoll());
+			} else {
+				rollString = String.format(getContext().getString(R.string.min_max_roll_value), criticalResult.getMinRoll(),
+						criticalResult.getMaxRoll());
+			}
+			holder.leftRollView.setText(rollString);
+			holder.bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(criticalResult.getBodyPart()));
+			holder.hitsEdit.setText(String.valueOf(criticalResult.getHits()));
+			holder.bleedingEdit.setText(String.valueOf(criticalResult.getBleeding()));
+			holder.fatigueEdit.setText(String.valueOf(criticalResult.getFatigue()));
+			if(criticalResult.getBreakage() == null) {
+				holder.breakageEdit.setText(null);
+			}
+			else {
+				holder.breakageEdit.setText(String.valueOf(criticalResult.getBreakage()));
+			}
+			holder.injuryEdit.setText(String.valueOf(criticalResult.getInjury()));
+			holder.dazedEdit.setText(String.valueOf(criticalResult.getDazed()));
+			holder.stunnedEdit.setText(String.valueOf(criticalResult.getStunned()));
+			holder.noParryEdit.setText(String.valueOf(criticalResult.getNoParry()));
+			holder.staggeredCheckBox.setChecked(criticalResult.isStaggered());
+			holder.knockBackEdit.setText(String.valueOf(criticalResult.getKnockBack()));
+			holder.proneCheckBox.setChecked(criticalResult.isProne());
+			holder.grappledEdit.setText(String.valueOf(criticalResult.getGrappled()));
+			holder.resultTextEdit.setText(criticalResult.getResultText());
+			holder.rightRollView.setText(rollString);
 		}
-		else {
-			rollString = String.format(getContext().getString(R.string.min_max_roll_value), criticalResult.getMinRoll(),
-					criticalResult.getMaxRoll());
-		}
-		holder.leftRollView.setText(rollString);
-		holder.bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(criticalResult.getBodyPart()));
-		holder.hitsEdit.setText(String.valueOf(criticalResult.getHits()));
-		holder.bleedingEdit.setText(String.valueOf(criticalResult.getBleeding()));
-		holder.fatigueEdit.setText(String.valueOf(criticalResult.getFatigue()));
-		if(criticalResult.getBreakage() == null) {
-			holder.breakageEdit.setText(null);
-		}
-		else {
-			holder.breakageEdit.setText(String.valueOf(criticalResult.getBreakage()));
-		}
-		holder.injuryEdit.setText(String.valueOf(criticalResult.getInjury()));
-		holder.dazedEdit.setText(String.valueOf(criticalResult.getDazed()));
-		holder.stunnedEdit.setText(String.valueOf(criticalResult.getStunned()));
-		holder.noParryEdit.setText(String.valueOf(criticalResult.getNoParry()));
-		holder.staggeredCheckBox.setChecked(criticalResult.isStaggered());
-		holder.knockBackEdit.setText(String.valueOf(criticalResult.getKnockBack()));
-		holder.proneCheckBox.setChecked(criticalResult.isProne());
-		holder.grappledEdit.setText(String.valueOf(criticalResult.getGrappled()));
-		holder.resultTextEdit.setText(criticalResult.getResultText());
-		holder.rightRollView.setText(rollString);
 		return rowView;
 	}
 
@@ -201,17 +203,16 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 							}
 							@Override
 							public void onNext(CriticalResult savedCriticalResult) {
-								if(getContext() != null) {
-									String toastString;
-									toastString = getContext().getString(R.string.toast_critical_result_saved);
-									Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-								}
+								String toastString;
+								toastString = getContext().getString(R.string.toast_critical_result_saved);
+								Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
 							}
 						});
 			}
 		}
 
 		private void initBodyPartSpinner() {
+			bodyPartSpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
 			bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
 			bodyPartRxHandler.getAll()
 					.observeOn(AndroidSchedulers.mainThread())

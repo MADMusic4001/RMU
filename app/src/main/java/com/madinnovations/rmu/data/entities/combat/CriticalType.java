@@ -15,9 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Critical Type attributes
  */
@@ -52,11 +49,7 @@ public class CriticalType {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", id)
-                .append("Code", Code)
-                .append("name", name)
-                .toString();
+        return name;
     }
 
     @Override

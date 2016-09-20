@@ -28,8 +28,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
@@ -53,7 +53,6 @@ import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.character.ProfessionCategoryCostListAdapter;
-import com.madinnovations.rmu.view.adapters.spell.RealmSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.ArrayList;
@@ -61,7 +60,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -83,10 +81,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	protected SkillRxHandler                    skillRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler            skillCategoryRxHandler;
-	@Inject
-	protected RealmSpinnerAdapter               realm1SpinnerAdapter;
-	@Inject
-	protected RealmSpinnerAdapter               realm2SpinnerAdapter;
+	private   ArrayAdapter<Realm>               realm1SpinnerAdapter;
+	private   ArrayAdapter<Realm>               realm2SpinnerAdapter;
 	private   ProfessionCategoryCostListAdapter categoryCostListAdapter;
 	private   TwoFieldListAdapter<Profession>   listAdapter;
 	private   ListView                          listView;
@@ -230,23 +226,25 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		}
 
 		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
-		if(newRealm.getId() == -1 && currentInstance.getRealm1() != null) {
-			currentInstance.setRealm1(null);
-			changed = true;
-		}
-		else if(newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm1())) {
-			currentInstance.setRealm1(newRealm);
-			changed = true;
+		if(newRealm != null) {
+			if (newRealm.getId() == -1 && currentInstance.getRealm1() != null) {
+				currentInstance.setRealm1(null);
+				changed = true;
+			} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm1())) {
+				currentInstance.setRealm1(newRealm);
+				changed = true;
+			}
 		}
 
 		newRealm = realm2SpinnerAdapter.getItem(realm2Spinner.getSelectedItemPosition());
-		if(newRealm.getId() == -1 && currentInstance.getRealm2() != null) {
-			currentInstance.setRealm2(null);
-			changed = true;
-		}
-		else if(newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm2())) {
-			currentInstance.setRealm2(newRealm);
-			changed = true;
+		if(newRealm != null) {
+			if (newRealm.getId() == -1 && currentInstance.getRealm2() != null) {
+				currentInstance.setRealm2(null);
+				changed = true;
+			} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm2())) {
+				currentInstance.setRealm2(newRealm);
+				changed = true;
+			}
 		}
 
 		return changed;
@@ -418,6 +416,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
+		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -442,13 +441,14 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Realm newRealm = realm1SpinnerAdapter.getItem(position);
-				if(newRealm.getId() == -1 && currentInstance.getRealm1() != null) {
-					currentInstance.setRealm1(null);
-					saveItem();
-				}
-				else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm1())) {
-					currentInstance.setRealm1(newRealm);
-					saveItem();
+				if(newRealm != null) {
+					if (newRealm.getId() == -1 && currentInstance.getRealm1() != null) {
+						currentInstance.setRealm1(null);
+						saveItem();
+					} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm1())) {
+						currentInstance.setRealm1(newRealm);
+						saveItem();
+					}
 				}
 			}
 			@Override
@@ -459,6 +459,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 
 	private void initRealm2Spinner(View layout) {
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
+		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -483,13 +484,14 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Realm newRealm = realm2SpinnerAdapter.getItem(position);
-				if(newRealm.getId() == -1 && currentInstance.getRealm2() != null) {
-					currentInstance.setRealm2(null);
-					saveItem();
-				}
-				else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm2())) {
-					currentInstance.setRealm2(newRealm);
-					saveItem();
+				if(newRealm != null) {
+					if (newRealm.getId() == -1 && currentInstance.getRealm2() != null) {
+						currentInstance.setRealm2(null);
+						saveItem();
+					} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm2())) {
+						currentInstance.setRealm2(newRealm);
+						saveItem();
+					}
 				}
 			}
 			@Override

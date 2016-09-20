@@ -17,9 +17,6 @@ package com.madinnovations.rmu.data.entities.spells;
 
 import com.madinnovations.rmu.data.entities.common.Stat;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Realm attributes
  */
@@ -55,12 +52,7 @@ public class Realm {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("description", description)
-				.append("stat", stat)
-				.toString();
+		return name;
 	}
 
 	@Override

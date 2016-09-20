@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -42,8 +43,6 @@ import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.CriticalResultListAdapter;
-import com.madinnovations.rmu.view.adapters.combat.CriticalSeveritySpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.combat.CriticalTypeSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -66,12 +65,8 @@ public class CriticalResultsFragment extends Fragment {
 	protected CriticalTypeRxHandler      criticalTypeRxHandler;
 	@Inject
 	protected CriticalResultListAdapter  listAdapter;
-	@Inject
-	protected CriticalTypeSpinnerAdapter criticalTypeFilterSpinnerAdapter;
-	@Inject
-	protected CriticalSeveritySpinnerAdapter criticalSeverityFilterSpinnerAdapter;
-	@Inject
-	protected CriticalTypeSpinnerAdapter criticalTypeSpinnerAdapter;
+	private   ArrayAdapter<CriticalType> criticalTypeFilterSpinnerAdapter;
+	private   ArrayAdapter<Character>    criticalSeverityFilterSpinnerAdapter;
 	private Spinner  criticalTypeFilterSpinner;
 	private Spinner  criticalSeverityFilterSpinner;
 	private ListView listView;
@@ -387,6 +382,7 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initCriticalTypeFilterSpinner(View layout) {
 		criticalTypeFilterSpinner = (Spinner)layout.findViewById(R.id.critical_type_filter_spinner);
+		criticalTypeFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		criticalTypeFilterSpinner.setAdapter(criticalTypeFilterSpinnerAdapter);
 
 		criticalTypeRxHandler.getAll()
@@ -421,6 +417,7 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initCriticalSeverityFilterSpinner(View layout) {
 		criticalSeverityFilterSpinner = (Spinner)layout.findViewById(R.id.critical_severity_filter_spinner);
+		criticalSeverityFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		criticalSeverityFilterSpinner.setAdapter(criticalSeverityFilterSpinnerAdapter);
 
 		criticalSeverityFilterSpinnerAdapter.add('A');
@@ -433,6 +430,7 @@ public class CriticalResultsFragment extends Fragment {
 		criticalSeverityFilterSpinner.setSelection(criticalSeverityFilterSpinnerAdapter.getPosition(criticalSeverityFilter));
 
 		criticalSeverityFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@SuppressWarnings("ConstantConditions")
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 				criticalSeverityFilter = criticalSeverityFilterSpinnerAdapter.getItem(position);

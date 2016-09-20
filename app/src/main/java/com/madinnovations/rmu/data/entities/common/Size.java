@@ -15,8 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Creature size class
@@ -34,8 +34,7 @@ public class Size {
 	/**
 	 * Creates a new Size instance
 	 */
-	public Size() {
-	}
+	public Size() {}
 
 	/**
 	 * Creates a new Size instance with the given id
@@ -60,16 +59,7 @@ public class Size {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("code", code)
-				.append("name", name)
-				.append("examples", examples)
-				.append("minWeight", minWeight)
-				.append("maxWeight", maxWeight)
-				.append("minHeight", minHeight)
-				.append("maxHeight", maxHeight)
-				.toString();
+		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), code, name);
 	}
 
 	@Override

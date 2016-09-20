@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -52,12 +53,6 @@ import com.madinnovations.rmu.data.entities.spells.SpellSubType;
 import com.madinnovations.rmu.data.entities.spells.SpellType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.spell.AreaOfEffectSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.DurationSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.RangeSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.SpellListSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.SpellSubTypeSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.spell.SpellTypeSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import java.util.Collection;
@@ -82,20 +77,13 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	protected SpellTypeRxHandler         spellTypeRxHandler;
 	@Inject
 	protected SpellSubTypeRxHandler      spellSubTypeRxHandler;
-	@Inject
-	protected SpellListSpinnerAdapter    spellListFilterSpinnerAdapter;
-	@Inject
-	protected SpellListSpinnerAdapter    spellListSpinnerAdapter;
-	@Inject
-	protected AreaOfEffectSpinnerAdapter areaOfEffectSpinnerAdapter;
-	@Inject
-	protected DurationSpinnerAdapter     durationSpinnerAdapter;
-	@Inject
-	protected RangeSpinnerAdapter        rangeSpinnerAdapter;
-	@Inject
-	protected SpellTypeSpinnerAdapter    spellTypeSpinnerAdapter;
-	@Inject
-	protected SpellSubTypeSpinnerAdapter spellSubTypeSpinnerAdapter;
+	private   ArrayAdapter<SpellList>    spellListFilterSpinnerAdapter;
+	private   ArrayAdapter<SpellList>    spellListSpinnerAdapter;
+	private   ArrayAdapter<AreaOfEffect> areaOfEffectSpinnerAdapter;
+	private   ArrayAdapter<Duration>     durationSpinnerAdapter;
+	private   ArrayAdapter<Range>        rangeSpinnerAdapter;
+	private   ArrayAdapter<SpellType>    spellTypeSpinnerAdapter;
+	private   ArrayAdapter<SpellSubType> spellSubTypeSpinnerAdapter;
 	private   TwoFieldListAdapter<Spell> listAdapter;
 	private   Spinner                    spellListFilterSpinner;
 	private   ListView                   listView;
@@ -267,7 +255,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		position = spellListSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			spellList = spellListSpinnerAdapter.getItem(position);
-			if(!spellList.equals(currentInstance.getSpellList())) {
+			if(spellList != null && !spellList.equals(currentInstance.getSpellList())) {
 				currentInstance.setSpellList(spellList);
 				changed = true;
 			}
@@ -276,7 +264,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		position = spellTypeSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			spellType = spellTypeSpinnerAdapter.getItem(position);
-			if(!spellType.equals(currentInstance.getSpellType())) {
+			if(spellType != null && !spellType.equals(currentInstance.getSpellType())) {
 				currentInstance.setSpellType(spellType);
 				changed = true;
 			}
@@ -285,7 +273,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		position = spellSubTypeSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			spellSubType = spellSubTypeSpinnerAdapter.getItem(position);
-			if(!spellSubType.equals(currentInstance.getSpellSubType())) {
+			if(spellSubType != null && !spellSubType.equals(currentInstance.getSpellSubType())) {
 				currentInstance.setSpellSubType(spellSubType);
 				changed = true;
 			}
@@ -294,41 +282,44 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		position = areaOfEffectSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			areaOfEffect = areaOfEffectSpinnerAdapter.getItem(position);
-			if(!areaOfEffect.equals(currentInstance.getAreaOfEffect())) {
-				currentInstance.setAreaOfEffect(areaOfEffect);
-				changed = true;
+			if(areaOfEffect != null) {
+				if (!areaOfEffect.equals(currentInstance.getAreaOfEffect())) {
+					currentInstance.setAreaOfEffect(areaOfEffect);
+					changed = true;
+				}
+				params = new int[areaOfEffect.getParameterCount()];
+				changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
+						aoeParam1Edit.getText().toString(), 0);
+				changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
+						aoeParam2Edit.getText().toString(), 1);
+				changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
+						aoeParam3Edit.getText().toString(), 2);
+				changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
+						aoeParam4Edit.getText().toString(), 3);
+				currentInstance.setAreaOfEffectParams(params);
 			}
-			params = new int[areaOfEffect.getParameterCount()];
-			changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
-									   aoeParam1Edit.getText().toString(), 0);
-			changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
-									   aoeParam2Edit.getText().toString(), 1);
-			changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
-									   aoeParam3Edit.getText().toString(), 2);
-			changed |= copyParamToItem(params, currentInstance.getAreaOfEffectParams(),
-									   aoeParam4Edit.getText().toString(), 3);
-			currentInstance.setAreaOfEffectParams(params);
 		}
 
 		position = durationSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			duration = durationSpinnerAdapter.getItem(position);
-			if(!duration.equals(currentInstance.getDuration())) {
-				currentInstance.setDuration(duration);
-				changed = true;
-			}
-			if(duration.getParameterCount() >= 0) {
-				params = new int[duration.getParameterCount()];
-				changed |= copyParamToItem(params, currentInstance.getDurationParams(),
-										   durationParam1Edit.getText().toString(), 0);
-				changed |= copyParamToItem(params, currentInstance.getDurationParams(),
-										   durationParam2Edit.getText().toString(), 1);
-				currentInstance.setDurationParams(params);
-			}
-			else {
-				if(currentInstance.getDurationParams() != null) {
-					currentInstance.setDurationParams(null);
+			if(duration != null) {
+				if (!duration.equals(currentInstance.getDuration())) {
+					currentInstance.setDuration(duration);
 					changed = true;
+				}
+				if (duration.getParameterCount() >= 0) {
+					params = new int[duration.getParameterCount()];
+					changed |= copyParamToItem(params, currentInstance.getDurationParams(),
+							durationParam1Edit.getText().toString(), 0);
+					changed |= copyParamToItem(params, currentInstance.getDurationParams(),
+							durationParam2Edit.getText().toString(), 1);
+					currentInstance.setDurationParams(params);
+				} else {
+					if (currentInstance.getDurationParams() != null) {
+						currentInstance.setDurationParams(null);
+						changed = true;
+					}
 				}
 			}
 		}
@@ -336,26 +327,26 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		position = rangeSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			range = rangeSpinnerAdapter.getItem(position);
-			if(!range.equals(currentInstance.getRange())) {
-				currentInstance.setRange(range);
-				changed = true;
-			}
-			if(range.getParameterCount() >= 0) {
-				if(rangeParamEdit.getText().length() > 0) {
-					param = Integer.valueOf(rangeParamEdit.getText().toString());
-				}
-				else {
-					param = 1;
-				}
-				if(currentInstance.getRangeParam() == null || !param.equals(currentInstance.getRangeParam())) {
-					currentInstance.setRangeParam(param);
+			if(range != null) {
+				if (!range.equals(currentInstance.getRange())) {
+					currentInstance.setRange(range);
 					changed = true;
 				}
-			}
-			else {
-				if(currentInstance.getRangeParam() != null) {
-					currentInstance.setRangeParam(null);
-					changed = true;
+				if (range.getParameterCount() >= 0) {
+					if (rangeParamEdit.getText().length() > 0) {
+						param = Integer.valueOf(rangeParamEdit.getText().toString());
+					} else {
+						param = 1;
+					}
+					if (currentInstance.getRangeParam() == null || !param.equals(currentInstance.getRangeParam())) {
+						currentInstance.setRangeParam(param);
+						changed = true;
+					}
+				} else {
+					if (currentInstance.getRangeParam() != null) {
+						currentInstance.setRangeParam(null);
+						changed = true;
+					}
 				}
 			}
 		}
@@ -552,25 +543,26 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								int position = listAdapter.getPosition(currentInstance);
 								SpellList spellList = spellListFilterSpinnerAdapter.getItem
 										(spellListFilterSpinner.getSelectedItemPosition());
-								if(position >= 0 ) {
-									if (!spellList.getName().equals(savedSpell.getSpellList().getName())
-											&& spellList.getId() !=    -1) {
-										listAdapter.remove(savedSpell);
+								if(spellList != null) {
+									if (position >= 0) {
+										if (!spellList.getName().equals(savedSpell.getSpellList().getName())
+												&& spellList.getId() != -1) {
+											listAdapter.remove(savedSpell);
+											listAdapter.notifyDataSetChanged();
+										} else {
+											LinearLayout v = (LinearLayout) listView.getChildAt(
+													position - listView.getFirstVisiblePosition());
+											if (v != null) {
+												TextView textView = (TextView) v.findViewById(R.id.row_field1);
+												textView.setText(currentInstance.getName());
+												textView = (TextView) v.findViewById(R.id.row_field2);
+												textView.setText(currentInstance.getDescription());
+											}
+										}
+									} else if (spellList.equals(savedSpell.getSpellList()) && spellList.getId() != -1) {
+										listAdapter.add(savedSpell);
 										listAdapter.notifyDataSetChanged();
 									}
-									else {
-										LinearLayout v = (LinearLayout) listView.getChildAt(
-												position - listView.getFirstVisiblePosition());
-										if (v != null) {
-											TextView textView = (TextView) v.findViewById(R.id.row_field1);
-											textView.setText(currentInstance.getName());
-											textView = (TextView) v.findViewById(R.id.row_field2);
-											textView.setText(currentInstance.getDescription());
-										}
-									}
-								} else if (spellList == savedSpell.getSpellList() && spellList.getId() != -1) {
-									listAdapter.add(savedSpell);
-									listAdapter.notifyDataSetChanged();
 								}
 							}
 						}
@@ -580,6 +572,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellListFilterSpinner(View layout) {
 		spellListFilterSpinner = (Spinner)layout.findViewById(R.id.spell_list_filter_spinner);
+		spellListFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		spellListFilterSpinner.setAdapter(spellListFilterSpinnerAdapter);
 
 		final SpellList allSpellLists = new SpellList();
@@ -673,6 +666,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellListSpinner(View layout) {
 		spellListSpinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
+		spellListSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		spellListSpinner.setAdapter(spellListSpinnerAdapter);
 
 		spellListRxHandler.getAll()
@@ -715,6 +709,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellTypeSpinner(View layout) {
 		spellTypeSpinner = (Spinner)layout.findViewById(R.id.spell_type_spinner);
+		spellTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		spellTypeSpinner.setAdapter(spellTypeSpinnerAdapter);
 
 		spellTypeRxHandler.getAll()
@@ -736,7 +731,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				SpellType spellType = spellTypeSpinnerAdapter.getItem(position);
-				if(!spellType.equals(currentInstance.getSpellType())) {
+				if(spellType != null && !spellType.equals(currentInstance.getSpellType())) {
 					currentInstance.setSpellType(spellType);
 					saveItem();
 				}
@@ -753,6 +748,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellSubTypeSpinner(View layout) {
 		spellSubTypeSpinner = (Spinner)layout.findViewById(R.id.spell_sub_type_spinner);
+		spellSubTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		spellSubTypeSpinner.setAdapter(spellSubTypeSpinnerAdapter);
 
 		spellSubTypeRxHandler.getAll()
@@ -776,11 +772,11 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				SpellSubType spellSubType = spellSubTypeSpinnerAdapter.getItem(position);
-				if(spellSubType.getId() == -1 && currentInstance.getSpellSubType() != null) {
+				if(spellSubType != null && spellSubType.getId() == -1 && currentInstance.getSpellSubType() != null) {
 					currentInstance.setSpellSubType(null);
 					saveItem();
 				}
-				else if(spellSubType.getId() != -1 && !spellSubType.equals(currentInstance.getSpellSubType())) {
+				else if(spellSubType != null && spellSubType.getId() != -1 && !spellSubType.equals(currentInstance.getSpellSubType())) {
 					currentInstance.setSpellSubType(spellSubType);
 					saveItem();
 				}
@@ -797,6 +793,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initAreaOfEffectSpinner(View layout) {
 		areaOfEffectSpinner = (Spinner)layout.findViewById(R.id.area_of_effect_spinner);
+		areaOfEffectSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		areaOfEffectSpinner.setAdapter(areaOfEffectSpinnerAdapter);
 
 		areaOfEffectSpinnerAdapter.clear();
@@ -807,7 +804,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				AreaOfEffect areaOfEffect = areaOfEffectSpinnerAdapter.getItem(position);
-				if(!areaOfEffect.equals(currentInstance.getAreaOfEffect())) {
+				if(areaOfEffect != null && !areaOfEffect.equals(currentInstance.getAreaOfEffect())) {
 					currentInstance.setAreaOfEffect(areaOfEffect);
 					updateAreaOfEffectParams();
 					saveItem();
@@ -917,6 +914,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initDurationSpinner(View layout) {
 		durationSpinner = (Spinner)layout.findViewById(R.id.duration_spinner);
+		durationSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		durationSpinner.setAdapter(durationSpinnerAdapter);
 
 		durationSpinnerAdapter.clear();
@@ -927,7 +925,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Duration duration = durationSpinnerAdapter.getItem(position);
-				if(!duration.equals(currentInstance.getDuration())) {
+				if(duration != null && !duration.equals(currentInstance.getDuration())) {
 					currentInstance.setDuration(duration);
 					updateDurationParams();
 					saveItem();
@@ -1020,6 +1018,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initRangeSpinner(View layout) {
 		rangeSpinner = (Spinner)layout.findViewById(R.id.range_spinner);
+		rangeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		rangeSpinner.setAdapter(rangeSpinnerAdapter);
 
 		rangeSpinnerAdapter.clear();
@@ -1030,7 +1029,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Range range = rangeSpinnerAdapter.getItem(position);
-				if(!range.equals(currentInstance.getRange())) {
+				if(range != null && !range.equals(currentInstance.getRange())) {
 					currentInstance.setRange(range);
 					if(range.getParameterCount() == 0) {
 						currentInstance.setRangeParam(null);

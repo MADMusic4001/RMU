@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Spinner;
@@ -42,7 +43,6 @@ import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
-import com.madinnovations.rmu.view.adapters.combat.DamageTableSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
 import java.util.Collection;
@@ -61,8 +61,7 @@ public class DamageResultsFragment extends Fragment {
 	protected DamageResultRowRxHandler  damageResultRowRxHandler;
 	@Inject
 	protected DamageTableRxHandler      damageTableRxHandler;
-	@Inject
-	protected DamageTableSpinnerAdapter damageTableFilterSpinnerAdapter;
+	private   ArrayAdapter<DamageTable> damageTableFilterSpinnerAdapter;
 	@Inject
 	protected DamageResultsGridAdapter  damageResultsGridAdapter;
 	private Spinner  damageTableFilterSpinner;
@@ -224,6 +223,7 @@ public class DamageResultsFragment extends Fragment {
 
 	private void initDamageTableFilterSpinner(View layout) {
 		damageTableFilterSpinner = (Spinner)layout.findViewById(R.id.damage_tables_spinner);
+		damageTableFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		damageTableFilterSpinner.setAdapter(damageTableFilterSpinnerAdapter);
 
 		damageTableRxHandler.getAll()

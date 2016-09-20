@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters.creature;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -47,8 +48,9 @@ public class RacialStatBonusListAdapter extends ArrayAdapter<RacialStatBonus> {
 		this.setRacialStatBonusHandler = setRacialStatBonusHandler;
 	}
 
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView,@NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 
@@ -64,10 +66,12 @@ public class RacialStatBonusListAdapter extends ArrayAdapter<RacialStatBonus> {
 		}
 
 		RacialStatBonus racialStatBonus = getItem(position);
-		holder.currentInstance = racialStatBonus;
-		holder.statNameView.setText(String.format(getContext().getString(R.string.code_name_format_string),
-				racialStatBonus.getStat().getAbbreviation(), racialStatBonus.getStat().getName()));
-		holder.bonusEdit.setText(String.valueOf(racialStatBonus.getBonus()));
+		if(racialStatBonus != null) {
+			holder.currentInstance = racialStatBonus;
+			holder.statNameView.setText(String.format(getContext().getString(R.string.code_name_format_string),
+					racialStatBonus.getStat().getAbbreviation(), racialStatBonus.getStat().getName()));
+			holder.bonusEdit.setText(String.valueOf(racialStatBonus.getBonus()));
+		}
 
 		return rowView;
 	}
@@ -93,15 +97,6 @@ public class RacialStatBonusListAdapter extends ArrayAdapter<RacialStatBonus> {
 				public void afterTextChanged(Editable editable) {
 					if (editable.length() == 0) {
 						bonusEdit.setError(getContext().getString(R.string.validation_creature_variety_bonus_required));
-					}
-					else {
-						try {
-							Short.valueOf(bonusEdit.getText().toString());
-							bonusEdit.setError(null);
-						}
-						catch (NumberFormatException ex) {
-							bonusEdit.setError(getContext().getString(R.string.validation_creature_variety_bonus_required));
-						}
 					}
 				}
 			});
@@ -134,6 +129,6 @@ public class RacialStatBonusListAdapter extends ArrayAdapter<RacialStatBonus> {
 		 *
 		 * @param racialStatBonus  a racial stat bonus instance
 		 */
-		public void setRacialStatBonus(RacialStatBonus racialStatBonus);
+		void setRacialStatBonus(RacialStatBonus racialStatBonus);
 	}
 }

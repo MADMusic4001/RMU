@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -53,14 +54,8 @@ import com.madinnovations.rmu.data.entities.creature.RacialStatBonus;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.SizeSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.TalentNamesListAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentTierListAdapter;
-import com.madinnovations.rmu.view.adapters.creature.CreatureTypeSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.creature.LevelSpreadSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.creature.OutlookSpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.creature.RacialStatBonusListAdapter;
-import com.madinnovations.rmu.view.adapters.spell.RealmSpinnerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.ArrayList;
@@ -96,20 +91,13 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	protected StatRxHandler              statRxHandler;
 	@Inject
 	protected TalentRxHandler            talentRxHandler;
-	@Inject
-	protected CreatureTypeSpinnerAdapter creatureTypeSpinnerAdapter;
-	@Inject
-	protected SizeSpinnerAdapter         sizeSpinnerAdapter;
-	@Inject
-	protected LevelSpreadSpinnerAdapter  levelSpreadSpinnerAdapter;
-	@Inject
-	protected TalentNamesListAdapter     talentNamesListAdapter;
-	@Inject
-	protected RealmSpinnerAdapter        realm1SpinnerAdapter;
-	@Inject
-	protected RealmSpinnerAdapter        realm2SpinnerAdapter;
-	@Inject
-	protected OutlookSpinnerAdapter      outlookSpinnerAdapter;
+	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
+	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
+	private   ArrayAdapter<Character>    levelSpreadSpinnerAdapter;
+	private   ArrayAdapter<Talent>       talentNamesListAdapter;
+	private   ArrayAdapter<Realm>        realm1SpinnerAdapter;
+	private   ArrayAdapter<Realm>        realm2SpinnerAdapter;
+	private   ArrayAdapter<Outlook>      outlookSpinnerAdapter;
 	protected RacialStatBonusListAdapter racialStatBonusListAdapter;
 	protected TalentTierListAdapter      talentTiersListAdapter;
 	private   EditText                   nameEdit;
@@ -187,6 +175,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		super.onResume();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
@@ -231,7 +220,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			position = creatureTypeSpinner.getSelectedItemPosition();
 			if (position != -1) {
 				newType = creatureTypeSpinnerAdapter.getItem(position);
-				if (!newType.equals(varietiesFragment.getCurrentInstance().getType())) {
+				if (newType != null && !newType.equals(varietiesFragment.getCurrentInstance().getType())) {
 					varietiesFragment.getCurrentInstance().setType(newType);
 					changed = true;
 				}
@@ -247,17 +236,19 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 			position = levelSpreadSpinner.getSelectedItemPosition();
 			if (position != -1) {
-				newLevelSpread = levelSpreadSpinnerAdapter.getItem(position);
-				if (newLevelSpread != varietiesFragment.getCurrentInstance().getLevelSpread()) {
-					varietiesFragment.getCurrentInstance().setLevelSpread(newLevelSpread);
-					changed = true;
+				if(levelSpreadSpinnerAdapter.getItem(position) != null) {
+					newLevelSpread = levelSpreadSpinnerAdapter.getItem(position);
+					if (newLevelSpread != varietiesFragment.getCurrentInstance().getLevelSpread()) {
+						varietiesFragment.getCurrentInstance().setLevelSpread(newLevelSpread);
+						changed = true;
+					}
 				}
 			}
 
 			position = sizeSpinner.getSelectedItemPosition();
 			if (position != -1) {
 				newSize = sizeSpinnerAdapter.getItem(position);
-				if (!newSize.equals(varietiesFragment.getCurrentInstance().getSize())) {
+				if (newSize != null && !newSize.equals(varietiesFragment.getCurrentInstance().getSize())) {
 					varietiesFragment.getCurrentInstance().setSize(newSize);
 					changed = true;
 				}
@@ -362,7 +353,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			position = realm1Spinner.getSelectedItemPosition();
 			if (position != -1) {
 				newRealm = realm1SpinnerAdapter.getItem(position);
-				if (!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
+				if (newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
 					varietiesFragment.getCurrentInstance().setRealm1(newRealm);
 					changed = true;
 				}
@@ -371,7 +362,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			position = realm2Spinner.getSelectedItemPosition();
 			if (position != -1) {
 				newRealm = realm2SpinnerAdapter.getItem(position);
-				if (!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
+				if (newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
 					if (newRealm.getId() == -1) {
 						varietiesFragment.getCurrentInstance().setRealm2(null);
 					}
@@ -385,7 +376,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			position = outlookSpinner.getSelectedItemPosition();
 			if (position != -1) {
 				newOutlook = outlookSpinnerAdapter.getItem(position);
-				if (!newOutlook.equals(varietiesFragment.getCurrentInstance().getOutlook())) {
+				if (newOutlook != null && !newOutlook.equals(varietiesFragment.getCurrentInstance().getOutlook())) {
 					varietiesFragment.getCurrentInstance().setOutlook(newOutlook);
 					changed = true;
 				}
@@ -396,19 +387,20 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 				newStatBonusMap = new HashMap<>(checkedItemPositions.size());
 				for (int i = 0; i < checkedItemPositions.size(); i++) {
 					racialStatBonus = racialStatBonusListAdapter.getItem(checkedItemPositions.keyAt(i));
-					if (varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
-						if (!varietiesFragment.getCurrentInstance()
-								.getRacialStatBonuses()
-								.get(racialStatBonus.getStat())
-								.equals(racialStatBonus.getBonus())) {
+					if(racialStatBonus != null) {
+						if (varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
+							if (!varietiesFragment.getCurrentInstance()
+									.getRacialStatBonuses()
+									.get(racialStatBonus.getStat())
+									.equals(racialStatBonus.getBonus())) {
+								changed = true;
+							}
+							varietiesFragment.getCurrentInstance().getRacialStatBonuses().remove(racialStatBonus.getStat());
+						} else {
 							changed = true;
 						}
-						varietiesFragment.getCurrentInstance().getRacialStatBonuses().remove(racialStatBonus.getStat());
+						newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
 					}
-					else {
-						changed = true;
-					}
-					newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
 				}
 				if (!varietiesFragment.getCurrentInstance().getRacialStatBonuses().isEmpty() && !newStatBonusMap.isEmpty()) {
 					changed = true;
@@ -422,19 +414,21 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			newTalentTiersMap = new HashMap<>(talentTiersListAdapter.getCount());
 			for (int i = 0; i < talentTiersListAdapter.getCount(); i++) {
 				newTalentTier = talentTiersListAdapter.getItem(i);
-				if (varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(newTalentTier.getTalent())) {
-					if (!varietiesFragment.getCurrentInstance()
-							.getTalentTiersMap()
-							.get(newTalentTier.getTalent())
-							.equals(newTalentTier.getTier())) {
+				if(newTalentTier != null) {
+					if (varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(
+							newTalentTier.getTalent())) {
+						if (!varietiesFragment.getCurrentInstance()
+								.getTalentTiersMap()
+								.get(newTalentTier.getTalent())
+								.equals(newTalentTier.getTier())) {
+							changed = true;
+						}
+						varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(newTalentTier.getTalent());
+					} else {
 						changed = true;
 					}
-					varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(newTalentTier.getTalent());
+					newTalentTiersMap.put(newTalentTier.getTalent(), newTalentTier.getTier());
 				}
-				else {
-					changed = true;
-				}
-				newTalentTiersMap.put(newTalentTier.getTalent(), newTalentTier.getTier());
 			}
 			if (!varietiesFragment.getCurrentInstance().getTalentTiersMap().isEmpty() && !newTalentTiersMap.isEmpty()) {
 				changed = true;
@@ -556,6 +550,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initCretureTypeSpinner(View layout) {
 		creatureTypeSpinner = (Spinner)layout.findViewById(R.id.creature_type_spinner);
+		creatureTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		creatureTypeSpinner.setAdapter(creatureTypeSpinnerAdapter);
 
 		creatureTypeRxHandler.getAll()
@@ -625,6 +620,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initLevelSpreadSpinner(View layout) {
 		levelSpreadSpinner = (Spinner)layout.findViewById(R.id.level_spread_spinner);
+		levelSpreadSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		levelSpreadSpinner.setAdapter(levelSpreadSpinnerAdapter);
 
 		levelSpreadSpinnerAdapter.clear();
@@ -632,10 +628,11 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		levelSpreadSpinnerAdapter.notifyDataSetChanged();
 
 		levelSpreadSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@SuppressWarnings("ConstantConditions")
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				char newLevelSpread = levelSpreadSpinnerAdapter.getItem(position);
-				if(newLevelSpread != varietiesFragment.getCurrentInstance().getLevelSpread()) {
+				if (newLevelSpread != varietiesFragment.getCurrentInstance().getLevelSpread()) {
 					varietiesFragment.getCurrentInstance().setLevelSpread(newLevelSpread);
 					varietiesFragment.saveItem();
 				}
@@ -647,6 +644,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initSizeSpinner(View layout) {
 		sizeSpinner = (Spinner)layout.findViewById(R.id.size_spinner);
+		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		sizeSpinner.setAdapter(sizeSpinnerAdapter);
 
 		sizeRxHandler.getAll()
@@ -1046,6 +1044,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
+		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -1068,7 +1067,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		realm1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(!realm1SpinnerAdapter.getItem(position).equals(varietiesFragment.getCurrentInstance().getRealm1())) {
+				Realm newRealm = realm1SpinnerAdapter.getItem(position);
+				if(newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
 					varietiesFragment.getCurrentInstance().setRealm1(realm1SpinnerAdapter.getItem(position));
 					varietiesFragment.saveItem();
 				}
@@ -1085,6 +1085,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initRealm2Spinner(View layout) {
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
+		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -1111,7 +1112,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Realm newRealm = realm2SpinnerAdapter.getItem(position);
-				if(!newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
+				if(newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
 					if(newRealm.getId() == -1) {
 						varietiesFragment.getCurrentInstance().setRealm2(null);
 					}
@@ -1133,6 +1134,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initOutlookSpinner(View layout) {
 		outlookSpinner = (Spinner)layout.findViewById(R.id.outlook_spinner);
+		outlookSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		outlookSpinner.setAdapter(outlookSpinnerAdapter);
 
 		outlookRxHandler.getAll()
@@ -1155,7 +1157,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		outlookSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(!outlookSpinnerAdapter.getItem(position).equals(varietiesFragment.getCurrentInstance().getOutlook())) {
+				Outlook outlook = outlookSpinnerAdapter.getItem(position);
+				if(outlook != null && !outlook.equals(varietiesFragment.getCurrentInstance().getOutlook())) {
 					varietiesFragment.getCurrentInstance().setOutlook(outlookSpinnerAdapter.getItem(position));
 					varietiesFragment.saveItem();
 				}
@@ -1205,6 +1208,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initTalentNamesList(View layout) {
 		talentNamesList = (ListView) layout.findViewById(R.id.talents_list);
+		talentNamesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		talentNamesList.setAdapter(talentNamesListAdapter);
 
 		talentRxHandler.getAll()
@@ -1487,8 +1491,10 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 							TalentTier newTalentTier = new TalentTier(newTalent, (short)0);
 							int position = talentTiersListAdapter.getPosition(newTalentTier);
 							TalentTier talentTier = talentTiersListAdapter.getItem(position);
-							varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(talentTier.getTalent());
-							talentTiersListAdapter.remove(talentTier);
+							if(talentTier != null) {
+								varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(talentTier.getTalent());
+								talentTiersListAdapter.remove(talentTier);
+							}
 						}
 						varietiesFragment.saveItem();
 						talentTiersList.clearChoices();

@@ -18,10 +18,6 @@ package com.madinnovations.rmu.view.activities.common;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,7 +28,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextThemeWrapper;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,8 +41,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,15 +56,16 @@ import com.madinnovations.rmu.data.entities.common.ParameterValue;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.DragParameterListAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillSpinnerAdapter;
-import com.madinnovations.rmu.view.adapters.common.TalentCategorySpinnerAdapter;
 import com.madinnovations.rmu.view.adapters.common.TalentParameterListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -86,22 +80,21 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private static final String DRAG_ADD_PARAMETER = "add-parameter";
 	private static final String DRAG_REMOVE_PARAMETER = "remove-parameter";
 	@Inject
-	protected TalentRxHandler talentRxHandler;
+	TalentRxHandler                      talentRxHandler;
 	@Inject
-	TalentCategoryRxHandler talentCategoryRxHandler;
+	TalentCategoryRxHandler              talentCategoryRxHandler;
 	@Inject
-	SkillRxHandler skillRxHandler;
+	SkillRxHandler                       skillRxHandler;
 	@Inject
-	ParameterRxHandler parameterRxHandler;
+	ParameterRxHandler                   parameterRxHandler;
+	private ArrayAdapter<TalentCategory> categorySpinnerAdapter;
+	private ArrayAdapter<Skill>          affectedSkillSpinnerAdapter;
 	@Inject
-	protected TalentCategorySpinnerAdapter categorySpinnerAdapter;
-	private ArrayAdapter<Skill> affectedSkillSpinnerAdapter;
-	@Inject
-	protected DragParameterListAdapter parametersListAdapter;
+	DragParameterListAdapter             parametersListAdapter;
 	@Inject
 	protected TalentParameterListAdapter selectedParametersListAdapter;
-	private TwoFieldListAdapter<Talent> listAdapter;
-	private ArrayAdapter<Effect> effectArrayAdapter;
+	private TwoFieldListAdapter<Talent>  listAdapter;
+	private ArrayAdapter<Effect>         effectArrayAdapter;
 	private ListView listView;
 	private Spinner  categorySpinner;
 	private EditText nameEdit;
@@ -220,6 +213,16 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				}
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	@Override
+	public CharSequence getField1Value(Talent talent) {
+		return talent.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(Talent talent) {
+		return talent.getDescription();
 	}
 
 	private boolean copyViewsToItem() {
@@ -428,6 +431,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initCategorySpinner(View layout) {
 		categorySpinner = (Spinner)layout.findViewById(R.id.category_spinner);
+		categorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		categorySpinner.setAdapter(categorySpinnerAdapter);
 
 		talentCategoryRxHandler.getAll()
@@ -523,7 +527,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initAffectedSkillSpinner(View layout) {
 		affectedSkillSpinner = (Spinner)layout.findViewById(R.id.affected_skill_spinner);
-		affectedSkillSpinnerAdapter = new ArrayAdapter<Skill>(getActivity(), R.layout.spinner_row);
+		affectedSkillSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		affectedSkillSpinner.setAdapter(affectedSkillSpinnerAdapter);
 
 		skillRxHandler.getAll()
@@ -705,9 +709,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initEffectsViews(View layout, LayoutInflater inflater) {
 		LinearLayout effectsList = (LinearLayout)layout.findViewById(R.id.effects_list);
-		View effectRow = (View)inflater.inflate(R.layout.talent_effect_row, null);
+		View effectRow = inflater.inflate(R.layout.talent_effect_row, effectsList, false);
 		Spinner spinner = (Spinner)effectRow.findViewById(R.id.effect_spinner);
-		ArrayAdapter<Effect> adapter = new ArrayAdapter<Effect>(getActivity(), R.layout.spinner_row);
+		ArrayAdapter<Effect> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		adapter.clear();
 		adapter.addAll(Effect.values());
 		adapter.notifyDataSetChanged();
@@ -715,7 +719,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		EditText editText = (EditText)effectRow.findViewById(R.id.value_edit);
 		editText.setText("5");
 		effectsList.addView(effectRow);
-		effectRow = (View)inflater.inflate(R.layout.talent_effect_row, null);
+		effectRow = inflater.inflate(R.layout.talent_effect_row, effectsList, false);
 		editText = (EditText)effectRow.findViewById(R.id.value_edit);
 		editText.setText("10");
 		effectsList.addView(effectRow);
@@ -747,7 +751,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				ClipData dragData = new ClipData(DRAG_ADD_PARAMETER, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN},
 						clipDataItem);
 
-				View.DragShadowBuilder myShadow = new MyDragShadowBuilder(view);
+				List<View> views = new ArrayList<>();
+				views.add(view);
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(views);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -893,40 +899,5 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 			return true;
 		}
-	}
-
-	private static class MyDragShadowBuilder extends View.DragShadowBuilder {
-		private static Drawable shadow;
-
-		public MyDragShadowBuilder(View v) {
-			super(v);
-			shadow = new ColorDrawable(Color.LTGRAY);
-		}
-
-		@Override
-		public void onProvideShadowMetrics (Point size, Point touch) {
-			int width, height;
-
-			width = getView().getWidth() * 3/4;
-			height = getView().getHeight() * 3/4;
-			shadow.setBounds(0, 0, width, height);
-			size.set(width, height);
-			touch.set(width / 2, height / 2);
-		}
-
-		@Override
-		public void onDrawShadow(Canvas canvas) {
-			shadow.draw(canvas);
-		}
-	}
-
-	@Override
-	public CharSequence getField1Value(Talent talent) {
-		return talent.getName();
-	}
-
-	@Override
-	public CharSequence getField2Value(Talent talent) {
-		return talent.getDescription();
 	}
 }

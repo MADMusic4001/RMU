@@ -60,6 +60,11 @@ public enum Duration {
 		this.parameterCount = parameterCount;
 	}
 
+	@Override
+	public String toString() {
+		return text;
+	}
+
 	// Getters
 	public String getText() {
 		return text;
@@ -67,4 +72,5 @@ public enum Duration {
 	public short getParameterCount() {
 		return parameterCount;
 	}
+
 }
