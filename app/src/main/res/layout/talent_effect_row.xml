@@ -33,6 +33,7 @@
       android:layout_toRightOf="@id/effect_label"
       android:layout_toEndOf="@id/effect_label"
       android:layout_centerVertical="true"/>
+
   <TextView
       android:id="@+id/value_label"
       android:layout_width="wrap_content"
@@ -101,8 +102,8 @@
       android:id="@+id/resistance_spinner"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/skill_label"
-      android:layout_toEndOf="@id/skill_label"
+      android:layout_toRightOf="@id/resistance_label"
+      android:layout_toEndOf="@id/resistance_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
   <TextView
