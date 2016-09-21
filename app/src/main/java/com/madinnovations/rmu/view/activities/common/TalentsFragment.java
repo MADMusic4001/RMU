@@ -75,6 +75,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static android.view.View.GONE;
+
 /**
  * Handles interactions with the UI for talents.
  */
@@ -896,6 +898,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		View effectRow = inflater.inflate(R.layout.talent_effect_row, effectsList, false);
 		initEffectSpinner(effectRow, index);
 		initEffectEdit(effectRow, index);
+		setResistancesVisibility(effectRow, GONE);
+		setSkillsVisibility(effectRow, GONE);
+		setStatsVisibility(effectRow, GONE);
 		effectsList.addView(effectRow);
 	}
 
@@ -926,6 +931,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								currentInstance.setAffectedResistances(resistances);
 								currentInstance.setResistBonuses(bonuses);
 								enableResistances(effectsList, index);
+//								setValuesVisibility(effectsList, View.GONE);
+//								setSkillsVisibility(effectsList, View.GONE);
+//								setStatsVisibility(effectsList, View.GONE);
 								break;
 							case STAT_BONUS:
 								enableStats(effectsList, index);
@@ -962,9 +970,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	}
 
 	private void enableResistances(View parent, final int index) {
-		setValuesVisibility(parent, View.GONE);
-		setSkillsVisibility(parent, View.GONE);
-		setStatsVisibility(parent, View.GONE);
+		setValuesVisibility(parent, GONE);
+		setSkillsVisibility(parent, GONE);
+		setStatsVisibility(parent, GONE);
 
 		parent.findViewById(R.id.resistance_label).setVisibility(View.VISIBLE);
 		final Spinner spinner = (Spinner)parent.findViewById(R.id.resistance_spinner);
@@ -1011,15 +1019,15 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	}
 
 	private void enableSkills(View parent, int index) {
-		setValuesVisibility(parent, View.GONE);
-		setResistancesVisibility(parent, View.GONE);
-		setStatsVisibility(parent, View.GONE);
+		setValuesVisibility(parent, GONE);
+		setResistancesVisibility(parent, GONE);
+		setStatsVisibility(parent, GONE);
 	}
 
 	private void enableStats(View parent, int index) {
-		setValuesVisibility(parent, View.GONE);
-		setResistancesVisibility(parent, View.GONE);
-		setSkillsVisibility(parent, View.GONE);
+		setValuesVisibility(parent, GONE);
+		setResistancesVisibility(parent, GONE);
+		setSkillsVisibility(parent, GONE);
 	}
 
 	private void setValuesVisibility(View parent, int visibility) {
