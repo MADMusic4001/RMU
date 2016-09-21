@@ -166,14 +166,16 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				switch (in.nextName()) {
 					case RaceRealmRRModSchema.COLUMN_REALM_ID:
 						newRealm = new Realm(in.nextInt());
+						break;
+					case RaceRealmRRModSchema.COLUMN_MODIFIER:
 						mods = (short)in.nextInt();
-						race.getRealmResistancesModifiers().put(newRealm, mods);
+						break;
 				}
 			}
+			in.endObject();
 			if(newRealm != null) {
 				race.getRealmResistancesModifiers().put(newRealm, mods);
 			}
-			in.endObject();
 		}
 		in.endArray();
 	}
@@ -188,14 +190,16 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				switch (in.nextName()) {
 					case RaceStatModSchema.COLUMN_STAT_ID:
 						newStat = new Stat(in.nextInt());
+						break;
+					case RaceStatModSchema.COLUMN_MODIFIER:
 						mods = (short)in.nextInt();
-						race.getStatModifiers().put(newStat, mods);
+						break;
 				}
 			}
+			in.endObject();
 			if(newStat != null) {
 				race.getStatModifiers().put(newStat, mods);
 			}
-			in.endObject();
 		}
 		in.endArray();
 	}
@@ -210,14 +214,16 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				switch (in.nextName()) {
 					case RaceTalentsSchema.COLUMN_TALENT_ID:
 						newTalent = new Talent(in.nextInt());
+						break;
+					case RaceTalentsSchema.COLUMN_TIERS:
 						tiers = (short)in.nextInt();
-						race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
+						break;
 				}
 			}
+			in.endObject();
 			if(newTalent != null) {
 				race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
 			}
-			in.endObject();
 		}
 		in.endArray();
 	}
@@ -238,10 +244,10 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 						break;
 				}
 			}
+			in.endObject();
 			if(newLocomotionType != null) {
 				race.getLocomotionTypeRatesMap().put(newLocomotionType, rate);
 			}
-			in.endObject();
 		}
 		in.endArray();
 	}

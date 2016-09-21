@@ -720,7 +720,12 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(CreatureVariety.class, creatureVarietySerializer);
 							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);
 							gsonBuilder.registerTypeAdapter(Culture.class, cultureSerializer);
-							gsonBuilder.registerTypeAdapter(DamageResult.class, damageResultSerializer);
+							try {
+								gsonBuilder.registerTypeAdapter(DamageResult.class, damageResultSerializer);
+							}
+							catch (IllegalArgumentException e) {
+								Log.e(LOG_TAG, "Exception caught registering TypeAdapter " + damageResultSerializer, e);
+							}
 							gsonBuilder.registerTypeAdapter(DamageResultRow.class, damageResultRowSerializer);
 							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);

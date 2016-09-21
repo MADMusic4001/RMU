@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * Json serializer and deserializer for the {@link DamageResult} entities
  */
-public class DamageResultSerializer extends TypeAdapter<DamageResult> implements DamageResultSchema {
+public class  DamageResultSerializer extends TypeAdapter<DamageResult> implements DamageResultSchema {
 	@Override
 	public void write(JsonWriter out, DamageResult value) throws IOException {
 		out.beginObject();

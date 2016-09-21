@@ -50,11 +50,11 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceSchema {
-    TalentDao talentDao;
-    LocomotionTypeDao locomotionTypeDao;
-	RealmDao realmDao;
-	SizeDao sizeDao;
-	StatDao statDao;
+    private TalentDao talentDao;
+	private LocomotionTypeDao locomotionTypeDao;
+	private RealmDao realmDao;
+	private SizeDao sizeDao;
+	private StatDao statDao;
 
     /**
      * Creates a new instance of RaceDaoDbImpl
@@ -137,6 +137,8 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		instance.setAverageWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_WEIGHT)));
 		instance.setPoundsPerInch(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_POUNDS_PER_INCH)));
 		instance.setSize(sizeDao.getById(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
+		instance.setRealmResistancesModifiers(getRealmResistanceModifiers(instance.getId()));
+		instance.setStatModifiers(getStatModifiers(instance.getId()));
 		instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
 		instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
 
@@ -158,8 +160,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		values.put(COLUMN_AVERAGE_HEIGHT, instance.getAverageHeight());
 		values.put(COLUMN_AVERAGE_WEIGHT, instance.getAverageWeight());
 		values.put(COLUMN_POUNDS_PER_INCH, instance.getPoundsPerInch());
-		instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
-		instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
 		return values;
 	}
 

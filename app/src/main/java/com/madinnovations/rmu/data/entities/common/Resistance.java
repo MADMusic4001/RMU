@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Magic/Physical element attribute
  */
@@ -37,6 +40,11 @@ public enum Resistance {
 		this.text = text;
 		this.elemental = elemental;
 		this.magical = magical;
+	}
+
+	@Override
+	public String toString() {
+		return text;
 	}
 
 	// Getters

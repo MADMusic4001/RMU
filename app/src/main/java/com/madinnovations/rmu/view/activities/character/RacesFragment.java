@@ -52,6 +52,8 @@ import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -65,11 +67,11 @@ import rx.schedulers.Schedulers;
 public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Race> {
 	private static final String LOG_TAG = "RacesFragment";
 	@Inject
-	protected RaceRxHandler                raceRxHandler;
+	protected RaceRxHandler       raceRxHandler;
 	@Inject
-	protected RealmRxHandler               realmRxHandler;
+	protected RealmRxHandler      realmRxHandler;
 	@Inject
-	protected SizeRxHandler                sizeRxHandler;
+	protected SizeRxHandler       sizeRxHandler;
 	@Inject
 	protected StatRxHandler                statRxHandler;
 	private   ArrayAdapter<Size>           sizeSpinnerAdapter;
@@ -86,10 +88,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	private   EditText                     averageHeightEdit;
 	private   EditText                     averageWeightEdit;
 	private   EditText                     poundsPerInchEdit;
-	private   TextView[]                   statTextViews;
-	private   EditText[]                   statEditViews;
-	private   TextView[]                   rrTextViews;
-	private   EditText[]                   rrEditViews;
+	private   Map<Stat, EditText>          statEditViews;
+	private   Map<Realm, EditText>         rrEditViews;
+	private   EditText                     physicalRREdit;
 	private   Race              currentInstance = new Race();
 	private   boolean           isNew           = true;
 
@@ -204,6 +205,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		boolean changed = false;
 		String newString;
 		short newShort;
+		Short oldShort;
 		float newFloat;
 		Size newSize;
 
@@ -244,7 +246,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		}
 
 		if(baseHitsEdit.getText().length() > 0) {
-			Log.d(LOG_TAG, "text = " + baseHitsEdit.getText());
 			newShort = Short.valueOf(baseHitsEdit.getText().toString());
 			if(newShort != currentInstance.getBaseHits()) {
 				currentInstance.setBaseHits(newShort);
@@ -300,6 +301,45 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			}
 		}
 
+		for(Map.Entry<Stat, EditText> entry : statEditViews.entrySet()) {
+			EditText editText = entry.getValue();
+			oldShort = currentInstance.getStatModifiers().get(entry.getKey());
+			if(editText.getText().length() > 0) {
+				newShort = Short.valueOf(editText.getText().toString());
+				if(oldShort == null || newShort != oldShort) {
+					currentInstance.getStatModifiers().put(entry.getKey(), newShort);
+					changed = true;
+				}
+			}
+			else if(oldShort != null) {
+				currentInstance.getStatModifiers().remove(entry.getKey());
+				changed= true;
+			}
+		}
+
+		for(Map.Entry<Realm, EditText> entry : rrEditViews.entrySet()) {
+			EditText editText = entry.getValue();
+			oldShort = currentInstance.getRealmResistancesModifiers().get(entry.getKey());
+			if(editText.getText().length() > 0) {
+				newShort = Short.valueOf(editText.getText().toString());
+				if(oldShort == null || newShort != oldShort) {
+					currentInstance.getRealmResistancesModifiers().put(entry.getKey(), newShort);
+					changed = true;
+				}
+			}
+			else if(oldShort != null) {
+				currentInstance.getRealmResistancesModifiers().remove(entry.getKey());
+				changed= true;
+			}
+		}
+
+		if(physicalRREdit.getText().length() > 0) {
+			newShort = Short.valueOf(physicalRREdit.getText().toString());
+			if(newShort != currentInstance.getPhysicalResistanceModifier()) {
+				currentInstance.setPhysicalResistanceModifier(newShort);
+				changed = true;
+			}
+		}
 		return changed;
 	}
 
@@ -341,6 +381,26 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 		poundsPerInchEdit.setText(String.valueOf(currentInstance.getPoundsPerInch()));
 		poundsPerInchEdit.setError(null);
+
+		for(Map.Entry<Stat, EditText> entry : statEditViews.entrySet()) {
+			if(currentInstance.getStatModifiers().get(entry.getKey()) == null) {
+				entry.getValue().setText(null);
+			}
+			else {
+				entry.getValue().setText(String.valueOf(currentInstance.getStatModifiers().get(entry.getKey())));
+			}
+		}
+
+		for(Map.Entry<Realm, EditText> entry : rrEditViews.entrySet()) {
+			if(currentInstance.getRealmResistancesModifiers().get(entry.getKey()) == null) {
+				entry.getValue().setText(null);
+			}
+			else {
+				entry.getValue().setText(String.valueOf(currentInstance.getRealmResistancesModifiers().get(entry.getKey())));
+			}
+		}
+
+		physicalRREdit.setText(String.valueOf(currentInstance.getPhysicalResistanceModifier()));
 	}
 
 	private void deleteItem(final Race item) {
@@ -772,35 +832,52 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					}
 					@Override
 					public void onNext(Collection<Stat> stats) {
-						statTextViews = new TextView[stats.size()];
-						statEditViews = new EditText[stats.size()];
-						int index = 0;
+						statEditViews = new HashMap<>(stats.size());
+						int i = 0;
 						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT,
 								1f);
-						TextView textView;
-						EditText editText;
 						int numStats = stats.size();
 						for(Stat stat : stats) {
-							textView = new TextView(getActivity());
-							textView.setLayoutParams(params);
-							textView.setText(stat.getName());
-							statTextViews[index] = textView;
-							editText = new EditText(getActivity());
-							editText.setHint(getString(R.string.hint_race_stat_mod));
-							editText.setLayoutParams(params);
-							statEditViews[index] = editText;
-							if(numStats <= 6  || index < numStats/2) {
-								statModLabels1.addView(textView);
-								statModEdits1.addView(editText);
+							if(numStats <= 6  || i < numStats/2) {
+								initStatViews(stat, params, statModLabels1, statModEdits1);
 							}
 							else {
-								statModLabels2.addView(textView);
-								statModEdits2.addView(editText);
+								initStatViews(stat, params, statModLabels2, statModEdits2);
 							}
-							index++;
+							i++;
 						}
 					}
 				});
+	}
+
+	private void initStatViews(final Stat stat, LinearLayout.LayoutParams params, LinearLayout labelsRow, LinearLayout editsRow) {
+		TextView textView = new TextView(getActivity());
+		textView.setLayoutParams(params);
+		textView.setText(stat.getName());
+
+		final EditText editText = new EditText(getActivity());
+		editText.setHint(getString(R.string.hint_race_stat_mod));
+		editText.setLayoutParams(params);
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					short newShort = Short.valueOf(editText.getText().toString());
+					if(currentInstance.getStatModifiers().get(stat) == null ||
+							newShort != currentInstance.getStatModifiers().get(stat)) {
+						currentInstance.getStatModifiers().put(stat, newShort);
+						saveItem();
+					}
+				}
+				else if(currentInstance.getStatModifiers().get(stat) != null) {
+					currentInstance.getStatModifiers().remove(stat);
+					saveItem();
+				}
+			}
+		});
+		statEditViews.put(stat, editText);
+		labelsRow.addView(textView);
+		editsRow.addView(editText);
 	}
 
 	private void initRRMods(View layout) {
@@ -810,45 +887,86 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		realmRxHandler.getAll()
 				.subscribe(new Subscriber<Collection<Realm>>() {
 					@Override
-					public void onCompleted() {
-
-					}
+					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception caught getting all Realm instances", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
-						rrTextViews = new TextView[realms.size()];
-						rrEditViews = new EditText[realms.size()];
-						int index = 0;
-						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT,
-																					   1f);
+						rrEditViews = new HashMap<>(realms.size());
+						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0,
+																						 ActionBar.LayoutParams.WRAP_CONTENT,
+																						 1f);
 						TextView textView;
-						EditText editText;
 						for(Realm realm : realms) {
-							textView = new TextView(getActivity());
-							textView.setLayoutParams(params);
-							textView.setText(realm.getName());
-							rrModLabels.addView(textView);
-							rrTextViews[index] = textView;
-							editText = new EditText(getActivity());
-							editText.setHint(getString(R.string.hint_race_rr_mod));
-							editText.setLayoutParams(params);
-							rrModEdits.addView(editText);
-							rrEditViews[index] = editText;
-							index++;
+							initRealmViews(realm, params, rrModLabels, rrModEdits);
 						}
 						textView = new TextView(getActivity());
 						textView.setLayoutParams(params);
 						textView.setText(getString(R.string.label_physical_rr));
 						rrModLabels.addView(textView);
-						editText = new EditText(getActivity());
-						editText.setLayoutParams(params);
-						editText.setHint(getString(R.string.hint_race_physical_rr));
-						rrModEdits.addView(editText);
+						physicalRREdit = new EditText(getActivity());
+						physicalRREdit.setLayoutParams(params);
+						physicalRREdit.setHint(getString(R.string.hint_race_physical_rr));
+						rrModEdits.addView(physicalRREdit);
+						physicalRREdit.addTextChangedListener(new TextWatcher() {
+							@Override
+							public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+							@Override
+							public void onTextChanged(CharSequence s, int start, int before, int count) {}
+							@Override
+							public void afterTextChanged(Editable s) {
+								if (s.length() == 0) {
+									physicalRREdit.setError(getString(R.string.validation_race_phyiscal_rr_required));
+								}
+							}
+						});
+						physicalRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if(physicalRREdit.getText().length() > 0) {
+									short newShort = Short.valueOf(physicalRREdit.getText().toString());
+									if(newShort != currentInstance.getPhysicalResistanceModifier()) {
+										currentInstance.setPhysicalResistanceModifier(newShort);
+										saveItem();
+									}
+								}
+							}
+						});
 					}
 				});
+	}
+
+	private void initRealmViews(final Realm realm, LinearLayout.LayoutParams params, LinearLayout labelsRow,
+								LinearLayout editsRow) {
+		TextView textView = new TextView(getActivity());
+		textView.setLayoutParams(params);
+		textView.setText(realm.getName());
+
+		final EditText editText = new EditText(getActivity());
+		editText.setHint(getString(R.string.hint_race_rr_mod));
+		editText.setLayoutParams(params);
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					short newShort = Short.valueOf(editText.getText().toString());
+					if(currentInstance.getRealmResistancesModifiers().get(realm) == null ||
+							newShort != currentInstance.getRealmResistancesModifiers().get(realm)) {
+						currentInstance.getRealmResistancesModifiers().put(realm, newShort);
+						saveItem();
+					}
+				}
+				else if(currentInstance.getRealmResistancesModifiers().get(realm) != null) {
+					currentInstance.getRealmResistancesModifiers().remove(realm);
+					saveItem();
+				}
+			}
+		});
+		rrEditViews.put(realm, editText);
+		labelsRow.addView(textView);
+		editsRow.addView(editText);
 	}
 
 	private void initListView(View layout) {

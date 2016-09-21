@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
