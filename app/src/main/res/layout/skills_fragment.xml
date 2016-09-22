@@ -83,6 +83,22 @@
             android:layout_alignTop="@id/requires_specialization_check_box"
             android:checked="true"
             android:text="@string/label_use_category_stats"/>
+        <CheckBox
+            android:id="@+id/requires_concentration_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/use_cat_stats_check_box"
+            android:layout_toEndOf="@id/use_cat_stats_check_box"
+            android:layout_alignTop="@id/requires_specialization_check_box"
+            android:text="@string/label_requires_concentration"/>
+        <CheckBox
+            android:id="@+id/is_lore_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/requires_concentration_check_box"
+            android:layout_toEndOf="@id/requires_concentration_check_box"
+            android:layout_alignTop="@id/requires_specialization_check_box"
+            android:text="@string/label_is_lore"/>
 
         <Spinner
             android:id="@+id/stat1_spinner"

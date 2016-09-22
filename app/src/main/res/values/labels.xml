@@ -90,6 +90,7 @@
   <string name="label_code">Code</string>
   <string name="label_description">Description</string>
   <string name="label_flaw">Flaw</string>
+  <string name="label_is_lore">- Lore Skill?</string>
   <string name="label_move_right">&gt;&gt;</string>
   <string name="label_move_left">&lt;&lt;</string>
   <string name="label_name">Name</string>
@@ -97,10 +98,12 @@
   <string name="label_per_tier">Per Tier</string>
   <string name="label_physical_rr">Physical</string>
   <string name="label_range">Range</string>
+  <string name="label_requires_concentration">- Requires Concentration?</string>
+  <string name="label_requires_specialization">- Requires Specialization?</string>
   <string name="label_rr_mods">Resistance Roll Modifications</string>
   <string name="label_situational">Situational</string>
   <string name="label_stat_mods">Stat Modifications</string>
-  <string name="label_use_category_stats">Use Category Stats</string>
+  <string name="label_use_category_stats">- Use Category Stats?</string>
   <string name="label_value">Value</string>
 
   <!-- Menu labels -->
@@ -257,7 +260,6 @@
   <string name="label_ranks">Ranks</string>
   <string name="label_non_realm_stat">Non-Realm Stat</string>
   <string name="label_realm_stats">Realm Stats</string>
-  <string name="label_requires_specialization">Requires Specialization</string>
   <string name="label_roll">Roll</string>
   <string name="label_secondary_skills">Secondary Skills</string>
   <string name="label_size_code">Size Code</string>

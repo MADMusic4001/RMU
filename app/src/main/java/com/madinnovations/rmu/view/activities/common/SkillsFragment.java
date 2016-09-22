@@ -17,9 +17,8 @@ package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -48,6 +47,8 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
+import com.madinnovations.rmu.view.utils.CheckBoxUtils;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +64,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for skills.
  */
-public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Skill> {
+public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Skill>, EditTextUtils.ValuesCallback,
+		CheckBoxUtils.ValuesCallback {
 	private static final String LOG_TAG = "SkillsFragment";
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
@@ -84,6 +86,8 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	private   Spinner                     skillCategorySpinner;
 	private   CheckBox                    useCategoryStatsCheckBox;
 	private   CheckBox                    requiresSpecializationCheckBox;
+	private   CheckBox                    requiresConcentrationCheckBox;
+	private   CheckBox                    isLoreCheckBox;
 	private   Spinner                     stat1Spinner;
 	private   Spinner                     stat2Spinner;
 	private   Spinner                     stat3Spinner;
@@ -102,11 +106,17 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_skill_description));
 
 		initSkillCategoryFilterSpinner(layout);
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_skill_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+				R.string.validation_skill_description_required);
+
+//		initNameEdit(layout);
+//		initDescriptionEdit(layout);
 		initSkillCategorySpinner(layout);
 		initUseCategoryStatsCheckBox(layout);
-		initRequiresSpecializationCheckBox(layout);
+		requiresSpecializationCheckBox = CheckBoxUtils.initCheckBox(layout, getActivity(), this, R.id.requires_specialization_check_box);
+		requiresConcentrationCheckBox = CheckBoxUtils.initCheckBox(layout, getActivity(), this, R.id.requires_concentration_check_box);
+		isLoreCheckBox = CheckBoxUtils.initCheckBox(layout, getActivity(), this, R.id.is_lore_check_box);
 		initStat1Spinner(layout);
 		initStat2Spinner(layout);
 		initStat3Spinner(layout);
@@ -184,6 +194,81 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		if(currentInstance != null) {
+			switch (editTextId) {
+				case R.id.name_edit:
+					result = currentInstance.getName();
+					break;
+				case R.id.description_edit:
+					result = currentInstance.getDescription();
+					break;
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		if(currentInstance != null) {
+			switch (editTextId) {
+				case R.id.name_edit:
+					currentInstance.setName(newString);
+					saveItem();
+					break;
+				case R.id.description_edit:
+					currentInstance.setDescription(newString);
+					saveItem();
+					break;
+			}
+		}
+	}
+
+	@Override
+	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
+		boolean result = false;
+
+		if(currentInstance != null) {
+			switch (checkBoxId) {
+				case R.id.requires_specialization_check_box:
+					result = currentInstance.isRequiresSpecialization();
+					break;
+				case R.id.requires_concentration_check_box:
+					result = currentInstance.isRequiresConcentration();
+					break;
+				case R.id.is_lore_check_box:
+					result = currentInstance.isLore();
+					break;
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
+		if(currentInstance != null) {
+			switch (checkBoxId) {
+				case R.id.requires_specialization_check_box:
+					currentInstance.setRequiresSpecialization(newBoolean);
+					saveItem();
+					break;
+				case R.id.requires_concentration_check_box:
+					currentInstance.setRequiresConcentration(newBoolean);
+					saveItem();
+					break;
+				case R.id.is_lore_check_box:
+					currentInstance.setLore(newBoolean);
+					saveItem();
+					break;
+			}
+		}
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		Stat newStat;
@@ -220,6 +305,19 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		newBoolean = requiresSpecializationCheckBox.isChecked();
 		if(newBoolean != currentInstance.isRequiresSpecialization()) {
 			currentInstance.setRequiresSpecialization(newBoolean);
+			changed = true;
+		}
+
+		newBoolean = requiresConcentrationCheckBox.isChecked();
+		if(newBoolean != currentInstance.isRequiresConcentration()) {
+			currentInstance.setRequiresConcentration(newBoolean);
+			changed = true;
+		}
+
+		newBoolean = isLoreCheckBox.isChecked();
+		if(newBoolean != currentInstance.isLore()) {
+			currentInstance.setLore(newBoolean);
+			changed = true;
 		}
 
 		newBoolean = useCategoryStatsCheckBox.isChecked();
@@ -283,6 +381,9 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		}
 
 		requiresSpecializationCheckBox.setChecked(currentInstance.isRequiresSpecialization());
+		requiresConcentrationCheckBox.setChecked(currentInstance.isRequiresConcentration());
+		isLoreCheckBox.setChecked(currentInstance.isLore());
+
 		useCategoryStatsCheckBox.setChecked(currentInstance.isUseCategoryStats());
 		if(currentInstance.isUseCategoryStats()) {
 			stat1Spinner.setVisibility(View.GONE);
@@ -442,61 +543,61 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		});
 	}
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_skill_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
+//	private void initNameEdit(View layout) {
+//		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
+//		nameEdit.addTextChangedListener(new TextWatcher() {
+//			@Override
+//			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+//			@Override
+//			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+//			@Override
+//			public void afterTextChanged(Editable editable) {
+//				if (editable.length() == 0 && nameEdit != null) {
+//					nameEdit.setError(getString(R.string.validation_skill_name_required));
+//				}
+//			}
+//		});
+//		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//			@Override
+//			public void onFocusChange(View view, boolean hasFocus) {
+//				if(!hasFocus) {
+//					final String newName = nameEdit.getText().toString();
+//					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
+//						currentInstance.setName(newName);
+//						saveItem();
+//					}
+//				}
+//			}
+//		});
+//	}
 
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_skill_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
+//	private void initDescriptionEdit(View layout) {
+//		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
+//		descriptionEdit.addTextChangedListener(new TextWatcher() {
+//			@Override
+//			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+//			@Override
+//			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+//			@Override
+//			public void afterTextChanged(Editable editable) {
+//				if (editable.length() == 0 && descriptionEdit != null) {
+//					descriptionEdit.setError(getString(R.string.validation_skill_description_required));
+//				}
+//			}
+//		});
+//		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//			@Override
+//			public void onFocusChange(View view, boolean hasFocus) {
+//				if(!hasFocus) {
+//					final String newDescription = descriptionEdit.getText().toString();
+//					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
+//						currentInstance.setDescription(newDescription);
+//						saveItem();
+//					}
+//				}
+//			}
+//		});
+//	}
 
 	private void initSkillCategorySpinner(View layout) {
 		skillCategorySpinner = (Spinner)layout.findViewById(R.id.skill_category_spinner);
@@ -564,18 +665,18 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		});
 	}
 
-	private void initRequiresSpecializationCheckBox(View layout) {
-		requiresSpecializationCheckBox = (CheckBox)layout.findViewById(R.id.requires_specialization_check_box);
-		requiresSpecializationCheckBox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if(requiresSpecializationCheckBox.isChecked() != currentInstance.isRequiresSpecialization()) {
-					currentInstance.setRequiresSpecialization(requiresSpecializationCheckBox.isChecked());
-					saveItem();
-				}
-			}
-		});
-	}
+//	private void initRequiresSpecializationCheckBox(View layout) {
+//		requiresSpecializationCheckBox = (CheckBox)layout.findViewById(R.id.requires_specialization_check_box);
+//		requiresSpecializationCheckBox.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//				if(requiresSpecializationCheckBox.isChecked() != currentInstance.isRequiresSpecialization()) {
+//					currentInstance.setRequiresSpecialization(requiresSpecializationCheckBox.isChecked());
+//					saveItem();
+//				}
+//			}
+//		});
+//	}
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
