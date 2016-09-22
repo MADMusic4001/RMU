@@ -15,9 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +28,9 @@ public class Skill {
 	private SkillCategory category               = null;
 	private boolean       requiresSpecialization = false;
 	private boolean       useCategoryStats       = true;
+	private boolean       requiresConcentration  = false;
+	private boolean       lore                   = false;  // Used to allow skill ranks > 2x level with Intense Training
+	                                                       // optional rule
 	private List<Stat>    stats                  = new ArrayList<>();
 
 	/**
@@ -114,6 +114,18 @@ public class Skill {
 	}
 	public void setUseCategoryStats(boolean useCategoryStats) {
 		this.useCategoryStats = useCategoryStats;
+	}
+	public boolean isRequiresConcentration() {
+		return requiresConcentration;
+	}
+	public void setRequiresConcentration(boolean requiresConcentration) {
+		this.requiresConcentration = requiresConcentration;
+	}
+	public boolean isLore() {
+		return lore;
+	}
+	public void setLore(boolean lore) {
+		this.lore = lore;
 	}
 	public List<Stat> getStats() {
 		return stats;

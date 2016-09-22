@@ -36,15 +36,24 @@ public class Item {
         return name != null && !name.isEmpty() && description != null && !description.isEmpty();
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", id)
-                .append("name", name)
-                .append("description", description)
-                .append("weight", weight)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	/**
+	 * Debug output of this instance.
+	 *
+	 * @return a String of this instance's attributes.
+	 */
+	public String debugToString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("weight", weight)
+				.toString();
+	}
 
     @Override
     public boolean equals(Object o) {

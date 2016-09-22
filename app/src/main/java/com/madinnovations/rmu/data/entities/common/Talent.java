@@ -15,30 +15,32 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import com.madinnovations.rmu.data.entities.combat.Resistance;
+
 /**
  * Talent data
  */
 public class Talent {
-	private int id = -1;
-	private TalentCategory category = null;
-	private String name = null;
-	private String description = null;
-	private boolean flaw = false;
-	private Effect[] effects = new Effect[0];
-	private short[] effectValues = new short[0];
-	private Skill[] affectedSkills = new Skill[0];
-	private short[] skillBonuses = new short[0];
-	private Resistance[] affectedResistances = new Resistance[0];
-	private short[] resistBonuses = new short[0];
-	private Stat[] affectedStats = new Stat[0];
-	private short[] statBonuses = new short[0];
-	private short tier = 1;
-	private short maxTiers = 1;
-	private short dpCost = 5;
-	private short dpCostPerTier = 0;
-	private boolean situational = false;
-	private short actionPoints = 0;
-	private ParameterValue[] parameterValues = new ParameterValue[0];
+	private int              id                  = -1;
+	private TalentCategory   category            = null;
+	private String           name                = null;
+	private String           description         = null;
+	private boolean          flaw                = false;
+	private Effect[]         effects             = new Effect[0];
+	private short[]          effectValues        = new short[0];
+	private Skill[]          affectedSkills      = new Skill[0];
+	private short[]          skillBonuses        = new short[0];
+	private Resistance[]     affectedResistances = new Resistance[0];
+	private short[]          resistBonuses       = new short[0];
+	private Stat[]           affectedStats       = new Stat[0];
+	private short[]          statBonuses         = new short[0];
+	private short            tier                = 1;
+	private short            maxTiers            = 1;
+	private short            dpCost              = 5;
+	private short            dpCostPerTier       = 0;
+	private boolean          situational         = false;
+	private short            actionPoints        = 0;
+	private ParameterValue[] parameterValues     = new ParameterValue[0];
 
 	/**
 	 * Default no-arg constructor

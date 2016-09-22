@@ -25,8 +25,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Weapon attributes
  */
 public class Weapon extends Item {
-    private Skill combatSkill;
-    private DamageTable damageTable;
+    private Skill combatSkill = null;
+    private DamageTable damageTable = null;
+    private boolean braceable = false;
 
     /**
      * Checks the validity of the Weapon instance.
@@ -37,15 +38,19 @@ public class Weapon extends Item {
         return combatSkill != null && damageTable != null;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("combatSkill", combatSkill)
-                .append("damageTable", damageTable)
-                .toString();
-    }
+	/**
+	 * Debug output of this instance.
+	 *
+	 * @return a String of this instance's attributes.
+	 */
+	public String debugToString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("combatSkill", combatSkill)
+				.append("damageTable", damageTable)
+				.toString();
+	}
 
-    // Getters and setters
+	// Getters and setters
     public Skill getCombatSkill() {
         return combatSkill;
     }

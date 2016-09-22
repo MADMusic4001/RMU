@@ -39,6 +39,8 @@ public class SkillSerializer extends TypeAdapter<Skill> implements SkillSchema {
 		out.name(COLUMN_CATEGORY_ID).value(value.getCategory().getId());
 		out.name(COLUMN_REQUIRES_SPECIALIZATION).value(value.isRequiresSpecialization());
 		out.name(COLUMN_USE_CATEGORY_STATS).value(value.isUseCategoryStats());
+		out.name(COLUMN_REQUIRES_CONCENTRATION).value(value.isRequiresConcentration());
+		out.name(COLUMN_IS_LORE).value(value.isLore());
 
 		if(value.getStats() != null && !value.getStats().isEmpty()) {
 			out.name(SkillStatsSchema.TABLE_NAME).beginArray();
@@ -74,6 +76,12 @@ public class SkillSerializer extends TypeAdapter<Skill> implements SkillSchema {
 					break;
 				case COLUMN_USE_CATEGORY_STATS:
 					skill.setUseCategoryStats(in.nextBoolean());
+					break;
+				case COLUMN_REQUIRES_CONCENTRATION:
+					skill.setRequiresConcentration(in.nextBoolean());
+					break;
+				case COLUMN_IS_LORE:
+					skill.setLore(in.nextBoolean());
 					break;
 				case SkillStatsSchema.TABLE_NAME:
 					in.beginArray();

@@ -400,7 +400,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			}
 		}
 
-		physicalRREdit.setText(String.valueOf(currentInstance.getPhysicalResistanceModifier()));
+		physicalRREdit.setText(String.valueOf(currentInstance));
 	}
 
 	private void deleteItem(final Race item) {

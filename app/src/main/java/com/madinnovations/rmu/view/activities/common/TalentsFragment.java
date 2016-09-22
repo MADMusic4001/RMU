@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.drawable.Drawable;
@@ -52,10 +53,10 @@ import com.madinnovations.rmu.controller.rxhandler.common.ParameterRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
+import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Effect;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.ParameterValue;
-import com.madinnovations.rmu.data.entities.common.Resistance;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
@@ -97,20 +98,20 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	@Inject
 	protected TalentParameterListAdapter selectedParametersListAdapter;
 	private TwoFieldListAdapter<Talent>  listAdapter;
-	private ListView listView;
-	private Spinner  categorySpinner;
-	private EditText nameEdit;
-	private EditText descriptionEdit;
-	private EditText initialCostEdit;
-	private EditText costPerTierEdit;
-	private EditText bonusPerTierEdit;
-	private CheckBox flawCheckbox;
-	private CheckBox situationalCheckbox;
-	private EditText actionPointsEdit;
-	private LinearLayout effectsList;
-	private ListView selectedParametersList;
-	private Talent currentInstance = new Talent();
-	private boolean          isNew            = true;
+	private ListView                     listView;
+	private Spinner                      categorySpinner;
+	private EditText                     nameEdit;
+	private EditText                     descriptionEdit;
+	private EditText                     initialCostEdit;
+	private EditText                     costPerTierEdit ;
+	private EditText                     bonusPerTierEdit;
+	private CheckBox                     flawCheckbox;
+	private CheckBox                     situationalCheckbox;
+	private EditText                     actionPointsEdit;
+	private LinearLayout                 effectsList;
+	private ListView                     selectedParametersList;
+	private Talent                       currentInstance = new Talent();
+	private boolean                      isNew             = true;
 	private SparseIntArray resistanceIndexes = new SparseIntArray(0);
 
 	@Nullable
@@ -716,6 +717,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			@Override
 			public void onClick(View v) {
 				int length = currentInstance.getEffects().length;
+				EffectFragment effectFragment = new EffectFragment();
+				effectFragment.setEffectsList(effectsList);
+				FragmentTransaction transaction = getFragmentManager().beginTransaction();
+				getFragmentManager().putFragment(null, "RMU", effectFragment);
+				transaction.commit();
 				Effect[] effects = new Effect[length + 1];
 				short[] values = new short[length + 1];
 				if(length > 0) {

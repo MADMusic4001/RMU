@@ -101,6 +101,8 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
         initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
         initialValues.put(COLUMN_REQUIRES_SPECIALIZATION, instance.isRequiresSpecialization());
         initialValues.put(COLUMN_USE_CATEGORY_STATS, instance.isUseCategoryStats());
+		initialValues.put(COLUMN_REQUIRES_CONCENTRATION, instance.isRequiresConcentration());
+		initialValues.put(COLUMN_IS_LORE, instance.isLore());
 
         return initialValues;
     }
@@ -200,6 +202,8 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 		instance.setCategory(skillCategory);
 		instance.setRequiresSpecialization(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REQUIRES_SPECIALIZATION)) != 0);
 		instance.setUseCategoryStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USE_CATEGORY_STATS)) != 0);
+		instance.setRequiresConcentration(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REQUIRES_CONCENTRATION)) != 0);
+		instance.setLore(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_LORE)) != 0);
 		if(!instance.isUseCategoryStats()) {
 			instance.setStats(getStats(instance.getId()));
 		}
