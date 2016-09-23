@@ -17,9 +17,8 @@ package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -41,6 +40,7 @@ import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -53,7 +53,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.GetValues<BodyPart> {
+public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.GetValues<BodyPart>,
+		EditTextUtils.ValuesCallback {
 	@Inject
 	protected BodyPartRxHandler   bodyPartRxHandler;
 	private TwoFieldListAdapter<BodyPart> listAdapter;
@@ -63,6 +64,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 	private BodyPart currentInstance = new BodyPart();
 	private boolean isNew = true;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,8 +76,10 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_body_part_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_body_part_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_body_part_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_body_part_description_required);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -149,6 +153,46 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public CharSequence getField1Value(BodyPart bodyPart) {
+		return bodyPart.getName();
+	}
+
+	@Override
+	public CharSequence getField2Value(BodyPart bodyPart) {
+		return bodyPart.getDescription();
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				break;
+			case R.id.description_edit:
+				currentInstance.setDescription(newString);
+				break;
+		}
+	}
+	// </editor-fold>
+
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
@@ -185,7 +229,9 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 			descriptionEdit.setError(null);
 		}
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Save/delete entity methods">
 	private void deleteItem(final BodyPart item) {
 		bodyPartRxHandler.deleteById(item.getId())
 			.observeOn(AndroidSchedulers.mainThread())
@@ -267,63 +313,9 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 				});
 		}
 	}
+	// </editor-fold>
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_body_part_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_body_part_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
+	// <editor-fold desc="Widget initialization methods">
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
@@ -386,14 +378,5 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 		});
 		registerForContextMenu(listView);
 	}
-
-	@Override
-	public CharSequence getField1Value(BodyPart bodyPart) {
-		return bodyPart.getName();
-	}
-
-	@Override
-	public CharSequence getField2Value(BodyPart bodyPart) {
-		return bodyPart.getDescription();
-	}
+	// </editor-fold>
 }

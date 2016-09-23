@@ -17,9 +17,8 @@ package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -47,6 +46,7 @@ import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -59,7 +59,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack> {
+public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack>, EditTextUtils.ValuesCallback {
 	@Inject
 	protected AttackRxHandler              attackRxHandler;
 	@Inject
@@ -78,6 +78,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 	private boolean isNew = true;
 	private Specialization noSpecialization = new Specialization();
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,8 +90,8 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_attack_code));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_attack_name));
 
-		initCodeEdit(layout);
-		initNameEdit(layout);
+		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.code_edit, R.string.validation_attack_code_required);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_attack_name_required);
 		initDamageTableSpinner(layout);
 		initSpecializationSpinner(layout);
 		initListView(layout);
@@ -166,50 +167,100 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public CharSequence getField1Value(Attack attack) {
+		return attack.getCode();
+	}
+
+	@Override
+	public CharSequence getField2Value(Attack attack) {
+		return attack.getName();
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.code_edit:
+				result = currentInstance.getCode();
+				break;
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.code_edit:
+				currentInstance.setCode(newString);
+				break;
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				break;
+		}
+	}
+	// </editor-fold>
+
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		int position;
 		String value;
 
-		value = codeEdit.getText().toString();
-		if(value.isEmpty()) {
-			value = null;
-		}
-		if((value == null && currentInstance.getCode() != null) ||
-				(value != null && !value.equals(currentInstance.getCode()))) {
-			currentInstance.setCode(value);
-			changed = true;
-		}
-
-		value = nameEdit.getText().toString();
-		if(value.isEmpty()) {
-			value = null;
-		}
-		if((value == null && currentInstance.getName() != null) ||
-				(value != null && !value.equals(currentInstance.getName()))) {
-			currentInstance.setName(value);
-			changed = true;
-		}
-
-		position = damageTableSpinner.getSelectedItemPosition();
-		if(position != -1) {
-			DamageTable damageTable = damageTableAdapter.getItem(position);
-			if(!damageTable.equals(currentInstance.getDamageTable())) {
-				currentInstance.setDamageTable(damageTable);
+		if(codeEdit != null) {
+			value = codeEdit.getText().toString();
+			if (value.isEmpty()) {
+				value = null;
+			}
+			if ((value == null && currentInstance.getCode() != null) ||
+					(value != null && !value.equals(currentInstance.getCode()))) {
+				currentInstance.setCode(value);
 				changed = true;
 			}
 		}
 
-		position = specializationSpinner.getSelectedItemPosition();
-		if(position != -1) {
-			Specialization specialization = specializationAdapter.getItem(position);
-			if(specialization.equals(noSpecialization) && currentInstance.getSpecialization() != null) {
-				currentInstance.setSpecialization(null);
+		if(nameEdit != null) {
+			value = nameEdit.getText().toString();
+			if (value.isEmpty()) {
+				value = null;
+			}
+			if ((value == null && currentInstance.getName() != null) ||
+					(value != null && !value.equals(currentInstance.getName()))) {
+				currentInstance.setName(value);
 				changed = true;
 			}
-			else if(!specialization.equals(currentInstance.getSpecialization())) {
-				currentInstance.setSpecialization(specialization);
-				changed = true;
+		}
+
+		if(damageTableSpinner != null) {
+			position = damageTableSpinner.getSelectedItemPosition();
+			if (position != -1) {
+				DamageTable damageTable = damageTableAdapter.getItem(position);
+				if (damageTable != null && !damageTable.equals(currentInstance.getDamageTable())) {
+					currentInstance.setDamageTable(damageTable);
+					changed = true;
+				}
+			}
+		}
+
+		if(specializationSpinner != null) {
+			position = specializationSpinner.getSelectedItemPosition();
+			if (position != -1) {
+				Specialization specialization = specializationAdapter.getItem(position);
+				if (specialization != null) {
+					if (specialization.equals(noSpecialization) && currentInstance.getSpecialization() != null) {
+						currentInstance.setSpecialization(null);
+						changed = true;
+					}
+					else if (!specialization.equals(currentInstance.getSpecialization())) {
+						currentInstance.setSpecialization(specialization);
+						changed = true;
+					}
+				}
 			}
 		}
 
@@ -234,7 +285,9 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 			nameEdit.setError(null);
 		}
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Save/delete entity methods">
 	private void deleteItem(final Attack item) {
 		attackRxHandler.deleteById(item.getId())
 			.observeOn(AndroidSchedulers.mainThread())
@@ -316,63 +369,9 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				});
 		}
 	}
+	// </editor-fold>
 
-	private void initCodeEdit(View layout) {
-		codeEdit = (EditText)layout.findViewById(R.id.attack_code_edit);
-		codeEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					codeEdit.setError(getString(R.string.validation_attack_code_required));
-				}
-			}
-		});
-		codeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newCode = codeEdit.getText().toString();
-					if (currentInstance != null && !newCode.equals(currentInstance.getCode())) {
-						currentInstance.setCode(newCode);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_attack_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
+	// <editor-fold desc="Widget initialization methods">
 	private void initDamageTableSpinner(View layout) {
 		damageTableSpinner = (Spinner)layout.findViewById(R.id.damage_table_spinner);
 		damageTableAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -402,7 +401,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				DamageTable damageTable = damageTableAdapter.getItem(position);
-				if(!damageTable.equals(currentInstance.getDamageTable())) {
+				if(damageTable != null && !damageTable.equals(currentInstance.getDamageTable())) {
 					currentInstance.setDamageTable(damageTable);
 					saveItem();
 				}
@@ -416,6 +415,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initSpecializationSpinner(View layout) {
 		specializationSpinner = (Spinner)layout.findViewById(R.id.attack_specialization_spinner);
+		specializationAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		specializationSpinner.setAdapter(specializationAdapter);
 
 		specializationRxHandler.getAllAttackSpecializations()
@@ -448,13 +448,15 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Specialization specialization = specializationAdapter.getItem(position);
-				if(specialization.equals(noSpecialization) && currentInstance.getSpecialization() != null) {
-					currentInstance.setSpecialization(null);
-					saveItem();
-				}
-				else if(!specialization.equals(currentInstance.getSpecialization())) {
-					currentInstance.setSpecialization(specialization);
-					saveItem();
+				if(specialization != null) {
+					if (specialization.equals(noSpecialization) && currentInstance.getSpecialization() != null) {
+						currentInstance.setSpecialization(null);
+						saveItem();
+					}
+					else if (!specialization.equals(currentInstance.getSpecialization())) {
+						currentInstance.setSpecialization(specialization);
+						saveItem();
+					}
 				}
 			}
 
@@ -526,14 +528,5 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 		registerForContextMenu(listView);
 	}
-
-	@Override
-	public CharSequence getField1Value(Attack attack) {
-		return attack.getCode();
-	}
-
-	@Override
-	public CharSequence getField2Value(Attack attack) {
-		return attack.getName();
-	}
+	// </editor-fold>
 }

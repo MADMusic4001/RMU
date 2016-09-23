@@ -28,8 +28,6 @@ import java.util.Collection;
  */
 public class CriticalResult {
     private static short[] rangeStarts = {1, 2, 4, 6, 11, 16, 21, 26, 36, 46, 56, 66, 67, 76, 81, 86, 91, 96, 98, 100, 101};
-    private static String[] bodyPartForRange = {"Head", "Chest", "Groin", "Leg", "Arm", "Head", "Chest", "Groin", "Leg", "Arm",
-            "Arm", "Groin", "Leg", "Chest", "Head", "Arm", "Leg", "Groin", "Chest", "Head"};
 
     private int id = -1;
     private char severityCode = 'A';
@@ -67,7 +65,7 @@ public class CriticalResult {
      * @param maxRoll  a short to use for the initial maxRoll value
      * @param bodyPart  a BodyPart instance to use for the initial bodyPart value
      */
-    public CriticalResult(CriticalType criticalType, char severityCode, short minRoll, short maxRoll, BodyPart bodyPart) {
+    private CriticalResult(CriticalType criticalType, char severityCode, short minRoll, short maxRoll, BodyPart bodyPart) {
         this.criticalType = criticalType;
         this.severityCode = severityCode;
         this.minRoll = minRoll;
@@ -77,11 +75,9 @@ public class CriticalResult {
 
     public static Collection<CriticalResult> generateMissingCriticalResultRows(Collection<CriticalResult> currentRows,
                                                                                @NonNull CriticalType criticalType,
-                                                                               char severityCode,
-                                                                               @NonNull Collection<BodyPart> bodyParts) {
+                                                                               char severityCode) {
         Collection<CriticalResult> allRows;
         CriticalResult currentRow;
-        BodyPart currentBodyPart;
 
         if(currentRows.size() == rangeStarts.length - 1) {
             allRows = currentRows;
@@ -98,16 +94,9 @@ public class CriticalResult {
                         }
                     }
                 }
-                currentBodyPart = null;
-                for(BodyPart bodyPart : bodyParts) {
-                    if(bodyPart.getName().equals(bodyPartForRange[i])) {
-                        currentBodyPart = bodyPart;
-                        break;
-                    }
-                }
                 if(currentRow == null) {
                     currentRow = new CriticalResult(criticalType, severityCode, rangeStarts[i], (short)(rangeStarts[i+1] - 1),
-                            currentBodyPart);
+                                                    null);
                 }
                 allRows.add(currentRow);
             }

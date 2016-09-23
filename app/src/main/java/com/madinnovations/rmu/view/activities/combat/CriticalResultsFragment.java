@@ -38,7 +38,6 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -57,6 +56,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for critical results.
  */
 public class CriticalResultsFragment extends Fragment {
+	private static final String LOG_TAG = "CriticalResultsFragment";
 	@Inject
 	protected BodyPartRxHandler          bodyPartRxHandler;
 	@Inject
@@ -67,16 +67,15 @@ public class CriticalResultsFragment extends Fragment {
 	protected CriticalResultListAdapter  listAdapter;
 	private   ArrayAdapter<CriticalType> criticalTypeFilterSpinnerAdapter;
 	private   ArrayAdapter<Character>    criticalSeverityFilterSpinnerAdapter;
-	private Spinner  criticalTypeFilterSpinner;
-	private Spinner  criticalSeverityFilterSpinner;
-	private ListView listView;
+	private   Spinner                    criticalTypeFilterSpinner;
+	private   ListView                   listView;
 	private CriticalType criticalTypeFilter = null;
 	private char criticalSeverityFilter = 'A';
-	private Collection<BodyPart> bodyParts = null;
 	private Collection<CriticalResult> tempResults = null;
 	private CriticalResult currentInstance = new CriticalResult();
 	private boolean isNew = true;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -113,188 +112,28 @@ public class CriticalResultsFragment extends Fragment {
 		int id = item.getItemId();
 		return super.onOptionsItemSelected(item);
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		int position;
 		CriticalType newCriticalType = null;
-		String newString;
-		char newChar;
-		short newShort;
 
-//		position = criticalTypeFilterSpinner.getSelectedItemPosition();
-//		if(position >= 0) {
-//			newCriticalType = criticalTypeFilterSpinnerAdapter.getItem(position);
-//		}
-//		if((newCriticalType == null && currentInstance.getCriticalType() != null) ||
-//				(newCriticalType != null && !newCriticalType.equals(currentInstance.getCriticalType()))) {
-//			currentInstance.setCriticalType(newCriticalType);
-//			changed = true;
-//		}
+		position = criticalTypeFilterSpinner.getSelectedItemPosition();
+		if(position >= 0) {
+			newCriticalType = criticalTypeFilterSpinnerAdapter.getItem(position);
+		}
+		if((newCriticalType == null && currentInstance.getCriticalType() != null) ||
+				(newCriticalType != null && !newCriticalType.equals(currentInstance.getCriticalType()))) {
+			currentInstance.setCriticalType(newCriticalType);
+			changed = true;
+		}
 
-//		newString = descriptionEdit.getText().toString();
-//		if(newString.isEmpty()) {
-//			newString = null;
-//		}
-//		if((newString == null && currentInstance.getResultText() != null) ||
-//				(newString != null && !newString.equals(currentInstance.getResultText()))) {
-//			currentInstance.setResultText(newString);
-//			changed = true;
-//		}
-//
-//		if(severityCodeEdit.length() > 0) {
-//			newChar = severityCodeEdit.getText().charAt(0);
-//			if(newChar !=  currentInstance.getSeverityCode()) {
-//				currentInstance.setSeverityCode(newChar);
-//				changed = true;
-//			}
-//		}
-//
-//		if(minRollEdit.length() > 0) {
-//			newShort = Short.valueOf(minRollEdit.getText().toString());
-//			if(newShort !=  currentInstance.getMinRoll()) {
-//				currentInstance.setMinRoll(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(maxRollEdit.length() > 0) {
-//			newShort = Short.valueOf(maxRollEdit.getText().toString());
-//			if(newShort !=  currentInstance.getMaxRoll()) {
-//				currentInstance.setMaxRoll(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(bodyPartSpinner.getSelectedItemPosition() >= 0) {
-//			newBodyPart = bodyPartSpinnerAdapter.getItem(bodyPartSpinner.getSelectedItemPosition());
-//		}
-//		if((newBodyPart == null && currentInstance.getBodyPart() != null) ||
-//				(newBodyPart!= null && !newBodyPart.equals(currentInstance.getBodyPart()))) {
-//			currentInstance.setBodyPart(newBodyPart);
-//			changed = true;
-//		}
-//
-//		if(hitsEdit.length() > 0) {
-//			newShort = Short.valueOf(hitsEdit.getText().toString());
-//			if(newShort !=  currentInstance.getHits()) {
-//				currentInstance.setHits(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(bleedingEdit.length() > 0) {
-//			newShort = Short.valueOf(bleedingEdit.getText().toString());
-//			if(newShort !=  currentInstance.getBleeding()) {
-//				currentInstance.setBleeding(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(fatigueEdit.length() > 0) {
-//			newShort = Short.valueOf(fatigueEdit.getText().toString());
-//			if(newShort !=  currentInstance.getFatigue()) {
-//				currentInstance.setFatigue(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(breakageEdit.length() > 0) {
-//			newBreakage = Short.valueOf(breakageEdit.getText().toString());
-//		}
-//		if(newBreakage ==  null && currentInstance.getBreakage() != null ||
-//				newBreakage != null && !newBreakage.equals(currentInstance.getBreakage())) {
-//			currentInstance.setBreakage(newBreakage);
-//			changed = true;
-//		}
-//
-//		if(injuryEdit.length() > 0) {
-//			newShort = Short.valueOf(injuryEdit.getText().toString());
-//			if(newShort !=  currentInstance.getInjury()) {
-//				currentInstance.setInjury(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(dazedEdit.length() > 0) {
-//			newShort = Short.valueOf(dazedEdit.getText().toString());
-//			if(newShort !=  currentInstance.getDazed()) {
-//				currentInstance.setDazed(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(stunnedEdit.length() > 0) {
-//			newShort = Short.valueOf(stunnedEdit.getText().toString());
-//			if(newShort !=  currentInstance.getStunned()) {
-//				currentInstance.setStunned(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(noParryEdit.length() > 0) {
-//			newShort = Short.valueOf(noParryEdit.getText().toString());
-//			if(newShort !=  currentInstance.getNoParry()) {
-//				currentInstance.setNoParry(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(staggeredCheckBox.isChecked() != currentInstance.isStaggered()) {
-//			currentInstance.setStaggered(staggeredCheckBox.isChecked());
-//			changed = true;
-//		}
-//
-//		if(knockBackEdit.length() > 0) {
-//			newShort = Short.valueOf(knockBackEdit.getText().toString());
-//			if(newShort !=  currentInstance.getKnockBack()) {
-//				currentInstance.setKnockBack(newShort);
-//				changed = true;
-//			}
-//		}
-//
-//		if(proneCheckBox.isChecked() != currentInstance.isProne()) {
-//			currentInstance.setProne(proneCheckBox.isChecked());
-//			changed = true;
-//		}
-//
-//		if(grappledEdit.length() > 0) {
-//			newShort = Short.valueOf(grappledEdit.getText().toString());
-//			if(newShort !=  currentInstance.getGrappled()) {
-//				currentInstance.setGrappled(newShort);
-//				changed = true;
-//			}
-//		}
-//
 		return changed;
 	}
 
 	private void copyItemToViews() {
-//		descriptionEdit.setText(currentInstance.getResultText());
-//		minRollEdit.setText(String.valueOf(currentInstance.getMinRoll()));
-//		maxRollEdit.setText(String.valueOf(currentInstance.getMaxRoll()));
-//		severityCodeEdit.setText(String.valueOf(currentInstance.getSeverityCode()));
-//		bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(currentInstance.getBodyPart()));
-//		hitsEdit.setText(String.valueOf(currentInstance.getHits()));
-//		bleedingEdit.setText(String.valueOf(currentInstance.getBleeding()));
-//		fatigueEdit.setText(String.valueOf(currentInstance.getFatigue()));
-//		if(currentInstance.getBreakage() != null) {
-//			breakageEdit.setText(String.valueOf(currentInstance.getBreakage()));
-//		}
-//		else {
-//			breakageEdit.setText("");
-//		}
-//		injuryEdit.setText(String.valueOf(currentInstance.getInjury()));
-//		dazedEdit.setText(String.valueOf(currentInstance.getDazed()));
-//		stunnedEdit.setText(String.valueOf(currentInstance.getStunned()));
-//		noParryEdit.setText(String.valueOf(currentInstance.getNoParry()));
-//		staggeredCheckBox.setChecked(currentInstance.isStaggered());
-//		knockBackEdit.setText(String.valueOf(currentInstance.getKnockBack()));
-//		proneCheckBox.setChecked(currentInstance.isProne());
-//		grappledEdit.setText(String.valueOf(currentInstance.getGrappled()));
-//		if(currentInstance.getResultText() != null) {
-//			descriptionEdit.setError(null);
-//		}
 	}
 
 	private void saveItem() {
@@ -309,7 +148,7 @@ public class CriticalResultsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CriticalResultsFragment", "Exception saving new CriticalResult", e);
+						Log.e(LOG_TAG, "Exception saving new CriticalResult", e);
 					}
 					@Override
 					public void onNext(CriticalResult savedCriticalResult) {
@@ -351,7 +190,7 @@ public class CriticalResultsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CriticalResultFragment", "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_critical_result_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -393,7 +232,7 @@ public class CriticalResultsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CriticalResultsFragment", "Exception caught getting all CriticalType instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all CriticalType instances", e);
 					}
 					@Override
 					public void onNext(Collection<CriticalType> criticalTypes) {
@@ -416,7 +255,7 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void initCriticalSeverityFilterSpinner(View layout) {
-		criticalSeverityFilterSpinner = (Spinner)layout.findViewById(R.id.critical_severity_filter_spinner);
+		Spinner criticalSeverityFilterSpinner = (Spinner) layout.findViewById(R.id.critical_severity_filter_spinner);
 		criticalSeverityFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		criticalSeverityFilterSpinner.setAdapter(criticalSeverityFilterSpinnerAdapter);
 
@@ -488,44 +327,20 @@ public class CriticalResultsFragment extends Fragment {
 							}
 							copyItemToViews();
 						}
-
 						@Override
 						public void onError(Throwable e) {
-							Log.e("CriticalResultsFragment", "Exception caught getting all CriticalResult instances", e);
+							Log.e(LOG_TAG, "Exception caught getting all CriticalResult instances", e);
 							Toast.makeText(CriticalResultsFragment.this.getActivity(),
 									getString(R.string.toast_critical_results_load_failed),
 									Toast.LENGTH_SHORT).show();
 						}
-
 						@Override
 						public void onNext(final Collection<CriticalResult> criticalResultRows) {
-							if (bodyParts == null) {
-								bodyPartRxHandler.getAll()
-										.observeOn(AndroidSchedulers.mainThread())
-										.subscribeOn(Schedulers.io())
-										.subscribe(new Subscriber<Collection<BodyPart>>() {
-											@Override
-											public void onCompleted() {}
-											@Override
-											public void onError(Throwable e) {
-												Log.e("RMU", "Exception caught getting all body parts.", e);
-											}
-											@Override
-											public void onNext(Collection<BodyPart> bodyParts) {
-												CriticalResultsFragment.this.bodyParts = bodyParts;
-												listAdapter.clear();
-												listAdapter.addAll(CriticalResult.generateMissingCriticalResultRows(criticalResultRows, criticalTypeFilter,
-														criticalSeverityFilter, bodyParts));
-												listAdapter.notifyDataSetChanged();
-											}
-										});
-							}
-							else {
-								listAdapter.clear();
-								listAdapter.addAll(CriticalResult.generateMissingCriticalResultRows(criticalResultRows, criticalTypeFilter,
-										criticalSeverityFilter, bodyParts));
-								listAdapter.notifyDataSetChanged();
-							}
+							listAdapter.clear();
+							listAdapter.addAll(CriticalResult.generateMissingCriticalResultRows(criticalResultRows,
+																								criticalTypeFilter,
+																								criticalSeverityFilter));
+							listAdapter.notifyDataSetChanged();
 						}
 					});
 		}

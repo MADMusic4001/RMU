@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.view.utils;
 
-import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -27,17 +26,32 @@ import android.widget.CheckBox;
 public class CheckBoxUtils {
 
 	/**
-	 * Initializes a CheckBox with onClick method implementations.
+	 * Initializes a CheckBox with an onClick method implementation.
 	 *
 	 * @param layout  the layout that contains the CheckBox to be initialized
-	 * @param context  an android Context that can be used to obtain resources, etc.
 	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object backing the UI
 	 * @param checkBoxId  the resource ID of the CheckBox to be initialized
 	 * @return  the {@link CheckBox} instance that was initialized or null if not found.
 	 */
-	public static CheckBox initCheckBox(@NonNull View layout, @NonNull final Context context, @NonNull final ValuesCallback valuesCallback,
+	public static CheckBox initCheckBox(@NonNull View layout, @NonNull final ValuesCallback valuesCallback,
 										@IdRes final int checkBoxId) {
 		final CheckBox checkBox = (CheckBox)layout.findViewById(checkBoxId);
+		if(checkBox != null) {
+			initCheckBox(checkBox, valuesCallback, checkBoxId);
+		}
+
+		return checkBox;
+	}
+
+	/**
+	 * Initializes a CheckBox with an onClick method implementation.
+	 *
+	 * @param checkBox  a CheckBox instance
+	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object backing the UI
+	 * @param checkBoxId  the resource ID of the CheckBox to be initialized
+	 */
+	public static void initCheckBox(@NonNull final CheckBox checkBox, @NonNull final ValuesCallback valuesCallback,
+									@IdRes final int checkBoxId) {
 		checkBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -46,8 +60,6 @@ public class CheckBoxUtils {
 				}
 			}
 		});
-
-		return checkBox;
 	}
 
 	/**

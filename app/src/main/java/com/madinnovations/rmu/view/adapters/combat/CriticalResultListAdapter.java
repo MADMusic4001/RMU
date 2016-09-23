@@ -16,9 +16,8 @@
 package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +34,8 @@ import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.view.utils.CheckBoxUtils;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -48,13 +49,15 @@ import rx.schedulers.Schedulers;
  * Populates a ListView with {@link CriticalResult} information
  */
 public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
+	private static final String LOG_TAG = "CriticalResultListAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_critical_result_row;
-	private LayoutInflater layoutInflater;
 	@Inject
-	BodyPartRxHandler       bodyPartRxHandler;
-	private   ArrayAdapter<BodyPart>  bodyPartSpinnerAdapter;
+	BodyPartRxHandler              bodyPartRxHandler;
 	@Inject
-	CriticalResultRxHandler criticalResultRxHandler;
+	CriticalResultRxHandler        criticalResultRxHandler;
+	private ArrayAdapter<BodyPart> bodyPartSpinnerAdapter;
+	private Collection<BodyPart>   bodyParts = null;
+	private LayoutInflater         layoutInflater;
 
 	/**
 	 * Creates a new CriticalResultListAdapter instance.
@@ -128,13 +131,20 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			holder.knockBackEdit.setText(String.valueOf(criticalResult.getKnockBack()));
 			holder.proneCheckBox.setChecked(criticalResult.isProne());
 			holder.grappledEdit.setText(String.valueOf(criticalResult.getGrappled()));
-			holder.resultTextEdit.setText(criticalResult.getResultText());
+			if(criticalResult.getResultText() == null || criticalResult.getResultText().isEmpty()) {
+				holder.resultTextEdit.setText(null);
+				holder.resultTextEdit.setError(getContext().getString(R.string.validation_critical_result_text_required));
+			}
+			else {
+				holder.resultTextEdit.setText(criticalResult.getResultText());
+				holder.resultTextEdit.setError(null);
+			}
 			holder.rightRollView.setText(rollString);
 		}
 		return rowView;
 	}
 
-	private class ViewHolder {
+	private class ViewHolder implements EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback {
 		private CriticalResult currentInstance;
 		private EditText leftRollView;
 		private Spinner  bodyPartSpinner;
@@ -161,32 +171,188 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			this.bodyPartSpinner = bodyPartSpinner;
 			initBodyPartSpinner();
 			this.hitsEdit = hitsEdit;
-			initHitsEdit();
+			EditTextUtils.initEdit(hitsEdit, getContext(), this, R.id.hits_edit, R.string.validation_hits_required);
 			this.bleedingEdit = bleedingEdit;
-			initBleedingEdit();
+			EditTextUtils.initEdit(bleedingEdit, getContext(), this, R.id.bleeding_edit, R.string.validation_bleeding_required);
 			this.fatigueEdit = fatigueEdit;
-			initFatigueEdit();
+			EditTextUtils.initEdit(fatigueEdit, getContext(), this, R.id.fatigue_edit, R.string.validation_fatigue_required);
 			this.breakageEdit = breakageEdit;
-			initBreakageEdit();
+			EditTextUtils.initEdit(breakageEdit, getContext(), this, R.id.breakage_edit, 0);
 			this.injuryEdit = injuryEdit;
-			initInjuryEdit();
+			EditTextUtils.initEdit(injuryEdit, getContext(), this, R.id.injury_edit, R.string.validation_injury_required);
 			this.dazedEdit = dazedEdit;
-			initDazedEdit();
+			EditTextUtils.initEdit(dazedEdit, getContext(), this, R.id.dazed_edit, R.string.validation_dazed_required);
 			this.stunnedEdit = stunnedEdit;
-			initStunnedEdit();
+			EditTextUtils.initEdit(stunnedEdit, getContext(), this, R.id.stunned_edit, R.string.validation_stunned_required);
 			this.noParryEdit = noParryEdit;
-			initNoParryEdit();
+			EditTextUtils.initEdit(noParryEdit, getContext(), this, R.id.stunned_no_parry_edit,
+								   R.string.validation_no_parry_required);
 			this.staggeredCheckBox = staggeredCheckBox;
-			initStaggeredCheckBox();
+			CheckBoxUtils.initCheckBox(staggeredCheckBox, this, R.id.staggered_checkbox);
 			this.knockBackEdit = knockBackEdit;
-			initKnockBackEdit();
+			EditTextUtils.initEdit(knockBackEdit, getContext(), this, R.id.knock_back_edit,
+								   R.string.validation_knock_back_required);
 			this.proneCheckBox = proneCheckBox;
-			initProneCheckBox();
+			CheckBoxUtils.initCheckBox(proneCheckBox, this, R.id.prone_checkbox);
 			this.grappledEdit = grappledEdit;
-			initGrappledEdit();
+			EditTextUtils.initEdit(grappledEdit, getContext(), this, R.id.grappled_edit, R.string.validation_grappled_required);
 			this.resultTextEdit = resultTextEdit;
-			initResultTextEdit();
+			EditTextUtils.initEdit(resultTextEdit, getContext(), this, R.id.result_text_edit,
+								   R.string.validation_critical_result_text_required);
 			this.rightRollView = rightRollView;
+		}
+
+		@Override
+		public boolean getValueForCheckBox(@IdRes int checkBoxId) {
+			boolean result = false;
+
+			switch (checkBoxId) {
+				case R.id.staggered_checkbox:
+					result = currentInstance.isStaggered();
+					break;
+				case R.id.prone_checkbox:
+					result = currentInstance.isProne();
+					break;
+			}
+
+			return result;
+		}
+
+		@Override
+		public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
+			switch (checkBoxId) {
+				case R.id.staggered_checkbox:
+					currentInstance.setStaggered(newBoolean);
+					saveItem();
+					break;
+				case R.id.prone_checkbox:
+					currentInstance.setProne(newBoolean);
+					saveItem();
+					break;
+			}
+		}
+
+		@Override
+		public String getValueForEditText(@IdRes int editTextId) {
+			String result = null;
+
+			switch (editTextId) {
+				case R.id.hits_edit:
+					result = String.valueOf(currentInstance.getHits());
+					break;
+				case R.id.bleeding_edit:
+					result = String.valueOf(currentInstance.getBleeding());
+					break;
+				case R.id.fatigue_edit:
+					result = String.valueOf(currentInstance.getFatigue());
+					break;
+				case R.id.breakage_edit:
+					if(currentInstance.getBreakage() != null) {
+						result = String.valueOf(currentInstance.getBreakage());
+					}
+					break;
+				case R.id.injury_edit:
+					result = String.valueOf(currentInstance.getInjury());
+					break;
+				case R.id.dazed_edit:
+					result = String.valueOf(currentInstance.getDazed());
+					break;
+				case R.id.stunned_edit:
+					result = String.valueOf(currentInstance.getStunned());
+					break;
+				case R.id.stunned_no_parry_edit:
+					result = String.valueOf(currentInstance.getNoParry());
+					break;
+				case R.id.knock_back_edit:
+					result = String.valueOf(currentInstance.getKnockBack());
+					break;
+				case R.id.grappled_edit:
+					result = String.valueOf(currentInstance.getGrappled());
+					break;
+				case R.id.result_text_edit:
+					result = currentInstance.getResultText();
+					break;
+			}
+
+			return result;
+		}
+
+		@Override
+		public void setValueFromEditText(@IdRes int editTextId, String newString) {
+			if(newString != null && newString.isEmpty()) {
+				newString = null;
+			}
+
+			switch (editTextId) {
+				case R.id.hits_edit:
+					if(newString != null) {
+						currentInstance.setHits(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.bleeding_edit:
+					if(newString != null) {
+						currentInstance.setBleeding(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.fatigue_edit:
+					if(newString != null) {
+						currentInstance.setFatigue(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.breakage_edit:
+					if(newString != null) {
+						currentInstance.setBreakage(Short.valueOf(newString));
+						saveItem();
+					}
+					else {
+						currentInstance.setBreakage(null);
+						saveItem();
+					}
+					break;
+				case R.id.injury_edit:
+					if(newString != null) {
+						currentInstance.setInjury(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.dazed_edit:
+					if(newString != null) {
+						currentInstance.setDazed(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.stunned_edit:
+					if(newString != null) {
+						currentInstance.setStunned(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.stunned_no_parry_edit:
+					if(newString != null) {
+						currentInstance.setNoParry(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.knock_back_edit:
+					if(newString != null) {
+						currentInstance.setKnockBack(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.grappled_edit:
+					if(newString != null) {
+						currentInstance.setGrappled(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.result_text_edit:
+					currentInstance.setResultText(newString);
+					saveItem();
+					break;
+			}
 		}
 
 		private void saveItem() {
@@ -199,7 +365,7 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 							public void onCompleted() {}
 							@Override
 							public void onError(Throwable e) {
-								Log.e("CriticalResultsFragment", "Exception saving new CriticalResult", e);
+								Log.e(LOG_TAG, "Exception saving new CriticalResult", e);
 							}
 							@Override
 							public void onNext(CriticalResult savedCriticalResult) {
@@ -213,24 +379,34 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 
 		private void initBodyPartSpinner() {
 			bodyPartSpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
-			bodyPartRxHandler.getAll()
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Collection<BodyPart>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e("CriticalResultsFragment", "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
-						}
-						@Override
-						public void onNext(Collection<BodyPart> bodyPartsResults) {
-							bodyPartSpinnerAdapter.clear();
-							bodyPartSpinnerAdapter.addAll(bodyPartsResults);
-							bodyPartSpinnerAdapter.notifyDataSetChanged();
-						}
-					});
+			if(bodyParts != null) {
+				bodyPartSpinnerAdapter.clear();
+				bodyPartSpinnerAdapter.addAll(bodyParts);
+				bodyPartSpinnerAdapter.notifyDataSetChanged();
+				bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
+			}
+			else {
+				bodyPartRxHandler.getAll()
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribeOn(Schedulers.io())
+						.subscribe(new Subscriber<Collection<BodyPart>>() {
+							@Override
+							public void onCompleted() {}
+							@Override
+							public void onError(Throwable e) {
+								Log.e(LOG_TAG, "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
+							}
+							@Override
+							public void onNext(Collection<BodyPart> bodyPartsResults) {
+								bodyParts = bodyPartsResults;
+								bodyPartSpinnerAdapter.clear();
+								bodyPartSpinnerAdapter.addAll(bodyPartsResults);
+								bodyPartSpinnerAdapter.notifyDataSetChanged();
+								bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
+							}
+						});
+			}
+
 			bodyPartSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -244,364 +420,6 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					if(currentInstance.getBodyPart() != null) {
 						currentInstance.setBodyPart(null);
 						saveItem();
-					}
-				}
-			});
-		}
-
-		private void initHitsEdit() {
-			hitsEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						hitsEdit.setError(getContext().getString(R.string.validation_hits_required));
-					}
-					else {
-						hitsEdit.setError(null);
-					}
-				}
-			});
-			hitsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					Log.d("RMU", "hitsEdit focus changed. hasFocus = " + hasFocus);
-					if(!hasFocus) {
-						if(hitsEdit.getText().length() > 0) {
-							short newHits = Short.valueOf(hitsEdit.getText().toString());
-							if (newHits != currentInstance.getHits()) {
-								currentInstance.setHits(newHits);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initBleedingEdit() {
-			bleedingEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						bleedingEdit.setError(getContext().getString(R.string.validation_bleeding_required));
-					}
-					else {
-						bleedingEdit.setError(null);
-					}
-				}
-			});
-			bleedingEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(bleedingEdit.getText().length() > 0) {
-							short newBleeding = Short.valueOf(bleedingEdit.getText().toString());
-							if (newBleeding != currentInstance.getBleeding()) {
-								currentInstance.setBleeding(newBleeding);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initFatigueEdit() {
-			fatigueEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						fatigueEdit.setError(getContext().getString(R.string.validation_fatigue_required));
-					}
-					else {
-						fatigueEdit.setError(null);
-					}
-				}
-			});
-			fatigueEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(fatigueEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(fatigueEdit.getText().toString());
-							if (newValue != currentInstance.getFatigue()) {
-								currentInstance.setFatigue(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initBreakageEdit() {
-			breakageEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						Short newValue = null;
-						if(breakageEdit.getText().length() > 0) {
-							newValue = Short.valueOf(breakageEdit.getText().toString());
-						}
-						if (newValue == null && currentInstance.getBreakage() != null ||
-								newValue != null && !newValue.equals(currentInstance.getBreakage())) {
-							currentInstance.setBreakage(newValue);
-							saveItem();
-						}
-					}
-				}
-			});
-		}
-
-		private void initInjuryEdit() {
-			injuryEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						injuryEdit.setError(getContext().getString(R.string.validation_injury_required));
-					}
-					else {
-						injuryEdit.setError(null);
-					}
-				}
-			});
-			injuryEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(injuryEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(injuryEdit.getText().toString());
-							if (newValue != currentInstance.getInjury()) {
-								currentInstance.setInjury(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initDazedEdit() {
-			dazedEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						dazedEdit.setError(getContext().getString(R.string.validation_dazed_required));
-					}
-					else {
-						dazedEdit.setError(null);
-					}
-				}
-			});
-			dazedEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(dazedEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(dazedEdit.getText().toString());
-							if (newValue != currentInstance.getDazed()) {
-								currentInstance.setDazed(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initStunnedEdit() {
-			stunnedEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						stunnedEdit.setError(getContext().getString(R.string.validation_stunned_required));
-					}
-					else {
-						stunnedEdit.setError(null);
-					}
-				}
-			});
-			stunnedEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(stunnedEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(stunnedEdit.getText().toString());
-							if (newValue != currentInstance.getStunned()) {
-								currentInstance.setStunned(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initNoParryEdit() {
-			noParryEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						noParryEdit.setError(getContext().getString(R.string.validation_no_parry_required));
-					}
-					else {
-						noParryEdit.setError(null);
-					}
-				}
-			});
-			noParryEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(noParryEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(noParryEdit.getText().toString());
-							if (newValue != currentInstance.getNoParry()) {
-								currentInstance.setNoParry(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initStaggeredCheckBox() {
-			staggeredCheckBox.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					currentInstance.setStaggered(staggeredCheckBox.isChecked());
-					saveItem();
-				}
-			});
-		}
-
-		private void initKnockBackEdit() {
-			knockBackEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						knockBackEdit.setError(getContext().getString(R.string.validation_knock_back_required));
-					}
-					else {
-						knockBackEdit.setError(null);
-					}
-				}
-			});
-			knockBackEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(knockBackEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(knockBackEdit.getText().toString());
-							if (newValue != currentInstance.getKnockBack()) {
-								currentInstance.setKnockBack(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initProneCheckBox() {
-			proneCheckBox.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					currentInstance.setProne(proneCheckBox.isChecked());
-					saveItem();
-				}
-			});
-		}
-
-		private void initGrappledEdit() {
-			grappledEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						grappledEdit.setError(getContext().getString(R.string.validation_grappled_required));
-					}
-					else {
-						grappledEdit.setError(null);
-					}
-				}
-			});
-			grappledEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(grappledEdit.getText().length() > 0) {
-							short newValue = Short.valueOf(grappledEdit.getText().toString());
-							if (newValue != currentInstance.getGrappled()) {
-								currentInstance.setGrappled(newValue);
-								saveItem();
-							}
-						}
-					}
-				}
-			});
-		}
-
-		private void initResultTextEdit() {
-			resultTextEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						resultTextEdit.setError(getContext().getString(R.string.validation_critical_result_text_required));
-					}
-				}
-			});
-			resultTextEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						final String newResultText = resultTextEdit.getText().toString();
-						if (!newResultText.equals(currentInstance.getResultText())) {
-							currentInstance.setResultText(newResultText);
-							saveItem();
-						}
-						if(!newResultText.isEmpty()) {
-							resultTextEdit.setError(null);
-						}
 					}
 				}
 			});

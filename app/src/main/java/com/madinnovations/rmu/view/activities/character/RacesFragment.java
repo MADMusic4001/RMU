@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.activities.character;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -50,6 +51,7 @@ import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Race> {
+public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Race>, EditTextUtils.ValuesCallback {
 	private static final String LOG_TAG = "RacesFragment";
 	@Inject
 	protected RaceRxHandler       raceRxHandler;
@@ -94,6 +96,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	private   Race              currentInstance = new Race();
 	private   boolean           isNew           = true;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,19 +108,29 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_race_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_race_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
-		initDevPointsEdit(layout);
-		initEnduranceModEdit(layout);
-		initBaseHitsEdit(layout);
-		initRecoveryMultEdit(layout);
-		initSizeSpinner(layout);
-		initStrideMod(layout);
-		initAverageHeightEdit(layout);
-		initAverageWeightEdit(layout);
-		initPoundsPerInchEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_race_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_race_description_required);
+		devPointsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.dp_edit,
+											   R.string.validation_race_dev_points_required);
+		enduranceModEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.endurance_mod_edit,
+												  R.string.validation_race_endurance_mod_required);
+		baseHitsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.base_hits_edit,
+											  R.string.validation_race_base_hits_required);
+		recoveryMultEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.recovery_mult_edit,
+												  R.string.validation_race_recovery_mult_required);
+		strideModEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.stride_mod_edit,
+											   R.string.validation_race_stride_mod_required);
+		averageHeightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.average_height_edit,
+												   R.string.validation_race_avg_height_required);
+		averageWeightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.average_weight_edit,
+												   R.string.validation_race_avg_weight_required);
+		poundsPerInchEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.pounds_per_inch_edit,
+												   R.string.validation_race_pounds_per_inch_required);
 		initStatMods(layout);
 		initRRMods(layout);
+		initSizeSpinner(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -201,6 +214,87 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		return race.getDescription();
 	}
 
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+			case R.id.dp_edit:
+				result = String.valueOf(currentInstance.getBonusDevelopmentPoints());
+				break;
+			case R.id.endurance_mod_edit:
+				result = String.valueOf(currentInstance.getEnduranceModifier());
+				break;
+			case R.id.base_hits_edit:
+				result = String.valueOf(currentInstance.getBaseHits());
+				break;
+			case R.id.recovery_mult_edit:
+				result = String.valueOf(currentInstance.getRecoveryMultiplier());
+				break;
+			case R.id.stride_mod_edit:
+				result = String.valueOf(currentInstance.getStrideModifier());
+				break;
+			case R.id.average_height_edit:
+				result = String.valueOf(currentInstance.getAverageHeight());
+				break;
+			case R.id.average_weight_edit:
+				result = String.valueOf(currentInstance.getAverageWeight());
+				break;
+			case R.id.pounds_per_inch_edit:
+				result = String.valueOf(currentInstance.getPoundsPerInch());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		try {
+			switch (editTextId) {
+				case R.id.name_edit:
+					currentInstance.setName(newString);
+					break;
+				case R.id.description_edit:
+					currentInstance.setDescription(newString);
+					break;
+				case R.id.dp_edit:
+					currentInstance.setBonusDevelopmentPoints(Short.valueOf(newString));
+					break;
+				case R.id.endurance_mod_edit:
+					currentInstance.setEnduranceModifier(Short.valueOf(newString));
+					break;
+				case R.id.base_hits_edit:
+					currentInstance.setBaseHits(Short.valueOf(newString));
+					break;
+				case R.id.recovery_mult_edit:
+					currentInstance.setRecoveryMultiplier(Float.valueOf(newString));
+					break;
+				case R.id.stride_mod_edit:
+					currentInstance.setStrideModifier(Short.valueOf(newString));
+					break;
+				case R.id.average_height_edit:
+					currentInstance.setAverageHeight(Short.valueOf(newString));
+					break;
+				case R.id.average_weight_edit:
+					currentInstance.setAverageWeight(Short.valueOf(newString));
+					break;
+				case R.id.pounds_per_inch_edit:
+					currentInstance.setPoundsPerInch(Short.valueOf(newString));
+					break;
+			}
+		}
+		catch (NumberFormatException ignored) {}
+	}
+	// </editor-fold>
+
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
@@ -400,9 +494,11 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			}
 		}
 
-		physicalRREdit.setText(String.valueOf(currentInstance));
+		physicalRREdit.setText(String.valueOf(currentInstance.getPhysicalResistanceModifier()));
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Save/delete entity methods">
 	private void deleteItem(final Race item) {
 		raceRxHandler.deleteById(item.getId())
 			.observeOn(AndroidSchedulers.mainThread())
@@ -484,183 +580,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 				});
 		}
 	}
+	// </editor-fold>
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					nameEdit.setError(getString(R.string.validation_race_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					descriptionEdit.setError(getString(R.string.validation_race_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDevPointsEdit(View layout) {
-		devPointsEdit = (EditText)layout.findViewById(R.id.dp_edit);
-		devPointsEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					devPointsEdit.setError(getString(R.string.validation_race_dev_points_required));
-				}
-			}
-		});
-		devPointsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(devPointsEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(devPointsEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getBonusDevelopmentPoints()) {
-							currentInstance.setBonusDevelopmentPoints(newShort);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initEnduranceModEdit(View layout) {
-		enduranceModEdit = (EditText)layout.findViewById(R.id.endurance_mod_edit);
-		enduranceModEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					enduranceModEdit.setError(getString(R.string.validation_race_endurance_mod_required));
-				}
-			}
-		});
-		enduranceModEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(enduranceModEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(enduranceModEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getEnduranceModifier()) {
-							currentInstance.setEnduranceModifier(newShort);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initBaseHitsEdit(View layout) {
-		baseHitsEdit = (EditText)layout.findViewById(R.id.base_hits_edit);
-		baseHitsEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					baseHitsEdit.setError(getString(R.string.validation_race_base_hits_required));
-				}
-			}
-		});
-		baseHitsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(baseHitsEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(baseHitsEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getBaseHits()) {
-							currentInstance.setBaseHits(newShort);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initRecoveryMultEdit(View layout) {
-		recoveryMultEdit = (EditText)layout.findViewById(R.id.recovery_mult_edit);
-		recoveryMultEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					recoveryMultEdit.setError(getString(R.string.validation_race_recovery_mult_required));
-				}
-			}
-		});
-		recoveryMultEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(recoveryMultEdit.getText().length() > 0) {
-						final float newFloat = Float.valueOf(recoveryMultEdit.getText().toString());
-						if (currentInstance != null && newFloat != currentInstance.getRecoveryMultiplier()) {
-							currentInstance.setRecoveryMultiplier(newFloat);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
+	// <editor-fold desc="Widget initialization methods">
 	private void initSizeSpinner(View layout) {
 		sizeSpinner = (Spinner)layout.findViewById(R.id.size_spinner);
 		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -692,126 +614,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
-	}
-
-	private void initStrideMod(View layout) {
-		strideModEdit = (EditText)layout.findViewById(R.id.stride_mod_edit);
-		strideModEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					strideModEdit.setError(getString(R.string.validation_race_stride_mod_required));
-				}
-			}
-		});
-		strideModEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(strideModEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(strideModEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getStrideModifier()) {
-							currentInstance.setStrideModifier(newShort);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initAverageHeightEdit(View layout) {
-		averageHeightEdit = (EditText)layout.findViewById(R.id.average_height_edit);
-		averageHeightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					averageHeightEdit.setError(getString(R.string.validation_race_avg_height_required));
-				}
-			}
-		});
-		averageHeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(averageHeightEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(averageHeightEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getAverageHeight()) {
-							currentInstance.setAverageHeight(newShort);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initAverageWeightEdit(View layout) {
-		averageWeightEdit = (EditText)layout.findViewById(R.id.average_weight_edit);
-		averageWeightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					averageWeightEdit.setError(getString(R.string.validation_race_avg_weight_required));
-				}
-			}
-		});
-		averageWeightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(averageWeightEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(averageWeightEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getAverageWeight()) {
-							currentInstance.setAverageWeight(newShort);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initPoundsPerInchEdit(View layout) {
-		poundsPerInchEdit = (EditText)layout.findViewById(R.id.pounds_per_inch_edit);
-		poundsPerInchEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					poundsPerInchEdit.setError(getString(R.string.validation_race_pounds_per_inch_required));
-				}
-			}
-		});
-		poundsPerInchEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(poundsPerInchEdit.getText().length() > 0) {
-						final short newShort = Short.valueOf(poundsPerInchEdit.getText().toString());
-						if (currentInstance != null && newShort != currentInstance.getPoundsPerInch()) {
-							currentInstance.setPoundsPerInch(newShort);
-							saveItem();
-						}
-					}
-				}
 			}
 		});
 	}
@@ -1031,4 +833,5 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		});
 		registerForContextMenu(listView);
 	}
+	// </editor-fold>
 }

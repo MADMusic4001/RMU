@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -42,6 +43,7 @@ import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -54,7 +56,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for critical codes.
  */
-public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CriticalCode> {
+public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CriticalCode>,
+		EditTextUtils.ValuesCallback {
 	@Inject
 	protected CriticalCodeRxHandler   criticalCodeRxHandler;
 	private TwoFieldListAdapter<CriticalCode> listAdapter;
@@ -64,6 +67,7 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 	private CriticalCode currentInstance = new CriticalCode();
 	private boolean isNew = true;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,8 +79,10 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_critical_code));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_critical_code_description));
 
-		initCodeEdit(layout);
-		initDescriptionEdit(layout);
+		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.code_edit,
+										  R.string.validation_critical_code_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_critical_code_description_required);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -149,6 +155,46 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public CharSequence getField1Value(CriticalCode criticalCode) {
+		return criticalCode.getCode();
+	}
+
+	@Override
+	public CharSequence getField2Value(CriticalCode criticalCode) {
+		return criticalCode.getDescription();
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.code_edit:
+				result = currentInstance.getCode();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.code_edit:
+				currentInstance.setCode(newString);
+				break;
+			case R.id.description_edit:
+				currentInstance.setDescription(newString);
+				break;
+		}
+	}
+	// </editor-fold>
+
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
@@ -185,7 +231,9 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 			descriptionEdit.setError(null);
 		}
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Save/delete entity methods">
 	private void saveItem() {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
@@ -264,63 +312,9 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 				}
 			});
 	}
+	// </editor-fold>
 
-	private void initCodeEdit(View layout) {
-		codeEdit = (EditText)layout.findViewById(R.id.code_edit);
-		codeEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && codeEdit != null) {
-					codeEdit.setError(getString(R.string.validation_critical_code_required));
-				}
-			}
-		});
-		codeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newCode = codeEdit.getText().toString();
-					if (currentInstance != null && !newCode.equals(currentInstance.getCode())) {
-						currentInstance.setCode(newCode);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_critical_code_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
+	// <editor-fold desc="Widget initialization methods">
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
@@ -383,14 +377,5 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 		});
 		registerForContextMenu(listView);
 	}
-
-	@Override
-	public CharSequence getField1Value(CriticalCode criticalCode) {
-		return criticalCode.getCode();
-	}
-
-	@Override
-	public CharSequence getField2Value(CriticalCode criticalCode) {
-		return criticalCode.getDescription();
-	}
+	// </editor-fold>
 }

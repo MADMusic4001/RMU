@@ -17,9 +17,8 @@ package com.madinnovations.rmu.view.activities.character;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -54,6 +53,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.character.ProfessionCategoryCostListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +71,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for body parts.
  */
 public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Profession>,
-		ProfessionCategoryCostListAdapter.ProfessionCostsCallbacks {
+		ProfessionCategoryCostListAdapter.ProfessionCostsCallbacks, EditTextUtils.ValuesCallback {
 	private static final String LOG_TAG = "ProfessionsFragment";
 	@Inject
 	protected ProfessionRxHandler               professionRxHandler;
@@ -95,6 +95,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	private Profession currentInstance = new Profession();
 	private boolean isNew = true;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -106,8 +107,10 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_profession_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_profession_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_profession_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_profession_description_required);
 		initRealm1Spinner(layout);
 		initRealm2Spinner(layout);
 		initCategoryCostListView(layout);
@@ -200,6 +203,38 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		return currentInstance;
 	}
 
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				saveItem();
+				break;
+			case R.id.description_edit:
+				currentInstance.setDescription(newString);
+				saveItem();
+				break;
+		}
+	}
+	// </editor-fold>
+
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
@@ -277,7 +312,9 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			descriptionEdit.setError(null);
 		}
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Save/delete entity methods">
 	private void deleteItem(final Profession item) {
 		professionRxHandler.deleteById(item.getId())
 			.observeOn(AndroidSchedulers.mainThread())
@@ -357,63 +394,9 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				});
 		}
 	}
+	// </editor-fold>
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_profession_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_profession_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
+	// <editor-fold desc="Widget initialization methods">
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
 		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -600,7 +583,9 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		});
 		registerForContextMenu(listView);
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Private methods">
 	private void addMissingCosts() {
 		Map<SkillCategory, SkillCost> oldSkillCategoryCosts = currentInstance.getSkillCategoryCosts();
 		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
@@ -656,4 +641,5 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		}
 		return costList;
 	}
+	// </editor-fold>
 }

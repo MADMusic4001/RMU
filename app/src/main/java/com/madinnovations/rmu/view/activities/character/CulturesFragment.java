@@ -17,9 +17,8 @@ package com.madinnovations.rmu.view.activities.character;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -48,6 +47,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.character.CultureSkillRanksListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,7 +63,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for body parts.
  */
 public class CulturesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Culture>,
-		CultureSkillRanksListAdapter.CultureRanksCallbacks {
+		CultureSkillRanksListAdapter.CultureRanksCallbacks, EditTextUtils.ValuesCallback {
 	private static final String LOG_TAG = "CulturesFragment";
 	@Inject
 	protected CultureRxHandler             cultureRxHandler;
@@ -79,6 +79,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 	private   Culture                      currentInstance = new Culture();
 	private   boolean                      isNew           = true;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,9 +91,12 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_culture_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_culture_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
-		initTradesAndCraftsEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_culture_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_culture_description_required);
+		tradesAndCraftsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.trades_ranks_edit,
+													 R.string.validation_culture_trades_ranks_required);
 		initSkillRanksListView(layout);
 		initListView(layout);
 
@@ -182,6 +186,46 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 		return culture.getDescription();
 	}
 
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+			case R.id.trades_ranks_edit:
+				result = String.valueOf(currentInstance.getTradesAndCraftsRanks());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				saveItem();
+				break;
+			case R.id.description_edit:
+				currentInstance.setDescription(newString);
+				saveItem();
+				break;
+			case R.id.trades_ranks_edit:
+				try {
+					currentInstance.setTradesAndCraftsRanks(Short.valueOf(newString));
+				}
+				catch (NumberFormatException ignored) {}
+		}
+	}
+	// </editor-fold>
+
+	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
@@ -238,7 +282,9 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 			skillRanksListAdapter.notifyDataSetChanged();
 		}
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Save/delete entity methods">
 	private void deleteItem(final Culture item) {
 		cultureRxHandler.deleteById(item.getId())
 			.observeOn(AndroidSchedulers.mainThread())
@@ -320,100 +366,15 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				});
 		}
 	}
+	// </editor-fold>
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					nameEdit.setError(getString(R.string.validation_culture_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					descriptionEdit.setError(getString(R.string.validation_culture_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initTradesAndCraftsEdit(View layout) {
-		tradesAndCraftsEdit = (EditText)layout.findViewById(R.id.trades_ranks_edit);
-
-		tradesAndCraftsEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					tradesAndCraftsEdit.setError(getString(R.string.validation_culture_trades_ranks_required));
-				}
-			}
-		});
-		tradesAndCraftsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(tradesAndCraftsEdit.getText().length() > 0) {
-						short newRanks = Short.valueOf(tradesAndCraftsEdit.getText().toString());
-						if (currentInstance != null && newRanks != currentInstance.getTradesAndCraftsRanks()) {
-							currentInstance.setTradesAndCraftsRanks(newRanks);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
+	// <editor-fold desc="Widget initialization methods">
 	private void initSkillRanksListView(View layout) {
 		ExpandableListView skillRanksListView = (ExpandableListView) layout.findViewById(R.id.skill_ranks_list_view);
 		skillRanksListAdapter = new CultureSkillRanksListAdapter(getActivity(), this, skillRanksListView);
 		skillRanksListView.setAdapter(skillRanksListAdapter);
 
-	skillRxHandler.getAll()
+		skillRxHandler.getAll()
 				.subscribe(new Subscriber<Collection<Skill>>() {
 					@Override
 					public void onCompleted() {
@@ -494,7 +455,9 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 		});
 		registerForContextMenu(listView);
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="Private methods">
 	private Collection<CultureSkillCategoryRanks> createRanksList() {
 		Map<SkillCategory, CultureSkillCategoryRanks> categoryRanksMap = new HashMap<>();
 		for(Skill skill : skills) {
@@ -509,4 +472,5 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 		}
 		return categoryRanksMap.values();
 	}
+	// </editor-fold>
 }
