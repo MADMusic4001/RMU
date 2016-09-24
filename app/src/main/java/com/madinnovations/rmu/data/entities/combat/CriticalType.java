@@ -26,8 +26,7 @@ public class CriticalType {
 	/**
 	 * Creates a new CriticalType instance
 	 */
-	public CriticalType() {
-    }
+	public CriticalType() {}
 
 	/**
 	 * Creates a new CriticalType instance with the given id

@@ -88,6 +88,13 @@ public interface SkillDao {
 	public List<Skill> getSpecializationSkills();
 
 	/**
+	 * Retrieves all Skill objects that do not require specialization from persistent storage.
+	 *
+	 * @return  a List containing all Skill objects that do not require specialization currently in persistent storage.
+	 */
+	public List<Skill> getNonSpecializationSkills();
+
+	/**
 	 * Retrieves all Skill objects that reference the given SkillCategory from persistent storage.
 	 *
 	 * @param filter  a SkillCategory instance whose ID will be used to filter the Skill objects returned by the query

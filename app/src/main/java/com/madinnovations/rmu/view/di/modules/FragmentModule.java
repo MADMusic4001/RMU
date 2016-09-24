@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
-import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
@@ -33,7 +32,6 @@ import dagger.Provides;
 public class FragmentModule {
 	private AboutFragment      aboutFragment;
 	private MainMenuFragment   mainMenuFragment;
-	private LocomotionTypesFragment locomotionTypesFragment;
 	private ParametersFragment parametersFragment;
 	private StatsFragment statsFragment;
 	private TalentCategoriesFragment talentCategoriesFragment;
@@ -43,9 +41,6 @@ public class FragmentModule {
 	}
 	public FragmentModule(MainMenuFragment mainMenuFragment) {
 		this.mainMenuFragment = mainMenuFragment;
-	}
-	public FragmentModule(LocomotionTypesFragment locomotionTypesFragment) {
-		this.locomotionTypesFragment = locomotionTypesFragment;
 	}
 	public FragmentModule(ParametersFragment parametersFragment) {
 		this.parametersFragment = parametersFragment;
@@ -64,10 +59,6 @@ public class FragmentModule {
 	@Provides @PerFragment
 	public MainMenuFragment provideMainMenuFragment() {
 		return this.mainMenuFragment;
-	}
-	@Provides @PerFragment
-	public LocomotionTypesFragment provideLocomotionTypesFragment() {
-		return this.locomotionTypesFragment;
 	}
 	@Provides @PerFragment
 	public ParametersFragment provideParametersFragment() {

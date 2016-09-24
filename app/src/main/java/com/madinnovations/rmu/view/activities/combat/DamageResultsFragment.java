@@ -17,10 +17,9 @@ package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,6 +43,7 @@ import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -56,17 +56,16 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for damage results.
  */
-public class DamageResultsFragment extends Fragment {
+public class DamageResultsFragment extends Fragment implements EditTextUtils.ValuesCallback {
 	@Inject
 	protected DamageResultRowRxHandler  damageResultRowRxHandler;
 	@Inject
 	protected DamageTableRxHandler      damageTableRxHandler;
-	private   ArrayAdapter<DamageTable> damageTableFilterSpinnerAdapter;
 	@Inject
 	protected DamageResultsGridAdapter  damageResultsGridAdapter;
-	private Spinner  damageTableFilterSpinner;
-	private EditText damageTableNameEdit;
-	private GridView damageResultsGridView;
+	private   ArrayAdapter<DamageTable> damageTableFilterSpinnerAdapter;
+	private   Spinner                   damageTableFilterSpinner;
+	private   EditText                  damageTableNameEdit;
 	private DamageTable currentInstance = new DamageTable();
 	private boolean isNew = true;
 
@@ -78,8 +77,9 @@ public class DamageResultsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.damage_results_fragment, container, false);
 
+		damageTableNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+													 R.string.validation_damage_table_name_required);
 		initDamageTableFilterSpinner(layout);
-		initDamageTableNameEdit(layout);
 		initDamageResultsGridView(layout);
 
 		setHasOptionsMenu(true);
@@ -115,6 +115,29 @@ public class DamageResultsFragment extends Fragment {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				saveItem();
+				break;
+		}
 	}
 
 	private boolean copyViewsToItem() {
@@ -167,6 +190,7 @@ public class DamageResultsFragment extends Fragment {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void deleteItem(@NonNull final DamageResult item) {
 		damageTableRxHandler.deleteById(item.getId())
 				.observeOn(AndroidSchedulers.mainThread())
@@ -193,34 +217,6 @@ public class DamageResultsFragment extends Fragment {
 				});
 	}
 
-	private void initDamageTableNameEdit(View layout) {
-		damageTableNameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		damageTableNameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && damageTableNameEdit != null) {
-					damageTableNameEdit.setError(getString(R.string.validation_damage_table_name_required));
-				}
-			}
-		});
-		damageTableNameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = damageTableNameEdit.getText().toString();
-					if (!newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
 	private void initDamageTableFilterSpinner(View layout) {
 		damageTableFilterSpinner = (Spinner)layout.findViewById(R.id.damage_tables_spinner);
 		damageTableFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -234,16 +230,22 @@ public class DamageResultsFragment extends Fragment {
 					public void onCompleted() {
 						int position = damageTableFilterSpinner.getSelectedItemPosition();
 						if(position >= 0) {
-							currentInstance = damageTableFilterSpinnerAdapter.getItem(position);
-							damageTableNameEdit.setText(currentInstance.getName());
-							loadFilteredDamageResultRows(currentInstance);
+							DamageTable newDamageTable = damageTableFilterSpinnerAdapter.getItem(position);
+							if(newDamageTable != null) {
+								currentInstance = newDamageTable;
+								damageTableNameEdit.setText(currentInstance.getName());
+								loadFilteredDamageResultRows(currentInstance);
+							}
+							else {
+								currentInstance.resetRows();
+							}
 						}
 						else {
 							currentInstance.resetRows();
-							damageResultsGridAdapter.clear();
-							damageResultsGridAdapter.addAll(currentInstance.getResultRows());
-							damageResultsGridAdapter.notifyDataSetChanged();
 						}
+						damageResultsGridAdapter.clear();
+						damageResultsGridAdapter.addAll(currentInstance.getResultRows());
+						damageResultsGridAdapter.notifyDataSetChanged();
 					}
 					@Override
 					public void onError(Throwable e) {
@@ -265,9 +267,12 @@ public class DamageResultsFragment extends Fragment {
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = damageTableFilterSpinnerAdapter.getItem(position);
-				damageTableNameEdit.setText(currentInstance.getName());
-				loadFilteredDamageResultRows(currentInstance);
+				DamageTable newDamageTable = damageTableFilterSpinnerAdapter.getItem(position);
+				if(newDamageTable != null) {
+					currentInstance = newDamageTable;
+					damageTableNameEdit.setText(currentInstance.getName());
+					loadFilteredDamageResultRows(currentInstance);
+				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> adapterView) {
@@ -276,13 +281,16 @@ public class DamageResultsFragment extends Fragment {
 	}
 
 	private void initDamageResultsGridView(View layout) {
-		damageResultsGridView = (GridView) layout.findViewById(R.id.damage_results_grid);
+		GridView damageResultsGridView = (GridView) layout.findViewById(R.id.damage_results_grid);
 		damageResultsGridView.setAdapter(damageResultsGridAdapter);
 
 		damageResultsGridView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				loadFilteredDamageResultRows(damageResultsGridAdapter.getItem(position).getDamageTable());
+				DamageResultRow newDamageResultRow = damageResultsGridAdapter.getItem(position);
+				if(newDamageResultRow != null) {
+					loadFilteredDamageResultRows(newDamageResultRow.getDamageTable());
+				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {

@@ -138,7 +138,40 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_NAME);
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Skill instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<Skill> getNonSpecializationSkills() {
+		final String selectionArgs[] = { "0" };
+		final String selection = COLUMN_REQUIRES_SPECIALIZATION + " = ?";
+		List<Skill> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_NAME);
 
 			if (cursor != null) {
 				cursor.moveToFirst();

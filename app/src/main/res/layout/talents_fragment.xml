@@ -64,7 +64,6 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/description_edit"
         android:hint="@string/hint_initial_cost"/>
-
     <EditText
         android:id="@+id/cost_per_tier_edit"
         android:layout_width="wrap_content"
@@ -74,19 +73,27 @@
         android:layout_alignBaseline="@id/initial_cost_edit"
         android:hint="@string/hint_cost_per_tier"/>
     <EditText
-        android:id="@+id/bonus_per_tier_edit"
+        android:id="@+id/min_tiers_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/cost_per_tier_edit"
         android:layout_toRightOf="@id/cost_per_tier_edit"
         android:layout_alignBaseline="@id/initial_cost_edit"
-        android:hint="@string/hint_bonus_per_tier"/>
+        android:hint="@string/hint_min_tiers"/>
+    <EditText
+        android:id="@+id/max_tiers_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/min_tiers_edit"
+        android:layout_toRightOf="@id/min_tiers_edit"
+        android:layout_alignBaseline="@id/initial_cost_edit"
+        android:hint="@string/hint_max_tiers"/>
     <Spinner
         android:id="@+id/affected_skill_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/bonus_per_tier_edit"
-        android:layout_toEndOf="@id/bonus_per_tier_edit"
+        android:layout_toRightOf="@id/max_tiers_edit"
+        android:layout_toEndOf="@id/max_tiers_edit"
         android:layout_alignTop="@id/initial_cost_edit"/>
 
     <CheckBox
@@ -136,48 +143,5 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"/>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/param_lists_header"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/effects_scroll">
-      <TextView
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:text="@string/label_available_params"/>
-      <TextView
-          android:layout_width="0dp"
-          android:layout_weight="2"
-          android:layout_height="wrap_content"
-          android:text="@string/label_params_used"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/param_lists_header"
-        android:baselineAligned="false">
-      <ListView
-          android:id="@+id/parameters_list"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="120dp"
-          android:minHeight="20dp"
-          android:choiceMode="none"/>
-      <ListView
-          android:id="@+id/selected_parameters_list"
-          android:layout_width="0dp"
-          android:layout_weight="2"
-          android:layout_height="120dp"
-          android:minHeight="20dp"
-          android:choiceMode="none"/>
-    </LinearLayout>
   </RelativeLayout>
 </LinearLayout>

@@ -87,7 +87,7 @@ public class CommonDaoSqlModule {
 
 	@Provides @Singleton
 	public TalentDao provideTalentDao(RMUDatabaseHelper helper, TalentCategoryDao talentCategoryDao, SkillDao skillDao,
-									  ParameterDao parameterDao) {
-		return new TalentDaoDbImpl(helper, talentCategoryDao, skillDao, parameterDao);
+									  SpecializationDao specializationDao, StatDao statDao) {
+		return new TalentDaoDbImpl(helper, talentCategoryDao, skillDao, specializationDao, statDao);
 	}
 }

@@ -20,13 +20,16 @@ import android.util.Log;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.TalentEffectsSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
-import com.madinnovations.rmu.data.entities.common.Parameter;
-import com.madinnovations.rmu.data.entities.common.ParameterValue;
+import com.madinnovations.rmu.data.entities.combat.Resistance;
+import com.madinnovations.rmu.data.entities.common.Effect;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
+import com.madinnovations.rmu.data.entities.common.TalentEffectRow;
 
 import java.io.IOException;
 
@@ -42,31 +45,43 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_IS_FLAW).value(value.isFlaw());
-//		if(value.getAffectedSkill() != null) {
-//			out.name(COLUMN_AFFECTED_SKILL_ID).value(value.getAffectedSkill().getId());
-//		}
-		out.name(COLUMN_TIER).value(value.getTier());
-		out.name(COLUMN_MAX_TIERS).value(value.getMaxTiers());
+		out.name(COLUMN_MIN_TIER).value(value.getMinTier());
+		out.name(COLUMN_MAX_TIER).value(value.getMaxTier());
 		out.name(COLUMN_DP_COST).value(value.getDpCost());
 		out.name(COLUMN_DP_COST_PER_TIER).value(value.getDpCostPerTier());
-//		out.name(COLUMN_BONUS_PER_TIER).value(value.getBonusPerTier());
 		out.name(COLUMN_IS_SITUATIONAL).value(value.isSituational());
 		out.name(COLUMN_ACTION_POINTS).value(value.getActionPoints());
-		out.name(TalentParametersSchema.TABLE_NAME);
-		out.beginArray();
-		for(ParameterValue parameterValue : value.getParameterValues()) {
-			out.beginObject();
-			out.name(TalentParametersSchema.COLUMN_PARAMETER_ID).value(parameterValue.getParameter().getId());
-			out.name(TalentParametersSchema.COLUMN_VALUE).value(parameterValue.getValue());
-			out.endObject();
+		out.name("talentEffectRowLength").value(value.getTalentEffectRows().length);
+		if(value.getTalentEffectRows().length > 0) {
+			out.name(TalentEffectsSchema.TABLE_NAME);
+			out.beginArray();
+			for (TalentEffectRow talentEffectRow : value.getTalentEffectRows()) {
+				out.beginObject();
+				out.name(TalentEffectsSchema.COLUMN_EFFECT).value(talentEffectRow.getEffect().name());
+				out.name(TalentEffectsSchema.COLUMN_BONUS).value(talentEffectRow.getBonus());
+				if (talentEffectRow.getAffectedResistance() != null) {
+					out.name(TalentEffectsSchema.COLUMN_RESISTANCE).value(talentEffectRow.getAffectedResistance().name());
+				}
+				if (talentEffectRow.getAffectedSkill() != null) {
+					out.name("affectedSkill").value(talentEffectRow.getAffectedSkill().getId());
+				}
+				if (talentEffectRow.getAffectedSpecialization() != null) {
+					out.name("affectedSpecialization").value(talentEffectRow.getAffectedSpecialization().getId());
+				}
+				if (talentEffectRow.getAffectedStat() != null) {
+					out.name("affectedStat").value(talentEffectRow.getAffectedStat().getId());
+				}
+				out.endObject();
+			}
+			out.endArray();
 		}
-		out.endArray();
 		out.endObject();
 		out.flush();
 	}
 
 	@Override
 	public Talent read(JsonReader in) throws IOException {
+		int talentEffectRowLength = 0;
 		Talent talent = new Talent();
 		in.beginObject();
 		while (in.hasNext()) {
@@ -87,14 +102,11 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 				case COLUMN_IS_FLAW:
 					talent.setFlaw(in.nextBoolean());
 					break;
-				case COLUMN_AFFECTED_SKILL_ID:
-//					talent.setAffectedSkill(new Skill(in.nextInt()));
+				case COLUMN_MIN_TIER:
+					talent.setMinTier((short) in.nextInt());
 					break;
-				case COLUMN_TIER:
-					talent.setTier((short) in.nextInt());
-					break;
-				case COLUMN_MAX_TIERS:
-					talent.setMaxTiers((short) in.nextInt());
+				case COLUMN_MAX_TIER:
+					talent.setMaxTier((short) in.nextInt());
 					break;
 				case COLUMN_DP_COST:
 					talent.setDpCost((short) in.nextInt());
@@ -102,17 +114,17 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 				case COLUMN_DP_COST_PER_TIER:
 					talent.setDpCostPerTier((short) in.nextInt());
 					break;
-				case COLUMN_BONUS_PER_TIER:
-//					talent.setBonusPerTier((short) in.nextInt());
-					break;
 				case COLUMN_IS_SITUATIONAL:
 					talent.setSituational(in.nextBoolean());
 					break;
 				case COLUMN_ACTION_POINTS:
 					talent.setActionPoints((short) in.nextInt());
 					break;
-				case TalentParametersSchema.TABLE_NAME:
-					readParameterValues(in, talent);
+				case "talentEffectRowLength":
+					talentEffectRowLength = in.nextInt();
+					break;
+				case TalentEffectsSchema.TABLE_NAME:
+					readTalentEffectValues(in, talent, talentEffectRowLength);
 					break;
 			}
 		}
@@ -121,25 +133,39 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		return talent;
 	}
 
-	private void readParameterValues(JsonReader in, Talent talent) throws IOException {
+	private void readTalentEffectValues(JsonReader in, Talent talent, int talentEffectRowLength) throws IOException {
+		TalentEffectRow[] talentEffectRows = new TalentEffectRow[talentEffectRowLength];
+		int index = 0;
 		in.beginArray();
 		while(in.hasNext()) {
-			Parameter newParameter = null;
-			String newValue = null;
+			TalentEffectRow talentEffectRow = new TalentEffectRow();
 			in.beginObject();
 			while(in.hasNext()) {
 				switch (in.nextName()) {
-					case TalentParametersSchema.COLUMN_PARAMETER_ID:
-						newParameter = new Parameter(in.nextInt());
+					case TalentEffectsSchema.COLUMN_EFFECT:
+						talentEffectRow.setEffect(Effect.valueOf(in.nextString()));
 						break;
-					case TalentParametersSchema.COLUMN_VALUE:
-						newValue = in.nextString();
+					case TalentEffectsSchema.COLUMN_BONUS:
+						talentEffectRow.setBonus((short)in.nextInt());
+						break;
+					case TalentEffectsSchema.COLUMN_RESISTANCE:
+						talentEffectRow.setAffectedResistance(Resistance.valueOf(in.nextString()));
+						break;
+					case "affectedSkill":
+						talentEffectRow.setAffectedSkill(new Skill(in.nextInt()));
+						break;
+					case "affectedSpecialization":
+						talentEffectRow.setAffectedSpecialization(new Specialization(in.nextInt()));
+						break;
+					case "affectedStat":
+						talentEffectRow.setAffectedStat(new Stat(in.nextInt()));
+						break;
 				}
 			}
-			ParameterValue parameterValue = new ParameterValue(newParameter, newValue);
-//			talent.getParameterValues().add(parameterValue);
+			talentEffectRows[index++] = talentEffectRow;
 			in.endObject();
 		}
 		in.endArray();
+		talent.setTalentEffectRows(talentEffectRows);
 	}
 }

@@ -16,21 +16,14 @@
 package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.ContextMenu;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,26 +42,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.ParameterRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Effect;
-import com.madinnovations.rmu.data.entities.common.Parameter;
-import com.madinnovations.rmu.data.entities.common.ParameterValue;
+import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
-import com.madinnovations.rmu.view.RMUDragShadowBuilder;
+import com.madinnovations.rmu.data.entities.common.TalentEffectRow;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.common.DragParameterListAdapter;
-import com.madinnovations.rmu.view.adapters.common.TalentParameterListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
+import com.madinnovations.rmu.view.utils.CheckBoxUtils;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -81,22 +74,20 @@ import static android.view.View.GONE;
 /**
  * Handles interactions with the UI for talents.
  */
-public class TalentsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Talent> {
-	private static final String DRAG_ADD_PARAMETER = "add-parameter";
-	private static final String DRAG_REMOVE_PARAMETER = "remove-parameter";
+public class TalentsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Talent>, CheckBoxUtils.ValuesCallback,
+		EditTextUtils.ValuesCallback {
+	private static final String LOG_TAG = "TalentsFragment";
+	@Inject
+	SkillRxHandler                       skillRxHandler;
+	@Inject
+	SpecializationRxHandler              specializationRxHandler;
+	@Inject
+	StatRxHandler                        statRxHandler;
 	@Inject
 	TalentRxHandler                      talentRxHandler;
 	@Inject
 	TalentCategoryRxHandler              talentCategoryRxHandler;
-	@Inject
-	SkillRxHandler                       skillRxHandler;
-	@Inject
-	ParameterRxHandler                   parameterRxHandler;
 	private ArrayAdapter<TalentCategory> categorySpinnerAdapter;
-	@Inject
-	DragParameterListAdapter             parametersListAdapter;
-	@Inject
-	protected TalentParameterListAdapter selectedParametersListAdapter;
 	private TwoFieldListAdapter<Talent>  listAdapter;
 	private ListView                     listView;
 	private Spinner                      categorySpinner;
@@ -104,15 +95,17 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private EditText                     descriptionEdit;
 	private EditText                     initialCostEdit;
 	private EditText                     costPerTierEdit ;
-	private EditText                     bonusPerTierEdit;
+	private EditText                     minTiersEdit;
+	private EditText                     maxTiersEdit;
 	private CheckBox                     flawCheckbox;
 	private CheckBox                     situationalCheckbox;
 	private EditText                     actionPointsEdit;
 	private LinearLayout                 effectsList;
-	private ListView                     selectedParametersList;
-	private Talent                       currentInstance = new Talent();
+	private Talent                       currentInstance   = new Talent();
 	private boolean                      isNew             = true;
-	private SparseIntArray resistanceIndexes = new SparseIntArray(0);
+	private Collection<Skill>            skills            = null;
+	private Collection<Specialization>   specializations   = null;
+	private Collection<Stat>             stats             = null;
 
 	@Nullable
 	@Override
@@ -126,17 +119,24 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_talent_description));
 
 		initCategorySpinner(layout);
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
-		initInitialCostEdit(layout);
-		initCostPerTierEdit(layout);
-		initBonusPerTierEdit(layout);
-		initFlawCheckbox(layout);
-		initSituationalCheckbox(layout);
-		initActionPointsEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_talent_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_talent_description_required);
+		initialCostEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.initial_cost_edit,
+												 R.string.validation_talent_initial_cost_required);
+		costPerTierEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.cost_per_tier_edit,
+												 R.string.validation_talent_cost_per_tier_required);
+		minTiersEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.min_tiers_edit,
+											  R.string.validation_talent_min_tiers_required);
+		maxTiersEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.max_tiers_edit,
+											  R.string.validation_talent_max_tiers_required);
+		flawCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.flaw_check_box);
+		situationalCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.situational_check_box);
+		actionPointsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.action_points_edit,
+												  R.string.validation_talent_action_points_required);
 		initAddEffectsButton(layout, inflater);
-		initParametersListView(layout);
-		initSelectedParametersListView(layout);
+//		initParametersListView(layout);
+//		initSelectedParametersListView(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -205,14 +205,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					deleteItem(talent);
 					return true;
 				}
-			case R.id.context_delete_parameter:
-				ParameterValue parameterValue = (ParameterValue) selectedParametersList.getItemAtPosition(info.position);
-				if(parameterValue != null) {
-					selectedParametersListAdapter.remove(parameterValue);
-					selectedParametersListAdapter.notifyDataSetChanged();
-					saveItem();
-					return true;
-				}
+//			case R.id.context_delete_parameter:
+//				ParameterValue parameterValue = (ParameterValue) selectedParametersList.getItemAtPosition(info.position);
+//				if(parameterValue != null) {
+//					selectedParametersListAdapter.remove(parameterValue);
+//					selectedParametersListAdapter.notifyDataSetChanged();
+//					saveItem();
+//					return true;
+//				}
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -225,6 +225,101 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	@Override
 	public CharSequence getField2Value(Talent talent) {
 		return talent.getDescription();
+	}
+
+	@Override
+	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
+		boolean result = false;
+
+		switch (checkBoxId) {
+			case R.id.flaw_check_box:
+				result = currentInstance.isFlaw();
+				break;
+			case R.id.situational_check_box:
+				result = currentInstance.isSituational();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
+		switch (checkBoxId) {
+			case R.id.flaw_check_box:
+				currentInstance.setFlaw(newBoolean);
+				saveItem();
+				break;
+			case R.id.situational_check_box:
+				currentInstance.setSituational(newBoolean);
+				saveItem();
+				break;
+		}
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+			case R.id.initial_cost_edit:
+				result = String.valueOf(currentInstance.getDpCost());
+				break;
+			case R.id.cost_per_tier_edit:
+				result = String.valueOf(currentInstance.getDpCostPerTier());
+				break;
+			case R.id.min_tiers_edit:
+				result = String.valueOf(currentInstance.getMinTier());
+				break;
+			case R.id.max_tiers_edit:
+				result = String.valueOf(currentInstance.getMaxTier());
+				break;
+			case R.id.action_points_edit:
+				result = String.valueOf(currentInstance.getActionPoints());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				saveItem();
+				break;
+			case R.id.description_edit:
+				currentInstance.setDescription(newString);
+				saveItem();
+				break;
+			case R.id.initial_cost_edit:
+				currentInstance.setDpCost(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.cost_per_tier_edit:
+				currentInstance.setDpCostPerTier(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.min_tiers_edit:
+				currentInstance.setMinTier(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.max_tiers_edit:
+				currentInstance.setMaxTier(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.action_points_edit:
+				currentInstance.setActionPoints(Short.valueOf(newString));
+				saveItem();
+				break;
+		}
 	}
 
 	private boolean copyViewsToItem() {
@@ -260,15 +355,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 
-//		if(affectedSkillSpinner.getSelectedItemPosition() != -1) {
-//			Skill newSkill = affectedSkillSpinnerAdapter.getItem(affectedSkillSpinner.getSelectedItemPosition());
-//			if ((newSkill == null && currentInstance.getAffectedSkill() != null) ||
-//					(newSkill != null && !newSkill.equals(currentInstance.getAffectedSkill()))) {
-//				currentInstance.setAffectedSkill(newSkill);
-//				changed = true;
-//			}
-//		}
-
 		if(initialCostEdit.getText().length() > 0) {
 			newShort = Short.valueOf(initialCostEdit.getText().toString());
 			if(newShort != currentInstance.getDpCost()) {
@@ -285,13 +371,21 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 
-//		if(bonusPerTierEdit.getText().length() > 0) {
-//			newShort = Short.valueOf(bonusPerTierEdit.getText().toString());
-//			if(newShort != currentInstance.getBonusPerTier()) {
-//				currentInstance.setBonusPerTier(newShort);
-//				changed = true;
-//			}
-//		}
+		if(minTiersEdit.getText().length() > 0) {
+			newShort = Short.valueOf(minTiersEdit.getText().toString());
+			if(newShort != currentInstance.getMinTier()) {
+				currentInstance.setMinTier(newShort);
+				changed = true;
+			}
+		}
+
+		if(maxTiersEdit.getText().length() > 0) {
+			newShort = Short.valueOf(maxTiersEdit.getText().toString());
+			if(newShort != currentInstance.getMaxTier()) {
+				currentInstance.setMaxTier(newShort);
+				changed = true;
+			}
+		}
 
 		if(situationalCheckbox.isChecked() != currentInstance.isSituational()) {
 			currentInstance.setSituational(situationalCheckbox.isChecked());
@@ -306,26 +400,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 
-//		boolean updateParameters = false;
-//		if(selectedParametersListAdapter.getCount() != currentInstance.getParameterValues().size()) {
-//			updateParameters = true;
-//		}
-//		else {
-//			for(ParameterValue parameterValue : currentInstance.getParameterValues()) {
-//				if(selectedParametersListAdapter.getPosition(parameterValue) == -1) {
-//					updateParameters = true;
-//					break;
-//				}
-//			}
-//		}
-//		if(updateParameters) {
-//			currentInstance.getParameterValues().clear();
-//			for(int i = 0; i < selectedParametersListAdapter.getCount(); i++) {
-//				currentInstance.getParameterValues().add(selectedParametersListAdapter.getItem(i));
-//			}
-//			changed = true;
-//		}
-
 		return changed;
 	}
 
@@ -333,16 +407,16 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		categorySpinner.setSelection(categorySpinnerAdapter.getPosition(currentInstance.getCategory()));
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-//		affectedSkillSpinner.setSelection(affectedSkillSpinnerAdapter.getPosition(currentInstance.getAffectedSkill()));
 		initialCostEdit.setText(String.valueOf(currentInstance.getDpCost()));
 		costPerTierEdit.setText(String.valueOf(currentInstance.getDpCostPerTier()));
-//		bonusPerTierEdit.setText(String.valueOf(currentInstance.getBonusPerTier()));
+		minTiersEdit.setText(String.valueOf(currentInstance.getMinTier()));
+		maxTiersEdit.setText(String.valueOf(currentInstance.getMaxTier()));
 		flawCheckbox.setChecked(currentInstance.isFlaw());
 		situationalCheckbox.setChecked(currentInstance.isSituational());
 		actionPointsEdit.setText(String.valueOf(currentInstance.getActionPoints()));
-		selectedParametersListAdapter.clear();
-		selectedParametersListAdapter.addAll(currentInstance.getParameterValues());
-		selectedParametersListAdapter.notifyDataSetChanged();
+//		selectedParametersListAdapter.clear();
+//		selectedParametersListAdapter.addAll(currentInstance.getParameterValues());
+//		selectedParametersListAdapter.notifyDataSetChanged();
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -364,7 +438,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("TalentsFragment", "Exception saving new Talent: " + currentInstance, e);
+							Log.e(LOG_TAG, "Exception saving new Talent: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -402,7 +476,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentsFragment", "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_talent_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -443,7 +517,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentsFragment", "Exception caught getting all TalentCategory instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all TalentCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<TalentCategory> items) {
@@ -471,62 +545,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_talent_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (!newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_talent_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (!newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
 //	private void initAffectedSkillSpinner(View layout) {
 //		affectedSkillSpinner = (Spinner)layout.findViewById(R.id.affected_skill_spinner);
 //		affectedSkillSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -539,7 +557,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 //					public void onCompleted() {}
 //					@Override
 //					public void onError(Throwable e) {
-//						Log.e("TalentsFragment", "Exception caught getting all TalentCategory instances", e);
+//						Log.e(LOG_TAG, "Exception caught getting all TalentCategory instances", e);
 //					}
 //					@Override
 //					public void onNext(Collection<Skill> items) {
@@ -567,148 +585,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 //		});
 //	}
 
-	private void initInitialCostEdit(View layout) {
-		initialCostEdit = (EditText)layout.findViewById(R.id.initial_cost_edit);
-		initialCostEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && initialCostEdit != null) {
-					initialCostEdit.setError(getString(R.string.validation_talent_initial_cost_required));
-				}
-			}
-		});
-		initialCostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(initialCostEdit.getText().length() > 0) {
-						short newHits = Short.valueOf(initialCostEdit.getText().toString());
-						if (newHits != currentInstance.getDpCost()) {
-							currentInstance.setDpCost(newHits);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initCostPerTierEdit(View layout) {
-		costPerTierEdit = (EditText)layout.findViewById(R.id.cost_per_tier_edit);
-		costPerTierEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && costPerTierEdit != null) {
-					costPerTierEdit.setError(getString(R.string.validation_talent_cost_per_tier_required));
-				}
-			}
-		});
-		costPerTierEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(costPerTierEdit.getText().length() > 0) {
-						short newHits = Short.valueOf(costPerTierEdit.getText().toString());
-						if (newHits != currentInstance.getDpCostPerTier()) {
-							currentInstance.setDpCostPerTier(newHits);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initBonusPerTierEdit(View layout) {
-		bonusPerTierEdit = (EditText)layout.findViewById(R.id.bonus_per_tier_edit);
-		bonusPerTierEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && bonusPerTierEdit != null) {
-					bonusPerTierEdit.setError(getString(R.string.validation_talent_bonus_per_tier_required));
-				}
-			}
-		});
-		bonusPerTierEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(bonusPerTierEdit.getText().length() > 0) {
-						short newHits = Short.valueOf(bonusPerTierEdit.getText().toString());
-//						if (newHits != currentInstance.getBonusPerTier()) {
-//							currentInstance.setBonusPerTier(newHits);
-//							saveItem();
-//						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initFlawCheckbox(View layout) {
-		flawCheckbox = (CheckBox) layout.findViewById(R.id.flaw_check_box);
-		flawCheckbox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				currentInstance.setFlaw(situationalCheckbox.isChecked());
-				saveItem();
-			}
-		});
-	}
-
-	private void initSituationalCheckbox(View layout) {
-		situationalCheckbox = (CheckBox) layout.findViewById(R.id.situational_check_box);
-		situationalCheckbox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				currentInstance.setSituational(situationalCheckbox.isChecked());
-				saveItem();
-			}
-		});
-	}
-
-	private void initActionPointsEdit(View layout) {
-		actionPointsEdit = (EditText)layout.findViewById(R.id.action_points_edit);
-		actionPointsEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && actionPointsEdit != null) {
-					actionPointsEdit.setError(getString(R.string.validation_talent_action_points_required));
-				}
-			}
-		});
-		actionPointsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(actionPointsEdit.getText().length() > 0) {
-						short newHits = Short.valueOf(actionPointsEdit.getText().toString());
-						if (newHits != currentInstance.getActionPoints()) {
-							currentInstance.setActionPoints(newHits);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
 	private void initAddEffectsButton(final View layout, final LayoutInflater inflater) {
 		effectsList = (LinearLayout)layout.findViewById(R.id.effects_list);
 		Button button = (Button)layout.findViewById(R.id.add_effect_button);
@@ -716,81 +592,25 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				int length = currentInstance.getEffects().length;
 				EffectFragment effectFragment = new EffectFragment();
 				effectFragment.setEffectsList(effectsList);
-				FragmentTransaction transaction = getFragmentManager().beginTransaction();
-				getFragmentManager().putFragment(null, "RMU", effectFragment);
+				FragmentManager fragmentManager;
+				fragmentManager = getFragmentManager();
+				FragmentTransaction transaction = fragmentManager.beginTransaction();
+				transaction.add(R.id.effects_list, effectFragment);
 				transaction.commit();
-				Effect[] effects = new Effect[length + 1];
-				short[] values = new short[length + 1];
+
+				int length = currentInstance.getTalentEffectRows().length;
+				TalentEffectRow[] rows = new TalentEffectRow[length + 1];
 				if(length > 0) {
-					System.arraycopy(currentInstance.getEffects(), 0, effects, 0, length);
-					System.arraycopy(currentInstance.getEffectValues(), 0, values, 0, length);
+					System.arraycopy(currentInstance.getTalentEffectRows(), 0, rows, 0, length);
 				}
-				effects[length] = Effect.ACTION_POINTS;
-				values[length] = (short)0;
-				currentInstance.setEffects(effects);
-				currentInstance.setEffectValues(values);
+				rows[length] = new TalentEffectRow();
+				rows[length].setEffect(Effect.ACTION_POINTS);
+				currentInstance.setTalentEffectRows(rows);
 				addEffectRow(inflater, length);
 			}
 		});
-	}
-
-	private void initParametersListView(View layout) {
-		ListView parametersListView = (ListView) layout.findViewById(R.id.parameters_list);
-
-		parametersListView.setAdapter(parametersListAdapter);
-
-		parametersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-				String positionString = String.valueOf(position);
-				ClipData.Item clipDataItem = new ClipData.Item(positionString);
-				ClipData dragData = new ClipData(DRAG_ADD_PARAMETER, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN},
-						clipDataItem);
-
-				List<View> views = new ArrayList<>();
-				views.add(view);
-				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(views);
-
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
-				}
-				else {
-					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
-				}
-				return false;
-			}
-		});
-		parameterRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Parameter>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("TalentsFragment", "Exception caught getting all Parameter instances in initParametersListView", e);
-					}
-					@Override
-					public void onNext(Collection<Parameter> items) {
-						parametersListAdapter.clear();
-						parametersListAdapter.addAll(items);
-						parametersListAdapter.notifyDataSetChanged();
-					}
-				});
-	}
-
-	private void initSelectedParametersListView(View layout) {
-		selectedParametersList = (ListView) layout.findViewById(R.id.selected_parameters_list);
-		selectedParametersList.setAdapter(selectedParametersListAdapter);
-		selectedParametersList.setOnDragListener(new MyDragEventListener());
-		selectedParametersListAdapter.clear();
-		selectedParametersListAdapter.addAll(currentInstance.getParameterValues());
-		selectedParametersListAdapter.notifyDataSetChanged();
-		registerForContextMenu(selectedParametersList);
 	}
 
 	private void initListView(View layout) {
@@ -814,7 +634,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("TalentsFragment", "Exception caught getting all Talent instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all Talent instances", e);
 						Toast.makeText(TalentsFragment.this.getActivity(),
 								getString(R.string.toast_talents_load_failed),
 								Toast.LENGTH_SHORT).show();
@@ -848,58 +668,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		registerForContextMenu(listView);
 	}
 
-	protected class MyDragEventListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = selectedParametersList.getBackground();
-
-		@Override
-		public boolean onDrag(View v, DragEvent event) {
-			final int action = event.getAction();
-
-			switch(action) {
-				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription().getLabel().equals(DRAG_ADD_PARAMETER)) {
-						v.setBackground(targetShape);
-						v.invalidate();
-						break;
-					}
-					return false;
-				case DragEvent.ACTION_DRAG_ENTERED:
-					v.setBackground(hoverShape);
-					v.invalidate();
-					break;
-				case DragEvent.ACTION_DRAG_LOCATION:
-					break;
-				case DragEvent.ACTION_DRAG_EXITED:
-					v.setBackground(targetShape);
-					v.invalidate();
-					break;
-				case DragEvent.ACTION_DROP:
-					for(int i = 0; i < event.getClipData().getItemCount(); i++) {
-						ClipData.Item item = event.getClipData().getItemAt(i);
-						int position = Integer.valueOf(item.getText().toString());
-						Parameter parameter = parametersListAdapter.getItem(position);
-						ParameterValue parameterValue = new ParameterValue(parameter, null);
-						if (selectedParametersListAdapter.getPosition(parameterValue) == -1) {
-							selectedParametersListAdapter.add(parameterValue);
-						}
-					}
-					selectedParametersListAdapter.notifyDataSetChanged();
-					v.setBackground(normalShape);
-					v.invalidate();
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					v.setBackground(normalShape);
-					v.invalidate();
-					event.getResult();
-					break;
-			}
-
-			return true;
-		}
-	}
-
 	private void addEffectRow(LayoutInflater inflater, final int index) {
 		View effectRow = inflater.inflate(R.layout.talent_effect_row, effectsList, false);
 		initEffectSpinner(effectRow, index);
@@ -923,32 +691,32 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Effect effect = adapter.getItem(position);
 				if(effect != null) {
-					if(!effect.equals(currentInstance.getEffects()[index])) {
+					TalentEffectRow row = currentInstance.getTalentEffectRows()[index];
+					if(!effect.equals(row.getEffect())) {
+						row.setEffect(effect);
 						switch (effect) {
+							case ELEMENTAL_RR:
+							case FEAR_RR:
+							case FOLLOWER_FEAR_RR:
 							case MAGICAL_RR:
-								int length = currentInstance.getAffectedResistances().length;
-								Resistance[] resistances = new Resistance[length + 1];
-								short[] bonuses = new short[length + 1];
-								if(length > 0) {
-									System.arraycopy(currentInstance.getAffectedResistances(), 0, resistances, 0, length);
-									System.arraycopy(currentInstance.getResistBonuses(), 0, bonuses, 0, length);
-								}
-								resistanceIndexes.put(index, length);
-								currentInstance.setAffectedResistances(resistances);
-								currentInstance.setResistBonuses(bonuses);
+							case PHYSICAL_RR:
 								enableResistances(effectsList, index);
-//								setValuesVisibility(effectsList, View.GONE);
-//								setSkillsVisibility(effectsList, View.GONE);
-//								setStatsVisibility(effectsList, View.GONE);
-								break;
-							case STAT_BONUS:
-								enableStats(effectsList, index);
 								break;
 							case SKILL_BONUS:
 								enableSkills(effectsList, index);
 								break;
+							case SPECIALIZATION_BONUS:
+								enableSpecializations(effectsList, index);
+							case STAT_BONUS:
+								enableStats(effectsList, index);
+								break;
+							default:
+								setResistancesVisibility(effectsList, GONE);
+								setSkillsVisibility(effectsList, GONE);
+								setSpecializationsVisibility(effectsList, GONE);
+								setStatsVisibility(effectsList, GONE);
+								break;
 						}
-						currentInstance.getEffects()[index] = effect;
 					}
 				}
 			}
@@ -959,15 +727,15 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initEffectEdit(View parent, final int index) {
 		final EditText editText = (EditText)parent.findViewById(R.id.value_edit);
-		editText.setText(String.valueOf(currentInstance.getEffectValues()[index]));
+		editText.setText(String.valueOf(currentInstance.getTalentEffectRows()[index].getBonus()));
 
 		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if(editText.getText().length() > 0) {
 					short newShort = Short.valueOf(editText.getText().toString());
-					if(newShort != currentInstance.getEffectValues()[index]) {
-						currentInstance.getEffectValues()[index] = newShort;
+					if(newShort != currentInstance.getTalentEffectRows()[index].getBonus()) {
+						currentInstance.getTalentEffectRows()[index].setBonus(newShort);
 						saveItem();
 					}
 				}
@@ -978,6 +746,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void enableResistances(View parent, final int index) {
 		setValuesVisibility(parent, GONE);
 		setSkillsVisibility(parent, GONE);
+		setSpecializationsVisibility(parent, GONE);
 		setStatsVisibility(parent, GONE);
 
 		parent.findViewById(R.id.resistance_label).setVisibility(View.VISIBLE);
@@ -985,19 +754,31 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		spinner.setVisibility(View.VISIBLE);
 		final ArrayAdapter<Resistance> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		adapter.clear();
-		adapter.addAll(Resistance.values());
+		if(Effect.ELEMENTAL_RR.equals(currentInstance.getTalentEffectRows()[index].getEffect())) {
+			adapter.addAll(Resistance.getElementalResistances());
+		}
+		else if(Effect.FEAR_RR.equals(currentInstance.getTalentEffectRows()[index].getEffect())) {
+			adapter.addAll(Resistance.getFearResistances());
+		}
+		else if(Effect.FOLLOWER_FEAR_RR.equals(currentInstance.getTalentEffectRows()[index].getEffect())) {
+			adapter.addAll(Resistance.getFearResistances());
+		}
+		else if(Effect.MAGICAL_RR.equals(currentInstance.getTalentEffectRows()[index].getEffect())) {
+			adapter.addAll(Resistance.getMagicalResistances());
+		}
+		else if(Effect.PHYSICAL_RR.equals(currentInstance.getTalentEffectRows()[index].getEffect())) {
+			adapter.addAll(Resistance.gePhysicalResistances());
+		}
 		adapter.notifyDataSetChanged();
 		spinner.setAdapter(adapter);
-		int resistanceIndex = resistanceIndexes.get(index);
-		spinner.setSelection(adapter.getPosition(currentInstance.getAffectedResistances()[resistanceIndex]));
+		spinner.setSelection(adapter.getPosition(currentInstance.getTalentEffectRows()[index].getAffectedResistance()));
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Resistance resistance = adapter.getItem(position);
 				if(resistance != null) {
-					int resistanceIndex = resistanceIndexes.get(index);
-					if(!resistance.equals(currentInstance.getAffectedResistances()[resistanceIndex])) {
-						currentInstance.getAffectedResistances()[resistanceIndex] = resistance;
+					if(!resistance.equals(currentInstance.getTalentEffectRows()[index].getAffectedResistance())) {
+						currentInstance.getTalentEffectRows()[index].setAffectedResistance(resistance);
 						saveItem();
 					}
 				}
@@ -1008,15 +789,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		parent.findViewById(R.id.resistance_value_label).setVisibility(View.VISIBLE);
 		final EditText editText = (EditText)parent.findViewById(R.id.resistance_value_edit);
 		editText.setVisibility(View.VISIBLE);
-		editText.setText(String.valueOf(currentInstance.getResistBonuses()[index]));
+		editText.setText(String.valueOf(currentInstance.getTalentEffectRows()[index].getBonus()));
 		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if(editText.getText().length() > 0) {
 					short newShort = Short.valueOf(editText.getText().toString());
-					int resistanceIndex = resistanceIndexes.get(index);
-					if(newShort != currentInstance.getResistBonuses()[resistanceIndex]) {
-						currentInstance.getResistBonuses()[resistanceIndex] = newShort;
+					if(newShort != currentInstance.getTalentEffectRows()[index].getBonus()) {
+						currentInstance.getTalentEffectRows()[index].setBonus(newShort);
 						saveItem();
 					}
 				}
@@ -1024,21 +804,225 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void enableSkills(View parent, int index) {
+	private void enableSkills(View parent, final int index) {
 		setValuesVisibility(parent, GONE);
 		setResistancesVisibility(parent, GONE);
+		setSpecializationsVisibility(parent, GONE);
 		setStatsVisibility(parent, GONE);
+
+		parent.findViewById(R.id.skill_label).setVisibility(View.VISIBLE);
+		final Spinner spinner = (Spinner)parent.findViewById(R.id.skill_spinner);
+		spinner.setVisibility(View.VISIBLE);
+		final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		if(skills != null) {
+			adapter.clear();
+			adapter.addAll(skills);
+			adapter.notifyDataSetChanged();
+			spinner.setSelection(adapter.getPosition(currentInstance.getTalentEffectRows()[index].getAffectedSkill()));
+		}
+		else {
+			skillRxHandler.getNonSpecializationSkills()
+					.subscribe(new Subscriber<Collection<Skill>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception caught loading all non-specialization Skill instances", e);
+						}
+						@Override
+						public void onNext(Collection<Skill> skillCollection) {
+							skills = skillCollection;
+							adapter.clear();
+							adapter.addAll(skills);
+							adapter.notifyDataSetChanged();
+							spinner.setAdapter(adapter);
+							spinner.setSelection(adapter.getPosition(currentInstance.getTalentEffectRows()[index].getAffectedSkill()));
+						}
+					});
+		}
+
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Skill skill= adapter.getItem(position);
+				if(skill != null) {
+					if(!skill.equals(currentInstance.getTalentEffectRows()[index].getAffectedSkill())) {
+						currentInstance.getTalentEffectRows()[index].setAffectedSkill(skill);
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+		parent.findViewById(R.id.skill_bonus_label).setVisibility(View.VISIBLE);
+		final EditText editText = (EditText)parent.findViewById(R.id.skill_bonus_edit);
+		editText.setVisibility(View.VISIBLE);
+		editText.setText(String.valueOf(currentInstance.getTalentEffectRows()[index].getBonus()));
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					short newShort = Short.valueOf(editText.getText().toString());
+					if(newShort != currentInstance.getTalentEffectRows()[index].getBonus()) {
+						currentInstance.getTalentEffectRows()[index].setBonus(newShort);
+						saveItem();
+					}
+				}
+			}
+		});
 	}
 
-	private void enableStats(View parent, int index) {
+	private void enableSpecializations(View parent, final int index) {
 		setValuesVisibility(parent, GONE);
 		setResistancesVisibility(parent, GONE);
 		setSkillsVisibility(parent, GONE);
+		setStatsVisibility(parent, GONE);
+
+		parent.findViewById(R.id.specialization_label).setVisibility(View.VISIBLE);
+		final Spinner spinner = (Spinner)parent.findViewById(R.id.resistance_spinner);
+		spinner.setVisibility(View.VISIBLE);
+		final ArrayAdapter<Specialization> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		if(specializations != null) {
+			adapter.clear();
+			adapter.addAll(specializations);
+			adapter.notifyDataSetChanged();
+			spinner.setAdapter(adapter);
+			spinner.setSelection(adapter.getPosition(currentInstance.getTalentEffectRows()[index].getAffectedSpecialization()));
+		}
+		else {
+			specializationRxHandler.getAll()
+					.subscribe(new Subscriber<Collection<Specialization>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception caught getting all Specialization intances", e);
+						}
+						@Override
+						public void onNext(Collection<Specialization> specializationCollection) {
+							specializations = specializationCollection;
+							adapter.clear();
+							adapter.addAll(specializations);
+							adapter.notifyDataSetChanged();
+							spinner.setAdapter(adapter);
+							spinner.setSelection(adapter.getPosition(
+									currentInstance.getTalentEffectRows()[index].getAffectedSpecialization()));
+						}
+					});
+		}
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Specialization specialization= adapter.getItem(position);
+				if(specialization != null) {
+					if(!specialization.equals(currentInstance.getTalentEffectRows()[index].getAffectedSpecialization())) {
+						currentInstance.getTalentEffectRows()[index].setAffectedSpecialization(specialization);
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+		parent.findViewById(R.id.specialization_bonus_label).setVisibility(View.VISIBLE);
+		final EditText editText = (EditText)parent.findViewById(R.id.specialization_bonus_edit);
+		editText.setVisibility(View.VISIBLE);
+		editText.setText(String.valueOf(currentInstance.getTalentEffectRows()[index].getBonus()));
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					short newShort = Short.valueOf(editText.getText().toString());
+					if(newShort != currentInstance.getTalentEffectRows()[index].getBonus()) {
+						currentInstance.getTalentEffectRows()[index].setBonus(newShort);
+						saveItem();
+					}
+				}
+			}
+		});
+	}
+
+	private void enableStats(View parent, final int index) {
+		setValuesVisibility(parent, GONE);
+		setResistancesVisibility(parent, GONE);
+		setSkillsVisibility(parent, GONE);
+		setSpecializationsVisibility(parent, GONE);
+
+		parent.findViewById(R.id.stat_label).setVisibility(View.VISIBLE);
+		final Spinner spinner = (Spinner)parent.findViewById(R.id.stat_spinner);
+		spinner.setVisibility(View.VISIBLE);
+		final ArrayAdapter<Stat> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		if(stats != null) {
+			adapter.clear();
+			adapter.addAll(stats);
+			adapter.notifyDataSetChanged();
+			spinner.setAdapter(adapter);
+			spinner.setSelection(adapter.getPosition(currentInstance.getTalentEffectRows()[index].getAffectedStat()));
+		}
+		else {
+			statRxHandler.getAll()
+					.subscribe(new Subscriber<Collection<Stat>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception getting all Stat instances", e);
+						}
+						@Override
+						public void onNext(Collection<Stat> statsCollection) {
+							stats = statsCollection;
+							adapter.clear();
+							adapter.addAll(stats);
+							adapter.notifyDataSetChanged();
+							spinner.setAdapter(adapter);
+							spinner.setSelection(adapter.getPosition(
+									currentInstance.getTalentEffectRows()[index].getAffectedStat()));
+						}
+					});
+		}
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Stat stat = adapter.getItem(position);
+				if(stat != null) {
+					if(!stat.equals(currentInstance.getTalentEffectRows()[index].getAffectedStat())) {
+						currentInstance.getTalentEffectRows()[index].setAffectedStat(stat);
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+		parent.findViewById(R.id.stat_bonus_label).setVisibility(View.VISIBLE);
+		final EditText editText = (EditText)parent.findViewById(R.id.stat_bonus_edit);
+		editText.setVisibility(View.VISIBLE);
+		editText.setText(String.valueOf(currentInstance.getTalentEffectRows()[index].getBonus()));
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					short newShort = Short.valueOf(editText.getText().toString());
+					if(newShort != currentInstance.getTalentEffectRows()[index].getBonus()) {
+						currentInstance.getTalentEffectRows()[index].setBonus(newShort);
+						saveItem();
+					}
+				}
+			}
+		});
 	}
 
 	private void setValuesVisibility(View parent, int visibility) {
 		parent.findViewById(R.id.value_label).setVisibility(visibility);
 		parent.findViewById(R.id.value_edit).setVisibility(visibility);
+	}
+
+	private void setResistancesVisibility(View parent, int visibility) {
+		parent.findViewById(R.id.resistance_label).setVisibility(visibility);
+		parent.findViewById(R.id.resistance_spinner).setVisibility(visibility);
+		parent.findViewById(R.id.resistance_value_label).setVisibility(visibility);
+		parent.findViewById(R.id.resistance_value_edit).setVisibility(visibility);
 	}
 
 	private void setSkillsVisibility(View parent, int visibility) {
@@ -1048,11 +1032,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		parent.findViewById(R.id.skill_bonus_edit).setVisibility(visibility);
 	}
 
-	private void setResistancesVisibility(View parent, int visibility) {
-		parent.findViewById(R.id.resistance_label).setVisibility(visibility);
-		parent.findViewById(R.id.resistance_spinner).setVisibility(visibility);
-		parent.findViewById(R.id.resistance_value_label).setVisibility(visibility);
-		parent.findViewById(R.id.resistance_value_edit).setVisibility(visibility);
+	private void setSpecializationsVisibility(View parent, int visibility) {
+		parent.findViewById(R.id.specialization_label).setVisibility(visibility);
+		parent.findViewById(R.id.specialization_spinner).setVisibility(visibility);
+		parent.findViewById(R.id.specialization_bonus_label).setVisibility(visibility);
+		parent.findViewById(R.id.specialization_bonus_edit).setVisibility(visibility);
 	}
 
 	private void setStatsVisibility(View parent, int visibility) {

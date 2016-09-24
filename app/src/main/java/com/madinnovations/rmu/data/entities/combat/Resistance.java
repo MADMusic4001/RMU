@@ -15,36 +15,121 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Magic/Physical element attribute
  */
 public enum Resistance {
-	CHANNELING("Channeling", false, true),
-	COLD("Cold/Ice", true, false),
-	DISEASE("Disease", false, false),
-	ELECTRICITY("Electricity/Light", true, false),
-	ESSENCE("Essence", false, true),
-	FEAR("Fea", false, false),
-	HEAT("Heat/Fire", true, false),
-	MENTALISM("Mentalism", false, true),
-	POISON("Poison", false, false);
+	CHANNELING("Channeling", false, false, true, false),
+	COLD("Cold/Ice", true, false, false, false),
+	DISEASE("Disease", false, false, false, true),
+	ELECTRICITY("Electricity/Light", true, false, false, false),
+	ESSENCE("Essence", false, false, true, false),
+	FEAR("Fear", false, true, false, false),
+	HEAT("Heat/Fire", true, false, false, false),
+	MENTALISM("Mentalism", false, false, true, false),
+	POISON("Poison", false, false, false, true);
 
 	private String text;
 	private boolean elemental;
+	private boolean fear;
 	private boolean magical;
+	private boolean physical;
 
-	Resistance(String text, boolean elemental, boolean magical) {
+	Resistance(String text, boolean elemental, boolean fear, boolean magical, boolean physical) {
 		this.text = text;
 		this.elemental = elemental;
+		this.fear = fear;
 		this.magical = magical;
+		this.physical = physical;
 	}
 
 	@Override
 	public String toString() {
 		return text;
+	}
+
+	/**
+	 * Gets an array containing only elemental Resistance instances.
+	 *
+	 * @return  an array of Resistance instances with elemental flag = true.
+	 */
+	public static Resistance[] getElementalResistances() {
+		int count = 0;
+		Resistance[] values = Resistance.values();
+		for(Resistance resistance : values) {
+			count += (resistance.elemental) ? 1 : 0;
+		}
+		Resistance[] result = new Resistance[count];
+		int index = 0;
+		for (Resistance value : values) {
+			if (value.elemental) {
+				result[index++] = value;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Gets an array containing only fear Resistance instances.
+	 *
+	 * @return  an array of Resistance instances with fear flag = true.
+	 */
+	public static Resistance[] getFearResistances() {
+		int count = 0;
+		Resistance[] values = Resistance.values();
+		for(Resistance resistance : values) {
+			count += (resistance.fear) ? 1 : 0;
+		}
+		Resistance[] result = new Resistance[count];
+		int index = 0;
+		for (Resistance value : values) {
+			if (value.fear) {
+				result[index++] = value;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Gets an array containing only magical Resistance instances.
+	 *
+	 * @return  an array of Resistance instances with magical flag = true.
+	 */
+	public static Resistance[] getMagicalResistances() {
+		int count = 0;
+		Resistance[] values = Resistance.values();
+		for(Resistance resistance : values) {
+			count += (resistance.magical) ? 1 : 0;
+		}
+		Resistance[] result = new Resistance[count];
+		int index = 0;
+		for (Resistance value : values) {
+			if (value.magical) {
+				result[index++] = value;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Gets an array containing only physical Resistance instances.
+	 *
+	 * @return  an array of Resistance instances with physical flag = true.
+	 */
+	public static Resistance[] gePhysicalResistances() {
+		int count = 0;
+		Resistance[] values = Resistance.values();
+		for(Resistance resistance : values) {
+			count += (resistance.physical) ? 1 : 0;
+		}
+		Resistance[] result = new Resistance[count];
+		int index = 0;
+		for (Resistance value : values) {
+			if (value.physical) {
+				result[index++] = value;
+			}
+		}
+		return result;
 	}
 
 	// Getters
@@ -54,7 +139,13 @@ public enum Resistance {
 	public boolean isElemental() {
 		return elemental;
 	}
+	public boolean isFear() {
+		return fear;
+	}
 	public boolean isMagical() {
 		return magical;
+	}
+	public boolean isPhysical() {
+		return physical;
 	}
 }

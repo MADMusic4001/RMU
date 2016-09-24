@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
-import com.madinnovations.rmu.view.activities.common.LocomotionTypesFragment;
 import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
@@ -35,7 +34,6 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = CommonFragmentModule.class)
 public interface CommonFragmentComponent {
-	public void injectInto(LocomotionTypesFragment locomotionTypesFragment);
 	public void injectInto(ParametersFragment parametersFragment);
 	public void injectInto(SizesFragment sizesFragment);
 	public void injectInto(SkillCategoriesFragment skillCategoriesFragment);

@@ -17,10 +17,9 @@ package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -30,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -42,6 +42,8 @@ import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
+import com.madinnovations.rmu.view.utils.CheckBoxUtils;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -54,13 +56,16 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for talent categories.
  */
-public class TalentCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<TalentCategory> {
+public class TalentCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<TalentCategory>,
+		CheckBoxUtils.ValuesCallback, EditTextUtils.ValuesCallback {
 	@Inject
 	protected TalentCategoryRxHandler   talentCategoryRxHandler;
 	private TwoFieldListAdapter<TalentCategory> listAdapter;
 	private   ListView                  listView;
 	private   EditText                  nameEdit;
 	private   EditText                  descriptionEdit;
+	private   CheckBox                  isAttackCheckBox;
+	private   CheckBox                  isMovementCheckBox;
 	private TalentCategory currentInstance = new TalentCategory();
 	private boolean isNew = true;
 
@@ -75,8 +80,12 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_talent_category_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_talent_category_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_talent_category_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+												 R.string.validation_talent_category_description_required);
+		isAttackCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.is_attack_check_box);
+		isMovementCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.is_movement_check_box);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -150,9 +159,72 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
+		boolean result = false;
+
+		switch (checkBoxId) {
+			case R.id.is_attack_check_box:
+				result = currentInstance.isAttack();
+				break;
+			case R.id.is_movement_check_box:
+				result = currentInstance.isMovement();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
+		switch (checkBoxId) {
+			case R.id.is_attack_check_box:
+				currentInstance.setAttack(newBoolean);
+				saveItem();
+				break;
+			case R.id.is_movement_check_box:
+				currentInstance.setMovement(newBoolean);
+				saveItem();
+				break;
+		}
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.description_edit:
+				result = currentInstance.getDescription();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				saveItem();
+				break;
+			case R.id.description_edit:
+				currentInstance.setDescription(newString);
+				saveItem();
+				break;
+		}
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
-		String value = nameEdit.getText().toString();
+		String value;
+		boolean newBoolean;
+
+		value = nameEdit.getText().toString();
 		if(value.isEmpty()) {
 			value = null;
 		}
@@ -172,12 +244,25 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 			changed = true;
 		}
 
+		newBoolean = isAttackCheckBox.isChecked();
+		if(newBoolean != currentInstance.isAttack()) {
+			currentInstance.setAttack(newBoolean);
+			changed = true;
+		}
+		newBoolean = isMovementCheckBox.isChecked();
+		if(newBoolean != currentInstance.isMovement()) {
+			currentInstance.setMovement(newBoolean);
+			changed = true;
+		}
+
 		return changed;
 	}
 
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
+		isAttackCheckBox.setChecked(currentInstance.isAttack());
+		isMovementCheckBox.setChecked(currentInstance.isMovement());
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -264,62 +349,6 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 						}
 					}
 				});
-	}
-
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_talent_category_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_talent_category_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
 	}
 
 	private void initListView(View layout) {

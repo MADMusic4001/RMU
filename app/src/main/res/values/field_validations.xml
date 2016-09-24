@@ -144,6 +144,8 @@
   <string name="validation_talent_category_name_required">Please enter a skill category name.</string>
   <string name="validation_talent_description_required">Please enter a resultText for the Talent.</string>
   <string name="validation_talent_initial_cost_required">Please enter the initial cost of the Talent.</string>
+  <string name="validation_talent_min_tiers_required">Please enter the min Tier level for this Talent.</string>
+  <string name="validation_talent_max_tiers_required">Please enter the max Tier level for this Talent.</string>
   <string name="validation_talent_name_required">Please enter the name of the Talent.</string>
   <string name="validation_value_required">Please enter a baseValue.</string>
   <string name="validation_weight_required">Please enter a weight baseValue.</string>

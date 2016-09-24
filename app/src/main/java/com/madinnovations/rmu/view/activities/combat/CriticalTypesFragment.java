@@ -17,9 +17,8 @@ package com.madinnovations.rmu.view.activities.combat;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -41,6 +40,7 @@ import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
 
@@ -53,7 +53,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CriticalType> {
+public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CriticalType>,
+		EditTextUtils.ValuesCallback {
 	@Inject
 	protected CriticalTypeRxHandler criticalTypeRxHandler;
 	private TwoFieldListAdapter<CriticalType> listAdapter;
@@ -74,8 +75,10 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_critical_type_code));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_critical_type_description));
 
-		initNameEdit(layout);
-		initCodeEdit(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_critical_type_name_required);
+		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.code_edit,
+										  R.string.validation_critical_type_code_required);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -147,6 +150,46 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 				break;
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	@Override
+	public CharSequence getField1Value(CriticalType criticalType) {
+		return String.valueOf(criticalType.getCode());
+	}
+
+	@Override
+	public CharSequence getField2Value(CriticalType criticalType) {
+		return criticalType.getName();
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = currentInstance.getName();
+				break;
+			case R.id.code_edit:
+				result = String.valueOf(currentInstance.getCode());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				currentInstance.setName(newString);
+				saveItem();
+				break;
+			case R.id.code_edit:
+				currentInstance.setCode(newString.charAt(0));
+				saveItem();
+				break;
+		}
 	}
 
 	private boolean copyViewsToItem() {
@@ -262,65 +305,6 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 		}
 	}
 
-	private void initCodeEdit(View layout) {
-		codeEdit = (EditText)layout.findViewById(R.id.code_edit);
-		codeEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && codeEdit != null) {
-					codeEdit.setError(getString(R.string.validation_critical_type_code_required));
-				}
-			}
-		});
-		codeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					char code = currentInstance.getCode();
-					if(codeEdit.length() > 0) {
-						code = codeEdit.getText().charAt(0);
-					}
-					if (code != currentInstance.getCode()) {
-						currentInstance.setCode(code);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_critical_type_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
@@ -382,15 +366,5 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 			}
 		});
 		registerForContextMenu(listView);
-	}
-
-	@Override
-	public CharSequence getField1Value(CriticalType criticalType) {
-		return String.valueOf(criticalType.getCode());
-	}
-
-	@Override
-	public CharSequence getField2Value(CriticalType criticalType) {
-		return criticalType.getName();
 	}
 }

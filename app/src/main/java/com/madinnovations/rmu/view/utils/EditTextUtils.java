@@ -36,16 +36,16 @@ public final class EditTextUtils {
 	 * @param context  an android Context that can be used to obtain resources, etc.
 	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object backing the UI
 	 * @param editTextId  the resource ID of the EditText to be initialized
-	 * @param errorString  the resource ID of a string that can be used to display an error when the EditText is empty. And id of 0
+	 * @param errorStringId  the resource ID of a string that can be used to display an error when the EditText is empty. And id of 0
 	 *                     indicates that an empty EditText is not an error
 	 * @return  the {@link EditText} instance that was initialized or null if not found.
 	 */
 	public static EditText initEdit(@NonNull View layout, @NonNull final Context context,
 									@NonNull final ValuesCallback valuesCallback, @IdRes final int editTextId,
-									@StringRes final int errorString) {
+									@StringRes final int errorStringId) {
 		final EditText editText = (EditText)layout.findViewById(editTextId);
 		if(editText != null) {
-			initEdit(editText, context, valuesCallback, editTextId, errorString);
+			initEdit(editText, context, valuesCallback, editTextId, errorStringId);
 		}
 
 		return editText;
@@ -57,12 +57,12 @@ public final class EditTextUtils {
 	 * @param context  an android Context that can be used to obtain resources, etc.
 	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object backing the UI
 	 * @param editTextId  the resource ID of the EditText to be initialized
-	 * @param errorString  the resource ID of a string that can be used to display an error when the EditText is empty. And id of 0
+	 * @param errorStringId  the resource ID of a string that can be used to display an error when the EditText is empty. And id of 0
 	 *                     indicates that an empty EditText is not an error
 	 */
 	public static void initEdit(@NonNull final EditText editText, @NonNull final Context context,
 									@NonNull final ValuesCallback valuesCallback, @IdRes final int editTextId,
-									@StringRes final int errorString) {
+									@StringRes final int errorStringId) {
 		editText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -70,8 +70,8 @@ public final class EditTextUtils {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && errorString != 0) {
-					editText.setError(context.getString(errorString));
+				if (editable.length() == 0 && errorStringId != 0) {
+					editText.setError(context.getString(errorStringId));
 				}
 			}
 		});
@@ -79,11 +79,13 @@ public final class EditTextUtils {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if (!hasFocus) {
-					String newName = editText.getText().toString();
-					String oldName = valuesCallback.getValueForEditText(editTextId);
+					if(errorStringId == 0 || editText.getText().length() > 0) {
+						String newName = editText.getText().toString();
+						String oldName = valuesCallback.getValueForEditText(editTextId);
 
-					if (!newName.equals(oldName)) {
-						valuesCallback.setValueFromEditText(editTextId, newName);
+						if (!newName.equals(oldName)) {
+							valuesCallback.setValueFromEditText(editTextId, newName);
+						}
 					}
 				}
 			}

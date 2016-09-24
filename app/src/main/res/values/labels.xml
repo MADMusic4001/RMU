@@ -335,6 +335,8 @@
   <string name="input_label_height">Height:</string>
   <string name="input_label_hits">Hits:</string>
   <string name="input_label_injury">Injury:</string>
+  <string name="input_label_is_attack">Is Attack?</string>
+  <string name="input_label_is_movement">Is Movement?</string>
   <string name="input_label_leftover_dp">Leftover DP:</string>
   <string name="input_label_length">Length:</string>
   <string name="input_label_level">Level:</string>
@@ -351,6 +353,7 @@
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_skill">Skill:</string>
+  <string name="input_label_specialization">Specialization:</string>
   <string name="input_label_spell_list">Spell List:</string>
   <string name="input_label_spell_list_filter">Spell List Filter:</string>
   <string name="input_label_spell_list_type">Spell List Type:</string>

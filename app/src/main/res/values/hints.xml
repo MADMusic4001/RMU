@@ -77,8 +77,8 @@
   <string name="hint_base_parameter_value_per_tier_or_level">Value /Lvl/Tier</string>
   <string name="hint_base_physical_rr">Phyiscal RR</string>
   <string name="hint_base_stride">Base Stride</string>
-  <string name="hint_bonus_per_tier">Bonus per tier</string>
-  <string name="hint_cost_per_tier">Cost per tier</string>
+  <string name="hint_bonus_per_tier">Bonus per minTier</string>
+  <string name="hint_cost_per_tier">Cost per minTier</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_example_races">Examples Races/Creatures</string>
   <string name="hint_healing_rate">Healing Rate</string>
@@ -89,6 +89,8 @@
   <string name="hint_min_height">Min Height</string>
   <string name="hint_max_height">Max Height</string>
   <string name="hint_min_weight">Min Weight</string>
+  <string name="hint_min_tiers">Min Tiers</string>
+  <string name="hint_max_tiers">Max Tiers</string>
   <string name="hint_max_weight">Max Weight</string>
   <string name="hint_movement_rate">Movement Rate</string>
   <string name="hint_parameter_description">Parameter Description</string>
@@ -104,6 +106,7 @@
   <string name="hint_skill_category_description">Skill Category Description</string>
   <string name="hint_specialization_description">New Specialization Description</string>
   <string name="hint_specialization_name">New Name</string>
+  <string name="hint_specialization_bonus">Specialization Bonus</string>
   <string name="hint_stat_abbreviation">Stat Abbreviation</string>
   <string name="hint_stat_bonus">Stat Bonus</string>
   <string name="hint_stat_name">Stat Name</string>

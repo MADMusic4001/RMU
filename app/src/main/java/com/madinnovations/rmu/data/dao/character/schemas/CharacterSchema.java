@@ -75,10 +75,14 @@ public interface CharacterSchema {
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_MAX_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_DEVELOPMENT_POINTS + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_CULTURE_ID + ") REFERENCES " + CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME
+				+ "(" + RaceSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_CULTURE_ID + ") REFERENCES " + CultureSchema.TABLE_NAME
+				+ "(" + CultureSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME
+				+ "(" + ProfessionSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME
+				+ "(" + RealmSchema.COLUMN_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAIR_COLOR, COLUMN_HAIR_STYLE,

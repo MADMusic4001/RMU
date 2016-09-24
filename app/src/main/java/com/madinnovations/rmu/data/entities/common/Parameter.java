@@ -21,7 +21,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Representation of talent effect parameters.
  */
-public class Parameter {
+public class  Parameter {
 	private int id = -1;
 	private String name = null;
 	private String description = null;

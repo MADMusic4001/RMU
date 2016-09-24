@@ -279,31 +279,21 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 
 		@Override
 		public void setValueFromEditText(@IdRes int editTextId, String newString) {
-			if(newString != null && newString.isEmpty()) {
-				newString = null;
-			}
-
 			switch (editTextId) {
 				case R.id.hits_edit:
-					if(newString != null) {
-						currentInstance.setHits(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setHits(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.bleeding_edit:
-					if(newString != null) {
-						currentInstance.setBleeding(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setBleeding(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.fatigue_edit:
-					if(newString != null) {
-						currentInstance.setFatigue(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setFatigue(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.breakage_edit:
-					if(newString != null) {
+					if(newString != null && newString.length() > 0) {
 						currentInstance.setBreakage(Short.valueOf(newString));
 						saveItem();
 					}
@@ -313,40 +303,28 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					}
 					break;
 				case R.id.injury_edit:
-					if(newString != null) {
-						currentInstance.setInjury(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setInjury(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.dazed_edit:
-					if(newString != null) {
-						currentInstance.setDazed(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setDazed(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.stunned_edit:
-					if(newString != null) {
-						currentInstance.setStunned(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setStunned(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.stunned_no_parry_edit:
-					if(newString != null) {
-						currentInstance.setNoParry(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setNoParry(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.knock_back_edit:
-					if(newString != null) {
-						currentInstance.setKnockBack(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setKnockBack(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.grappled_edit:
-					if(newString != null) {
-						currentInstance.setGrappled(Short.valueOf(newString));
-						saveItem();
-					}
+					currentInstance.setGrappled(Short.valueOf(newString));
+					saveItem();
 					break;
 				case R.id.result_text_edit:
 					currentInstance.setResultText(newString);
