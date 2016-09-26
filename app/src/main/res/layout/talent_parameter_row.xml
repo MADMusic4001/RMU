@@ -50,6 +50,7 @@
       android:layout_toRightOf="@id/parameter_spinner"
       android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
+      android:visibility="gone"
       android:text="@string/input_label_value"/>
   <EditText
       android:id="@+id/value_edit"
@@ -60,6 +61,7 @@
       android:layout_toEndOf="@id/value_label"
       android:layout_centerVertical="true"
       android:background="@null"
+      android:visibility="gone"
       android:hint="@string/hint_value"/>
   <CheckBox
       android:id="@+id/per_tier_check_box"
@@ -68,6 +70,7 @@
       android:layout_toRightOf="@id/value_edit"
       android:layout_toEndOf="@id/value_edit"
       android:layout_centerVertical="true"
+      android:visibility="gone"
       android:text="@string/label_per_tier"/>
   <CheckBox
       android:id="@+id/per_level_check_box"
@@ -76,6 +79,7 @@
       android:layout_toRightOf="@id/per_tier_check_box"
       android:layout_toEndOf="@id/per_tier_check_box"
       android:layout_centerVertical="true"
+      android:visibility="gone"
       android:text="@string/label_per_level"/>
   <CheckBox
       android:id="@+id/per_round_check_box"
@@ -84,6 +88,7 @@
       android:layout_toRightOf="@id/per_level_check_box"
       android:layout_toEndOf="@id/per_level_check_box"
       android:layout_centerVertical="true"
+      android:visibility="gone"
       android:text="@string/label_per_round"/>
 
   <TextView

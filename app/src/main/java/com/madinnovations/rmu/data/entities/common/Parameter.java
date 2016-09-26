@@ -70,6 +70,7 @@ public enum Parameter {
 	SKILL("Skill"),
 	SPECIAL("Special"),
 	SPECIALIZATION("Specialization"),
+	SPELL("Spell"),
 	SPELL_DURATION("Spell Duration"),
 	SPELL_FAILURE("Spell Failure"),
 	SPELL_RADIUS("Spell Radius"),

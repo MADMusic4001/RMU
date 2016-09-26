@@ -657,9 +657,33 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initSpecializations(parameterRow);
 		initSpells(parameterRow);
 		initStats(parameterRow);
-		setResistancesVisibility(parameterRow, GONE);
-		setSkillsVisibility(parameterRow, GONE);
-		setStatsVisibility(parameterRow, GONE);
+		Parameter parameter = currentInstance.getTalentParameterRows()[index].getParameter();
+		switch (parameter) {
+			case ATTACK:
+				setAttacksVisibility(parameterRow, VISIBLE);
+				break;
+			case ELEMENTAL_RR:
+			case FEAR_RR:
+			case FOLLOWER_FEAR_RR:
+			case MAGICAL_RR:
+			case PHYSICAL_RR:
+				setResistancesVisibility(parameterRow, VISIBLE);
+				break;
+			case SKILL:
+				setSkillsVisibility(parameterRow, VISIBLE);
+				break;
+			case SPECIALIZATION:
+				setSpecializationsVisibility(parameterRow, VISIBLE);
+				break;
+			case SPELL:
+				setSpellsVisibility(parameterRow, VISIBLE);
+				break;
+			case STAT:
+				setStatsVisibility(parameterRow, VISIBLE);
+				break;
+			default:
+				setValuesVisibility(parameterRow, VISIBLE);
+		}
 		parametersList.addView(parameterRow);
 	}
 
@@ -681,10 +705,21 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					if(!parameter.equals(row.getParameter())) {
 						row.setParameter(parameter);
 						switch (parameter) {
-							case ELEMENTAL_RR:
-								setResistanceSpinnerAdapter(layout, Resistance.getElementalResistances());
+							case ATTACK:
+								setResistancesVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								setAttacksVisibility(layout, VISIBLE);
+								break;
+							case ELEMENTAL_RR:
+								setResistanceSpinnerAdapter(layout, Resistance.getElementalResistances());
+								setAttacksVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
@@ -692,50 +727,72 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case FEAR_RR:
 							case FOLLOWER_FEAR_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getFearResistances());
+								setAttacksVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
 								break;
 							case MAGICAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getMagicalResistances());
+								setAttacksVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
 								break;
 							case PHYSICAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getPhysicalResistances());
+								setAttacksVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
 								break;
 							case SKILL:
+								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setSkillsVisibility(layout, VISIBLE);
 								break;
 							case SPECIALIZATION:
+								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, VISIBLE);
 								break;
-							case STAT:
+							case SPELL:
+								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								setSpellsVisibility(layout, VISIBLE);
+								break;
+							case STAT:
+								setAttacksVisibility(layout, GONE);
+								setResistancesVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setStatsVisibility(layout, VISIBLE);
 								break;
 							default:
+								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -1177,6 +1234,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		layout.findViewById(R.id.per_round_check_box).setVisibility(visibility);
 	}
 
+	private void setAttacksVisibility(final View layout, int visibility) {
+		layout.findViewById(R.id.attack_label).setVisibility(visibility);
+		layout.findViewById(R.id.attack_spinner).setVisibility(visibility);
+	}
+
 	private void setResistancesVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.resistance_label).setVisibility(visibility);
 		layout.findViewById(R.id.resistance_spinner).setVisibility(visibility);
@@ -1190,6 +1252,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void setSpecializationsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.specialization_label).setVisibility(visibility);
 		layout.findViewById(R.id.specialization_spinner).setVisibility(visibility);
+	}
+
+	private void setSpellsVisibility(final View layout, int visibility) {
+		layout.findViewById(R.id.spell_label).setVisibility(visibility);
+		layout.findViewById(R.id.spell_spinner).setVisibility(visibility);
 	}
 
 	private void setStatsVisibility(final View layout, int visibility) {
