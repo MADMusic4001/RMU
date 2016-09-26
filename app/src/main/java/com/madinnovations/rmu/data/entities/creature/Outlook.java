@@ -19,6 +19,7 @@ package com.madinnovations.rmu.data.entities.creature;
  * Class containing a creature outlook description.
  */
 public class Outlook {
+	public static final String JSON_NAME = "Outlooks";
 	private int id = -1;
 	private String name = null;
 	private String description = null;

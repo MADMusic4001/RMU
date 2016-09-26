@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Creature attributes
  */
 public class Creature {
+	public static final String JSON_NAME = "Creatures";
 	private int id = -1;
 	private CreatureVariety creatureVariety = null;
 	private short level = 0;

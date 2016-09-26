@@ -19,6 +19,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Body part attributes
  */
 public class BodyPart {
+    public static final String JSON_NAME = "BodyParts";
     private int id = -1;
     private String name = null;
     private String description = null;

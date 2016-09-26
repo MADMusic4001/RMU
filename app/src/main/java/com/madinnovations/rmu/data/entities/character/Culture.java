@@ -27,6 +27,7 @@ import java.util.Map;
  * Culture attributes
  */
 public class Culture {
+	public static final String JSON_NAME = "Cultures";
 	private int id = -1;
 	private String name = null;
 	private String description = null;

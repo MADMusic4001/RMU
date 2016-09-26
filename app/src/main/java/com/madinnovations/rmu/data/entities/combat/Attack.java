@@ -24,6 +24,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Attack attributes
  */
 public class Attack {
+	public static final String JSON_NAME = "Attacks";
 	private int id = -1;
 	private String code = null;
 	private String name = null;

@@ -27,6 +27,7 @@ import java.util.Collection;
  * Critical result attributes
  */
 public class CriticalResult {
+    public static final String JSON_NAME = "CriticalResults";
     private static short[] rangeStarts = {1, 2, 4, 6, 11, 16, 21, 26, 36, 46, 56, 66, 67, 76, 81, 86, 91, 96, 98, 100, 101};
 
     private int id = -1;

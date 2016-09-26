@@ -21,8 +21,9 @@ import com.madinnovations.rmu.data.entities.combat.Action;
  * Talent data
  */
 public class Talent {
-	private int               id               = -1;
-	private TalentCategory    category         = null;
+	public static final String JSON_NAME = "Talents";
+	private int                  id                  = -1;
+	private TalentCategory       category            = null;
 	private String               name                = null;
 	private String               description         = null;
 	private boolean              flaw                = false;

@@ -28,6 +28,7 @@ import java.util.List;
  * Class containing Creature Archetype attributes.
  */
 public class CreatureArchetype {
+	public static final String JSON_NAME = "CreatureArchetypes";
 	private int                 id              = -1;
 	private String              name            = null;
 	private String              description     = null;

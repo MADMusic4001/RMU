@@ -22,6 +22,7 @@ import java.util.Collection;
  * Damage table attributes
  */
 public class DamageTable {
+    public static final String JSON_NAME = "DamageTables";
     private int id = -1;
     private String name = null;
     private Collection<DamageResultRow> resultRows = new ArrayList<>();

@@ -22,6 +22,7 @@ import java.util.List;
  * Skill category attributes
  */
 public class SkillCategory {
+	public static final String JSON_NAME = "SkillCategories";
 	private int id = -1;
 	private String name = null;
 	private String description = null;

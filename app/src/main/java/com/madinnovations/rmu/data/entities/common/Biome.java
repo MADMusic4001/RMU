@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Representation of a biome (habitat)
  */
 public class Biome {
+	public static final String JSON_NAME = "Biomes";
 	private int id;
 	private char code;
 	private String description;

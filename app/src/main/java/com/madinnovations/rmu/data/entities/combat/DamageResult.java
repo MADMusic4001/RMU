@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Damage result attributes
  */
 public class DamageResult {
+    public static final String JSON_NAME = "DamageResults";
     private int id = -1;
     private short hits = 0;
     private Character criticalSeverity = null;

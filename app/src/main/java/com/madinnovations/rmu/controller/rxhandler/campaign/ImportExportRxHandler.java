@@ -127,6 +127,7 @@ import rx.schedulers.Schedulers;
  * Creates reactive observables for importing and exporting the database
  */
 public class ImportExportRxHandler {
+	private static final int NUM_TYPES = 31;
 	private static final String LOG_TAG = "ImportExportRxHandler";
 	private static final String VERSION = "version";
 	private AttackDao                   attackDao;
@@ -284,362 +285,393 @@ public class ImportExportRxHandler {
 								throw new RMUAppException("Input file version mismatch. Expected " +
 																  RMUDatabaseHelper.DATABASE_VERSION + " but found " + version);
 							}
-							jsonReader.endObject();
 
 							try {
 								db = helper.getWritableDatabase();
 								db.beginTransaction();
 								helper.clearDatabase();
-
-								List<Stat> stats = new ArrayList<>();
-								jsonReader.beginArray();
+								int numTypesRead = 0;
 								while (jsonReader.hasNext()) {
-									Stat stat = gson.fromJson(jsonReader, Stat.class);
-									stats.add(stat);
+									switch (jsonReader.nextName()) {
+										case Stat.JSON_NAME:
+											List<Stat> stats = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Stat stat = gson.fromJson(jsonReader, Stat.class);
+												stats.add(stat);
+											}
+											jsonReader.endArray();
+											statDao.save(stats, true);
+											Log.d(LOG_TAG, "Loaded " + stats.size() + " stats.");
+											stats = null;
+											break;
+										case Size.JSON_NAME:
+											List<Size> sizes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Size size = gson.fromJson(jsonReader, Size.class);
+												sizes.add(size);
+											}
+											jsonReader.endArray();
+											sizeDao.save(sizes, true);
+											Log.d(LOG_TAG, "Loaded " + sizes.size() + " sizes.");
+											sizes = null;
+											break;
+										case SkillCategory.JSON_NAME:
+											List<SkillCategory> skillCategories = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												SkillCategory skillCategory = gson.fromJson(jsonReader, SkillCategory.class);
+												skillCategories.add(skillCategory);
+											}
+											jsonReader.endArray();
+											skillCategoryDao.save(skillCategories, true);
+											Log.d(LOG_TAG, "Loaded " + skillCategories.size() + " skillCategories.");
+											skillCategories = null;
+											break;
+										case Skill.JSON_NAME:
+											List<Skill> skills = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Skill skill = gson.fromJson(jsonReader, Skill.class);
+												skills.add(skill);
+											}
+											jsonReader.endArray();
+											skillDao.save(skills, true);
+											Log.d(LOG_TAG, "Loaded " + skills.size() + " skills.");
+											skills = null;
+											break;
+										case TalentCategory.JSON_NAME:
+											List<TalentCategory> talentCategories = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												TalentCategory talentCategory = gson.fromJson(jsonReader, TalentCategory.class);
+												talentCategories.add(talentCategory);
+											}
+											jsonReader.endArray();
+											talentCategoryDao.save(talentCategories, true);
+											Log.d(LOG_TAG, "Loaded " + talentCategories.size() + " talentCategories.");
+											talentCategories = null;
+											break;
+										case Talent.JSON_NAME:
+											List<Talent> talents = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Talent talent = gson.fromJson(jsonReader, Talent.class);
+												talents.add(talent);
+											}
+											jsonReader.endArray();
+											talentDao.save(talents, true);
+											Log.d(LOG_TAG, "Loaded " + talents.size() + " talents.");
+											talents = null;
+											break;
+										case Item.JSON_NAME:
+											List<Item> items = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Item item = gson.fromJson(jsonReader, Item.class);
+												items.add(item);
+											}
+											jsonReader.endArray();
+											itemDao.save(items, true);
+											Log.d(LOG_TAG, "Loaded " + items.size() + " items.");
+											items = null;
+											break;
+										case BodyPart.JSON_NAME:
+											List<BodyPart> bodyParts = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												BodyPart bodyPart = gson.fromJson(jsonReader, BodyPart.class);
+												bodyParts.add(bodyPart);
+											}
+											jsonReader.endArray();
+											bodyPartDao.save(bodyParts, true);
+											Log.d(LOG_TAG, "Loaded " + bodyParts.size() + " bodyParts.");
+											bodyParts = null;
+											break;
+										case CriticalCode.JSON_NAME:
+											List<CriticalCode> criticalCodes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CriticalCode criticalCode = gson.fromJson(jsonReader, CriticalCode.class);
+												criticalCodes.add(criticalCode);
+											}
+											jsonReader.endArray();
+											criticalCodeDao.save(criticalCodes, true);
+											Log.d(LOG_TAG, "Loaded " + criticalCodes.size() + " criticalCodes.");
+											criticalCodes = null;
+											break;
+										case CriticalType.JSON_NAME:
+											List<CriticalType> criticalTypes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CriticalType criticalType = gson.fromJson(jsonReader, CriticalType.class);
+												criticalTypes.add(criticalType);
+											}
+											jsonReader.endArray();
+											criticalTypeDao.save(criticalTypes, true);
+											Log.d(LOG_TAG, "Loaded " + criticalTypes.size() + " criticalTypes.");
+											criticalTypes = null;
+											break;
+										case CriticalResult.JSON_NAME:
+											List<CriticalResult> criticalResults = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CriticalResult criticalResult = gson.fromJson(jsonReader, CriticalResult.class);
+												criticalResults.add(criticalResult);
+											}
+											jsonReader.endArray();
+											criticalResultDao.save(criticalResults, true);
+											Log.d(LOG_TAG, "Loaded " + criticalResults.size() + " criticalResults.");
+											criticalResults = null;
+											break;
+										case DamageResult.JSON_NAME:
+											List<DamageResult> damageResults = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
+												damageResults.add(damageResult);
+											}
+											damageResultSerializer = null;
+											jsonReader.endArray();
+											damageResultDao.save(damageResults, true);
+											Log.d(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
+											damageResults = null;
+											break;
+										case DamageTable.JSON_NAME:
+											List<DamageTable> damageTables = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												DamageTable damageTable = gson.fromJson(jsonReader, DamageTable.class);
+												damageTables.add(damageTable);
+											}
+											jsonReader.endArray();
+											damageTableDao.save(damageTables, true);
+											Log.d(LOG_TAG, "Loaded " + damageTables.size() + " damageTables.");
+											damageTables = null;
+											break;
+										case DamageResultRow.JSON_NAME:
+											List<DamageResultRow> damageResultRows = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												DamageResultRow damageResultRow = gson.fromJson(jsonReader, DamageResultRow.class);
+												damageResultRows.add(damageResultRow);
+											}
+											jsonReader.endArray();
+											damageResultRowDao.save(damageResultRows, true);
+											Log.d(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
+											damageResultRows = null;
+											break;
+										case CreatureCategory.JSON_NAME:
+											List<CreatureCategory> creatureCategories = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CreatureCategory creatureCategory = gson.fromJson(jsonReader, CreatureCategory.class);
+												creatureCategories.add(creatureCategory);
+											}
+											jsonReader.endArray();
+											creatureCategoryDao.save(creatureCategories, true);
+											Log.d(LOG_TAG, "Loaded " + creatureCategories.size() + " creatureCategories.");
+											creatureCategories = null;
+											break;
+										case CreatureType.JSON_NAME:
+											List<CreatureType> creatureTypes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CreatureType creatureType = gson.fromJson(jsonReader, CreatureType.class);
+												creatureTypes.add(creatureType);
+											}
+											jsonReader.endArray();
+											creatureTypeDao.save(creatureTypes, true);
+											Log.d(LOG_TAG, "Loaded " + creatureTypes.size() + " creatureTypes.");
+											creatureTypes = null;
+											break;
+										case Outlook.JSON_NAME:
+											List<Outlook> outlooks = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Outlook outlook = gson.fromJson(jsonReader, Outlook.class);
+												outlooks.add(outlook);
+											}
+											jsonReader.endArray();
+											outlookDao.save(outlooks, true);
+											Log.d(LOG_TAG, "Loaded " + outlooks.size() + " outlooks.");
+											outlooks = null;
+											break;
+										case Realm.JSON_NAME:
+											List<Realm> realms = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Realm realm = gson.fromJson(jsonReader, Realm.class);
+												realms.add(realm);
+											}
+											jsonReader.endArray();
+											realmDao.save(realms, true);
+											Log.d(LOG_TAG, "Loaded " + realms.size() + " realms.");
+											realms = null;
+											break;
+										case Profession.JSON_NAME:
+											List<Profession> professions = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Profession profession = gson.fromJson(jsonReader, Profession.class);
+												professions.add(profession);
+											}
+											jsonReader.endArray();
+											professionDao.save(professions, true);
+											Log.d(LOG_TAG, "Loaded " + professions.size() + " professions.");
+											professions = null;
+											break;
+										case Culture.JSON_NAME:
+											List<Culture> cultures = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Culture culture = gson.fromJson(jsonReader, Culture.class);
+												cultures.add(culture);
+											}
+											jsonReader.endArray();
+											cultureDao.save(cultures, true);
+											Log.d(LOG_TAG, "Loaded " + cultures.size() + " cultures.");
+											cultures = null;
+											break;
+										case Race.JSON_NAME:
+											List<Race> races = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Race race = gson.fromJson(jsonReader, Race.class);
+												races.add(race);
+											}
+											jsonReader.endArray();
+											raceDao.save(races, true);
+											Log.d(LOG_TAG, "Loaded " + races.size() + " races.");
+											races = null;
+											break;
+										case Specialization.JSON_NAME:
+											List<Specialization> specializations = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Specialization specialization = gson.fromJson(jsonReader, Specialization.class);
+												specializations.add(specialization);
+											}
+											jsonReader.endArray();
+											specializationDao.save(specializations, true);
+											Log.d(LOG_TAG, "Loaded " + specializations.size() + " specializations.");
+											specializations = null;
+											break;
+										case Attack.JSON_NAME:
+											List<Attack> attacks = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Attack attack = gson.fromJson(jsonReader, Attack.class);
+												attacks.add(attack);
+											}
+											jsonReader.endArray();
+											attackDao.save(attacks, true);
+											Log.d(LOG_TAG, "Loaded " + attacks.size() + " attacks.");
+											attacks = null;
+											break;
+										case CreatureArchetype.JSON_NAME:
+											List<CreatureArchetype> creatureArchetypes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CreatureArchetype creatureArchetype = gson.fromJson(jsonReader, CreatureArchetype.class);
+												creatureArchetypes.add(creatureArchetype);
+											}
+											jsonReader.endArray();
+											creatureArchetypeDao.save(creatureArchetypes, true);
+											Log.d(LOG_TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
+											creatureArchetypes = null;
+											break;
+										case SpellListType.JSON_NAME:
+											List<SpellListType> spellListTypes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												SpellListType spellListType = gson.fromJson(jsonReader, SpellListType.class);
+												spellListTypes.add(spellListType);
+											}
+											jsonReader.endArray();
+											spellListTypeDao.save(spellListTypes, true);
+											Log.d(LOG_TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
+											spellListTypes = null;
+											break;
+										case SpellSubType.JSON_NAME:
+											List<SpellSubType> spellSubTypes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												SpellSubType spellSubType = gson.fromJson(jsonReader, SpellSubType.class);
+												spellSubTypes.add(spellSubType);
+											}
+											jsonReader.endArray();
+											spellSubTypeDao.save(spellSubTypes, true);
+											Log.d(LOG_TAG, "Loaded " + spellSubTypes.size() + " spellSubTypes.");
+											spellSubTypes = null;
+											break;
+										case SpellType.JSON_NAME:
+											List<SpellType> spellTypes = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												SpellType spellType = gson.fromJson(jsonReader, SpellType.class);
+												spellTypes.add(spellType);
+											}
+											jsonReader.endArray();
+											spellTypeDao.save(spellTypes, true);
+											Log.d(LOG_TAG, "Loaded " + spellTypes.size() + " spellTypes.");
+											spellTypes = null;
+											break;
+										case SpellList.JSON_NAME:
+											List<SpellList> spellLists = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												SpellList spellList = gson.fromJson(jsonReader, SpellList.class);
+												spellLists.add(spellList);
+											}
+											jsonReader.endArray();
+											spellListDao.save(spellLists, true);
+											Log.d(LOG_TAG, "Loaded " + spellLists.size() + " spellLists.");
+											spellLists = null;
+											break;
+										case Spell.JSON_NAME:
+											List<Spell> spells = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Spell spell = gson.fromJson(jsonReader, Spell.class);
+												spells.add(spell);
+											}
+											jsonReader.endArray();
+											spellDao.save(spells, true);
+											Log.d(LOG_TAG, "Loaded " + spells.size() + " spells.");
+											spells = null;
+											break;
+										case Character.JSON_NAME:
+											List<Character> characters = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Character character = gson.fromJson(jsonReader, Character.class);
+												characters.add(character);
+											}
+											jsonReader.endArray();
+											characterDao.save(characters, true);
+											Log.d(LOG_TAG, "characters = " + characters);
+											characters = null;
+											break;
+										case CreatureVariety.JSON_NAME:
+											List<CreatureVariety> creatureVarieties = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												CreatureVariety creatureVariety = gson.fromJson(jsonReader, CreatureVariety.class);
+												creatureVarieties.add(creatureVariety);
+											}
+											jsonReader.endArray();
+											creatureVarietyDao.save(creatureVarieties, true);
+											Log.d(LOG_TAG, "creatureVarieties = " + creatureVarieties);
+											creatureVarieties = null;
+											break;
+									}
+									if((numTypesRead*10/NUM_TYPES) % 10 < (++numTypesRead*10/NUM_TYPES) % 10) {
+										subscriber.onNext((numTypesRead*10/NUM_TYPES % 10) * 10);
+									}
 								}
-								jsonReader.endArray();
-								statDao.save(stats, true);
-								Log.d(LOG_TAG, "Loaded " + stats.size() + " stats.");
-								stats = null;
-
-								List<Size> sizes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Size size = gson.fromJson(jsonReader, Size.class);
-									sizes.add(size);
-								}
-								jsonReader.endArray();
-								sizeDao.save(sizes, true);
-								Log.d(LOG_TAG, "Loaded " + sizes.size() + " sizes.");
-								sizes = null;
-
-								List<SkillCategory> skillCategories = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									SkillCategory skillCategory = gson.fromJson(jsonReader, SkillCategory.class);
-									skillCategories.add(skillCategory);
-								}
-								jsonReader.endArray();
-								skillCategoryDao.save(skillCategories, true);
-								Log.d(LOG_TAG, "Loaded " + skillCategories.size() + " skillCategories.");
-								skillCategories = null;
-
-								List<Skill> skills = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Skill skill = gson.fromJson(jsonReader, Skill.class);
-									skills.add(skill);
-								}
-								jsonReader.endArray();
-								skillDao.save(skills, true);
-								Log.d(LOG_TAG, "Loaded " + skills.size() + " skills.");
-								skills = null;
-								subscriber.onNext(20);
-
-								List<TalentCategory> talentCategories = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									TalentCategory talentCategory = gson.fromJson(jsonReader, TalentCategory.class);
-									talentCategories.add(talentCategory);
-								}
-								jsonReader.endArray();
-								talentCategoryDao.save(talentCategories, true);
-								Log.d(LOG_TAG, "Loaded " + talentCategories.size() + " talentCategories.");
-								talentCategories = null;
-
-								List<Talent> talents = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Talent talent = gson.fromJson(jsonReader, Talent.class);
-									talents.add(talent);
-								}
-								jsonReader.endArray();
-								talentDao.save(talents, true);
-								Log.d(LOG_TAG, "Loaded " + talents.size() + " talents.");
-								talents = null;
-
-								List<Item> items = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Item item = gson.fromJson(jsonReader, Item.class);
-									items.add(item);
-								}
-								jsonReader.endArray();
-								itemDao.save(items, true);
-								Log.d(LOG_TAG, "Loaded " + items.size() + " items.");
-								items = null;
-
-								List<BodyPart> bodyParts = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									BodyPart bodyPart = gson.fromJson(jsonReader, BodyPart.class);
-									bodyParts.add(bodyPart);
-								}
-								jsonReader.endArray();
-								bodyPartDao.save(bodyParts, true);
-								Log.d(LOG_TAG, "Loaded " + bodyParts.size() + " bodyParts.");
-								bodyParts = null;
-								subscriber.onNext(30);
-
-								List<CriticalCode> criticalCodes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CriticalCode criticalCode = gson.fromJson(jsonReader, CriticalCode.class);
-									criticalCodes.add(criticalCode);
-								}
-								jsonReader.endArray();
-								criticalCodeDao.save(criticalCodes, true);
-								Log.d(LOG_TAG, "Loaded " + criticalCodes.size() + " criticalCodes.");
-								criticalCodes = null;
-
-								List<CriticalType> criticalTypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CriticalType criticalType = gson.fromJson(jsonReader, CriticalType.class);
-									criticalTypes.add(criticalType);
-								}
-								jsonReader.endArray();
-								criticalTypeDao.save(criticalTypes, true);
-								Log.d(LOG_TAG, "Loaded " + criticalTypes.size() + " criticalTypes.");
-								criticalTypes = null;
-
-								List<CriticalResult> criticalResults = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CriticalResult criticalResult = gson.fromJson(jsonReader, CriticalResult.class);
-									criticalResults.add(criticalResult);
-								}
-								jsonReader.endArray();
-								criticalResultDao.save(criticalResults, true);
-								Log.d(LOG_TAG, "Loaded " + criticalResults.size() + " criticalResults.");
-								criticalResults = null;
-								subscriber.onNext(40);
-
-								List<DamageResult> damageResults = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
-									damageResults.add(damageResult);
-								}
-								damageResultSerializer = null;
-								jsonReader.endArray();
-								damageResultDao.save(damageResults, true);
-								Log.d(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
-								damageResults = null;
-
-								List<DamageTable> damageTables = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									DamageTable damageTable = gson.fromJson(jsonReader, DamageTable.class);
-									damageTables.add(damageTable);
-								}
-								jsonReader.endArray();
-								damageTableDao.save(damageTables, true);
-								Log.d(LOG_TAG, "Loaded " + damageTables.size() + " damageTables.");
-								damageTables = null;
-
-								List<DamageResultRow> damageResultRows = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									DamageResultRow damageResultRow = gson.fromJson(jsonReader, DamageResultRow.class);
-									damageResultRows.add(damageResultRow);
-								}
-								jsonReader.endArray();
-								damageResultRowDao.save(damageResultRows, true);
-								Log.d(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
-								damageResultRows = null;
-								subscriber.onNext(50);
-
-								List<CreatureCategory> creatureCategories = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CreatureCategory creatureCategory = gson.fromJson(jsonReader, CreatureCategory.class);
-									creatureCategories.add(creatureCategory);
-								}
-								jsonReader.endArray();
-								creatureCategoryDao.save(creatureCategories, true);
-								Log.d(LOG_TAG, "Loaded " + creatureCategories.size() + " creatureCategories.");
-								creatureCategories = null;
-
-								List<CreatureType> creatureTypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CreatureType creatureType = gson.fromJson(jsonReader, CreatureType.class);
-									creatureTypes.add(creatureType);
-								}
-								jsonReader.endArray();
-								creatureTypeDao.save(creatureTypes, true);
-								Log.d(LOG_TAG, "Loaded " + creatureTypes.size() + " creatureTypes.");
-								creatureTypes = null;
-
-								List<Outlook> outlooks = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Outlook outlook = gson.fromJson(jsonReader, Outlook.class);
-									outlooks.add(outlook);
-								}
-								jsonReader.endArray();
-								outlookDao.save(outlooks, true);
-								Log.d(LOG_TAG, "Loaded " + outlooks.size() + " outlooks.");
-								outlooks = null;
-
-								List<Realm> realms = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Realm realm = gson.fromJson(jsonReader, Realm.class);
-									realms.add(realm);
-								}
-								jsonReader.endArray();
-								realmDao.save(realms, true);
-								Log.d(LOG_TAG, "Loaded " + realms.size() + " realms.");
-								realms = null;
-								subscriber.onNext(60);
-
-								List<Profession> professions = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Profession profession = gson.fromJson(jsonReader, Profession.class);
-									professions.add(profession);
-								}
-								jsonReader.endArray();
-								professionDao.save(professions, true);
-								Log.d(LOG_TAG, "Loaded " + professions.size() + " professions.");
-								professions = null;
-
-								List<Culture> cultures = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Culture culture = gson.fromJson(jsonReader, Culture.class);
-									cultures.add(culture);
-								}
-								jsonReader.endArray();
-								cultureDao.save(cultures, true);
-								Log.d(LOG_TAG, "Loaded " + cultures.size() + " cultures.");
-								cultures = null;
-
-								List<Race> races = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Race race = gson.fromJson(jsonReader, Race.class);
-									races.add(race);
-								}
-								jsonReader.endArray();
-								raceDao.save(races, true);
-								Log.d(LOG_TAG, "Loaded " + races.size() + " races.");
-								races = null;
-								subscriber.onNext(70);
-
-								List<Specialization> specializations = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Specialization specialization = gson.fromJson(jsonReader, Specialization.class);
-									specializations.add(specialization);
-								}
-								jsonReader.endArray();
-								specializationDao.save(specializations, true);
-								Log.d(LOG_TAG, "Loaded " + specializations.size() + " specializations.");
-								specializations = null;
-
-								List<Attack> attacks = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Attack attack = gson.fromJson(jsonReader, Attack.class);
-									attacks.add(attack);
-								}
-								jsonReader.endArray();
-								attackDao.save(attacks, true);
-								Log.d(LOG_TAG, "Loaded " + attacks.size() + " attacks.");
-								attacks = null;
-
-								List<CreatureArchetype> creatureArchetypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CreatureArchetype creatureArchetype = gson.fromJson(jsonReader, CreatureArchetype.class);
-									creatureArchetypes.add(creatureArchetype);
-								}
-								jsonReader.endArray();
-								creatureArchetypeDao.save(creatureArchetypes, true);
-								Log.d(LOG_TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
-								creatureArchetypes = null;
-
-								List<SpellListType> spellListTypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									SpellListType spellListType = gson.fromJson(jsonReader, SpellListType.class);
-									spellListTypes.add(spellListType);
-								}
-								jsonReader.endArray();
-								spellListTypeDao.save(spellListTypes, true);
-								Log.d(LOG_TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
-								spellListTypes = null;
-								subscriber.onNext(80);
-
-								List<SpellSubType> spellSubTypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									SpellSubType spellSubType = gson.fromJson(jsonReader, SpellSubType.class);
-									spellSubTypes.add(spellSubType);
-								}
-								jsonReader.endArray();
-								spellSubTypeDao.save(spellSubTypes, true);
-								Log.d(LOG_TAG, "Loaded " + spellSubTypes.size() + " spellSubTypes.");
-								spellSubTypes = null;
-
-								List<SpellType> spellTypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									SpellType spellType = gson.fromJson(jsonReader, SpellType.class);
-									spellTypes.add(spellType);
-								}
-								jsonReader.endArray();
-								spellTypeDao.save(spellTypes, true);
-								Log.d(LOG_TAG, "Loaded " + spellTypes.size() + " spellTypes.");
-								spellTypes = null;
-
-								List<SpellList> spellLists = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									SpellList spellList = gson.fromJson(jsonReader, SpellList.class);
-									spellLists.add(spellList);
-								}
-								jsonReader.endArray();
-								spellListDao.save(spellLists, true);
-								Log.d(LOG_TAG, "Loaded " + spellLists.size() + " spellLists.");
-								spellLists = null;
-								subscriber.onNext(90);
-
-								List<Spell> spells = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Spell spell = gson.fromJson(jsonReader, Spell.class);
-									spells.add(spell);
-								}
-								jsonReader.endArray();
-								spellDao.save(spells, true);
-								Log.d(LOG_TAG, "Loaded " + spells.size() + " spells.");
-								spells = null;
-
-								List<Character> characters = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Character character = gson.fromJson(jsonReader, Character.class);
-									characters.add(character);
-								}
-								jsonReader.endArray();
-								characterDao.save(characters, true);
-								Log.d(LOG_TAG, "characters = " + characters);
-								characters = null;
-
-								List<CreatureVariety> creatureVarieties = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									CreatureVariety creatureVariety = gson.fromJson(jsonReader, CreatureVariety.class);
-									creatureVarieties.add(creatureVariety);
-								}
-								jsonReader.endArray();
-								creatureVarietyDao.save(creatureVarieties, true);
-								Log.d(LOG_TAG, "creatureVarieties = " + creatureVarieties);
-								creatureVarieties = null;
+								jsonReader.endObject();
 								db.setTransactionSuccessful();
 							}
 							catch(Exception e) {
@@ -651,7 +683,6 @@ public class ImportExportRxHandler {
 									db.endTransaction();
 								}
 							}
-							subscriber.onNext(100);
 
 							reader.close();
 							subscriber.onCompleted();
@@ -707,48 +738,79 @@ public class ImportExportRxHandler {
 							jsonWriter.beginObject()
 									.name(VERSION)
 									.value(RMUDatabaseHelper.DATABASE_VERSION)
+									.name(Stat.JSON_NAME)
+									.jsonValue(gson.toJson(statDao.getAll()))
+									.name(Size.JSON_NAME)
+									.jsonValue(gson.toJson(sizeDao.getAll()))
+									.name(SkillCategory.JSON_NAME)
+									.jsonValue(gson.toJson(skillCategoryDao.getAll())) ;
+							subscriber.onNext(10);
+							jsonWriter.name(Skill.JSON_NAME)
+									.jsonValue(gson.toJson(skillDao.getAll()))
+									.name(TalentCategory.JSON_NAME)
+									.jsonValue(gson.toJson(talentCategoryDao.getAll()))
+									.name(Talent.JSON_NAME)
+									.jsonValue(gson.toJson(talentDao.getAll()));
+							subscriber.onNext(20);
+							jsonWriter.name(Item.JSON_NAME)
+									.jsonValue(gson.toJson(itemDao.getAll()))
+									.name(BodyPart.JSON_NAME)
+									.jsonValue(gson.toJson(bodyPartDao.getAll()))
+									.name(CriticalCode.JSON_NAME)
+									.jsonValue(gson.toJson(criticalCodeDao.getAll()));
+							subscriber.onNext(30);
+							jsonWriter.name(CriticalType.JSON_NAME)
+									.jsonValue(gson.toJson(criticalTypeDao.getAll()))
+									.name(CriticalResult.JSON_NAME)
+									.jsonValue(gson.toJson(criticalResultDao.getAll()))
+									.name(DamageResult.JSON_NAME)
+									.jsonValue(gson.toJson(damageResultDao.getAll()));
+							subscriber.onNext(40);
+							jsonWriter.name(DamageTable.JSON_NAME)
+									.jsonValue(gson.toJson(damageTableDao.getAll()))
+									.name(DamageResultRow.JSON_NAME)
+									.jsonValue(gson.toJson(damageResultRowDao.getAll()))
+									.name(CreatureCategory.JSON_NAME)
+									.jsonValue(gson.toJson(creatureCategoryDao.getAll()));
+							subscriber.onNext(50);
+							jsonWriter.name(CreatureType.JSON_NAME)
+									.jsonValue(gson.toJson(creatureTypeDao.getAll()))
+									.name(Outlook.JSON_NAME)
+									.jsonValue(gson.toJson(outlookDao.getAll()))
+									.name(Realm.JSON_NAME)
+									.jsonValue(gson.toJson(realmDao.getAll()));
+							subscriber.onNext(60);
+							jsonWriter.name(Profession.JSON_NAME)
+									.jsonValue(gson.toJson(professionDao.getAll()))
+									.name(Culture.JSON_NAME)
+									.jsonValue(gson.toJson(cultureDao.getAll()))
+									.name(Race.JSON_NAME)
+									.jsonValue(gson.toJson(raceDao.getAll()));
+							subscriber.onNext(70);
+							jsonWriter.name(Specialization.JSON_NAME)
+									.jsonValue(gson.toJson(specializationDao.getAll()))
+									.name(Attack.JSON_NAME)
+									.jsonValue(gson.toJson(attackDao.getAll()))
+									.name(CreatureArchetype.JSON_NAME)
+									.jsonValue(gson.toJson(creatureArchetypeDao.getAll()))
+									.name(SpellListType.JSON_NAME)
+									.jsonValue(gson.toJson(spellListTypeDao.getAll()));
+							subscriber.onNext(80);
+							jsonWriter.name(SpellSubType.JSON_NAME)
+									.jsonValue(gson.toJson(spellSubTypeDao.getAll()))
+									.name(SpellType.JSON_NAME)
+									.jsonValue(gson.toJson(spellTypeDao.getAll()))
+									.name(SpellList.JSON_NAME)
+									.jsonValue(gson.toJson(spellListDao.getAll()));
+							subscriber.onNext(90);
+							jsonWriter.name(Spell.JSON_NAME)
+									.jsonValue(gson.toJson(spellDao.getAll()))
+									.name(Character.JSON_NAME)
+									.jsonValue(gson.toJson(characterDao.getAll()))
+									.name(CreatureVariety.JSON_NAME)
+									.jsonValue(gson.toJson(creatureVarietyDao.getAll()))
 									.endObject()
 									.flush();
-							gson.toJson(statDao.getAll(), writer);
-							gson.toJson(sizeDao.getAll(), writer);
-							gson.toJson(skillCategoryDao.getAll(), writer);
-							subscriber.onNext(10);
-							gson.toJson(skillDao.getAll(), writer);
-							gson.toJson(talentCategoryDao.getAll(), writer);
-							gson.toJson(talentDao.getAll(), writer);
-							subscriber.onNext(20);
-							gson.toJson(itemDao.getAll(), writer);
-							gson.toJson(bodyPartDao.getAll(), writer);
-							gson.toJson(criticalCodeDao.getAll(), writer);
-							subscriber.onNext(30);
-							gson.toJson(criticalTypeDao.getAll(), writer);
-							gson.toJson(criticalResultDao.getAll(), writer);
-							gson.toJson(damageResultDao.getAll(), writer);
-							subscriber.onNext(40);
-							gson.toJson(damageTableDao.getAll(), writer);
-							gson.toJson(damageResultRowDao.getAll(), writer);
-							gson.toJson(creatureCategoryDao.getAll(), writer);
-							subscriber.onNext(50);
-							gson.toJson(creatureTypeDao.getAll(), writer);
-							gson.toJson(outlookDao.getAll(), writer);
-							gson.toJson(realmDao.getAll(), writer);
-							subscriber.onNext(60);
-							gson.toJson(professionDao.getAll(), writer);
-							gson.toJson(cultureDao.getAll(), writer);
-							gson.toJson(raceDao.getAll(), writer);
-							subscriber.onNext(70);
-							gson.toJson(specializationDao.getAll(), writer);
-							gson.toJson(attackDao.getAll(), writer);
-							gson.toJson(creatureArchetypeDao.getAll(), writer);
-							gson.toJson(spellListTypeDao.getAll(), writer);
-							subscriber.onNext(80);
-							gson.toJson(spellSubTypeDao.getAll(), writer);
-							gson.toJson(spellTypeDao.getAll(), writer);
-							gson.toJson(spellListDao.getAll(), writer);
-							subscriber.onNext(90);
-							gson.toJson(spellDao.getAll(), writer);
-							gson.toJson(characterDao.getAll(), writer);
-							gson.toJson(creatureVarietyDao.getAll(), writer);
 							subscriber.onNext(100);
 							writer.flush();
 							writer.close();

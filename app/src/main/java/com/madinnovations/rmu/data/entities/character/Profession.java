@@ -29,6 +29,7 @@ import java.util.Map;
  * Profession attributes
  */
 public class Profession {
+	public static final String JSON_NAME = "Professions";
 	private int                           id                          = -1;
 	private String                        name                        = null;
 	private String                        description                 = null;

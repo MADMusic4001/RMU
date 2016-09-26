@@ -35,6 +35,7 @@ import java.util.Map;
  * Class containing Creature Variety attributes.
  */
 public class CreatureVariety {
+	public static final String JSON_NAME = "CreatureVarieties";
 	private int id = -1;
 	private CreatureType type = null;
 	private String name = null;

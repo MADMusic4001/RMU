@@ -30,6 +30,7 @@ import java.util.Map;
  * Racial attributes
  */
 public class Race {
+	public static final String JSON_NAME = "Races";
 	private int              id                           = -1;
 	private String           name                         = null;
 	private String           description                  = null;

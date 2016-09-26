@@ -22,6 +22,7 @@ import java.util.List;
  * Skill specialization attributes
  */
 public class Specialization {
+	public static final String JSON_NAME = "Specializations";
 	private int id = -1;
 	private String name = null;
 	private String description = null;

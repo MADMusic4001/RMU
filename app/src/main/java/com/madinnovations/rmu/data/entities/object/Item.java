@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Item attributes
  */
 public class Item {
+	public static final String JSON_NAME = "Items";
     private int id = -1;
     private String name = null;
     private String description = null;

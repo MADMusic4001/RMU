@@ -19,9 +19,10 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * Class representing a Rolemaster stat.
+ * Class representing a RoleMaster stat.
  */
 public class Stat {
+	public static final String JSON_NAME = "Stats";
 	private int id = -1;
 	private String abbreviation;
 	private String name;

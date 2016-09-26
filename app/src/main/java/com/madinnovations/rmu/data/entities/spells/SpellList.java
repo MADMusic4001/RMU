@@ -23,6 +23,7 @@ import com.madinnovations.rmu.view.RMUApp;
  * Spell list attributes
  */
 public class SpellList {
+	public static final String JSON_NAME = "SpellLists";
 	private int           id            = -1;
 	private String        name          = null;
 	private String        notes         = null;

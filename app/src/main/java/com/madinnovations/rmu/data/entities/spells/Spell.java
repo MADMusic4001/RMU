@@ -19,6 +19,7 @@ package com.madinnovations.rmu.data.entities.spells;
  * Spell attributes
  */
 public class Spell {
+	public static final String JSON_NAME = "Spells";
 	private int id = -1;
 	private SpellList spellList = null;
 	private String name = null;

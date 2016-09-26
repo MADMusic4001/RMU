@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Skill bonus attributes
  */
 public class SkillBonus {
+	public static final String JSON_NAME = "SkillBonuses";
 	private Skill skill = null;
 	private short bonus = 0;
 

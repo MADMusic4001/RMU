@@ -22,14 +22,15 @@ import com.madinnovations.rmu.view.RMUApp;
  * Creature size class
  */
 public class Size {
+	public static final String JSON_NAME = "Sizes";
 	private int id = -1;
-	private String  code;
-	private String  name;
-	private String  examples;
-	private Integer minWeight;
-	private Integer maxWeight;
-	private Integer minHeight;
-	private Integer maxHeight;
+	private String  code = null;
+	private String  name = null;
+	private String  examples=  null;
+	private Integer minWeight = null;
+	private Integer maxWeight = null;
+	private Integer minHeight = null;
+	private Integer maxHeight = null;
 
 	/**
 	 * Creates a new Size instance

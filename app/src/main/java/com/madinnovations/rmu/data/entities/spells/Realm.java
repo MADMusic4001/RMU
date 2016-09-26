@@ -21,6 +21,7 @@ import com.madinnovations.rmu.data.entities.common.Stat;
  * Realm attributes
  */
 public class Realm {
+	public static final String JSON_NAME = "Realms";
 	private int id = -1;
 	private String name;
 	private String description;

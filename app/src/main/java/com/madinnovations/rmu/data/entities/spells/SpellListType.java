@@ -19,6 +19,7 @@ package com.madinnovations.rmu.data.entities.spells;
  * Spell list type attributes
  */
 public class SpellListType {
+	public static final String JSON_NAME = "SpellListTypes";
 	private int id = -1;
 	private String name = null;
 	private String description = null;

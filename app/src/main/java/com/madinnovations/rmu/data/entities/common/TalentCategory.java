@@ -19,8 +19,9 @@ package com.madinnovations.rmu.data.entities.common;
  * Talent category attributes
  */
 public class TalentCategory {
-	private int id = -1;
-	private String name = null;
+	public static final String JSON_NAME = "TalentCategories";
+	private int    id          = -1;
+	private String name        = null;
 	private String description = null;
 
 	/**

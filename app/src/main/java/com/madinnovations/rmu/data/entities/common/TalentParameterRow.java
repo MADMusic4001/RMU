@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import com.madinnovations.rmu.data.entities.combat.Resistance;
-
 /**
  * Talent Effect information
  */

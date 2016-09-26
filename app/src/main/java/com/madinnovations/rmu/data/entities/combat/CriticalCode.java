@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Critical code attributes
  */
 public class CriticalCode {
+	public static final String JSON_NAME = "CriticalCodes";
 	private int id = -1;
  	private String code = null;
 	private String description = null;

@@ -19,6 +19,7 @@ package com.madinnovations.rmu.data.entities.spells;
  * Spell sub type attributes
  */
 public class SpellSubType {
+	public static final String JSON_NAME = "SpellListSubTypes";
 	private int id = -1;
 	private String name = null;
 	private Character code = null;

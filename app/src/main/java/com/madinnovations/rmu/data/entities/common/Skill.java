@@ -19,9 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class representing a Rolemaster Skill
+ * Class representing a RoleMaster Skill
  */
 public class Skill {
+	public static final String JSON_NAME = "Skills";
 	private int           id                     = -1;
 	private String        name                   = null;
 	private String        description            = null;

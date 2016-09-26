@@ -19,6 +19,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Critical Type attributes
  */
 public class CriticalType {
+    public static final String JSON_NAME = "CriticalTypes";
     private int    id   = -1;
     private char   code = 'A';
     private String name = null;

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Damage result row attributes
  */
 public class DamageResultRow {
+	public static final String JSON_NAME = "DamageResultRows";
 	private int id = -1;
 	private DamageTable damageTable = null;
 	private short rangeLowValue = 65;

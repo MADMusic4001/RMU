@@ -31,6 +31,7 @@ import java.util.Map;
  * Character attributes
  */
 public class Character {
+	public static final String JSON_NAME = "Characters";
 	private int                   id = -1;
 	private String                name = null;
 	private String                description = null;

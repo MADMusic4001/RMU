@@ -24,6 +24,7 @@ import java.util.List;
  * Class containing Creature Type attributes.
  */
 public class CreatureType {
+	public static final String JSON_NAME = "CreatureTypes";
 	private int              id          = -1;
 	private CreatureCategory category    = null;
 	private String           name        = null;
