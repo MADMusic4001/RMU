@@ -38,11 +38,11 @@ public class FragmentModule {
 	}
 
 	@Provides @PerFragment
-	public AboutFragment provideAboutFragment() {
+	AboutFragment provideAboutFragment() {
 		return this.aboutFragment;
 	}
 	@Provides @PerFragment
-	public MainMenuFragment provideMainMenuFragment() {
+	MainMenuFragment provideMainMenuFragment() {
 		return this.mainMenuFragment;
 	}
 }

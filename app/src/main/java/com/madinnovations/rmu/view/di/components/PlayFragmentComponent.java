@@ -25,5 +25,5 @@ import dagger.Subcomponent;
  */
 @PerFragment
 @Subcomponent(modules = PlayFragmentModule.class)
-public interface PlayFragmentComponent {
+interface PlayFragmentComponent {
 }

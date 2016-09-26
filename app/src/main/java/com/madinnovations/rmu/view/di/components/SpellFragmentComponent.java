@@ -29,13 +29,14 @@ import dagger.Subcomponent;
 /**
  * The SpellFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = SpellFragmentModule.class)
 public interface SpellFragmentComponent {
-	public void injectInto(RealmsFragment realmsFragment);
-	public void injectInto(SpellListsFragment spellListsFragment);
-	public void injectInto(SpellListTypesFragment spellListTypesFragment);
-	public void injectInto(SpellsFragment spellsFragment);
-	public void injectInto(SpellSubTypesFragment spellSubTypesFragment);
-	public void injectInto(SpellTypesFragment spellTypesFragment);
+	void injectInto(RealmsFragment realmsFragment);
+	void injectInto(SpellListsFragment spellListsFragment);
+	void injectInto(SpellListTypesFragment spellListTypesFragment);
+	void injectInto(SpellsFragment spellsFragment);
+	void injectInto(SpellSubTypesFragment spellSubTypesFragment);
+	void injectInto(SpellTypesFragment spellTypesFragment);
 }

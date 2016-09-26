@@ -24,8 +24,9 @@ import dagger.Subcomponent;
 /**
  * The ItemFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = ItemFragmentModule.class)
 public interface ItemFragmentComponent {
-	public void injectInto(ItemsFragment itemsFragment);
+	void injectInto(ItemsFragment itemsFragment);
 }

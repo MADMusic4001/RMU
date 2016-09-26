@@ -35,7 +35,7 @@ public class CampaignFragmentModule {
 
 	@Provides
 	@PerFragment
-	public FileSelectorDialogFragment provideFileSelectorDialogFragment() {
+	FileSelectorDialogFragment provideFileSelectorDialogFragment() {
 		return this.fsDialogFragment;
 	}
 }

@@ -44,17 +44,17 @@ public class CharacterFragmentModule {
 
 	@Provides
 	@PerFragment
-	public CulturesFragment provideCulturesFragment() {
+	CulturesFragment provideCulturesFragment() {
 		return this.culturesFragment;
 	}
 	@Provides
 	@PerFragment
-	public ProfessionsFragment provideProfessionsFragment() {
+	ProfessionsFragment provideProfessionsFragment() {
 		return this.professionsFragment;
 	}
 	@Provides
 	@PerFragment
-	public RacesFragment provideRacesFragment() {
+	RacesFragment provideRacesFragment() {
 		return this.racesFragment;
 	}
 }

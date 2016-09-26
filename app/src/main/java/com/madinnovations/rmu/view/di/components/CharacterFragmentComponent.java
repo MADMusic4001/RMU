@@ -26,10 +26,11 @@ import dagger.Subcomponent;
 /**
  * The CharacterFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = CharacterFragmentModule.class)
 public interface CharacterFragmentComponent {
-	public void injectInto(CulturesFragment culturesFragment);
-	public void injectInto(ProfessionsFragment professionsFragment);
-	public void injectInto(RacesFragment racesFragment);
+	void injectInto(CulturesFragment culturesFragment);
+	void injectInto(ProfessionsFragment professionsFragment);
+	void injectInto(RacesFragment racesFragment);
 }

@@ -52,7 +52,7 @@ public class ApplicationModule {
 	 */
 	@Provides
 	@Singleton
-	public Context provideApplicationContext() {
+	Context provideApplicationContext() {
 		return this.application;
 	}
 
@@ -63,7 +63,7 @@ public class ApplicationModule {
 	 * @return an Application instance
 	 */
 	@Provides @Singleton
-	public Application provideApplication(RMUApp application) {
+	Application provideApplication(RMUApp application) {
 		return application;
 	}
 
@@ -73,7 +73,7 @@ public class ApplicationModule {
 	 * @return a RMUApp instance.
 	 */
 	@Provides @Singleton
-	public RMUApp provideRMUApp() {
+	RMUApp provideRMUApp() {
 		return application;
 	}
 
@@ -84,7 +84,7 @@ public class ApplicationModule {
 	 * @return a SharedPreferences instance.
 	 */
 	@Provides @Singleton
-	public SharedPreferences provideSharedPrefs(Application app) {
+	SharedPreferences provideSharedPrefs(Application app) {
 		return app.getSharedPreferences(PREFS_DEFAULT, Context.MODE_PRIVATE);
 	}
 }

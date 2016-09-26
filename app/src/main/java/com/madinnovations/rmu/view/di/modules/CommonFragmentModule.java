@@ -63,31 +63,31 @@ public class CommonFragmentModule {
 	}
 
 	@Provides @PerFragment
-	public SizesFragment provideSizesFragment() {
+	SizesFragment provideSizesFragment() {
 		return this.sizesFragment;
 	}
 	@Provides @PerFragment
-	public SkillCategoriesFragment provideSkillCategoriesFragment() {
+	SkillCategoriesFragment provideSkillCategoriesFragment() {
 		return this.skillCategoriesFragment;
 	}
 	@Provides @PerFragment
-	public SkillsFragment provideSkillsFragment() {
+	SkillsFragment provideSkillsFragment() {
 		return this.skillsFragment;
 	}
 	@Provides @PerFragment
-	public SpecializationsFragment provideSpecializationsFragment() {
+	SpecializationsFragment provideSpecializationsFragment() {
 		return this.specializationsFragment;
 	}
 	@Provides @PerFragment
-	public StatsFragment provideStatsFragment() {
+	StatsFragment provideStatsFragment() {
 		return this.statsFragment;
 	}
 	@Provides @PerFragment
-	public TalentCategoriesFragment provideTalentCategoryFragment() {
+	TalentCategoriesFragment provideTalentCategoryFragment() {
 		return this.talentCategoriesFragment;
 	}
 	@Provides @PerFragment
-	public TalentsFragment provideTalentsFragment() {
+	TalentsFragment provideTalentsFragment() {
 		return this.talentsFragment;
 	}
 }

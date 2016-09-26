@@ -59,27 +59,27 @@ public class SpellFragmentModule {
 
 	@Provides
 	@PerFragment
-	public RealmsFragment provideRealmsFragment() {
+	RealmsFragment provideRealmsFragment() {
 		return this.realmsFragment;
 	}
 	@Provides
 	@PerFragment
-	public SpellListsFragment provideSpellListsFragment() {
+	SpellListsFragment provideSpellListsFragment() {
 		return this.spellListsFragment;
 	}
 	@Provides
 	@PerFragment
-	public SpellListTypesFragment provideSpellListTypesFragment() {
+	SpellListTypesFragment provideSpellListTypesFragment() {
 		return this.spellListTypesFragment;
 	}
 	@Provides
 	@PerFragment
-	public SpellsFragment provideSpellsFragment() {
+	SpellsFragment provideSpellsFragment() {
 		return this.spellsFragment;
 	}
 	@Provides
 	@PerFragment
-	public SpellSubTypesFragment provideSpellSubTypesFragment() {
+	SpellSubTypesFragment provideSpellSubTypesFragment() {
 		return this.spellSubTypesFragment;
 	}
 	@PerFragment

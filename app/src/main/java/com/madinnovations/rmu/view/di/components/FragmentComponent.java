@@ -25,9 +25,10 @@ import dagger.Subcomponent;
 /**
  * The FragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = FragmentModule.class)
 public interface FragmentComponent {
-	public void injectInto(AboutFragment aboutFragment);
-	public void injectInto(MainMenuFragment mainMenuFragment);
+	void injectInto(AboutFragment aboutFragment);
+	void injectInto(MainMenuFragment mainMenuFragment);
 }

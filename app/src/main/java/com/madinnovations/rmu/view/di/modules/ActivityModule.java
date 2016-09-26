@@ -34,7 +34,7 @@ public class ActivityModule {
 	}
 
 	@Provides @PerActivity
-	public CampaignActivity provideCampaignActivity() {
+	CampaignActivity provideCampaignActivity() {
 		return this.campaignActivity;
 	}
 }

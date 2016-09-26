@@ -63,31 +63,31 @@ public class CreatureFragmentModule {
 	}
 
 	@Provides @PerFragment
-	public CreatureArchetypesFragment provideCreatureArchetypesFragment() {
+	CreatureArchetypesFragment provideCreatureArchetypesFragment() {
 		return this.creatureArchetypesFragment;
 	}
 	@Provides @PerFragment
-	public CreatureCategoriesFragment provideCreatureCategoriesFragment() {
+	CreatureCategoriesFragment provideCreatureCategoriesFragment() {
 		return this.creatureCategoriesFragment;
 	}
 	@Provides @PerFragment
-	public CreatureTypesFragment provideCreatureTypesFragment() {
+	CreatureTypesFragment provideCreatureTypesFragment() {
 		return this.creatureTypesFragment;
 	}
 	@Provides @PerFragment
-	public CreatureVarietiesFragment provideCreatureVarietiesFragment() {
+	CreatureVarietiesFragment provideCreatureVarietiesFragment() {
 		return this.creatureVarietiesFragment;
 	}
 	@Provides @PerFragment
-	public CreatureVarietyAttackPageFragment provideCreatureVarietyAttackPageFragment() {
+	CreatureVarietyAttackPageFragment provideCreatureVarietyAttackPageFragment() {
 		return this.creatureVarietyAttackPageFragment;
 	}
 	@Provides @PerFragment
-	public CreatureVarietyMainPageFragment provideCreatureVarietyMainPageFragment() {
+	CreatureVarietyMainPageFragment provideCreatureVarietyMainPageFragment() {
 		return this.creatureVarietyMainPageFragment;
 	}
 	@Provides @PerFragment
-	public OutlooksFragment provideOutlooksFragment() {
+	OutlooksFragment provideOutlooksFragment() {
 		return this.outlooksFragment;
 	}
 }

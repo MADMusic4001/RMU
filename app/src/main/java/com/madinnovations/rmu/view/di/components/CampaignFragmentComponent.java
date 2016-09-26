@@ -16,20 +16,17 @@
 package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
-import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CampaignFragmentModule;
-import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
-
-import java.io.File;
 
 import dagger.Subcomponent;
 
 /**
  * The ItemFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = CampaignFragmentModule.class)
 public interface CampaignFragmentComponent {
-	public void injectInto(FileSelectorDialogFragment fsDialogFragment);
+	void injectInto(FileSelectorDialogFragment fsDialogFragment);
 }

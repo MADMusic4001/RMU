@@ -58,27 +58,27 @@ public class CombatFragmentModule {
 	}
 
 	@Provides @PerFragment
-	public AttacksFragment provideAttacksFragment() {
+	AttacksFragment provideAttacksFragment() {
 		return this.attacksFragment;
 	}
 	@Provides @PerFragment
-	public BodyPartsFragment provideBodyPartsFragment() {
+	BodyPartsFragment provideBodyPartsFragment() {
 		return this.bodyPartsFragment;
 	}
 	@Provides @PerFragment
-	public CriticalCodesFragment provideCriticalCodesFragment() {
+	CriticalCodesFragment provideCriticalCodesFragment() {
 		return this.criticalCodesFragment;
 	}
 	@Provides @PerFragment
-	public CriticalResultsFragment provideCriticalResultsFragment() {
+	CriticalResultsFragment provideCriticalResultsFragment() {
 		return this.criticalResultsFragment;
 	}
 	@Provides @PerFragment
-	public CriticalTypesFragment provideCriticalTypesFragment() {
+	CriticalTypesFragment provideCriticalTypesFragment() {
 		return this.criticalTypesFragment;
 	}
 	@Provides @PerFragment
-	public DamageResultsFragment provideDamageResultsFragment() {
+	DamageResultsFragment provideDamageResultsFragment() {
 		return this.damageResultsFragment;
 	}
 }

@@ -30,14 +30,15 @@ import dagger.Subcomponent;
 /**
  * The CreatureFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = CreatureFragmentModule.class)
 public interface CreatureFragmentComponent {
-	public void injectInto(CreatureArchetypesFragment creatureArchetypesFragment);
-	public void injectInto(CreatureCategoriesFragment creatureCategoriesFragment);
-	public void injectInto(CreatureTypesFragment creatureTypesFragment);
-	public void injectInto(CreatureVarietiesFragment creatureVarietiesFragment);
-	public void injectInto(CreatureVarietyAttackPageFragment creatureVarietyAttackPageFragment);
-	public void injectInto(CreatureVarietyMainPageFragment creatureVarietyMainPageFragment);
-	public void injectInto(OutlooksFragment outlooksFragment);
+	void injectInto(CreatureArchetypesFragment creatureArchetypesFragment);
+	void injectInto(CreatureCategoriesFragment creatureCategoriesFragment);
+	void injectInto(CreatureTypesFragment creatureTypesFragment);
+	void injectInto(CreatureVarietiesFragment creatureVarietiesFragment);
+	void injectInto(CreatureVarietyAttackPageFragment creatureVarietyAttackPageFragment);
+	void injectInto(CreatureVarietyMainPageFragment creatureVarietyMainPageFragment);
+	void injectInto(OutlooksFragment outlooksFragment);
 }

@@ -36,15 +36,15 @@ import dagger.Subcomponent;
 @PerActivity
 @Subcomponent(modules = ActivityModule.class)
 public interface ActivityComponent {
-	public FragmentComponent newFragmentComponent(FragmentModule fragmentModule);
-	public CampaignFragmentComponent newCampaignFragmentComponent(CampaignFragmentModule fragmentModule);
-	public CharacterFragmentComponent newCharacterFragmentComponent(CharacterFragmentModule fragmentModule);
-	public CombatFragmentComponent newCombatFragmentComponent(CombatFragmentModule fragmentModule);
-	public CommonFragmentComponent newCommonFragmentComponent(CommonFragmentModule fragmentModule);
-	public CreatureFragmentComponent newCreatureFragmentComponent(CreatureFragmentModule fragmentModule);
-	public ItemFragmentComponent newItemFragmentComponent(ItemFragmentModule fragmentModule);
-	public PlayFragmentComponent newPlayFragmentComponent(PlayFragmentModule fragmentModule);
-	public SpellFragmentComponent newSpellFragmentComponent(SpellFragmentModule fragmentModule);
+	FragmentComponent newFragmentComponent(FragmentModule fragmentModule);
+	CampaignFragmentComponent newCampaignFragmentComponent(CampaignFragmentModule fragmentModule);
+	CharacterFragmentComponent newCharacterFragmentComponent(CharacterFragmentModule fragmentModule);
+	CombatFragmentComponent newCombatFragmentComponent(CombatFragmentModule fragmentModule);
+	CommonFragmentComponent newCommonFragmentComponent(CommonFragmentModule fragmentModule);
+	CreatureFragmentComponent newCreatureFragmentComponent(CreatureFragmentModule fragmentModule);
+	ItemFragmentComponent newItemFragmentComponent(ItemFragmentModule fragmentModule);
+	PlayFragmentComponent newPlayFragmentComponent(PlayFragmentModule fragmentModule);
+	SpellFragmentComponent newSpellFragmentComponent(SpellFragmentModule fragmentModule);
 
-	public void injectInto(CampaignActivity campaignActivity);
+	void injectInto(CampaignActivity campaignActivity);
 }

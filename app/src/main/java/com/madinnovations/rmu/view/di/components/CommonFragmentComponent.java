@@ -30,14 +30,15 @@ import dagger.Subcomponent;
 /**
  * The CommonFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = CommonFragmentModule.class)
 public interface CommonFragmentComponent {
-	public void injectInto(SizesFragment sizesFragment);
-	public void injectInto(SkillCategoriesFragment skillCategoriesFragment);
-	public void injectInto(SkillsFragment skillsFragment);
-	public void injectInto(SpecializationsFragment specializationsFragment);
-	public void injectInto(StatsFragment statsFragment);
-	public void injectInto(TalentCategoriesFragment talentCategoriesFragment);
-	public void injectInto(TalentsFragment talentsFragment);
+	void injectInto(SizesFragment sizesFragment);
+	void injectInto(SkillCategoriesFragment skillCategoriesFragment);
+	void injectInto(SkillsFragment skillsFragment);
+	void injectInto(SpecializationsFragment specializationsFragment);
+	void injectInto(StatsFragment statsFragment);
+	void injectInto(TalentCategoriesFragment talentCategoriesFragment);
+	void injectInto(TalentsFragment talentsFragment);
 }

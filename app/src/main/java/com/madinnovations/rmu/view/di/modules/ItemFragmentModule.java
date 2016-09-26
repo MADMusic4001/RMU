@@ -34,7 +34,7 @@ public class ItemFragmentModule {
 
 	@Provides
 	@PerFragment
-	public ItemsFragment provideItemsFragment() {
+	ItemsFragment provideItemsFragment() {
 		return this.itemsFragment;
 	}
 }

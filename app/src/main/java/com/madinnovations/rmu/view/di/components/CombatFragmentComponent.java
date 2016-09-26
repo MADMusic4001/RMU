@@ -29,13 +29,14 @@ import dagger.Subcomponent;
 /**
  * The CombatFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = CombatFragmentModule.class)
 public interface CombatFragmentComponent {
-	public void injectInto(AttacksFragment attacksFragment);
-	public void injectInto(BodyPartsFragment bodyPartsFragment);
-	public void injectInto(CriticalCodesFragment criticalCodesFragment);
-	public void injectInto(CriticalResultsFragment criticalResultsFragment);
-	public void injectInto(CriticalTypesFragment criticalTypesFragment);
-	public void injectInto(DamageResultsFragment damageResultsFragment);
+	void injectInto(AttacksFragment attacksFragment);
+	void injectInto(BodyPartsFragment bodyPartsFragment);
+	void injectInto(CriticalCodesFragment criticalCodesFragment);
+	void injectInto(CriticalResultsFragment criticalResultsFragment);
+	void injectInto(CriticalTypesFragment criticalTypesFragment);
+	void injectInto(DamageResultsFragment damageResultsFragment);
 }
