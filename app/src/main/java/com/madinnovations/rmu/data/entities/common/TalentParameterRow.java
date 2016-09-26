@@ -21,11 +21,11 @@ import com.madinnovations.rmu.data.entities.combat.Resistance;
  * Talent Effect information
  */
 public class TalentParameterRow {
-	private Effect         effect                 = Effect.BONUS;
-	private Skill          affectedSkill          = null;
-	private Specialization affectedSpecialization = null;
-	private Resistance     affectedResistance     = null;
-	private Stat           affectedStat           = null;
+	private Parameter      parameter              = Parameter.BONUS;
+	private boolean        perTier                = false;
+	private boolean        perLevel               = false;
+	private boolean        perRound               = false;
+	private String         enumName               = null;
 	private Integer        value                  = 0;
 
 	@Override
@@ -48,35 +48,35 @@ public class TalentParameterRow {
 	}
 
 	// Getters and setters
-	public Effect getParameter() {
-		return effect;
+	public Parameter getParameter() {
+		return parameter;
 	}
-	public void setParameter(Effect effect) {
-		this.effect = effect;
+	public void setParameter(Parameter parameter) {
+		this.parameter = parameter;
 	}
-	public Skill getAffectedSkill() {
-		return affectedSkill;
+	public boolean isPerTier() {
+		return perTier;
 	}
-	public void setAffectedSkill(Skill affectedSkill) {
-		this.affectedSkill = affectedSkill;
+	public void setPerTier(boolean perTier) {
+		this.perTier = perTier;
 	}
-	public Specialization getAffectedSpecialization() {
-		return affectedSpecialization;
+	public boolean isPerLevel() {
+		return perLevel;
 	}
-	public void setAffectedSpecialization(Specialization affectedSpecialization) {
-		this.affectedSpecialization = affectedSpecialization;
+	public void setPerLevel(boolean perLevel) {
+		this.perLevel = perLevel;
 	}
-	public Resistance getAffectedResistance() {
-		return affectedResistance;
+	public boolean isPerRound() {
+		return perRound;
 	}
-	public void setAffectedResistance(Resistance affectedResistance) {
-		this.affectedResistance = affectedResistance;
+	public void setPerRound(boolean perRound) {
+		this.perRound = perRound;
 	}
-	public Stat getAffectedStat() {
-		return affectedStat;
+	public String getEnumName() {
+		return enumName;
 	}
-	public void setAffectedStat(Stat affectedStat) {
-		this.affectedStat = affectedStat;
+	public void setEnumName(String enumName) {
+		this.enumName = enumName;
 	}
 	public Integer getValue() {
 		return value;

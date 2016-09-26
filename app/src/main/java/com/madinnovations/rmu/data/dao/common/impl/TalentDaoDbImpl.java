@@ -22,16 +22,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.SpecializationDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
-import com.madinnovations.rmu.data.dao.common.schemas.TalentEffectsSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 import com.madinnovations.rmu.data.entities.combat.Action;
-import com.madinnovations.rmu.data.entities.combat.Resistance;
-import com.madinnovations.rmu.data.entities.common.Effect;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
 
@@ -44,9 +40,6 @@ import javax.inject.Singleton;
 @Singleton
 public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao, TalentSchema {
     private TalentCategoryDao talentCategoryDao;
-	private SkillDao          skillDao;
-	private SpecializationDao specializationDao;
-	private StatDao           statDao;
 
     /**
      * Creates a new instance of TalentDaoDbImpl
@@ -54,13 +47,9 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public TalentDaoDbImpl(SQLiteOpenHelper helper, TalentCategoryDao talentCategoryDao, SkillDao skillDao,
-						   SpecializationDao specializationDao, StatDao statDao) {
+    public TalentDaoDbImpl(SQLiteOpenHelper helper, TalentCategoryDao talentCategoryDao) {
         super(helper);
         this.talentCategoryDao = talentCategoryDao;
-		this.skillDao = skillDao;
-		this.specializationDao = specializationDao;
-		this.statDao = statDao;
     }
 
     @Override
@@ -90,7 +79,7 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 
     @Override
     protected boolean saveRelationships(SQLiteDatabase db, Talent instance) {
-        return saveTalentEffects(db, instance);
+        return saveTalentParameters(db, instance);
     }
 
     @Override
@@ -131,42 +120,33 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         return initialValues;
     }
 
-    private boolean saveTalentEffects(SQLiteDatabase db, Talent instance) {
+    private boolean saveTalentParameters(SQLiteDatabase db, Talent instance) {
 		boolean result;
 		final String selectionArgs[] = { String.valueOf(	instance.getId()) };
-		final String selection = TalentEffectsSchema.COLUMN_TALENT_ID + " = ?";
-		ContentValues contentValues = new ContentValues(6);
+		final String selection = TalentParametersSchema.COLUMN_TALENT_ID + " = ?";
+		ContentValues contentValues = new ContentValues(5);
 
 		// Delete all current effects for this talent and then recreate them
-		result = (db.delete(TalentEffectsSchema.TABLE_NAME, selection, selectionArgs) != -1);
+		result = (db.delete(TalentParametersSchema.TABLE_NAME, selection, selectionArgs) != -1);
 
-		contentValues.put(TalentEffectsSchema.COLUMN_TALENT_ID, instance.getId());
+		contentValues.put(TalentParametersSchema.COLUMN_TALENT_ID, instance.getId());
 		for(int i = 0; i < instance.getTalentParameterRows().length; i++) {
 			TalentParameterRow talentParameterRow = instance.getTalentParameterRows()[i];
-			contentValues.put(TalentEffectsSchema.COLUMN_INDEX, i);
-			contentValues.put(TalentEffectsSchema.COLUMN_EFFECT, talentParameterRow.getParameter().name());
+			contentValues.put(TalentParametersSchema.COLUMN_INDEX, i);
+			contentValues.put(TalentParametersSchema.COLUMN_EFFECT, talentParameterRow.getParameter().name());
 			if(talentParameterRow.getValue() == null) {
-				contentValues.putNull(TalentEffectsSchema.COLUMN_VALUE);
+				contentValues.putNull(TalentParametersSchema.COLUMN_VALUE);
 			}
 			else {
-				contentValues.put(TalentEffectsSchema.COLUMN_VALUE, talentParameterRow.getValue());
+				contentValues.put(TalentParametersSchema.COLUMN_VALUE, talentParameterRow.getValue());
 			}
-			if(talentParameterRow.getAffectedResistance() != null) {
-				contentValues.put(TalentEffectsSchema.COLUMN_RESISTANCE, talentParameterRow.getAffectedResistance().name());
+			if(talentParameterRow.getEnumName() != null) {
+				contentValues.put(TalentParametersSchema.COLUMN_ENUM_NAME, talentParameterRow.getEnumName());
 			}
 			else {
-				contentValues.putNull(TalentEffectsSchema.COLUMN_RESISTANCE);
+				contentValues.putNull(TalentParametersSchema.COLUMN_ENUM_NAME);
 			}
-			if(talentParameterRow.getAffectedSkill() != null) {
-				contentValues.put(TalentEffectsSchema.COLUMN_ENTITY_ID, talentParameterRow.getAffectedSkill().getId());
-			}
-			else if(talentParameterRow.getAffectedSpecialization() != null) {
-				contentValues.put(TalentEffectsSchema.COLUMN_ENTITY_ID, talentParameterRow.getAffectedSpecialization().getId());
-			}
-			else if(talentParameterRow.getAffectedStat() != null){
-				contentValues.put(TalentEffectsSchema.COLUMN_ENTITY_ID, talentParameterRow.getAffectedStat().getId());
-			}
-			result &= (db.insertWithOnConflict(TalentEffectsSchema.TABLE_NAME, null, contentValues,
+			result &= (db.insertWithOnConflict(TalentParametersSchema.TABLE_NAME, null, contentValues,
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
@@ -174,55 +154,29 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 
 	private TalentParameterRow[] getTalentEffectRows(int talentId) {
 		final String selectionArgs[] = { String.valueOf(talentId) };
-		final String selection = TalentEffectsSchema.COLUMN_TALENT_ID + " = ?";
+		final String selection = TalentParametersSchema.COLUMN_TALENT_ID + " = ?";
 
-		Cursor cursor = super.query(TalentEffectsSchema.TABLE_NAME, TalentEffectsSchema.COLUMNS, selection,
-									selectionArgs, TalentEffectsSchema.COLUMN_INDEX);
+		Cursor cursor = super.query(TalentParametersSchema.TABLE_NAME, TalentParametersSchema.COLUMNS, selection,
+									selectionArgs, TalentParametersSchema.COLUMN_INDEX);
 		TalentParameterRow[] rows = new TalentParameterRow[cursor.getCount()];
 		TalentParameterRow row = new TalentParameterRow();
 		int index;
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			index = cursor.getInt(cursor.getColumnIndexOrThrow(TalentEffectsSchema.COLUMN_INDEX));
-			Effect effect = Effect.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(TalentEffectsSchema.COLUMN_EFFECT)));
-			row.setParameter(effect);
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(TalentEffectsSchema.COLUMN_VALUE))) {
+			index = cursor.getInt(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_INDEX));
+			Parameter parameter = Parameter.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_EFFECT)));
+			row.setParameter(parameter);
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_VALUE))) {
 				row.setValue(null);
 			}
 			else {
-				row.setValue(cursor.getInt(cursor.getColumnIndexOrThrow(TalentEffectsSchema.COLUMN_VALUE)));
+				row.setValue(cursor.getInt(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_VALUE)));
 			}
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(TalentEffectsSchema.COLUMN_RESISTANCE))) {
-				row.setAffectedResistance(null);
-			}
-			else {
-				row.setAffectedResistance(Resistance.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
-						TalentEffectsSchema.COLUMN_RESISTANCE))));
-			}
-			if(cursor.isNull(cursor.getColumnIndexOrThrow(TalentEffectsSchema.COLUMN_ENTITY_ID))) {
-				row.setAffectedSkill(null);
-				row.setAffectedSpecialization(null);
-				row.setAffectedStat(null);
+			if(cursor.isNull(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_ENUM_NAME))) {
+				row.setEnumName(null);
 			}
 			else {
-				if(effect.equals(Effect.SKILL_BONUS)) {
-					row.setAffectedSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
-							TalentEffectsSchema.COLUMN_ENTITY_ID))));
-					row.setAffectedSpecialization(null);
-					row.setAffectedStat(null);
-				}
-				else if(effect.equals(Effect.SPECIALIZATION_BONUS)) {
-					row.setAffectedSkill(null);
-					row.setAffectedSpecialization(specializationDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
-							TalentEffectsSchema.COLUMN_ENTITY_ID))));
-					row.setAffectedStat(null);
-				}
-				else if(effect.equals(Effect.STAT_BONUS)) {
-					row.setAffectedSkill(null);
-					row.setAffectedSpecialization(null);
-					row.setAffectedStat(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
-							TalentEffectsSchema.COLUMN_ENTITY_ID))));
-				}
+				row.setEnumName(cursor.getString(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_ENUM_NAME)));
 			}
 			rows[index] = row;
 			cursor.moveToNext();

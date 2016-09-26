@@ -18,15 +18,14 @@ package com.madinnovations.rmu.data.dao.common.schemas;
 /**
  * Database schema data for the talent_parameter table
  */
-public interface TalentEffectsSchema {
+public interface TalentParametersSchema {
 	String TABLE_NAME = "talent_parameter";
 
-	String COLUMN_TALENT_ID  = "talentId";
-	String COLUMN_INDEX      = "rowIndex";
-	String COLUMN_EFFECT     = "effect";
-	String COLUMN_RESISTANCE = "resistance";
-	String COLUMN_ENTITY_ID  = "entityId";
-	String COLUMN_VALUE      = "value";
+	String COLUMN_TALENT_ID = "talentId";
+	String COLUMN_INDEX     = "rowIndex";
+	String COLUMN_EFFECT    = "effect";
+	String COLUMN_ENUM_NAME = "enumName";
+	String COLUMN_VALUE     = "value";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -34,13 +33,11 @@ public interface TalentEffectsSchema {
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
 			+ COLUMN_INDEX + " INTEGER NOT NULL, "
 			+ COLUMN_EFFECT + " TEXT NOT NULL, "
-			+ COLUMN_RESISTANCE + " TEXT, "
-			+ COLUMN_ENTITY_ID + " INTEGER, "
+			+ COLUMN_ENUM_NAME + " TEXT, "
 			+ COLUMN_VALUE + " INTEGER, "
 			+ "PRIMARY KEY(" + COLUMN_TALENT_ID + "," + COLUMN_INDEX + "), "
 			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_INDEX, COLUMN_EFFECT, COLUMN_RESISTANCE, COLUMN_RESISTANCE,
-			COLUMN_ENTITY_ID, COLUMN_VALUE};
+	String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_INDEX, COLUMN_EFFECT, COLUMN_ENUM_NAME, COLUMN_VALUE};
 }

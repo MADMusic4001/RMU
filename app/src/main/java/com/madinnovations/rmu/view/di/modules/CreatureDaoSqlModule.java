@@ -48,31 +48,31 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class CreatureDaoSqlModule {
 	@Provides @Singleton
-	public CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper, StatDao statDao, SkillCategoryDao skillCategoryDao) {
+	CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper, StatDao statDao, SkillCategoryDao skillCategoryDao) {
 		return new CreatureArchetypeDaoDbImpl(helper, statDao, skillCategoryDao);
 	}
 	@Provides @Singleton
-	public CreatureCategoryDao provideCreatureCategoryDao(RMUDatabaseHelper helper, TalentDao talentDao) {
+	CreatureCategoryDao provideCreatureCategoryDao(RMUDatabaseHelper helper, TalentDao talentDao) {
 		return new CreatureCategoryDaoDbImpl(helper, talentDao);
 	}
 	@Provides @Singleton
-	public CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CreatureVarietyDao creatureVarietyDao) {
+	CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CreatureVarietyDao creatureVarietyDao) {
 		return new CreatureDaoDbImpl(helper, creatureVarietyDao);
 	}
 	@Provides @Singleton
-	public CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao,
+	CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao,
 												  TalentDao talentDao) {
 		return new CreatureTypeDaoDbImpl(helper, creatureCategoryDao, talentDao);
 	}
 	@Provides @Singleton
-	public CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,
+	CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,
 														CriticalCodeDao criticalCodeDao, RealmDao realmDao, OutlookDao outlookDao,
 														StatDao statDao, SkillDao skillDao, TalentDao talentDao, AttackDao attackDao) {
 		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao, sizeDao, criticalCodeDao, realmDao, outlookDao, statDao, skillDao,
 				talentDao, attackDao);
 	}
 	@Provides @Singleton
-	public OutlookDao provideOutlookDao(RMUDatabaseHelper helper) {
+	OutlookDao provideOutlookDao(RMUDatabaseHelper helper) {
 		return new OutlookDaoDbImpl(helper);
 	}
 }

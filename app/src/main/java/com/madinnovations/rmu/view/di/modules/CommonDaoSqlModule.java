@@ -42,38 +42,37 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class CommonDaoSqlModule {
 	@Provides @Singleton
-	public SizeDao provideSizeDao(RMUDatabaseHelper helper) {
+	SizeDao provideSizeDao(RMUDatabaseHelper helper) {
 		return new SizeDaoDbImpl(helper);
 	}
 
 	@Provides @Singleton
-	public SkillCategoryDao provideSkillCategoryDao(RMUDatabaseHelper helper, StatDao statDao) {
+	SkillCategoryDao provideSkillCategoryDao(RMUDatabaseHelper helper, StatDao statDao) {
 		return new SkillCategoryDaoDbImpl(helper, statDao);
 	}
 
 	@Provides @Singleton
-	public SkillDao provideSkillDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, StatDao statDao) {
+	SkillDao provideSkillDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao, StatDao statDao) {
 		return new SkillDaoDbImpl(helper, skillCategoryDao, statDao);
 	}
 
 	@Provides @Singleton
-	public SpecializationDao provideSpecializationDao(RMUDatabaseHelper helper, SkillDao skillDao, StatDao statDao) {
+	SpecializationDao provideSpecializationDao(RMUDatabaseHelper helper, SkillDao skillDao, StatDao statDao) {
 		return new SpecializationDaoDbImpl(helper, skillDao, statDao);
 	}
 
 	@Provides @Singleton
-	public StatDao provideStatDao(RMUDatabaseHelper helper) {
+	StatDao provideStatDao(RMUDatabaseHelper helper) {
 		return new StatDaoDbImpl(helper);
 	}
 
 	@Provides @Singleton
-	public TalentCategoryDao provideTalentCategoryDao(RMUDatabaseHelper helper) {
+	TalentCategoryDao provideTalentCategoryDao(RMUDatabaseHelper helper) {
 		return new TalentCategoryDaoDbImpl(helper);
 	}
 
 	@Provides @Singleton
-	public TalentDao provideTalentDao(RMUDatabaseHelper helper, TalentCategoryDao talentCategoryDao, SkillDao skillDao,
-									  SpecializationDao specializationDao, StatDao statDao) {
-		return new TalentDaoDbImpl(helper, talentCategoryDao, skillDao, specializationDao, statDao);
+	TalentDao provideTalentDao(RMUDatabaseHelper helper, TalentCategoryDao talentCategoryDao) {
+		return new TalentDaoDbImpl(helper, talentCategoryDao);
 	}
 }

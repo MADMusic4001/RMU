@@ -214,6 +214,7 @@
   <string name="label_flaw">Flaw</string>
   <string name="label_is_lore">Lore Skill</string>
   <string name="label_per_level">Per Level</string>
+  <string name="label_per_round">Per Round</string>
   <string name="label_per_tier">Per Tier</string>
   <string name="label_requires_concentration">Requires Concentration</string>
   <string name="label_requires_specialization">Requires Specialization</string>

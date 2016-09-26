@@ -18,7 +18,7 @@ package com.madinnovations.rmu.data.entities.common;
 /**
  * Adjustable Attributes
  */
-public enum Effect {
+public enum Parameter {
 	ARMOR_PENALTY("Armor Penalty"),
 	ARMOR_TYPE("Armor Type"),
 	ATTACK("Attack"),
@@ -67,22 +67,21 @@ public enum Effect {
 	RECOVERY_RATE("HP Recovery Rate"),
 	RECOVERY_RATE_MULT("HP Recovery Rate Multiplier"),
 	SIZE_DIFFERENCE("Size Difference"),
-	SKILL_BONUS("Skill Bonus"),
+	SKILL("Skill"),
 	SPECIAL("Special"),
-	SPECIALIZATION_BONUS("Specialization Bonus"),
+	SPECIALIZATION("Specialization"),
 	SPELL_DURATION("Spell Duration"),
 	SPELL_FAILURE("Spell Failure"),
 	SPELL_RADIUS("Spell Radius"),
 	SPELL_RANGE("Spell Range"),
 	STAT("Stat"),
-	STAT_BONUS("Stat Bonus"),
 	TERRAIN("Terrain"),
 	USES("Uses"),
 	VISION_RANGE("Vision Range");
 
 	private String text;
 
-	Effect(String text) {
+	Parameter(String text) {
 		this.text = text;
 	}
 

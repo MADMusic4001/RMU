@@ -20,14 +20,10 @@ import android.util.Log;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.common.schemas.TalentEffectsSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 import com.madinnovations.rmu.data.entities.combat.Action;
-import com.madinnovations.rmu.data.entities.combat.Resistance;
-import com.madinnovations.rmu.data.entities.common.Effect;
-import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
@@ -54,25 +50,16 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		out.name(COLUMN_IS_SITUATIONAL).value(value.isSituational());
 		out.name("talentEffectRowLength").value(value.getTalentParameterRows().length);
 		if(value.getTalentParameterRows().length > 0) {
-			out.name(TalentEffectsSchema.TABLE_NAME);
+			out.name(TalentParametersSchema.TABLE_NAME);
 			out.beginArray();
 			for (TalentParameterRow talentParameterRow : value.getTalentParameterRows()) {
 				out.beginObject();
-				out.name(TalentEffectsSchema.COLUMN_EFFECT).value(talentParameterRow.getParameter().name());
+				out.name(TalentParametersSchema.COLUMN_EFFECT).value(talentParameterRow.getParameter().name());
 				if(talentParameterRow.getValue() != null) {
-					out.name(TalentEffectsSchema.COLUMN_VALUE).value(talentParameterRow.getValue());
+					out.name(TalentParametersSchema.COLUMN_VALUE).value(talentParameterRow.getValue());
 				}
-				if (talentParameterRow.getAffectedResistance() != null) {
-					out.name(TalentEffectsSchema.COLUMN_RESISTANCE).value(talentParameterRow.getAffectedResistance().name());
-				}
-				if (talentParameterRow.getAffectedSkill() != null) {
-					out.name("affectedSkill").value(talentParameterRow.getAffectedSkill().getId());
-				}
-				if (talentParameterRow.getAffectedSpecialization() != null) {
-					out.name("affectedSpecialization").value(talentParameterRow.getAffectedSpecialization().getId());
-				}
-				if (talentParameterRow.getAffectedStat() != null) {
-					out.name("affectedStat").value(talentParameterRow.getAffectedStat().getId());
+				if (talentParameterRow.getEnumName() != null) {
+					out.name(TalentParametersSchema.COLUMN_ENUM_NAME).value(talentParameterRow.getEnumName());
 				}
 				out.endObject();
 			}
@@ -128,7 +115,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 				case "talentEffectRowLength":
 					talentEffectRowLength = in.nextInt();
 					break;
-				case TalentEffectsSchema.TABLE_NAME:
+				case TalentParametersSchema.TABLE_NAME:
 					readTalentEffectValues(in, talent, talentEffectRowLength);
 					break;
 			}
@@ -147,23 +134,14 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 			in.beginObject();
 			while(in.hasNext()) {
 				switch (in.nextName()) {
-					case TalentEffectsSchema.COLUMN_EFFECT:
-						talentParameterRow.setParameter(Effect.valueOf(in.nextString()));
+					case TalentParametersSchema.COLUMN_EFFECT:
+						talentParameterRow.setParameter(Parameter.valueOf(in.nextString()));
 						break;
-					case TalentEffectsSchema.COLUMN_VALUE:
+					case TalentParametersSchema.COLUMN_VALUE:
 						talentParameterRow.setValue(in.nextInt());
 						break;
-					case TalentEffectsSchema.COLUMN_RESISTANCE:
-						talentParameterRow.setAffectedResistance(Resistance.valueOf(in.nextString()));
-						break;
-					case "affectedSkill":
-						talentParameterRow.setAffectedSkill(new Skill(in.nextInt()));
-						break;
-					case "affectedSpecialization":
-						talentParameterRow.setAffectedSpecialization(new Specialization(in.nextInt()));
-						break;
-					case "affectedStat":
-						talentParameterRow.setAffectedStat(new Stat(in.nextInt()));
+					case TalentParametersSchema.COLUMN_ENUM_NAME:
+						talentParameterRow.setEnumName(in.nextString());
 						break;
 				}
 			}

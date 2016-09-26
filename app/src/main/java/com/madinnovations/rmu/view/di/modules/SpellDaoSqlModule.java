@@ -42,29 +42,29 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class SpellDaoSqlModule {
 	@Provides @Singleton
-	public RealmDao provideRealmDao(RMUDatabaseHelper helper, StatDao statDao) {
+	RealmDao provideRealmDao(RMUDatabaseHelper helper, StatDao statDao) {
 		return new RealmDaoDbImpl(helper, statDao);
 	}
 	@Provides @Singleton
-	public SpellDao provideSpellDao(RMUDatabaseHelper helper, SpellListDao spellListDao, SpellTypeDao spellTypeDao,
+	SpellDao provideSpellDao(RMUDatabaseHelper helper, SpellListDao spellListDao, SpellTypeDao spellTypeDao,
 									SpellSubTypeDao spellSubTypeDao) {
 		return new SpellDaoDbImpl(helper, spellListDao, spellTypeDao, spellSubTypeDao);
 	}
 	@Provides @Singleton
-	public SpellListDao provideSpellListDao(RMUDatabaseHelper helper, RealmDao realmDao, SpellListTypeDao spellListTypeDao,
+	SpellListDao provideSpellListDao(RMUDatabaseHelper helper, RealmDao realmDao, SpellListTypeDao spellListTypeDao,
 											ProfessionDao professionDao) {
 		return new SpellListDaoDbImpl(helper, realmDao, spellListTypeDao, professionDao);
 	}
 	@Provides @Singleton
-	public SpellListTypeDao provideSpellListTypeDao(RMUDatabaseHelper helper) {
+	SpellListTypeDao provideSpellListTypeDao(RMUDatabaseHelper helper) {
 		return new SpellListTypeDaoDbImpl(helper);
 	}
 	@Provides @Singleton
-	public SpellSubTypeDao provideSpellSubTypeDao(RMUDatabaseHelper helper) {
+	SpellSubTypeDao provideSpellSubTypeDao(RMUDatabaseHelper helper) {
 		return new SpellSubTypeDaoDbImpl(helper);
 	}
 	@Provides @Singleton
-	public SpellTypeDao provideSpellTypeDao(RMUDatabaseHelper helper, SpellSubTypeDao spellSubTypeDao) {
+	SpellTypeDao provideSpellTypeDao(RMUDatabaseHelper helper, SpellSubTypeDao spellSubTypeDao) {
 		return new SpellTypeDaoDbImpl(helper);
 	}
 }

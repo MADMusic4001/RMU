@@ -116,7 +116,7 @@ public enum Resistance {
 	 *
 	 * @return  an array of Resistance instances with physical flag = true.
 	 */
-	public static Resistance[] gePhysicalResistances() {
+	public static Resistance[] getPhysicalResistances() {
 		int count = 0;
 		Resistance[] values = Resistance.values();
 		for(Resistance resistance : values) {

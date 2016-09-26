@@ -32,12 +32,12 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class ItemDaoSqlModule {
 	@Provides @Singleton
-	public ItemDao provideItemDao(RMUDatabaseHelper helper) {
+	ItemDao provideItemDao(RMUDatabaseHelper helper) {
 		return new ItemDaoDbImpl(helper);
 	}
 
 	@Provides @Singleton
-	public WeaponDao provideWeaponDao(RMUDatabaseHelper helper) {
+	WeaponDao provideWeaponDao(RMUDatabaseHelper helper) {
 		return new WeaponDaoDbImpl(helper);
 	}
 }

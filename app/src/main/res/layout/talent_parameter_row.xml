@@ -61,6 +61,30 @@
       android:layout_centerVertical="true"
       android:background="@null"
       android:hint="@string/hint_value"/>
+  <CheckBox
+      android:id="@+id/per_tier_check_box"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/value_edit"
+      android:layout_toEndOf="@id/value_edit"
+      android:layout_centerVertical="true"
+      android:text="@string/label_per_tier"/>
+  <CheckBox
+      android:id="@+id/per_level_check_box"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/per_tier_check_box"
+      android:layout_toEndOf="@id/per_tier_check_box"
+      android:layout_centerVertical="true"
+      android:text="@string/label_per_level"/>
+  <CheckBox
+      android:id="@+id/per_round_check_box"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/per_level_check_box"
+      android:layout_toEndOf="@id/per_level_check_box"
+      android:layout_centerVertical="true"
+      android:text="@string/label_per_round"/>
 
   <TextView
       android:id="@+id/skill_label"
@@ -79,26 +103,6 @@
       android:layout_toEndOf="@id/skill_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
-  <TextView
-      android:id="@+id/skill_bonus_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/skill_spinner"
-      android:layout_toEndOf="@id/skill_spinner"
-      android:layout_centerVertical="true"
-      android:visibility="gone"
-      android:text="@string/input_label_bonus"/>
-  <EditText
-      android:id="@+id/skill_bonus_edit"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:inputType="numberSigned"
-      android:layout_toRightOf="@id/skill_bonus_label"
-      android:layout_toEndOf="@id/skill_bonus_label"
-      android:layout_centerVertical="true"
-      android:visibility="gone"
-      android:background="@null"
-      android:hint="@string/hint_skill_bonus"/>
 
   <TextView
       android:id="@+id/specialization_label"
@@ -117,26 +121,6 @@
       android:layout_toEndOf="@id/specialization_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
-  <TextView
-      android:id="@+id/specialization_bonus_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/specialization_spinner"
-      android:layout_toEndOf="@id/specialization_spinner"
-      android:layout_centerVertical="true"
-      android:visibility="gone"
-      android:text="@string/input_label_bonus"/>
-  <EditText
-      android:id="@+id/specialization_bonus_edit"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:inputType="numberSigned"
-      android:layout_toRightOf="@id/specialization_bonus_label"
-      android:layout_toEndOf="@id/specialization_bonus_label"
-      android:layout_centerVertical="true"
-      android:visibility="gone"
-      android:background="@null"
-      android:hint="@string/hint_specialization_bonus"/>
 
   <TextView
       android:id="@+id/resistance_label"
@@ -155,26 +139,6 @@
       android:layout_toEndOf="@id/resistance_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
-  <TextView
-      android:id="@+id/resistance_value_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/resistance_spinner"
-      android:layout_toEndOf="@id/resistance_spinner"
-      android:layout_centerVertical="true"
-      android:visibility="gone"
-      android:text="@string/input_label_value"/>
-  <EditText
-      android:id="@+id/resistance_value_edit"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:inputType="numberSigned"
-      android:layout_toRightOf="@id/resistance_value_label"
-      android:layout_toEndOf="@id/resistance_value_label"
-      android:layout_centerVertical="true"
-      android:background="@null"
-      android:visibility="gone"
-      android:hint="@string/hint_resistance_value"/>
 
   <TextView
       android:id="@+id/stat_label"
@@ -193,24 +157,40 @@
       android:layout_toEndOf="@id/stat_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
+
   <TextView
-      android:id="@+id/stat_bonus_label"
+      android:id="@+id/attack_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/stat_spinner"
-      android:layout_toEndOf="@id/stat_spinner"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
-      android:text="@string/input_label_stat"/>
-  <EditText
-      android:id="@+id/stat_bonus_edit"
+      android:text="@string/label_attack_name"/>
+  <Spinner
+      android:id="@+id/attack_spinner"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:inputType="numberSigned"
-      android:layout_toRightOf="@id/stat_bonus_label"
-      android:layout_toEndOf="@id/stat_bonus_label"
+      android:layout_toRightOf="@id/attack_label"
+      android:layout_toEndOf="@id/attack_label"
       android:layout_centerVertical="true"
-      android:background="@null"
+      android:visibility="gone"/>
+
+  <TextView
+      android:id="@+id/spell_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
+      android:layout_centerVertical="true"
       android:visibility="gone"
-      android:hint="@string/hint_stat_bonus"/>
+      android:text="@string/label_spell_name"/>
+  <Spinner
+      android:id="@+id/spell_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/spell_label"
+      android:layout_toEndOf="@id/spell_label"
+      android:layout_centerVertical="true"
+      android:visibility="gone"/>
 </RelativeLayout>

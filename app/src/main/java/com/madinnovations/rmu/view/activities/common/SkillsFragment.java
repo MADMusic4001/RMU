@@ -524,7 +524,8 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onNext(Collection<SkillCategory> skillCategories) {
 						skillCategoryFilterSpinnerAdapter.addAll(skillCategories);
 						skillCategoryFilterSpinnerAdapter.notifyDataSetChanged();
-						skillCategoryFilterSpinner.setSelection(skillCategoryFilterSpinnerAdapter.getPosition(allSkillCategories));
+						skillCategoryFilterSpinner.setSelection(
+								skillCategoryFilterSpinnerAdapter.getPosition(allSkillCategories));
 					}
 				});
 
@@ -560,7 +561,8 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						skillCategorySpinnerAdapter.addAll(skillCategories);
 						skillCategorySpinnerAdapter.notifyDataSetChanged();
 						if(currentInstance.getCategory() != null) {
-							skillCategorySpinner.setSelection(skillCategorySpinnerAdapter.getPosition(currentInstance.getCategory()));
+							skillCategorySpinner.setSelection(
+									skillCategorySpinnerAdapter.getPosition(currentInstance.getCategory()));
 						}
 					}
 				});
@@ -621,6 +623,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
+		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -653,6 +656,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStat2Spinner(View layout) {
 		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
+		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -683,13 +687,15 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStat3Spinner(View layout) {
 		stat3Spinner = (Spinner)layout.findViewById(R.id.stat3_spinner);
+		stat3SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat3Spinner.setAdapter(stat3SpinnerAdapter);
 
 		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				List<Stat> stats = currentInstance.getStats();
-				if(stats != null && (stats.size() == 2 || (stats.size() == 3 && stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
+				if(stats != null && (stats.size() == 2 || (stats.size() == 3 &&
+						stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
 					if(stats.size() == 2) {
 						stats.add(stat3SpinnerAdapter.getItem(position));
 					}
