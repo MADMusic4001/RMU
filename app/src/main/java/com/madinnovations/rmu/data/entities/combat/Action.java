@@ -22,6 +22,7 @@ package com.madinnovations.rmu.data.entities.combat;
  * Created 9/21/2016.
  */
 public enum Action {
+	AUTO("Auto", (short)0, (short)0, false),
 	DROP_ITEM("Drop Item", (short)0, (short)0, false),
 	INSTANTANEOUS_SPELL("Instantaneous Spell", (short)0, (short)0, false),
 	USE_SHIELD_IN_MELEE("Use Shield in Melee", (short)0, (short)0, false),

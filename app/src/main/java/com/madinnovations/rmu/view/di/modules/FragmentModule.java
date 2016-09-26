@@ -17,9 +17,6 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.campaign.AboutFragment;
 import com.madinnovations.rmu.view.activities.campaign.MainMenuFragment;
-import com.madinnovations.rmu.view.activities.common.ParametersFragment;
-import com.madinnovations.rmu.view.activities.common.StatsFragment;
-import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -32,24 +29,12 @@ import dagger.Provides;
 public class FragmentModule {
 	private AboutFragment      aboutFragment;
 	private MainMenuFragment   mainMenuFragment;
-	private ParametersFragment parametersFragment;
-	private StatsFragment statsFragment;
-	private TalentCategoriesFragment talentCategoriesFragment;
 
 	public FragmentModule(AboutFragment aboutFragment) {
 		this.aboutFragment = aboutFragment;
 	}
 	public FragmentModule(MainMenuFragment mainMenuFragment) {
 		this.mainMenuFragment = mainMenuFragment;
-	}
-	public FragmentModule(ParametersFragment parametersFragment) {
-		this.parametersFragment = parametersFragment;
-	}
-	public FragmentModule(StatsFragment statsFragment) {
-		this.statsFragment = statsFragment;
-	}
-	public FragmentModule(TalentCategoriesFragment talentCategoriesFragment) {
-		this.talentCategoriesFragment = talentCategoriesFragment;
 	}
 
 	@Provides @PerFragment
@@ -59,17 +44,5 @@ public class FragmentModule {
 	@Provides @PerFragment
 	public MainMenuFragment provideMainMenuFragment() {
 		return this.mainMenuFragment;
-	}
-	@Provides @PerFragment
-	public ParametersFragment provideParametersFragment() {
-		return this.parametersFragment;
-	}
-	@Provides @PerFragment
-	public StatsFragment provideStatsFragment() {
-		return this.statsFragment;
-	}
-	@Provides @PerFragment
-	public TalentCategoriesFragment provideCommonDataFragment() {
-		return this.talentCategoriesFragment;
 	}
 }

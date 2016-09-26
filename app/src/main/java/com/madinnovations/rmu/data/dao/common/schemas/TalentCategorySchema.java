@@ -24,18 +24,14 @@ public interface TalentCategorySchema {
 	String COLUMN_ID = "id";
 	String COLUMN_NAME = "name";
 	String COLUMN_DESCRIPTION = "description";
-	String COLUMN_IS_ATTACK = "isAttack";
-	String COLUMN_IS_MOVEMENT = "isMovement";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
-			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
-			+ COLUMN_IS_ATTACK + " INTEGER NOT NULL, "
-			+ COLUMN_IS_MOVEMENT + " INTEGER NOT NULL"
+			+ COLUMN_DESCRIPTION + " TEXT NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_IS_ATTACK, COLUMN_IS_MOVEMENT};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION};
 }

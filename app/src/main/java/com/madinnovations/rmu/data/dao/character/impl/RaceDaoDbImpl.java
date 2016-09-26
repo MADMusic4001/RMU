@@ -23,18 +23,15 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
-import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
@@ -51,7 +48,6 @@ import javax.inject.Singleton;
 @Singleton
 public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceSchema {
     private TalentDao talentDao;
-	private LocomotionTypeDao locomotionTypeDao;
 	private RealmDao realmDao;
 	private SizeDao sizeDao;
 	private StatDao statDao;
@@ -62,12 +58,10 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, LocomotionTypeDao locomotionTypeDao, RealmDao realmDao,
-						 SizeDao sizeDao, StatDao statDao) {
+    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao, StatDao statDao) {
         super(helper);
         this.talentDao = talentDao;
-        this.locomotionTypeDao = locomotionTypeDao;
-		this.realmDao = realmDao;
+ 		this.realmDao = realmDao;
 		this.sizeDao = sizeDao;
 		this.statDao = statDao;
     }
@@ -140,7 +134,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		instance.setRealmResistancesModifiers(getRealmResistanceModifiers(instance.getId()));
 		instance.setStatModifiers(getStatModifiers(instance.getId()));
 		instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
-		instance.setLocomotionTypeRatesMap(getLocomotionTypeRates(instance.getId()));
 
         return instance;
     }
@@ -166,7 +159,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 	@Override
 	protected boolean saveRelationships(SQLiteDatabase db, Race instance) {
 		boolean result = saveTalentsAndFlaws(db, instance.getId(), instance.getTalentsAndFlawsTiersMap());
-		result &= saveLocomotionTypes(db, instance.getId(), instance.getLocomotionTypeRatesMap());
 		result &= saveSatMods(db, instance.getId(), instance.getStatModifiers());
 		result &= saveRealmRRMods(db, instance.getId(), instance.getRealmResistancesModifiers());
 		return result;
@@ -192,20 +184,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		values.put(RaceTalentsSchema.COLUMN_TALENT_ID, talent.getId());
 		values.put(RaceTalentsSchema.COLUMN_TIERS, tiers);
 		return values;
-	}
-
-	private boolean saveLocomotionTypes(SQLiteDatabase db, int raceId, Map<LocomotionType, Short> locomotionTypeRatesMap) {
-		boolean result = true;
-		final String selectionArgs[] = { String.valueOf(raceId) };
-		final String selection = RaceLocomotionSchema.COLUMN_RACE_ID + " = ?";
-
-		db.delete(RaceLocomotionSchema.TABLE_NAME, selection, selectionArgs);
-
-		for(Map.Entry<LocomotionType, Short> entry : locomotionTypeRatesMap.entrySet()) {
-			result &= (db.insertWithOnConflict(RaceLocomotionSchema.TABLE_NAME, null, getLocomotionTypeValues(raceId, entry),
-											   SQLiteDatabase.CONFLICT_NONE) != -1);
-		}
-		return result;
 	}
 
 	private boolean saveSatMods(SQLiteDatabase db, int raceId, Map<Stat, Short> statMods) {
@@ -236,14 +214,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return result;
 	}
 
-	private ContentValues getLocomotionTypeValues(int raceId, Map.Entry<LocomotionType, Short> locomotionTypeRateEntry) {
-		ContentValues values = new ContentValues();
-		values.put(RaceLocomotionSchema.COLUMN_RACE_ID, raceId);
-		values.put(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID, locomotionTypeRateEntry.getKey().getId());
-		values.put(RaceLocomotionSchema.COLUMN_RATE, locomotionTypeRateEntry.getValue());
-		return values;
-	}
-
 	private Map<Talent, Short> getTalentsAndFlaws(int id) {
         final String selectionArgs[] = { String.valueOf(id) };
         final String selection = RaceTalentsSchema.COLUMN_RACE_ID + " = ?";
@@ -263,27 +233,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		cursor.close();
 
         return map;
-    }
-
-    private Map<LocomotionType, Short> getLocomotionTypeRates(int id) {
-        final String selectionArgs[] = { String.valueOf(id) };
-        final String selection = RaceLocomotionSchema.COLUMN_RACE_ID + " = ?";
-
-        Cursor cursor = super.query(RaceLocomotionSchema.TABLE_NAME, RaceLocomotionSchema.COLUMNS, selection,
-                selectionArgs, RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID);
-        Map<LocomotionType, Short> locomotionTypeRatesMap = new HashMap<>(cursor.getCount());
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			int locomotionTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID));
-			LocomotionType locomotionType = locomotionTypeDao.getById(locomotionTypeId);
-			if(locomotionType != null) {
-				locomotionTypeRatesMap.put(locomotionType, cursor.getShort(cursor.getColumnIndexOrThrow(RaceLocomotionSchema.COLUMN_RATE)));
-			}
-			cursor.moveToNext();
-		}
-		cursor.close();
-
-        return locomotionTypeRatesMap;
     }
 
 	private Map<Stat, Short> getStatModifiers(int id) {

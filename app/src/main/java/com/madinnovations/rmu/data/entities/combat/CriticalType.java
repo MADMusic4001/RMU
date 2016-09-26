@@ -19,8 +19,8 @@ package com.madinnovations.rmu.data.entities.combat;
  * Critical Type attributes
  */
 public class CriticalType {
-    private int id = -1;
-    private char Code = 'A';
+    private int    id   = -1;
+    private char   code = 'A';
     private String name = null;
 
 	/**
@@ -74,10 +74,10 @@ public class CriticalType {
         this.id = id;
     }
     public char getCode() {
-        return Code;
+        return code;
     }
     public void setCode(char code) {
-        Code = code;
+        this.code = code;
     }
     public String getName() {
         return name;

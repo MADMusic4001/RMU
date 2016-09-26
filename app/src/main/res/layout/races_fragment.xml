@@ -150,7 +150,7 @@
           android:layout_toRightOf="@id/base_hits_edit"
           android:layout_toEndOf="@id/base_hits_edit"
           android:layout_alignBaseline="@id/size_view"
-          android:text="@string/input_label_recovery_mult"/>
+          android:text="@string/input_label_recovery_multiplier"/>
       <EditText
           android:id="@+id/recovery_mult_edit"
           android:layout_width="wrap_content"

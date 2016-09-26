@@ -38,7 +38,7 @@ import static android.view.View.GONE;
  */
 public class EffectFragment extends Fragment {
 	private LinearLayout                 effectsList;
-	private Effect     currentEffect     = Effect.ACTION_POINTS;
+	private Effect     currentEffect     = Effect.BONUS;
 	private short      effectValue       = 0;
 	private Resistance currentResistance = Resistance.CHANNELING;
 	private short      resistBonus       = 0;
@@ -56,7 +56,7 @@ public class EffectFragment extends Fragment {
 	}
 
 	private void addEffectRow(LayoutInflater inflater, final int index) {
-		View effectRow = inflater.inflate(R.layout.talent_effect_row, effectsList, false);
+		View effectRow = inflater.inflate(R.layout.talent_parameter_row, effectsList, false);
 		initEffectSpinner(effectRow, index);
 		initEffectEdit(effectRow, index);
 		setResistancesVisibility(effectRow, GONE);
@@ -66,7 +66,7 @@ public class EffectFragment extends Fragment {
 	}
 
 	private void initEffectSpinner(View parent, final int index) {
-		final Spinner spinner = (Spinner)parent.findViewById(R.id.effect_spinner);
+		final Spinner spinner = (Spinner)parent.findViewById(R.id.parameter_spinner);
 		final ArrayAdapter<Effect> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		adapter.clear();
 		adapter.addAll(Effect.values());

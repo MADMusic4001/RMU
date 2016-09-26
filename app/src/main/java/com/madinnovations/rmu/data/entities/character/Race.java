@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
@@ -43,7 +42,6 @@ public class Race {
 	private float recoveryMultiplier = 1.0f;
 	private Map<Talent, Short> talentsAndFlawsTiersMap = new HashMap<>();
 	private Size size = null;
-	private Map<LocomotionType, Short> locomotionTypeRatesMap = new HashMap<>();
 	private short strideModifier = 0;
 	private short averageHeight = 0;
 	private short averageWeight = 0;
@@ -87,7 +85,6 @@ public class Race {
 				.append("recoveryMultiplier", recoveryMultiplier)
 				.append("talentsAndFlawsTiersMap", talentsAndFlawsTiersMap)
 				.append("size", size)
-				.append("locomotionTypeRatesMap", locomotionTypeRatesMap)
 				.append("strideModifier", strideModifier)
 				.append("averageHeight", averageHeight)
 				.append("averageWeight", averageWeight)
@@ -183,12 +180,6 @@ public class Race {
 	}
 	public void setSize(Size size) {
 		this.size = size;
-	}
-	public Map<LocomotionType, Short> getLocomotionTypeRatesMap() {
-		return locomotionTypeRatesMap;
-	}
-	public void setLocomotionTypeRatesMap(Map<LocomotionType, Short> locomotionTypeRatesMap) {
-		this.locomotionTypeRatesMap = locomotionTypeRatesMap;
 	}
 	public short getStrideModifier() {
 		return strideModifier;

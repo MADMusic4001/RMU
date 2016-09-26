@@ -83,7 +83,7 @@ public class StatsFragment extends Fragment implements ThreeFieldListAdapter.Get
 
 		View layout = inflater.inflate(R.layout.stats_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_abbreviation));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_stat_abbreviation));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_stat_name));
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field3).getLayoutParams()).weight = 6;
 		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_stat_description));

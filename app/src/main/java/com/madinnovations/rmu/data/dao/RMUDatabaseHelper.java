@@ -31,7 +31,6 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionAssignableSki
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCategoryCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
@@ -45,8 +44,6 @@ import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.LocomotionTypeSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.ParameterSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
@@ -124,9 +121,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(SkillCategorySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SizeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(ParameterSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(OutlookSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(LocomotionTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ItemSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(DamageTableSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CultureSchema.TABLE_CREATE);
@@ -165,7 +160,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(RaceTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceStatModSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceRealmRRModSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(RaceLocomotionSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSkillCostSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSkillCategoryCostSchema.TABLE_CREATE);
@@ -229,7 +223,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionSkillCostSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(RaceLocomotionSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceRealmRRModSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceStatModSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceTalentsSchema.TABLE_NAME, null, null);
@@ -269,9 +262,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CultureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageTableSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(LocomotionTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(OutlookSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(ParameterSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SizeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillCategorySchema.TABLE_NAME, null, null);

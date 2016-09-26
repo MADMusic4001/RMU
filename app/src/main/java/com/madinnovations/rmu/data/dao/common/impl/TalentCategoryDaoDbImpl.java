@@ -75,20 +75,16 @@ public class TalentCategoryDaoDbImpl extends BaseDaoDbImpl<TalentCategory> imple
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		instance.setAttack(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_ATTACK)) != 0);
-		instance.setMovement(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_MOVEMENT)) != 0);
 
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(TalentCategory instance) {
-		ContentValues initialValues = new ContentValues(4);
+		ContentValues initialValues = new ContentValues(2);
 
 		initialValues.put(COLUMN_NAME, instance.getName());
 		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_IS_ATTACK, instance.isAttack());
-		initialValues.put(COLUMN_IS_MOVEMENT, instance.isMovement());
 
 		return initialValues;
 	}

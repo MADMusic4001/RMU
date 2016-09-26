@@ -16,8 +16,6 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
-import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
-import com.madinnovations.rmu.data.dao.common.ParameterDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
@@ -25,8 +23,6 @@ import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
-import com.madinnovations.rmu.data.dao.common.impl.LocomotionTypeDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.impl.ParameterDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SizeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SkillCategoryDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SkillDaoDbImpl;
@@ -45,16 +41,6 @@ import dagger.Provides;
  */
 @Module(includes = ApplicationModule.class)
 public class CommonDaoSqlModule {
-	@Provides @Singleton
-	public LocomotionTypeDao provideLocomotionTypeDao(RMUDatabaseHelper helper) {
-		return new LocomotionTypeDaoDbImpl(helper);
-	}
-
-	@Provides @Singleton
-	public ParameterDao provideParameterDao(RMUDatabaseHelper helper) {
-		return new ParameterDaoDbImpl(helper);
-	}
-
 	@Provides @Singleton
 	public SizeDao provideSizeDao(RMUDatabaseHelper helper) {
 		return new SizeDaoDbImpl(helper);

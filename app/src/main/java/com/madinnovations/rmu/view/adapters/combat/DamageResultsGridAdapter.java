@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.combat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
@@ -64,7 +65,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
 	@Inject
-	public DamageResultsGridAdapter(CampaignActivity context, DamageResultRxHandler damageResultRxHandler,
+	DamageResultsGridAdapter(CampaignActivity context, DamageResultRxHandler damageResultRxHandler,
 									DamageResultRowRxHandler damageResultRowRxHandler,
 									CriticalTypeRxHandler criticalTypeRxHandler) {
 		super(context, LAYOUT_RESOURCE_ID);
@@ -99,8 +100,9 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 				});
 	}
 
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 
@@ -129,20 +131,23 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		DamageResultRow resultsRow = getItem(position);
 		holder.damageResultRow = resultsRow;
 
-		String rollString = String.format(getContext().getString(R.string.min_max_roll_value), resultsRow.getRangeLowValue(),
-				resultsRow.getRangeHighValue());
-		holder.leftRollView.setText(rollString);
-		holder.at1ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[0]));
-		holder.at2ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[1]));
-		holder.at3ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[2]));
-		holder.at4ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[3]));
-		holder.at5ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[4]));
-		holder.at6ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[5]));
-		holder.at7ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[6]));
-		holder.at8ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[7]));
-		holder.at9ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[8]));
-		holder.at10ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[9]));
-		holder.rightRollView.setText(rollString);
+		if(resultsRow != null) {
+			String rollString = String.format(getContext().getString(R.string.min_max_roll_value), resultsRow.getRangeLowValue(),
+											  resultsRow.getRangeHighValue());
+			holder.leftRollView.setText(rollString);
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[0]));
+			holder.at2ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[1]));
+			holder.at3ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[2]));
+			holder.at4ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[3]));
+			holder.at5ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[4]));
+			holder.at6ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[5]));
+			holder.at7ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[6]));
+			holder.at8ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[7]));
+			holder.at9ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[8]));
+			holder.at10ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[9]));
+			holder.rightRollView.setText(rollString);
+		}
+
 		return rowView;
 	}
 

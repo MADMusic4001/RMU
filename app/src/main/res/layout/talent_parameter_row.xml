@@ -18,35 +18,44 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-  <TextView
-      android:id="@+id/effect_label"
+  <ImageButton
+      android:id="@+id/remove_parameter_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentLeft="true"
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
-      android:text="@string/input_label_effect"/>
-  <Spinner
-      android:id="@+id/effect_spinner"
+      android:background="@drawable/ic_remove_black"
+      android:contentDescription="@string/remove_parameter"/>
+  <TextView
+      android:id="@+id/parameter_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/effect_label"
-      android:layout_toEndOf="@id/effect_label"
+      android:layout_toRightOf="@id/remove_parameter_button"
+      android:layout_toEndOf="@id/remove_parameter_button"
+      android:layout_centerVertical="true"
+      android:text="@string/input_label_parameter"/>
+  <Spinner
+      android:id="@+id/parameter_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/parameter_label"
+      android:layout_toEndOf="@id/parameter_label"
       android:layout_centerVertical="true"/>
 
   <TextView
       android:id="@+id/value_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/effect_spinner"
-      android:layout_toEndOf="@id/effect_spinner"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:text="@string/input_label_value"/>
   <EditText
       android:id="@+id/value_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:inputType="number"
+      android:inputType="numberSigned"
       android:layout_toRightOf="@id/value_label"
       android:layout_toEndOf="@id/value_label"
       android:layout_centerVertical="true"
@@ -57,8 +66,8 @@
       android:id="@+id/skill_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/effect_spinner"
-      android:layout_toEndOf="@id/effect_spinner"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/input_label_skill"/>
@@ -83,7 +92,7 @@
       android:id="@+id/skill_bonus_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:inputType="number"
+      android:inputType="numberSigned"
       android:layout_toRightOf="@id/skill_bonus_label"
       android:layout_toEndOf="@id/skill_bonus_label"
       android:layout_centerVertical="true"
@@ -95,8 +104,8 @@
       android:id="@+id/specialization_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/effect_spinner"
-      android:layout_toEndOf="@id/effect_spinner"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/input_label_specialization"/>
@@ -121,9 +130,9 @@
       android:id="@+id/specialization_bonus_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:inputType="number"
-      android:layout_toRightOf="@id/specialization_bonus_edit"
-      android:layout_toEndOf="@id/specialization_bonus_edit"
+      android:inputType="numberSigned"
+      android:layout_toRightOf="@id/specialization_bonus_label"
+      android:layout_toEndOf="@id/specialization_bonus_label"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:background="@null"
@@ -133,8 +142,8 @@
       android:id="@+id/resistance_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/effect_spinner"
-      android:layout_toEndOf="@id/effect_spinner"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/input_label_resistance"/>
@@ -159,7 +168,7 @@
       android:id="@+id/resistance_value_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:inputType="number"
+      android:inputType="numberSigned"
       android:layout_toRightOf="@id/resistance_value_label"
       android:layout_toEndOf="@id/resistance_value_label"
       android:layout_centerVertical="true"
@@ -171,8 +180,8 @@
       android:id="@+id/stat_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/effect_spinner"
-      android:layout_toEndOf="@id/effect_spinner"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/input_label_stat"/>
@@ -197,7 +206,7 @@
       android:id="@+id/stat_bonus_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:inputType="number"
+      android:inputType="numberSigned"
       android:layout_toRightOf="@id/stat_bonus_label"
       android:layout_toEndOf="@id/stat_bonus_label"
       android:layout_centerVertical="true"

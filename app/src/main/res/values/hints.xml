@@ -75,10 +75,9 @@
   <string name="hint_base_mentalism_rr">Mentalism RR</string>
   <string name="hint_base_parameter_value">Base Value</string>
   <string name="hint_base_parameter_value_per_tier_or_level">Value /Lvl/Tier</string>
-  <string name="hint_base_physical_rr">Phyiscal RR</string>
+  <string name="hint_base_physical_rr">Physical RR</string>
   <string name="hint_base_stride">Base Stride</string>
-  <string name="hint_bonus_per_tier">Bonus per minTier</string>
-  <string name="hint_cost_per_tier">Cost per minTier</string>
+  <string name="hint_cost_per_tier">Cost per Tier</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_example_races">Examples Races/Creatures</string>
   <string name="hint_healing_rate">Healing Rate</string>

@@ -22,8 +22,6 @@ public class TalentCategory {
 	private int id = -1;
 	private String name = null;
 	private String description = null;
-	private boolean attack = false;
-	private boolean movement = false;
 
 	/**
 	 * Creates a new TalentCategory instance
@@ -87,17 +85,5 @@ public class TalentCategory {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	public boolean isAttack() {
-		return attack;
-	}
-	public void setAttack(boolean attack) {
-		this.attack = attack;
-	}
-	public boolean isMovement() {
-		return movement;
-	}
-	public void setMovement(boolean movement) {
-		this.movement = movement;
 	}
 }

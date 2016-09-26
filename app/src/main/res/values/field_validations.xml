@@ -35,7 +35,7 @@
   <string name="validation_creature_variety_base_endurance_required">Please enter a base endurance value.</string>
   <string name="validation_creature_variety_base_hits_required">Please enter a number of base hits.</string>
   <string name="validation_creature_variety_base_stride_required">Please enter a base stride.</string>
-  <string name="validation_creature_variety_bonus_required">Please enter a stat bonus.</string>
+  <string name="validation_creature_variety_bonus_required">Please enter a stat value.</string>
   <string name="validation_creature_variety_channeling_rr_required">Please enter a base Channeling RR.</string>
   <string name="validation_creature_variety_description_required">Please enter a creature variety resultText.</string>
   <string name="validation_creature_variety_essence_rr_required">Please enter a base Essence RR.</string>
@@ -48,7 +48,7 @@
   <string name="validation_creature_variety_movement_rate_required">Please enter a movement rate.</string>
   <string name="validation_creature_variety_name_required">Please enter a creature variety name.</string>
   <string name="validation_creature_variety_physical_rr_required">Please enter a base Physical RR.</string>
-  <string name="validation_creature_variety_tier_required">Please enter a skill bonus.</string>
+  <string name="validation_creature_variety_tier_required">Please enter a skill value.</string>
   <string name="validation_creature_variety_typical_level_required">Please enter a typical level for this creature variety.</string>
   <string name="validation_creature_variety_weight_required">Please enter a weight for this creature variety.</string>
   <string name="validation_critical_code_required">Please enter a critical code.</string>
@@ -89,7 +89,7 @@
   <string name="validation_race_avg_weight_required">Please enter an average weight.</string>
   <string name="validation_race_base_hits_required">Please enter the number of base hits.</string>
   <string name="validation_race_description_required">Please enter a race notes.</string>
-  <string name="validation_race_dev_points_required">Please enter the number of bonus development points.</string>
+  <string name="validation_race_dev_points_required">Please enter the number of value development points.</string>
   <string name="validation_race_endurance_mod_required">Please enter an endurance modification value.</string>
   <string name="validation_race_name_required">Please enter a race name.</string>
   <string name="validation_race_phyiscal_rr_required">Please enter a physical resistance roll modifier.</string>
@@ -138,8 +138,8 @@
   <string name="validation_stat_name_required">Please enter a stat name.</string>
   <string name="validation_stunned_required">Please enter the number of rounds the defender is stunned.</string>
   <string name="validation_talent_action_points_required">Please enter the number of Action Points required to use the Talent.</string>
-  <string name="validation_talent_bonus_per_tier_required">Please enter the bonus given per bonus for the Talent.</string>
-  <string name="validation_talent_cost_per_tier_required">Please enter the cost per bonus for the Talent.</string>
+  <string name="validation_talent_bonus_per_tier_required">Please enter the value given per value for the Talent.</string>
+  <string name="validation_talent_cost_per_tier_required">Please enter the cost per value for the Talent.</string>
   <string name="validation_talent_category_description_required">Please enter a skill category resultText.</string>
   <string name="validation_talent_category_name_required">Please enter a skill category name.</string>
   <string name="validation_talent_description_required">Please enter a resultText for the Talent.</string>

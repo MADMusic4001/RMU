@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
-import com.madinnovations.rmu.data.entities.combat.Resistance;
+import com.madinnovations.rmu.data.entities.combat.Action;
 
 /**
  * Talent data
@@ -23,16 +23,16 @@ import com.madinnovations.rmu.data.entities.combat.Resistance;
 public class Talent {
 	private int               id               = -1;
 	private TalentCategory    category         = null;
-	private String            name             = null;
-	private String            description      = null;
-	private boolean           flaw             = false;
-	private short             minTier          = 1;
-	private short             maxTier          = 1;
-	private short             dpCost           = 5;
-	private short             dpCostPerTier    = 0;
-	private boolean           situational      = false;
-	private short             actionPoints     = 0;
-	private TalentEffectRow[] talentEffectRows = new TalentEffectRow[0];
+	private String               name                = null;
+	private String               description         = null;
+	private boolean              flaw                = false;
+	private short                minTier             = 1;
+	private short                maxTier             = 1;
+	private short                dpCost              = 5;
+	private short                dpCostPerTier       = 0;
+	private boolean              situational         = false;
+	private Action               action              = Action.MELEE_ATTACK;
+	private TalentParameterRow[] talentParameterRows = new TalentParameterRow[0];
 
 	/**
 	 * Default no-arg constructor
@@ -56,7 +56,7 @@ public class Talent {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && category != null
-				&& minTier <= maxTier;
+				&& minTier <= maxTier && action != null;
 	}
 
 	@Override
@@ -140,16 +140,16 @@ public class Talent {
 	public void setSituational(boolean situational) {
 		this.situational = situational;
 	}
-	public short getActionPoints() {
-		return actionPoints;
+	public Action getAction() {
+		return action;
 	}
-	public void setActionPoints(short actionPoints) {
-		this.actionPoints = actionPoints;
+	public void setAction(Action action) {
+		this.action = action;
 	}
-	public TalentEffectRow[] getTalentEffectRows() {
-		return talentEffectRows;
+	public TalentParameterRow[] getTalentParameterRows() {
+		return talentParameterRows;
 	}
-	public void setTalentEffectRows(TalentEffectRow[] talentEffectRows) {
-		this.talentEffectRows = talentEffectRows;
+	public void setTalentParameterRows(TalentParameterRow[] talentParameterRows) {
+		this.talentParameterRows = talentParameterRows;
 	}
 }

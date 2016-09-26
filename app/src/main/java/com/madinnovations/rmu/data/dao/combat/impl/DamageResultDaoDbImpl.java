@@ -101,7 +101,7 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
             values.putNull(COLUMN_CRITICAL_TYPE_ID);
         }
         else {
-            values.put(COLUMN_CRITICAL_SEVERITY, String.valueOf(instance.getCriticalSeverity()));
+            values.put(COLUMN_CRITICAL_SEVERITY, String.valueOf((char)instance.getCriticalSeverity()));
             values.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
         }
 

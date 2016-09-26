@@ -33,7 +33,7 @@ public class  DamageResultSerializer extends TypeAdapter<DamageResult> implement
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_HITS).value(value.getHits());
-		out.name(COLUMN_CRITICAL_SEVERITY).value(value.getCriticalSeverity());
+		out.name(COLUMN_CRITICAL_SEVERITY).value(String.valueOf(value.getCriticalSeverity()));
 		out.name(COLUMN_CRITICAL_TYPE_ID).value(value.getCriticalType().getId());
 		out.endObject();
 		out.flush();

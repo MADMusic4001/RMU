@@ -20,13 +20,13 @@ import com.madinnovations.rmu.data.entities.combat.Resistance;
 /**
  * Talent Effect information
  */
-public class TalentEffectRow {
-	private Effect         effect                 = Effect.ACTION_POINTS;
+public class TalentParameterRow {
+	private Effect         effect                 = Effect.BONUS;
 	private Skill          affectedSkill          = null;
 	private Specialization affectedSpecialization = null;
 	private Resistance     affectedResistance     = null;
 	private Stat           affectedStat           = null;
-	private short          bonus                  = 0;
+	private Integer        value                  = 0;
 
 	@Override
 	public boolean equals(Object o) {
@@ -37,21 +37,21 @@ public class TalentEffectRow {
 			return false;
 		}
 
-		TalentEffectRow that = (TalentEffectRow) o;
+		TalentParameterRow that = (TalentParameterRow) o;
 
-		return getEffect() == that.getEffect();
+		return getParameter() == that.getParameter();
 	}
 
 	@Override
 	public int hashCode() {
-		return getEffect() != null ? getEffect().hashCode() : 0;
+		return getParameter() != null ? getParameter().hashCode() : 0;
 	}
 
 	// Getters and setters
-	public Effect getEffect() {
+	public Effect getParameter() {
 		return effect;
 	}
-	public void setEffect(Effect effect) {
+	public void setParameter(Effect effect) {
 		this.effect = effect;
 	}
 	public Skill getAffectedSkill() {
@@ -78,10 +78,10 @@ public class TalentEffectRow {
 	public void setAffectedStat(Stat affectedStat) {
 		this.affectedStat = affectedStat;
 	}
-	public short getBonus() {
-		return bonus;
+	public Integer getValue() {
+		return value;
 	}
-	public void setBonus(short bonus) {
-		this.bonus = bonus;
+	public void setValue(Integer value) {
+		this.value = value;
 	}
 }

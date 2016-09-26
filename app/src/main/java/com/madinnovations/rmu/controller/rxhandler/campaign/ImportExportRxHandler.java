@@ -45,8 +45,6 @@ import com.madinnovations.rmu.data.dao.combat.serializers.CriticalResultSerializ
 import com.madinnovations.rmu.data.dao.combat.serializers.DamageResultRowSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.DamageResultSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.DamageTableSerializer;
-import com.madinnovations.rmu.data.dao.common.LocomotionTypeDao;
-import com.madinnovations.rmu.data.dao.common.ParameterDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
@@ -89,8 +87,6 @@ import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.data.entities.common.LocomotionType;
-import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
@@ -159,9 +155,7 @@ public class ImportExportRxHandler {
 	private DamageTableDao              damageTableDao;
 	private DamageTableSerializer       damageTableSerializer = new DamageTableSerializer();
 	private ItemDao                     itemDao;
-	private LocomotionTypeDao           locomotionTypeDao;
 	private OutlookDao                  outlookDao;
-	private ParameterDao                parameterDao;
 	private ProfessionDao               professionDao;
 	private ProfessionSerializer        professionSerializer = new ProfessionSerializer();
 	private RaceDao                     raceDao;
@@ -192,18 +186,18 @@ public class ImportExportRxHandler {
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	public ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CharacterDao characterDao,
+	ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CharacterDao characterDao,
 								 CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
 								 CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
 								 CriticalCodeDao criticalCodeDao, CriticalResultDao criticalResultDao,
 								 CriticalTypeDao criticalTypeDao, CultureDao cultureDao, DamageResultDao damageResultDao,
 								 DamageResultRowDao damageResultRowDao, DamageTableDao damageTableDao, ItemDao itemDao,
-								 LocomotionTypeDao locomotionTypeDao, OutlookDao outlookDao, ParameterDao parameterDao,
-								 ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao, SizeDao sizeDao,
-								 SkillDao skillDao, SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
-								 SpellDao spellDao, SpellListDao spellListDao, SpellListTypeDao spellListTypeDao,
-								 SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao, StatDao statDao, TalentDao talentDao,
-								 TalentCategoryDao talentCategoryDao,RMUDatabaseHelper helper) {
+								 OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao,
+								 SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
+								 SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
+								 SpellListTypeDao spellListTypeDao, SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao,
+								 StatDao statDao, TalentDao talentDao, TalentCategoryDao talentCategoryDao,
+								 RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
 		this.characterDao = characterDao;
@@ -219,9 +213,7 @@ public class ImportExportRxHandler {
 		this.damageResultRowDao = damageResultRowDao;
 		this.damageTableDao = damageTableDao;
 		this.itemDao = itemDao;
-		this.locomotionTypeDao = locomotionTypeDao;
 		this.outlookDao = outlookDao;
-		this.parameterDao = parameterDao;
 		this.professionDao = professionDao;
 		this.raceDao = raceDao;
 		this.realmDao = realmDao;
@@ -309,29 +301,6 @@ public class ImportExportRxHandler {
 								statDao.save(stats, true);
 								Log.d(LOG_TAG, "Loaded " + stats.size() + " stats.");
 								stats = null;
-
-								List<LocomotionType> locomotionTypes = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									LocomotionType locomotionType = gson.fromJson(jsonReader, LocomotionType.class);
-									locomotionTypes.add(locomotionType);
-								}
-								jsonReader.endArray();
-								locomotionTypeDao.save(locomotionTypes, true);
-								Log.d(LOG_TAG, "Loaded " + locomotionTypes.size() + " locomotionTypes.");
-								locomotionTypes = null;
-
-								List<Parameter> parameters = new ArrayList<>();
-								jsonReader.beginArray();
-								while (jsonReader.hasNext()) {
-									Parameter parameter = gson.fromJson(jsonReader, Parameter.class);
-									parameters.add(parameter);
-								}
-								jsonReader.endArray();
-								parameterDao.save(parameters, true);
-								Log.d(LOG_TAG, "Loaded " + parameters.size() + " parameters.");
-								parameters = null;
-								subscriber.onNext(10);
 
 								List<Size> sizes = new ArrayList<>();
 								jsonReader.beginArray();
@@ -720,12 +689,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(CreatureVariety.class, creatureVarietySerializer);
 							gsonBuilder.registerTypeAdapter(CriticalResult.class, criticalResultSerializer);
 							gsonBuilder.registerTypeAdapter(Culture.class, cultureSerializer);
-							try {
-								gsonBuilder.registerTypeAdapter(DamageResult.class, damageResultSerializer);
-							}
-							catch (IllegalArgumentException e) {
-								Log.e(LOG_TAG, "Exception caught registering TypeAdapter " + damageResultSerializer, e);
-							}
+							gsonBuilder.registerTypeAdapter(DamageResult.class, damageResultSerializer);
 							gsonBuilder.registerTypeAdapter(DamageResultRow.class, damageResultRowSerializer);
 							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
@@ -746,27 +710,25 @@ public class ImportExportRxHandler {
 									.endObject()
 									.flush();
 							gson.toJson(statDao.getAll(), writer);
-							gson.toJson(locomotionTypeDao.getAll(), writer);
-							gson.toJson(parameterDao.getAll(), writer);
-							subscriber.onNext(10);
 							gson.toJson(sizeDao.getAll(), writer);
 							gson.toJson(skillCategoryDao.getAll(), writer);
+							subscriber.onNext(10);
 							gson.toJson(skillDao.getAll(), writer);
-							subscriber.onNext(20);
 							gson.toJson(talentCategoryDao.getAll(), writer);
 							gson.toJson(talentDao.getAll(), writer);
+							subscriber.onNext(20);
 							gson.toJson(itemDao.getAll(), writer);
 							gson.toJson(bodyPartDao.getAll(), writer);
-							subscriber.onNext(30);
 							gson.toJson(criticalCodeDao.getAll(), writer);
+							subscriber.onNext(30);
 							gson.toJson(criticalTypeDao.getAll(), writer);
 							gson.toJson(criticalResultDao.getAll(), writer);
-							subscriber.onNext(40);
 							gson.toJson(damageResultDao.getAll(), writer);
+							subscriber.onNext(40);
 							gson.toJson(damageTableDao.getAll(), writer);
 							gson.toJson(damageResultRowDao.getAll(), writer);
-							subscriber.onNext(50);
 							gson.toJson(creatureCategoryDao.getAll(), writer);
+							subscriber.onNext(50);
 							gson.toJson(creatureTypeDao.getAll(), writer);
 							gson.toJson(outlookDao.getAll(), writer);
 							gson.toJson(realmDao.getAll(), writer);

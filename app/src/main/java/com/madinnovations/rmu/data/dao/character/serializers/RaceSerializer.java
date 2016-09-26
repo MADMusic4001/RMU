@@ -18,13 +18,11 @@ package com.madinnovations.rmu.data.dao.character.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.character.schemas.RaceLocomotionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.LocomotionType;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
@@ -76,15 +74,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			out.beginObject();
 			out.name(RaceTalentsSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
 			out.name(RaceTalentsSchema.COLUMN_TIERS).value(entry.getValue());
-			out.endObject();
-		}
-		out.endArray();
-
-		out.name(RaceLocomotionSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<LocomotionType, Short> entry : value.getLocomotionTypeRatesMap().entrySet()) {
-			out.beginObject();
-			out.name(RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID).value(entry.getKey().getId());
-			out.name(RaceLocomotionSchema.COLUMN_RATE).value(entry.getValue());
 			out.endObject();
 		}
 		out.endArray();
@@ -146,10 +135,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				case RaceTalentsSchema.TABLE_NAME:
 					readTalentsAndFlawsTiers(in, race);
 					break;
-				case RaceLocomotionSchema.TABLE_NAME:
-					readLocomotions(in, race);
-					break;
-
 			}
 		}
 		in.endObject();
@@ -223,30 +208,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			in.endObject();
 			if(newTalent != null) {
 				race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
-			}
-		}
-		in.endArray();
-	}
-
-	private void readLocomotions(JsonReader in, Race race) throws IOException {
-		in.beginArray();
-		while (in.hasNext()) {
-			LocomotionType newLocomotionType = null;
-			Short rate = null;
-			in.beginObject();
-			while (in.hasNext()) {
-				switch (in.nextName()) {
-					case RaceLocomotionSchema.COLUMN_LOCOMOTION_TYPE_ID:
-						newLocomotionType = new LocomotionType(in.nextInt());
-						break;
-					case RaceLocomotionSchema.COLUMN_RATE:
-						rate = (short)in.nextInt();
-						break;
-				}
-			}
-			in.endObject();
-			if(newLocomotionType != null) {
-				race.getLocomotionTypeRatesMap().put(newLocomotionType, rate);
 			}
 		}
 		in.endArray();

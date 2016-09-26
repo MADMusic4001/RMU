@@ -88,13 +88,6 @@
         android:layout_toRightOf="@id/min_tiers_edit"
         android:layout_alignBaseline="@id/initial_cost_edit"
         android:hint="@string/hint_max_tiers"/>
-    <Spinner
-        android:id="@+id/affected_skill_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/max_tiers_edit"
-        android:layout_toEndOf="@id/max_tiers_edit"
-        android:layout_alignTop="@id/initial_cost_edit"/>
 
     <CheckBox
         android:id="@+id/flaw_check_box"
@@ -112,33 +105,40 @@
         android:layout_toEndOf="@id/flaw_check_box"
         android:layout_alignTop="@+id/flaw_check_box"
         android:text="@string/label_situational"/>
-    <EditText
-        android:id="@+id/action_points_edit"
+    <TextView
+        android:id="@+id/action_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/situational_check_box"
         android:layout_toEndOf="@id/situational_check_box"
-        android:layout_alignBaseline="@id/situational_check_box"
-        android:hint="@string/hint_action_points"/>
+        android:layout_alignBaseline="@id/flaw_check_box"
+        android:text="@string/input_label_action"/>
+    <Spinner
+        android:id="@+id/action_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/action_label"
+        android:layout_toEndOf="@id/action_label"
+        android:layout_alignBaseline="@id/flaw_check_box"/>
 
     <Button
-        android:id="@+id/add_effect_button"
+        android:id="@+id/add_parameter_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@id/flaw_check_box"
-        android:text="@string/label_add_effect"/>
+        android:text="@string/label_add_parameter"/>
 
     <ScrollView
-        android:id="@+id/effects_scroll"
+        android:id="@+id/parameters_scroll"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/add_effect_button">
+        android:layout_below="@id/add_parameter_button">
       <LinearLayout
-          android:id="@+id/effects_list"
+          android:id="@+id/parameters_list"
           android:orientation="vertical"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"/>

@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
-import com.madinnovations.rmu.view.activities.common.ParametersFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillsFragment;
@@ -33,7 +32,6 @@ import dagger.Provides;
  */
 @Module
 public class CommonFragmentModule {
-	private ParametersFragment       parametersFragment;
 	private SizesFragment            sizesFragment;
 	private SkillCategoriesFragment  skillCategoriesFragment;
 	private SkillsFragment           skillsFragment;
@@ -42,9 +40,6 @@ public class CommonFragmentModule {
 	private TalentCategoriesFragment talentCategoriesFragment;
 	private TalentsFragment          talentsFragment;
 
-	public CommonFragmentModule(ParametersFragment parametersFragment) {
-		this.parametersFragment = parametersFragment;
-	}
 	public CommonFragmentModule(SizesFragment sizesFragment) {
 		this.sizesFragment = sizesFragment;
 	}
@@ -67,10 +62,6 @@ public class CommonFragmentModule {
 		this.talentsFragment = talentsFragment;
 	}
 
-	@Provides @PerFragment
-	public ParametersFragment provideParametersFragment() {
-		return this.parametersFragment;
-	}
 	@Provides @PerFragment
 	public SizesFragment provideSizesFragment() {
 		return this.sizesFragment;

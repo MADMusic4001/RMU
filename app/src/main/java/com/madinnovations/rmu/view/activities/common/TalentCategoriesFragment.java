@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -42,7 +41,6 @@ import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
-import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
@@ -57,15 +55,13 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for talent categories.
  */
 public class TalentCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<TalentCategory>,
-		CheckBoxUtils.ValuesCallback, EditTextUtils.ValuesCallback {
+		EditTextUtils.ValuesCallback {
 	@Inject
 	protected TalentCategoryRxHandler   talentCategoryRxHandler;
 	private TwoFieldListAdapter<TalentCategory> listAdapter;
 	private   ListView                  listView;
 	private   EditText                  nameEdit;
 	private   EditText                  descriptionEdit;
-	private   CheckBox                  isAttackCheckBox;
-	private   CheckBox                  isMovementCheckBox;
 	private TalentCategory currentInstance = new TalentCategory();
 	private boolean isNew = true;
 
@@ -84,8 +80,6 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 										  R.string.validation_talent_category_name_required);
 		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
 												 R.string.validation_talent_category_description_required);
-		isAttackCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.is_attack_check_box);
-		isMovementCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.is_movement_check_box);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -160,36 +154,6 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 	}
 
 	@Override
-	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
-		boolean result = false;
-
-		switch (checkBoxId) {
-			case R.id.is_attack_check_box:
-				result = currentInstance.isAttack();
-				break;
-			case R.id.is_movement_check_box:
-				result = currentInstance.isMovement();
-				break;
-		}
-
-		return result;
-	}
-
-	@Override
-	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
-		switch (checkBoxId) {
-			case R.id.is_attack_check_box:
-				currentInstance.setAttack(newBoolean);
-				saveItem();
-				break;
-			case R.id.is_movement_check_box:
-				currentInstance.setMovement(newBoolean);
-				saveItem();
-				break;
-		}
-	}
-
-	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
@@ -222,7 +186,6 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String value;
-		boolean newBoolean;
 
 		value = nameEdit.getText().toString();
 		if(value.isEmpty()) {
@@ -244,25 +207,12 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 			changed = true;
 		}
 
-		newBoolean = isAttackCheckBox.isChecked();
-		if(newBoolean != currentInstance.isAttack()) {
-			currentInstance.setAttack(newBoolean);
-			changed = true;
-		}
-		newBoolean = isMovementCheckBox.isChecked();
-		if(newBoolean != currentInstance.isMovement()) {
-			currentInstance.setMovement(newBoolean);
-			changed = true;
-		}
-
 		return changed;
 	}
 
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
-		isAttackCheckBox.setChecked(currentInstance.isAttack());
-		isMovementCheckBox.setChecked(currentInstance.isMovement());
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
