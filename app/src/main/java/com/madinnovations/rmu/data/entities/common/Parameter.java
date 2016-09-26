@@ -29,6 +29,7 @@ public enum Parameter {
 	BONUS("Bonus"),
 	CONE("Cone"),
 	CONE_PARAMETER_INCREASE("Cone Parameter Increase"),
+	CRITICAL_ROLL("Critical Roll"),
 	CRITICAL_SEVERITY("Critical Severity"),
 	CRITICAL_TYPE("Critical Type"),
 	DEFENSIVE_BONUS("Defensive Bonus"),
