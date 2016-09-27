@@ -17,6 +17,8 @@ package com.madinnovations.rmu.view.adapters.combat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -35,6 +37,7 @@ import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+import com.madinnovations.rmu.view.MultiPasteEditText;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 
 import java.util.Collection;
@@ -81,13 +84,14 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					public void onCompleted() {
 						StringBuilder builder = new StringBuilder(20 + criticalTypes.size()*2);
 						builder.append("(\\d*)");
+						builder.append("([A-J])?([A-B])?");
 						if(!criticalTypes.isEmpty()) {
-							builder.append("([A-J]?)([)");
+							builder.append("([A-J])?([");
 							for (CriticalType criticalType : criticalTypes) {
 								builder.append(criticalType.getCode()).append(",");
 							}
 							builder.deleteCharAt(builder.length() - 1);
-							builder.append("]?)");
+							builder.append("])?");
 						}
 						pattern = Pattern.compile(builder.toString());
 					}
@@ -110,16 +114,16 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder(
 					(EditText) rowView.findViewById(R.id.left_roll_view),
-					(EditText)rowView.findViewById(R.id.at1_result_edit),
-					(EditText)rowView.findViewById(R.id.at2_result_edit),
-					(EditText)rowView.findViewById(R.id.at3_result_edit),
-					(EditText)rowView.findViewById(R.id.at4_result_edit),
-					(EditText)rowView.findViewById(R.id.at5_result_edit),
-					(EditText)rowView.findViewById(R.id.at6_result_edit),
-					(EditText)rowView.findViewById(R.id.at7_result_edit),
-					(EditText)rowView.findViewById(R.id.at8_result_edit),
-					(EditText)rowView.findViewById(R.id.at9_result_edit),
-					(EditText)rowView.findViewById(R.id.at10_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at1_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at2_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at3_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at4_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at5_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at6_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at7_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at8_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at9_result_edit),
+					(MultiPasteEditText)rowView.findViewById(R.id.at10_result_edit),
 					(EditText) rowView.findViewById(R.id.right_roll_view));
 			rowView.setTag(holder);
 		}
@@ -189,58 +193,81 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	private class ViewHolder {
 		private DamageResultRow damageResultRow;
 		private EditText leftRollView;
-		private EditText at1ResultEdit;
-		private EditText at2ResultEdit;
-		private EditText at3ResultEdit;
-		private EditText at4ResultEdit;
-		private EditText at5ResultEdit;
-		private EditText at6ResultEdit;
-		private EditText at7ResultEdit;
-		private EditText at8ResultEdit;
-		private EditText at9ResultEdit;
-		private EditText at10ResultEdit;
+		private MultiPasteEditText at1ResultEdit;
+		private MultiPasteEditText at2ResultEdit;
+		private MultiPasteEditText at3ResultEdit;
+		private MultiPasteEditText at4ResultEdit;
+		private MultiPasteEditText at5ResultEdit;
+		private MultiPasteEditText at6ResultEdit;
+		private MultiPasteEditText at7ResultEdit;
+		private MultiPasteEditText at8ResultEdit;
+		private MultiPasteEditText at9ResultEdit;
+		private MultiPasteEditText at10ResultEdit;
 		private EditText rightRollView;
 
-		public ViewHolder(EditText leftRollView, EditText at1ResultEdit, EditText at2ResultEdit, EditText at3ResultEdit,
-						  EditText at4ResultEdit, EditText at5ResultEdit, EditText at6ResultEdit, EditText at7ResultEdit,
-						  EditText at8ResultEdit, EditText at9ResultEdit, EditText at10ResultEdit, EditText rightRollView) {
+		public ViewHolder(EditText leftRollView, MultiPasteEditText at1ResultEdit, MultiPasteEditText at2ResultEdit, MultiPasteEditText at3ResultEdit,
+						  MultiPasteEditText at4ResultEdit, MultiPasteEditText at5ResultEdit, MultiPasteEditText at6ResultEdit, MultiPasteEditText at7ResultEdit,
+						  MultiPasteEditText at8ResultEdit, MultiPasteEditText at9ResultEdit, MultiPasteEditText at10ResultEdit, EditText rightRollView) {
 
 			this.leftRollView = leftRollView;
 			this.at1ResultEdit = at1ResultEdit;
 			initEdit(at1ResultEdit, 0);
+
 			this.at2ResultEdit = at2ResultEdit;
 			initEdit(at2ResultEdit, 1);
+			at1ResultEdit.setNextMultiPaste(at2ResultEdit);
+
 			this.at3ResultEdit = at3ResultEdit;
 			initEdit(at3ResultEdit, 2);
+			at2ResultEdit.setNextMultiPaste(at3ResultEdit);
+
 			this.at4ResultEdit = at4ResultEdit;
 			initEdit(at4ResultEdit, 3);
+			at3ResultEdit.setNextMultiPaste(at4ResultEdit);
+
 			this.at5ResultEdit = at5ResultEdit;
 			initEdit(at5ResultEdit, 4);
+			at4ResultEdit.setNextMultiPaste(at5ResultEdit);
+
 			this.at6ResultEdit = at6ResultEdit;
 			initEdit(at6ResultEdit, 5);
+			at5ResultEdit.setNextMultiPaste(at6ResultEdit);
+
 			this.at7ResultEdit = at7ResultEdit;
 			initEdit(at7ResultEdit, 6);
+			at6ResultEdit.setNextMultiPaste(at7ResultEdit);
+
 			this.at8ResultEdit = at8ResultEdit;
 			initEdit(at8ResultEdit, 7);
+			at7ResultEdit.setNextMultiPaste(at8ResultEdit);
+
 			this.at9ResultEdit = at9ResultEdit;
 			initEdit(at9ResultEdit, 8);
+			at8ResultEdit.setNextMultiPaste(at9ResultEdit);
+
 			this.at10ResultEdit = at10ResultEdit;
 			initEdit(at10ResultEdit, 9);
+			at9ResultEdit.setNextMultiPaste(at10ResultEdit);
+			at10ResultEdit.setNextMultiPaste(null);
+
 			this.rightRollView = rightRollView;
 		}
 
-		private void initEdit(final EditText editText, final int armorTypeIndex) {
+		private void initEdit(final MultiPasteEditText editText, final int armorTypeIndex) {
+			editText.setPattern(pattern);
+
 			editText.setFilters(new InputFilter[] {inputFilter});
 			editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View view, boolean hasFocus) {
 					if(!hasFocus) {
+						editText.setBackground(null);
 						Short hits = null;
 						String severity = null;
 						CriticalType type = null;
 						boolean matches;
 
-						CharSequence text = ((EditText)view).getText();
+						final CharSequence text = ((EditText)view).getText();
 						Matcher matcher = pattern.matcher(text);
 						matches = matcher.matches();
 						if(matcher.groupCount() >= 1 && text.length() > 0) {
@@ -313,24 +340,30 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 														public void onCompleted() {
 															if (finalRowChanged) {
 																damageResultRowRxHandler.save(damageResultRow)
-																		.observeOn(AndroidSchedulers.mainThread())
-																		.subscribeOn(Schedulers.io())
 																		.subscribe(new Subscriber<DamageResultRow>() {
+																			Toast toast = null;
 																			@Override
 																			public void onCompleted() {
 																			}
 																			@Override
 																			public void onError(Throwable e) {
+																				if(toast != null) {
+																					toast.cancel();
+																				}
 																				Log.e("DamageResultsGridAdapt", "Exception saving DamageResultRow", e);
-																				String toastString;
-																				toastString = getContext().getString(R.string.toast_damage_result_row_save_failed);
-																				Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+																				Toast.makeText(getContext(),
+																							   getContext().getString(R.string.toast_damage_result_row_save_failed),
+																							   Toast.LENGTH_SHORT).show();
 																			}
 																			@Override
 																			public void onNext(DamageResultRow savedDamageResultRow) {
-																				String toastString;
-																				toastString = getContext().getString(R.string.toast_damage_result_row_saved);
-																				Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+																				if(toast != null) {
+																					toast.cancel();
+																				}
+																				toast = Toast.makeText(getContext(),
+																									   getContext().getString(R.string.toast_damage_result_row_saved),
+																									   Toast.LENGTH_SHORT);
+																				toast.show();
 																			}
 																		});
 															}
@@ -383,6 +416,14 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 									}
 								}
 							}
+						}
+					}
+					else {
+						if(editText.getBackground() != null) {
+							editText.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+						}
+						else {
+							editText.setBackgroundColor(Color.RED);
 						}
 					}
 				}

@@ -47,9 +47,10 @@ public class SpecializationRxHandler {
 	 * @param dao  a SpecializationDao instance
 	 */
 	@Inject
-	public SpecializationRxHandler(SpecializationDao dao, SkillDao skillDao) {
+	SpecializationRxHandler(SpecializationDao dao, SkillDao skillDao, SkillCategoryDao skillCategoryDao) {
 		this.dao = dao;
 		this.skillDao = skillDao;
+		this.skillCategoryDao = skillCategoryDao;
 	}
 
 	/**

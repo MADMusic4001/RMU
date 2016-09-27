@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view;
 
 import android.app.Application;
+import android.content.ClipboardManager;
 
 import com.madinnovations.rmu.view.di.components.ApplicationComponent;
 import com.madinnovations.rmu.view.di.components.DaggerApplicationComponent;
@@ -29,12 +30,14 @@ import com.madinnovations.rmu.view.utils.ResourceUtils;
 public class RMUApp extends Application {
 	private ApplicationComponent applicationComponent;
 	private static ResourceUtils resourceUtils;
+	private static ClipboardManager clipboardManager;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		this.initializeInjector();
 		resourceUtils = new AndroidResourceUtils(this);
+		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 	}
 
 	private void initializeInjector() {
@@ -55,4 +58,6 @@ public class RMUApp extends Application {
 	public static ResourceUtils getResourceUtils() {
 		return resourceUtils;
 	}
+
+	public static ClipboardManager getClipboardManager() { return clipboardManager; }
 }

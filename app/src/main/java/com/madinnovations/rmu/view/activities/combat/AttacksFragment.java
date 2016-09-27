@@ -60,6 +60,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for body parts.
  */
 public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack>, EditTextUtils.ValuesCallback {
+	private static final String LOG_TAG = "AttacksFragment";
 	@Inject
 	protected AttackRxHandler              attackRxHandler;
 	@Inject
@@ -90,7 +91,8 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_attack_code));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_attack_name));
 
-		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.code_edit, R.string.validation_attack_code_required);
+		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.attack_code_edit,
+										  R.string.validation_attack_code_required);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_attack_name_required);
 		initDamageTableSpinner(layout);
 		initSpecializationSpinner(layout);
@@ -182,7 +184,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		String result = null;
 
 		switch (editTextId) {
-			case R.id.code_edit:
+			case R.id.attack_code_edit:
 				result = currentInstance.getCode();
 				break;
 			case R.id.name_edit:
@@ -196,7 +198,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 	@Override
 	public void setValueFromEditText(@IdRes int editTextId, String newString) {
 		switch (editTextId) {
-			case R.id.code_edit:
+			case R.id.attack_code_edit:
 				currentInstance.setCode(newString);
 				break;
 			case R.id.name_edit:
@@ -297,7 +299,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("AttackFragment", "Exception when deleting: " + item, e);
+					Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 					Toast.makeText(getActivity(), getString(R.string.toast_attack_delete_failed), Toast.LENGTH_SHORT).show();
 				}
 				@Override
@@ -337,7 +339,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("AttacksFragment", "Exception saving Attack", e);
+						Log.e(LOG_TAG, "Exception saving Attack", e);
 						String toastString = getString(R.string.toast_attack_save_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -387,7 +389,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("AttacksFragment", "Exception caught getting all DamageTable instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all DamageTable instances", e);
 					}
 					@Override
 					public void onNext(Collection<DamageTable> damageTables) {
@@ -433,7 +435,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("AttacksFragment", "Exception caught getting all attack Specialization instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all attack Specialization instances", e);
 					}
 					@Override
 					public void onNext(Collection<Specialization> specializations) {
@@ -476,19 +478,10 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 			.subscribeOn(Schedulers.io())
 			.subscribe(new Subscriber<Collection<Attack>>() {
 				@Override
-				public void onCompleted() {
-					if(listAdapter.getCount() > 0) {
-						currentInstance = listAdapter.getItem(0);
-						isNew = false;
-						listView.setSelection(0);
-						listView.setItemChecked(0, true);
-						listAdapter.notifyDataSetChanged();
-						copyItemToViews();
-					}
-				}
+				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e("AttacksFragment", "Exception caught getting all Attack instances", e);
+					Log.e(LOG_TAG, "Exception caught getting all Attack instances", e);
 					Toast.makeText(AttacksFragment.this.getActivity(),
 							getString(R.string.toast_attacks_load_failed),
 							Toast.LENGTH_SHORT).show();
@@ -505,9 +498,9 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 						isNew = false;
 						copyItemToViews();
 					}
-					String toastString;
-					toastString = String.format(getString(R.string.toast_attacks_loaded), attacks.size());
-					Toast.makeText(AttacksFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					Toast.makeText(AttacksFragment.this.getActivity(),
+								   String.format(getString(R.string.toast_attacks_loaded), attacks.size()),
+								   Toast.LENGTH_SHORT).show();
 				}
 			});
 
