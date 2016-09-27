@@ -21,6 +21,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
+import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +35,8 @@ import java.util.regex.Pattern;
 public class MultiPasteEditText extends EditText {
 	private Pattern pattern;
 	private MultiPasteEditText nextMultiPaste;
+	private DamageResultsGridAdapter.ViewHolder viewHolder;
+	private int atIndex;
 
 	/**
 	 * @see EditText#EditText(Context)
@@ -75,23 +79,16 @@ public class MultiPasteEditText extends EditText {
 			MultiPasteEditText nextEditText = this;
 			boolean changed = false;
 			for(String result : results) {
-				Matcher matcher = pattern.matcher(result);
-				if(matcher.matches()) {
-					changed = true;
-					nextEditText.setText(result);
-					nextEditText = nextEditText.getNextMultiPaste();
-					if(nextEditText == null) {
-						break;
-					}
-				}
-				else {
+				boolean matched = viewHolder.setResult(result, nextEditText, nextEditText.atIndex);
+				if(!matched) {
 					break;
 				}
+				nextEditText.setText(result);
+				nextEditText = nextEditText.getNextMultiPaste();
+				if(nextEditText == null) {
+						break;
+				}
 			}
-			// TODO: Save item
-//			if(changed) {
-//				saveItem();
-//			}
 		}
 	}
 
@@ -104,5 +101,11 @@ public class MultiPasteEditText extends EditText {
 	}
 	public void setNextMultiPaste(MultiPasteEditText nextMultiPaste) {
 		this.nextMultiPaste = nextMultiPaste;
+	}
+	public void setViewHolder(DamageResultsGridAdapter.ViewHolder viewHolder) {
+		this.viewHolder = viewHolder;
+	}
+	public void setAtIndex(int atIndex) {
+		this.atIndex = atIndex;
 	}
 }

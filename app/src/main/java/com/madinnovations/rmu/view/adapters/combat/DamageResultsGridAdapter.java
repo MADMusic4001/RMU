@@ -62,6 +62,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	private InputFilter inputFilter;
 	private Collection<CriticalType> criticalTypes;
 	private Pattern pattern;
+	private Toast toast = null;
 
 	/**
 	 * Creates a new DamageResultListAdapter instance.
@@ -85,7 +86,6 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					public void onCompleted() {
 						StringBuilder builder = new StringBuilder(20 + criticalTypes.size()*2);
 						builder.append("(\\d*)");
-						builder.append("([A-J])?([A-B])?");
 						if(!criticalTypes.isEmpty()) {
 							builder.append("([A-J])?([");
 							for (CriticalType criticalType : criticalTypes) {
@@ -178,20 +178,26 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception deleting DamageResult", e);
-						String toastString;
-						toastString = getContext().getString(R.string.toast_damage_result_delete_failed);
-						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_delete_failed),
+								Toast.LENGTH_SHORT);
+						toast.show();
 					}
 					@Override
 					public void onNext(Boolean aBoolean) {
-						String toastString;
-						toastString = getContext().getString(R.string.toast_damage_result_deleted);
-						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_deleted),
+								Toast.LENGTH_SHORT);
+						toast.show();
 					}
 				});
 	}
 
-	private class ViewHolder {
+	public class ViewHolder {
 		private DamageResultRow damageResultRow;
 		private EditText leftRollView;
 		private MultiPasteEditText at1ResultEdit;
@@ -213,41 +219,61 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			this.leftRollView = leftRollView;
 			this.at1ResultEdit = at1ResultEdit;
 			initEdit(at1ResultEdit, 0);
+			at1ResultEdit.setViewHolder(this);
+			at1ResultEdit.setAtIndex(0);
 
 			this.at2ResultEdit = at2ResultEdit;
 			initEdit(at2ResultEdit, 1);
+			at2ResultEdit.setViewHolder(this);
+			at2ResultEdit.setAtIndex(1);
 			at1ResultEdit.setNextMultiPaste(at2ResultEdit);
 
 			this.at3ResultEdit = at3ResultEdit;
 			initEdit(at3ResultEdit, 2);
+			at3ResultEdit.setViewHolder(this);
+			at3ResultEdit.setAtIndex(2);
 			at2ResultEdit.setNextMultiPaste(at3ResultEdit);
 
 			this.at4ResultEdit = at4ResultEdit;
 			initEdit(at4ResultEdit, 3);
+			at4ResultEdit.setViewHolder(this);
+			at4ResultEdit.setAtIndex(3);
 			at3ResultEdit.setNextMultiPaste(at4ResultEdit);
 
 			this.at5ResultEdit = at5ResultEdit;
 			initEdit(at5ResultEdit, 4);
+			at5ResultEdit.setViewHolder(this);
+			at5ResultEdit.setAtIndex(4);
 			at4ResultEdit.setNextMultiPaste(at5ResultEdit);
 
 			this.at6ResultEdit = at6ResultEdit;
 			initEdit(at6ResultEdit, 5);
+			at6ResultEdit.setViewHolder(this);
+			at6ResultEdit.setAtIndex(5);
 			at5ResultEdit.setNextMultiPaste(at6ResultEdit);
 
 			this.at7ResultEdit = at7ResultEdit;
 			initEdit(at7ResultEdit, 6);
+			at7ResultEdit.setViewHolder(this);
+			at7ResultEdit.setAtIndex(6);
 			at6ResultEdit.setNextMultiPaste(at7ResultEdit);
 
 			this.at8ResultEdit = at8ResultEdit;
 			initEdit(at8ResultEdit, 7);
+			at8ResultEdit.setViewHolder(this);
+			at8ResultEdit.setAtIndex(7);
 			at7ResultEdit.setNextMultiPaste(at8ResultEdit);
 
 			this.at9ResultEdit = at9ResultEdit;
 			initEdit(at9ResultEdit, 8);
+			at9ResultEdit.setViewHolder(this);
+			at9ResultEdit.setAtIndex(8);
 			at8ResultEdit.setNextMultiPaste(at9ResultEdit);
 
 			this.at10ResultEdit = at10ResultEdit;
 			initEdit(at10ResultEdit, 9);
+			at10ResultEdit.setViewHolder(this);
+			at10ResultEdit.setAtIndex(9);
 			at9ResultEdit.setNextMultiPaste(at10ResultEdit);
 			at10ResultEdit.setNextMultiPaste(null);
 
@@ -263,90 +289,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 				public void onFocusChange(View view, boolean hasFocus) {
 					if(!hasFocus) {
 						editText.setBackground(null);
-						Short hits = null;
-						String severity = null;
-						CriticalType type = null;
-						boolean matches;
-
-						final CharSequence text = ((EditText)view).getText();
-						Matcher matcher = pattern.matcher(text);
-						matches = matcher.matches();
-						if(matcher.groupCount() >= 1 && text.length() > 0) {
-							if(matcher.group(1).length()>0) {
-								hits = Short.valueOf(matcher.group(1));
-							}
-							if(matcher.groupCount() == 3) {
-								severity = matcher.group(2);
-								if (severity != null) {
-									String typeString = matcher.group(3);
-									if (typeString == null ||  typeString.isEmpty()) {
-										matches = false;
-									}
-									else {
-										type = getTypeForCode(typeString.charAt(0));
-									}
-								}
-							}
-						}
-						if(!matches) {
-							((EditText)view).setError(getContext().getString(R.string.validation_damage_results_format_invalid));
-						}
-						else {
-							if(((View)view.getParent()).getTag() instanceof ViewHolder) {
-								boolean resultChanged = false;
-								boolean rowChanged = false;
-								if(editText == view) {
-									DamageResult damageResult = damageResultRow.getDamageResults()[armorTypeIndex];
-									if(hits != null) {
-										if(damageResult == null) {
-											damageResult = new DamageResult();
-											damageResultRow.getDamageResults()[armorTypeIndex] = damageResult;
-											resultChanged = true;
-											rowChanged = true;
-										}
-										if(damageResult.getHits() != hits) {
-											damageResult.setHits(hits);
-											resultChanged = true;
-										}
-										if((severity == null && damageResult.getCriticalSeverity() != null) ||
-												(severity != null && !severity.isEmpty() &&
-														damageResult.getCriticalSeverity() == null) ||
-												(severity != null && !severity.isEmpty() && severity.charAt(0)
-														!= damageResult.getCriticalSeverity())) {
-											resultChanged = true;
-											if(severity == null || severity.isEmpty()) {
-												damageResult.setCriticalSeverity(null);
-											}
-											else {
-												damageResult.setCriticalSeverity(severity.charAt(0));
-											}
-										}
-										if((type == null && damageResult.getCriticalType() != null) ||
-												(type != null && !type.equals(damageResult.getCriticalType()))) {
-											resultChanged = true;
-											if(type == null) {
-												damageResult.setCriticalType(null);
-											}
-											else {
-												damageResult.setCriticalType(type);
-											}
-										}
-										if(resultChanged) {
-											saveResult(rowChanged, damageResult, damageResultRow);
-										}
-									}
-									else {
-										if(damageResult != null) {
-											damageResultRow.getDamageResults()[armorTypeIndex] = null;
-											if(damageResult.getId() != -1) {
-												final int damageResultId = damageResult.getId();
-												saveDamageResultRow(damageResultRow, damageResultId);
-											}
-										}
-									}
-								}
-							}
-						}
+						setResult(((EditText)view).getText(), (EditText)view, armorTypeIndex);
 					}
 					else {
 						if(editText.getBackground() != null) {
@@ -359,89 +302,191 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 				}
 			});
 		}
-	}
 
-	private void saveResult(boolean rowChanged, DamageResult damageResult, final DamageResultRow damageResultRow) {
-		final boolean finalRowChanged = rowChanged;
-		damageResultRxHandler.save(damageResult)
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<DamageResult>() {
-					@Override
-					public void onCompleted() {
-						if (finalRowChanged) {
-							saveResultRow(damageResultRow);
+		public boolean setResult(final CharSequence text, EditText view, int armorTypeIndex) {
+			Short hits = null;
+			String severity = null;
+			CriticalType type = null;
+			boolean matches;
+
+			Matcher matcher = pattern.matcher(text);
+			matches = matcher.matches();
+			if(!matches) {
+				((EditText)view).setError(getContext().getString(R.string.validation_damage_results_format_invalid));
+			}
+			else {
+				if(matcher.groupCount() >= 1 && text.length() > 0) {
+					if(matcher.group(1).length()>0) {
+						hits = Short.valueOf(matcher.group(1));
+					}
+					if(matcher.groupCount() == 3) {
+						severity = matcher.group(2);
+						if (severity != null) {
+							String typeString = matcher.group(3);
+							if (typeString == null ||  typeString.isEmpty()) {
+								matches = false;
+							}
+							else {
+								type = getTypeForCode(typeString.charAt(0));
+							}
 						}
 					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving DamageResult", e);
-						String toastString;
-						toastString = getContext().getString(R.string.toast_damage_result_save_failed);
-						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(DamageResult damageResult) {
-						String toastString;
-						toastString = getContext().getString(R.string.toast_damage_result_saved);
-						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-	}
+				}
+				Log.d("RMU", "pattern = " + pattern.pattern());
+				Log.d("RMU", "input = " + text + ". Hits = " + hits + ", severity = " + severity + ", type = " + type);
+				if(((View)view.getParent()).getTag() instanceof ViewHolder) {
+					updateResult(armorTypeIndex, hits, severity, type);
+				}
+			}
 
-	private void saveResultRow(DamageResultRow damageResultRow) {
-		damageResultRowRxHandler.save(damageResultRow)
-				.subscribe(new Subscriber<DamageResultRow>() {
-					Toast toast = null;
-					@Override
-					public void onCompleted() {
-					}
-					@Override
-					public void onError(Throwable e) {
-						if(toast != null) {
-							toast.cancel();
-						}
-						Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
-						Toast.makeText(getContext(),
-									   getContext().getString(R.string.toast_damage_result_row_save_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(DamageResultRow savedDamageResultRow) {
-						if(toast != null) {
-							toast.cancel();
-						}
-						toast = Toast.makeText(getContext(),
-											   getContext().getString(R.string.toast_damage_result_row_saved),
-											   Toast.LENGTH_SHORT);
-						toast.show();
-					}
-				});
-	}
+			return matches;
+		}
 
-	private void saveDamageResultRow(DamageResultRow damageResultRow, final int damageResultId) {
-		damageResultRowRxHandler.save(damageResultRow)
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<DamageResultRow>() {
-					@Override
-					public void onCompleted() {
-						deleteDamageResult(damageResultId);
+		private void updateResult(int armorTypeIndex, Short hits, String severity, CriticalType type) {
+			boolean resultChanged = false;
+			boolean rowChanged = false;
+			DamageResult damageResult = damageResultRow.getDamageResults()[armorTypeIndex];
+			if(hits != null) {
+				if(damageResult == null) {
+					damageResult = new DamageResult();
+					damageResultRow.getDamageResults()[armorTypeIndex] = damageResult;
+					resultChanged = true;
+					rowChanged = true;
+				}
+				if(damageResult.getHits() != hits) {
+					damageResult.setHits(hits);
+					resultChanged = true;
+				}
+				if((severity == null && damageResult.getCriticalSeverity() != null) ||
+						(severity != null && !severity.isEmpty() &&
+								damageResult.getCriticalSeverity() == null) ||
+						(severity != null && !severity.isEmpty() && severity.charAt(0)
+								!= damageResult.getCriticalSeverity())) {
+					resultChanged = true;
+					if(severity == null || severity.isEmpty()) {
+						damageResult.setCriticalSeverity(null);
 					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
-						String toastString;
-						toastString = getContext().getString(R.string.toast_damage_result_row_save_failed);
-						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					else {
+						damageResult.setCriticalSeverity(severity.charAt(0));
 					}
-					@Override
-					public void onNext(DamageResultRow savedDamageResultRow) {
-						String toastString;
-						toastString = getContext().getString(R.string.toast_damage_result_row_saved);
-						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+				}
+				if((type == null && damageResult.getCriticalType() != null) ||
+						(type != null && !type.equals(damageResult.getCriticalType()))) {
+					resultChanged = true;
+					if(type == null) {
+						damageResult.setCriticalType(null);
 					}
-				});
+					else {
+						damageResult.setCriticalType(type);
+					}
+				}
+				if(resultChanged) {
+					saveResult(rowChanged, damageResult, damageResultRow);
+				}
+			}
+			else {
+				if(damageResult != null) {
+					damageResultRow.getDamageResults()[armorTypeIndex] = null;
+					if(damageResult.getId() != -1) {
+						final int damageResultId = damageResult.getId();
+						saveDamageResultRow(damageResultRow, damageResultId);
+					}
+				}
+			}
+		}
+
+		public void saveResult(final boolean rowChanged, DamageResult damageResult, final DamageResultRow damageResultRow) {
+			damageResultRxHandler.save(damageResult)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<DamageResult>() {
+						@Override
+						public void onCompleted() {
+							if (rowChanged) {
+								saveResultRow(damageResultRow);
+							}
+						}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception saving DamageResult", e);
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getContext(),  getContext().getString(R.string.toast_damage_result_save_failed),
+									Toast.LENGTH_SHORT);
+							toast.show();
+						}
+						@Override
+						public void onNext(DamageResult damageResult) {
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getContext(),  getContext().getString(R.string.toast_damage_result_saved),
+									Toast.LENGTH_SHORT);
+							toast.show();
+						}
+					});
+		}
+
+		public void saveResultRow(DamageResultRow damageResultRow) {
+			damageResultRowRxHandler.save(damageResultRow)
+					.subscribe(new Subscriber<DamageResultRow>() {
+						@Override
+						public void onCompleted() {
+						}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_save_failed),
+									Toast.LENGTH_SHORT);
+							toast.show();
+						}
+						@Override
+						public void onNext(DamageResultRow savedDamageResultRow) {
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_saved),
+									Toast.LENGTH_SHORT);
+							toast.show();
+						}
+					});
+		}
+
+		public void saveDamageResultRow(DamageResultRow damageResultRow, final int damageResultId) {
+			damageResultRowRxHandler.save(damageResultRow)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<DamageResultRow>() {
+						@Override
+						public void onCompleted() {
+							deleteDamageResult(damageResultId);
+						}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_save_failed),
+									Toast.LENGTH_SHORT);
+							toast.show();
+						}
+						@Override
+						public void onNext(DamageResultRow savedDamageResultRow) {
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_saved),
+									Toast.LENGTH_SHORT);
+							toast.show();
+						}
+					});
+		}
+
 	}
 
 	private String formatResultString(DamageResult damageResult) {

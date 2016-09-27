@@ -19,7 +19,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
-import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.io.IOException;
@@ -34,11 +33,6 @@ public class DamageTableSerializer extends TypeAdapter<DamageTable> implements D
 		out.beginObject()
 				.name(COLUMN_ID).value(value.getId())
 				.name(COLUMN_NAME).value(value.getName());
-		out.name(COLUMN_RESULT_ROWS).beginArray();
-		for(DamageResultRow resultRow : value.getResultRows()) {
-			out.value(resultRow.getId());
-		}
-		out.endArray();
 		out.endObject();
 	}
 
@@ -54,15 +48,6 @@ public class DamageTableSerializer extends TypeAdapter<DamageTable> implements D
 					break;
 				case COLUMN_NAME:
 					damageTable.setName(in.nextString());
-					break;
-				case COLUMN_RESULT_ROWS:
-					in.beginArray();
-					while (in.hasNext()) {
-						DamageResultRow damageResultRow = new DamageResultRow();
-						damageResultRow.setId(in.nextInt());
-						damageTable.getResultRows().add(damageResultRow);
-					}
-					in.endArray();
 					break;
 			}
 		}
