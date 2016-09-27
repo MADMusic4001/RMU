@@ -54,6 +54,7 @@ import rx.schedulers.Schedulers;
  * Populates a ListView with {@link DamageResultRow} information
  */
 public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
+	private static final String LOG_TAG = "DamageResultsGridAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_damage_result_row;
 	private DamageResultRxHandler damageResultRxHandler;
 	private DamageResultRowRxHandler damageResultRowRxHandler;
@@ -176,7 +177,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("DamageResultsGridAdapt", "Exception deleting DamageResult", e);
+						Log.e(LOG_TAG, "Exception deleting DamageResult", e);
 						String toastString;
 						toastString = getContext().getString(R.string.toast_damage_result_delete_failed);
 						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
@@ -331,57 +332,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 											}
 										}
 										if(resultChanged) {
-											final boolean finalRowChanged = rowChanged;
-											damageResultRxHandler.save(damageResult)
-													.observeOn(AndroidSchedulers.mainThread())
-													.subscribeOn(Schedulers.io())
-													.subscribe(new Subscriber<DamageResult>() {
-														@Override
-														public void onCompleted() {
-															if (finalRowChanged) {
-																damageResultRowRxHandler.save(damageResultRow)
-																		.subscribe(new Subscriber<DamageResultRow>() {
-																			Toast toast = null;
-																			@Override
-																			public void onCompleted() {
-																			}
-																			@Override
-																			public void onError(Throwable e) {
-																				if(toast != null) {
-																					toast.cancel();
-																				}
-																				Log.e("DamageResultsGridAdapt", "Exception saving DamageResultRow", e);
-																				Toast.makeText(getContext(),
-																							   getContext().getString(R.string.toast_damage_result_row_save_failed),
-																							   Toast.LENGTH_SHORT).show();
-																			}
-																			@Override
-																			public void onNext(DamageResultRow savedDamageResultRow) {
-																				if(toast != null) {
-																					toast.cancel();
-																				}
-																				toast = Toast.makeText(getContext(),
-																									   getContext().getString(R.string.toast_damage_result_row_saved),
-																									   Toast.LENGTH_SHORT);
-																				toast.show();
-																			}
-																		});
-															}
-														}
-														@Override
-														public void onError(Throwable e) {
-															Log.e("DamageResultsGridAdapt", "Exception saving DamageResult", e);
-															String toastString;
-															toastString = getContext().getString(R.string.toast_damage_result_save_failed);
-															Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-														}
-														@Override
-														public void onNext(DamageResult damageResult) {
-															String toastString;
-															toastString = getContext().getString(R.string.toast_damage_result_saved);
-															Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-														}
-													});
+											saveResult(rowChanged, damageResult, damageResultRow);
 										}
 									}
 									else {
@@ -389,28 +340,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 											damageResultRow.getDamageResults()[armorTypeIndex] = null;
 											if(damageResult.getId() != -1) {
 												final int damageResultId = damageResult.getId();
-												damageResultRowRxHandler.save(damageResultRow)
-														.observeOn(AndroidSchedulers.mainThread())
-														.subscribeOn(Schedulers.io())
-														.subscribe(new Subscriber<DamageResultRow>() {
-															@Override
-															public void onCompleted() {
-																deleteDamageResult(damageResultId);
-															}
-															@Override
-															public void onError(Throwable e) {
-																Log.e("DamageResultsGridAdapt", "Exception saving DamageResultRow", e);
-																String toastString;
-																toastString = getContext().getString(R.string.toast_damage_result_row_save_failed);
-																Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-															}
-															@Override
-															public void onNext(DamageResultRow savedDamageResultRow) {
-																String toastString;
-																toastString = getContext().getString(R.string.toast_damage_result_row_saved);
-																Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-															}
-														});
+												saveDamageResultRow(damageResultRow, damageResultId);
 											}
 										}
 									}
@@ -431,6 +361,89 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		}
 	}
 
+	private void saveResult(boolean rowChanged, DamageResult damageResult, final DamageResultRow damageResultRow) {
+		final boolean finalRowChanged = rowChanged;
+		damageResultRxHandler.save(damageResult)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<DamageResult>() {
+					@Override
+					public void onCompleted() {
+						if (finalRowChanged) {
+							saveResultRow(damageResultRow);
+						}
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception saving DamageResult", e);
+						String toastString;
+						toastString = getContext().getString(R.string.toast_damage_result_save_failed);
+						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(DamageResult damageResult) {
+						String toastString;
+						toastString = getContext().getString(R.string.toast_damage_result_saved);
+						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+	}
+
+	private void saveResultRow(DamageResultRow damageResultRow) {
+		damageResultRowRxHandler.save(damageResultRow)
+				.subscribe(new Subscriber<DamageResultRow>() {
+					Toast toast = null;
+					@Override
+					public void onCompleted() {
+					}
+					@Override
+					public void onError(Throwable e) {
+						if(toast != null) {
+							toast.cancel();
+						}
+						Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
+						Toast.makeText(getContext(),
+									   getContext().getString(R.string.toast_damage_result_row_save_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(DamageResultRow savedDamageResultRow) {
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(getContext(),
+											   getContext().getString(R.string.toast_damage_result_row_saved),
+											   Toast.LENGTH_SHORT);
+						toast.show();
+					}
+				});
+	}
+
+	private void saveDamageResultRow(DamageResultRow damageResultRow, final int damageResultId) {
+		damageResultRowRxHandler.save(damageResultRow)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<DamageResultRow>() {
+					@Override
+					public void onCompleted() {
+						deleteDamageResult(damageResultId);
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
+						String toastString;
+						toastString = getContext().getString(R.string.toast_damage_result_row_save_failed);
+						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(DamageResultRow savedDamageResultRow) {
+						String toastString;
+						toastString = getContext().getString(R.string.toast_damage_result_row_saved);
+						Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+					}
+				});
+	}
+
 	private String formatResultString(DamageResult damageResult) {
 		StringBuilder builder = new StringBuilder(6);
 		if(damageResult != null) {
@@ -446,7 +459,6 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	}
 
 	private class DamageResultInputFilter implements InputFilter {
-
 		@Override
 		public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
 			StringBuilder builder = new StringBuilder(dest.toString());
