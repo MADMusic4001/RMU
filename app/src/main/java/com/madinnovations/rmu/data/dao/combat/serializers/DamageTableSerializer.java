@@ -32,7 +32,8 @@ public class DamageTableSerializer extends TypeAdapter<DamageTable> implements D
 	public void write(JsonWriter out, DamageTable value) throws IOException {
 		out.beginObject()
 				.name(COLUMN_ID).value(value.getId())
-				.name(COLUMN_NAME).value(value.getName());
+				.name(COLUMN_NAME).value(value.getName())
+				.name(COLUMN_IS_BALL_TABLE).value(value.isBallTable());
 		out.endObject();
 	}
 
@@ -48,6 +49,9 @@ public class DamageTableSerializer extends TypeAdapter<DamageTable> implements D
 					break;
 				case COLUMN_NAME:
 					damageTable.setName(in.nextString());
+					break;
+				case COLUMN_IS_BALL_TABLE:
+					damageTable.setBallTable(in.nextBoolean());
 					break;
 			}
 		}

@@ -107,6 +107,7 @@
   <string name="label_new_critical_type">New Critical Type</string>
   <string name="label_delete_culture">Delete Culture</string>
   <string name="label_new_culture">New Culture</string>
+  <string name="label_delete_damage_table">Delete Damage Table</string>
   <string name="label_new_damage_table">New Damage Table</string>
   <string name="label_delete_item">Delete Item</string>
   <string name="label_new_item">New Item</string>
@@ -211,6 +212,7 @@
   <string name="label_all_spell_lists">All Spell Lists</string>
 
   <!-- CheckBox labels -->
+  <string name="label_ball_table">Ball Table</string>
   <string name="label_flaw">Flaw</string>
   <string name="label_is_lore">Lore Skill</string>
   <string name="label_per_level">Per Level</string>
@@ -223,7 +225,8 @@
 
   <!-- Button labels -->
   <string name="label_add_parameter">Add Parameter</string>
-  <string name="remove_parameter">Remove Parameter</string>
+  <string name="label_remove_parameter">Remove Parameter</string>
+  <string name="label_remove_damage_table">Remove Damage Table</string>
 
   <!-- TextView labels -->
   <string name="label_1">1</string>

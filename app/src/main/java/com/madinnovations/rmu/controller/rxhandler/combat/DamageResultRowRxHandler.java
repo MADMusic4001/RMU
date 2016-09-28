@@ -15,7 +15,13 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.combat;
 
+import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
+import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -32,7 +38,10 @@ import rx.schedulers.Schedulers;
  * Creates reactive observable for requesting operations on {@link DamageResultRow} instances with persistent storage.
  */
 public class DamageResultRowRxHandler {
+	private RMUDatabaseHelper helper;
 	private DamageResultRowDao dao;
+	private DamageResultDao damageResultDao;
+	private DamageTableDao damageTableDao;
 
 	/**
 	 * Creates a new DamageResultRowRxHandler
@@ -40,7 +49,8 @@ public class DamageResultRowRxHandler {
 	 * @param dao  a DamageResultRowDao instance
 	 */
 	@Inject
-	public DamageResultRowRxHandler(DamageResultRowDao dao) {
+	public DamageResultRowRxHandler(RMUDatabaseHelper helper, DamageResultRowDao dao) {
+		this.helper = helper;
 		this.dao = dao;
 	}
 
@@ -182,6 +192,41 @@ public class DamageResultRowRxHandler {
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+
+	/**
+	 * Creates an Observable that, when subscribed to, will delete all DamageResultRow instances meeting the given criteria.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to delete the DamageResultRow instances.
+	 */
+	public Observable<Collection<DamageResultRow>> deleteAllForDamageTable(final DamageTable damageTable) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<DamageResultRow>>() {
+					@Override
+					public void call(Subscriber<? super Collection<DamageResultRow>> subscriber) {
+						try {
+							helper.getWritableDatabase().beginTransaction();
+							helper.getWritableDatabase().execSQL(
+									"delete from " + DamageResultSchema.TABLE_NAME
+											+ " where " + DamageResultSchema.COLUMN_ID
+											+ " in  (Select " + DamageResultRowSchema.COLUMN_ID  + " from "
+											+ DamageResultRowSchema.TABLE_NAME + " where "
+											+ DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = "
+											+ damageTable.getId());
+							helper.getWritableDatabase().execSQL(
+									"delete from damage_results_row where id in "
+																		 + "(Select id FROM damage_result_rows where damageTableId = )" + damageTable.getId());
+							subscriber.onNext(null);
+							subscriber.onCompleted();
+						}
+						catch(Exception e) {
 							subscriber.onError(e);
 						}
 					}

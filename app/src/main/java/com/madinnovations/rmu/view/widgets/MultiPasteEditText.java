@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view;
+package com.madinnovations.rmu.view.widgets;
 
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -21,22 +21,16 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
+import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 9/26/2016.
+ * Custom EditText used by Damage Results UI to handle pasting entire row of damage results
  */
 public class MultiPasteEditText extends EditText {
-	private Pattern pattern;
 	private MultiPasteEditText nextMultiPaste;
-	private DamageResultsGridAdapter.ViewHolder viewHolder;
-	private int atIndex;
+	private DamageResultsGridAdapter.ViewHolder         viewHolder;
+	private int                                         atIndex;
 
 	/**
 	 * @see EditText#EditText(Context)
@@ -77,7 +71,6 @@ public class MultiPasteEditText extends EditText {
 			CharSequence text = clipboardManager.getPrimaryClip().getItemAt(0).getText();
 			String[] results = text.toString().split("\\s");
 			MultiPasteEditText nextEditText = this;
-			boolean changed = false;
 			for(String result : results) {
 				boolean matched = viewHolder.setResult(result, nextEditText, nextEditText.atIndex);
 				if(!matched) {
@@ -86,16 +79,13 @@ public class MultiPasteEditText extends EditText {
 				nextEditText.setText(result);
 				nextEditText = nextEditText.getNextMultiPaste();
 				if(nextEditText == null) {
-						break;
+					break;
 				}
 			}
 		}
 	}
 
 	// Getters and setters
-	public void setPattern(Pattern pattern) {
-		this.pattern = pattern;
-	}
 	public MultiPasteEditText getNextMultiPaste() {
 		return nextMultiPaste;
 	}

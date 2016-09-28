@@ -79,6 +79,8 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl<DamageTable> implements 
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setName((cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))));
+        instance.setBallTable(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_BALL_TABLE)) != 0);
+
         return instance;
     }
 
@@ -87,13 +89,14 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl<DamageTable> implements 
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(2);
+            values = new ContentValues(3);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(1);
+            values = new ContentValues(2);
         }
         values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_IS_BALL_TABLE, instance.isBallTable());
 
 		return values;
 	}

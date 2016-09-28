@@ -23,14 +23,15 @@ public interface DamageTableSchema {
 
     String COLUMN_ID = "id";
     String COLUMN_NAME = "name";
-    String COLUMN_RESULT_ROWS = "resultRows";
+    String COLUMN_IS_BALL_TABLE = "isBallTable";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
-            + COLUMN_NAME  + " TEXT NOT NULL"
+            + COLUMN_NAME  + " TEXT NOT NULL, "
+			+ COLUMN_IS_BALL_TABLE + " INTEGER NOT NULL"
             + ")";
 
-    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_IS_BALL_TABLE};
 }

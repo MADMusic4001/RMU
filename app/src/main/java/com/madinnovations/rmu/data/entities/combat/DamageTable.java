@@ -25,6 +25,7 @@ public class DamageTable {
     public static final String JSON_NAME = "DamageTables";
     private int id = -1;
     private String name = null;
+    private boolean ballTable = false;
     private Collection<DamageResultRow> resultRows = new ArrayList<>();
 
 	/**
@@ -72,8 +73,19 @@ public class DamageTable {
     }
 
     public void resetRows() {
+		short start;
+		short end;
         resultRows = new ArrayList<>(37);
-        for(short i = 175; i > 65; i -= 3) {
+
+		if(ballTable) {
+			start = 125;
+			end = 15;
+		}
+		else {
+			start = 175;
+			end = 65;
+		}
+        for(short i = start; i > end; i -= 3) {
             DamageResultRow row = new DamageResultRow();
             row.setDamageTable(this);
             row.setRangeLowValue((short)(i-2));
@@ -95,7 +107,13 @@ public class DamageTable {
     public void setName(String name) {
         this.name = name;
     }
-    public Collection<DamageResultRow> getResultRows() {
+	public boolean isBallTable() {
+		return ballTable;
+	}
+	public void setBallTable(boolean ballTable) {
+		this.ballTable = ballTable;
+	}
+	public Collection<DamageResultRow> getResultRows() {
         return resultRows;
     }
     public void setResultRows(Collection<DamageResultRow> resultRows) {

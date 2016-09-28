@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.combat;
 
+import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -32,6 +34,8 @@ import rx.schedulers.Schedulers;
  */
 public class DamageTableRxHandler {
 	private DamageTableDao dao;
+	private DamageResultDao damageResultDao;
+	private DamageResultRowDao damageResultRowDao;
 
 	/**
 	 * Creates a new DamageTableRxHandler

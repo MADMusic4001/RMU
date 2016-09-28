@@ -15,7 +15,9 @@
  */
 package com.madinnovations.rmu.view.activities.combat;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -29,20 +31,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
-import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
+import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.Collection;
@@ -56,7 +60,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for damage results.
  */
-public class DamageResultsFragment extends Fragment implements EditTextUtils.ValuesCallback {
+public class DamageResultsFragment extends Fragment implements EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback {
 	private static final String LOG_TAG = "DamageResultsFragment";
 	@Inject
 	protected DamageResultRowRxHandler  damageResultRowRxHandler;
@@ -67,6 +71,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	private   ArrayAdapter<DamageTable> damageTableFilterSpinnerAdapter;
 	private   Spinner                   damageTableFilterSpinner;
 	private   EditText                  damageTableNameEdit;
+	private   CheckBox                  ballTableCheckbox;
 	private DamageTable currentInstance = new DamageTable();
 	private boolean isNew = true;
 
@@ -80,7 +85,9 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 
 		damageTableNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 													 R.string.validation_damage_table_name_required);
+		ballTableCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.ball_table_check_box);
 		initDamageTableFilterSpinner(layout);
+		initDeleteTableButton(layout);
 		initDamageResultsGridView(layout);
 
 		setHasOptionsMenu(true);
@@ -119,6 +126,28 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	}
 
 	@Override
+	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
+		boolean result = false;
+
+		switch (checkBoxId) {
+			case R.id.ball_table_check_box:
+				result = currentInstance.isBallTable();
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
+		switch (checkBoxId) {
+			case R.id.ball_table_check_box:
+				currentInstance.setBallTable(newBoolean);
+				saveItem();
+				break;
+		}
+	}
+
+	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
@@ -143,11 +172,13 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 
 	private boolean copyViewsToItem() {
 		currentInstance.setName(damageTableNameEdit.getText().toString());
+		currentInstance.setBallTable(ballTableCheckbox.isChecked());
 		return false;
 	}
 
 	private void copyItemToViews() {
 		damageTableNameEdit.setText(currentInstance.getName());
+		ballTableCheckbox.setChecked(currentInstance.isBallTable());
 		damageResultsGridAdapter.clear();
 		damageResultsGridAdapter.addAll(currentInstance.getResultRows());
 		damageResultsGridAdapter.notifyDataSetChanged();
@@ -191,23 +222,22 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void deleteItem(@NonNull final DamageResult item) {
-		damageTableRxHandler.deleteById(item.getId())
+	private void deleteItem(@NonNull final DamageTable item) {
+		damageResultRowRxHandler.deleteAllForDamageTable(item)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Boolean>() {
+				.subscribe(new Subscriber<Collection<DamageResultRow>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_damage_result_row_delete_failed);
+						String toastString = getString(R.string.toast_damage_table_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Boolean success) {
-						if(success) {
+					public void onNext(Collection<DamageResultRow> damageResultRow) {
+						if(damageResultRow != null) {
 							currentInstance = new DamageTable();
 							currentInstance.resetRows();
 							isNew = true;
@@ -222,6 +252,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		damageTableFilterSpinner = (Spinner)layout.findViewById(R.id.damage_tables_spinner);
 		damageTableFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		damageTableFilterSpinner.setAdapter(damageTableFilterSpinnerAdapter);
+		registerForContextMenu(damageTableFilterSpinner);
 
 		damageTableRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
@@ -281,6 +312,18 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		});
 	}
 
+	private void initDeleteTableButton(View layout) {
+		ImageButton deleteTableButton = (ImageButton)layout.findViewById(R.id.delete_table_button);
+
+		deleteTableButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				AlertDialog deleteDialog = ConfirmDelete();
+				deleteDialog.show();
+			}
+		});
+	}
+
 	private void initDamageResultsGridView(View layout) {
 		GridView damageResultsGridView = (GridView) layout.findViewById(R.id.damage_results_grid);
 		damageResultsGridView.setAdapter(damageResultsGridAdapter);
@@ -325,5 +368,32 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						Toast.makeText(DamageResultsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
+	}
+
+	private AlertDialog ConfirmDelete() {
+		return new AlertDialog.Builder(getActivity())
+				//set message, title, and icon
+				.setTitle(getString(R.string.confirm_delete_title))
+				.setMessage(getString(R.string.confirm_delete_message))
+				.setIcon(R.drawable.file_icon)
+				.setPositiveButton(getString(R.string.label_delete), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						int position = damageTableFilterSpinner.getSelectedItemPosition();
+						DamageTable damageTable = damageTableFilterSpinnerAdapter.getItem(position);
+						if(damageTable != null) {
+							deleteItem(damageTable);
+						}
+						damageTableFilterSpinnerAdapter.remove(damageTable);
+						currentInstance = damageTableFilterSpinnerAdapter.getItem(
+								damageTableFilterSpinner.getSelectedItemPosition());
+						dialog.dismiss();
+					}
+				})
+				.setNegativeButton(getString(R.string.label_cancel), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				})
+				.create();
 	}
 }

@@ -37,8 +37,8 @@ import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
-import com.madinnovations.rmu.view.MultiPasteEditText;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.widgets.MultiPasteEditText;
 
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -220,60 +220,41 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			this.at1ResultEdit = at1ResultEdit;
 			initEdit(at1ResultEdit, 0);
 			at1ResultEdit.setViewHolder(this);
-			at1ResultEdit.setAtIndex(0);
 
 			this.at2ResultEdit = at2ResultEdit;
 			initEdit(at2ResultEdit, 1);
-			at2ResultEdit.setViewHolder(this);
-			at2ResultEdit.setAtIndex(1);
 			at1ResultEdit.setNextMultiPaste(at2ResultEdit);
 
 			this.at3ResultEdit = at3ResultEdit;
 			initEdit(at3ResultEdit, 2);
-			at3ResultEdit.setViewHolder(this);
-			at3ResultEdit.setAtIndex(2);
 			at2ResultEdit.setNextMultiPaste(at3ResultEdit);
 
 			this.at4ResultEdit = at4ResultEdit;
 			initEdit(at4ResultEdit, 3);
-			at4ResultEdit.setViewHolder(this);
-			at4ResultEdit.setAtIndex(3);
 			at3ResultEdit.setNextMultiPaste(at4ResultEdit);
 
 			this.at5ResultEdit = at5ResultEdit;
 			initEdit(at5ResultEdit, 4);
-			at5ResultEdit.setViewHolder(this);
-			at5ResultEdit.setAtIndex(4);
 			at4ResultEdit.setNextMultiPaste(at5ResultEdit);
 
 			this.at6ResultEdit = at6ResultEdit;
 			initEdit(at6ResultEdit, 5);
-			at6ResultEdit.setViewHolder(this);
-			at6ResultEdit.setAtIndex(5);
 			at5ResultEdit.setNextMultiPaste(at6ResultEdit);
 
 			this.at7ResultEdit = at7ResultEdit;
 			initEdit(at7ResultEdit, 6);
-			at7ResultEdit.setViewHolder(this);
-			at7ResultEdit.setAtIndex(6);
 			at6ResultEdit.setNextMultiPaste(at7ResultEdit);
 
 			this.at8ResultEdit = at8ResultEdit;
 			initEdit(at8ResultEdit, 7);
-			at8ResultEdit.setViewHolder(this);
-			at8ResultEdit.setAtIndex(7);
 			at7ResultEdit.setNextMultiPaste(at8ResultEdit);
 
 			this.at9ResultEdit = at9ResultEdit;
 			initEdit(at9ResultEdit, 8);
-			at9ResultEdit.setViewHolder(this);
-			at9ResultEdit.setAtIndex(8);
 			at8ResultEdit.setNextMultiPaste(at9ResultEdit);
 
 			this.at10ResultEdit = at10ResultEdit;
 			initEdit(at10ResultEdit, 9);
-			at10ResultEdit.setViewHolder(this);
-			at10ResultEdit.setAtIndex(9);
 			at9ResultEdit.setNextMultiPaste(at10ResultEdit);
 			at10ResultEdit.setNextMultiPaste(null);
 
@@ -281,8 +262,8 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		}
 
 		private void initEdit(final MultiPasteEditText editText, final int armorTypeIndex) {
-			editText.setPattern(pattern);
-
+			editText.setAtIndex(armorTypeIndex);
+			editText.setViewHolder(this);
 			editText.setFilters(new InputFilter[] {inputFilter});
 			editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
@@ -312,7 +293,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			Matcher matcher = pattern.matcher(text);
 			matches = matcher.matches();
 			if(!matches) {
-				((EditText)view).setError(getContext().getString(R.string.validation_damage_results_format_invalid));
+				view.setError(getContext().getString(R.string.validation_damage_results_format_invalid));
 			}
 			else {
 				if(matcher.groupCount() >= 1 && text.length() > 0) {
@@ -395,7 +376,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			}
 		}
 
-		public void saveResult(final boolean rowChanged, DamageResult damageResult, final DamageResultRow damageResultRow) {
+		void saveResult(final boolean rowChanged, DamageResult damageResult, final DamageResultRow damageResultRow) {
 			damageResultRxHandler.save(damageResult)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
@@ -428,7 +409,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					});
 		}
 
-		public void saveResultRow(DamageResultRow damageResultRow) {
+		void saveResultRow(DamageResultRow damageResultRow) {
 			damageResultRowRxHandler.save(damageResultRow)
 					.subscribe(new Subscriber<DamageResultRow>() {
 						@Override
@@ -456,7 +437,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 					});
 		}
 
-		public void saveDamageResultRow(DamageResultRow damageResultRow, final int damageResultId) {
+		void saveDamageResultRow(DamageResultRow damageResultRow, final int damageResultId) {
 			damageResultRowRxHandler.save(damageResultRow)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
