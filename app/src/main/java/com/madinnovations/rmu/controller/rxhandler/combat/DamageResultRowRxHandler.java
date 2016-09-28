@@ -21,7 +21,7 @@ import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
-import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -212,17 +212,20 @@ public class DamageResultRowRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<DamageResultRow>> subscriber) {
 						try {
+							String[] selectionArgs = { String.valueOf(damageTable.getId())};
 							helper.getWritableDatabase().beginTransaction();
-							helper.getWritableDatabase().execSQL(
+							helper.getWritableDatabase().rawQuery(
 									"delete from " + DamageResultSchema.TABLE_NAME
 											+ " where " + DamageResultSchema.COLUMN_ID
-											+ " in  (Select " + DamageResultRowSchema.COLUMN_ID  + " from "
+											+ " in (Select " + DamageResultRowSchema.COLUMN_ID  + " from "
 											+ DamageResultRowSchema.TABLE_NAME + " where "
-											+ DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = "
-											+ damageTable.getId());
-							helper.getWritableDatabase().execSQL(
-									"delete from damage_results_row where id in "
-																		 + "(Select id FROM damage_result_rows where damageTableId = )" + damageTable.getId());
+											+ DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = ?)", selectionArgs);
+							helper.getWritableDatabase().rawQuery(
+									"delete from " + DamageResultRowSchema.TABLE_NAME + " where "
+											+ DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = ?", selectionArgs);
+							helper.getWritableDatabase().rawQuery(
+									"delete from " + DamageTableSchema.TABLE_NAME + " where "
+											+ DamageTableSchema.COLUMN_ID + " = ?",  selectionArgs);
 							subscriber.onNext(null);
 							subscriber.onCompleted();
 						}

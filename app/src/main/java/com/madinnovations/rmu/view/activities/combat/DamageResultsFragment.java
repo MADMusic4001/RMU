@@ -117,7 +117,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 				saveItem();
 			}
 			currentInstance = new DamageTable();
-			currentInstance.resetRows();
+			currentInstance.initRows();
 			isNew = true;
 			copyItemToViews();
 			return true;
@@ -143,6 +143,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 			case R.id.ball_table_check_box:
 				currentInstance.setBallTable(newBoolean);
 				saveItem();
+				copyItemToViews();
 				break;
 		}
 	}
@@ -182,6 +183,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		damageResultsGridAdapter.clear();
 		damageResultsGridAdapter.addAll(currentInstance.getResultRows());
 		damageResultsGridAdapter.notifyDataSetChanged();
+		loadFilteredDamageResultRows(currentInstance);
 	}
 
 	private void saveItem() {
@@ -222,29 +224,34 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		}
 	}
 
-	private void deleteItem(@NonNull final DamageTable item) {
-		damageResultRowRxHandler.deleteAllForDamageTable(item)
+	private void deleteItem(@NonNull final DamageTable damageTable) {
+		damageResultRowRxHandler.deleteAllForDamageTable(damageTable)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<Collection<DamageResultRow>>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {
+						damageTableFilterSpinnerAdapter.remove(damageTable);
+						int position = damageTableFilterSpinner.getSelectedItemPosition();
+						if(position != -1) {
+							currentInstance = damageTableFilterSpinnerAdapter.getItem(position);
+						}
+						else {
+							currentInstance = new DamageTable();
+							currentInstance.initRows();
+							isNew = true;
+						}
+						copyItemToViews();
+						Toast.makeText(getActivity(), getString(R.string.toast_damage_table_deleted), Toast.LENGTH_SHORT).show();
+					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + damageTable, e);
 						String toastString = getString(R.string.toast_damage_table_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Collection<DamageResultRow> damageResultRow) {
-						if(damageResultRow != null) {
-							currentInstance = new DamageTable();
-							currentInstance.resetRows();
-							isNew = true;
-							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_damage_table_deleted), Toast.LENGTH_SHORT).show();
-						}
-					}
+					public void onNext(Collection<DamageResultRow> damageResultRow) {}
 				});
 	}
 
@@ -269,11 +276,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 								loadFilteredDamageResultRows(currentInstance);
 							}
 							else {
-								currentInstance.resetRows();
+								currentInstance.initRows();
 							}
 						}
 						else {
-							currentInstance.resetRows();
+							currentInstance.initRows();
 						}
 						damageResultsGridAdapter.clear();
 						damageResultsGridAdapter.addAll(currentInstance.getResultRows());
@@ -349,7 +356,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onCompleted() {
 						if(currentInstance.getResultRows() == null) {
-							currentInstance.resetRows();
+							currentInstance.initRows();
 						}
 						copyItemToViews();
 					}
@@ -383,9 +390,6 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						if(damageTable != null) {
 							deleteItem(damageTable);
 						}
-						damageTableFilterSpinnerAdapter.remove(damageTable);
-						currentInstance = damageTableFilterSpinnerAdapter.getItem(
-								damageTableFilterSpinner.getSelectedItemPosition());
 						dialog.dismiss();
 					}
 				})

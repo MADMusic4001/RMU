@@ -72,7 +72,7 @@ public class DamageTable {
         return id;
     }
 
-    public void resetRows() {
+    public void initRows() {
 		short start;
 		short end;
         resultRows = new ArrayList<>(37);
@@ -94,6 +94,22 @@ public class DamageTable {
         }
     }
 
+	private void convertRows() {
+		short offset;
+		resultRows = new ArrayList<>(37);
+
+		if(ballTable) {
+			offset = 50;
+		}
+		else {
+			offset = -50;
+		}
+		for(DamageResultRow damageResultRow : resultRows) {
+			damageResultRow.setRangeLowValue((short)(damageResultRow.getRangeLowValue() + offset));
+			damageResultRow.setRangeHighValue((short)(damageResultRow.getRangeHighValue() + offset));
+		}
+	}
+
     // Getters and setters
     public int getId() {
         return id;
@@ -111,6 +127,9 @@ public class DamageTable {
 		return ballTable;
 	}
 	public void setBallTable(boolean ballTable) {
+		if(this.ballTable != ballTable) {
+			convertRows();
+		}
 		this.ballTable = ballTable;
 	}
 	public Collection<DamageResultRow> getResultRows() {
