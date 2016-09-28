@@ -107,8 +107,15 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 
 	@Override
 	protected ContentValues getContentValues(Creature instance) {
-		ContentValues values = new ContentValues(5);
+		ContentValues values;
 
+		if(instance.getId() != -1) {
+			values = new ContentValues(5);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(4);
+		}
 		values.put(COLUMN_CURRENT_HITS, instance.getCurrentHits());
 		values.put(COLUMN_MAX_HITS, instance.getMaxHits());
 		values.put(COLUMN_LEVEL, instance.getLevel());

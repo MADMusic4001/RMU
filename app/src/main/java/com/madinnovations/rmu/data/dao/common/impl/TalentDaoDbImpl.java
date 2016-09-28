@@ -104,20 +104,27 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 
     @Override
     protected ContentValues getContentValues(Talent instance) {
-        ContentValues initialValues = new ContentValues(10);
+		ContentValues values;
 
-        initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
-        initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_IS_FLAW, instance.isFlaw());
-        initialValues.put(COLUMN_MIN_TIER, instance.getMinTier());
-        initialValues.put(COLUMN_MAX_TIER, instance.getMaxTier());
-        initialValues.put(COLUMN_DP_COST, instance.getDpCost());
-        initialValues.put(COLUMN_DP_COST_PER_TIER, instance.getDpCostPerTier());
-        initialValues.put(COLUMN_IS_SITUATIONAL, instance.isSituational());
-        initialValues.put(COLUMN_ACTION, instance.getAction().name());
+		if(instance.getId() != -1) {
+			values = new ContentValues(11);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(10);
+		}
+        values.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
+        values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+        values.put(COLUMN_IS_FLAW, instance.isFlaw());
+        values.put(COLUMN_MIN_TIER, instance.getMinTier());
+        values.put(COLUMN_MAX_TIER, instance.getMaxTier());
+        values.put(COLUMN_DP_COST, instance.getDpCost());
+        values.put(COLUMN_DP_COST_PER_TIER, instance.getDpCostPerTier());
+        values.put(COLUMN_IS_SITUATIONAL, instance.isSituational());
+        values.put(COLUMN_ACTION, instance.getAction().name());
 
-        return initialValues;
+        return values;
     }
 
     private boolean saveTalentParameters(SQLiteDatabase db, Talent instance) {

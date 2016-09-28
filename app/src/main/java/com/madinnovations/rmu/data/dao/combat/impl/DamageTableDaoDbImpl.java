@@ -69,6 +69,11 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl<DamageTable> implements 
     }
 
     @Override
+    protected String getSortString() {
+        return COLUMN_NAME;
+    }
+
+    @Override
     protected DamageTable cursorToEntity(@NonNull Cursor cursor) {
         DamageTable instance = new DamageTable();
 
@@ -79,8 +84,15 @@ public class DamageTableDaoDbImpl extends BaseDaoDbImpl<DamageTable> implements 
 
 	@Override
 	protected ContentValues getContentValues(DamageTable instance) {
-        ContentValues values = new ContentValues(2);
+        ContentValues values;
 
+        if(instance.getId() != -1) {
+            values = new ContentValues(2);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(1);
+        }
         values.put(COLUMN_NAME, instance.getName());
 
 		return values;

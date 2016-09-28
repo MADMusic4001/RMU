@@ -93,19 +93,26 @@ public class CriticalCodeDaoDbImpl extends BaseDaoDbImpl<CriticalCode> implement
 	protected CriticalCode cursorToEntity(@NonNull  Cursor cursor) {
 		CriticalCode instance = new CriticalCode();
 
-		if (cursor != null) {
-			instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-			instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
-			instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CODE)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+
 		return instance;
 	}
 
 	@Override
 	protected ContentValues getContentValues(CriticalCode instance) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(COLUMN_CODE, instance.getCode());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		return initialValues;
+		ContentValues values;
+
+		if(instance.getId() != -1) {
+			values = new ContentValues(3);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(2);
+		}
+		values.put(COLUMN_CODE, instance.getCode());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		return values;
 	}
 }

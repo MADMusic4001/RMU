@@ -112,28 +112,35 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 
 	@Override
 	protected ContentValues getContentValues(CreatureArchetype instance) {
-		ContentValues initialValues = new ContentValues(8);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_STAT1_IS_REALM, instance.isRealmStat1());
+		if(instance.getId() != -1) {
+			values = new ContentValues(9);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(8);
+		}
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_STAT1_IS_REALM, instance.isRealmStat1());
 		if(instance.getStat1() == null) {
-			initialValues.putNull(COLUMN_STAT1_ID);
+			values.putNull(COLUMN_STAT1_ID);
 		}
 		else {
-			initialValues.put(COLUMN_STAT1_ID, instance.getStat1().getId());
+			values.put(COLUMN_STAT1_ID, instance.getStat1().getId());
 		}
-		initialValues.put(COLUMN_STAT2_IS_REALM, instance.isRealmStat2());
+		values.put(COLUMN_STAT2_IS_REALM, instance.isRealmStat2());
 		if(instance.getStat2() == null) {
-			initialValues.putNull(COLUMN_STAT2_ID);
+			values.putNull(COLUMN_STAT2_ID);
 		}
 		else {
-			initialValues.put(COLUMN_STAT2_ID, instance.getStat2().getId());
+			values.put(COLUMN_STAT2_ID, instance.getStat2().getId());
 		}
-		initialValues.put(COLUMN_SPELLS, instance.getSpells());
-		initialValues.put(COLUMN_ROLES, instance.getRoles());
+		values.put(COLUMN_SPELLS, instance.getSpells());
+		values.put(COLUMN_ROLES, instance.getRoles());
 
-		return initialValues;
+		return values;
 	}
 
 	@Override

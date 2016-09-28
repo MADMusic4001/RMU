@@ -20,11 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.LruCache;
-
-import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -253,17 +249,8 @@ public abstract class BaseDaoDbImpl<T> {
 			db.beginTransaction();
 		}
 		try {
-			int maxId = 0;
 			for(T t : collection) {
 				result &= save(t, isNew);
-				if(getTableName().equals(DamageResultSchema.TABLE_NAME)) {
-					if(maxId < getId(t)) {
-						maxId = getId(t);
-					}
-				}
-			}
-			if(getTableName().equals(DamageResultSchema.TABLE_NAME)) {
-				Log.d("RMU", "max damageResult Id = " + maxId);
 			}
 			if(result && newTransaction) {
 				db.setTransactionSuccessful();
@@ -308,9 +295,6 @@ public abstract class BaseDaoDbImpl<T> {
 		}
 		try {
 			if(getId(instance) == -1 || isNew) {
-				if(getTableName().equals(DamageResultRowSchema.TABLE_NAME)) {
-					Log.d("RMU", "contentValues = " + contentValues);
-				}
 				setId(instance, (int)db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE));
 				result = (getId(instance) != -1);
 			}

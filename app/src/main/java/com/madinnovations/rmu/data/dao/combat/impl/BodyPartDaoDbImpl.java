@@ -110,9 +110,17 @@ public class BodyPartDaoDbImpl extends BaseDaoDbImpl<BodyPart> implements BodyPa
 
 	@Override
 	protected ContentValues getContentValues(BodyPart instance) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		return initialValues;
+        ContentValues values;
+
+        if(instance.getId() != -1) {
+            values = new ContentValues(3);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(2);
+        }
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		return values;
 	}
 }

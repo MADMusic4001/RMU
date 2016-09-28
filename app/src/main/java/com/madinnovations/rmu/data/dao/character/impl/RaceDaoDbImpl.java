@@ -140,7 +140,15 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
 	@Override
 	protected ContentValues getContentValues(Race instance) {
-		ContentValues values = new ContentValues();
+		ContentValues values;
+
+		if(instance.getId() != -1) {
+			values = new ContentValues(13);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(12);
+		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 		values.put(COLUMN_BONUS_DEVELOPMENT_POINTS, instance.getBonusDevelopmentPoints());

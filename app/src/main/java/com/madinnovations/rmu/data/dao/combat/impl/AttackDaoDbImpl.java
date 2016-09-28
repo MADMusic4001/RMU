@@ -35,8 +35,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class AttackDaoDbImpl extends BaseDaoDbImpl<Attack> implements AttackDao, AttackSchema {
-    DamageTableDao damageTableDao;
-    SpecializationDao specializationDao;
+    private DamageTableDao damageTableDao;
+    private SpecializationDao specializationDao;
 
     /**
      * Creates a new instance of AttackDaoDbImpl
@@ -95,8 +95,15 @@ public class AttackDaoDbImpl extends BaseDaoDbImpl<Attack> implements AttackDao,
 
 	@Override
 	protected ContentValues getContentValues(Attack instance) {
-        ContentValues values = new ContentValues(4);
+        ContentValues values;
 
+        if(instance.getId() != -1) {
+            values = new ContentValues(5);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(4);
+        }
         values.put(COLUMN_CODE, instance.getCode());
         values.put(COLUMN_NAME, instance.getName());
         values.put(COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());

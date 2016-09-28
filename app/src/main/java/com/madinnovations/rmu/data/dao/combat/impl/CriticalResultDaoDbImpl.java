@@ -41,8 +41,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> implements CriticalResultDao, CriticalResultSchema {
-    BodyPartDao bodyPartDao;
-    CriticalTypeDao criticalTypeDao;
+    private BodyPartDao bodyPartDao;
+    private CriticalTypeDao criticalTypeDao;
 
     /**
      * Creates a new instance of CriticalResultDaoDbImpl
@@ -108,28 +108,35 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 
 	@Override
 	protected ContentValues getContentValues(CriticalResult instance) {
-        ContentValues initialValues = new ContentValues(20);
+        ContentValues values;
 
-        initialValues.put(COLUMN_SEVERITY_CODE, String.valueOf(instance.getSeverityCode()));
-        initialValues.put(COLUMN_RESULT_TEXT, instance.getResultText());
-        initialValues.put(COLUMN_MIN_ROLL, instance.getMinRoll());
-        initialValues.put(COLUMN_MAX_ROLL, instance.getMaxRoll());
-        initialValues.put(COLUMN_BODY_PART_ID, instance.getBodyPart().getId());
-        initialValues.put(COLUMN_HITS, instance.getHits());
-        initialValues.put(COLUMN_BLEEDING, instance.getBleeding());
-        initialValues.put(COLUMN_FATIGUE, instance.getFatigue());
-        initialValues.put(COLUMN_BREAKAGE, instance.getBreakage());
-        initialValues.put(COLUMN_INJURY, instance.getInjury());
-        initialValues.put(COLUMN_DAZED, instance.getDazed());
-        initialValues.put(COLUMN_STUNNED, instance.getStunned());
-        initialValues.put(COLUMN_NO_PARRY, instance.getNoParry());
-        initialValues.put(COLUMN_STAGGERED, instance.isStaggered());
-        initialValues.put(COLUMN_KNOCK_BACK, instance.getKnockBack());
-        initialValues.put(COLUMN_PRONE, instance.isProne());
-        initialValues.put(COLUMN_GRAPPLED, instance.getGrappled());
-        initialValues.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
+        if(instance.getId() != -1) {
+            values = new ContentValues(19);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(18);
+        }
+        values.put(COLUMN_SEVERITY_CODE, String.valueOf(instance.getSeverityCode()));
+        values.put(COLUMN_RESULT_TEXT, instance.getResultText());
+        values.put(COLUMN_MIN_ROLL, instance.getMinRoll());
+        values.put(COLUMN_MAX_ROLL, instance.getMaxRoll());
+        values.put(COLUMN_BODY_PART_ID, instance.getBodyPart().getId());
+        values.put(COLUMN_HITS, instance.getHits());
+        values.put(COLUMN_BLEEDING, instance.getBleeding());
+        values.put(COLUMN_FATIGUE, instance.getFatigue());
+        values.put(COLUMN_BREAKAGE, instance.getBreakage());
+        values.put(COLUMN_INJURY, instance.getInjury());
+        values.put(COLUMN_DAZED, instance.getDazed());
+        values.put(COLUMN_STUNNED, instance.getStunned());
+        values.put(COLUMN_NO_PARRY, instance.getNoParry());
+        values.put(COLUMN_STAGGERED, instance.isStaggered());
+        values.put(COLUMN_KNOCK_BACK, instance.getKnockBack());
+        values.put(COLUMN_PRONE, instance.isProne());
+        values.put(COLUMN_GRAPPLED, instance.getGrappled());
+        values.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
 
-        return initialValues;
+        return values;
 	}
 
     @Override

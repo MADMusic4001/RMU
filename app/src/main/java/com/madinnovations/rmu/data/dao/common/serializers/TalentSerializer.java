@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.common.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -75,9 +73,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		Talent talent = new Talent();
 		in.beginObject();
 		while (in.hasNext()) {
-			Log.d("RMU", "TalentSerializer peek = " + in.peek());
 			String name = in.nextName();
-			Log.d("RMU", "TalentSerializer name = " + name);
 			switch (name) {
 				case COLUMN_ID:
 					talent.setId(in.nextInt());

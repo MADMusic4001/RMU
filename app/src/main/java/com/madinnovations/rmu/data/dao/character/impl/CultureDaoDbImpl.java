@@ -94,13 +94,20 @@ public class CultureDaoDbImpl extends BaseDaoDbImpl<Culture> implements CultureD
 
     @Override
 	protected ContentValues getContentValues(Culture instance) {
-        ContentValues initialValues = new ContentValues(3);
+        ContentValues values;
 
-        initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_TRADES_AND_CRAFTS_RANKS, instance.getTradesAndCraftsRanks());
+        if(instance.getId() != -1) {
+            values = new ContentValues(4);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(3);
+        }
+        values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_TRADES_AND_CRAFTS_RANKS, instance.getTradesAndCraftsRanks());
 
-        return initialValues;
+        return values;
 	}
 
     @Override

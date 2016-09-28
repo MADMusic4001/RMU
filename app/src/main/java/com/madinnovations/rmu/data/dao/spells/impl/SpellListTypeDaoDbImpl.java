@@ -77,8 +77,15 @@ public class SpellListTypeDaoDbImpl extends BaseDaoDbImpl<SpellListType> impleme
 
 	@Override
 	protected ContentValues getContentValues(SpellListType instance) {
-		ContentValues values = new ContentValues(2);
+		ContentValues values;
 
+		if(instance.getId() != -1) {
+			values = new ContentValues(3);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(2);
+		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 

@@ -106,16 +106,23 @@ public class SizeDaoDbImpl extends BaseDaoDbImpl<Size> implements SizeDao, SizeS
 
 	@Override
 	protected ContentValues getContentValues(Size instance) {
-		ContentValues initialValues = new ContentValues(8);
+		ContentValues values;
 
-		initialValues.put(COLUMN_CODE, instance.getCode());
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_EXAMPLES, instance.getExamples());
-		initialValues.put(COLUMN_MIN_HEIGHT, instance.getMinHeight());
-		initialValues.put(COLUMN_MAX_HEIGHT, instance.getMaxHeight());
-		initialValues.put(COLUMN_MIN_WEIGHT, instance.getMinWeight());
-		initialValues.put(COLUMN_MAX_WEIGHT, instance.getMaxWeight());
+		if(instance.getId() != -1) {
+			values = new ContentValues(8);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(7);
+		}
+		values.put(COLUMN_CODE, instance.getCode());
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_EXAMPLES, instance.getExamples());
+		values.put(COLUMN_MIN_HEIGHT, instance.getMinHeight());
+		values.put(COLUMN_MAX_HEIGHT, instance.getMaxHeight());
+		values.put(COLUMN_MIN_WEIGHT, instance.getMinWeight());
+		values.put(COLUMN_MAX_WEIGHT, instance.getMaxWeight());
 
-		return initialValues;
+		return values;
 	}
 }

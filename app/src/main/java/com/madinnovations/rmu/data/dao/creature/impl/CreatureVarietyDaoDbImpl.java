@@ -169,34 +169,41 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 
 	@Override
 	protected ContentValues getContentValues(CreatureVariety instance) {
-		ContentValues initialValues = new ContentValues(26);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_TYPE_ID, instance.getType().getId());
-		initialValues.put(COLUMN_TYPICAL_LEVEL, instance.getTypicalLevel());
-		initialValues.put(COLUMN_LEVEL_SPREAD, String.valueOf(instance.getLevelSpread()));
-		initialValues.put(COLUMN_HEIGHT, instance.getHeight());
-		initialValues.put(COLUMN_LENGTH, instance.getLength());
-		initialValues.put(COLUMN_WEIGHT, instance.getWeight());
-		initialValues.put(COLUMN_HEALING_RATE, instance.getHealingRate());
-		initialValues.put(COLUMN_BASE_HITS, instance.getBaseHits());
-		initialValues.put(COLUMN_BASE_ENDURANCE, instance.getBaseEndurance());
-		initialValues.put(COLUMN_SIZE_ID, instance.getSize().getId());
-		initialValues.put(COLUMN_ARMOR_TYPE, instance.getArmorType());
-		initialValues.put(COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
-		initialValues.put(COLUMN_BASE_CHANNELING_RR, instance.getBaseChannellingRR());
-		initialValues.put(COLUMN_BASE_ESSENCE_RR, instance.getBaseEssenceRR());
-		initialValues.put(COLUMN_BASE_MENTALISM_RR, instance.getBaseMentalismRR());
-		initialValues.put(COLUMN_BASE_PHYSICAL_RR, instance.getBasePhysicalRR());
-		initialValues.put(COLUMN_BASE_FEAR_RR, instance.getBaseFearRR());
-		initialValues.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
-		initialValues.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
-		initialValues.put(COLUMN_BASE_STRIDE, instance.getBaseStride());
-		initialValues.put(COLUMN_LEFTOVER_DP, instance.getLeftoverDP());
-		initialValues.put(COLUMN_OUTLOOK_ID, instance.getOutlook().getId());
-		initialValues.put(COLUMN_ATTACK_SEQUENCE, instance.getAttackSequence());
-		return initialValues;
+		if(instance.getId() != -1) {
+			values = new ContentValues(27);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(26);
+		}
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_TYPE_ID, instance.getType().getId());
+		values.put(COLUMN_TYPICAL_LEVEL, instance.getTypicalLevel());
+		values.put(COLUMN_LEVEL_SPREAD, String.valueOf(instance.getLevelSpread()));
+		values.put(COLUMN_HEIGHT, instance.getHeight());
+		values.put(COLUMN_LENGTH, instance.getLength());
+		values.put(COLUMN_WEIGHT, instance.getWeight());
+		values.put(COLUMN_HEALING_RATE, instance.getHealingRate());
+		values.put(COLUMN_BASE_HITS, instance.getBaseHits());
+		values.put(COLUMN_BASE_ENDURANCE, instance.getBaseEndurance());
+		values.put(COLUMN_SIZE_ID, instance.getSize().getId());
+		values.put(COLUMN_ARMOR_TYPE, instance.getArmorType());
+		values.put(COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
+		values.put(COLUMN_BASE_CHANNELING_RR, instance.getBaseChannellingRR());
+		values.put(COLUMN_BASE_ESSENCE_RR, instance.getBaseEssenceRR());
+		values.put(COLUMN_BASE_MENTALISM_RR, instance.getBaseMentalismRR());
+		values.put(COLUMN_BASE_PHYSICAL_RR, instance.getBasePhysicalRR());
+		values.put(COLUMN_BASE_FEAR_RR, instance.getBaseFearRR());
+		values.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
+		values.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
+		values.put(COLUMN_BASE_STRIDE, instance.getBaseStride());
+		values.put(COLUMN_LEFTOVER_DP, instance.getLeftoverDP());
+		values.put(COLUMN_OUTLOOK_ID, instance.getOutlook().getId());
+		values.put(COLUMN_ATTACK_SEQUENCE, instance.getAttackSequence());
+		return values;
 	}
 
 	@Override

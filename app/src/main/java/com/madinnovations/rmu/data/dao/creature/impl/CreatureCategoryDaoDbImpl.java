@@ -114,12 +114,19 @@ public class CreatureCategoryDaoDbImpl extends BaseDaoDbImpl<CreatureCategory>
 
 	@Override
 	protected ContentValues getContentValues(CreatureCategory instance) {
-		ContentValues initialValues = new ContentValues(3);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+		if(instance.getId() != -1) {
+			values = new ContentValues(3);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(2);
+		}
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 
-		return initialValues;
+		return values;
 	}
 
 	@Override

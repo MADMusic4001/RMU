@@ -108,20 +108,27 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 
 	@Override
 	protected ContentValues getContentValues(@NonNull SpellList instance) {
-		ContentValues initialValues = new ContentValues(7);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		if(instance.getNotes() == null) {
-			initialValues.putNull(COLUMN_NOTES);
+		if(instance.getId() != -1) {
+			values = new ContentValues(7);
+			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			initialValues.put(COLUMN_NOTES, instance.getNotes());
+			values = new ContentValues(6);
 		}
-		initialValues.put(COLUMN_REALM_ID, instance.getRealm().getId());
-		initialValues.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
-		initialValues.put(COLUMN_PROFESSION_ID, instance.getProfession() != null ? instance.getProfession().getId() : null);
-		initialValues.put(COLUMN_SPELL_LIST_TYPE_ID, instance.getSpellListType().getId());
+		values.put(COLUMN_NAME, instance.getName());
+		if(instance.getNotes() == null) {
+			values.putNull(COLUMN_NOTES);
+		}
+		else {
+			values.put(COLUMN_NOTES, instance.getNotes());
+		}
+		values.put(COLUMN_REALM_ID, instance.getRealm().getId());
+		values.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
+		values.put(COLUMN_PROFESSION_ID, instance.getProfession() != null ? instance.getProfession().getId() : null);
+		values.put(COLUMN_SPELL_LIST_TYPE_ID, instance.getSpellListType().getId());
 
-		return initialValues;
+		return values;
 	}
 }

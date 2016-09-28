@@ -146,15 +146,22 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
 
     @Override
     protected ContentValues getContentValues(SkillCategory instance) {
-        ContentValues initialValues = new ContentValues(5);
+        ContentValues values;
 
-        initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_IS_COMBAT, instance.isCombat());
-        initialValues.put(COLUMN_NO_STATS, instance.isNoStats());
-        initialValues.put(COLUMN_REALM_STATS, instance.isRealmStats());
+        if(instance.getId() != -1) {
+            values = new ContentValues(6);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(5);
+        }
+        values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+        values.put(COLUMN_IS_COMBAT, instance.isCombat());
+        values.put(COLUMN_NO_STATS, instance.isNoStats());
+        values.put(COLUMN_REALM_STATS, instance.isRealmStats());
 
-        return initialValues;
+        return values;
     }
 
     @Override

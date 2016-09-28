@@ -428,10 +428,15 @@ public class ImportExportRxHandler {
 										case DamageResult.JSON_NAME:
 											List<DamageResult> damageResults = new ArrayList<>();
 											jsonReader.beginArray();
+											int maxId = 0;
 											while (jsonReader.hasNext()) {
 												DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
 												damageResults.add(damageResult);
+												if(maxId < damageResult.getId()) {
+													maxId = damageResult.getId();
+												}
 											}
+											Log.d(LOG_TAG, "Max damageResult ID =  " + maxId);
 											damageResultSerializer = null;
 											jsonReader.endArray();
 											damageResultDao.save(damageResults, true);

@@ -102,12 +102,19 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 
     @Override
     protected ContentValues getContentValues(Item instance) {
-		ContentValues initialValues = new ContentValues(4);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_WEIGHT, instance.getWeight());
+		if(instance.getId() != -1) {
+			values = new ContentValues(4);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(3);
+		}
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_WEIGHT, instance.getWeight());
 
-		return initialValues;
+		return values;
     }
 }

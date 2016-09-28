@@ -99,29 +99,36 @@ public class SpellDaoDbImpl extends BaseDaoDbImpl<Spell> implements SpellDao, Sp
 
 	@Override
 	protected ContentValues getContentValues(Spell instance) {
-		ContentValues initialValues = new ContentValues(9);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		initialValues.put(COLUMN_SPELL_LIST_ID, instance.getSpellList().getId());
-		initialValues.put(COLUMN_SPELL_TYPE_ID, instance.getSpellType().getId());
+		if(instance.getId() != -1) {
+			values = new ContentValues(10);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(9);
+		}
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		values.put(COLUMN_SPELL_LIST_ID, instance.getSpellList().getId());
+		values.put(COLUMN_SPELL_TYPE_ID, instance.getSpellType().getId());
 		if(instance.getSpellSubType() == null) {
-			initialValues.putNull(COLUMN_SPELL_SUB_TYPE_ID);
+			values.putNull(COLUMN_SPELL_SUB_TYPE_ID);
 		}
 		else {
-			initialValues.put(COLUMN_SPELL_SUB_TYPE_ID, instance.getSpellSubType().getId());
+			values.put(COLUMN_SPELL_SUB_TYPE_ID, instance.getSpellSubType().getId());
 		}
-		initialValues.put(COLUMN_AREA_OF_EFFECT, instance.getAreaOfEffect().name());
-		initialValues.put(COLUMN_DURATION, instance.getDuration().name());
-		initialValues.put(COLUMN_RANGE, instance.getRange().name());
+		values.put(COLUMN_AREA_OF_EFFECT, instance.getAreaOfEffect().name());
+		values.put(COLUMN_DURATION, instance.getDuration().name());
+		values.put(COLUMN_RANGE, instance.getRange().name());
 		if(instance.getRangeParam() == null) {
-			initialValues.putNull(COLUMN_RANGE_PARAM);
+			values.putNull(COLUMN_RANGE_PARAM);
 		}
 		else {
-			initialValues.put(COLUMN_RANGE_PARAM, instance.getRangeParam());
+			values.put(COLUMN_RANGE_PARAM, instance.getRangeParam());
 		}
 
-		return initialValues;
+		return values;
 	}
 
 	@Override

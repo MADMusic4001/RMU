@@ -94,17 +94,24 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 
     @Override
     protected ContentValues getContentValues(Skill instance) {
-        ContentValues initialValues = new ContentValues(6);
+		ContentValues values;
 
-        initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
-        initialValues.put(COLUMN_REQUIRES_SPECIALIZATION, instance.isRequiresSpecialization());
-        initialValues.put(COLUMN_USE_CATEGORY_STATS, instance.isUseCategoryStats());
-		initialValues.put(COLUMN_REQUIRES_CONCENTRATION, instance.isRequiresConcentration());
-		initialValues.put(COLUMN_IS_LORE, instance.isLore());
+		if(instance.getId() != -1) {
+			values = new ContentValues(8);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(7);
+		}
+        values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+        values.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
+        values.put(COLUMN_REQUIRES_SPECIALIZATION, instance.isRequiresSpecialization());
+        values.put(COLUMN_USE_CATEGORY_STATS, instance.isUseCategoryStats());
+		values.put(COLUMN_REQUIRES_CONCENTRATION, instance.isRequiresConcentration());
+		values.put(COLUMN_IS_LORE, instance.isLore());
 
-        return initialValues;
+        return values;
     }
 
     @Override

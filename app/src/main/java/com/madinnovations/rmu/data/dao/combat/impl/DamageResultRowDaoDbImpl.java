@@ -40,8 +40,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> implements DamageResultRowDao, DamageResultRowSchema {
-    DamageTableDao damageTableDao;
-    DamageResultDao damageResultDao;
+    private DamageTableDao damageTableDao;
+    private DamageResultDao damageResultDao;
 
     /**
      * Creates a new instance of DamageResultRowDaoDbImpl
@@ -87,13 +87,21 @@ public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> imp
 
 	@Override
 	protected ContentValues getContentValues(DamageResultRow instance) {
-        ContentValues values = new ContentValues(14);
+        ContentValues values;
 
+        if(instance.getId() != -1) {
+            values = new ContentValues(14);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(13);
+        }
         values.put(COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
         values.put(COLUMN_RANGE_LOW_VALUE, instance.getRangeLowValue());
         values.put(COLUMN_RANGE_HIGH_VALUE, instance.getRangeHighValue());
         for(int i = 0; i < 10; i++) {
-            values.put(COLUMN_AT_RESULT_IDS[i], instance.getDamageResults()[i] != null ? instance.getDamageResults()[i].getId() : null);
+            values.put(COLUMN_AT_RESULT_IDS[i], instance.getDamageResults()[i] != null ?
+                                                instance.getDamageResults()[i].getId() : null);
         }
 
 		return values;

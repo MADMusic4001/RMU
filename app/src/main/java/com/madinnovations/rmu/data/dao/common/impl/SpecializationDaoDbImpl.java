@@ -90,14 +90,21 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
 
     @Override
     protected ContentValues getContentValues(Specialization instance) {
-        ContentValues initialValues = new ContentValues(5);
+        ContentValues values;
 
-        initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_SKILL_ID, instance.getSkill().getId());
-        initialValues.put(COLUMN_SKILL_STATS, instance.isUseSkillStats());
+        if(instance.getId() != -1) {
+            values = new ContentValues(5);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(4);
+        }
+        values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+        values.put(COLUMN_SKILL_ID, instance.getSkill().getId());
+        values.put(COLUMN_SKILL_STATS, instance.isUseSkillStats());
 
-        return initialValues;
+        return values;
     }
 
     @Override

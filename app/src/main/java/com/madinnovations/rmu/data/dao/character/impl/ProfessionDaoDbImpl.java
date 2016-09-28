@@ -113,24 +113,31 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 	@Override
 	protected ContentValues getContentValues(Profession instance) {
-		ContentValues initialValues = new ContentValues(4);
+		ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-		if(instance.getRealm1() != null) {
-			initialValues.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
+		if(instance.getId() != -1) {
+			values = new ContentValues(5);
+			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			initialValues.putNull(COLUMN_REALM1_ID);
+			values = new ContentValues(4);
+		}
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		if(instance.getRealm1() != null) {
+			values.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
+		}
+		else {
+			values.putNull(COLUMN_REALM1_ID);
 		}
 		if(instance.getRealm2() != null) {
-			initialValues.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
+			values.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
 		}
 		else {
-			initialValues.putNull(COLUMN_REALM2_ID);
+			values.putNull(COLUMN_REALM2_ID);
 		}
 
-		return initialValues;
+		return values;
 	}
 
 	@Override

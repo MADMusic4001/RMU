@@ -136,9 +136,15 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 
 	@Override
 	protected ContentValues getContentValues(Character instance) {
-		ContentValues values = new ContentValues(11);
+		ContentValues values;
 
-		values.put(COLUMN_ID, instance.getId());
+		if(instance.getId() != -1) {
+			values = new ContentValues(10);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(9);
+		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 		values.put(COLUMN_RACE_ID, instance.getRace().getId());

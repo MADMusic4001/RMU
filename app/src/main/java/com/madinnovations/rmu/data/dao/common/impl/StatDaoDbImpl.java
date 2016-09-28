@@ -91,12 +91,19 @@ public class StatDaoDbImpl extends BaseDaoDbImpl<Stat> implements StatDao, StatS
 
 	@Override
 	protected ContentValues getContentValues(Stat instance) {
-		ContentValues initialValues = new ContentValues(4);
+		ContentValues values;
 
-		initialValues.put(COLUMN_ABBREVIATION, instance.getAbbreviation());
-		initialValues.put(COLUMN_NAME, instance.getName());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+		if(instance.getId() != -1) {
+			values = new ContentValues(4);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(3);
+		}
+		values.put(COLUMN_ABBREVIATION, instance.getAbbreviation());
+		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 
-		return initialValues;
+		return values;
 	}
 }

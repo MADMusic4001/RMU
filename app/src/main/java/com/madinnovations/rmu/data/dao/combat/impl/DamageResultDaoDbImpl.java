@@ -34,7 +34,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implements DamageResultDao, DamageResultSchema {
-    CriticalTypeDao criticalTypeDao;
+    private CriticalTypeDao criticalTypeDao;
 
     /**
      * Creates a new instance of DamageResultDaoDbImpl
@@ -93,8 +93,15 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
 
 	@Override
 	protected ContentValues getContentValues(DamageResult instance) {
-        ContentValues values = new ContentValues(4);
+        ContentValues values;
 
+        if(instance.getId() != -1) {
+			values = new ContentValues(5);
+			values.put(COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(4);
+		}
         values.put(COLUMN_HITS, instance.getHits());
         if(instance.getCriticalSeverity() == null || instance.getCriticalType() == null) {
             values.putNull(COLUMN_CRITICAL_SEVERITY);

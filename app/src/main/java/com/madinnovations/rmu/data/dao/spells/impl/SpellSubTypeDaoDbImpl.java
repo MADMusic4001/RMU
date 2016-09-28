@@ -111,12 +111,19 @@ public class SpellSubTypeDaoDbImpl extends BaseDaoDbImpl<SpellSubType> implement
 
 	@Override
 	protected ContentValues getContentValues(SpellSubType instance) {
-		ContentValues initialValues = new ContentValues(3);
+        ContentValues values;
 
-		initialValues.put(COLUMN_NAME, instance.getName());
-        initialValues.put(COLUMN_CODE, instance.getCode().toString());
-		initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
+        if(instance.getId() != -1) {
+            values = new ContentValues(4);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(3);
+        }
+		values.put(COLUMN_NAME, instance.getName());
+        values.put(COLUMN_CODE, instance.getCode().toString());
+		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 
-		return initialValues;
+		return values;
 	}
 }

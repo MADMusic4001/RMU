@@ -84,14 +84,21 @@ public class BiomesDaoDbImpl extends BaseDaoDbImpl<Biome> implements BiomeDao, B
 
     @Override
     protected ContentValues getContentValues(Biome instance) {
-        ContentValues initialValues = new ContentValues(6);
+        ContentValues values;
 
-        initialValues.put(COLUMN_CODE, String.valueOf(instance.getCode()));
-        initialValues.put(COLUMN_DESCRIPTION, instance.getDescription());
-        initialValues.put(COLUMN_HUMIDITY, instance.getHumidity());
-        initialValues.put(COLUMN_FLORA, instance.getFlora());
-        initialValues.put(COLUMN_FAUNA, instance.getFauna());
+        if(instance.getId() != -1) {
+            values = new ContentValues(6);
+            values.put(COLUMN_ID, instance.getId());
+        }
+        else {
+            values = new ContentValues(5);
+        }
+        values.put(COLUMN_CODE, String.valueOf(instance.getCode()));
+        values.put(COLUMN_DESCRIPTION, instance.getDescription());
+        values.put(COLUMN_HUMIDITY, instance.getHumidity());
+        values.put(COLUMN_FLORA, instance.getFlora());
+        values.put(COLUMN_FAUNA, instance.getFauna());
 
-        return initialValues;
+        return values;
     }
 }

@@ -57,6 +57,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for damage results.
  */
 public class DamageResultsFragment extends Fragment implements EditTextUtils.ValuesCallback {
+	private static final String LOG_TAG = "DamageResultsFragment";
 	@Inject
 	protected DamageResultRowRxHandler  damageResultRowRxHandler;
 	@Inject
@@ -164,7 +165,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("DamageResultsFragment", "Exception saving DamageTable", e);
+						Log.e(LOG_TAG, "Exception saving DamageTable", e);
 					}
 					@Override
 					public void onNext(DamageTable savedDamageTable) {
@@ -200,7 +201,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("DamageResultsFragment", "Exception when deleting: " + item, e);
+						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_damage_result_row_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -249,7 +250,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("DamageResultsFragment", "Exception caught getting all DamageResult instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all DamageResult instances", e);
 						Toast.makeText(DamageResultsFragment.this.getActivity(),
 								getString(R.string.toast_damage_tables_load_failed),
 								Toast.LENGTH_SHORT).show();
@@ -311,7 +312,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("DamageResultsFragment", "Exception caught getting all DamageResultRow instances", e);
+						Log.e(LOG_TAG, "Exception caught getting all DamageResultRow instances", e);
 						Toast.makeText(DamageResultsFragment.this.getActivity(),
 								getString(R.string.toast_damage_result_rows_load_failed),
 								Toast.LENGTH_SHORT).show();
