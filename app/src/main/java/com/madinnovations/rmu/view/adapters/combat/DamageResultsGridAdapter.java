@@ -23,10 +23,11 @@ import android.support.annotation.NonNull;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -53,9 +54,11 @@ import rx.schedulers.Schedulers;
 /**
  * Populates a ListView with {@link DamageResultRow} information
  */
-public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
+public class DamageResultsGridAdapter extends BaseAdapter {
 	private static final String LOG_TAG = "DamageResultsGridAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_damage_result_row;
+	private SparseArray<DamageResultRow> data;
+	private Context context;
 	private DamageResultRxHandler damageResultRxHandler;
 	private DamageResultRowRxHandler damageResultRowRxHandler;
 	private LayoutInflater layoutInflater;
@@ -73,7 +76,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	DamageResultsGridAdapter(CampaignActivity context, DamageResultRxHandler damageResultRxHandler,
 									DamageResultRowRxHandler damageResultRowRxHandler,
 									CriticalTypeRxHandler criticalTypeRxHandler) {
-		super(context, LAYOUT_RESOURCE_ID);
+		this.context = context;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.damageResultRxHandler = damageResultRxHandler;
 		this.damageResultRowRxHandler = damageResultRowRxHandler;
@@ -105,6 +108,39 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 				});
 	}
 
+	@Override
+	public int getCount() {
+		int result = 0;
+
+		if(data != null) {
+			result = data.size();
+		}
+
+		return result;
+	}
+
+	@Override
+	public Object getItem(int position) {
+		DamageResultRow result = null;
+
+		if(data != null) {
+			result = data.valueAt(position);
+		}
+
+		return result;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		long result = 0;
+
+		if(data != null) {
+			result = data.keyAt(position);
+		}
+
+		return result;
+	}
+
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -133,11 +169,11 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		DamageResultRow resultsRow = getItem(position);
+		DamageResultRow resultsRow = (DamageResultRow)getItem(position);
 		holder.damageResultRow = resultsRow;
 
 		if(resultsRow != null) {
-			String rollString = String.format(getContext().getString(R.string.min_max_roll_value), resultsRow.getRangeLowValue(),
+			String rollString = String.format(context.getString(R.string.min_max_roll_value), resultsRow.getRangeLowValue(),
 											  resultsRow.getRangeHighValue());
 			holder.leftRollView.setText(rollString);
 			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(1)));
@@ -154,6 +190,16 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		}
 
 		return rowView;
+	}
+
+	public void addAll(SparseArray<DamageResultRow> data) {
+		this.data = data;
+	}
+
+	public void clear() {
+		if(data != null) {
+			data.clear();
+		}
 	}
 
 	private CriticalType getTypeForCode(char code) {
@@ -181,7 +227,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 						if(toast != null) {
 							toast.cancel();
 						}
-						toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_delete_failed),
+						toast = Toast.makeText(context, context.getString(R.string.toast_damage_result_delete_failed),
 								Toast.LENGTH_SHORT);
 						toast.show();
 					}
@@ -190,7 +236,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 						if(toast != null) {
 							toast.cancel();
 						}
-						toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_deleted),
+						toast = Toast.makeText(context, context.getString(R.string.toast_damage_result_deleted),
 								Toast.LENGTH_SHORT);
 						toast.show();
 					}
@@ -294,7 +340,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			Matcher matcher = pattern.matcher(text);
 			matches = matcher.matches();
 			if(!matches) {
-				view.setError(getContext().getString(R.string.validation_damage_results_format_invalid));
+				view.setError(context.getString(R.string.validation_damage_results_format_invalid));
 			}
 			else {
 				if(matcher.groupCount() >= 1 && text.length() > 0) {
@@ -394,7 +440,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getContext(),  getContext().getString(R.string.toast_damage_result_save_failed),
+							toast = Toast.makeText(context,  context.getString(R.string.toast_damage_result_save_failed),
 									Toast.LENGTH_SHORT);
 							toast.show();
 						}
@@ -403,7 +449,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getContext(),  getContext().getString(R.string.toast_damage_result_saved),
+							toast = Toast.makeText(context,  context.getString(R.string.toast_damage_result_saved),
 									Toast.LENGTH_SHORT);
 							toast.show();
 						}
@@ -422,7 +468,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_save_failed),
+							toast = Toast.makeText(context, context.getString(R.string.toast_damage_result_row_save_failed),
 									Toast.LENGTH_SHORT);
 							toast.show();
 						}
@@ -431,7 +477,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_saved),
+							toast = Toast.makeText(context, context.getString(R.string.toast_damage_result_row_saved),
 									Toast.LENGTH_SHORT);
 							toast.show();
 						}
@@ -453,7 +499,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_save_failed),
+							toast = Toast.makeText(context, context.getString(R.string.toast_damage_result_row_save_failed),
 									Toast.LENGTH_SHORT);
 							toast.show();
 						}
@@ -462,7 +508,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getContext(), getContext().getString(R.string.toast_damage_result_row_saved),
+							toast = Toast.makeText(context, context.getString(R.string.toast_damage_result_row_saved),
 									Toast.LENGTH_SHORT);
 							toast.show();
 						}
@@ -498,7 +544,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 
 			Matcher matcher = pattern.matcher(builder);
 			if(matcher.matches()) {
-				View focused = ((Activity)DamageResultsGridAdapter.this.getContext()).getCurrentFocus();
+				View focused = ((Activity)context).getCurrentFocus();
 				if(focused instanceof EditText) {
 					((EditText) focused).setError(null);
 				}

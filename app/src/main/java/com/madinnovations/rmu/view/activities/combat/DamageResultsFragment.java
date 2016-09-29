@@ -44,7 +44,6 @@ import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
@@ -207,7 +206,8 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onNext(DamageTable savedDamageTable) {
 						if (wasNew) {
-							for(DamageResultRow row : currentInstance.getResultRows()) {
+							for(int i = 0; i < currentInstance.getResultRows().size(); i++) {
+								DamageResultRow row = currentInstance.getResultRows().valueAt(i);
 								row.setDamageTable(savedDamageTable);
 								damageResultRowRxHandler.save(row)
 										.observeOn(AndroidSchedulers.mainThread())
@@ -313,8 +313,8 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 				DamageTable newDamageTable = damageTableFilterSpinnerAdapter.getItem(position);
 				if(newDamageTable != null) {
 					currentInstance = newDamageTable;
-					damageTableNameEdit.setText(currentInstance.getName());
-					loadFilteredDamageResultRows(currentInstance);
+//					addMissingDamageResultRows();
+					copyItemToViews();
 				}
 			}
 			@Override
@@ -322,6 +322,13 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 			}
 		});
 	}
+
+//	private void addMissingDamageResultRows() {
+//		for(int i = 0; i < currentInstance.getResultRows().size(); i++) {
+//			currentInstance.getResultRows()
+//
+//		}
+//	}
 
 	private void initDeleteTableButton(View layout) {
 		ImageButton deleteTableButton = (ImageButton)layout.findViewById(R.id.delete_table_button);
@@ -342,7 +349,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		damageResultsGridView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				DamageResultRow newDamageResultRow = damageResultsGridAdapter.getItem(position);
+				DamageResultRow newDamageResultRow = (DamageResultRow)damageResultsGridAdapter.getItem(position);
 				if(newDamageResultRow != null) {
 					loadFilteredDamageResultRows(newDamageResultRow.getDamageTable());
 				}
@@ -372,7 +379,9 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					}
 					@Override
 					public void onNext(Collection<DamageResultRow> damageResultRows) {
-						currentInstance.setResultRows(damageResultRows);
+						for(DamageResultRow row : damageResultRows) {
+							currentInstance.getResultRows().put(row.getRangeHighValue(), row);
+						}
 						Toast.makeText(DamageResultsFragment.this.getActivity(),
 									   String.format(
 											   getString(R.string.toast_damage_result_rows_loaded),

@@ -16,21 +16,19 @@
 package com.madinnovations.rmu.data.entities.combat;
 
 import android.util.Log;
-
-import com.madinnovations.rmu.view.RMUAppException;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import android.util.SparseArray;
 
 /**
  * Damage table attributes
  */
 public class DamageTable {
+	private static final int ROW_COUNT = 37;
     public static final String JSON_NAME = "DamageTables";
     private int id = -1;
     private String name = null;
     private boolean ballTable = false;
-    private Collection<DamageResultRow> resultRows = new ArrayList<>();
+	private SparseArray<DamageResultRow> resultRows = new SparseArray<>(ROW_COUNT);
+//    private Collection<DamageResultRow> resultRows = new ArrayList<>();
 
 	/**
      * Creates a new DamageTable instance
@@ -79,7 +77,6 @@ public class DamageTable {
     public void initRows() {
 		short start;
 		short end;
-        resultRows = new ArrayList<>(37);
 
 		if(ballTable) {
 			start = 125;
@@ -89,12 +86,15 @@ public class DamageTable {
 			start = 175;
 			end = 65;
 		}
-        for(short i = start; i > end; i -= 3) {
-            DamageResultRow row = new DamageResultRow();
-            row.setDamageTable(this);
-            row.setRangeLowValue((short)(i-2));
-            row.setRangeHighValue(i);
-            resultRows.add(row);
+        for(short rollValue = start; rollValue > end; rollValue -= 3) {
+            DamageResultRow row = resultRows.get(rollValue);
+			if(row == null) {
+				row = new DamageResultRow();
+				row.setDamageTable(this);
+				row.setRangeLowValue((short)(rollValue-2));
+				row.setRangeHighValue(rollValue);
+				resultRows.put(rollValue, row);
+			}
         }
     }
 
@@ -102,7 +102,6 @@ public class DamageTable {
 		short min = 255, max = 0;
 		Log.d("RMU", "converting rows");
 		short offset;
-		resultRows = new ArrayList<>(37);
 
 		if(ballTable) {
 			offset = 50;
@@ -110,7 +109,8 @@ public class DamageTable {
 		else {
 			offset = -50;
 		}
-		for(DamageResultRow damageResultRow : resultRows) {
+		for(int i = 0; i < resultRows.size(); i++) {
+			DamageResultRow damageResultRow = resultRows.valueAt(i);
 			damageResultRow.setRangeLowValue((short)(damageResultRow.getRangeLowValue() + offset));
 			damageResultRow.setRangeHighValue((short)(damageResultRow.getRangeHighValue() + offset));
 			if(min <= damageResultRow.getRangeLowValue()) {
@@ -120,7 +120,6 @@ public class DamageTable {
 				max = damageResultRow.getRangeHighValue();
 			}
 		}
-		Log.d("RMU", "max = " + max + ", min = " + min);
 	}
 
     // Getters and setters
@@ -145,10 +144,10 @@ public class DamageTable {
 		}
 		this.ballTable = ballTable;
 	}
-	public Collection<DamageResultRow> getResultRows() {
+	public SparseArray<DamageResultRow> getResultRows() {
         return resultRows;
     }
-    public void setResultRows(Collection<DamageResultRow> resultRows) {
+    public void setResultRows(SparseArray<DamageResultRow> resultRows) {
         this.resultRows = resultRows;
     }
 }
