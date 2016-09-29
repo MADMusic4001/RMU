@@ -40,9 +40,11 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
+import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
@@ -62,6 +64,8 @@ import rx.schedulers.Schedulers;
  */
 public class DamageResultsFragment extends Fragment implements EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback {
 	private static final String LOG_TAG = "DamageResultsFragment";
+	@Inject
+	protected DamageResultRxHandler     damageResultRxHandler;
 	@Inject
 	protected DamageResultRowRxHandler  damageResultRowRxHandler;
 	@Inject
@@ -228,7 +232,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		damageResultRowRxHandler.deleteAllForDamageTable(damageTable)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<DamageResultRow>>() {
+				.subscribe(new Subscriber<Boolean>() {
 					@Override
 					public void onCompleted() {
 						damageTableFilterSpinnerAdapter.remove(damageTable);
@@ -251,7 +255,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Collection<DamageResultRow> damageResultRow) {}
+					public void onNext(Boolean successful) {}
 				});
 	}
 
@@ -358,7 +362,6 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						if(currentInstance.getResultRows() == null) {
 							currentInstance.initRows();
 						}
-						copyItemToViews();
 					}
 					@Override
 					public void onError(Throwable e) {
@@ -370,9 +373,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onNext(Collection<DamageResultRow> damageResultRows) {
 						currentInstance.setResultRows(damageResultRows);
-						String toastString;
-						toastString = String.format(getString(R.string.toast_damage_result_rows_loaded), damageResultRows.size());
-						Toast.makeText(DamageResultsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(DamageResultsFragment.this.getActivity(),
+									   String.format(
+											   getString(R.string.toast_damage_result_rows_loaded),
+											   damageResultRows.size()),
+									   Toast.LENGTH_SHORT).show();
 					}
 				});
 	}

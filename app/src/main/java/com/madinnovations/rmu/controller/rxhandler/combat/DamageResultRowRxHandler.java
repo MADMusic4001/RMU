@@ -18,10 +18,10 @@ package com.madinnovations.rmu.controller.rxhandler.combat;
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
-import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -41,7 +41,6 @@ public class DamageResultRowRxHandler {
 	private RMUDatabaseHelper helper;
 	private DamageResultRowDao dao;
 	private DamageResultDao damageResultDao;
-	private DamageTableDao damageTableDao;
 
 	/**
 	 * Creates a new DamageResultRowRxHandler
@@ -49,9 +48,10 @@ public class DamageResultRowRxHandler {
 	 * @param dao  a DamageResultRowDao instance
 	 */
 	@Inject
-	public DamageResultRowRxHandler(RMUDatabaseHelper helper, DamageResultRowDao dao) {
+	DamageResultRowRxHandler(RMUDatabaseHelper helper, DamageResultRowDao dao, DamageResultDao damageResultDao) {
 		this.helper = helper;
 		this.dao = dao;
+		this.damageResultDao = damageResultDao;
 	}
 
 	/**
@@ -188,6 +188,12 @@ public class DamageResultRowRxHandler {
 					public void call(Subscriber<? super Collection<DamageResultRow>> subscriber) {
 						try {
 							Collection<DamageResultRow> rows = dao.getDamageResultRowsForDamageTable(filter);
+							for(DamageResultRow damageResultRow : rows) {
+								Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+								for(DamageResult result : results) {
+									damageResultRow.getResults().put(result.getArmorType(), result);
+								}
+							}
 							subscriber.onNext(rows);
 							subscriber.onCompleted();
 						}
@@ -200,33 +206,33 @@ public class DamageResultRowRxHandler {
 				.observeOn(AndroidSchedulers.mainThread());
 	}
 
-
 	/**
 	 * Creates an Observable that, when subscribed to, will delete all DamageResultRow instances meeting the given criteria.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to delete the DamageResultRow instances.
 	 */
-	public Observable<Collection<DamageResultRow>> deleteAllForDamageTable(final DamageTable damageTable) {
+	public Observable<Boolean> deleteAllForDamageTable(final DamageTable damageTable) {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<DamageResultRow>>() {
+				new Observable.OnSubscribe<Boolean>() {
 					@Override
-					public void call(Subscriber<? super Collection<DamageResultRow>> subscriber) {
+					public void call(Subscriber<? super Boolean> subscriber) {
 						try {
 							String[] selectionArgs = { String.valueOf(damageTable.getId())};
 							helper.getWritableDatabase().beginTransaction();
-							helper.getWritableDatabase().rawQuery(
+							helper.getWritableDatabase().execSQL(
 									"delete from " + DamageResultSchema.TABLE_NAME
 											+ " where " + DamageResultSchema.COLUMN_ID
 											+ " in (Select " + DamageResultRowSchema.COLUMN_ID  + " from "
 											+ DamageResultRowSchema.TABLE_NAME + " where "
 											+ DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = ?)", selectionArgs);
-							helper.getWritableDatabase().rawQuery(
+							helper.getWritableDatabase().execSQL(
 									"delete from " + DamageResultRowSchema.TABLE_NAME + " where "
 											+ DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = ?", selectionArgs);
-							helper.getWritableDatabase().rawQuery(
+							helper.getWritableDatabase().execSQL(
 									"delete from " + DamageTableSchema.TABLE_NAME + " where "
 											+ DamageTableSchema.COLUMN_ID + " = ?",  selectionArgs);
-							subscriber.onNext(null);
+							helper.getWritableDatabase().endTransaction();
+							subscriber.onNext(true);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {

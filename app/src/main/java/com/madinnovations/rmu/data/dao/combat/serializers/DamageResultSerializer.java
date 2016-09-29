@@ -21,6 +21,7 @@ import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 
 import java.io.IOException;
 
@@ -32,6 +33,8 @@ public class  DamageResultSerializer extends TypeAdapter<DamageResult> implement
 	public void write(JsonWriter out, DamageResult value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_DAMAGE_RESULT_ROW_ID).value(value.getDamageResultRow().getId());
+		out.name(COLUMN_ARMOR_TYPE).value(value.getArmorType());
 		out.name(COLUMN_HITS).value(value.getHits());
 		if(value.getCriticalSeverity() != null && value.getCriticalType() != null) {
 			out.name(COLUMN_CRITICAL_SEVERITY).value(String.valueOf(value.getCriticalSeverity()));
@@ -49,6 +52,12 @@ public class  DamageResultSerializer extends TypeAdapter<DamageResult> implement
 			switch (in.nextName()) {
 				case COLUMN_ID:
 					damageResult.setId(in.nextInt());
+					break;
+				case COLUMN_DAMAGE_RESULT_ROW_ID:
+					damageResult.setDamageResultRow(new DamageResultRow(in.nextInt()));
+					break;
+				case COLUMN_ARMOR_TYPE:
+					damageResult.setArmorType((short)in.nextInt());
 					break;
 				case COLUMN_HITS:
 					damageResult.setHits((short) in.nextInt());

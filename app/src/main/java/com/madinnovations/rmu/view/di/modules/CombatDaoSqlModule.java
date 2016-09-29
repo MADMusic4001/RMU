@@ -65,13 +65,13 @@ public class CombatDaoSqlModule {
 		return new CriticalTypeDaoDbImpl(helper);
 	}
 	@Provides @Singleton
-	DamageResultDao provideDamageResultDao(RMUDatabaseHelper helper, CriticalTypeDao criticalTypeDao) {
-		return new DamageResultDaoDbImpl(helper, criticalTypeDao);
+	DamageResultDao provideDamageResultDao(RMUDatabaseHelper helper, CriticalTypeDao criticalTypeDao,
+										   DamageResultRowDao damageResultRowDao) {
+		return new DamageResultDaoDbImpl(helper, criticalTypeDao, damageResultRowDao);
 	}
 	@Provides @Singleton
-	DamageResultRowDao provideDamageResultRowDao(RMUDatabaseHelper helper, DamageTableDao damageTableDao,
-														DamageResultDao damageResultDao) {
-		return new DamageResultRowDaoDbImpl(helper, damageTableDao, damageResultDao);
+	DamageResultRowDao provideDamageResultRowDao(RMUDatabaseHelper helper, DamageTableDao damageTableDao) {
+		return new DamageResultRowDaoDbImpl(helper, damageTableDao);
 	}
 	@Provides @Singleton
 	DamageTableDao provideDamageTableDao(RMUDatabaseHelper helper) {

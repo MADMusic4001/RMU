@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.combat;
 
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,4 +79,20 @@ public interface DamageResultDao {
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+	/**
+	 * Gets all DamageResult instances for the given DamageResultRow.
+	 *
+	 * @param damageResultRow  a DamageResultRow instance
+	 * @return a collection of DamageResult instances for the given DamageResultRow.
+	 */
+	public Collection<DamageResult> getDamageResultsForRow(DamageResultRow damageResultRow);
+
+	/**
+	 * Deletes all DamageResult instances for the given DamageResultRow.
+	 *
+	 * @param damageResultRow  a DamageResultRow instance
+	 * @return the collection of DamageResult instances that were deleted.
+	 */
+	public Collection<DamageResult> deleteDamageResultsForRow(DamageResultRow damageResultRow);
 }

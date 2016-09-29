@@ -25,10 +25,6 @@ public interface DamageResultRowSchema {
     String COLUMN_DAMAGE_TABLE_ID = "damageTableId";
     String COLUMN_RANGE_LOW_VALUE = "rangeLowValue";
     String COLUMN_RANGE_HIGH_VALUE = "rangeHighValue";
-    String COLUMN_AT_RESULTS = "atResults";
-    String COLUMN_AT_RESULT_ID = "atResultId";
-    String[] COLUMN_AT_RESULT_IDS = {"at1ResultId", "at2ResultId", "at3ResultId", "at4ResultId", "at5ResultId",
-            "at6ResultId", "at7ResultId", "at8ResultId", "at9ResultId", "at10ResultId"};
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
@@ -37,31 +33,9 @@ public interface DamageResultRowSchema {
             + COLUMN_DAMAGE_TABLE_ID  + " INTEGER NOT NULL, "
             + COLUMN_RANGE_LOW_VALUE  + " INTEGER NOT NULL, "
             + COLUMN_RANGE_HIGH_VALUE  + " INTEGER NOT NULL, "
-            + COLUMN_AT_RESULT_IDS[0]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[1]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[2]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[3]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[4]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[5]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[6]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[7]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[8]  + " INTEGER, "
-            + COLUMN_AT_RESULT_IDS[9]  + " INTEGER, "
-            + "FOREIGN KEY (" + COLUMN_DAMAGE_TABLE_ID + ") REFERENCES " + DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[0] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[1] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[2] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[3] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[4] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[5] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[6] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[7] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[8] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_AT_RESULT_IDS[9] + ") REFERENCES " + DamageResultSchema.TABLE_NAME + "(" + DamageResultSchema.COLUMN_ID + ")"
+            + "FOREIGN KEY (" + COLUMN_DAMAGE_TABLE_ID + ") REFERENCES "
+				+ DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + ")"
             + ")";
 
-    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_RANGE_LOW_VALUE,
-            COLUMN_RANGE_HIGH_VALUE, COLUMN_AT_RESULT_IDS[0], COLUMN_AT_RESULT_IDS[1], COLUMN_AT_RESULT_IDS[2], COLUMN_AT_RESULT_IDS[3],
-            COLUMN_AT_RESULT_IDS[4], COLUMN_AT_RESULT_IDS[5], COLUMN_AT_RESULT_IDS[6], COLUMN_AT_RESULT_IDS[7], COLUMN_AT_RESULT_IDS[8],
-            COLUMN_AT_RESULT_IDS[9]};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_RANGE_LOW_VALUE, COLUMN_RANGE_HIGH_VALUE};
 }

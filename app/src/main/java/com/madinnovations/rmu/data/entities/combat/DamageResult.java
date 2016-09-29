@@ -24,6 +24,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class DamageResult {
     public static final String JSON_NAME = "DamageResults";
     private int id = -1;
+    private DamageResultRow damageResultRow = null;
+    private short armorType = 1;
     private short hits = 0;
     private Character criticalSeverity = null;
     private CriticalType criticalType = null;
@@ -49,7 +51,8 @@ public class DamageResult {
      * @return true if the DamageResult instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return hits > 0 && ((criticalSeverity == null && criticalType == null) ||
+        return hits > 0 && damageResultRow != null && armorType >= 1 && armorType <= 10 &&
+				((criticalSeverity == null && criticalType == null) ||
                 (criticalSeverity != null && criticalType != null));
     }
 
@@ -57,6 +60,8 @@ public class DamageResult {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", id)
+				.append("damageResultRow", damageResultRow)
+				.append("armorType", armorType)
                 .append("hits", hits)
                 .append("criticalSeverity", criticalSeverity)
                 .append("criticalType", criticalType)
@@ -85,7 +90,19 @@ public class DamageResult {
     public void setId(int id) {
         this.id = id;
     }
-    public short getHits() {
+	public DamageResultRow getDamageResultRow() {
+		return damageResultRow;
+	}
+	public void setDamageResultRow(DamageResultRow damageResultRow) {
+		this.damageResultRow = damageResultRow;
+	}
+	public short getArmorType() {
+		return armorType;
+	}
+	public void setArmorType(short armorType) {
+		this.armorType = armorType;
+	}
+	public short getHits() {
         return hits;
     }
     public void setHits(short hits) {

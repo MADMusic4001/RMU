@@ -17,6 +17,8 @@ package com.madinnovations.rmu.controller.rxhandler.combat;
 
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.util.Collection;
 
@@ -156,6 +158,31 @@ public class DamageResultRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all DamageResultRow instances that
+	 * reference the given DamageTable.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of DamageResultRow instances.
+	 */
+	public Observable<Collection<DamageResult>> getDamageResultForDamageResultRow(final DamageResultRow filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<DamageResult>>() {
+					@Override
+					public void call(Subscriber<? super Collection<DamageResult>> subscriber) {
+						try {
+							Collection<DamageResult> rows = dao.getDamageResultsForRow(filter);
+							subscriber.onNext(rows);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}

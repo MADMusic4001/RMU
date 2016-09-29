@@ -87,4 +87,12 @@ public interface DamageResultRowDao {
      * @return  a Collection containing all DamageResultRow objects that reference the given DamageTable currently in persistent storage.
      */
     public Collection<DamageResultRow> getDamageResultRowsForDamageTable(DamageTable filter);
+
+	/**
+	 * Deletes all DamageResultRow objects that reference the given DamageTable from persistent storage.
+	 *
+	 * @param filter  a DamageTable instance whose ID will be used to filter the DamageResultRow objects to be deleted
+	 * @return  a Collection containing all DamageResultRow objects that were deleted.
+	 */
+	public Collection<DamageResultRow> deleteDamageResultRowsForDamageTable(DamageTable filter);
 }

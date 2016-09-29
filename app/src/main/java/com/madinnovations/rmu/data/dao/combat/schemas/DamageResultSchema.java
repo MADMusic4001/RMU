@@ -22,6 +22,8 @@ public interface DamageResultSchema {
     String TABLE_NAME = "damage_results";
 
     String COLUMN_ID = "id";
+	String COLUMN_DAMAGE_RESULT_ROW_ID = "damageResultRowId";
+	String COLUMN_ARMOR_TYPE = "armorType";
     String COLUMN_HITS = "hits";
     String COLUMN_CRITICAL_SEVERITY = "criticalSeverity";
     String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
@@ -30,10 +32,15 @@ public interface DamageResultSchema {
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
+			+ COLUMN_DAMAGE_RESULT_ROW_ID + " INTEGER NOT NULL, "
+			+ COLUMN_ARMOR_TYPE + " INTEGER NOT NULL, "
             + COLUMN_HITS  + " INTEGER NOT NULL, "
             + COLUMN_CRITICAL_SEVERITY  + " TEXT, "
             + COLUMN_CRITICAL_TYPE_ID  + " INTEGER, "
-            + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_DAMAGE_RESULT_ROW_ID + ") REFERENCES "
+				+ DamageResultRowSchema.TABLE_NAME + "(" + DamageResultRowSchema.COLUMN_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES "
+				+ CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
             + ")";
 
     String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_HITS, COLUMN_CRITICAL_SEVERITY, COLUMN_CRITICAL_TYPE_ID};

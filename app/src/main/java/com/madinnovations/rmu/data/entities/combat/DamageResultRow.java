@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import android.util.SparseArray;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -27,7 +29,22 @@ public class DamageResultRow {
 	private DamageTable damageTable = null;
 	private short rangeLowValue = 65;
 	private short rangeHighValue = 67;
-	private DamageResult[] damageResults = new DamageResult[10];
+	private SparseArray<DamageResult> results = new SparseArray<>(10);
+
+	/**
+	 * Creates a new DamageResultRow instance.
+	 */
+	public DamageResultRow() {
+	}
+
+	/**
+	 * Creates a new DamageResultRow instance with the given id.
+	 *
+	 * @param id  the id for the new instance
+	 */
+	public DamageResultRow(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Checks the validity of the DamageResultRow instance.
@@ -45,7 +62,6 @@ public class DamageResultRow {
 				.append("damageTable", damageTable)
 				.append("rangeLowValue", rangeLowValue)
 				.append("rangeHighValue", rangeHighValue)
-				.append("damageResults", damageResults)
 				.toString();
 	}
 
@@ -89,7 +105,10 @@ public class DamageResultRow {
 	public void setRangeHighValue(short rangeHighValue) {
 		this.rangeHighValue = rangeHighValue;
 	}
-	public DamageResult[] getDamageResults() {
-		return damageResults;
+	public SparseArray<DamageResult> getResults() {
+		return results;
+	}
+	public void setResults(SparseArray<DamageResult> results) {
+		this.results = results;
 	}
 }

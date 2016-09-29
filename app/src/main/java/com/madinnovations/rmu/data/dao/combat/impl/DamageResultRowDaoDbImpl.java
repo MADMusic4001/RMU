@@ -22,7 +22,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
@@ -41,7 +40,6 @@ import javax.inject.Singleton;
 @Singleton
 public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> implements DamageResultRowDao, DamageResultRowSchema {
     private DamageTableDao damageTableDao;
-    private DamageResultDao damageResultDao;
 
     /**
      * Creates a new instance of DamageResultRowDaoDbImpl
@@ -49,10 +47,9 @@ public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> imp
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public DamageResultRowDaoDbImpl(SQLiteOpenHelper helper, DamageTableDao damageTableDao, DamageResultDao damageResultDao) {
+    public DamageResultRowDaoDbImpl(SQLiteOpenHelper helper, DamageTableDao damageTableDao) {
         super(helper);
         this.damageTableDao = damageTableDao;
-        this.damageResultDao = damageResultDao;
     }
 
     @Override
@@ -90,19 +87,15 @@ public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> imp
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(14);
+            values = new ContentValues(4);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(13);
+            values = new ContentValues(3);
         }
         values.put(COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
         values.put(COLUMN_RANGE_LOW_VALUE, instance.getRangeLowValue());
         values.put(COLUMN_RANGE_HIGH_VALUE, instance.getRangeHighValue());
-        for(int i = 0; i < 10; i++) {
-            values.put(COLUMN_AT_RESULT_IDS[i], instance.getDamageResults()[i] != null ?
-                                                instance.getDamageResults()[i].getId() : null);
-        }
 
 		return values;
 	}
@@ -141,21 +134,42 @@ public class DamageResultRowDaoDbImpl extends BaseDaoDbImpl<DamageResultRow> imp
         return list;
     }
 
-    private DamageResultRow cursorToEntity(@NonNull Cursor cursor, DamageTable damageTable) {
+	@Override
+	public Collection<DamageResultRow> deleteDamageResultRowsForDamageTable(DamageTable filter) {
+		Collection<DamageResultRow> list;
+		String selection = COLUMN_DAMAGE_TABLE_ID + " = ?";
+		String[] selectionArgs = { String.valueOf(filter.getId())};
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			list = getDamageResultRowsForDamageTable(filter);
+			boolean successful = (db.delete(TABLE_NAME, selection, selectionArgs) == list.size());
+			if(newTransaction && successful) {
+				db.setTransactionSuccessful();
+			} else if(!successful) {
+				list = new ArrayList<>();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	private DamageResultRow cursorToEntity(@NonNull Cursor cursor, DamageTable damageTable) {
         DamageResultRow instance = new DamageResultRow();
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
         instance.setDamageTable(damageTable);
         instance.setRangeLowValue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_RANGE_LOW_VALUE)));
         instance.setRangeHighValue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_RANGE_HIGH_VALUE)));
-        for(int i =  0; i < 10; i ++) {
-            if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_AT_RESULT_IDS[i]))) {
-                instance.getDamageResults()[i] = null;
-            }
-            else {
-                instance.getDamageResults()[i] = damageResultDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AT_RESULT_IDS[i])));
-            }
-        }
 
         return instance;
     }

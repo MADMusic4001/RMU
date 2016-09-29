@@ -17,14 +17,21 @@ package com.madinnovations.rmu.data.dao.combat.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,6 +42,7 @@ import javax.inject.Singleton;
 @Singleton
 public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implements DamageResultDao, DamageResultSchema {
     private CriticalTypeDao criticalTypeDao;
+	private DamageResultRowDao damageResultRowDao;
 
     /**
      * Creates a new instance of DamageResultDaoDbImpl
@@ -42,9 +50,11 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public DamageResultDaoDbImpl(SQLiteOpenHelper helper, CriticalTypeDao criticalTypeDao) {
+    public DamageResultDaoDbImpl(SQLiteOpenHelper helper, CriticalTypeDao criticalTypeDao,
+								 DamageResultRowDao damageResultRowDao) {
         super(helper);
         this.criticalTypeDao = criticalTypeDao;
+		this.damageResultRowDao = damageResultRowDao;
     }
 
     @Override
@@ -77,6 +87,9 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
         DamageResult instance = new DamageResult();
 
         instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setDamageResultRow(damageResultRowDao.getById(cursor.getInt(
+				cursor.getColumnIndexOrThrow(COLUMN_DAMAGE_RESULT_ROW_ID))));
+		instance.setArmorType(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ARMOR_TYPE)));
         instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
         if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SEVERITY)) ||
                 cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))) {
@@ -96,12 +109,14 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
         ContentValues values;
 
         if(instance.getId() != -1) {
-			values = new ContentValues(5);
+			values = new ContentValues(6);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(4);
+			values = new ContentValues(5);
 		}
+		values.put(COLUMN_DAMAGE_RESULT_ROW_ID, instance.getDamageResultRow().getId());
+		values.put(COLUMN_ARMOR_TYPE, instance.getArmorType());
         values.put(COLUMN_HITS, instance.getHits());
         if(instance.getCriticalSeverity() == null || instance.getCriticalType() == null) {
             values.putNull(COLUMN_CRITICAL_SEVERITY);
@@ -113,5 +128,70 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
         }
 
 		return values;
+	}
+
+	@Override
+	public Collection<DamageResult> getDamageResultsForRow(DamageResultRow damageResultRow) {
+		List<DamageResult> list = new ArrayList<>();
+		String selection = COLUMN_DAMAGE_RESULT_ROW_ID + " = ?";
+		String[] selectionArgs = { String.valueOf(damageResultRow.getId())};
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getSortString());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					DamageResult instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+			if(newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public Collection<DamageResult> deleteDamageResultsForRow(DamageResultRow damageResultRow) {
+		Collection<DamageResult> list;
+		String selection = COLUMN_DAMAGE_RESULT_ROW_ID + " = ?";
+		String[] selectionArgs = { String.valueOf(damageResultRow.getId())};
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			list = getDamageResultsForRow(damageResultRow);
+			boolean successful = (db.delete(TABLE_NAME, selection, selectionArgs) == list.size());
+			if(newTransaction && successful) {
+				db.setTransactionSuccessful();
+			} else if(!successful) {
+				list = new ArrayList<>();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
 	}
 }

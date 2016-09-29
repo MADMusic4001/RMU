@@ -15,6 +15,10 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import android.util.Log;
+
+import com.madinnovations.rmu.view.RMUAppException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -95,6 +99,8 @@ public class DamageTable {
     }
 
 	private void convertRows() {
+		short min = 255, max = 0;
+		Log.d("RMU", "converting rows");
 		short offset;
 		resultRows = new ArrayList<>(37);
 
@@ -107,7 +113,14 @@ public class DamageTable {
 		for(DamageResultRow damageResultRow : resultRows) {
 			damageResultRow.setRangeLowValue((short)(damageResultRow.getRangeLowValue() + offset));
 			damageResultRow.setRangeHighValue((short)(damageResultRow.getRangeHighValue() + offset));
+			if(min <= damageResultRow.getRangeLowValue()) {
+				min = damageResultRow.getRangeLowValue();
+			}
+			if(max >= damageResultRow.getRangeHighValue()) {
+				max = damageResultRow.getRangeHighValue();
+			}
 		}
+		Log.d("RMU", "max = " + max + ", min = " + min);
 	}
 
     // Getters and setters

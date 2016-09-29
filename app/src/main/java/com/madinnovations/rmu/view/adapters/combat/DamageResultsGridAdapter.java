@@ -140,16 +140,16 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			String rollString = String.format(getContext().getString(R.string.min_max_roll_value), resultsRow.getRangeLowValue(),
 											  resultsRow.getRangeHighValue());
 			holder.leftRollView.setText(rollString);
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[0]));
-			holder.at2ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[1]));
-			holder.at3ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[2]));
-			holder.at4ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[3]));
-			holder.at5ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[4]));
-			holder.at6ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[5]));
-			holder.at7ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[6]));
-			holder.at8ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[7]));
-			holder.at9ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[8]));
-			holder.at10ResultEdit.setText(formatResultString(resultsRow.getDamageResults()[9]));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(1)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(2)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(3)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(4)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(5)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(6)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(7)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(8)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(9)));
+			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(10)));
 			holder.rightRollView.setText(rollString);
 		}
 
@@ -200,61 +200,62 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 	public class ViewHolder {
 		private DamageResultRow damageResultRow;
 		private EditText leftRollView;
-		private MultiPasteEditText at1ResultEdit;
-		private MultiPasteEditText at2ResultEdit;
-		private MultiPasteEditText at3ResultEdit;
-		private MultiPasteEditText at4ResultEdit;
-		private MultiPasteEditText at5ResultEdit;
-		private MultiPasteEditText at6ResultEdit;
-		private MultiPasteEditText at7ResultEdit;
-		private MultiPasteEditText at8ResultEdit;
-		private MultiPasteEditText at9ResultEdit;
-		private MultiPasteEditText at10ResultEdit;
+		MultiPasteEditText at1ResultEdit;
+		MultiPasteEditText at2ResultEdit;
+		MultiPasteEditText at3ResultEdit;
+		MultiPasteEditText at4ResultEdit;
+		MultiPasteEditText at5ResultEdit;
+		MultiPasteEditText at6ResultEdit;
+		MultiPasteEditText at7ResultEdit;
+		MultiPasteEditText at8ResultEdit;
+		MultiPasteEditText at9ResultEdit;
+		MultiPasteEditText at10ResultEdit;
 		private EditText rightRollView;
 
-		public ViewHolder(EditText leftRollView, MultiPasteEditText at1ResultEdit, MultiPasteEditText at2ResultEdit, MultiPasteEditText at3ResultEdit,
-						  MultiPasteEditText at4ResultEdit, MultiPasteEditText at5ResultEdit, MultiPasteEditText at6ResultEdit, MultiPasteEditText at7ResultEdit,
-						  MultiPasteEditText at8ResultEdit, MultiPasteEditText at9ResultEdit, MultiPasteEditText at10ResultEdit, EditText rightRollView) {
+		public ViewHolder(EditText leftRollView, MultiPasteEditText at1ResultEdit, MultiPasteEditText at2ResultEdit,
+						  MultiPasteEditText at3ResultEdit, MultiPasteEditText at4ResultEdit, MultiPasteEditText at5ResultEdit,
+						  MultiPasteEditText at6ResultEdit, MultiPasteEditText at7ResultEdit, MultiPasteEditText at8ResultEdit,
+						  MultiPasteEditText at9ResultEdit, MultiPasteEditText at10ResultEdit, EditText rightRollView) {
 
 			this.leftRollView = leftRollView;
 			this.at1ResultEdit = at1ResultEdit;
-			initEdit(at1ResultEdit, 0);
+			initEdit(at1ResultEdit, 1);
 			at1ResultEdit.setViewHolder(this);
 
 			this.at2ResultEdit = at2ResultEdit;
-			initEdit(at2ResultEdit, 1);
+			initEdit(at2ResultEdit, 2);
 			at1ResultEdit.setNextMultiPaste(at2ResultEdit);
 
 			this.at3ResultEdit = at3ResultEdit;
-			initEdit(at3ResultEdit, 2);
+			initEdit(at3ResultEdit, 3);
 			at2ResultEdit.setNextMultiPaste(at3ResultEdit);
 
 			this.at4ResultEdit = at4ResultEdit;
-			initEdit(at4ResultEdit, 3);
+			initEdit(at4ResultEdit, 4);
 			at3ResultEdit.setNextMultiPaste(at4ResultEdit);
 
 			this.at5ResultEdit = at5ResultEdit;
-			initEdit(at5ResultEdit, 4);
+			initEdit(at5ResultEdit, 5);
 			at4ResultEdit.setNextMultiPaste(at5ResultEdit);
 
 			this.at6ResultEdit = at6ResultEdit;
-			initEdit(at6ResultEdit, 5);
+			initEdit(at6ResultEdit, 6);
 			at5ResultEdit.setNextMultiPaste(at6ResultEdit);
 
 			this.at7ResultEdit = at7ResultEdit;
-			initEdit(at7ResultEdit, 6);
+			initEdit(at7ResultEdit, 7);
 			at6ResultEdit.setNextMultiPaste(at7ResultEdit);
 
 			this.at8ResultEdit = at8ResultEdit;
-			initEdit(at8ResultEdit, 7);
+			initEdit(at8ResultEdit, 8);
 			at7ResultEdit.setNextMultiPaste(at8ResultEdit);
 
 			this.at9ResultEdit = at9ResultEdit;
-			initEdit(at9ResultEdit, 8);
+			initEdit(at9ResultEdit, 9);
 			at8ResultEdit.setNextMultiPaste(at9ResultEdit);
 
 			this.at10ResultEdit = at10ResultEdit;
-			initEdit(at10ResultEdit, 9);
+			initEdit(at10ResultEdit, 10);
 			at9ResultEdit.setNextMultiPaste(at10ResultEdit);
 			at10ResultEdit.setNextMultiPaste(null);
 
@@ -326,11 +327,11 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 		private void updateResult(int armorTypeIndex, Short hits, String severity, CriticalType type) {
 			boolean resultChanged = false;
 			boolean rowChanged = false;
-			DamageResult damageResult = damageResultRow.getDamageResults()[armorTypeIndex];
+			DamageResult damageResult = damageResultRow.getResults().get(armorTypeIndex);
 			if(hits != null) {
 				if(damageResult == null) {
 					damageResult = new DamageResult();
-					damageResultRow.getDamageResults()[armorTypeIndex] = damageResult;
+					damageResultRow.getResults().put(armorTypeIndex, damageResult);
 					resultChanged = true;
 					rowChanged = true;
 				}
@@ -367,7 +368,7 @@ public class DamageResultsGridAdapter extends ArrayAdapter<DamageResultRow> {
 			}
 			else {
 				if(damageResult != null) {
-					damageResultRow.getDamageResults()[armorTypeIndex] = null;
+					damageResultRow.getResults().remove(armorTypeIndex);
 					if(damageResult.getId() != -1) {
 						final int damageResultId = damageResult.getId();
 						saveDamageResultRow(damageResultRow, damageResultId);
