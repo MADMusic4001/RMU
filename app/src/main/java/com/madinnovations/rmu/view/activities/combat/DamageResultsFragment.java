@@ -120,7 +120,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 				saveItem();
 			}
 			currentInstance = new DamageTable();
-			currentInstance.initRows();
+			currentInstance.addMissingRows();
 			isNew = true;
 			copyItemToViews();
 			return true;
@@ -229,20 +229,20 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	}
 
 	private void deleteItem(@NonNull final DamageTable damageTable) {
-		damageResultRowRxHandler.deleteAllForDamageTable(damageTable)
+		damageTableRxHandler.delete(damageTable)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<Boolean>() {
 					@Override
 					public void onCompleted() {
 						damageTableFilterSpinnerAdapter.remove(damageTable);
-						int position = damageTableFilterSpinner.getSelectedItemPosition();
+						int position = damageTableFilterSpinner.getSelectedItemPosition() - 1;
 						if(position != -1) {
 							currentInstance = damageTableFilterSpinnerAdapter.getItem(position);
 						}
 						else {
 							currentInstance = new DamageTable();
-							currentInstance.initRows();
+							currentInstance.addMissingRows();
 							isNew = true;
 						}
 						copyItemToViews();
@@ -280,11 +280,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 								loadFilteredDamageResultRows(currentInstance);
 							}
 							else {
-								currentInstance.initRows();
+								currentInstance.addMissingRows();
 							}
 						}
 						else {
-							currentInstance.initRows();
+							currentInstance.addMissingRows();
 						}
 						damageResultsGridAdapter.clear();
 						damageResultsGridAdapter.addAll(currentInstance.getResultRows());
@@ -313,7 +313,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 				DamageTable newDamageTable = damageTableFilterSpinnerAdapter.getItem(position);
 				if(newDamageTable != null) {
 					currentInstance = newDamageTable;
-//					addMissingDamageResultRows();
+					currentInstance.addMissingRows();
 					copyItemToViews();
 				}
 			}
@@ -322,13 +322,6 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 			}
 		});
 	}
-
-//	private void addMissingDamageResultRows() {
-//		for(int i = 0; i < currentInstance.getResultRows().size(); i++) {
-//			currentInstance.getResultRows()
-//
-//		}
-//	}
 
 	private void initDeleteTableButton(View layout) {
 		ImageButton deleteTableButton = (ImageButton)layout.findViewById(R.id.delete_table_button);
@@ -367,7 +360,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onCompleted() {
 						if(currentInstance.getResultRows() == null) {
-							currentInstance.initRows();
+							currentInstance.addMissingRows();
 						}
 					}
 					@Override

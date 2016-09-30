@@ -28,7 +28,6 @@ public class DamageTable {
     private String name = null;
     private boolean ballTable = false;
 	private SparseArray<DamageResultRow> resultRows = new SparseArray<>(ROW_COUNT);
-//    private Collection<DamageResultRow> resultRows = new ArrayList<>();
 
 	/**
      * Creates a new DamageTable instance
@@ -74,7 +73,7 @@ public class DamageTable {
         return id;
     }
 
-    public void initRows() {
+    public void addMissingRows() {
 		short start;
 		short end;
 

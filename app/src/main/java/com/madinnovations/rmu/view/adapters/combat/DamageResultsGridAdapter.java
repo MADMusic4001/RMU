@@ -123,8 +123,9 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 	public Object getItem(int position) {
 		DamageResultRow result = null;
 
+		// Reverse the order so the high roll values are at the top
 		if(data != null) {
-			result = data.valueAt(position);
+			result = data.valueAt((data.size() - 1) - position);
 		}
 
 		return result;
@@ -132,13 +133,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		long result = 0;
-
-		if(data != null) {
-			result = data.keyAt(position);
-		}
-
-		return result;
+		return position;
 	}
 
 	@NonNull
@@ -381,6 +376,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 					resultChanged = true;
 					rowChanged = true;
 				}
+				damageResult.setDamageResultRow(damageResultRow);
 				if(damageResult.getHits() != hits) {
 					damageResult.setHits(hits);
 					resultChanged = true;
@@ -409,7 +405,11 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 					}
 				}
 				if(resultChanged) {
-					saveResult(rowChanged, damageResult, damageResultRow);
+					if (rowChanged) {
+						saveResultRow(damageResultRow);
+					}
+					Log.d(LOG_TAG, "Saving DamageResult: " + damageResult);
+					saveResult(damageResult, damageResultRow);
 				}
 			}
 			else {
@@ -423,16 +423,13 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 			}
 		}
 
-		void saveResult(final boolean rowChanged, DamageResult damageResult, final DamageResultRow damageResultRow) {
+		void saveResult(DamageResult damageResult, final DamageResultRow damageResultRow) {
 			damageResultRxHandler.save(damageResult)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
 					.subscribe(new Subscriber<DamageResult>() {
 						@Override
 						public void onCompleted() {
-							if (rowChanged) {
-								saveResultRow(damageResultRow);
-							}
 						}
 						@Override
 						public void onError(Throwable e) {

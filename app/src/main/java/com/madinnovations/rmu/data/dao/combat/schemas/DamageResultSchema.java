@@ -43,5 +43,6 @@ public interface DamageResultSchema {
 				+ CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
             + ")";
 
-    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_HITS, COLUMN_CRITICAL_SEVERITY, COLUMN_CRITICAL_TYPE_ID};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_DAMAGE_RESULT_ROW_ID, COLUMN_ARMOR_TYPE, COLUMN_HITS,
+			COLUMN_CRITICAL_SEVERITY, COLUMN_CRITICAL_TYPE_ID};
 }

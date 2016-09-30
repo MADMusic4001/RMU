@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.combat;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.util.Collection;
@@ -73,9 +75,31 @@ public interface DamageTableDao {
     public boolean deleteById(int id);
 
     /**
+     * Delete the given DamageTable object from persistent storage.
+     *
+     * @param damageTable  the DamageTable object to delete
+     * @return true if successful, otherwise false.
+     */
+    public boolean delete(DamageTable damageTable);
+
+    /**
      * Delete all DamageTable objects from persistent storage.
      *
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+	/**
+	 * Begins a database transaction.
+	 */
+	public void beginTransaction();
+
+	/**
+	 * Ends a database transaction
+	 *
+	 * @param successful  true if the transaction should be marked as successful. If false then the transaction will be rolled
+	 *                       back unless {@link SQLiteDatabase#setTransactionSuccessful()} was called prior to calling this
+	 *                       method.
+	 */
+	public void endTransaction(boolean successful);
 }

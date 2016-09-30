@@ -138,6 +138,28 @@ public abstract class BaseDaoDbImpl<T> {
 	}
 
 	/**
+	 * Begins a database transaction.
+	 */
+	public void beginTransaction() {
+		helper.getWritableDatabase().beginTransaction();
+	}
+
+	/**
+	 * Ends a database transaction
+	 *
+	 * @param successful  true if the transaction should be marked as successful. If false then the transaction will be rolled
+	 *                       back unless {@link SQLiteDatabase#setTransactionSuccessful()} was called prior to calling this
+	 *                       method.
+	 */
+	public void endTransaction(boolean successful) {
+		SQLiteDatabase db = helper.getWritableDatabase();
+		if(successful) {
+			db.setTransactionSuccessful();
+		}
+		db.endTransaction();
+	}
+
+	/**
 	 * Retrieves a T object from persistent storage.
 	 *
 	 * @param id  the id of the T object to retrieve
@@ -319,6 +341,16 @@ public abstract class BaseDaoDbImpl<T> {
 	}
 
 	/**
+	 * Delete the T object from persistent storage.
+	 *
+	 * @param instance  the T object to delete
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean delete(T instance) {
+		return deleteById(getId(instance));
+	}
+
+	/**
 	 * Delete the T object with the given id from persistent storage.
 	 *
 	 * @param id  the id of the T object to delete
@@ -359,6 +391,22 @@ public abstract class BaseDaoDbImpl<T> {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll() {
+		return deleteWithFilter(null, null);
+	}
+
+	/**
+	 * Delete all T objects that match the given filter information
+	 *
+	 * @param whereClause the optional WHERE clause to apply when deleting.
+	 *            Passing null will delete all rows.
+	 * @param whereArgs You may include ?s in the where clause, which
+	 *            will be replaced by the values from whereArgs. The values
+	 *            will be bound as Strings.
+	 * @return the number of rows affected if a whereClause is passed in, 0
+	 *         otherwise. To remove all rows and get a count pass "1" as the
+	 *         whereClause.
+	 */
+	public int deleteWithFilter(String whereClause, String[] whereArgs) {
 		int count = 0;
 		LruCache<Integer, T> cache = getCache();
 
@@ -368,7 +416,7 @@ public abstract class BaseDaoDbImpl<T> {
 			db.beginTransaction();
 		}
 		try {
-			count = db.delete(getTableName(), null, null);
+			count = db.delete(getTableName(), whereClause, whereArgs);
 			if(cache != null) {
 				cache.evictAll();
 			}

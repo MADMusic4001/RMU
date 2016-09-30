@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.combat;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -95,4 +97,32 @@ public interface DamageResultRowDao {
 	 * @return  a Collection containing all DamageResultRow objects that were deleted.
 	 */
 	public Collection<DamageResultRow> deleteDamageResultRowsForDamageTable(DamageTable filter);
+
+	/**
+	 * Delete all T objects that match the given filter information
+	 *
+	 * @param whereClause the optional WHERE clause to apply when deleting.
+	 *            Passing null will delete all rows.
+	 * @param whereArgs You may include ?s in the where clause, which
+	 *            will be replaced by the values from whereArgs. The values
+	 *            will be bound as Strings.
+	 * @return the number of rows affected if a whereClause is passed in, 0
+	 *         otherwise. To remove all rows and get a count pass "1" as the
+	 *         whereClause.
+	 */
+	public int deleteWithFilter(String whereClause, String[] whereArgs);
+
+	/**
+	 * Begins a database transaction.
+	 */
+	public void beginTransaction();
+
+	/**
+	 * Ends a database transaction
+	 *
+	 * @param successful  true if the transaction should be marked as successful. If false then the transaction will be rolled
+	 *                       back unless {@link SQLiteDatabase#setTransactionSuccessful()} was called prior to calling this
+	 *                       method.
+	 */
+	public void endTransaction(boolean successful);
 }

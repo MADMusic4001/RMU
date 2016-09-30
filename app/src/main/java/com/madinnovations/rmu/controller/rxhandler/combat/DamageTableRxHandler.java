@@ -18,6 +18,8 @@ package com.madinnovations.rmu.controller.rxhandler.combat;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.util.Collection;
@@ -33,18 +35,22 @@ import rx.schedulers.Schedulers;
  * Creates reactive observable for requesting operations on {@link DamageTable} instances with persistent storage.
  */
 public class DamageTableRxHandler {
-	private DamageTableDao dao;
-	private DamageResultDao damageResultDao;
+	private DamageTableDao     damageTableDao;
+	private DamageResultDao    damageResultDao;
 	private DamageResultRowDao damageResultRowDao;
 
 	/**
 	 * Creates a new DamageTableRxHandler
 	 *
-	 * @param dao  a DamageTableDao instance
+	 * @param damageTableDao  a DamageTableDao instance
+	 * @param damageResultRowDao  a DamageResultRowDao instance
+	 * @param damageResultDao  a DamageResultDao instance
 	 */
 	@Inject
-	public DamageTableRxHandler(DamageTableDao dao) {
-		this.dao = dao;
+	DamageTableRxHandler(DamageTableDao damageTableDao, DamageResultRowDao damageResultRowDao, DamageResultDao damageResultDao) {
+		this.damageTableDao = damageTableDao;
+		this.damageResultRowDao = damageResultRowDao;
+		this.damageResultDao = damageResultDao;
 	}
 
 	/**
@@ -59,7 +65,7 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super DamageTable> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							subscriber.onNext(damageTableDao.getById(id));
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -83,7 +89,7 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<DamageTable>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							subscriber.onNext(damageTableDao.getAll());
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -107,7 +113,7 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super DamageTable> subscriber) {
 						try {
-							dao.save(damageTable);
+							damageTableDao.save(damageTable);
 							subscriber.onNext(damageTable);
 							subscriber.onCompleted();
 						}
@@ -131,7 +137,7 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super Boolean> subscriber) {
 						try {
-							subscriber.onNext(dao.deleteById(id));
+							subscriber.onNext(damageTableDao.deleteById(id));
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
@@ -154,8 +160,8 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<DamageTable>> subscriber) {
 						try {
-							Collection<DamageTable> damageTablesDeleted = dao.getAll();
-							dao.deleteAll();
+							Collection<DamageTable> damageTablesDeleted = damageTableDao.getAll();
+							damageTableDao.deleteAll();
 							subscriber.onNext(damageTablesDeleted);
 							subscriber.onCompleted();
 						}
@@ -166,5 +172,31 @@ public class DamageTableRxHandler {
 				}
 		).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	public Observable<Boolean> delete(final DamageTable damageTable) {
+		return Observable.create(new Observable.OnSubscribe<Boolean>() {
+			@Override
+			public void call(Subscriber<? super Boolean> subscriber) {
+				try {
+					String where = DamageResultSchema.COLUMN_DAMAGE_RESULT_ROW_ID + " = ?";
+					damageTableDao.beginTransaction();
+					for(int i = 0; i < damageTable.getResultRows().size(); i++) {
+						String[] whereArgs = {String.valueOf(damageTable.getResultRows().valueAt(i).getId())};
+						damageResultDao.deleteWithFilter(where, whereArgs);
+					}
+					where = DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = ?";
+					String[] whereArgs = {String.valueOf(damageTable.getId())};
+					damageResultRowDao.deleteWithFilter(where, whereArgs);
+					damageTableDao.delete(damageTable);
+					damageTableDao.endTransaction(true);
+					subscriber.onNext(true);
+					subscriber.onCompleted();
+				}
+				catch(Exception e) {
+					subscriber.onError(e);
+				}
+			}
+		});
 	}
 }
