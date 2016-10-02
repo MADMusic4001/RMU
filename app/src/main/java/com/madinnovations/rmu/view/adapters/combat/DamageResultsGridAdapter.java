@@ -172,23 +172,29 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 											  resultsRow.getRangeHighValue());
 			holder.leftRollView.setText(rollString);
 			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(1)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(2)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(3)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(4)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(5)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(6)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(7)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(8)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(9)));
-			holder.at1ResultEdit.setText(formatResultString(resultsRow.getResults().get(10)));
+			holder.at2ResultEdit.setText(formatResultString(resultsRow.getResults().get(2)));
+			holder.at3ResultEdit.setText(formatResultString(resultsRow.getResults().get(3)));
+			holder.at4ResultEdit.setText(formatResultString(resultsRow.getResults().get(4)));
+			holder.at5ResultEdit.setText(formatResultString(resultsRow.getResults().get(5)));
+			holder.at6ResultEdit.setText(formatResultString(resultsRow.getResults().get(6)));
+			holder.at7ResultEdit.setText(formatResultString(resultsRow.getResults().get(7)));
+			holder.at8ResultEdit.setText(formatResultString(resultsRow.getResults().get(8)));
+			holder.at9ResultEdit.setText(formatResultString(resultsRow.getResults().get(9)));
+			holder.at10ResultEdit.setText(formatResultString(resultsRow.getResults().get(10)));
 			holder.rightRollView.setText(rollString);
 		}
 
 		return rowView;
 	}
 
-	public void addAll(SparseArray<DamageResultRow> data) {
-		this.data = data;
+	public void addAll(@NonNull SparseArray<DamageResultRow> newData) {
+		if(this.data == null || this.data.size() == 0) {
+			this.data = new SparseArray<>(newData.size());
+		}
+
+		for (int i = 0; i < newData.size(); i++) {
+			this.data.append(newData.keyAt(i), newData.valueAt(i));
+		}
 	}
 
 	public void clear() {
@@ -303,8 +309,8 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 			this.rightRollView = rightRollView;
 		}
 
-		private void initEdit(final MultiPasteEditText editText, final int armorTypeIndex) {
-			editText.setAtIndex(armorTypeIndex);
+		private void initEdit(final MultiPasteEditText editText, final int armorType) {
+			editText.setAtIndex(armorType);
 			editText.setViewHolder(this);
 			editText.setFilters(new InputFilter[] {inputFilter});
 			editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -312,7 +318,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 				public void onFocusChange(View view, boolean hasFocus) {
 					if(!hasFocus) {
 						editText.setBackground(null);
-						setResult(((EditText)view).getText(), (EditText)view, armorTypeIndex);
+						setResult(((EditText)view).getText(), (EditText)view, armorType);
 					}
 					else {
 						if(editText.getBackground() != null) {
@@ -326,7 +332,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 			});
 		}
 
-		public boolean setResult(final CharSequence text, EditText view, int armorTypeIndex) {
+		public boolean setResult(final CharSequence text, EditText view, int armorType) {
 			Short hits = null;
 			String severity = null;
 			CriticalType type = null;
@@ -355,24 +361,23 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 						}
 					}
 				}
-				Log.d("RMU", "pattern = " + pattern.pattern());
-				Log.d("RMU", "input = " + text + ". Hits = " + hits + ", severity = " + severity + ", type = " + type);
 				if(((View)view.getParent()).getTag() instanceof ViewHolder) {
-					updateResult(armorTypeIndex, hits, severity, type);
+					updateResult(armorType, hits, severity, type);
 				}
 			}
 
 			return matches;
 		}
 
-		private void updateResult(int armorTypeIndex, Short hits, String severity, CriticalType type) {
+		private void updateResult(int armorType, Short hits, String severity, CriticalType type) {
 			boolean resultChanged = false;
 			boolean rowChanged = false;
-			DamageResult damageResult = damageResultRow.getResults().get(armorTypeIndex);
+			DamageResult damageResult = damageResultRow.getResults().get(armorType);
 			if(hits != null) {
 				if(damageResult == null) {
 					damageResult = new DamageResult();
-					damageResultRow.getResults().put(armorTypeIndex, damageResult);
+					damageResult.setArmorType((short)armorType);
+					damageResultRow.getResults().put(armorType, damageResult);
 					resultChanged = true;
 					rowChanged = true;
 				}
@@ -408,13 +413,12 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 					if (rowChanged) {
 						saveResultRow(damageResultRow);
 					}
-					Log.d(LOG_TAG, "Saving DamageResult: " + damageResult);
 					saveResult(damageResult, damageResultRow);
 				}
 			}
 			else {
 				if(damageResult != null) {
-					damageResultRow.getResults().remove(armorTypeIndex);
+					damageResultRow.getResults().remove(armorType);
 					if(damageResult.getId() != -1) {
 						final int damageResultId = damageResult.getId();
 						saveDamageResultRow(damageResultRow, damageResultId);

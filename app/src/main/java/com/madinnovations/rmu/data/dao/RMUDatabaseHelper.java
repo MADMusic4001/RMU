@@ -229,8 +229,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(VarietyAttacksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(AttackSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CriticalResultSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);

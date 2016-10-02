@@ -192,4 +192,30 @@ public class DamageResultRxHandler {
 		).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
 	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all DamageResultRow instances that
+	 * reference the given DamageTable.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of DamageResultRow instances.
+	 */
+	@SuppressWarnings("unused")
+	public Observable<Collection<DamageResult>> deleteDamageResultForDamageResultRow(@NonNull final DamageResultRow filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<DamageResult>>() {
+					@Override
+					public void call(Subscriber<? super Collection<DamageResult>> subscriber) {
+						try {
+							Collection<DamageResult> rows = dao.deleteDamageResultsForRow(filter);
+							subscriber.onNext(rows);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
 }

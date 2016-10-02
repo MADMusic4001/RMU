@@ -406,6 +406,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 *         otherwise. To remove all rows and get a count pass "1" as the
 	 *         whereClause.
 	 */
+	@SuppressWarnings("WeakerAccess")
 	public int deleteWithFilter(String whereClause, String[] whereArgs) {
 		int count = 0;
 		LruCache<Integer, T> cache = getCache();
@@ -442,6 +443,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 * @param values  a {@link ContentValues} instance containing the data to be inserted
 	 * @return  the row id of the newly inserted record or -1 if an error occurred
 	 */
+	@SuppressWarnings("unused")
 	public long insert(String tableName, ContentValues values) {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		return db.insertWithOnConflict(tableName, null, values, SQLiteDatabase.CONFLICT_NONE);
@@ -519,6 +521,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 * @param selectionArgs  the where clause parameters
 	 * @return the number of rows affected.
 	 */
+	@SuppressWarnings("unused")
 	public int update(String tableName, ContentValues values,
 					  String selection, String[] selectionArgs) {
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -536,6 +539,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 *                          selectionArgs. The values will be bound as Strings.
 	 * @return  A {@link Cursor} object, which is positioned before the first entry. Note that Cursors are not synchronized
 	 */
+	@SuppressWarnings("unused")
 	public Cursor rawQuery(String sql, String[] selectionArgs) {
 		SQLiteDatabase db = helper.getReadableDatabase();
 		return db.rawQuery(sql, selectionArgs);

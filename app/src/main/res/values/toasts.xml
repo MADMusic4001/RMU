@@ -85,12 +85,14 @@
   <string name="toast_culture_deleted">Culture deleted.</string>
   <string name="toast_culture_delete_failed">Culture deletion failed.</string>
 
+  <string name="toast_damage_result_load_failed">Failed to load Damage Result(s).</string>
+  <string name="toast_damage_result_loaded">%1$d Damage Results loaded.</string>
   <string name="toast_damage_result_saved">Damage Result saved.</string>
   <string name="toast_damage_result_save_failed">Damage Result save failed.</string>
   <string name="toast_damage_result_deleted">Damage Result deleted.</string>
   <string name="toast_damage_result_delete_failed">Damage Result deletion failed.</string>
 
-  <string name="toast_damage_result_rows_load_failed">Failed to load Damage Result Rows</string>
+  <string name="toast_damage_result_rows_load_failed">Failed to load Damage Result Row(s)</string>
   <string name="toast_damage_result_rows_loaded">%1$d Damage Result Rows loaded.</string>
   <string name="toast_damage_result_row_saved">Damage Result Row saved.</string>
   <string name="toast_damage_result_row_save_failed">Damage Result Row save failed.</string>

@@ -23,6 +23,10 @@ import android.util.SparseArray;
  */
 public class DamageTable {
 	private static final int ROW_COUNT = 37;
+	private static final short NON_BALL_HIGH = 175;
+	private static final short NON_BALL_LOW = 65;
+	private static final short BALL_HIGH = 125;
+	private static final short BALL_LOW = 15;
     public static final String JSON_NAME = "DamageTables";
     private int id = -1;
     private String name = null;
@@ -76,49 +80,70 @@ public class DamageTable {
     public void addMissingRows() {
 		short start;
 		short end;
+		short offset = 0;
+		SparseArray<DamageResultRow> newArray = new SparseArray<>(ROW_COUNT);
 
 		if(ballTable) {
-			start = 125;
-			end = 15;
+			if(resultRows.keyAt(0) == NON_BALL_LOW + 2) {
+				start = NON_BALL_HIGH;
+				end = NON_BALL_LOW;
+				offset = BALL_HIGH - NON_BALL_HIGH;
+			}
+			else {
+				start = BALL_HIGH;
+				end = BALL_LOW;
+			}
 		}
 		else {
-			start = 175;
-			end = 65;
+			if(resultRows.keyAt(0) == BALL_LOW + 2) {
+				start = BALL_HIGH;
+				end = BALL_LOW;
+				offset = NON_BALL_HIGH - BALL_HIGH;
+			}
+			else {
+				start = NON_BALL_HIGH;
+				end = NON_BALL_LOW;
+			}
 		}
         for(short rollValue = start; rollValue > end; rollValue -= 3) {
             DamageResultRow row = resultRows.get(rollValue);
 			if(row == null) {
 				row = new DamageResultRow();
 				row.setDamageTable(this);
-				row.setRangeLowValue((short)(rollValue-2));
-				row.setRangeHighValue(rollValue);
-				resultRows.put(rollValue, row);
+				row.setRangeLowValue((short)(rollValue + offset - 2));
+				row.setRangeHighValue((short)(rollValue + offset));
 			}
+			newArray.put(rollValue + offset, row);
         }
+		resultRows = newArray;
     }
 
-	private void convertRows() {
-		short min = 255, max = 0;
-		Log.d("RMU", "converting rows");
+	public void convertRows() {
+		short highValue;
 		short offset;
+		SparseArray<DamageResultRow> convertedArray = new SparseArray<>(ROW_COUNT);
 
-		if(ballTable) {
-			offset = 50;
+		Log.d("RMU", "keyAt(0) = " + resultRows.keyAt(0));
+		if(resultRows.keyAt(0) == NON_BALL_LOW + 2 && ballTable) {
+			offset = BALL_HIGH - NON_BALL_HIGH;
+		}
+		else if(resultRows.keyAt(0) == BALL_LOW + 2 && !ballTable) {
+			offset = NON_BALL_HIGH - BALL_HIGH;
 		}
 		else {
-			offset = -50;
+			Log.d("RMU", "not converting rows");
+			return;
 		}
+		Log.d("RMU", "offset = " + offset);
 		for(int i = 0; i < resultRows.size(); i++) {
 			DamageResultRow damageResultRow = resultRows.valueAt(i);
 			damageResultRow.setRangeLowValue((short)(damageResultRow.getRangeLowValue() + offset));
-			damageResultRow.setRangeHighValue((short)(damageResultRow.getRangeHighValue() + offset));
-			if(min <= damageResultRow.getRangeLowValue()) {
-				min = damageResultRow.getRangeLowValue();
-			}
-			if(max >= damageResultRow.getRangeHighValue()) {
-				max = damageResultRow.getRangeHighValue();
-			}
+			highValue = (short)(damageResultRow.getRangeHighValue() + offset);
+			damageResultRow.setRangeHighValue(highValue);
+			convertedArray.put(highValue, damageResultRow);
 		}
+		Log.d("RMU", "convertedArray size = " + convertedArray.size());
+		resultRows = convertedArray;
 	}
 
     // Getters and setters
@@ -138,15 +163,9 @@ public class DamageTable {
 		return ballTable;
 	}
 	public void setBallTable(boolean ballTable) {
-		if(this.ballTable != ballTable) {
-			convertRows();
-		}
 		this.ballTable = ballTable;
 	}
 	public SparseArray<DamageResultRow> getResultRows() {
         return resultRows;
-    }
-    public void setResultRows(SparseArray<DamageResultRow> resultRows) {
-        this.resultRows = resultRows;
     }
 }

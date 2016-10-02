@@ -20,6 +20,7 @@ import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
 import java.util.Collection;
@@ -181,8 +182,9 @@ public class DamageTableRxHandler {
 				try {
 					String where = DamageResultSchema.COLUMN_DAMAGE_RESULT_ROW_ID + " = ?";
 					damageTableDao.beginTransaction();
-					for(int i = 0; i < damageTable.getResultRows().size(); i++) {
-						String[] whereArgs = {String.valueOf(damageTable.getResultRows().valueAt(i).getId())};
+					Collection<DamageResultRow> rows = damageResultRowDao.getDamageResultRowsForDamageTable(damageTable);
+					for(DamageResultRow row : rows) {
+						String[] whereArgs = {String.valueOf(row.getId())};
 						damageResultDao.deleteWithFilter(where, whereArgs);
 					}
 					where = DamageResultRowSchema.COLUMN_DAMAGE_TABLE_ID + " = ?";

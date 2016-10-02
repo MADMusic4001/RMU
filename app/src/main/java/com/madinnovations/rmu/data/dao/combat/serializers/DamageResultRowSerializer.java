@@ -15,10 +15,14 @@
  */
 package com.madinnovations.rmu.data.dao.combat.serializers;
 
+import android.util.Log;
+import android.util.SparseArray;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -28,6 +32,12 @@ import java.io.IOException;
  * Json serializer and deserializer for the {@link DamageResultRow} entities
  */
 public class DamageResultRowSerializer extends TypeAdapter<DamageResultRow> implements DamageResultRowSchema {
+	private SparseArray<DamageResult> damageResults;
+
+	public void setDamageResults(SparseArray<DamageResult> damageResults) {
+		this.damageResults = damageResults;
+	}
+
 	@Override
 	public void write(JsonWriter out, DamageResultRow value) throws IOException {
 		out.beginObject();
@@ -56,6 +66,37 @@ public class DamageResultRowSerializer extends TypeAdapter<DamageResultRow> impl
 					break;
 				case COLUMN_DAMAGE_TABLE_ID:
 					damageResultRow.setDamageTable(new DamageTable(in.nextInt()));
+					break;
+				case "atResults":
+					in.beginArray();
+					int resultCount = 0;
+					while (in.hasNext()) {
+						in.beginObject();
+						short armorType = 0;
+						int resultId = -1;
+						while (in.hasNext()) {
+							switch (in.nextName()) {
+								case "index":
+									armorType = (short)(in.nextInt() + 1);
+									break;
+								case "atResultId":
+									resultId = in.nextInt();
+									break;
+							}
+							DamageResult damageResult = damageResults.get(resultId);
+							if(damageResult != null && armorType != 0) {
+								resultCount++;
+								damageResult.setArmorType(armorType);
+								damageResult.setDamageResultRow(damageResultRow);
+								damageResultRow.getResults().put(armorType, damageResult);
+							}
+							else if (resultId != -1){
+								Log.d("RMU", "resultId " +  resultId + ". armorType = " + armorType);
+							}
+						}
+						in.endObject();
+					}
+					in.endArray();
 					break;
 			}
 		}

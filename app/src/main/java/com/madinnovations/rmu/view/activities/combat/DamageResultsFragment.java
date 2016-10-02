@@ -42,6 +42,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -77,6 +78,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	private   CheckBox                  ballTableCheckbox;
 	private DamageTable currentInstance = new DamageTable();
 	private boolean isNew = true;
+	Toast toast = null;
 
 	@Nullable
 	@Override
@@ -135,6 +137,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		switch (checkBoxId) {
 			case R.id.ball_table_check_box:
 				result = currentInstance.isBallTable();
+				break;
 		}
 
 		return result;
@@ -144,9 +147,13 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
 		switch (checkBoxId) {
 			case R.id.ball_table_check_box:
-				currentInstance.setBallTable(newBoolean);
-				saveItem();
-				copyItemToViews();
+				if(currentInstance.isBallTable() != newBoolean) {
+					currentInstance.setBallTable(newBoolean);
+					currentInstance.convertRows();
+					saveItem();
+					updateRows();
+					copyItemToViews();
+				}
 				break;
 		}
 	}
@@ -182,10 +189,8 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 
 	private void copyItemToViews() {
 		damageTableNameEdit.setText(currentInstance.getName());
+		Log.d(LOG_TAG, "Setting Ball Table = " + currentInstance.isBallTable());
 		ballTableCheckbox.setChecked(currentInstance.isBallTable());
-		damageResultsGridAdapter.clear();
-		damageResultsGridAdapter.addAll(currentInstance.getResultRows());
-		damageResultsGridAdapter.notifyDataSetChanged();
 		loadFilteredDamageResultRows(currentInstance);
 	}
 
@@ -202,6 +207,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception saving DamageTable", e);
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_table_save_failed), Toast.LENGTH_SHORT);
+						toast.show();
 					}
 					@Override
 					public void onNext(DamageTable savedDamageTable) {
@@ -219,12 +229,44 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							damageTableFilterSpinnerAdapter.notifyDataSetChanged();
 						}
 						if(getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_damage_table_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							if(toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_table_saved), Toast.LENGTH_SHORT);
+							toast.show();
 						}
 					}
 				});
+		}
+	}
+
+	private void updateRows() {
+		for(int i = 0; i < currentInstance.getResultRows().size(); i++) {
+			DamageResultRow row = currentInstance.getResultRows().valueAt(i);
+			damageResultRowRxHandler.save(row)
+					.subscribe(new Subscriber<DamageResultRow>() {
+						@Override
+						public void onCompleted() {
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							Log.e(LOG_TAG, "Exception caught saving DamageResultRow", e);
+							if (toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_result_row_save_failed), Toast.LENGTH_SHORT);
+							toast.show();
+						}
+
+						@Override
+						public void onNext(DamageResultRow row) {
+							for (int i = 0; i < row.getResults().size(); i++) {
+								DamageResult result = row.getResults().valueAt(i);
+								result.setDamageResultRow(row);
+							}
+						}
+					});
 		}
 	}
 
@@ -237,6 +279,9 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					public void onCompleted() {
 						damageTableFilterSpinnerAdapter.remove(damageTable);
 						int position = damageTableFilterSpinner.getSelectedItemPosition() - 1;
+						if(position == -1 && damageTableFilterSpinnerAdapter.getCount() > 0) {
+							position = 0;
+						}
 						if(position != -1) {
 							currentInstance = damageTableFilterSpinnerAdapter.getItem(position);
 						}
@@ -251,8 +296,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception when deleting: " + damageTable, e);
-						String toastString = getString(R.string.toast_damage_table_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_table_delete_failed), Toast.LENGTH_SHORT);
+						toast.show();
 					}
 					@Override
 					public void onNext(Boolean successful) {}
@@ -293,9 +341,12 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception caught getting all DamageResult instances", e);
-						Toast.makeText(DamageResultsFragment.this.getActivity(),
-								getString(R.string.toast_damage_tables_load_failed),
-								Toast.LENGTH_SHORT).show();
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(DamageResultsFragment.this.getActivity(),
+								getString(R.string.toast_damage_tables_load_failed), Toast.LENGTH_SHORT);
+						toast.show();
 					}
 					@Override
 					public void onNext(Collection<DamageTable> damageTables) {
@@ -338,48 +389,42 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	private void initDamageResultsGridView(View layout) {
 		GridView damageResultsGridView = (GridView) layout.findViewById(R.id.damage_results_grid);
 		damageResultsGridView.setAdapter(damageResultsGridAdapter);
-
-		damageResultsGridView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				DamageResultRow newDamageResultRow = (DamageResultRow)damageResultsGridAdapter.getItem(position);
-				if(newDamageResultRow != null) {
-					loadFilteredDamageResultRows(newDamageResultRow.getDamageTable());
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
 	}
 
 	private void loadFilteredDamageResultRows(final DamageTable filter) {
+		Log.d(LOG_TAG, "Loading result rows");
 		damageResultRowRxHandler.getDamageResultRowsForDamageTable(filter)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<DamageResultRow>>() {
 					@Override
-					public void onCompleted() {
-						if(currentInstance.getResultRows() == null) {
-							currentInstance.addMissingRows();
-						}
-					}
+					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
 						Log.e(LOG_TAG, "Exception caught getting all DamageResultRow instances", e);
-						Toast.makeText(DamageResultsFragment.this.getActivity(),
-								getString(R.string.toast_damage_result_rows_load_failed),
-								Toast.LENGTH_SHORT).show();
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(DamageResultsFragment.this.getActivity(),
+								getString(R.string.toast_damage_result_rows_load_failed), Toast.LENGTH_SHORT);
+						toast.show();
 					}
 					@Override
 					public void onNext(Collection<DamageResultRow> damageResultRows) {
 						for(DamageResultRow row : damageResultRows) {
 							currentInstance.getResultRows().put(row.getRangeHighValue(), row);
 						}
-						Toast.makeText(DamageResultsFragment.this.getActivity(),
-									   String.format(
-											   getString(R.string.toast_damage_result_rows_loaded),
-											   damageResultRows.size()),
-									   Toast.LENGTH_SHORT).show();
+						currentInstance.addMissingRows();
+						Log.d(LOG_TAG, "Showing " + currentInstance.getResultRows().size() + " rows");
+						damageResultsGridAdapter.clear();
+						damageResultsGridAdapter.addAll(currentInstance.getResultRows());
+						damageResultsGridAdapter.notifyDataSetChanged();
+						if(toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(DamageResultsFragment.this.getActivity(),
+								String.format(getString(R.string.toast_damage_result_rows_loaded), damageResultRows.size()),
+								Toast.LENGTH_SHORT);
+						toast.show();
 					}
 				});
 	}

@@ -18,6 +18,7 @@ package com.madinnovations.rmu.controller.rxhandler.campaign;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -287,6 +288,9 @@ public class ImportExportRxHandler {
 							}
 
 							try {
+								SparseArray<DamageResult> damageResultsSparseArray = new SparseArray<DamageResult>();
+								List<DamageResult> damageResults = new ArrayList<>();
+								List<DamageResultRow> damageResultRows = new ArrayList<>();
 								db = helper.getWritableDatabase();
 								db.beginTransaction();
 								helper.clearDatabase();
@@ -425,24 +429,6 @@ public class ImportExportRxHandler {
 											Log.d(LOG_TAG, "Loaded " + criticalResults.size() + " criticalResults.");
 											criticalResults = null;
 											break;
-										case DamageResult.JSON_NAME:
-											List<DamageResult> damageResults = new ArrayList<>();
-											jsonReader.beginArray();
-											int maxId = 0;
-											while (jsonReader.hasNext()) {
-												DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
-												damageResults.add(damageResult);
-												if(maxId < damageResult.getId()) {
-													maxId = damageResult.getId();
-												}
-											}
-											Log.d(LOG_TAG, "Max damageResult ID =  " + maxId);
-											damageResultSerializer = null;
-											jsonReader.endArray();
-											damageResultDao.save(damageResults, true);
-											Log.d(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
-											damageResults = null;
-											break;
 										case DamageTable.JSON_NAME:
 											List<DamageTable> damageTables = new ArrayList<>();
 											jsonReader.beginArray();
@@ -456,16 +442,36 @@ public class ImportExportRxHandler {
 											damageTables = null;
 											break;
 										case DamageResultRow.JSON_NAME:
-											List<DamageResultRow> damageResultRows = new ArrayList<>();
+//											List<DamageResultRow> damageResultRows = new ArrayList<>();
+											damageResultRowSerializer.setDamageResults(damageResultsSparseArray);
 											jsonReader.beginArray();
 											while (jsonReader.hasNext()) {
 												DamageResultRow damageResultRow = gson.fromJson(jsonReader, DamageResultRow.class);
 												damageResultRows.add(damageResultRow);
 											}
 											jsonReader.endArray();
-											damageResultRowDao.save(damageResultRows, true);
-											Log.d(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
-											damageResultRows = null;
+//											damageResultRowDao.save(damageResultRows, true);
+//											Log.d(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
+//											damageResultRows = null;
+											break;
+										case DamageResult.JSON_NAME:
+//											List<DamageResult> damageResults = new ArrayList<>();
+											jsonReader.beginArray();
+											int maxId = 0;
+											while (jsonReader.hasNext()) {
+												DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
+												damageResults.add(damageResult);
+												damageResultsSparseArray.put(damageResult.getId(), damageResult);
+												if(maxId < damageResult.getId()) {
+													maxId = damageResult.getId();
+												}
+											}
+											Log.d(LOG_TAG, "Max damageResult ID =  " + maxId);
+											damageResultSerializer = null;
+											jsonReader.endArray();
+//											damageResultDao.save(damageResults, true);
+//											Log.d(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
+//											damageResults = null;
 											break;
 										case CreatureCategory.JSON_NAME:
 											List<CreatureCategory> creatureCategories = new ArrayList<>();
@@ -677,6 +683,17 @@ public class ImportExportRxHandler {
 									}
 								}
 								jsonReader.endObject();
+								damageResultRowDao.save(damageResultRows, true);
+								Log.d(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
+								for(int i = 0; i < damageResultsSparseArray.size(); i++) {
+									DamageResult damageResult = damageResultsSparseArray.valueAt(i);
+									if(damageResult.getDamageResultRow() == null) {
+										Log.i("CorruptResults", damageResult.toString());
+										damageResults.remove(damageResult);
+									}
+								}
+								damageResultDao.save(damageResults, true);
+								Log.d(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
 								db.setTransactionSuccessful();
 							}
 							catch(Exception e) {
@@ -748,67 +765,85 @@ public class ImportExportRxHandler {
 									.name(Size.JSON_NAME)
 									.jsonValue(gson.toJson(sizeDao.getAll()))
 									.name(SkillCategory.JSON_NAME)
-									.jsonValue(gson.toJson(skillCategoryDao.getAll())) ;
+									.jsonValue(gson.toJson(skillCategoryDao.getAll()))
+							;
 							subscriber.onNext(10);
-							jsonWriter.name(Skill.JSON_NAME)
+							jsonWriter
+									.name(Skill.JSON_NAME)
 									.jsonValue(gson.toJson(skillDao.getAll()))
 									.name(TalentCategory.JSON_NAME)
 									.jsonValue(gson.toJson(talentCategoryDao.getAll()))
 									.name(Talent.JSON_NAME)
-									.jsonValue(gson.toJson(talentDao.getAll()));
+									.jsonValue(gson.toJson(talentDao.getAll()))
+							;
 							subscriber.onNext(20);
-							jsonWriter.name(Item.JSON_NAME)
+							jsonWriter
+									.name(Item.JSON_NAME)
 									.jsonValue(gson.toJson(itemDao.getAll()))
 									.name(BodyPart.JSON_NAME)
 									.jsonValue(gson.toJson(bodyPartDao.getAll()))
 									.name(CriticalCode.JSON_NAME)
-									.jsonValue(gson.toJson(criticalCodeDao.getAll()));
+									.jsonValue(gson.toJson(criticalCodeDao.getAll()))
+							;
 							subscriber.onNext(30);
-							jsonWriter.name(CriticalType.JSON_NAME)
+							jsonWriter
+									.name(CriticalType.JSON_NAME)
 									.jsonValue(gson.toJson(criticalTypeDao.getAll()))
 									.name(CriticalResult.JSON_NAME)
 									.jsonValue(gson.toJson(criticalResultDao.getAll()))
-									.name(DamageResult.JSON_NAME)
-									.jsonValue(gson.toJson(damageResultDao.getAll()));
-							subscriber.onNext(40);
-							jsonWriter.name(DamageTable.JSON_NAME)
+									.name(DamageTable.JSON_NAME)
 									.jsonValue(gson.toJson(damageTableDao.getAll()))
+							;
+							subscriber.onNext(40);
+							jsonWriter
 									.name(DamageResultRow.JSON_NAME)
 									.jsonValue(gson.toJson(damageResultRowDao.getAll()))
+									.name(DamageResult.JSON_NAME)
+									.jsonValue(gson.toJson(damageResultDao.getAll()))
 									.name(CreatureCategory.JSON_NAME)
-									.jsonValue(gson.toJson(creatureCategoryDao.getAll()));
+									.jsonValue(gson.toJson(creatureCategoryDao.getAll()))
+							;
 							subscriber.onNext(50);
-							jsonWriter.name(CreatureType.JSON_NAME)
+							jsonWriter
+									.name(CreatureType.JSON_NAME)
 									.jsonValue(gson.toJson(creatureTypeDao.getAll()))
 									.name(Outlook.JSON_NAME)
 									.jsonValue(gson.toJson(outlookDao.getAll()))
 									.name(Realm.JSON_NAME)
-									.jsonValue(gson.toJson(realmDao.getAll()));
+									.jsonValue(gson.toJson(realmDao.getAll()))
+							;
 							subscriber.onNext(60);
-							jsonWriter.name(Profession.JSON_NAME)
+							jsonWriter
+									.name(Profession.JSON_NAME)
 									.jsonValue(gson.toJson(professionDao.getAll()))
 									.name(Culture.JSON_NAME)
 									.jsonValue(gson.toJson(cultureDao.getAll()))
 									.name(Race.JSON_NAME)
-									.jsonValue(gson.toJson(raceDao.getAll()));
+									.jsonValue(gson.toJson(raceDao.getAll()))
+							;
 							subscriber.onNext(70);
-							jsonWriter.name(Specialization.JSON_NAME)
+							jsonWriter
+									.name(Specialization.JSON_NAME)
 									.jsonValue(gson.toJson(specializationDao.getAll()))
 									.name(Attack.JSON_NAME)
 									.jsonValue(gson.toJson(attackDao.getAll()))
 									.name(CreatureArchetype.JSON_NAME)
 									.jsonValue(gson.toJson(creatureArchetypeDao.getAll()))
 									.name(SpellListType.JSON_NAME)
-									.jsonValue(gson.toJson(spellListTypeDao.getAll()));
+									.jsonValue(gson.toJson(spellListTypeDao.getAll()))
+							;
 							subscriber.onNext(80);
-							jsonWriter.name(SpellSubType.JSON_NAME)
+							jsonWriter
+									.name(SpellSubType.JSON_NAME)
 									.jsonValue(gson.toJson(spellSubTypeDao.getAll()))
 									.name(SpellType.JSON_NAME)
 									.jsonValue(gson.toJson(spellTypeDao.getAll()))
 									.name(SpellList.JSON_NAME)
-									.jsonValue(gson.toJson(spellListDao.getAll()));
+									.jsonValue(gson.toJson(spellListDao.getAll()))
+							;
 							subscriber.onNext(90);
-							jsonWriter.name(Spell.JSON_NAME)
+							jsonWriter
+									.name(Spell.JSON_NAME)
 									.jsonValue(gson.toJson(spellDao.getAll()))
 									.name(Character.JSON_NAME)
 									.jsonValue(gson.toJson(characterDao.getAll()))

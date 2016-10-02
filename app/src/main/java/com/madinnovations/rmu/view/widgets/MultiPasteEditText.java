@@ -70,12 +70,10 @@ public class MultiPasteEditText extends EditText {
 		if(clipboardManager.hasPrimaryClip() && clipboardManager.getPrimaryClipDescription().hasMimeType(
 				ClipDescription.MIMETYPE_TEXT_PLAIN)) {
 			CharSequence text = clipboardManager.getPrimaryClip().getItemAt(0).getText();
-			Log.d("RMU", "Source = " + text);
 			String[] results = text.toString().split("\\s");
 			MultiPasteEditText nextEditText = this;
 			for(String result : results) {
 				boolean matched = viewHolder.setResult(result, nextEditText, nextEditText.atIndex);
-				Log.d("RMU", "Matched = " + matched);
 				if(!matched) {
 					break;
 				}
