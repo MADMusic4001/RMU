@@ -191,7 +191,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			Bundle bundle = new Bundle();
 			bundle.putString(FILE_SELECTOR_FILTER, RMU_FILE_EXTENSION);
 			dialogFragment.setArguments(bundle);
-			Log.d("RMU", "Preparing to show FileSelectorDialogFragment");
 			dialogFragment.show(getFragmentManager(), "");
 			return true;
 		}

@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -123,7 +122,6 @@ public class DamageTable {
 		short offset;
 		SparseArray<DamageResultRow> convertedArray = new SparseArray<>(ROW_COUNT);
 
-		Log.d("RMU", "keyAt(0) = " + resultRows.keyAt(0));
 		if(resultRows.keyAt(0) == NON_BALL_LOW + 2 && ballTable) {
 			offset = BALL_HIGH - NON_BALL_HIGH;
 		}
@@ -131,10 +129,8 @@ public class DamageTable {
 			offset = NON_BALL_HIGH - BALL_HIGH;
 		}
 		else {
-			Log.d("RMU", "not converting rows");
 			return;
 		}
-		Log.d("RMU", "offset = " + offset);
 		for(int i = 0; i < resultRows.size(); i++) {
 			DamageResultRow damageResultRow = resultRows.valueAt(i);
 			damageResultRow.setRangeLowValue((short)(damageResultRow.getRangeLowValue() + offset));
@@ -142,7 +138,6 @@ public class DamageTable {
 			damageResultRow.setRangeHighValue(highValue);
 			convertedArray.put(highValue, damageResultRow);
 		}
-		Log.d("RMU", "convertedArray size = " + convertedArray.size());
 		resultRows = convertedArray;
 	}
 

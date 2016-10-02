@@ -189,7 +189,6 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 
 	private void copyItemToViews() {
 		damageTableNameEdit.setText(currentInstance.getName());
-		Log.d(LOG_TAG, "Setting Ball Table = " + currentInstance.isBallTable());
 		ballTableCheckbox.setChecked(currentInstance.isBallTable());
 		loadFilteredDamageResultRows(currentInstance);
 	}
@@ -392,7 +391,6 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	}
 
 	private void loadFilteredDamageResultRows(final DamageTable filter) {
-		Log.d(LOG_TAG, "Loading result rows");
 		damageResultRowRxHandler.getDamageResultRowsForDamageTable(filter)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<DamageResultRow>>() {
@@ -414,7 +412,6 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							currentInstance.getResultRows().put(row.getRangeHighValue(), row);
 						}
 						currentInstance.addMissingRows();
-						Log.d(LOG_TAG, "Showing " + currentInstance.getResultRows().size() + " rows");
 						damageResultsGridAdapter.clear();
 						damageResultsGridAdapter.addAll(currentInstance.getResultRows());
 						damageResultsGridAdapter.notifyDataSetChanged();

@@ -341,7 +341,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	 * Manages the page fragments for a ViewPager
 	 */
 	private class CreatureVarietyFragmentPagerAdapter extends FragmentPagerAdapter {
-		public CreatureVarietyFragmentPagerAdapter(FragmentManager fm) {
+		CreatureVarietyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
@@ -353,7 +353,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				case 0:
 					fragment = Fragment.instantiate(getActivity(), CreatureVarietyMainPageFragment.class.getName());
 					((CreatureVarietyMainPageFragment)fragment).setVarietiesFragment(CreatureVarietiesFragment.this);
-					Log.d(LOG_TAG, "In getItem. CreatureVarietyMainPageFragment = " + fragment);
 					break;
 				case 1:
 					fragment = Fragment.instantiate(getActivity(), CreatureVarietyAttackPageFragment.class.getName());

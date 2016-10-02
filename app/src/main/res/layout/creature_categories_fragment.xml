@@ -29,10 +29,15 @@
       android:layout_gravity="center_horizontal"
       android:choiceMode="singleChoice"/>
 
-  <LinearLayout
+  <ScrollView
       android:orientation="vertical"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="0dp"
+      android:layout_weight="3">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/name_edit"
         android:layout_width="match_parent"
@@ -45,22 +50,24 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:hint="@string/hint_creature_category_description"/>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-      <ExpandableListView
-          android:id="@+id/talents_list"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="180dp"
-          android:choiceMode="multipleChoice"/>
-      <ListView
-          android:id="@+id/selected_talents_list"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="180dp"
-          android:choiceMode="multipleChoice"/>
     </LinearLayout>
+  </ScrollView>
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:baselineAligned="false">
+    <ExpandableListView
+        android:id="@+id/talents_list"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="180dp"
+        android:choiceMode="multipleChoice"/>
+    <ListView
+        android:id="@+id/selected_talents_list"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="180dp"
+        android:choiceMode="multipleChoice"/>
   </LinearLayout>
 </LinearLayout>

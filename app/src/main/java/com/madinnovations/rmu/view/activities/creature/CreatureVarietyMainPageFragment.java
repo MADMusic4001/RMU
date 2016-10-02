@@ -171,7 +171,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	@Override
 	public void onResume() {
-		Log.d(LOG_TAG, "In onResume");
 		super.onResume();
 	}
 
@@ -440,7 +439,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	}
 
 	public void copyItemToViews() {
-		Log.d(LOG_TAG, "In copyItemToViews. CreatureVarietyMainPageFragment = " + this);
 		nameEdit.setText(varietiesFragment.getCurrentInstance().getName());
 		creatureTypeSpinner.setSelection(creatureTypeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getType()));
 		typicalLevelEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getTypicalLevel()));
