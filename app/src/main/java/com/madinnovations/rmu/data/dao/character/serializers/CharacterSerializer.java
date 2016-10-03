@@ -44,7 +44,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 	public void write(JsonWriter out, Character value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
-		out.name(COLUMN_NAME).value(value.getName());
+		out.name(COLUMN_FIRST_NAME).value(value.getFirstName());
+		out.name(COLUMN_LAST_NAME).value(value.getLastName());
+		out.name(COLUMN_KNOWN_AS).value(value.getKnownAs());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_HAIR_COLOR).value(value.getHairColor());
 		out.name(COLUMN_HAIR_STYLE).value(value.getHairStyle());
@@ -52,7 +54,6 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_SKIN_COMPLEXION).value(value.getSkinComplexion());
 		out.name(COLUMN_FACIAL_FEATURES).value(value.getFacialFeatures());
 		out.name(COLUMN_IDENTIFYING_MARKS).value(value.getIdentifyingMarks());
-		out.name(COLUMN_CLOTHING).value(value.getClothing());
 		out.name(COLUMN_PERSONALITY).value(value.getPersonality());
 		out.name(COLUMN_MANNERISMS).value(value.getMannerisms());
 		out.name(COLUMN_HOMETOWN).value(value.getHometown());
@@ -63,7 +64,6 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
 		out.name(COLUMN_HEIGHT).value(value.getHeight());
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
-		out.name(COLUMN_STRIDE).value(value.getStride());
 		out.name(COLUMN_CURRENT_HITS).value(value.getCurrentHits());
 		out.name(COLUMN_MAX_HITS).value(value.getMaxHits());
 		out.name(COLUMN_CURRENT_DEVELOPMENT_POINTS).value(value.getCurrentDevelopmentPoints());
@@ -119,8 +119,14 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_ID:
 					character.setId(in.nextInt());
 					break;
-				case COLUMN_NAME:
-					character.setName(in.nextString());
+				case COLUMN_FIRST_NAME:
+					character.setFirstName(in.nextString());
+					break;
+				case COLUMN_LAST_NAME:
+					character.setLastName(in.nextString());
+					break;
+				case COLUMN_KNOWN_AS:
+					character.setKnownAs(in.nextString());
 					break;
 				case COLUMN_DESCRIPTION:
 					character.setDescription(in.nextString());
@@ -142,9 +148,6 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case COLUMN_IDENTIFYING_MARKS:
 					character.setIdentifyingMarks(in.nextString());
-					break;
-				case COLUMN_CLOTHING:
-					character.setClothing(in.nextString());
 					break;
 				case COLUMN_PERSONALITY:
 					character.setPersonality(in.nextString());
@@ -175,9 +178,6 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case COLUMN_WEIGHT:
 					character.setWeight((short)in.nextInt());
-					break;
-				case COLUMN_STRIDE:
-					character.setStride((short)in.nextInt());
 					break;
 				case COLUMN_CURRENT_HITS:
 					character.setCurrentHits((short)in.nextInt());

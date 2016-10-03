@@ -117,12 +117,13 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		Character instance = new Character();
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+		instance.setFirstName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME)));
+		instance.setLastName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME)));
+		instance.setKnownAs(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_KNOWN_AS)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 		instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
 		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
 		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
-		instance.setStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRIDE)));
 		instance.setCurrentHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HITS)));
 		instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
@@ -145,12 +146,13 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		else {
 			values = new ContentValues(9);
 		}
-		values.put(COLUMN_NAME, instance.getName());
+		values.put(COLUMN_FIRST_NAME, instance.getFirstName());
+		values.put(COLUMN_LAST_NAME, instance.getLastName());
+		values.put(COLUMN_KNOWN_AS, instance.getKnownAs());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 		values.put(COLUMN_RACE_ID, instance.getRace().getId());
 		values.put(COLUMN_HEIGHT, instance.getHeight());
 		values.put(COLUMN_WEIGHT, instance.getWeight());
-		values.put(COLUMN_STRIDE, instance.getStride());
 		values.put(COLUMN_CURRENT_HITS, instance.getCurrentHits());
 		values.put(COLUMN_MAX_HITS, instance.getMaxHits());
 		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());

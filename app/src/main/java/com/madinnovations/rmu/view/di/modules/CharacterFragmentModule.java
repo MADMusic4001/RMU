@@ -15,6 +15,10 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
@@ -28,10 +32,26 @@ import dagger.Provides;
  */
 @Module
 public class CharacterFragmentModule {
-	private CulturesFragment    culturesFragment;
-	private ProfessionsFragment professionsFragment;
-	private RacesFragment       racesFragment;
+	private CharacterBackgroundPageFragment characterBackgroundPageFragment;
+	private CharacterMainPageFragment       characterMainPageFragment;
+	private CharactersFragment              charactersFragment;
+	private CharacterSkillsPageFragment     characterSkillsPageFragment;
+	private CulturesFragment                culturesFragment;
+	private ProfessionsFragment             professionsFragment;
+	private RacesFragment                   racesFragment;
 
+	public CharacterFragmentModule(CharacterBackgroundPageFragment charactersFragment) {
+		this.characterBackgroundPageFragment = characterBackgroundPageFragment;
+	}
+	public CharacterFragmentModule(CharacterMainPageFragment characterMainPageFragment) {
+		this.characterMainPageFragment = characterMainPageFragment;
+	}
+	public CharacterFragmentModule(CharactersFragment charactersFragment) {
+		this.charactersFragment = charactersFragment;
+	}
+	public CharacterFragmentModule(CharacterSkillsPageFragment characterSkillsPageFragment) {
+		this.characterSkillsPageFragment = characterSkillsPageFragment;
+	}
 	public CharacterFragmentModule(CulturesFragment culturesFragment) {
 		this.culturesFragment = culturesFragment;
 	}
@@ -42,6 +62,26 @@ public class CharacterFragmentModule {
 		this.racesFragment = racesFragment;
 	}
 
+	@Provides
+	@PerFragment
+	CharacterBackgroundPageFragment provideCharacterBackgroundPageFragment() {
+		return this.characterBackgroundPageFragment;
+	}
+	@Provides
+	@PerFragment
+	CharacterMainPageFragment provideCharacterMainPageFragment() {
+		return this.characterMainPageFragment;
+	}
+	@Provides
+	@PerFragment
+	CharactersFragment provideCharactersFragment() {
+		return this.charactersFragment;
+	}
+	@Provides
+	@PerFragment
+	CharacterSkillsPageFragment provideCharacterSkillsPageFragment() {
+		return this.characterSkillsPageFragment;
+	}
 	@Provides
 	@PerFragment
 	CulturesFragment provideCulturesFragment() {

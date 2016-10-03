@@ -75,7 +75,7 @@ public class MainMenuFragment extends Fragment {
 					case 0:
 						switch (childPosition) {
 							case 0:
-//								((CampaignActivity)getActivity()).showCharacters();
+								((CampaignActivity)getActivity()).showCharacters();
 								break;
 							case 1:
 								((CampaignActivity)getActivity()).showCultures();

@@ -91,6 +91,8 @@
   <string name="label_new_attack">New Attack</string>
   <string name="label_delete_body_part">Delete Body Part</string>
   <string name="label_new_body_part">New Body Part</string>
+  <string name="label_delete_character">Delete Character</string>
+  <string name="label_new_character">New Character</string>
   <string name="label_delete_creature_archetype">Delete Creature Archetype</string>
   <string name="label_new_creature_archetype">New Creature Archetype</string>
   <string name="label_delete_creature_category">Delete Creature Category</string>
@@ -151,6 +153,9 @@
   <string name="label_attack_name">Attack Name</string>
   <string name="label_body_part_description">Body Part Description</string>
   <string name="label_body_part_name">Body Part Name</string>
+  <string name="label_character_first_name">Character First Name</string>
+  <string name="label_character_known_as">Character Last Name</string>
+  <string name="label_character_last_name">Character Known As</string>
   <string name="label_creature_archetype_description">Creature Archetype Description</string>
   <string name="label_creature_archetype_name">Creature Archetype Name</string>
   <string name="label_creature_category_description">Creature Category Description</string>
@@ -182,8 +187,10 @@
   <string name="label_size_code">Size Code</string>
   <string name="label_size_name">Size Name</string>
   <string name="label_size_examples">Size Examples</string>
+  <string name="label_skill_cost">Skill Cost</string>
   <string name="label_skill_description">Skill Description</string>
   <string name="label_skill_name">Skill Name</string>
+  <string name="label_skill_rank">Skill Rank</string>
   <string name="label_skill_category_description">Skill Category Description</string>
   <string name="label_skill_category_name">Skill Category Name</string>
   <string name="label_specialization_description">Specialization Description</string>
@@ -205,6 +212,7 @@
   <string name="label_talent_name">Talent Name</string>
   <string name="label_talent_category_name">Talent Category Name</string>
   <string name="label_talent_category_description">Talent Category Description</string>
+  <string name="label_talent_tier">Talent Tiers</string>
 
   <!-- Filter default labels -->
   <string name="label_all_skill_categories">All Skill Categories</string>
@@ -312,29 +320,49 @@
   <string name="input_label_critical_type">Critical Type:</string>
   <string name="input_label_critical_severity_filter">Critical Severity Filter:</string>
   <string name="input_label_critical_type_filter">Critical Type Filter:</string>
+  <string name="input_label_culture">Culture:</string>
+  <string name="input_label_current_dps">Current DP:</string>
+  <string name="input_label_current_hits">Current Hits:</string>
+  <string name="input_label_current_lvl">Current Level:</string>
   <string name="input_label_damage_table">Damage Table:</string>
   <string name="input_label_dazed">Dazed:</string>
   <string name="input_label_description">Description:</string>
   <string name="input_label_dev_points">Dev Points:</string>
   <string name="input_label_duration">Duration:</string>
   <string name="input_label_endurance_mod">Endurance Mod.:</string>
+  <string name="input_label_eye_color">Eye Color:</string>
+  <string name="input_label_facial_features">Facial Features:</string>
+  <string name="input_label_family_info">Family Information:</string>
   <string name="input_label_fatigue">Fatigue:</string>
+  <string name="input_label_first_name">First Name:</string>
+  <string name="input_label_hair_color">Hair Color:</string>
+  <string name="input_label_hair_style">Hair Style:</string>
   <string name="input_label_healing_rate">Healing Rate:</string>
   <string name="input_label_height">Height:</string>
   <string name="input_label_hits">Hits:</string>
+  <string name="input_label_hometown">Hometown:</string>
+  <string name="input_label_identifying_marks">Identifying Marks:</string>
   <string name="input_label_injury">Injury:</string>
   <string name="input_label_is_attack">Is Attack?</string>
   <string name="input_label_is_movement">Is Movement?</string>
+  <string name="input_label_known_as">Known As:</string>
+  <string name="input_label_last_name">Last Name:</string>
   <string name="input_label_leftover_dp">Leftover DP:</string>
   <string name="input_label_length">Length:</string>
   <string name="input_label_level">Level:</string>
+  <string name="input_label_mannerisms">Mannerisms:</string>
+  <string name="input_label_max_hits">Max Hits:</string>
   <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
   <string name="input_label_outlook">Outlook:</string>
   <string name="input_label_parameter">Parameter:</string>
+  <string name="input_label_personality">Personality:</string>
   <string name="input_label_pounds_per_inch">Pounds per Inch:</string>
+  <string name="input_label_profession">Profession:</string>
+  <string name="input_label_race">Race:</string>
   <string name="input_label_race_name">Race Name:</string>
   <string name="input_label_range">Range:</string>
+  <string name="input_label_realm">Realm:</string>
   <string name="input_label_realm1">Realm 1:</string>
   <string name="input_label_realm2">Realm 2:</string>
   <string name="input_label_recovery_multiplier">Recovery Mult.:</string>
@@ -342,6 +370,7 @@
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_skill">Skill:</string>
+  <string name="input_label_skin_complexion">Skin Complexion:</string>
   <string name="input_label_specialization">Specialization:</string>
   <string name="input_label_spell_list">Spell List:</string>
   <string name="input_label_spell_list_filter">Spell List Filter:</string>
@@ -368,4 +397,7 @@
   <!-- ViewPager title strings -->
   <string name="title_creature_variety_main_page">General Attributes</string>
   <string name="title_creature_variety_attacks_page">Attacks and Skills</string>
+  <string name="title_character_main_page">General Attributes</string>
+  <string name="title_character_skills_page">Skills, Talents and Stats</string>
+  <string name="title_character_background_page">Background Information</string>
 </resources>

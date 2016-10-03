@@ -23,36 +23,38 @@ import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 public interface CharacterSchema {
 	String TABLE_NAME = "characters";
 
-	String COLUMN_ID = "id";
-	String COLUMN_NAME = "name";
-	String COLUMN_DESCRIPTION = "description";
-	String COLUMN_HAIR_COLOR = "hairColor";
-	String COLUMN_HAIR_STYLE = "hairStyle";
-	String COLUMN_EYE_COLOR = "eyeColor";
-	String COLUMN_SKIN_COMPLEXION = "skinComplexion";
-	String COLUMN_FACIAL_FEATURES = "facialFeatures";
-	String COLUMN_IDENTIFYING_MARKS = "identifyingMarks";
-	String COLUMN_CLOTHING = "clothing";
-	String COLUMN_PERSONALITY = "personality";
-	String COLUMN_MANNERISMS = "mannerisms";
-	String COLUMN_HOMETOWN = "hometown";
-	String COLUMN_FAMILY_INFO = "familyInfo";
-	String COLUMN_RACE_ID = "raceId";
-	String COLUMN_CULTURE_ID = "cultureId";
-	String COLUMN_PROFESSION_ID = "professionId";
-	String COLUMN_REALM_ID = "realmId";
-	String COLUMN_HEIGHT = "height";
-	String COLUMN_WEIGHT = "weight";
-	String COLUMN_STRIDE = "stride";
-	String COLUMN_CURRENT_HITS = "currentHits";
-	String COLUMN_MAX_HITS = "maxHits";
+	String COLUMN_ID                         = "id";
+	String COLUMN_FIRST_NAME                 = "firstName";
+	String COLUMN_LAST_NAME                  = "lastName";
+	String COLUMN_KNOWN_AS                   = "knownAs";
+	String COLUMN_DESCRIPTION                = "description";
+	String COLUMN_HAIR_COLOR                 = "hairColor";
+	String COLUMN_HAIR_STYLE                 = "hairStyle";
+	String COLUMN_EYE_COLOR                  = "eyeColor";
+	String COLUMN_SKIN_COMPLEXION            = "skinComplexion";
+	String COLUMN_FACIAL_FEATURES            = "facialFeatures";
+	String COLUMN_IDENTIFYING_MARKS          = "identifyingMarks";
+	String COLUMN_PERSONALITY                = "personality";
+	String COLUMN_MANNERISMS                 = "mannerisms";
+	String COLUMN_HOMETOWN                   = "hometown";
+	String COLUMN_FAMILY_INFO                = "familyInfo";
+	String COLUMN_RACE_ID                    = "raceId";
+	String COLUMN_CULTURE_ID                 = "cultureId";
+	String COLUMN_PROFESSION_ID              = "professionId";
+	String COLUMN_REALM_ID                   = "realmId";
+	String COLUMN_HEIGHT                     = "height";
+	String COLUMN_WEIGHT                     = "weight";
+	String COLUMN_CURRENT_HITS               = "currentHits";
+	String COLUMN_MAX_HITS                   = "maxHits";
 	String COLUMN_CURRENT_DEVELOPMENT_POINTS = "currentDevelopmentPoints";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-			+ COLUMN_NAME  + " TEXT NOT NULL, "
+			+ COLUMN_FIRST_NAME + " TEXT NOT NULL, "
+			+ COLUMN_LAST_NAME + " TEXT NOT NULL, "
+			+ COLUMN_KNOWN_AS + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_HAIR_COLOR + " TEXT, "
 			+ COLUMN_HAIR_STYLE + " TEXT, "
@@ -60,7 +62,6 @@ public interface CharacterSchema {
 			+ COLUMN_SKIN_COMPLEXION + " TEXT, "
 			+ COLUMN_FACIAL_FEATURES + " TEXT, "
 			+ COLUMN_IDENTIFYING_MARKS + " TEXT, "
-			+ COLUMN_CLOTHING + " TEXT, "
 			+ COLUMN_PERSONALITY + " TEXT, "
 			+ COLUMN_MANNERISMS + " TEXT, "
 			+ COLUMN_HOMETOWN + " TEXT, "
@@ -71,7 +72,6 @@ public interface CharacterSchema {
 			+ COLUMN_REALM_ID  + " INTEGER, "
 			+ COLUMN_HEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_WEIGHT + " INTEGER NOT NULL, "
-			+ COLUMN_STRIDE + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_MAX_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_DEVELOPMENT_POINTS + " INTEGER NOT NULL, "
@@ -85,9 +85,9 @@ public interface CharacterSchema {
 				+ "(" + RealmSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAIR_COLOR, COLUMN_HAIR_STYLE,
-			COLUMN_EYE_COLOR, COLUMN_SKIN_COMPLEXION, COLUMN_FACIAL_FEATURES, COLUMN_IDENTIFYING_MARKS, COLUMN_CLOTHING,
-			COLUMN_PERSONALITY, COLUMN_MANNERISMS, COLUMN_HOMETOWN, COLUMN_FAMILY_INFO, COLUMN_RACE_ID, COLUMN_CULTURE_ID,
-			COLUMN_PROFESSION_ID, COLUMN_REALM_ID, COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_STRIDE, COLUMN_CURRENT_HITS,
-			COLUMN_MAX_HITS, COLUMN_CURRENT_DEVELOPMENT_POINTS};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_KNOWN_AS, COLUMN_DESCRIPTION,
+			COLUMN_HAIR_COLOR, COLUMN_HAIR_STYLE, COLUMN_EYE_COLOR, COLUMN_SKIN_COMPLEXION, COLUMN_FACIAL_FEATURES,
+			COLUMN_IDENTIFYING_MARKS, COLUMN_PERSONALITY, COLUMN_MANNERISMS, COLUMN_HOMETOWN, COLUMN_FAMILY_INFO,
+			COLUMN_RACE_ID, COLUMN_CULTURE_ID, COLUMN_PROFESSION_ID, COLUMN_REALM_ID, COLUMN_HEIGHT, COLUMN_WEIGHT,
+			COLUMN_CURRENT_HITS, COLUMN_MAX_HITS, COLUMN_CURRENT_DEVELOPMENT_POINTS};
 }

@@ -31,6 +31,7 @@ import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportRxHandler;
 import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
+import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
@@ -83,6 +84,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private AboutFragment              aboutFragment;
 	private AttacksFragment            attacksFragment;
 	private BodyPartsFragment          bodyPartsFragment;
+	private CharactersFragment         charactersFragment;
 	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 	private CreatureTypesFragment      creatureTypesFragment;
@@ -254,6 +256,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			bodyPartsFragment = new BodyPartsFragment();
 		}
 		replaceDetailFragment(bodyPartsFragment);
+	}
+
+	public void showCharacters() {
+		if(charactersFragment == null) {
+			charactersFragment = new CharactersFragment();
+		}
+		replaceDetailFragment(charactersFragment);
 	}
 
 	public void showCreatureArchetypes() {

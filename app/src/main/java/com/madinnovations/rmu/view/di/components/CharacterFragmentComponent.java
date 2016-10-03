@@ -15,6 +15,10 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
@@ -30,6 +34,10 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = CharacterFragmentModule.class)
 public interface CharacterFragmentComponent {
+	void injectInto(CharacterBackgroundPageFragment characterBackgroundPageFragment);
+	void injectInto(CharacterMainPageFragment characterMainPageFragment);
+	void injectInto(CharactersFragment charactersFragment);
+	void injectInto(CharacterSkillsPageFragment characterSkillsPageFragment);
 	void injectInto(CulturesFragment culturesFragment);
 	void injectInto(ProfessionsFragment professionsFragment);
 	void injectInto(RacesFragment racesFragment);

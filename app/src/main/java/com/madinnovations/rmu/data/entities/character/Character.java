@@ -33,7 +33,10 @@ import java.util.Map;
 public class Character {
 	public static final String JSON_NAME = "Characters";
 	private int                   id = -1;
-	private String                name = null;
+	private short                 currentLevel = 0;
+	private String                firstName = null;
+	private String                lastName = null;
+	private String                knownAs = null;
 	private String                description = null;
 	private String                hairColor = null;
 	private String                hairStyle = null;
@@ -41,7 +44,6 @@ public class Character {
 	private String                skinComplexion = null;
 	private String                facialFeatures = null;
 	private String                identifyingMarks = null;
-	private String                clothing = null;
 	private String                personality = null;
 	private String                mannerisms = null;
 	private String                hometown = null;
@@ -50,12 +52,11 @@ public class Character {
 	private Culture               culture = null;
 	private Profession            profession = null;
 	private Realm                 realm = null;
-	private short                 height;
-	private short                 weight;
-	private short                 stride;
-	private short                 currentHits;
-	private short                 maxHits;
-	private short                 currentDevelopmentPoints;
+	private short                 height = 70;
+	private short                 weight = 185;
+	private short                 currentHits = 25;
+	private short                 maxHits = 25;
+	private short                 currentDevelopmentPoints = 50;
 	private Map<Skill, SkillCost> skillCosts = new HashMap<>();
 	private Map<Skill, Short>     skillRanks = new HashMap<>();
 	private Map<Talent, Short>    talentTiers = new HashMap<>();
@@ -68,14 +69,19 @@ public class Character {
 	 * @return true if the Character instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && race != null && profession != null;
+		return firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty() && description != null
+				&& !description.isEmpty() && race != null && profession != null && culture != null
+				&& (profession.getRealm1() != null || realm != null);
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
-				.append("name", name)
+				.append("currentLevel", currentLevel)
+				.append("firstName", firstName)
+				.append("lastName", lastName)
+				.append("knownAs", knownAs)
 				.append("description", description)
 				.append("hairColor", hairColor)
 				.append("hairStyle", hairStyle)
@@ -83,7 +89,6 @@ public class Character {
 				.append("skinComplexion", skinComplexion)
 				.append("facialFeatures", facialFeatures)
 				.append("identifyingMarks", identifyingMarks)
-				.append("clothing", clothing)
 				.append("personality", personality)
 				.append("mannerisms", mannerisms)
 				.append("hometown", hometown)
@@ -94,7 +99,6 @@ public class Character {
 				.append("realm", realm)
 				.append("height", height)
 				.append("weight", weight)
-				.append("stride", stride)
 				.append("currentHits", currentHits)
 				.append("maxHits", maxHits)
 				.append("currentDevelopmentPoints", currentDevelopmentPoints)
@@ -128,11 +132,29 @@ public class Character {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
+	public short getCurrentLevel() {
+		return currentLevel;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setCurrentLevel(short currentLevel) {
+		this.currentLevel = currentLevel;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getKnownAs() {
+		return knownAs;
+	}
+	public void setKnownAs(String knownAs) {
+		this.knownAs = knownAs;
 	}
 	public String getDescription() {
 		return description;
@@ -175,12 +197,6 @@ public class Character {
 	}
 	public void setIdentifyingMarks(String identifyingMarks) {
 		this.identifyingMarks = identifyingMarks;
-	}
-	public String getClothing() {
-		return clothing;
-	}
-	public void setClothing(String clothing) {
-		this.clothing = clothing;
 	}
 	public String getPersonality() {
 		return personality;
@@ -241,12 +257,6 @@ public class Character {
 	}
 	public void setWeight(short weight) {
 		this.weight = weight;
-	}
-	public short getStride() {
-		return stride;
-	}
-	public void setStride(short stride) {
-		this.stride = stride;
 	}
 	public short getCurrentHits() {
 		return currentHits;

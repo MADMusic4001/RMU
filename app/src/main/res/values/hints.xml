@@ -17,7 +17,30 @@
 <resources>
   <!-- EditText hints -->
 
+  <!-- Shared -->
+  <string name="hint_current_hits">Current Hits</string>
+  <string name="hint_height">Height</string>
+  <string name="hint_max_hits">Max Hits</string>
+  <string name="hint_stride">Stride</string>
+  <string name="hint_weight">Weight</string>
+
   <!-- Character -->
+  <string name="hint_character_current_dps">Current DP</string>
+  <string name="hint_character_current_lvl">Current Level</string>
+  <string name="hint_character_description">Character Description</string>
+  <string name="hint_character_eye_color">Eye Color</string>
+  <string name="hint_character_facial_features">Facial Features</string>
+  <string name="hint_character_family_info">Family Information</string>
+  <string name="hint_character_first_name">First Name</string>
+  <string name="hint_character_hair_color">Hair Color</string>
+  <string name="hint_character_hair_style">Hair Style</string>
+  <string name="hint_character_hometown">Hometown</string>
+  <string name="hint_character_identifying_marks">Identifying Marks</string>
+  <string name="hint_character_known_as">Known As</string>
+  <string name="hint_character_last_name">Last Name</string>
+  <string name="hint_character_mannerisms">Mannerisms</string>
+  <string name="hint_character_personality">Personality</string>
+  <string name="hint_character_skin_complexion">Skin Complexion</string>
   <string name="hint_culture_description">Culture Description</string>
   <string name="hint_culture_name">Culture Name</string>
   <string name="hint_dev_points">Dev Points</string>
