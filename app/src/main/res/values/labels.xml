@@ -154,8 +154,8 @@
   <string name="label_body_part_description">Body Part Description</string>
   <string name="label_body_part_name">Body Part Name</string>
   <string name="label_character_first_name">Character First Name</string>
-  <string name="label_character_known_as">Character Last Name</string>
-  <string name="label_character_last_name">Character Known As</string>
+  <string name="label_character_known_as">Character Known As</string>
+  <string name="label_character_last_name">Character Last Name</string>
   <string name="label_creature_archetype_description">Creature Archetype Description</string>
   <string name="label_creature_archetype_name">Creature Archetype Name</string>
   <string name="label_creature_category_description">Creature Category Description</string>
@@ -400,4 +400,7 @@
   <string name="title_character_main_page">General Attributes</string>
   <string name="title_character_skills_page">Skills, Talents and Stats</string>
   <string name="title_character_background_page">Background Information</string>
+
+  <!-- Adapter extra instance names -->
+  <string name="no_specialization">No Specialization</string>
 </resources>

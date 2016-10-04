@@ -20,16 +20,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+
+import java.util.Map;
 
 /**
  * Handles interactions with the UI for character creation.
  */
 public class CharacterSkillsPageFragment extends Fragment {
-	private   CharactersFragment  charactersFragment;
+	private CharactersFragment  charactersFragment;
+	private ListView            skillCostsListView;
+	private ListView            skillRanksListView;
+	private ListView            talentTiersListView;
+	private Map<Stat, EditText> statEditTextMap;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,6 +46,10 @@ public class CharacterSkillsPageFragment extends Fragment {
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.character_skills_talents_stats_fragment, container, false);
+
+//		skillCostsListView = initSkillCostsListView(layout);
+//		skillRanksListView = initSkillRanksListView(layout);
+//		talentTiersListView = initTalentTiersListView(layout);
 
 		return layout;
 	}

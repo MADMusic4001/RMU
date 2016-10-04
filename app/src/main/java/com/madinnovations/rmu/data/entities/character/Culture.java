@@ -17,9 +17,6 @@ package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.Skill;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,13 +57,7 @@ public class Culture {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("description", description)
-				.append("tradesAndCraftsRanks", tradesAndCraftsRanks)
-				.append("skillRanks", skillRanks)
-				.toString();
+		return name;
 	}
 
 	@Override

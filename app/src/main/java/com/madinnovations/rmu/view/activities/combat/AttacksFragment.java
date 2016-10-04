@@ -28,11 +28,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +45,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
+import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
 import java.util.Collection;
 
@@ -59,7 +58,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for body parts.
  */
-public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack>, EditTextUtils.ValuesCallback {
+public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack>, EditTextUtils.ValuesCallback,
+		SpinnerUtils.ValuesCallback {
 	private static final String LOG_TAG = "AttacksFragment";
 	@Inject
 	protected AttackRxHandler              attackRxHandler;
@@ -67,14 +67,12 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 	protected DamageTableRxHandler         damageTableRxHandler;
 	@Inject
 	protected SpecializationRxHandler      specializationRxHandler;
-	private   ArrayAdapter<DamageTable>    damageTableAdapter;
-	private   ArrayAdapter<Specialization> specializationAdapter;
 	private   TwoFieldListAdapter<Attack>  listAdapter;
 	private ListView                       listView;
 	private EditText                       codeEdit;
 	private EditText                       nameEdit;
-	private Spinner                        damageTableSpinner;
-	private Spinner                        specializationSpinner;
+	private SpinnerUtils<DamageTable>      damageTableSpinner;
+	private SpinnerUtils<Specialization>   specializationSpinner;
 	private Attack currentInstance = new Attack();
 	private boolean isNew = true;
 	private Specialization noSpecialization = new Specialization();
@@ -86,6 +84,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCombatFragmentComponent(new CombatFragmentModule(this)).injectInto(this);
 
+		noSpecialization.setName(getString(R.string.no_specialization));
 		View layout = inflater.inflate(R.layout.attacks_fragment, container, false);
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_attack_code));
@@ -94,8 +93,10 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.attack_code_edit,
 										  R.string.validation_attack_code_required);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_attack_name_required);
-		initDamageTableSpinner(layout);
-		initSpecializationSpinner(layout);
+		damageTableSpinner = new SpinnerUtils<>();
+		damageTableSpinner.initSpinner(layout, getActivity(), damageTableRxHandler.getAll(), this, R.id.damage_table_spinner, null);
+		specializationSpinner = new SpinnerUtils<>();
+		specializationSpinner.initSpinner(layout, getActivity(), specializationRxHandler.getAll(), this, R.id.specialization_spinner, noSpecialization);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -206,12 +207,40 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				break;
 		}
 	}
+
+	@Override
+	public Object getValueForSpinner(@IdRes int spinnerId) {
+		Object result = null;
+
+		switch (spinnerId) {
+			case R.id.damage_table_spinner:
+				result = currentInstance.getDamageTable();
+				break;
+			case R.id.specialization_spinner:
+				result = currentInstance.getSpecialization();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
+		switch (spinnerId) {
+			case R.id.damage_table_spinner:
+				currentInstance.setDamageTable((DamageTable)newItem);
+				saveItem();
+				break;
+			case R.id.specialization_spinner:
+				currentInstance.setSpecialization((Specialization)newItem);
+				break;
+		}
+	}
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
 		boolean changed = false;
-		int position;
 		String value;
 
 		if(codeEdit != null) {
@@ -238,32 +267,23 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 
-		if(damageTableSpinner != null) {
-			position = damageTableSpinner.getSelectedItemPosition();
-			if (position != -1) {
-				DamageTable damageTable = damageTableAdapter.getItem(position);
-				if (damageTable != null && !damageTable.equals(currentInstance.getDamageTable())) {
-					currentInstance.setDamageTable(damageTable);
-					changed = true;
-				}
-			}
+		DamageTable newDamageTable = damageTableSpinner.getSelectedItem();
+		DamageTable oldDamageTable = currentInstance.getDamageTable();
+		if((newDamageTable != null && !newDamageTable.equals(oldDamageTable)) ||
+				(oldDamageTable != null && !oldDamageTable.equals(newDamageTable))) {
+			currentInstance.setDamageTable(newDamageTable);
+			changed = true;
 		}
 
-		if(specializationSpinner != null) {
-			position = specializationSpinner.getSelectedItemPosition();
-			if (position != -1) {
-				Specialization specialization = specializationAdapter.getItem(position);
-				if (specialization != null) {
-					if (specialization.equals(noSpecialization) && currentInstance.getSpecialization() != null) {
-						currentInstance.setSpecialization(null);
-						changed = true;
-					}
-					else if (!specialization.equals(currentInstance.getSpecialization())) {
-						currentInstance.setSpecialization(specialization);
-						changed = true;
-					}
-				}
-			}
+		Specialization newSpecialization = specializationSpinner.getSelectedItem();
+		if(noSpecialization.equals(newSpecialization)) {
+			newSpecialization = null;
+		}
+		Specialization oldSpecialization = currentInstance.getSpecialization();
+		if((newSpecialization != null && !newSpecialization.equals(oldSpecialization)) ||
+				(oldSpecialization != null && !oldSpecialization.equals(newSpecialization))) {
+			currentInstance.setSpecialization(newSpecialization);
+			changed = true;
 		}
 
 		return changed;
@@ -272,12 +292,12 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void copyItemToViews() {
 		codeEdit.setText(currentInstance.getCode());
 		nameEdit.setText(currentInstance.getName());
-		damageTableSpinner.setSelection(damageTableAdapter.getPosition(currentInstance.getDamageTable()));
+		damageTableSpinner.setSelection(currentInstance.getDamageTable());
 		if(currentInstance.getSpecialization() == null) {
-			specializationSpinner.setSelection(specializationAdapter.getPosition(noSpecialization));
+			specializationSpinner.setSelection(noSpecialization);
 		}
 		else {
-			specializationSpinner.setSelection(specializationAdapter.getPosition(currentInstance.getSpecialization()));
+			specializationSpinner.setSelection(currentInstance.getSpecialization());
 		}
 
 		if(currentInstance.getCode() != null && !currentInstance.getCode().isEmpty()) {
@@ -374,100 +394,6 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 	// </editor-fold>
 
 	// <editor-fold desc="Widget initialization methods">
-	private void initDamageTableSpinner(View layout) {
-		damageTableSpinner = (Spinner)layout.findViewById(R.id.damage_table_spinner);
-		damageTableAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		damageTableSpinner.setAdapter(damageTableAdapter);
-
-		damageTableRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<DamageTable>>() {
-					@Override
-					public void onCompleted() {
-						damageTableSpinner.setSelection(damageTableAdapter.getPosition(currentInstance.getDamageTable()));
-					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all DamageTable instances", e);
-					}
-					@Override
-					public void onNext(Collection<DamageTable> damageTables) {
-						damageTableAdapter.clear();
-						damageTableAdapter.addAll(damageTables);
-						damageTableAdapter.notifyDataSetChanged();
-					}
-				});
-
-		damageTableSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				DamageTable damageTable = damageTableAdapter.getItem(position);
-				if(damageTable != null && !damageTable.equals(currentInstance.getDamageTable())) {
-					currentInstance.setDamageTable(damageTable);
-					saveItem();
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
-	}
-
-	private void initSpecializationSpinner(View layout) {
-		specializationSpinner = (Spinner)layout.findViewById(R.id.attack_specialization_spinner);
-		specializationAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		specializationSpinner.setAdapter(specializationAdapter);
-
-		specializationRxHandler.getAllAttackSpecializations()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Specialization>>() {
-					@Override
-					public void onCompleted() {
-						if(currentInstance.getSpecialization() == null) {
-							specializationSpinner.setSelection(specializationAdapter.getPosition(noSpecialization));
-						}
-						else {
-							specializationSpinner.setSelection(specializationAdapter.getPosition(currentInstance.getSpecialization()));
-						}
-					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all attack Specialization instances", e);
-					}
-					@Override
-					public void onNext(Collection<Specialization> specializations) {
-						specializationAdapter.clear();
-						specializationAdapter.add(noSpecialization);
-						specializationAdapter.addAll(specializations);
-						specializationAdapter.notifyDataSetChanged();
-					}
-				});
-
-		specializationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Specialization specialization = specializationAdapter.getItem(position);
-				if(specialization != null) {
-					if (specialization.equals(noSpecialization) && currentInstance.getSpecialization() != null) {
-						currentInstance.setSpecialization(null);
-						saveItem();
-					}
-					else if (!specialization.equals(currentInstance.getSpecialization())) {
-						currentInstance.setSpecialization(specialization);
-						saveItem();
-					}
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
-	}
-
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);

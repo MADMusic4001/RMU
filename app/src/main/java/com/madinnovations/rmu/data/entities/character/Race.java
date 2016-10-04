@@ -20,9 +20,6 @@ import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,24 +70,7 @@ public class Race {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
-				.append("name", name)
-				.append("description", description)
-				.append("bonusDevelopmentPoints", bonusDevelopmentPoints)
-				.append("statModifiers", statModifiers)
-				.append("realmResistancesModifiers", realmResistancesModifiers)
-				.append("physicalResistanceModifier", physicalResistanceModifier)
-				.append("enduranceModifier", enduranceModifier)
-				.append("baseHits", baseHits)
-				.append("recoveryMultiplier", recoveryMultiplier)
-				.append("talentsAndFlawsTiersMap", talentsAndFlawsTiersMap)
-				.append("size", size)
-				.append("strideModifier", strideModifier)
-				.append("averageHeight", averageHeight)
-				.append("averageWeight", averageWeight)
-				.append("poundsPerInch", poundsPerInch)
-				.toString();
+		return name;
 	}
 
 	@Override
