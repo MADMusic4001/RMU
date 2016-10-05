@@ -32,7 +32,7 @@ import android.widget.TextView;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
-import com.madinnovations.rmu.data.entities.character.ProfessionSkillCost;
+import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 
@@ -187,7 +187,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			holder = (ChildViewHolder) convertView.getTag();
 		}
 
-		ProfessionSkillCost skillCost = (ProfessionSkillCost)getChild(groupPosition, childPosition);
+		SkillCostEntry skillCost = (SkillCostEntry)getChild(groupPosition, childPosition);
 		holder.skillCost = skillCost;
 		holder.nameView.setText(skillCost.getSkill().getName());
 		if(skillCost.getSkillCost() == null) {
@@ -380,7 +380,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 									List<SkillCost> assignableCosts = new ArrayList<>(skillCategoryCost.getSkillCosts().size());
 									callbackImpl.getProfessionInstance().getAssignableSkillCosts()
 											.put(skillCategoryCost.getSkillCategory(), assignableCosts);
-									for(ProfessionSkillCost professionSkillCost : skillCategoryCost.getSkillCosts()) {
+									for(SkillCostEntry professionSkillCost : skillCategoryCost.getSkillCosts()) {
 										assignableCosts.add(professionSkillCost.getSkillCost());
 										skillCategoryCost.getAssignableSkillCosts().add(professionSkillCost.getSkillCost());
 									}
@@ -399,10 +399,10 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 	}
 
 	private class ChildViewHolder {
-		private ProfessionSkillCost skillCost;
-		private TextView            nameView;
-		private EditText            initialCostEdit;
-		private EditText            additionalCostEdit;
+		private SkillCostEntry skillCost;
+		private TextView       nameView;
+		private EditText       initialCostEdit;
+		private EditText       additionalCostEdit;
 
 		public ChildViewHolder(TextView nameView, EditText initialCostEdit, EditText additionalCostEdit) {
 			this.nameView = nameView;

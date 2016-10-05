@@ -15,33 +15,31 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import android.support.annotation.NonNull;
+
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Container class for associating ranks to Skill
+ * Container class for associating SkillCost to Skill
  */
-public class CultureSkillRank {
-	private Skill skill;
-	private Short ranks;
+public class SkillCostEntry {
+	private Skill                     skill;
+	private SkillCost                 skillCost = null;
 
-	/**
-	 * Creates a new CultureSkillRank instance
-	 *
-	 * @param skill  the {@link Skill} for this instance
-	 */
-	public CultureSkillRank(Skill skill) {
+	public SkillCostEntry(@NonNull Skill skill, SkillCost skillCost) {
 		this.skill = skill;
+		this.skillCost = skillCost;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this,
-								   ToStringStyle.MULTI_LINE_STYLE)
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("skill", skill)
-				.append("ranks", ranks)
+				.append("skillCost", skillCost)
 				.toString();
 	}
 
@@ -71,10 +69,10 @@ public class CultureSkillRank {
 	public void setSkill(Skill skill) {
 		this.skill = skill;
 	}
-	public Short getRanks() {
-		return ranks;
+	public SkillCost getSkillCost() {
+		return skillCost;
 	}
-	public void setRanks(Short ranks) {
-		this.ranks = ranks;
+	public void setSkillCost(SkillCost skillCost) {
+		this.skillCost = skillCost;
 	}
 }

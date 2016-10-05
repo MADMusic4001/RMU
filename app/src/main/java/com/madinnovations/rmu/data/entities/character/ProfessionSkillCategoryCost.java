@@ -31,10 +31,10 @@ import java.util.List;
  */
 public class ProfessionSkillCategoryCost {
 	private SkillCategory skillCategory;
-	private List<ProfessionSkillCost> skillCosts           = new ArrayList<>();
-	private SkillCost                 skillCategoryCost    = new SkillCost();
-	private boolean                   assignable           = false;
-	private List<SkillCost>           assignableSkillCosts = new ArrayList<>();
+	private List<SkillCostEntry> skillCosts           = new ArrayList<>();
+	private SkillCost            skillCategoryCost    = new SkillCost();
+	private boolean              assignable           = false;
+	private List<SkillCost>      assignableSkillCosts = new ArrayList<>();
 
 	/**
 	 * Creates a new ProfessionSkillCategoryCost instance
@@ -46,7 +46,7 @@ public class ProfessionSkillCategoryCost {
 	 * @param assignableSkillCosts  the list of SkillCosts to be assigned to individual skills when assignable is true
 	 */
 	public ProfessionSkillCategoryCost(@NonNull SkillCategory skillCategory,
-									   @NonNull List<ProfessionSkillCost> skillCosts,
+									   @NonNull List<SkillCostEntry> skillCosts,
 									   @NonNull SkillCost skillCategoryCost,
 									   boolean assignable,
 									   @NonNull List<SkillCost> assignableSkillCosts) {
@@ -76,10 +76,10 @@ public class ProfessionSkillCategoryCost {
 	public void setSkillCategory(SkillCategory skillCategory) {
 		this.skillCategory = skillCategory;
 	}
-	public List<ProfessionSkillCost> getSkillCosts() {
+	public List<SkillCostEntry> getSkillCosts() {
 		return skillCosts;
 	}
-	public void setSkillCosts(List<ProfessionSkillCost> skillCosts) {
+	public void setSkillCosts(List<SkillCostEntry> skillCosts) {
 		this.skillCosts = skillCosts;
 	}
 	public SkillCost getSkillCategoryCost() {

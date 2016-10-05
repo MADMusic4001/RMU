@@ -44,7 +44,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
-import com.madinnovations.rmu.data.entities.character.ProfessionSkillCost;
+import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
@@ -617,10 +617,10 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	private List<ProfessionSkillCategoryCost> createCostList() {
 		List<ProfessionSkillCategoryCost> costList = new ArrayList<>(currentInstance.getSkillCategoryCosts().size());
 		for(Map.Entry<SkillCategory, SkillCost> entry : currentInstance.getSkillCategoryCosts().entrySet()) {
-			List<ProfessionSkillCost> professionSkillCostList = new ArrayList<>();
+			List<SkillCostEntry> professionSkillCostList = new ArrayList<>();
 			for(Map.Entry<Skill, SkillCost> skillCostEntry : currentInstance.getSkillCosts().entrySet()) {
 				if(skillCostEntry.getKey().getCategory().equals(entry.getKey())) {
-					ProfessionSkillCost professionSkillCost = new ProfessionSkillCost(
+					SkillCostEntry professionSkillCost = new SkillCostEntry(
 							skillCostEntry.getKey(),
 							skillCostEntry.getValue());
 					professionSkillCostList.add(professionSkillCost);

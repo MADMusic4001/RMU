@@ -211,34 +211,42 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		newString = eyeColorEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getEyeColor())) {
 			charactersFragment.getCurrentInstance().setEyeColor(newString);
+			changed = true;
 		}
 		newString = skinComplexionEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getSkinComplexion())) {
 			charactersFragment.getCurrentInstance().setSkinComplexion(newString);
+			changed = true;
 		}
 		newString = facialFeaturesEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getFacialFeatures())) {
 			charactersFragment.getCurrentInstance().setFacialFeatures(newString);
+			changed = true;
 		}
 		newString = identifyingMarksEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getIdentifyingMarks())) {
 			charactersFragment.getCurrentInstance().setIdentifyingMarks(newString);
+			changed = true;
 		}
 		newString = personalityEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getPersonality())) {
 			charactersFragment.getCurrentInstance().setPersonality(newString);
+			changed = true;
 		}
 		newString = mannerismsEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getMannerisms())) {
 			charactersFragment.getCurrentInstance().setMannerisms(newString);
+			changed = true;
 		}
 		newString = familyInformationEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getFamilyInfo())) {
 			charactersFragment.getCurrentInstance().setFamilyInfo(newString);
+			changed = true;
 		}
 		newString = hometownEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getHometown())) {
 			charactersFragment.getCurrentInstance().setHometown(newString);
+			changed = true;
 		}
 
 		return changed;

@@ -1,44 +1,41 @@
 /**
  * Copyright (C) 2016 MadInnovations
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.entities.character;
+package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.NonNull;
-
-import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Container class for associating SkillCost to Skill
+ * Container class for associating SkillCost to Specialization
  */
-public class ProfessionSkillCost {
-	private Skill                     skill;
+public class SpecializationCostEntry {
+	private Specialization            specialization;
 	private SkillCost                 skillCost = null;
 
-	public ProfessionSkillCost(@NonNull Skill skill, SkillCost skillCost) {
-		this.skill = skill;
+	public SpecializationCostEntry(@NonNull Specialization specialization, SkillCost skillCost) {
+		this.specialization = specialization;
 		this.skillCost = skillCost;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("skill", skill)
+				.append("specialization", specialization)
 				.append("skillCost", skillCost)
 				.toString();
 	}
@@ -52,22 +49,22 @@ public class ProfessionSkillCost {
 			return false;
 		}
 
-		ProfessionSkillCost that = (ProfessionSkillCost) o;
+		SpecializationCostEntry that = (SpecializationCostEntry) o;
 
-		return getSkill().equals(that.getSkill());
+		return getSpecialization().equals(that.getSpecialization());
 	}
 
 	@Override
 	public int hashCode() {
-		return getSkill().hashCode();
+		return getSpecialization().hashCode();
 	}
 
 	// Getters and setters
-	public Skill getSkill() {
-		return skill;
+	public Specialization getSpecialization() {
+		return specialization;
 	}
-	public void setSkill(Skill skill) {
-		this.skill = skill;
+	public void setSpecialization(Specialization specialization) {
+		this.specialization = specialization;
 	}
 	public SkillCost getSkillCost() {
 		return skillCost;

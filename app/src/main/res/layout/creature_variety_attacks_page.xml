@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="@string/label_choose_skills"/>
     <TextView
-        android:id="@+id/_skill_name_view"
+        android:id="@+id/skill_name_view"
         android:layout_width="0dp"
         android:layout_weight="2"
         android:layout_height="wrap_content"
