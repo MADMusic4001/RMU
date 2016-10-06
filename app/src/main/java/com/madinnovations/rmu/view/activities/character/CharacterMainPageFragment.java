@@ -253,6 +253,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				break;
 			case R.id.profession_spinner:
 				charactersFragment.getCurrentInstance().setProfession((Profession) newItem);
+				charactersFragment.changeProfession();
 				charactersFragment.saveItem();
 				break;
 			case R.id.realm_spinner:

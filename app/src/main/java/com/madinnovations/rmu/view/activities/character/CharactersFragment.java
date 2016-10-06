@@ -178,6 +178,26 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		return character.getKnownAs();
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+
+		if(this.mainPageFragment != null && getFragmentManager().findFragmentById(this.mainPageFragment.getId()) != null) {
+			getFragmentManager().beginTransaction().remove(this.mainPageFragment).commit();
+			this.mainPageFragment = null;
+		}
+
+		if(this.backgroundPageFragment != null && getFragmentManager().findFragmentById(this.backgroundPageFragment.getId()) != null) {
+			getFragmentManager().beginTransaction().remove(this.backgroundPageFragment).commit();
+			this.backgroundPageFragment = null;
+		}
+
+		if(this.skillsPageFragment != null && getFragmentManager().findFragmentById(this.skillsPageFragment.getId()) != null) {
+			getFragmentManager().beginTransaction().remove(this.skillsPageFragment).commit();
+			this.skillsPageFragment = null;
+		}
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
@@ -418,7 +438,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					skillsPageFragment= (CharacterSkillsPageFragment)createdFragment;
 					break;
 				case 2:
-					backgroundPageFragment = (CharacterBackgroundPageFragment) createdFragment;
+					backgroundPageFragment = (CharacterBackgroundPageFragment)createdFragment;
 					break;
 			}
 
@@ -439,6 +459,12 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					backgroundPageFragment= null;
 					break;
 			}
+		}
+	}
+
+	public void changeProfession() {
+		if(skillsPageFragment != null) {
+			skillsPageFragment.changeProfession();
 		}
 	}
 }

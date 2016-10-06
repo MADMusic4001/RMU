@@ -21,8 +21,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
@@ -31,10 +31,11 @@ import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandle
 import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.SpecializationCostEntry;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
+import com.madinnovations.rmu.view.adapters.character.AssignableCostsAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.Collection;
@@ -55,8 +56,9 @@ public class CharacterSkillsPageFragment extends Fragment {
 	@Inject
 	protected SpecializationRxHandler     specializationRxHandler;
 	private CharactersFragment            charactersFragment;
-	private ArrayAdapter<Skill>           skillsAdapter;
-	private ListView                      skillCostsListView;
+	private AssignableCostsAdapter[]      assignableSkillsAdapters;
+	private LinearLayout                  assignableCostLayoutRows;
+	private ListView[]                    skillCostsListViews;
 	private ListView                      skillRanksListView;
 	private ListView                      talentTiersListView;
 	private Map<Stat, EditText>           statEditTextMap;
@@ -103,12 +105,28 @@ public class CharacterSkillsPageFragment extends Fragment {
 	}
 
 	private void initSkillCostsListView(View layout) {
-		skillCostsListView = (ListView)layout.findViewById(R.id.skill_cost_list);
-		skillsAdapter =  new ArrayAdapter<>(getActivity(), R.layout.list_profession_category_costs_child_row);
+		assignableCostLayoutRows = (LinearLayout)layout.findViewById(R.id.assignable_cost_layout_rows);
 
-		if(charactersFragment.getCurrentInstance().getProfession() != null) {
+		changeProfession();
+	}
+
+	public void changeProfession() {
+		if(charactersFragment.getCurrentInstance().getProfession() != null &&
+				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size() > 0) {
+			int size = charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size();
+			if(skillCostsListViews == null || skillCostsListViews.length < size) {
+				size = ((size + 2) / 3) * 3;
+				skillCostsListViews = new ListView[size];
+				assignableSkillsAdapters = new AssignableCostsAdapter[size];
+			}
+			for(int i = 0; i < charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size(); i += 3) {
+				addAssignableCostRow(i);
+			}
+			int i = 0;
 			for(final SkillCategory category :
-				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().keySet()) {
+					charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().keySet()) {
+				final int index = i++;
+				skillCostsListViews[index].setVisibility(View.VISIBLE);
 				skillRxHandler.getSkillsForCategory(category)
 						.subscribe(new Subscriber<Collection<Skill>>() {
 							@Override
@@ -119,12 +137,46 @@ public class CharacterSkillsPageFragment extends Fragment {
 							}
 							@Override
 							public void onNext(Collection<Skill> skillCollection) {
-								skillsAdapter.clear();
-								skillsAdapter.addAll(skillCollection);
-								skillsAdapter.notifyDataSetChanged();
+								List<SkillCost> skillCosts = charactersFragment.getCurrentInstance().getProfession()
+										.getAssignableSkillCosts().get(category);
+								if(skillCollection.size() == skillCosts.size()) {
+									assignableSkillsAdapters[index].clear();
+									int i = 0;
+									for(Skill skill : skillCollection) {
+										SkillCostEntry entry = new SkillCostEntry(skill, skillCosts.get(i++));
+										assignableSkillsAdapters[index].add(entry);
+									}
+									Log.d(LOG_TAG, "Loaded " + i + " skillCosts");
+									assignableSkillsAdapters[index].notifyDataSetChanged();
+								}
 							}
 						});
 			}
+			for(int j = i; j < skillCostsListViews.length; j++) {
+				skillCostsListViews[j].setVisibility(View.INVISIBLE);
+			}
 		}
+	}
+
+	private void addAssignableCostRow(int startIndex) {
+		LayoutInflater.from(getActivity()).inflate(R.layout.assignable_costs_header, assignableCostLayoutRows);
+		LinearLayout linearLayout = new LinearLayout(getActivity());
+		linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+		for(int i = startIndex; i < startIndex + 3; i++) {
+			ListView listView = new ListView(getActivity());
+			LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
+			if(params == null) {
+				params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+				listView.setLayoutParams(params);
+			}
+			params.weight = 1;
+			skillCostsListViews[i] = listView;
+			final AssignableCostsAdapter adapter = new AssignableCostsAdapter(getActivity());
+			listView.setAdapter(adapter);
+			assignableSkillsAdapters[i] = adapter;
+			listView.setVisibility(View.INVISIBLE);
+			linearLayout.addView(listView);
+		}
+		assignableCostLayoutRows.addView(linearLayout);
 	}
 }
