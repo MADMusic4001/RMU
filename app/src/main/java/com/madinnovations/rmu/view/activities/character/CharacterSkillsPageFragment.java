@@ -16,14 +16,23 @@
 package com.madinnovations.rmu.view.activities.character;
 
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
@@ -34,10 +43,12 @@ import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.SpecializationCostEntry;
 import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.character.AssignableCostsAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +62,7 @@ import rx.Subscriber;
  */
 public class CharacterSkillsPageFragment extends Fragment {
 	private static final String LOG_TAG = "CharacterSkillsPageFrag";
+	private static final String DRAG_COST = "drag-cost";
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
@@ -63,6 +75,8 @@ public class CharacterSkillsPageFragment extends Fragment {
 	private ListView                      talentTiersListView;
 	private Map<Stat, EditText>           statEditTextMap;
 	private List<SpecializationCostEntry> skillCostsMap;
+	private LinearLayout                  draggingView = null;
+	private SkillCostEntry                draggingEntry = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -163,7 +177,7 @@ public class CharacterSkillsPageFragment extends Fragment {
 		LinearLayout linearLayout = new LinearLayout(getActivity());
 		linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 		for(int i = startIndex; i < startIndex + 3; i++) {
-			ListView listView = new ListView(getActivity());
+			final ListView listView = new ListView(getActivity());
 			LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
 			if(params == null) {
 				params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -176,7 +190,160 @@ public class CharacterSkillsPageFragment extends Fragment {
 			assignableSkillsAdapters[i] = adapter;
 			listView.setVisibility(View.INVISIBLE);
 			linearLayout.addView(listView);
+			listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					ClipData dragData;
+
+					ClipData.Item clipDataItem = new ClipData.Item(String.valueOf(position));
+					dragData = new ClipData(DRAG_COST, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					List<View> dragViewList = new ArrayList<>(1);
+					dragViewList.add(view);
+					View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(dragViewList);
+					draggingView = (LinearLayout)view;
+					draggingEntry = adapter.getItem(position);
+
+					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+						view.startDragAndDrop(dragData, myShadow, position, 0);
+					}
+					else {
+						//noinspection deprecation
+						view.startDrag(dragData, myShadow, position, 0);
+					}
+					return false;
+				}
+			});
+
+			listView.setOnDragListener(new AssignableCostDragListener());
 		}
 		assignableCostLayoutRows.addView(linearLayout);
+	}
+
+
+	protected class AssignableCostDragListener implements View.OnDragListener {
+		private Animation slideUpAnim;
+		private Animation slideDownAnim;
+		private SkillCostEntry[] entries;
+		private int draggedPosition = -1;
+		private int currentPosition = -1;
+
+		AssignableCostDragListener() {
+			slideUpAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
+			slideUpAnim.setDuration(500);
+			slideDownAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
+			slideDownAnim.setDuration(500);
+		}
+
+		@Override
+		public boolean onDrag(View v, DragEvent event) {
+			final int action = event.getAction();
+
+			if(event.getClipDescription() == null || !DRAG_COST.equals(event.getClipDescription().getLabel())) {
+				return false;
+			}
+
+			ListView listView = (ListView)v;
+			AssignableCostsAdapter adapter = (AssignableCostsAdapter)listView.getAdapter();
+
+			switch(action) {
+				case DragEvent.ACTION_DRAG_STARTED:
+					draggedPosition = currentPosition = (Integer)event.getLocalState();
+					entries = new SkillCostEntry[adapter.getCount()];
+					for(int i = 0; i < adapter.getCount(); i++) {
+						entries[i] = adapter.getItem(i);
+					}
+					break;
+				case DragEvent.ACTION_DRAG_ENTERED:
+					break;
+				case DragEvent.ACTION_DRAG_LOCATION:
+					for(int i = 0; i < listView.getChildCount(); i++) {
+						LinearLayout childView = (LinearLayout)listView.getChildAt(i);
+						Rect hitRect = new Rect();
+						childView.getHitRect(hitRect);
+						if(hitRect.contains((int)event.getX(), (int)event.getY())) {
+							if(currentPosition != i) {
+								if(i > currentPosition) {
+									while(i > currentPosition ) {
+										animate(listView, currentPosition, currentPosition + 1, slideDownAnim, slideUpAnim);
+										currentPosition++;
+									}
+								}
+								else {
+									while(currentPosition > i) {
+										animate(listView, currentPosition, currentPosition - 1, slideUpAnim, slideDownAnim);
+										currentPosition--;
+									}
+								}
+								v.invalidate();
+							}
+						}
+					}
+					break;
+				case DragEvent.ACTION_DRAG_EXITED:
+					reset(listView);
+					break;
+				case DragEvent.ACTION_DROP:
+					adapter.clear();
+					adapter.addAll(entries);
+					adapter.notifyDataSetChanged();
+					v.invalidate();
+					break;
+				case DragEvent.ACTION_DRAG_ENDED:
+					if(!event.getResult()) {
+						reset(listView);
+					}
+					v.invalidate();
+					break;
+			}
+
+			return true;
+		}
+
+		private void reset(ListView listView) {
+			int offset;
+			Animation fromAnimation;
+			Animation toAnimation;
+			if(currentPosition > draggedPosition) {
+				offset = -1;
+				fromAnimation = slideUpAnim;
+				toAnimation = slideDownAnim;
+			}
+			else {
+				offset = 1;
+				fromAnimation = slideDownAnim;
+				toAnimation = slideUpAnim;
+			}
+			while(currentPosition != draggedPosition) {
+				animate(listView, currentPosition, currentPosition + offset, fromAnimation, toAnimation);
+				currentPosition += offset;
+			}
+		}
+
+		private void animate(ListView listView, int from, int to, Animation fromAnimation, Animation toAnimation) {
+			TextView newFromNameView = newNameView();
+			TextView newToNameView = newNameView();
+			LinearLayout fromLayout = (LinearLayout)listView.getChildAt(from);
+			LinearLayout toLayout = (LinearLayout)listView.getChildAt(to);
+			Skill swap = entries[to].getSkill();
+			entries[to].setSkill(entries[from].getSkill());
+			entries[from].setSkill(swap);
+			newFromNameView.setText(entries[from].getSkill().getName());
+			newToNameView.setText(entries[to].getSkill().getName());
+			fromLayout.removeView(fromLayout.findViewById(R.id.name_view));
+			fromLayout.addView(newFromNameView, 0);
+			newFromNameView.startAnimation(fromAnimation);
+			toLayout.removeView(toLayout.findViewById(R.id.name_view));
+			toLayout.addView(newToNameView, 0);
+			newToNameView.startAnimation(toAnimation);
+		}
+
+		private TextView newNameView() {
+			TextView newNameView = new TextView(getActivity());
+			newNameView.setId(R.id.name_view);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+			params.weight = 1;
+			newNameView.setLayoutParams(params);
+			return newNameView;
+		}
 	}
 }
