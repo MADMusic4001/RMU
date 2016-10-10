@@ -26,13 +26,47 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Container class for associating SkillCost to Skill
  */
-public class SkillCostEntry {
+public class SkillCostEntry implements Comparable {
 	private Skill                     skill;
 	private SkillCost                 skillCost = null;
 
+	/**
+	 * Creates a new SkillCostEntry instance will the given values.
+	 *
+	 * @param skill  a {@link Skill} instance
+	 * @param skillCost  a {@link SkillCost} instance
+	 */
 	public SkillCostEntry(@NonNull Skill skill, SkillCost skillCost) {
 		this.skill = skill;
 		this.skillCost = skillCost;
+	}
+
+	@Override
+	public int compareTo(@NonNull Object o) {
+		int result;
+
+		if(!(o instanceof SkillCostEntry)) {
+			result = 1;
+		}
+		else {
+			SkillCostEntry o2 = (SkillCostEntry)o;
+			result = this.getSkillCost().compareTo(o2.getSkillCost());
+			if(result == 0) {
+				if(this.getSkill() == null) {
+					if(o2.getSkill() != null) {
+						result = -1;
+					}
+				}
+				else if(o2.getSkill() == null) {
+					result = 1;
+				}
+				else {
+					result = this.getSkill().getName().compareTo(o2.getSkill().getName());
+				}
+			}
+		}
+
+		return result;
 	}
 
 	@Override

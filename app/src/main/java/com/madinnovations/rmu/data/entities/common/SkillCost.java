@@ -15,13 +15,15 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.NonNull;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Cost of improving a skill
  */
-public class SkillCost {
+public class SkillCost implements Comparable {
 	private Short firstCost = null;
 	private Short additionalCost = null;
 
@@ -52,8 +54,54 @@ public class SkillCost {
 	}
 
 	@Override
+	public int compareTo(@NonNull Object o) {
+		int result = 0;
+
+		if (!(o instanceof SkillCost)) {
+			result = 1;
+		}
+		else {
+			SkillCost o2 = (SkillCost)o;
+			if(this.firstCost == null) {
+				if(o2.firstCost != null) {
+					result = -1;
+				}
+				else if(this.additionalCost == null) {
+					if(o2.additionalCost != null) {
+						result = -1;
+					}
+				}
+				else if(o2.additionalCost == null) {
+					result = 1;
+				}
+				else {
+					result = (this.additionalCost - o2.additionalCost);
+				}
+			}
+			else if(o2.firstCost == null) {
+				result = 1;
+			}
+			else if (this.firstCost.equals(o2.firstCost)) {
+				if(this.additionalCost == null) {
+					if(o2.additionalCost != null) {
+						result = -1;
+					}
+				}
+				else if(o2.additionalCost == null) {
+					result = 1;
+				}
+			}
+			else {
+				result = (this.firstCost - o2.firstCost);
+			}
+		}
+
+		return result;
+	}
+
+	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+		return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
 				.append("firstCost", firstCost)
 				.append("additionalCost", additionalCost)
 				.toString();

@@ -35,4 +35,5 @@ dependencies {
 	compile 'io.reactivex:rxandroid:1.2.1'
 	compile 'io.reactivex:rxjava:1.1.7'
 	compile 'org.apache.commons:commons-lang3:3.4'
+	testCompile 'org.testng:testng:6.9.13.6'
 }

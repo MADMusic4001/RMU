@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.activities.character;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -37,6 +38,7 @@ import android.widget.TextView;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
@@ -49,7 +51,9 @@ import com.madinnovations.rmu.view.adapters.character.AssignableCostsAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -63,20 +67,20 @@ import rx.Subscriber;
 public class CharacterSkillsPageFragment extends Fragment {
 	private static final String LOG_TAG = "CharacterSkillsPageFrag";
 	private static final String DRAG_COST = "drag-cost";
+	private static final String HEADER_TAG = "Header%d";
+	private static final String LISTS_ROW_TAG = "ListsRow%d";
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
 	protected SpecializationRxHandler     specializationRxHandler;
 	private CharactersFragment            charactersFragment;
-	private AssignableCostsAdapter[]      assignableSkillsAdapters;
 	private LinearLayout                  assignableCostLayoutRows;
 	private ListView[]                    skillCostsListViews;
+	private SkillCategory[]               skillCategories;
 	private ListView                      skillRanksListView;
 	private ListView                      talentTiersListView;
 	private Map<Stat, EditText>           statEditTextMap;
 	private List<SpecializationCostEntry> skillCostsMap;
-	private LinearLayout                  draggingView = null;
-	private SkillCostEntry                draggingEntry = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,10 +112,40 @@ public class CharacterSkillsPageFragment extends Fragment {
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		boolean changed = false;
+
+		for(ListView listView : skillCostsListViews) {
+			if(listView != null) {
+				AssignableCostsAdapter adapter = (AssignableCostsAdapter)listView.getAdapter();
+				if(adapter != null) {
+					for (int i = 0; i < adapter.getCount(); i++) {
+						SkillCostEntry entry = adapter.getItem(i);
+						charactersFragment.getCurrentInstance().getSkillCosts().put(entry.getSkill(), entry.getSkillCost());
+					}
+				}
+			}
+		}
+
 		return changed;
 	}
 
 	public void copyItemToViews() {
+		for(Map.Entry<SkillCategory, List<SkillCost>> entry :
+				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().entrySet()) {
+			int index = Arrays.asList(skillCategories).indexOf(entry.getKey());
+			if(index != -1) {
+				setSkillCosts((AssignableCostsAdapter)skillCostsListViews[index].getAdapter(), null, skillCategories[index]);
+			}
+			else {
+				for(int i = 0; i < skillCategories.length; i++) {
+					SkillCategory category = skillCategories[i];
+					if((!entry.getKey().equals(category)) &&
+							(!charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts()
+							.containsKey(category))) {
+						hideAssignableList(i);
+					}
+				}
+			}
+		}
 	}
 
 	public void setCharactersFragment(CharactersFragment charactersFragment) {
@@ -121,25 +155,40 @@ public class CharacterSkillsPageFragment extends Fragment {
 	private void initSkillCostsListView(View layout) {
 		assignableCostLayoutRows = (LinearLayout)layout.findViewById(R.id.assignable_cost_layout_rows);
 
+		if(skillCostsListViews == null || skillCostsListViews.length == 0) {
+			addAssignableCostsRow();
+		}
 		changeProfession();
 	}
 
+	private void hideAssignableList(int index) {
+		if(skillCostsListViews.length > index) {
+			ListView listView = skillCostsListViews[index];
+			if (listView != null) {
+				listView.setVisibility(View.INVISIBLE);
+				AssignableCostsAdapter adapter = (AssignableCostsAdapter)listView.getAdapter();
+				if(adapter != null) {
+					adapter.clear();
+				}
+			}
+		}
+		if(skillCategories.length > index) {
+			skillCategories[index] = null;
+		}
+	}
+
+	@SuppressLint("DefaultLocale")
 	public void changeProfession() {
 		if(charactersFragment.getCurrentInstance().getProfession() != null &&
 				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size() > 0) {
-			int size = charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size();
-			if(skillCostsListViews == null || skillCostsListViews.length < size) {
-				size = ((size + 2) / 3) * 3;
-				skillCostsListViews = new ListView[size];
-				assignableSkillsAdapters = new AssignableCostsAdapter[size];
-			}
-			for(int i = 0; i < charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size(); i += 3) {
-				addAssignableCostRow(i);
-			}
 			int i = 0;
 			for(final SkillCategory category :
 					charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().keySet()) {
 				final int index = i++;
+				while(skillCostsListViews.length <= index) {
+					addAssignableCostsRow();
+				}
+				skillCategories[index] = category;
 				skillCostsListViews[index].setVisibility(View.VISIBLE);
 				skillRxHandler.getSkillsForCategory(category)
 						.subscribe(new Subscriber<Collection<Skill>>() {
@@ -149,34 +198,87 @@ public class CharacterSkillsPageFragment extends Fragment {
 							public void onError(Throwable e) {
 								Log.e(LOG_TAG, "Exception caught getting Skill for category " + category.getName() + ".", e);
 							}
+							@SuppressWarnings("unchecked")
 							@Override
 							public void onNext(Collection<Skill> skillCollection) {
-								List<SkillCost> skillCosts = charactersFragment.getCurrentInstance().getProfession()
-										.getAssignableSkillCosts().get(category);
-								if(skillCollection.size() == skillCosts.size()) {
-									assignableSkillsAdapters[index].clear();
-									int i = 0;
-									for(Skill skill : skillCollection) {
-										SkillCostEntry entry = new SkillCostEntry(skill, skillCosts.get(i++));
-										assignableSkillsAdapters[index].add(entry);
-									}
-									Log.d(LOG_TAG, "Loaded " + i + " skillCosts");
-									assignableSkillsAdapters[index].notifyDataSetChanged();
-								}
+								setSkillCosts((AssignableCostsAdapter)skillCostsListViews[index].getAdapter(), skillCollection,
+											  category);
 							}
 						});
 			}
-			for(int j = i; j < skillCostsListViews.length; j++) {
-				skillCostsListViews[j].setVisibility(View.INVISIBLE);
+			for(int j = skillCostsListViews.length - 1; j > i; j--) {
+				if(j % 3 == 2 && charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size() <= j
+						-2) {
+					LinearLayout header = (LinearLayout)assignableCostLayoutRows.findViewWithTag(
+							String.format(HEADER_TAG, j-2));
+					assignableCostLayoutRows.removeView(header);
+					LinearLayout listsRow = (LinearLayout)assignableCostLayoutRows.findViewWithTag(
+							String.format(LISTS_ROW_TAG, j-2));
+					assignableCostLayoutRows.removeView(listsRow);
+					 j-=2;
+				}
+				else {
+					skillCostsListViews[j].setVisibility(View.INVISIBLE);
+				}
 			}
 		}
 	}
 
-	private void addAssignableCostRow(int startIndex) {
-		LayoutInflater.from(getActivity()).inflate(R.layout.assignable_costs_header, assignableCostLayoutRows);
+	@SuppressWarnings("unchecked")
+	private void setSkillCosts(AssignableCostsAdapter adapter, Collection<Skill> skills, SkillCategory category) {
+		List<SkillCost> skillCosts = new ArrayList<>(charactersFragment.getCurrentInstance().getProfession()
+				.getAssignableSkillCosts().get(category));
+		List<Skill> skillsCopy = new ArrayList<>(skills);
+		if(skills.size() == skillCosts.size()) {
+			List<SkillCostEntry> entries = new ArrayList<>(skills.size());
+			Character character = charactersFragment.getCurrentInstance();
+			SkillCostEntry entry;
+			for(Skill skill : skills) {
+				SkillCost skillCost;
+				if(character != null) {
+					skillCost = character.getSkillCosts().get(skill);
+					if(skillCost != null) {
+						skillCosts.remove(skillCosts.indexOf(skillCost));
+						skillsCopy.remove(skill);
+						entry = new SkillCostEntry(skill, skillCost);
+						entries.add(entry);
+					}
+				}
+			}
+			for(SkillCost skillCost : skillCosts) {
+				entry = new SkillCostEntry(skillsCopy.get(0), skillCost);
+				entries.add(entry);
+				skillsCopy.remove(0);
+			}
+			Collections.sort(entries);
+			adapter.clear();
+			adapter.addAll(entries);
+			adapter.notifyDataSetChanged();
+		}
+	}
+
+	@SuppressLint("DefaultLocale")
+	private void addAssignableCostsRow() {
+		LinearLayout header = (LinearLayout)LayoutInflater.from(getActivity()).inflate(R.layout.assignable_costs_header,
+																	   assignableCostLayoutRows);
 		LinearLayout linearLayout = new LinearLayout(getActivity());
 		linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-		for(int i = startIndex; i < startIndex + 3; i++) {
+		int oldSize = skillCostsListViews == null ? 0 : skillCostsListViews.length;
+		header.setTag(String.format(HEADER_TAG, oldSize));
+		linearLayout.setTag(String.format(LISTS_ROW_TAG, oldSize));
+		ListView[] listViews = new ListView[oldSize + 3];
+		if(skillCostsListViews != null && skillCostsListViews.length > 0) {
+			System.arraycopy(skillCostsListViews, 0, listViews, 0, skillCostsListViews.length);
+		}
+		skillCostsListViews = listViews;
+
+		SkillCategory[] categories = new SkillCategory[oldSize + 3];
+		if(skillCategories != null && skillCategories.length > 0) {
+			System.arraycopy(skillCategories, 0, categories, 0, skillCategories.length);
+		}
+		skillCategories = categories;
+
+		for(int i = oldSize; i < oldSize + 3; i++) {
 			final ListView listView = new ListView(getActivity());
 			LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
 			if(params == null) {
@@ -184,11 +286,10 @@ public class CharacterSkillsPageFragment extends Fragment {
 				listView.setLayoutParams(params);
 			}
 			params.weight = 1;
-			skillCostsListViews[i] = listView;
 			final AssignableCostsAdapter adapter = new AssignableCostsAdapter(getActivity());
 			listView.setAdapter(adapter);
-			assignableSkillsAdapters[i] = adapter;
 			listView.setVisibility(View.INVISIBLE);
+			skillCostsListViews[i] = listView;
 			linearLayout.addView(listView);
 			listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 				@Override
@@ -200,8 +301,6 @@ public class CharacterSkillsPageFragment extends Fragment {
 					List<View> dragViewList = new ArrayList<>(1);
 					dragViewList.add(view);
 					View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(dragViewList);
-					draggingView = (LinearLayout)view;
-					draggingEntry = adapter.getItem(position);
 
 					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 						view.startDragAndDrop(dragData, myShadow, position, 0);
@@ -283,6 +382,9 @@ public class CharacterSkillsPageFragment extends Fragment {
 					reset(listView);
 					break;
 				case DragEvent.ACTION_DROP:
+					for(SkillCostEntry entry : entries) {
+						charactersFragment.getCurrentInstance().getSkillCosts().put(entry.getSkill(), entry.getSkillCost());
+					}
 					adapter.clear();
 					adapter.addAll(entries);
 					adapter.notifyDataSetChanged();

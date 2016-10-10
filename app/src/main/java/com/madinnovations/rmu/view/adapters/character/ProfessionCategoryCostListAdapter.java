@@ -375,15 +375,20 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 							skillCategoryCost.setAssignable(isChecked);
 							if(isChecked) {
+								List<SkillCost> assignableCosts;
 								if(callbackImpl.getProfessionInstance().getAssignableSkillCosts()
 										.get(skillCategoryCost.getSkillCategory()) == null) {
-									List<SkillCost> assignableCosts = new ArrayList<>(skillCategoryCost.getSkillCosts().size());
+									assignableCosts = new ArrayList<>(skillCategoryCost.getSkillCosts().size());
 									callbackImpl.getProfessionInstance().getAssignableSkillCosts()
 											.put(skillCategoryCost.getSkillCategory(), assignableCosts);
-									for(SkillCostEntry professionSkillCost : skillCategoryCost.getSkillCosts()) {
-										assignableCosts.add(professionSkillCost.getSkillCost());
-										skillCategoryCost.getAssignableSkillCosts().add(professionSkillCost.getSkillCost());
-									}
+								}
+								else {
+									assignableCosts = callbackImpl.getProfessionInstance().getAssignableSkillCosts()
+											.get(skillCategoryCost.getSkillCategory());
+								}
+								for(SkillCostEntry professionSkillCost : skillCategoryCost.getSkillCosts()) {
+									assignableCosts.add(professionSkillCost.getSkillCost());
+									skillCategoryCost.getAssignableSkillCosts().add(professionSkillCost.getSkillCost());
 								}
 							}
 							else {
@@ -404,7 +409,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		private EditText       initialCostEdit;
 		private EditText       additionalCostEdit;
 
-		public ChildViewHolder(TextView nameView, EditText initialCostEdit, EditText additionalCostEdit) {
+		ChildViewHolder(TextView nameView, EditText initialCostEdit, EditText additionalCostEdit) {
 			this.nameView = nameView;
 			this.initialCostEdit = initialCostEdit;
 			initInitialCostEdit();

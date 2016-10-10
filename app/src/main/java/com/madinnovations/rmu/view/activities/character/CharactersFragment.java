@@ -92,15 +92,15 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			saveItem();
 		}
 		if(mainPageFragment != null) {
-			getFragmentManager().beginTransaction().remove(mainPageFragment).commit();
+			getFragmentManager().beginTransaction().remove(mainPageFragment).commitAllowingStateLoss();
 			mainPageFragment = null;
 		}
 		if(backgroundPageFragment != null) {
-			getFragmentManager().beginTransaction().remove(backgroundPageFragment).commit();
+			getFragmentManager().beginTransaction().remove(backgroundPageFragment).commitAllowingStateLoss();
 			mainPageFragment = null;
 		}
 		if(skillsPageFragment != null) {
-			getFragmentManager().beginTransaction().remove(backgroundPageFragment).commit();
+			getFragmentManager().beginTransaction().remove(backgroundPageFragment).commitAllowingStateLoss();
 			mainPageFragment = null;
 		}
 		super.onPause();
@@ -183,17 +183,17 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		super.onDestroyView();
 
 		if(this.mainPageFragment != null && getFragmentManager().findFragmentById(this.mainPageFragment.getId()) != null) {
-			getFragmentManager().beginTransaction().remove(this.mainPageFragment).commit();
+			getFragmentManager().beginTransaction().remove(this.mainPageFragment).commitAllowingStateLoss();
 			this.mainPageFragment = null;
 		}
 
 		if(this.backgroundPageFragment != null && getFragmentManager().findFragmentById(this.backgroundPageFragment.getId()) != null) {
-			getFragmentManager().beginTransaction().remove(this.backgroundPageFragment).commit();
+			getFragmentManager().beginTransaction().remove(this.backgroundPageFragment).commitAllowingStateLoss();
 			this.backgroundPageFragment = null;
 		}
 
 		if(this.skillsPageFragment != null && getFragmentManager().findFragmentById(this.skillsPageFragment.getId()) != null) {
-			getFragmentManager().beginTransaction().remove(this.skillsPageFragment).commit();
+			getFragmentManager().beginTransaction().remove(this.skillsPageFragment).commitAllowingStateLoss();
 			this.skillsPageFragment = null;
 		}
 	}
