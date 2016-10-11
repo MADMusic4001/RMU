@@ -401,6 +401,38 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 					}
 			);
 		}
+
+		private boolean copyCostToItem() {
+			boolean changed = false;
+			Short firstCost = null;
+			Short secondCost = null;
+			SkillCost skillCost = callbackImpl.getProfessionInstance().getSkillCategoryCosts().get(
+					skillCategoryCost.getSkillCategory());
+
+			if(initialCostEdit.getText().length() > 0) {
+				firstCost = Short.valueOf(initialCostEdit.getText().toString());
+			}
+			if(additionalCostEdit.getText().length() > 0) {
+				secondCost = Short.valueOf(additionalCostEdit.getText().toString());
+			}
+			if(firstCost == null && secondCost == null && skillCost != null) {
+				changed = true;
+				callbackImpl.getProfessionInstance().getSkillCategoryCosts().remove(skillCategoryCost.getSkillCategory());
+			}
+			else if(firstCost != null && secondCost != null) {
+				if(skillCost == null) {
+					skillCost = new SkillCost(firstCost, secondCost);
+					callbackImpl.getProfessionInstance().getSkillCategoryCosts().put(
+							skillCategoryCost.getSkillCategory(),skillCost);
+					changed = true;
+				}
+				else if(!skillCost.getFirstCost().equals(firstCost) || !skillCost.getAdditionalCost().equals(secondCost)) {
+					skillCost.setFirstCost(firstCost);
+					skillCost.setAdditionalCost(secondCost);
+				}
+			}
+			return changed;
+		}
 	}
 
 	private class ChildViewHolder {

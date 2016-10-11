@@ -64,7 +64,36 @@ public class Profession {
 	 * @return true if the Profession instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+		boolean isValid = (name != null && !name.isEmpty() && description != null && !description.isEmpty());
+		if(isValid) {
+			for (Map.Entry<SkillCategory, SkillCost> entry : skillCategoryCosts.entrySet()) {
+				SkillCost skillCost = entry.getValue();
+				isValid &= (skillCost == null || assignableSkillCosts.containsKey(entry.getKey()) ||
+						(skillCost.getFirstCost() != null && skillCost.getAdditionalCost() != null &&
+							skillCost.getFirstCost() < skillCost.getAdditionalCost()));
+			}
+		}
+		if(isValid) {
+			for (Map.Entry<Skill, SkillCost> entry : skillCosts.entrySet()) {
+				SkillCost skillCost = entry.getValue();
+				isValid &= (skillCost == null ||
+						(skillCategoryCosts.containsKey(entry.getKey().getCategory()) &&
+								skillCategoryCosts.get(entry.getKey().getCategory()).getFirstCost() != null &&
+								skillCategoryCosts.get(entry.getKey().getCategory()).getAdditionalCost() != null) ||
+						(skillCost.getFirstCost() != null && skillCost.getAdditionalCost() != null &&
+							skillCost.getFirstCost() < skillCost.getAdditionalCost()));
+			}
+		}
+		if(isValid) {
+			for (Map.Entry<SkillCategory, List<SkillCost>> entry : assignableSkillCosts.entrySet()) {
+				for(SkillCost skillCost : entry.getValue()) {
+					isValid &= (skillCost == null ||
+							(skillCost.getFirstCost() != null && skillCost.getAdditionalCost() != null &&
+								skillCost.getFirstCost() < skillCost.getAdditionalCost()));
+				}
+			}
+		}
+		return isValid;
 	}
 
 	@Override
@@ -72,6 +101,12 @@ public class Profession {
 		return name;
 	}
 
+	/**
+	 * Generates a debug output string for this instance.
+	 *
+	 * @return  a string with the instance's values.
+	 */
+	@SuppressWarnings("unused")
 	public String toDebugString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
@@ -152,8 +187,5 @@ public class Profession {
 	}
 	public List<SkillCategory> getProfessionalSkillCategories() {
 		return professionalSkillCategories;
-	}
-	public void setProfessionalSkillCategories(List<SkillCategory> professionalSkillCategories) {
-		this.professionalSkillCategories = professionalSkillCategories;
 	}
 }

@@ -79,14 +79,8 @@ public class ProfessionSkillCategoryCost {
 	public List<SkillCostEntry> getSkillCosts() {
 		return skillCosts;
 	}
-	public void setSkillCosts(List<SkillCostEntry> skillCosts) {
-		this.skillCosts = skillCosts;
-	}
 	public SkillCost getSkillCategoryCost() {
 		return skillCategoryCost;
-	}
-	public void setSkillCategoryCost(SkillCost skillCategoryCost) {
-		this.skillCategoryCost = skillCategoryCost;
 	}
 	public boolean isAssignable() {
 		return assignable;
@@ -96,8 +90,5 @@ public class ProfessionSkillCategoryCost {
 	}
 	public List<SkillCost> getAssignableSkillCosts() {
 		return assignableSkillCosts;
-	}
-	public void setAssignableSkillCosts(List<SkillCost> assignableSkillCosts) {
-		this.assignableSkillCosts = assignableSkillCosts;
 	}
 }
