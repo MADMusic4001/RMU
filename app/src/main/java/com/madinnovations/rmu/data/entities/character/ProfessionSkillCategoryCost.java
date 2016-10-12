@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Container class for associating SkillCost to SkillCategory
  */
-public class ProfessionSkillCategoryCost {
+public class ProfessionSkillCategoryCost implements Comparable {
 	private SkillCategory skillCategory;
 	private List<SkillCostEntry> skillCosts           = new ArrayList<>();
 	private SkillCost            skillCategoryCost    = new SkillCost();
@@ -58,6 +58,34 @@ public class ProfessionSkillCategoryCost {
 	}
 
 	@Override
+	public int compareTo(@NonNull Object o) {
+		int result;
+
+		if(!(o instanceof ProfessionSkillCategoryCost)) {
+			result = 1;
+		}
+		else {
+			ProfessionSkillCategoryCost o2 = (ProfessionSkillCategoryCost)o;
+			result = this.skillCategory.compareTo(o2.skillCategory);
+			if(result == 0) {
+				if(this.skillCategory == null) {
+					if(o2.skillCategory != null) {
+						result = -1;
+					}
+				}
+				else if(o2.skillCategory == null) {
+					result = 1;
+				}
+				else {
+					result = this.skillCategory.getName().compareTo(o2.skillCategory.getName());
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
 	public String toString() {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
@@ -81,6 +109,9 @@ public class ProfessionSkillCategoryCost {
 	}
 	public SkillCost getSkillCategoryCost() {
 		return skillCategoryCost;
+	}
+	public void setSkillCategoryCost(SkillCost skillCategoryCost) {
+		this.skillCategoryCost = skillCategoryCost;
 	}
 	public boolean isAssignable() {
 		return assignable;

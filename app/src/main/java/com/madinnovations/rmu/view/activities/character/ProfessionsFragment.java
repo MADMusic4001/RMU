@@ -617,34 +617,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	// </editor-fold>
 
 	// <editor-fold desc="Private methods">
-//	private void addMissingCosts() {
-//		Map<SkillCategory, SkillCost> oldSkillCategoryCosts = currentInstance.getSkillCategoryCosts();
-//		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
-//		if(oldSkillCategoryCosts == null) {
-//			oldSkillCategoryCosts = new LinkedHashMap<>(0);
-//		}
-//		for(SkillCategory skillCategory : skillCategories) {
-//			if(!oldSkillCategoryCosts.containsKey(skillCategory)) {
-//				newSkillCategoryCosts.put(skillCategory, new SkillCost());
-//			}
-//			else {
-//				newSkillCategoryCosts.put(skillCategory, oldSkillCategoryCosts.get(skillCategory));
-//			}
-//		}
-//		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
-//
-//		Map<Skill, SkillCost> skillCosts = currentInstance.getSkillCosts();
-//		if(skillCosts == null) {
-//			skillCosts = new LinkedHashMap<>(skills.size());
-//			currentInstance.setSkillCosts(skillCosts);
-//		}
-//		for(Skill skill : skills) {
-//			if(!skillCosts.containsKey(skill)) {
-//				skillCosts.put(skill, new SkillCost());
-//			}
-//		}
-//	}
-
 	private Map<SkillCategory, SkillCost> getSkillCategoryCosts() {
 		Map<SkillCategory, SkillCost> oldSkillCategoryCosts = currentInstance.getSkillCategoryCosts();
 		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
@@ -689,6 +661,9 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				}
 			}
 			List<SkillCost> assignableCostList = currentInstance.getAssignableSkillCosts().get(entry.getKey());
+			if(assignableCostList == null) {
+				assignableCostList = new ArrayList<>();
+			}
 			ProfessionSkillCategoryCost professionSkillCategoryCost = new ProfessionSkillCategoryCost(
 					entry.getKey(),
 					professionSkillCostList,

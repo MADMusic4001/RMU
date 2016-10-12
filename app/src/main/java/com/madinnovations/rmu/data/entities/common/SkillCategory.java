@@ -15,13 +15,15 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Skill category attributes
  */
-public class SkillCategory {
+public class SkillCategory implements Comparable {
 	public static final String JSON_NAME = "SkillCategories";
 	private int id = -1;
 	private String name = null;
@@ -88,6 +90,34 @@ public class SkillCategory {
 	@Override
 	public int hashCode() {
 		return id;
+	}
+
+	@Override
+	public int compareTo(@NonNull Object o) {
+		int result;
+
+		if(!(o instanceof SkillCategory)) {
+			result = 1;
+		}
+		else {
+			SkillCategory o2 = (SkillCategory)o;
+			result = this.name.compareTo(o2.name);
+			if(result == 0) {
+				if(this.name == null) {
+					if(o2.name != null) {
+						result = -1;
+					}
+				}
+				else if(o2.name == null) {
+					result = 1;
+				}
+				else {
+					result = this.name.compareTo(o2.name);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	// Getters and setters

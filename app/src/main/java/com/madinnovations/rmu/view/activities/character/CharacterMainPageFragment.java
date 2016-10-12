@@ -64,7 +64,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private EditText                 heightEdit;
 	private EditText                 weightEdit;
 	private EditText                 currentHitsEdit;
-	private EditText                 maxHitsEdit;
+	private EditText                 maxHitsEdit;				
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
