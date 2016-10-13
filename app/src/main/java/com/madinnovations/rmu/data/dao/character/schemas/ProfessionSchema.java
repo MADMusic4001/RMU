@@ -38,9 +38,11 @@ public interface ProfessionSchema {
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_REALM1_ID + " INTEGER, "
 			+ COLUMN_REALM2_ID + " INTEGER, "
-			+ "FOREIGN KEY (" + COLUMN_REALM1_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_REALM2_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
-			+ ")";
+			+ "FOREIGN KEY fk_profession_realm1 (" + COLUMN_REALM1_ID + ") REFERENCES "
+				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY fk_profession_realm2 (" + COLUMN_REALM2_ID + ") REFERENCES "
+				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID +	")"
+			+ ");";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_REALM1_ID, COLUMN_REALM2_ID};
 }

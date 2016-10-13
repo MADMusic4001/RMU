@@ -50,18 +50,21 @@ public class SkillCostEntry implements Comparable {
 		}
 		else {
 			SkillCostEntry o2 = (SkillCostEntry)o;
-			result = this.getSkillCost().compareTo(o2.getSkillCost());
-			if(result == 0) {
-				if(this.getSkill() == null) {
-					if(o2.getSkill() != null) {
-						result = -1;
-					}
+			if(this.getSkill() != null) {
+				result = this.getSkill().getName().compareTo(o2.getSkill().getName());
+			}
+			else if (o2.getSkill() != null) {
+				result = 1;
+			}
+			else {
+				if(this.getSkillCost() != null) {
+					result = this.getSkillCost().compareTo(o2.getSkillCost());
 				}
-				else if(o2.getSkill() == null) {
-					result = 1;
+				else if(o2.getSkillCost() != null) {
+					result = -1;
 				}
 				else {
-					result = this.getSkill().getName().compareTo(o2.getSkill().getName());
+					result = 0;
 				}
 			}
 		}

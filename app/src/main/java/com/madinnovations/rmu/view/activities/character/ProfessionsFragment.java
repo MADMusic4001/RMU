@@ -651,13 +651,13 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		Map<Skill, SkillCost> skillCosts = getSkillCosts();
 
 		for(Map.Entry<SkillCategory, SkillCost> entry : skillCategoryCosts.entrySet()) {
-			List<SkillCostEntry> professionSkillCostList = new ArrayList<>();
+			List<SkillCostEntry> skillCostEntryList = new ArrayList<>();
 			for(Map.Entry<Skill, SkillCost> skillCostEntry : skillCosts.entrySet()) {
 				if(skillCostEntry.getKey().getCategory().equals(entry.getKey())) {
 					SkillCostEntry professionSkillCost = new SkillCostEntry(
 							skillCostEntry.getKey(),
 							skillCostEntry.getValue());
-					professionSkillCostList.add(professionSkillCost);
+					skillCostEntryList.add(professionSkillCost);
 				}
 			}
 			List<SkillCost> assignableCostList = currentInstance.getAssignableSkillCosts().get(entry.getKey());
@@ -666,7 +666,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			}
 			ProfessionSkillCategoryCost professionSkillCategoryCost = new ProfessionSkillCategoryCost(
 					entry.getKey(),
-					professionSkillCostList,
+					skillCostEntryList,
 					entry.getValue(),
 					!assignableCostList.isEmpty(),
 					assignableCostList);

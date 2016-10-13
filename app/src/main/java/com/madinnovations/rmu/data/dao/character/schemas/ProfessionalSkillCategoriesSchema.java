@@ -34,9 +34,11 @@ public interface ProfessionalSkillCategoriesSchema {
 			+ COLUMN_PROFESSION_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_CATEGORY_ID + " INTEGER NOT NULL, "
 			+ "CONSTRAINT unique_profession_skill_category UNIQUE(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_CATEGORY_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES " + SkillCategorySchema.TABLE_NAME + "(" + SkillCategorySchema.COLUMN_ID + ")"
-			+ ")";
+			+ "FOREIGN KEY fk_profession_skill_categories_profession (" + COLUMN_PROFESSION_ID + ") REFERENCES "
+			+ ProfessionSchema.TABLE_NAME +	"(" + ProfessionSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY fk_profession_skill_categories_skill_category (" + COLUMN_SKILL_CATEGORY_ID + ") REFERENCES "
+				+ SkillCategorySchema.TABLE_NAME +	"(" + SkillCategorySchema.COLUMN_ID + ")"
+			+ ");";
 
 	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_PROFESSION_ID, COLUMN_SKILL_CATEGORY_ID};
 }

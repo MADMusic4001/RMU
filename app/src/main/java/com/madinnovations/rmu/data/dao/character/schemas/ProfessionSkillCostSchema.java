@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
@@ -39,9 +38,11 @@ public interface ProfessionSkillCostSchema {
 			+ COLUMN_FIRST_COST + " INTEGER NOT NULL, "
 			+ COLUMN_SECOND_COST + " INTEGER NOT NULL, "
 			+ "CONSTRAINT unique_profession_skill_category UNIQUE(" + COLUMN_PROFESSION_ID + "," + COLUMN_SKILL_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
-			+ ")";
+			+ "FOREIGN KEY fk_profession_skill_costs_profession (" + COLUMN_PROFESSION_ID + ") REFERENCES "
+				+ ProfessionSchema.TABLE_NAME +	"(" + ProfessionSchema.COLUMN_ID + "), "
+			+ "FOREIGN KEY fk_profession_skill_costs_skill (" + COLUMN_SKILL_ID + ") REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ ");";
 
 	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_PROFESSION_ID, COLUMN_SKILL_ID, COLUMN_FIRST_COST, COLUMN_SECOND_COST};
 }

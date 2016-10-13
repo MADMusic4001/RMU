@@ -39,7 +39,7 @@ public class ProfessionRxHandler {
 	 * @param dao  a ProfessionDao instance
 	 */
 	@Inject
-	public ProfessionRxHandler(ProfessionDao dao) {
+	ProfessionRxHandler(ProfessionDao dao) {
 		this.dao = dao;
 	}
 
