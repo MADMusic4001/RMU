@@ -22,6 +22,8 @@ import com.madinnovations.rmu.view.RMUApp;
  * Class representing a RoleMaster stat.
  */
 public class Stat {
+	private static final short[] bonusRangeStart = {1, 2, 3, 4, 5, 6, 7, 9, 12, 15, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78,
+			84, 87, 90, 93, 95, 96, 97, 98, 99, 100};
 	public static final String JSON_NAME = "Stats";
 	private int id = -1;
 	private String abbreviation;
@@ -51,6 +53,22 @@ public class Stat {
 	public boolean isValid() {
 		return abbreviation != null && !abbreviation.isEmpty() && name != null && !name.isEmpty() && description != null &&
 				!description.isEmpty();
+	}
+
+	/**
+	 * Gets the bonus for a stat given its value.
+	 *
+	 * @param statValue  the value of the stat
+	 * @return  the bonus for the given value.
+	 */
+	public static short getBonus(short statValue) {
+		int i;
+		for(i = 0; i < bonusRangeStart.length; i++) {
+			if(statValue <= bonusRangeStart[i]) {
+				break;
+			}
+		}
+		return (short)(i - 15);
 	}
 
 	@Override

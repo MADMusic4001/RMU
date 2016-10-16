@@ -28,14 +28,13 @@ public interface RaceRealmRRModSchema {
 	String COLUMN_MODIFIER = "modifier";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
-			+ COLUMN_RACE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_REALM_ID + " INTEGER NOT NULL, "
+			+ TABLE_NAME + "("
+			+ COLUMN_RACE_ID + " INTEGER NOT NULL REFERENCES "
+				+ RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
+			+ COLUMN_REALM_ID + " INTEGER NOT NULL REFERENCES "
+				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
 			+ COLUMN_MODIFIER + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY (" + COLUMN_RACE_ID + "," + COLUMN_REALM_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY (" + COLUMN_RACE_ID + "," + COLUMN_REALM_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_REALM_ID, COLUMN_MODIFIER};

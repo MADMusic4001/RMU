@@ -21,7 +21,7 @@ import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
 /**
  * Database schema data for the weapons table
  */
-public interface WeaponSchema {
+public interface WeaponTemplateSchema {
     String TABLE_NAME = "weapons";
 
     String COLUMN_ID = "id";

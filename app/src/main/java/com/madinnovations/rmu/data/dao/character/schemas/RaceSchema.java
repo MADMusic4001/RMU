@@ -36,8 +36,7 @@ public interface RaceSchema {
 	String COLUMN_POUNDS_PER_INCH = "poundsPerInch";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
+			+ TABLE_NAME + "("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
@@ -51,7 +50,7 @@ public interface RaceSchema {
 			+ COLUMN_AVERAGE_HEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_AVERAGE_WEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_POUNDS_PER_INCH + " INTEGER NOT NULL"
-			+ ")";
+			+ ");";
 
 	String[] COLUMNS = new String[] { COLUMN_ID,
 			COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_BONUS_DEVELOPMENT_POINTS,

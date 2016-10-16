@@ -28,14 +28,13 @@ public interface RaceTalentsSchema {
 	String COLUMN_TIERS = "tiers";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
-			+ COLUMN_RACE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_TALENT_ID + " INTEGER NOT NULL, "
+			+ TABLE_NAME + "("
+			+ COLUMN_RACE_ID + " INTEGER NOT NULL REFERENCES "
+				+ RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
+			+ COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
+				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
 			+ COLUMN_TIERS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_RACE_ID + "," + COLUMN_TALENT_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_RACE_ID + "," + COLUMN_TALENT_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_TIERS};

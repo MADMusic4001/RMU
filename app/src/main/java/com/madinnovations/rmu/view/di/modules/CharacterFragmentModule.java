@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharactersFragment;
@@ -33,6 +34,7 @@ import dagger.Provides;
 @Module
 public class CharacterFragmentModule {
 	private CharacterBackgroundPageFragment characterBackgroundPageFragment;
+	private CharacterGeneratedValuesFragment characterGeneratedValuesFragment;
 	private CharacterMainPageFragment       characterMainPageFragment;
 	private CharactersFragment              charactersFragment;
 	private CharacterSkillsPageFragment     characterSkillsPageFragment;
@@ -40,8 +42,11 @@ public class CharacterFragmentModule {
 	private ProfessionsFragment             professionsFragment;
 	private RacesFragment                   racesFragment;
 
-	public CharacterFragmentModule(CharacterBackgroundPageFragment charactersFragment) {
+	public CharacterFragmentModule(CharacterBackgroundPageFragment characterBackgroundPageFragment) {
 		this.characterBackgroundPageFragment = characterBackgroundPageFragment;
+	}
+	public CharacterFragmentModule(CharacterGeneratedValuesFragment characterGeneratedValuesFragment) {
+		this.characterGeneratedValuesFragment = characterGeneratedValuesFragment;
 	}
 	public CharacterFragmentModule(CharacterMainPageFragment characterMainPageFragment) {
 		this.characterMainPageFragment = characterMainPageFragment;
@@ -66,6 +71,11 @@ public class CharacterFragmentModule {
 	@PerFragment
 	CharacterBackgroundPageFragment provideCharacterBackgroundPageFragment() {
 		return this.characterBackgroundPageFragment;
+	}
+	@Provides
+	@PerFragment
+	CharacterGeneratedValuesFragment provideCharacterGeneratedValuesFragment() {
+		return this.characterGeneratedValuesFragment;
 	}
 	@Provides
 	@PerFragment

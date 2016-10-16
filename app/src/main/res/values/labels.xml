@@ -172,6 +172,8 @@
   <string name="label_culture_description">Culture Description</string>
   <string name="label_item_description">Item Description</string>
   <string name="label_item_name">Item Name</string>
+  <string name="label_item_template_description">Item Template Description</string>
+  <string name="label_item_template_name">Item Template Name</string>
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
   <string name="label_profession_cat_list_additional_cost">Additional Cost</string>
@@ -310,30 +312,38 @@
   <string name="input_label_base_fear_rr">Fear RR:</string>
   <string name="input_label_base_hits">Base Hits:</string>
   <string name="input_label_base_mentalism_rr">Mentalism RR:</string>
+  <string name="input_label_base_movement_rate">Base Movement Rate:</string>
   <string name="input_label_base_physical_rr">Phyiscal RR:</string>
   <string name="input_label_base_stride">Base Stride:</string>
   <string name="input_label_bleeding">Bleeding:</string>
   <string name="input_label_bonus">Bonus:</string>
   <string name="input_label_breakage">Breakage:</string>
   <string name="input_label_category_filter">Category Filter:</string>
+  <string name="input_label_channeling_rr">Channeling RR:</string>
   <string name="input_label_critical_codes">Critical Codes:</string>
   <string name="input_label_critical_type">Critical Type:</string>
   <string name="input_label_critical_severity_filter">Critical Severity Filter:</string>
   <string name="input_label_critical_type_filter">Critical Type Filter:</string>
   <string name="input_label_culture">Culture:</string>
   <string name="input_label_current_dps">Current DP:</string>
+  <string name="input_label_current_endurance">Current Endurance:</string>
   <string name="input_label_current_hits">Current Hits:</string>
   <string name="input_label_current_lvl">Current Level:</string>
   <string name="input_label_damage_table">Damage Table:</string>
   <string name="input_label_dazed">Dazed:</string>
+  <string name="input_label_defensive_bonus">Defensive Bonus:</string>
   <string name="input_label_description">Description:</string>
-  <string name="input_label_dev_points">Dev Points:</string>
+  <string name="input_label_dev_points">Development Points:</string>
   <string name="input_label_duration">Duration:</string>
+  <string name="input_label_encumbrance">Encumbrance:</string>
   <string name="input_label_endurance_mod">Endurance Mod.:</string>
+  <string name="input_label_essence_rr">Essence RR:</string>
+  <string name="input_label_experience_points">Experience Points:</string>
   <string name="input_label_eye_color">Eye Color:</string>
   <string name="input_label_facial_features">Facial Features:</string>
   <string name="input_label_family_info">Family Information:</string>
   <string name="input_label_fatigue">Fatigue:</string>
+  <string name="input_label_fear_rr">Fear RR:</string>
   <string name="input_label_first_name">First Name:</string>
   <string name="input_label_hair_color">Hair Color:</string>
   <string name="input_label_hair_style">Hair Style:</string>
@@ -342,6 +352,7 @@
   <string name="input_label_hits">Hits:</string>
   <string name="input_label_hometown">Hometown:</string>
   <string name="input_label_identifying_marks">Identifying Marks:</string>
+  <string name="input_label_initiative">Initiative:</string>
   <string name="input_label_injury">Injury:</string>
   <string name="input_label_is_attack">Is Attack?</string>
   <string name="input_label_is_movement">Is Movement?</string>
@@ -351,13 +362,17 @@
   <string name="input_label_length">Length:</string>
   <string name="input_label_level">Level:</string>
   <string name="input_label_mannerisms">Mannerisms:</string>
+  <string name="input_label_max_endurance">Max Endurance:</string>
   <string name="input_label_max_hits">Max Hits:</string>
+  <string name="input_label_mentalism_rr">Mentalism RR:</string>
   <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
   <string name="input_label_outlook">Outlook:</string>
   <string name="input_label_parameter">Parameter:</string>
   <string name="input_label_personality">Personality:</string>
+  <string name="input_label_physical_rr">Physical RR:</string>
   <string name="input_label_pounds_per_inch">Pounds per Inch:</string>
+  <string name="input_label_power_points">Power Points:</string>
   <string name="input_label_profession">Profession:</string>
   <string name="input_label_race">Race:</string>
   <string name="input_label_race_name">Race Name:</string>
@@ -393,6 +408,7 @@
   <string name="spell_list_format_string">%1$s (%2$s %3$s)</string>
   <string name="export_status">Export %1$d%% complete.</string>
   <string name="import_status">Import %1$d%% complete.</string>
+  <string name="assignable_skill_name">Skill %1$d</string>
 
   <!-- ViewPager title strings -->
   <string name="title_creature_variety_main_page">General Attributes</string>
@@ -400,6 +416,7 @@
   <string name="title_character_main_page">General Attributes</string>
   <string name="title_character_skills_page">Skills, Talents and Stats</string>
   <string name="title_character_background_page">Background Information</string>
+  <string name="title_character_generated_values_page">Generated Values</string>
 
   <!-- Adapter extra instance names -->
   <string name="no_specialization">No Specialization</string>

@@ -28,14 +28,13 @@ public interface RaceStatModSchema {
 	String COLUMN_MODIFIER = "modifier";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
-			+ COLUMN_RACE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_STAT_ID + " INTEGER NOT NULL, "
+			+ TABLE_NAME + "("
+			+ COLUMN_RACE_ID + " INTEGER NOT NULL REFERENCES "
+				+ RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
+			+ COLUMN_STAT_ID + " INTEGER NOT NULL REFERENCES "
+				+ StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + "), "
 			+ COLUMN_MODIFIER + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY (" + COLUMN_RACE_ID + "," + COLUMN_STAT_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_RACE_ID + ") REFERENCES " + RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY (" + COLUMN_RACE_ID + "," + COLUMN_STAT_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_STAT_ID, COLUMN_MODIFIER};

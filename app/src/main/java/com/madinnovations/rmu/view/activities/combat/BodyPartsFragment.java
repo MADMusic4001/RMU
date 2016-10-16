@@ -78,7 +78,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_body_part_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_body_part_description_required);
 		initListView(layout);
 
@@ -171,7 +171,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 			case R.id.name_edit:
 				result = currentInstance.getName();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 		}
@@ -185,7 +185,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 			case R.id.name_edit:
 				currentInstance.setName(newString);
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				currentInstance.setDescription(newString);
 				break;
 		}

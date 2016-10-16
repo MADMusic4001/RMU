@@ -8,25 +8,6 @@
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/current_level_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_current_lvl"/>
-    <EditText
-        android:id="@+id/current_level_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:maxLength="2"
-        android:nextFocusDown="@+id/first_name_edit"
-        android:hint="@string/hint_character_current_lvl"/>
-  </LinearLayout>
-
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
   <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -58,7 +39,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:maxLength="30"
-      android:nextFocusDown="@+id/description_edit"
+      android:nextFocusDown="@+id/notes_edit"
       android:hint="@string/hint_character_known_as"/>
   </LinearLayout>
 
@@ -71,7 +52,7 @@
         android:layout_height="wrap_content"
         android:text="@string/input_label_description"/>
     <EditText
-        android:id="@+id/description_edit"
+        android:id="@+id/notes_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"

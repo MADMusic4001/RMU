@@ -406,7 +406,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	}
 
 	private void initDescriptionEdit(View layout) {
-		notesEdit = (EditText)layout.findViewById(R.id.description_edit);
+		notesEdit = (EditText)layout.findViewById(R.id.notes_edit);
 		notesEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

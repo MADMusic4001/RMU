@@ -70,8 +70,10 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietyCriticalCodesSche
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ArmorSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellAreaOfEffectParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellDurationParamSchema;
@@ -122,6 +124,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(SizeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(OutlookSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(ItemTemplateSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ItemSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(DamageTableSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CultureSchema.TABLE_CREATE);
@@ -139,7 +142,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillCategoryStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(WeaponSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(WeaponTemplateSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(ArmorSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietySkillsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureArchetypeSchema.TABLE_CREATE);
@@ -243,7 +247,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CreatureArchetypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietySkillsSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(WeaponSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(WeaponTemplateSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillCategoryStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyCriticalCodesSchema.TABLE_NAME, null, null);

@@ -53,7 +53,7 @@ import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragmen
 import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
-import com.madinnovations.rmu.view.activities.item.ItemsFragment;
+import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
@@ -94,7 +94,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private CriticalTypesFragment      criticalTypesFragment;
 	private CulturesFragment           culturesFragment;
 	private DamageResultsFragment      damageResultsFragment;
-	private ItemsFragment              itemsFragment;
+	private ItemTemplatesFragment      itemTemplatesFragment;
 	private OutlooksFragment           outlooksFragment;
 	private ProfessionsFragment        professionsFragment;
 	private RacesFragment              racesFragment;
@@ -329,10 +329,10 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	}
 
 	public void showItems() {
-		if(itemsFragment == null) {
-			itemsFragment = new ItemsFragment();
+		if(itemTemplatesFragment == null) {
+			itemTemplatesFragment = new ItemTemplatesFragment();
 		}
-		replaceDetailFragment(itemsFragment);
+		replaceDetailFragment(itemTemplatesFragment);
 	}
 
 	public void showOutlooks() {

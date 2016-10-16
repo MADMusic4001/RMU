@@ -107,7 +107,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 		initSkillCategoryFilterSpinner(layout);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_skill_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 				R.string.validation_skill_description_required);
 		initSkillCategorySpinner(layout);
 		initUseCategoryStatsCheckBox(layout);
@@ -200,7 +200,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 				case R.id.name_edit:
 					result = currentInstance.getName();
 					break;
-				case R.id.description_edit:
+				case R.id.notes_edit:
 					result = currentInstance.getDescription();
 					break;
 			}
@@ -217,7 +217,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					currentInstance.setName(newString);
 					saveItem();
 					break;
-				case R.id.description_edit:
+				case R.id.notes_edit:
 					currentInstance.setDescription(newString);
 					saveItem();
 					break;

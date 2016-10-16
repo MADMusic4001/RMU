@@ -29,6 +29,7 @@ import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
+import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 
 import javax.inject.Singleton;
@@ -42,9 +43,11 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class CharacterDaoSqlModule {
 	@Provides @Singleton
-	CharacterDao provideCharacterDao(RMUDatabaseHelper helper, RaceDao raceDao, SkillDao skillDao,
-											TalentDao talentDao, StatDao statDao) {
-		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, statDao);
+	CharacterDao provideCharacterDao(RMUDatabaseHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
+									 StatDao statDao, CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao,
+									 ItemDao itemDao) {
+		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, statDao, cultureDao, professionDao, realmDao,
+									  itemDao);
 	}
 
 	@Provides @Singleton

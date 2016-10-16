@@ -34,6 +34,14 @@ public interface SkillDao {
 	public Skill getById(int id);
 
 	/**
+	 * Retrieves a Skill object from persistent storage.
+	 *
+	 * @param name  the name of the Skill object to retrieve
+	 * @return the Skill instance with the given name or null if not found.
+	 */
+	public Skill getByName(String name);
+
+	/**
 	 * Retrieves all Skill objects from persistent storage.
 	 *
 	 * @return  a List containing all Skill objects currently in persistent storage.

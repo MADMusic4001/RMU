@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.data.dao.character.schemas;
 
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
 
 /**
  * Database schema data for the character_skill_costs table
@@ -30,15 +29,14 @@ public interface CharacterSkillCostsSchema {
 	String COLUMN_ADDITIONAL_COST = "additionalCost";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
-			+ COLUMN_CHARACTER_ID  + " INTEGER NOT NULL, "
-			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
+			+ TABLE_NAME + "("
+			+ COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
+				+ CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+			+ COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
 			+ COLUMN_FIRST_COST  + " INTEGER NOT NULL, "
 			+ COLUMN_ADDITIONAL_COST + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_CHARACTER_ID + ") REFERENCES " + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_FIRST_COST, COLUMN_ADDITIONAL_COST};

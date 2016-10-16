@@ -57,6 +57,8 @@ import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +111,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_profession_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_profession_description_required);
 		initRealm1Spinner(layout);
 		initRealm2Spinner(layout);
@@ -144,7 +146,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			}
 			currentInstance = new Profession();
 			isNew = true;
-//			addMissingCosts();
 			copyItemToViews();
 			listView.clearChoices();
 			listAdapter.notifyDataSetChanged();
@@ -211,7 +212,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			case R.id.name_edit:
 				result = currentInstance.getName();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 		}
@@ -226,7 +227,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				currentInstance.setName(newString);
 				saveItem();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				currentInstance.setDescription(newString);
 				saveItem();
 				break;
@@ -260,35 +261,35 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			changed = true;
 		}
 
-		currentInstance.getSkillCategoryCosts().clear();
-		currentInstance.getSkillCosts().clear();
-		currentInstance.getAssignableSkillCosts().clear();
+		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new HashMap<>();
+		Map<Skill, SkillCost> newSkillCosts = new HashMap<>();
+		Map<SkillCategory, List<SkillCost>> newAssignableSkillCosts = new HashMap<>();
 		for(int i = 0; i < categoryCostListAdapter.getGroupCount(); i++) {
 			ProfessionSkillCategoryCost categoryCost = (ProfessionSkillCategoryCost)categoryCostListAdapter.getGroup(i);
 			if(!categoryCost.isAssignable() && categoryCost.getSkillCategoryCost() != null &&
 					categoryCost.getSkillCategoryCost().getFirstCost() != null &&
 					categoryCost.getSkillCategoryCost().getAdditionalCost() != null) {
-				currentInstance.getSkillCategoryCosts().put(categoryCost.getSkillCategory(), categoryCost.getSkillCategoryCost());
+				newSkillCategoryCosts.put(categoryCost.getSkillCategory(), categoryCost.getSkillCategoryCost());
 			}
 			for(int j = 0; j < categoryCostListAdapter.getChildrenCount(i); j++) {
 				SkillCostEntry skillCostEntry = (SkillCostEntry) categoryCostListAdapter.getChild(i, j);
-				if(skillCostEntry.getSkillCost() != null && skillCostEntry.getSkillCost().getFirstCost() != null &&
+				if(categoryCost.isAssignable()) {
+					List<SkillCost> assignableCosts = newAssignableSkillCosts.get(categoryCost.getSkillCategory());
+					if(assignableCosts == null) {
+						assignableCosts = new ArrayList<>(categoryCostListAdapter.getChildrenCount(i));
+						newAssignableSkillCosts.put(categoryCost.getSkillCategory(), assignableCosts);
+					}
+					assignableCosts.add(skillCostEntry.getSkillCost());
+				}
+				else if(skillCostEntry.getSkillCost() != null && skillCostEntry.getSkillCost().getFirstCost() != null &&
 						skillCostEntry.getSkillCost().getAdditionalCost() != null) {
-					if(categoryCost.isAssignable()) {
-						List<SkillCost> assignableCosts = currentInstance.getAssignableSkillCosts().get(
-								categoryCost.getSkillCategory());
-						if(assignableCosts == null) {
-							assignableCosts = new ArrayList<>(categoryCostListAdapter.getChildrenCount(i));
-							currentInstance.getAssignableSkillCosts().put(categoryCost.getSkillCategory(), assignableCosts);
-						}
-						assignableCosts.add(skillCostEntry.getSkillCost());
-					}
-					else {
-						currentInstance.getSkillCosts().put(skillCostEntry.getSkill(), skillCostEntry.getSkillCost());
-					}
+					newSkillCosts.put(skillCostEntry.getSkill(), skillCostEntry.getSkillCost());
 				}
 			}
 		}
+		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
+		currentInstance.setSkillCosts(newSkillCosts);
+		currentInstance.setAssignableSkillCosts(newAssignableSkillCosts);
 
 		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
 		if(newRealm != null) {
@@ -331,7 +332,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		}
 		realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(currentRealm));
 
-//		addMissingCosts();
 		categoryCostListAdapter.clear();
 		categoryCostListAdapter.addAll(createCostList());
 		categoryCostListAdapter.notifyDataSetChanged();
@@ -386,6 +386,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	@Override
 	public void saveItem() {
 		if(currentInstance.isValid()) {
+			Log.d(LOG_TAG, "currentInstance = " + currentInstance);
 			final boolean wasNew = isNew;
 			isNew = false;
 			professionRxHandler.save(currentInstance)
@@ -567,9 +568,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 						listView.setItemChecked(0, true);
 						listAdapter.notifyDataSetChanged();
 					}
-//					else {
-//						addMissingCosts();
-//					}
 					copyItemToViews();
 				}
 				@Override
@@ -645,6 +643,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		return skillCosts;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<ProfessionSkillCategoryCost> createCostList() {
 		List<ProfessionSkillCategoryCost> costList = new ArrayList<>(skillCategories.size());
 		Map<SkillCategory, SkillCost> skillCategoryCosts = getSkillCategoryCosts();
@@ -660,8 +659,18 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					skillCostEntryList.add(professionSkillCost);
 				}
 			}
+			Collections.sort(skillCostEntryList);
 			List<SkillCost> assignableCostList = currentInstance.getAssignableSkillCosts().get(entry.getKey());
-			if(assignableCostList == null) {
+			if(assignableCostList != null) {
+				if (assignableCostList.size() > skillCostEntryList.size()) {
+					assignableCostList = new ArrayList<>();
+					currentInstance.getAssignableSkillCosts().put(entry.getKey(), assignableCostList);
+				}
+				else {
+					Collections.sort(assignableCostList);
+				}
+			}
+			else {
 				assignableCostList = new ArrayList<>();
 			}
 			ProfessionSkillCategoryCost professionSkillCategoryCost = new ProfessionSkillCategoryCost(

@@ -28,20 +28,16 @@ public interface ProfessionSchema {
 	String COLUMN_DESCRIPTION = "description";
 	String COLUMN_REALM1_ID = "realm1Id";
 	String COLUMN_REALM2_ID = "realm2Id";
-	String COLUMN_COST_ARRAY = "costArray";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
+			+ TABLE_NAME + "("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
-			+ COLUMN_REALM1_ID + " INTEGER, "
-			+ COLUMN_REALM2_ID + " INTEGER, "
-			+ "FOREIGN KEY fk_profession_realm1 (" + COLUMN_REALM1_ID + ") REFERENCES "
+			+ COLUMN_REALM1_ID + " INTEGER REFERENCES "
 				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY fk_profession_realm2 (" + COLUMN_REALM2_ID + ") REFERENCES "
-				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID +	")"
+			+ COLUMN_REALM2_ID + " INTEGER REFERENCES "
+				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + ")"
 			+ ");";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_REALM1_ID, COLUMN_REALM2_ID};

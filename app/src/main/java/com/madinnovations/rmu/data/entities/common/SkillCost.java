@@ -64,31 +64,31 @@ public class SkillCost implements Comparable {
 			SkillCost o2 = (SkillCost)o;
 			if(this.firstCost == null) {
 				if(o2.firstCost != null) {
-					result = -1;
+					result = 1;
 				}
 				else if(this.additionalCost == null) {
 					if(o2.additionalCost != null) {
-						result = -1;
+						result = 1;
 					}
 				}
 				else if(o2.additionalCost == null) {
-					result = 1;
+					result = -1;
 				}
 				else {
 					result = (this.additionalCost - o2.additionalCost);
 				}
 			}
 			else if(o2.firstCost == null) {
-				result = 1;
+				result = -1;
 			}
 			else if (this.firstCost.equals(o2.firstCost)) {
 				if(this.additionalCost == null) {
 					if(o2.additionalCost != null) {
-						result = -1;
+						result = 1;
 					}
 				}
 				else if(o2.additionalCost == null) {
-					result = 1;
+					result = -1;
 				}
 			}
 			else {

@@ -37,8 +37,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.item.ItemRxHandler;
-import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
+import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
@@ -52,18 +52,18 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Handles interactions with the UI for creature categories.
+ * Handles interactions with the UI for item templates.
  */
-public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Item> {
+public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapter.GetValues<ItemTemplate> {
 	@Inject
-	protected ItemRxHandler   itemRxHandler;
-	private   TwoFieldListAdapter<Item> listAdapter;
-	private   ListView        listView;
-	private   EditText        nameEdit;
-	private   EditText        descriptionEdit;
-	private   EditText        weightEdit;
-	private Item currentInstance = new Item();
-	private boolean          isNew            = true;
+	protected ItemTemplateRxHandler             itemRxHandler;
+	private   TwoFieldListAdapter<ItemTemplate> listAdapter;
+	private   ListView                          listView;
+	private   EditText                          nameEdit;
+	private   EditText                          notesEdit;
+	private   EditText                          weightEdit;
+	private   ItemTemplate                      currentInstance = new ItemTemplate();
+	private   boolean                           isNew = true;
 
 	@Nullable
 	@Override
@@ -71,13 +71,13 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newItemFragmentComponent(new ItemFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.items_fragment, container, false);
+		View layout = inflater.inflate(R.layout.item_templates_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_item_name));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_item_template_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_item_description));
 
 		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		initNotesEdit(layout);
 		initWeightEdit(layout);
 		initListView(layout);
 
@@ -96,7 +96,7 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_item) {
-			currentInstance = new Item();
+			currentInstance = new ItemTemplate();
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -114,21 +114,21 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
-		final Item item;
+		final ItemTemplate item;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
 
 		switch (menuItem.getItemId()) {
 			case R.id.context_new_item:
-				currentInstance = new Item();
+				currentInstance = new ItemTemplate();
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_item:
-				item = (Item)listView.getItemAtPosition(info.position);
+				item = (ItemTemplate)listView.getItemAtPosition(info.position);
 				if(item != null) {
 					deleteItem(item);
 					return true;
@@ -139,14 +139,14 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 	private void copyItemToViews() {
 		nameEdit.setText(currentInstance.getName());
-		descriptionEdit.setText(currentInstance.getDescription());
+		notesEdit.setText(currentInstance.getNotes());
 		weightEdit.setText(String.valueOf(currentInstance.getWeight()));
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
 		}
-		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
-			descriptionEdit.setError(null);
+		if(currentInstance.getNotes() != null && !currentInstance.getNotes().isEmpty()) {
+			notesEdit.setError(null);
 		}
 		weightEdit.setError(null);
 	}
@@ -158,33 +158,33 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			itemRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Item>() {
+					.subscribe(new Subscriber<ItemTemplate>() {
 						@Override
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("ItemsFragment", "Exception saving new Item: " + currentInstance, e);
+							Log.e("ItemTemplatesFragment", "Exception saving new ItemTemplate: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_item_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
-						public void onNext(Item savedItem) {
+						public void onNext(ItemTemplate savedItemTemplate) {
 							if (wasNew) {
-								listAdapter.add(savedItem);
-								if(savedItem == currentInstance) {
-									listView.setSelection(listAdapter.getPosition(savedItem));
-									listView.setItemChecked(listAdapter.getPosition(savedItem), true);
+								listAdapter.add(savedItemTemplate);
+								if(savedItemTemplate == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedItemTemplate));
+									listView.setItemChecked(listAdapter.getPosition(savedItemTemplate), true);
 								}
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
 								Toast.makeText(getActivity(), getString(R.string.toast_item_saved), Toast.LENGTH_SHORT).show();
-								int position = listAdapter.getPosition(savedItem);
+								int position = listAdapter.getPosition(savedItemTemplate);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
 									TextView textView = (TextView) v.findViewById(R.id.row_field1);
-									textView.setText(savedItem.getName());
+									textView.setText(savedItemTemplate.getName());
 									textView = (TextView) v.findViewById(R.id.row_field2);
-									textView.setText(savedItem.getDescription());
+									textView.setText(savedItemTemplate.getNotes());
 								}
 							}
 						}
@@ -192,7 +192,7 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		}
 	}
 
-	private void deleteItem(@NonNull final Item item) {
+	private void deleteItem(@NonNull final ItemTemplate item) {
 		itemRxHandler.deleteById(item.getId())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
@@ -201,7 +201,7 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("ItemsFragment", "Exception when deleting: " + item, e);
+						Log.e("ItemTemplatesFragment", "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_item_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -220,7 +220,7 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 								currentInstance = listAdapter.getItem(position);
 							}
 							else {
-								currentInstance = new Item();
+								currentInstance = new ItemTemplate();
 								isNew = true;
 							}
 							copyItemToViews();
@@ -258,27 +258,27 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		});
 	}
 
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
+	private void initNotesEdit(View layout) {
+		notesEdit = (EditText)layout.findViewById(R.id.notes_edit);
+		notesEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_item_description_required));
+				if (editable.length() == 0 && notesEdit != null) {
+					notesEdit.setError(getString(R.string.validation_item_description_required));
 				}
 			}
 		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		notesEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
+					final String newDescription = notesEdit.getText().toString();
+					if (currentInstance != null && !newDescription.equals(currentInstance.getNotes())) {
+						currentInstance.setNotes(newDescription);
 						saveItem();
 					}
 				}
@@ -323,7 +323,7 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 		itemRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Item>>() {
+				.subscribe(new Subscriber<Collection<ItemTemplate>>() {
 					@Override
 					public void onCompleted() {
 						if(listAdapter.getCount() > 0) {
@@ -337,30 +337,30 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("ItemsFragment",
-								"Exception caught getting all Item instances in onCreateView", e);
-						Toast.makeText(ItemsFragment.this.getActivity(),
+						Log.e("ItemTemplatesFragment",
+								"Exception caught getting all ItemTemplate instances in onCreateView", e);
+						Toast.makeText(ItemTemplatesFragment.this.getActivity(),
 								getString(R.string.toast_items_load_failed),
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Collection<Item> creatureCategories) {
+					public void onNext(Collection<ItemTemplate> creatureCategories) {
 						listAdapter.clear();
 						listAdapter.addAll(creatureCategories);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
 						toastString = String.format(getString(R.string.toast_items_loaded), creatureCategories.size());
-						Toast.makeText(ItemsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(ItemTemplatesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
 
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				currentInstance = (Item) listView.getItemAtPosition(position);
+				currentInstance = (ItemTemplate) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
-					currentInstance = new Item();
+					currentInstance = new ItemTemplate();
 					isNew = true;
 				}
 				copyItemToViews();
@@ -370,12 +370,12 @@ public class ItemsFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	}
 
 	@Override
-	public CharSequence getField1Value(Item item) {
+	public CharSequence getField1Value(ItemTemplate item) {
 		return item.getName();
 	}
 
 	@Override
-	public CharSequence getField2Value(Item item) {
-		return item.getDescription();
+	public CharSequence getField2Value(ItemTemplate item) {
+		return item.getNotes();
 	}
 }

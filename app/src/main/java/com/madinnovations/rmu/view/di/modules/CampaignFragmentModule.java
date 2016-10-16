@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
-import com.madinnovations.rmu.view.activities.item.ItemsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;

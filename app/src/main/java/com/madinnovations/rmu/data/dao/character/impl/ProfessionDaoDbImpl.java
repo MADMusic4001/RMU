@@ -36,9 +36,9 @@ import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -233,7 +233,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		Cursor cursor = super.query(ProfessionSkillCostSchema.TABLE_NAME, ProfessionSkillCostSchema.COLUMNS, selection,
 				selectionArgs, ProfessionSkillCostSchema.COLUMN_SKILL_ID);
-		Map<Skill, SkillCost> map = new HashMap<>(cursor.getCount());
+		Map<Skill, SkillCost> map = new TreeMap<>();
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int skillId = cursor.getInt(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_SKILL_ID));
@@ -257,7 +257,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		Cursor cursor = super.query(ProfessionSkillCategoryCostSchema.TABLE_NAME, ProfessionSkillCategoryCostSchema.COLUMNS,
 									selection, selectionArgs, ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID);
-		Map<SkillCategory, SkillCost> map = new HashMap<>(cursor.getCount());
+		Map<SkillCategory, SkillCost> map = new TreeMap<>();
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int skillCategoryId = cursor.getInt(cursor.getColumnIndexOrThrow(
@@ -284,7 +284,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		Cursor cursor = super.query(ProfessionAssignableSkillCostSchema.TABLE_NAME, ProfessionAssignableSkillCostSchema.COLUMNS,
 									selection, selectionArgs, ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID);
-		Map<SkillCategory, List<SkillCost>> map = new HashMap<>();
+		Map<SkillCategory, List<SkillCost>> map = new TreeMap<>();
 		List<SkillCost> skillCostList = new ArrayList<>();
 		SkillCategory skillCategory = null;
 		cursor.moveToFirst();

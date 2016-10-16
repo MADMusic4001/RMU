@@ -138,7 +138,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 		initCategorySpinner(layout);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_talent_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_talent_description_required);
 		initialCostEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.initial_cost_edit,
 												 R.string.validation_talent_initial_cost_required);
@@ -272,7 +272,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			case R.id.name_edit:
 				result = currentInstance.getName();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 			case R.id.initial_cost_edit:
@@ -299,7 +299,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				currentInstance.setName(newString);
 				saveItem();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				currentInstance.setDescription(newString);
 				saveItem();
 				break;

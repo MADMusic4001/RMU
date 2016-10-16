@@ -17,12 +17,16 @@ package com.madinnovations.rmu.data.dao.character.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
+import com.madinnovations.rmu.data.dao.character.CultureDao;
+import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterItemsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
@@ -31,13 +35,18 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
+import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.object.Item;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -52,6 +61,10 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	private SkillDao skillDao;
 	private TalentDao talentDao;
 	private StatDao statDao;
+	private CultureDao cultureDao;
+	private ProfessionDao professionDao;
+	private RealmDao realmDao;
+	private ItemDao itemDao;
 
 	/**
 	 * Creates a new instance of CharacterDaoImpl
@@ -59,12 +72,17 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
 	@Inject
-	public CharacterDaoDbImpl(SQLiteOpenHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao, StatDao statDao) {
+	public CharacterDaoDbImpl(SQLiteOpenHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao, StatDao statDao,
+							  CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao) {
 		super(helper);
 		this.raceDao = raceDao;
 		this.skillDao = skillDao;
 		this.talentDao = talentDao;
 		this.statDao = statDao;
+		this.cultureDao = cultureDao;
+		this.professionDao = professionDao;
+		this.realmDao = realmDao;
+		this.itemDao = itemDao;
 	}
 	@Override
 	public Character getById(int id) {
@@ -117,19 +135,57 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		Character instance = new Character();
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setExperiencePoints(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EXPERIENCE_POINTS)));
 		instance.setFirstName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME)));
 		instance.setLastName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME)));
 		instance.setKnownAs(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_KNOWN_AS)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_HAIR_COLOR))) {
+			instance.setHairColor(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HAIR_COLOR)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_HAIR_STYLE))) {
+			instance.setHairStyle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HAIR_STYLE)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_EYE_COLOR))) {
+			instance.setEyeColor(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EYE_COLOR)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_SKIN_COMPLEXION))) {
+			instance.setSkinComplexion(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SKIN_COMPLEXION)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_FACIAL_FEATURES))) {
+			instance.setFacialFeatures(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FACIAL_FEATURES)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_IDENTIFYING_MARKS))) {
+			instance.setIdentifyingMarks(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IDENTIFYING_MARKS)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PERSONALITY))) {
+			instance.setPersonality(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PERSONALITY)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MANNERISMS))) {
+			instance.setMannerisms(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MANNERISMS)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_HOMETOWN))) {
+			instance.setHometown(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HOMETOWN)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_FAMILY_INFO))) {
+			instance.setFamilyInfo(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAMILY_INFO)));
+		}
 		instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
+		instance.setCulture(cultureDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CULTURE_ID))));
+		instance.setProfession(professionDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))) {
+			instance.setRealm(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
+		}
 		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
 		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
-		instance.setCurrentHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HITS)));
-		instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
+		instance.setHitPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HP_LOSS)));
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
+		instance.setEnduranceLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_ENDURANCE_LOSS)));
+		instance.setPowerPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_PP_LOSS)));
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
 		instance.setSkillCosts(getSkillCosts(instance.getId()));
 		instance.setTalentTiers(getTalentTiers(instance.getId()));
+		instance.setItems(getItems(instance.getId()));
 		setStatValues(instance);
 
 		return instance;
@@ -150,12 +206,160 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_LAST_NAME, instance.getLastName());
 		values.put(COLUMN_KNOWN_AS, instance.getKnownAs());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
+		if(instance.getHairColor() == null) {
+			values.putNull(COLUMN_HAIR_COLOR);
+		}
+		else {
+			values.put(COLUMN_HAIR_COLOR, instance.getHairColor());
+		}
+		if(instance.getHairStyle() == null) {
+			values.putNull(COLUMN_HAIR_STYLE);
+		}
+		else {
+			values.put(COLUMN_HAIR_STYLE, instance.getHairStyle());
+		}
+		if(instance.getEyeColor() == null) {
+			values.putNull(COLUMN_EYE_COLOR);
+		}
+		else {
+			values.put(COLUMN_EYE_COLOR, instance.getEyeColor());
+		}
+		if(instance.getSkinComplexion() == null) {
+			values.putNull(COLUMN_SKIN_COMPLEXION);
+		}
+		else {
+			values.put(COLUMN_SKIN_COMPLEXION, instance.getSkinComplexion());
+		}
+		if(instance.getFacialFeatures() == null) {
+			values.putNull(COLUMN_FACIAL_FEATURES);
+		}
+		else {
+			values.put(COLUMN_FACIAL_FEATURES, instance.getFacialFeatures());
+		}
+		if(instance.getIdentifyingMarks() == null) {
+			values.putNull(COLUMN_IDENTIFYING_MARKS);
+		}
+		else {
+			values.put(COLUMN_IDENTIFYING_MARKS, instance.getIdentifyingMarks());
+		}
+		if(instance.getPersonality() == null) {
+			values.putNull(COLUMN_PERSONALITY);
+		}
+		else {
+			values.put(COLUMN_PERSONALITY, instance.getPersonality());
+		}
+		if(instance.getMannerisms() == null) {
+			values.putNull(COLUMN_MANNERISMS);
+		}
+		else {
+			values.put(COLUMN_MANNERISMS, instance.getMannerisms());
+		}
+		if(instance.getFamilyInfo() == null) {
+			values.putNull(COLUMN_FAMILY_INFO);
+		}
+		else {
+			values.put(COLUMN_FAMILY_INFO, instance.getFamilyInfo());
+		}
+		if(instance.getHometown() == null) {
+			values.putNull(COLUMN_HOMETOWN);
+		}
+		else {
+			values.put(COLUMN_HOMETOWN, instance.getHometown());
+		}
 		values.put(COLUMN_RACE_ID, instance.getRace().getId());
+		values.put(COLUMN_CULTURE_ID, instance.getCulture().getId());
+		values.put(COLUMN_PROFESSION_ID, instance.getProfession().getId());
+		if(instance.getRealm() == null) {
+			values.putNull(COLUMN_REALM_ID);
+		}
+		else {
+			values.put(COLUMN_REALM_ID, instance.getRealm().getId());
+		}
 		values.put(COLUMN_HEIGHT, instance.getHeight());
 		values.put(COLUMN_WEIGHT, instance.getWeight());
-		values.put(COLUMN_CURRENT_HITS, instance.getCurrentHits());
-		values.put(COLUMN_MAX_HITS, instance.getMaxHits());
+		values.put(COLUMN_CURRENT_HP_LOSS, instance.getHitPointLoss());
 		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
+
+		return values;
+	}
+
+	@Override
+	protected boolean saveRelationships(SQLiteDatabase db, Character instance) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+		String selection = CharacterSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		db.delete(CharacterSkillRanksSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Skill, Short> entry : instance.getSkillRanks().entrySet()) {
+			if(entry.getValue() != null) {
+				result &= (db.insertWithOnConflict(CharacterSkillRanksSchema.TABLE_NAME, null,
+												   getSkillRanksContentValues(instance.getId(), entry.getKey().getId(),
+																					   entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
+		selection = CharacterSkillCostsSchema.COLUMN_CHARACTER_ID + " = ?";
+		db.delete(CharacterSkillCostsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Skill, SkillCost> entry : instance.getSkillCosts().entrySet()) {
+			if(entry.getValue() != null && entry.getValue().getFirstCost() != null &&
+					entry.getValue().getAdditionalCost() != null) {
+				result &= (db.insertWithOnConflict(CharacterSkillCostsSchema.TABLE_NAME, null,
+												   getSkillCostsContentValues(instance.getId(),
+																			  entry.getKey().getId(),
+																			  entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
+		selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
+		db.delete(CharacterTalentsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Talent, Short> entry : instance.getTalentTiers().entrySet()) {
+			if(entry.getValue() != null) {
+				result &= (db.insertWithOnConflict(CharacterTalentsSchema.TABLE_NAME, null,
+												   getTalentTiersContentValues(instance.getId(),
+																			   entry.getKey().getId(),
+																			   entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
+		selection = CharacterStatsSchema.COLUMN_CHARACTER_ID + " = ?";
+		db.delete(CharacterStatsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Stat, Short> entry : instance.getStatTemps().entrySet()) {
+			Short potential = instance.getStatPotentials().get(entry.getKey());
+			if(entry.getValue() != null && potential != null) {
+				result &= (db.insertWithOnConflict(CharacterStatsSchema.TABLE_NAME, null,
+												   getStatsContentValues(instance.getId(),
+																		 entry.getKey().getId(),
+																		 entry.getValue(),
+																		 potential),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
+		selection = CharacterItemsSchema.COLUMN_CHARACTER_ID + " = ?";
+		db.delete(CharacterItemsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Item item : instance.getItems()) {
+			result &= (db.insertWithOnConflict(CharacterItemsSchema.TABLE_NAME, null,
+											   getItemsContentValues(instance.getId(),
+																	 item.getId()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getSkillRanksContentValues(int characterId, int skillId, short skillRanks) {
+		ContentValues values = new ContentValues(3);
+
+		values.put(CharacterSkillRanksSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterSkillRanksSchema.COLUMN_SKILL_ID, skillId);
+		values.put(CharacterSkillRanksSchema.COLUMN_RANKS, skillRanks);
 
 		return values;
 	}
@@ -179,6 +383,17 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		cursor.close();
 
 		return map;
+	}
+
+	private ContentValues getSkillCostsContentValues(int characterId, int skillId, SkillCost skillCost) {
+		ContentValues values = new ContentValues(4);
+
+		values.put(CharacterSkillCostsSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterSkillCostsSchema.COLUMN_SKILL_ID, skillId);
+		values.put(CharacterSkillCostsSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
+		values.put(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST, skillCost.getAdditionalCost());
+
+		return values;
 	}
 
 	private Map<Skill, SkillCost> getSkillCosts(int id) {
@@ -206,6 +421,16 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		return map;
 	}
 
+	private ContentValues getTalentTiersContentValues(int characterId, int talentId, short talentTiers) {
+		ContentValues values = new ContentValues(3);
+
+		values.put(CharacterTalentsSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterTalentsSchema.COLUMN_TALENT_ID, talentId);
+		values.put(CharacterTalentsSchema.COLUMN_TIERS, talentTiers);
+
+		return values;
+	}
+
 	private Map<Talent, Short> getTalentTiers(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
@@ -225,6 +450,17 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		cursor.close();
 
 		return map;
+	}
+
+	private ContentValues getStatsContentValues(int characterId, int statId, short currentValue, short potentialValue) {
+		ContentValues values = new ContentValues(4);
+
+		values.put(CharacterStatsSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterStatsSchema.COLUMN_STAT_ID, statId);
+		values.put(CharacterStatsSchema.COLUMN_CURRENT_VALUE, currentValue);
+		values.put(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE, potentialValue);
+
+		return values;
 	}
 
 	private void setStatValues(Character character) {
@@ -248,5 +484,35 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		cursor.close();
 		character.setStatTemps(tempsMap);
 		character.setStatPotentials(potentialsMap);
+	}
+
+	private ContentValues getItemsContentValues(int characterId, int itemId) {
+		ContentValues values = new ContentValues(2);
+
+		values.put(CharacterItemsSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterItemsSchema.COLUMN_ITEM_ID, itemId);
+
+		return values;
+	}
+
+	private List<Item> getItems(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterItemsSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterItemsSchema.TABLE_NAME, CharacterItemsSchema.COLUMNS, selection,
+									selectionArgs, CharacterItemsSchema.COLUMN_ITEM_ID);
+		List<Item> list = new ArrayList<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int itemId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterItemsSchema.COLUMN_ITEM_ID));
+			Item instance = itemDao.getById(itemId);
+			if(instance != null) {
+				list.add(instance);
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return list;
 	}
 }

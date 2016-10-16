@@ -24,9 +24,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class Item {
 	public static final String JSON_NAME = "Items";
     private int id = -1;
-    private String name = null;
-    private String description = null;
-    private float weight = 0.5f;
+	private ItemTemplate itemTemplate = null;
+	private String name = null;
+	private String history = null;
 
     /**
      * Checks the validity of the Item instance.
@@ -34,12 +34,12 @@ public class Item {
      * @return true if the Item instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+        return itemTemplate != null;
     }
 
 	@Override
 	public String toString() {
-		return name;
+		return name == null ? itemTemplate.getName() : name;
 	}
 
 	/**
@@ -50,9 +50,8 @@ public class Item {
 	public String debugToString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
+				.append("itemTemplate", itemTemplate)
 				.append("name", name)
-				.append("description", description)
-				.append("weight", weight)
 				.toString();
 	}
 
@@ -78,22 +77,22 @@ public class Item {
     public void setId(int id) {
         this.id = id;
     }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public float getWeight() {
-        return weight;
-    }
-    public void setWeight(float weight) {
-        this.weight = weight;
-    }
+	public ItemTemplate getItemTemplate() {
+		return itemTemplate;
+	}
+	public void setItemTemplate(ItemTemplate itemTemplate) {
+		this.itemTemplate = itemTemplate;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getHistory() {
+		return history;
+	}
+	public void setHistory(String history) {
+		this.history = history;
+	}
 }

@@ -15,28 +15,47 @@
  */
 package com.madinnovations.rmu.data.dao.item;
 
-import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
- * Methods to manage {@link Weapon} objects in persistent storage.
+ * Methods to manage {@link WeaponTemplate} objects in persistent storage.
  */
-public interface WeaponDao {
+public interface WeaponTemplateDao {
     /**
      * Retrieves a Weapon object from persistent storage.
      *
      * @param id  the id of the Weapon object to retrieve
      * @return the Weapon instance with the given id or null if not found.
      */
-    public Weapon getById(int id);
+    public WeaponTemplate getById(int id);
 
     /**
      * Retrieves all Weapon objects from persistent storage.
      *
      * @return  a List containing all Weapon objects currently in persistent storage.
      */
-    public List<Weapon> getAll();
+    public List<WeaponTemplate> getAll();
+
+    /**
+     * Saves a collection of WeaponTemplate instances to persistent storage.
+     *
+     * @param instance  the collection of WeaponTemplate instances to be saved
+     * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<WeaponTemplate> instance, boolean isNew);
+
+    /**
+     * Saves a collection of WeaponTemplate instances to persistent storage.
+     *
+     * @param instance  the collection of WeaponTemplate instances to be saved
+     * @return true if successful, otherwise false.
+     */
+    public boolean save(Collection<WeaponTemplate> instance);
 
     /**
      * Saves a Weapon object to persistent storage.
@@ -44,7 +63,7 @@ public interface WeaponDao {
      * @param instance  the Weapon object to be saved
      * @return true if successful, otherwise false.
      */
-    public boolean save(Weapon instance);
+    public boolean save(WeaponTemplate instance);
 
     /**
      * Delete the Weapon object with the given id from persistent storage.

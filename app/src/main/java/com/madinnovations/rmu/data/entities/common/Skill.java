@@ -15,13 +15,15 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class representing a RoleMaster Skill
  */
-public class Skill {
+public class Skill implements Comparable {
 	public static final String JSON_NAME = "Skills";
 	private int           id                     = -1;
 	private String        name                   = null;
@@ -50,6 +52,15 @@ public class Skill {
 	}
 
 	/**
+	 * Creates a new skill instance with the given name.
+	 *
+	 * @param name  the name for this new instance
+	 */
+	public Skill(String name) {
+		this.name = name;
+	}
+
+	/**
 	 * Checks the validity of the Skill instance.
 	 *
 	 * @return true if the Skill instance is valid, otherwise false.
@@ -57,6 +68,32 @@ public class Skill {
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && category != null &&
 				(useCategoryStats || (stats != null && !stats.isEmpty() && stats.size() == 3));
+	}
+
+	@Override
+	public int compareTo(@NonNull Object o) {
+		int result = 0;
+		Skill skill2;
+
+		if(o instanceof Skill) {
+			skill2 = (Skill) o;
+			if (this.getName() == null) {
+				if (skill2.getName() != null) {
+					result = 1;
+				}
+			}
+			else if (skill2.getName() == null) {
+				result = -1;
+			}
+			else {
+				result = this.getName().compareTo(skill2.getName());
+			}
+		}
+		else {
+			result = -1;
+		}
+
+		return result;
 	}
 
 	@Override

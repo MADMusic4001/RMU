@@ -44,6 +44,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 	public void write(JsonWriter out, Character value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_EXPERIENCE_POINTS).value(value.getExperiencePoints());
 		out.name(COLUMN_FIRST_NAME).value(value.getFirstName());
 		out.name(COLUMN_LAST_NAME).value(value.getLastName());
 		out.name(COLUMN_KNOWN_AS).value(value.getKnownAs());
@@ -64,9 +65,10 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
 		out.name(COLUMN_HEIGHT).value(value.getHeight());
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
-		out.name(COLUMN_CURRENT_HITS).value(value.getCurrentHits());
-		out.name(COLUMN_MAX_HITS).value(value.getMaxHits());
+		out.name(COLUMN_CURRENT_HP_LOSS).value(value.getHitPointLoss());
 		out.name(COLUMN_CURRENT_DEVELOPMENT_POINTS).value(value.getCurrentDevelopmentPoints());
+		out.name(COLUMN_CURRENT_ENDURANCE_LOSS).value(value.getEnduranceLoss());
+		out.name(COLUMN_CURRENT_PP_LOSS).value(value.getPowerPointLoss());
 
 		out.name(CharacterSkillCostsSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Skill, SkillCost> entry : value.getSkillCosts().entrySet()) {
@@ -118,6 +120,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			switch (in.nextName()) {
 				case COLUMN_ID:
 					character.setId(in.nextInt());
+					break;
+				case COLUMN_EXPERIENCE_POINTS:
+					character.setExperiencePoints(in.nextInt());
 					break;
 				case COLUMN_FIRST_NAME:
 					character.setFirstName(in.nextString());
@@ -179,14 +184,20 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_WEIGHT:
 					character.setWeight((short)in.nextInt());
 					break;
-				case COLUMN_CURRENT_HITS:
-					character.setCurrentHits((short)in.nextInt());
+				case COLUMN_CURRENT_HP_LOSS:
+					character.setHitPointLoss(in.nextInt());
+				case "currentHits":
 					break;
-				case COLUMN_MAX_HITS:
-					character.setMaxHits((short)in.nextInt());
+				case "maxHits":
 					break;
 				case COLUMN_CURRENT_DEVELOPMENT_POINTS:
 					character.setCurrentDevelopmentPoints((short)in.nextInt());
+					break;
+				case COLUMN_CURRENT_ENDURANCE_LOSS:
+					character.setEnduranceLoss((short)in.nextInt());
+					break;
+				case COLUMN_CURRENT_PP_LOSS:
+					character.setPowerPointLoss((short)in.nextInt());
 					break;
 				case CharacterSkillCostsSchema.TABLE_NAME:
 					readSkillCosts(in, character);

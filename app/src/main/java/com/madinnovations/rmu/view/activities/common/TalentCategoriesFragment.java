@@ -78,7 +78,7 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_talent_category_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_talent_category_description_required);
 		initListView(layout);
 
@@ -161,7 +161,7 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 			case R.id.name_edit:
 				result = currentInstance.getName();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 		}
@@ -176,7 +176,7 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 				currentInstance.setName(newString);
 				saveItem();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				currentInstance.setDescription(newString);
 				saveItem();
 				break;

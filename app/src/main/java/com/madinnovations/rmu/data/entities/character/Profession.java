@@ -95,7 +95,7 @@ public class Profession {
 				}
 			}
 		}
-		Log.d("RMU", "Saving " + this.toDebugString());
+		Log.d("RMU", "Saving " + this.print());
 		return isValid;
 	}
 
@@ -109,8 +109,8 @@ public class Profession {
 	 *
 	 * @return  a string with the instance's values.
 	 */
-	@SuppressWarnings("unused")
-	public String toDebugString() {
+	@SuppressWarnings({"unused", "WeakerAccess"})
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
 				.append("name", name)

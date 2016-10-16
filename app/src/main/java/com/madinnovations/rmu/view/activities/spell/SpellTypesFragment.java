@@ -37,12 +37,9 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellTypeRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.SpellTypeRxHandler;
-import com.madinnovations.rmu.data.entities.spells.SpellType;
 import com.madinnovations.rmu.data.entities.spells.SpellType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.ThreeFieldListAdapter;
-import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import java.util.Collection;
@@ -377,7 +374,7 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 	}
 
 	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
+		descriptionEdit = (EditText)layout.findViewById(R.id.notes_edit);
 		descriptionEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

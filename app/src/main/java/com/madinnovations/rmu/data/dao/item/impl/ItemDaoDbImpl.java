@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.entities.object.Item;
 
@@ -33,14 +34,17 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemSchema {
+	private ItemTemplateDao itemTemplateDao;
+
     /**
      * Creates a new instance of ItemDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public ItemDaoDbImpl(SQLiteOpenHelper helper) {
+    public ItemDaoDbImpl(SQLiteOpenHelper helper, ItemTemplateDao itemTemplateDao) {
         super(helper);
+		this.itemTemplateDao = itemTemplateDao;
     }
 
 	@Override
@@ -93,9 +97,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 		Item instance = new Item();
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		instance.setWeight(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
+		instance.setItemTemplate(itemTemplateDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ITEM_TEMPLATE_ID))));
 
 		return instance;
     }
@@ -111,9 +113,19 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 		else {
 			values = new ContentValues(3);
 		}
-		values.put(COLUMN_NAME, instance.getName());
-		values.put(COLUMN_DESCRIPTION, instance.getDescription());
-		values.put(COLUMN_WEIGHT, instance.getWeight());
+		values.put(COLUMN_ITEM_TEMPLATE_ID, instance.getItemTemplate().getId());
+		if(instance.getName() == null) {
+			values.putNull(COLUMN_NAME);
+		}
+		else {
+			values.put(COLUMN_NAME, instance.getName());
+		}
+		if(instance.getHistory() == null) {
+			values.putNull(COLUMN_HISTORY);
+		}
+		else {
+			values.put(COLUMN_HISTORY, instance.getHistory());
+		}
 
 		return values;
     }

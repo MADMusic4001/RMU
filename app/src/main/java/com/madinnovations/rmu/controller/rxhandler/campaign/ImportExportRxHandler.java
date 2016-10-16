@@ -66,6 +66,9 @@ import com.madinnovations.rmu.data.dao.creature.serializers.CreatureCategorySeri
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureVarietySerializer;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.item.serializers.WeaponTemplateSerializer;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
@@ -100,6 +103,8 @@ import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.Spell;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
@@ -156,6 +161,7 @@ public class ImportExportRxHandler {
 	private DamageTableDao              damageTableDao;
 	private DamageTableSerializer       damageTableSerializer = new DamageTableSerializer();
 	private ItemDao                     itemDao;
+	private ItemTemplateDao             itemTemplateDao;
 	private OutlookDao                  outlookDao;
 	private ProfessionDao               professionDao;
 	private ProfessionSerializer        professionSerializer = new ProfessionSerializer();
@@ -181,24 +187,26 @@ public class ImportExportRxHandler {
 	private TalentDao                   talentDao;
 	private TalentSerializer            talentSerializer = new TalentSerializer();
 	private TalentCategoryDao           talentCategoryDao;
-	private RMUDatabaseHelper           helper;
+	private WeaponTemplateDao           weaponTemplateDao;
+	private WeaponTemplateSerializer    weaponTemplateSerializer = new WeaponTemplateSerializer();
+	private RMUDatabaseHelper helper;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
 	ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CharacterDao characterDao,
-								 CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
-								 CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
-								 CriticalCodeDao criticalCodeDao, CriticalResultDao criticalResultDao,
-								 CriticalTypeDao criticalTypeDao, CultureDao cultureDao, DamageResultDao damageResultDao,
-								 DamageResultRowDao damageResultRowDao, DamageTableDao damageTableDao, ItemDao itemDao,
-								 OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao,
-								 SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
-								 SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
-								 SpellListTypeDao spellListTypeDao, SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao,
-								 StatDao statDao, TalentDao talentDao, TalentCategoryDao talentCategoryDao,
-								 RMUDatabaseHelper helper) {
+						  CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
+						  CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
+						  CriticalCodeDao criticalCodeDao, CriticalResultDao criticalResultDao,
+						  CriticalTypeDao criticalTypeDao, CultureDao cultureDao, DamageResultDao damageResultDao,
+						  DamageResultRowDao damageResultRowDao, DamageTableDao damageTableDao, ItemDao itemDao,
+						  ItemTemplateDao itemTemplateDao, OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao,
+						  RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
+						  SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
+						  SpellListTypeDao spellListTypeDao, SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao,
+						  StatDao statDao, TalentDao talentDao, TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao,
+						  RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
 		this.characterDao = characterDao;
@@ -214,6 +222,7 @@ public class ImportExportRxHandler {
 		this.damageResultRowDao = damageResultRowDao;
 		this.damageTableDao = damageTableDao;
 		this.itemDao = itemDao;
+		this.itemTemplateDao = itemTemplateDao;
 		this.outlookDao = outlookDao;
 		this.professionDao = professionDao;
 		this.raceDao = raceDao;
@@ -230,6 +239,7 @@ public class ImportExportRxHandler {
 		this.statDao = statDao;
 		this.talentDao = talentDao;
 		this.talentCategoryDao = talentCategoryDao;
+		this.weaponTemplateDao = weaponTemplateDao;
 		this.helper = helper;
 	}
 
@@ -272,6 +282,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
 							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
 							gsonBuilder.registerTypeAdapter(Talent.class, talentSerializer);
+							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, weaponTemplateSerializer);
 							gsonBuilder.setLenient();
 							final Gson gson = gsonBuilder.create();
 
@@ -364,6 +375,18 @@ public class ImportExportRxHandler {
 											Log.i(LOG_TAG, "Loaded " + talents.size() + " talents.");
 											talents = null;
 											break;
+										case ItemTemplate.JSON_NAME:
+											List<ItemTemplate> itemTemplates = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												ItemTemplate itemTemplate = gson.fromJson(jsonReader, ItemTemplate.class);
+												itemTemplates.add(itemTemplate);
+											}
+											jsonReader.endArray();
+											itemTemplateDao.save(itemTemplates, true);
+											Log.i(LOG_TAG, "Loaded " + itemTemplates.size() + " itemTemplates.");
+											itemTemplates = null;
+											break;
 										case Item.JSON_NAME:
 											List<Item> items = new ArrayList<>();
 											jsonReader.beginArray();
@@ -455,11 +478,22 @@ public class ImportExportRxHandler {
 												DamageResult damageResult = gson.fromJson(jsonReader, DamageResult.class);
 												damageResults.add(damageResult);
 											}
-											damageResultSerializer = null;
 											jsonReader.endArray();
 											damageResultDao.save(damageResults, true);
 											Log.i(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
 											damageResults = null;
+											break;
+										case WeaponTemplate.JSON_NAME:
+											List<WeaponTemplate> weaponTemplates = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												WeaponTemplate weaponTemplate = gson.fromJson(jsonReader, WeaponTemplate.class);
+												weaponTemplates.add(weaponTemplate);
+											}
+											jsonReader.endArray();
+											weaponTemplateDao.save(weaponTemplates, true);
+											Log.i(LOG_TAG, "Loaded " + weaponTemplates.size() + " weaponTemplates.");
+											weaponTemplates = null;
 											break;
 										case CreatureCategory.JSON_NAME:
 											List<CreatureCategory> creatureCategories = new ArrayList<>();
@@ -731,6 +765,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
 							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
 							gsonBuilder.registerTypeAdapter(Talent.class, talentSerializer);
+							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, weaponTemplateSerializer);
 							final Gson gson = gsonBuilder.create();
 
 							JsonWriter jsonWriter = gson.newJsonWriter(writer);
@@ -755,6 +790,8 @@ public class ImportExportRxHandler {
 							;
 							subscriber.onNext(20);
 							jsonWriter
+									.name(ItemTemplate.JSON_NAME)
+									.jsonValue(gson.toJson(itemTemplateDao.getAll()))
 									.name(Item.JSON_NAME)
 									.jsonValue(gson.toJson(itemDao.getAll()))
 									.name(BodyPart.JSON_NAME)
@@ -777,6 +814,8 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(damageResultRowDao.getAll()))
 									.name(DamageResult.JSON_NAME)
 									.jsonValue(gson.toJson(damageResultDao.getAll()))
+									.name(WeaponTemplate.JSON_NAME)
+									.jsonValue(gson.toJson(weaponTemplateDao.getAll()))
 									.name(CreatureCategory.JSON_NAME)
 									.jsonValue(gson.toJson(creatureCategoryDao.getAll()))
 							;

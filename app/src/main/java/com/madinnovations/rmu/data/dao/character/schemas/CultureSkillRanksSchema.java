@@ -29,15 +29,15 @@ public interface CultureSkillRanksSchema {
 	String COLUMN_SKILL_RANKS = "skillRanks";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
+			+ TABLE_NAME + "("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_CULTURE_ID + " INTEGER NOT NULL, "
-			+ COLUMN_SKILL_ID + " INTEGER, "
+			+ COLUMN_CULTURE_ID + " INTEGER NOT NULL REFERENCES "
+				+ CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
+			+ COLUMN_SKILL_ID + " INTEGER REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
 			+ COLUMN_SKILL_RANKS + " INTEGER NOT NULL, "
-			+ "CONSTRAINT unique_culture_skill UNIQUE (" + COLUMN_CULTURE_ID + "," + COLUMN_SKILL_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_CULTURE_ID + ") REFERENCES " + CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ "CONSTRAINT unique_culture_skill UNIQUE ("
+				+ COLUMN_CULTURE_ID + "," + COLUMN_SKILL_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_CULTURE_ID, COLUMN_SKILL_ID, COLUMN_SKILL_RANKS};

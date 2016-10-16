@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Weapon attributes
  */
-public class Weapon extends Item {
+public class WeaponTemplate extends Item {
 	public static final String JSON_NAME = "Weapons";
     private Skill combatSkill = null;
     private DamageTable damageTable = null;

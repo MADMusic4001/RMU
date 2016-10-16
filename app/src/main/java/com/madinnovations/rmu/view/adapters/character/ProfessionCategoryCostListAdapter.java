@@ -19,6 +19,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
@@ -37,6 +39,7 @@ import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -145,6 +148,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		}
 
 		ProfessionSkillCategoryCost skillCategoryCost = (ProfessionSkillCategoryCost)getGroup(groupPosition);
+		holder.position = groupPosition;
 		holder.skillCategoryCost = skillCategoryCost;
 		holder.nameView.setText(skillCategoryCost.getSkillCategory().getName());
 		if(skillCategoryCost.getSkillCategoryCost() == null) {
@@ -186,33 +190,90 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			holder = (ChildViewHolder) convertView.getTag();
 		}
 
+		holder.groupPosition = groupPosition;
+		holder.position = childPosition;
 		ProfessionSkillCategoryCost skillCategoryCost = (ProfessionSkillCategoryCost)getGroup(groupPosition);
 		holder.skillCategoryCost = skillCategoryCost;
-		SkillCostEntry skillCost = (SkillCostEntry)getChild(groupPosition, childPosition);
-		holder.skillCostEntry = skillCost;
-		holder.nameView.setText(skillCost.getSkill().getName());
-		if(skillCost.getSkillCost() == null) {
-			holder.initialCostEdit.setText(null);
-			holder.additionalCostEdit.setText(null);
-		}
-		else {
-			if(skillCost.getSkillCost().getFirstCost() == null) {
-				holder.initialCostEdit.setText(null);
+		SkillCostEntry skillCostEntry = (SkillCostEntry)getChild(groupPosition, childPosition);
+		holder.skillCostEntry = skillCostEntry;
+		if(skillCategoryCost.isAssignable()) {
+			holder.nameView.setText(String.format(context.getString(R.string.assignable_skill_name), childPosition + 1));
+		 	if(skillCategoryCost.getAssignableSkillCosts().size() > childPosition) {
+				SkillCost skillCost = skillCategoryCost.getAssignableSkillCosts().get(childPosition);
+				if (skillCost == null || skillCost.getFirstCost() == null) {
+					holder.initialCostEdit.setText(null);
+				}
+				else {
+					holder.initialCostEdit.setText(String.valueOf(
+							skillCategoryCost.getAssignableSkillCosts().get(childPosition).getFirstCost()));
+				}
+				if (skillCost == null || skillCost.getAdditionalCost() == null) {
+					holder.additionalCostEdit.setText(null);
+				}
+				else {
+					holder.additionalCostEdit.setText(String.valueOf(
+							skillCategoryCost.getAssignableSkillCosts().get(childPosition).getAdditionalCost()));
+				}
 			}
 			else {
-				holder.initialCostEdit.setText(String.valueOf(skillCost.getSkillCost().getFirstCost()));
-			}
-			if(skillCost.getSkillCost().getAdditionalCost() == null) {
+				holder.initialCostEdit.setText(null);
 				holder.additionalCostEdit.setText(null);
 			}
+		}
+		else {
+			holder.nameView.setText(skillCostEntry.getSkill().getName());
+			if(skillCostEntry.getSkillCost() != null) {
+				if(skillCostEntry.getSkillCost().getFirstCost() == null) {
+					holder.initialCostEdit.setText(null);
+				}
+				else {
+					holder.initialCostEdit.setText(String.valueOf(skillCostEntry.getSkillCost().getFirstCost()));
+				}
+				if(skillCostEntry.getSkillCost().getAdditionalCost() == null) {
+					holder.additionalCostEdit.setText(null);
+				}
+				else {
+					holder.additionalCostEdit.setText(String.valueOf(skillCostEntry.getSkillCost().getAdditionalCost()));
+				}
+			}
 			else {
-				holder.additionalCostEdit.setText(String.valueOf(skillCost.getSkillCost().getAdditionalCost()));
+				holder.initialCostEdit.setText(null);
+				holder.additionalCostEdit.setText(null);
 			}
 		}
+
 		return rowView;
 	}
 
+	private ChildViewHolder findChildViewHolder(View startView, int groupPosition, int childPosition) {
+		View parentView;
+		ChildViewHolder childViewHolder = null;
+
+		do {
+			parentView = (View) startView.getParent();
+			Log.d("RMU", "parentView = " + parentView);
+		} while (parentView != null && !(parentView instanceof ViewGroup));
+
+		if(parentView != null && parentView instanceof ListView) {
+			ListView listView = (ListView)parentView;
+			for(int i = 0; i < listView.getChildCount(); i++) {
+				View child = listView.getChildAt(i);
+				Object tag = child.getTag();
+				if(tag instanceof ChildViewHolder) {
+					ChildViewHolder tempChildViewHolder = (ChildViewHolder)tag;
+					if(tempChildViewHolder.groupPosition == groupPosition && tempChildViewHolder.position == childPosition) {
+						childViewHolder = tempChildViewHolder;
+						break;
+					}
+				}
+			}
+		}
+
+		return childViewHolder;
+	}
+
 	private class GroupViewHolder {
+		private int position;
 		private ProfessionSkillCategoryCost skillCategoryCost;
 		private TextView nameView;
 		private EditText initialCostEdit;
@@ -328,37 +389,86 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 							skillCategoryCost.setAssignable(isChecked);
 							if(isChecked) {
-								List<SkillCost> assignableCosts = callbackImpl.getProfessionInstance().getAssignableSkillCosts()
-										.get(skillCategoryCost.getSkillCategory());
+								List<SkillCost> assignableCosts;
+								boolean isNew = false;
+								if (skillCategoryCost.getAssignableSkillCosts() == null ||
+										skillCategoryCost.getAssignableSkillCosts().isEmpty()) {
+									assignableCosts = callbackImpl.getProfessionInstance()
+											.getAssignableSkillCosts()
+											.get(skillCategoryCost.getSkillCategory());
+								}
+								else {
+									assignableCosts = skillCategoryCost.getAssignableSkillCosts();
+								}
 								if(assignableCosts == null) {
 									assignableCosts = new ArrayList<>(skillCategoryCost.getSkillCosts().size());
 									callbackImpl.getProfessionInstance().getAssignableSkillCosts()
 											.put(skillCategoryCost.getSkillCategory(), assignableCosts);
+									isNew = true;
 								}
 								for(int i = 0; i < skillCategoryCost.getSkillCosts().size(); i++) {
 									SkillCostEntry skillCostEntry = skillCategoryCost.getSkillCosts().get(i);
-									assignableCosts.add(i, skillCostEntry.getSkillCost());
-									skillCategoryCost.getAssignableSkillCosts().add(i, skillCostEntry.getSkillCost());
+									if(isNew) {
+										assignableCosts.add(i, skillCostEntry.getSkillCost());
+										skillCategoryCost.getAssignableSkillCosts().add(i, skillCostEntry.getSkillCost());
+									}
 									callbackImpl.getProfessionInstance().getSkillCosts().remove(skillCostEntry.getSkill());
+								}
+								for(int i = 0; i < skillCategoryCost.getAssignableSkillCosts().size(); i++) {
+									SkillCost skillCost = skillCategoryCost.getAssignableSkillCosts().get(i);
+									String firstCost = null;
+									String secondCost = null;
+									if(skillCost != null) {
+										if (skillCost.getFirstCost() != null) {
+											firstCost = String.valueOf(skillCost.getFirstCost());
+										}
+										if (skillCost.getAdditionalCost() != null) {
+											secondCost = String.valueOf(skillCost.getAdditionalCost());
+										}
+									}
+									updateSkillRow(position, i,
+												   String.format(context.getString(R.string.assignable_skill_name), i + 1),
+												   firstCost, secondCost);
 								}
 							}
 							else {
-								for(int i = 0; i < skillCategoryCost.getAssignableSkillCosts().size(); i++) {
-									if(skillCategoryCost.getAssignableSkillCosts().get(i) != null &&
-											skillCategoryCost.getSkillCosts().size() > i) {
-										callbackImpl.getProfessionInstance().getSkillCosts().put(
-												skillCategoryCost.getSkillCosts().get(i).getSkill(),
-												skillCategoryCost.getAssignableSkillCosts().get(i));
+								for(int i = 0; i < skillCategoryCost.getSkillCosts().size(); i++) {
+								SkillCostEntry skillCostEntry = skillCategoryCost.getSkillCosts().get(i);
+									if(skillCostEntry.getSkillCost() != null) {
+										if(skillCostEntry.getSkillCost().getFirstCost() != null &&
+											skillCostEntry.getSkillCost().getAdditionalCost() != null) {
+											callbackImpl.getProfessionInstance().getSkillCosts().put(
+													skillCostEntry.getSkill(), skillCostEntry.getSkillCost());
+										}
+										String firstCost = null;
+										String secondCost = null;
+										if(skillCostEntry.getSkillCost().getFirstCost() != null) {
+											firstCost = String.valueOf(skillCostEntry.getSkillCost().getFirstCost());
+											secondCost = String.valueOf(skillCostEntry.getSkillCost().getAdditionalCost());
+										}
+										updateSkillRow(position, i, skillCostEntry.getSkill().getName(), firstCost, secondCost);
 									}
 								}
 								callbackImpl.getProfessionInstance().getAssignableSkillCosts()
 										.remove(skillCategoryCost.getSkillCategory());
-								skillCategoryCost.getAssignableSkillCosts().clear();
 							}
 							callbackImpl.saveItem();
 						}
 					}
 			);
+		}
+
+		private void updateSkillRow(int groupPosition, int childPosition, String name, String firstCost, String secondCost) {
+			ChildViewHolder childViewHolder = ProfessionCategoryCostListAdapter.this.findChildViewHolder(
+					nameView, groupPosition, childPosition);
+			if(childViewHolder != null) {
+				childViewHolder.nameView.setText(name);
+				childViewHolder.initialCostEdit.setText(firstCost);
+				childViewHolder.additionalCostEdit.setText(secondCost);
+				childViewHolder.nameView.invalidate();
+				childViewHolder.initialCostEdit.invalidate();
+				childViewHolder.additionalCostEdit.invalidate();
+			}
 		}
 
 		private boolean copyCostToItem() {
@@ -431,6 +541,8 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 
 	private class ChildViewHolder {
 		private ProfessionSkillCategoryCost skillCategoryCost;
+		private int groupPosition;
+		private int position;
 		private SkillCostEntry skillCostEntry;
 		private TextView       nameView;
 		private EditText       initialCostEdit;
@@ -445,29 +557,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		}
 
 		private void initInitialCostEdit() {
-			initialCostEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if(editable.length() > 0) {
-						Short newValue = Short.valueOf(editable.toString());
-						Short otherValue;
-						if(additionalCostEdit.length() > 0) {
-							otherValue = Short.valueOf(additionalCostEdit.getText().toString());
-							if(otherValue < newValue) {
-								initialCostEdit.setError(context.getString(R.string.validation_initial_cost_gt_additional_cost));
-							}
-							else {
-								initialCostEdit.setError(null);
-								additionalCostEdit.setError(null);
-							}
-						}
-					}
-				}
-			});
 			initialCostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View view, boolean hasFocus) {
@@ -483,29 +572,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		}
 
 		private void initAdditionalCostEdit() {
-			additionalCostEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if(editable.length() > 0) {
-						Short newValue = Short.valueOf(editable.toString());
-						Short otherValue;
-							if(initialCostEdit.length() > 0) {
-								otherValue = Short.valueOf(initialCostEdit.getText().toString());
-								if(newValue < otherValue) {
-									additionalCostEdit.setError(context.getString(R.string.validation_initial_cost_gt_additional_cost));
-								}
-								else {
-									additionalCostEdit.setError(null);
-									initialCostEdit.setError(null);
-								}
-							}
-						}
-					}
-			});
 			additionalCostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View view, boolean hasFocus) {
@@ -524,12 +590,21 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			boolean changed = false;
 			Short firstCost = null;
 			Short secondCost = null;
-			SkillCost skillCost;
-			int index = 0;
+			SkillCost skillCost = null;
+
 			if(skillCategoryCost.isAssignable()) {
-				index = skillCategoryCost.getSkillCosts().indexOf(skillCostEntry);
-				skillCost = callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
-						skillCategoryCost.getSkillCategory()).get(index);
+				Log.d("RMU", "position = " + position);
+				List<SkillCost> skillCosts = callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
+						skillCategoryCost.getSkillCategory());
+				if(skillCosts == null) {
+					skillCosts = new ArrayList<>();
+					callbackImpl.getProfessionInstance().getAssignableSkillCosts().put(skillCategoryCost.getSkillCategory(),
+																					   skillCosts);
+				}
+				if(position < skillCosts.size()) {
+					skillCost = callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
+							skillCategoryCost.getSkillCategory()).get(position);
+				}
 			}
 			else {
 				skillCost = callbackImpl.getProfessionInstance().getSkillCosts().get(
@@ -546,34 +621,15 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			if(firstCost == null && secondCost == null && skillCost != null) {
 				changed = true;
 				skillCost = null;
-				if(skillCategoryCost.isAssignable()) {
-					callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
-							skillCategoryCost.getSkillCategory()).add(index, null);
-				}
-				else {
-					callbackImpl.getProfessionInstance().getSkillCosts().remove(skillCostEntry.getSkill());
-				}
 			}
 			else if(firstCost != null && secondCost != null) {
-				if(firstCost >= secondCost) {
-					additionalCostEdit.setError(context.getString(R.string.validation_initial_cost_gt_additional_cost));
-				}
-				else {
-					if (skillCost == null) {
-						skillCost = new SkillCost(firstCost, secondCost);
-						if(skillCategoryCost.isAssignable()) {
-							callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
-									skillCategoryCost.getSkillCategory()).add(index, skillCost);
-						}
-						else {
-							callbackImpl.getProfessionInstance().getSkillCosts().put(skillCostEntry.getSkill(), skillCost);
-						}
-						changed = true;
-					} else if (!firstCost.equals(skillCost.getFirstCost()) || !secondCost.equals(skillCost.getAdditionalCost())) {
-						skillCost.setFirstCost(firstCost);
-						skillCost.setAdditionalCost(secondCost);
-						changed = true;
-					}
+				if (skillCost == null) {
+					skillCost = new SkillCost(firstCost, secondCost);
+					changed = true;
+				} else if (!firstCost.equals(skillCost.getFirstCost()) || !secondCost.equals(skillCost.getAdditionalCost())) {
+					skillCost.setFirstCost(firstCost);
+					skillCost.setAdditionalCost(secondCost);
+					changed = true;
 				}
 			}
 			else {
@@ -603,8 +659,20 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 
 			if(changed) {
 				if(skillCategoryCost.isAssignable()) {
-					callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
-							skillCategoryCost.getSkillCategory()).add(index, skillCost);
+					List<SkillCost> skillCosts = callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
+							skillCategoryCost.getSkillCategory());
+					if(skillCosts.size() > position) {
+						skillCosts.remove(position);
+						skillCosts.add(position, skillCost);
+					} else {
+						while(skillCosts.size() < position) {
+							skillCosts.add(null);
+						}
+						skillCosts.add(skillCost);
+					}
+					if(skillCosts.size() <= skillCategoryCost.getAssignableSkillCosts().size()) {
+						Collections.copy(skillCategoryCost.getAssignableSkillCosts(), skillCosts);
+					}
 				}
 				else {
 					callbackImpl.getProfessionInstance().getSkillCosts().put(skillCostEntry.getSkill(), skillCost);

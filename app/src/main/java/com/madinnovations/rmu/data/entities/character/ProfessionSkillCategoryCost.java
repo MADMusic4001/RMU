@@ -32,9 +32,9 @@ import java.util.List;
 public class ProfessionSkillCategoryCost implements Comparable {
 	private SkillCategory skillCategory;
 	private List<SkillCostEntry> skillCosts           = new ArrayList<>();
-	private SkillCost            skillCategoryCost    = new SkillCost();
-	private boolean              assignable           = false;
-	private List<SkillCost>      assignableSkillCosts = new ArrayList<>();
+	private SkillCost           skillCategoryCost    = new SkillCost();
+	private boolean             assignable           = false;
+	private List<SkillCost>     assignableSkillCosts = new ArrayList<>();
 
 	/**
 	 * Creates a new ProfessionSkillCategoryCost instance

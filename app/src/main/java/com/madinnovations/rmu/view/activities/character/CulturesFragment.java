@@ -93,7 +93,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_culture_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_culture_description_required);
 		tradesAndCraftsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.trades_ranks_edit,
 													 R.string.validation_culture_trades_ranks_required);
@@ -194,7 +194,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 			case R.id.name_edit:
 				result = currentInstance.getName();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 			case R.id.trades_ranks_edit:
@@ -212,7 +212,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				currentInstance.setName(newString);
 				saveItem();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				currentInstance.setDescription(newString);
 				saveItem();
 				break;

@@ -17,9 +17,11 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
-import com.madinnovations.rmu.data.dao.item.WeaponDao;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.impl.ItemDaoDbImpl;
-import com.madinnovations.rmu.data.dao.item.impl.WeaponDaoDbImpl;
+import com.madinnovations.rmu.data.dao.item.impl.ItemTemplateDaoDbImpl;
+import com.madinnovations.rmu.data.dao.item.impl.WeaponTemplateDaoDbImpl;
 
 import javax.inject.Singleton;
 
@@ -32,12 +34,17 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class ItemDaoSqlModule {
 	@Provides @Singleton
-	ItemDao provideItemDao(RMUDatabaseHelper helper) {
-		return new ItemDaoDbImpl(helper);
+	ItemDao provideItemDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao) {
+		return new ItemDaoDbImpl(helper, itemTemplateDao);
 	}
 
 	@Provides @Singleton
-	WeaponDao provideWeaponDao(RMUDatabaseHelper helper) {
-		return new WeaponDaoDbImpl(helper);
+	ItemTemplateDao provideItemTemplateDap(RMUDatabaseHelper helper) {
+		return new ItemTemplateDaoDbImpl(helper);
+	}
+
+	@Provides @Singleton
+	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper) {
+		return new WeaponTemplateDaoDbImpl(helper);
 	}
 }

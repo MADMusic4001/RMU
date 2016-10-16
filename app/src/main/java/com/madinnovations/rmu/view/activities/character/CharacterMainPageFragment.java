@@ -52,7 +52,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	@Inject
 	protected RealmRxHandler         realmRxHandler;
 	private CharactersFragment       charactersFragment;
-	private EditText                 currentLevelEdit;
 	private EditText                 firstNameEdit;
 	private EditText                 lastNameEdit;
 	private EditText                 knownAsEdit;
@@ -63,8 +62,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private SpinnerUtils<Realm>      realmSpinner;
 	private EditText                 heightEdit;
 	private EditText                 weightEdit;
-	private EditText                 currentHitsEdit;
-	private EditText                 maxHitsEdit;				
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,15 +70,13 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		View layout = inflater.inflate(R.layout.character_main_page_fragment, container, false);
 
-		currentLevelEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.current_level_edit,
-				R.string.validation_character_current_level_required);
 		firstNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.first_name_edit,
 				R.string.validation_character_first_name_required);
 		lastNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.last_name_edit,
 				R.string.validation_character_last_name_required);
 		knownAsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.known_as_edit,
 				R.string.validation_character_known_as_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 				R.string.validation_character_description_required);
 		raceSpinner = new SpinnerUtils<>();
 		raceSpinner.initSpinner(layout, getActivity(), raceRxHandler.getAll(), this, R.id.race_spinner, null);
@@ -93,10 +88,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
 		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit, R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit, R.string.validation_character_weight_required);
-		currentHitsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.current_hits_edit,
-				R.string.validation_character_current_hits_required);
-		maxHitsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.max_hits_edit,
-				R.string.validation_character_max_hits_required);
 
 		return layout;
 	}
@@ -119,9 +110,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		String result = null;
 
 		switch (editTextId) {
-			case R.id.current_level_edit:
-				result = String.valueOf(charactersFragment.getCurrentInstance().getCurrentLevel());
-				break;
 			case R.id.first_name_edit:
 				result = charactersFragment.getCurrentInstance().getFirstName();
 				break;
@@ -131,7 +119,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			case R.id.known_as_edit:
 				result = charactersFragment.getCurrentInstance().getKnownAs();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = charactersFragment.getCurrentInstance().getDescription();
 				break;
 			case R.id.height_edit:
@@ -139,12 +127,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				break;
 			case R.id.weight_edit:
 				result = String.valueOf(charactersFragment.getCurrentInstance().getWeight());
-				break;
-			case R.id.current_hits_edit:
-				result = String.valueOf(charactersFragment.getCurrentInstance().getCurrentHits());
-				break;
-			case R.id.max_hits_edit:
-				result = String.valueOf(charactersFragment.getCurrentInstance().getMaxHits());
 				break;
 		}
 
@@ -156,13 +138,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		short newShort;
 
 		switch (editTextId) {
-			case R.id.current_level_edit:
-				newShort = Short.valueOf(newString);
-				if(newShort != charactersFragment.getCurrentInstance().getCurrentLevel()) {
-					charactersFragment.getCurrentInstance().setCurrentLevel(newShort);
-					charactersFragment.saveItem();
-				}
-				break;
 			case R.id.first_name_edit:
 				if(!newString.equals(charactersFragment.getCurrentInstance().getFirstName())) {
 					charactersFragment.getCurrentInstance().setFirstName(newString);
@@ -181,7 +156,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 					charactersFragment.saveItem();
 				}
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				if(!newString.equals(charactersFragment.getCurrentInstance().getDescription())) {
 					charactersFragment.getCurrentInstance().setDescription(newString);
 					charactersFragment.saveItem();
@@ -198,20 +173,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				newShort = Short.valueOf(newString);
 				if(newShort != charactersFragment.getCurrentInstance().getWeight()) {
 					charactersFragment.getCurrentInstance().setWeight(newShort);
-					charactersFragment.saveItem();
-				}
-				break;
-			case R.id.current_hits_edit:
-				newShort = Short.valueOf(newString);
-				if(newShort != charactersFragment.getCurrentInstance().getCurrentHits()) {
-					charactersFragment.getCurrentInstance().setCurrentHits(newShort);
-					charactersFragment.saveItem();
-				}
-				break;
-			case R.id.max_hits_edit:
-				newShort = Short.valueOf(newString);
-				if(newShort != charactersFragment.getCurrentInstance().getMaxHits()) {
-					charactersFragment.getCurrentInstance().setMaxHits(newShort);
 					charactersFragment.saveItem();
 				}
 				break;
@@ -244,7 +205,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
 		switch (spinnerId) {
 			case R.id.race_spinner:
-				charactersFragment.getCurrentInstance().setRace((Race)newItem);
+				Race newRace = (Race)newItem;
+				charactersFragment.getCurrentInstance().setRace(newRace);
 				charactersFragment.saveItem();
 				break;
 			case R.id.culture_spinner:
@@ -269,13 +231,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		String newString;
 		short newShort;
 
-		if(currentLevelEdit.getText().length() > 0) {
-			newShort = Short.valueOf(currentLevelEdit.getText().toString());
-			if(newShort != charactersFragment.getCurrentInstance().getCurrentLevel()) {
-				charactersFragment.getCurrentInstance().setCurrentLevel(newShort);
-				changed = true;
-			}
-		}
 		newString = firstNameEdit.getText().toString();
 		if(!newString.equals(charactersFragment.getCurrentInstance().getFirstName())) {
 			charactersFragment.getCurrentInstance().setFirstName(newString);
@@ -321,31 +276,17 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			charactersFragment.getCurrentInstance().setRealm(newRealm);
 			changed = true;
 		}
-		if(currentLevelEdit.getText().length() > 0) {
-			newShort = Short.valueOf(currentLevelEdit.getText().toString());
+		if(heightEdit.getText().length() > 0) {
+			newShort = Short.valueOf(heightEdit.getText().toString());
 			if(newShort != charactersFragment.getCurrentInstance().getHeight()) {
 				charactersFragment.getCurrentInstance().setHeight(newShort);
 				changed = true;
 			}
 		}
-		if(currentLevelEdit.getText().length() > 0) {
-			newShort = Short.valueOf(currentLevelEdit.getText().toString());
+		if(weightEdit.getText().length() > 0) {
+			newShort = Short.valueOf(weightEdit.getText().toString());
 			if(newShort != charactersFragment.getCurrentInstance().getWeight()) {
 				charactersFragment.getCurrentInstance().setWeight(newShort);
-				changed = true;
-			}
-		}
-		if(currentLevelEdit.getText().length() > 0) {
-			newShort = Short.valueOf(currentLevelEdit.getText().toString());
-			if(newShort != charactersFragment.getCurrentInstance().getCurrentHits()) {
-				charactersFragment.getCurrentInstance().setCurrentHits(newShort);
-				changed = true;
-			}
-		}
-		if(currentLevelEdit.getText().length() > 0) {
-			newShort = Short.valueOf(currentLevelEdit.getText().toString());
-			if(newShort != charactersFragment.getCurrentInstance().getMaxHits()) {
-				charactersFragment.getCurrentInstance().setMaxHits(newShort);
 				changed = true;
 			}
 		}
@@ -354,7 +295,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	public void copyItemToViews() {
-		currentLevelEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getCurrentLevel()));
 		firstNameEdit.setText(charactersFragment.getCurrentInstance().getFirstName());
 		lastNameEdit.setText(charactersFragment.getCurrentInstance().getLastName());
 		knownAsEdit.setText(charactersFragment.getCurrentInstance().getKnownAs());
@@ -365,8 +305,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.setSelection(charactersFragment.getCurrentInstance().getRealm());
 		heightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getHeight()));
 		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
-		currentHitsEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getCurrentHits()));
-		maxHitsEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getMaxHits()));
 	}
 
 	public void setCharactersFragment(CharactersFragment charactersFragment) {

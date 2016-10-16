@@ -61,6 +61,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	private CharacterMainPageFragment          mainPageFragment = null;
 	private CharacterBackgroundPageFragment    backgroundPageFragment = null;
 	private CharacterSkillsPageFragment        skillsPageFragment = null;
+	private CharacterGeneratedValuesFragment   generatedValuesFragment = null;
 	private ListView                           listView;
 	CharacterFragmentPagerAdapter              pagerAdapter = null;
 	private Character currentInstance = new Character();
@@ -91,18 +92,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		if(copyViewsToItem()) {
 			saveItem();
 		}
-//		if(mainPageFragment != null) {
-//			getFragmentManager().beginTransaction().remove(mainPageFragment).commit();
-//			mainPageFragment = null;
-//		}
-//		if(backgroundPageFragment != null) {
-//			getFragmentManager().beginTransaction().remove(backgroundPageFragment).commit();
-//			mainPageFragment = null;
-//		}
-//		if(skillsPageFragment != null) {
-//			getFragmentManager().beginTransaction().remove(backgroundPageFragment).commit();
-//			mainPageFragment = null;
-//		}
 		super.onPause();
 	}
 
@@ -196,6 +185,11 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			getFragmentManager().beginTransaction().remove(this.skillsPageFragment).commit();
 			this.skillsPageFragment = null;
 		}
+
+		if(this.generatedValuesFragment != null &&
+				getFragmentManager().findFragmentById(this.generatedValuesFragment.getId()) != null) {
+			this.generatedValuesFragment = null;
+		}
 	}
 
 	private boolean copyViewsToItem() {
@@ -223,6 +217,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		}
 		if(skillsPageFragment != null) {
 			skillsPageFragment.copyItemToViews();
+		}
+		if(generatedValuesFragment != null) {
+			generatedValuesFragment.copyItemToViews();
 		}
 	}
 
@@ -400,13 +397,17 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					fragment = Fragment.instantiate(getActivity(), CharacterBackgroundPageFragment.class.getName());
 					((CharacterBackgroundPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
+				case 3:
+					fragment = Fragment.instantiate(getActivity(), CharacterGeneratedValuesFragment.class.getName());
+					((CharacterGeneratedValuesFragment)fragment).setCharactersFragment(CharactersFragment.this);
+					break;
 			}
 			return fragment;
 		}
 
 		@Override
 		public int getCount() {
-			return 3;
+			return 4;
 		}
 
 		@Override
@@ -422,6 +423,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					break;
 				case 2:
 					title = getString(R.string.title_character_background_page);
+					break;
+				case 3:
+					title = getString(R.string.title_character_generated_values_page);
 					break;
 			}
 			return title;
@@ -440,6 +444,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				case 2:
 					backgroundPageFragment = (CharacterBackgroundPageFragment)createdFragment;
 					break;
+				case 3:
+					generatedValuesFragment = (CharacterGeneratedValuesFragment)createdFragment;
+					break;
 			}
 
 			return createdFragment;
@@ -457,6 +464,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					break;
 				case 2:
 					backgroundPageFragment= null;
+					break;
+				case 3:
+					generatedValuesFragment = null;
 					break;
 			}
 		}

@@ -21,35 +21,35 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.item.WeaponDao;
-import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
-import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Methods for managing {@link Weapon} objects in a SQLite database.
+ * Methods for managing {@link WeaponTemplate} objects in a SQLite database.
  */
 @Singleton
-public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao, WeaponSchema {
+public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> implements WeaponTemplateDao, WeaponTemplateSchema {
     /**
      * Creates a new instance of WeaponDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public WeaponDaoDbImpl(SQLiteOpenHelper helper) {
+    public WeaponTemplateDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
     }
 
     @Override
-    public Weapon getById(int id) {
+    public WeaponTemplate getById(int id) {
         return super.getById(id);
     }
 
     @Override
-    public boolean save(Weapon instance) {
+    public boolean save(WeaponTemplate instance) {
         return super.save(instance);
     }
 
@@ -79,22 +79,22 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
     }
 
     @Override
-    protected int getId(Weapon instance) {
+    protected int getId(WeaponTemplate instance) {
         return instance.getId();
     }
 
     @Override
-    protected void setId(Weapon instance, int id) {
+    protected void setId(WeaponTemplate instance, int id) {
         instance.setId(id);
     }
 
     @Override
-    protected Weapon cursorToEntity(@NonNull Cursor cursor) {
+    protected WeaponTemplate cursorToEntity(@NonNull Cursor cursor) {
         return null;
     }
 
     @Override
-    protected ContentValues getContentValues(Weapon instance) {
+    protected ContentValues getContentValues(WeaponTemplate instance) {
         return null;
     }
 }

@@ -487,7 +487,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	}
 
 	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.description_edit);
+		descriptionEdit = (EditText)layout.findViewById(R.id.notes_edit);
 		descriptionEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

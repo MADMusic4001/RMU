@@ -19,12 +19,15 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +36,7 @@ import java.util.Map;
 public class Character {
 	public static final String JSON_NAME = "Characters";
 	private int                   id = -1;
-	private short                 currentLevel = 0;
+	private int                   experiencePoints = 0;
 	private String                firstName = null;
 	private String                lastName = null;
 	private String                knownAs = null;
@@ -54,14 +57,16 @@ public class Character {
 	private Realm                 realm = null;
 	private short                 height = 70;
 	private short                 weight = 185;
-	private short                 currentHits = 25;
-	private short                 maxHits = 25;
+	private int                   hitPointLoss = 0;
 	private short                 currentDevelopmentPoints = 50;
+	private short                 enduranceLoss;
+	private short                 powerPointLoss;
 	private Map<Skill, SkillCost> skillCosts = new HashMap<>();
 	private Map<Skill, Short>     skillRanks = new HashMap<>();
 	private Map<Talent, Short>    talentTiers = new HashMap<>();
 	private Map<Stat, Short>      statTemps = new HashMap<>();
 	private Map<Stat, Short>      statPotentials = new HashMap<>();
+	private List<Item>            items = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -78,7 +83,7 @@ public class Character {
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
-				.append("currentLevel", currentLevel)
+				.append("experiencePoints", experiencePoints)
 				.append("firstName", firstName)
 				.append("lastName", lastName)
 				.append("knownAs", knownAs)
@@ -99,14 +104,16 @@ public class Character {
 				.append("realm", realm)
 				.append("height", height)
 				.append("weight", weight)
-				.append("currentHits", currentHits)
-				.append("maxHits", maxHits)
+				.append("hitPointLoss", hitPointLoss)
 				.append("currentDevelopmentPoints", currentDevelopmentPoints)
+				.append("enduranceLoss", enduranceLoss)
+				.append("powerPointLoss", powerPointLoss)
 				.append("skillCosts", skillCosts)
 				.append("skillRanks", skillRanks)
 				.append("talentTiers", talentTiers)
 				.append("statTemps", statTemps)
 				.append("statPotentials", statPotentials)
+				.append("items", items)
 				.toString();
 	}
 
@@ -132,11 +139,11 @@ public class Character {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public short getCurrentLevel() {
-		return currentLevel;
+	public int getExperiencePoints() {
+		return experiencePoints;
 	}
-	public void setCurrentLevel(short currentLevel) {
-		this.currentLevel = currentLevel;
+	public void setExperiencePoints(int experiencePoints) {
+		this.experiencePoints = experiencePoints;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -258,23 +265,29 @@ public class Character {
 	public void setWeight(short weight) {
 		this.weight = weight;
 	}
-	public short getCurrentHits() {
-		return currentHits;
+	public int getHitPointLoss() {
+		return hitPointLoss;
 	}
-	public void setCurrentHits(short currentHits) {
-		this.currentHits = currentHits;
-	}
-	public short getMaxHits() {
-		return maxHits;
-	}
-	public void setMaxHits(short maxHits) {
-		this.maxHits = maxHits;
+	public void setHitPointLoss(int hitPointLoss) {
+		this.hitPointLoss = hitPointLoss;
 	}
 	public short getCurrentDevelopmentPoints() {
 		return currentDevelopmentPoints;
 	}
 	public void setCurrentDevelopmentPoints(short currentDevelopmentPoints) {
 		this.currentDevelopmentPoints = currentDevelopmentPoints;
+	}
+	public short getEnduranceLoss() {
+		return enduranceLoss;
+	}
+	public void setEnduranceLoss(short enduranceLoss) {
+		this.enduranceLoss = enduranceLoss;
+	}
+	public short getPowerPointLoss() {
+		return powerPointLoss;
+	}
+	public void setPowerPointLoss(short powerPointLoss) {
+		this.powerPointLoss = powerPointLoss;
 	}
 	public Map<Skill, SkillCost> getSkillCosts() {
 		return skillCosts;
@@ -305,5 +318,11 @@ public class Character {
 	}
 	public void setStatPotentials(Map<Stat, Short> statPotentials) {
 		this.statPotentials = statPotentials;
+	}
+	public List<Item> getItems() {
+		return items;
+	}
+	public void setItems(List<Item> items) {
+		this.items = items;
 	}
 }

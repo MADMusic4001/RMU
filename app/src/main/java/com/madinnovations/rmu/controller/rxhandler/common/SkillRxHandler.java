@@ -69,6 +69,30 @@ public class SkillRxHandler {
 	}
 
 	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a Skill instance with the given name.
+	 *
+	 * @param name  the name of the Skill to retrieve from persistent storage
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Skill instance.
+	 */
+	public Observable<Skill> getByName(final String name) {
+		return Observable.create(
+				new Observable.OnSubscribe<Skill>() {
+					@Override
+					public void call(Subscriber<? super Skill> subscriber) {
+						try {
+							subscriber.onNext(dao.getByName(name));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
 	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill

@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
-import com.madinnovations.rmu.view.activities.item.ItemsFragment;
+import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -26,15 +26,15 @@ import dagger.Provides;
  */
 @Module
 public class ItemFragmentModule {
-	private ItemsFragment itemsFragment;
+	private ItemTemplatesFragment itemTemplatesFragment;
 
-	public ItemFragmentModule(ItemsFragment itemsFragment) {
-		this.itemsFragment = itemsFragment;
+	public ItemFragmentModule(ItemTemplatesFragment itemTemplatesFragment) {
+		this.itemTemplatesFragment = itemTemplatesFragment;
 	}
 
 	@Provides
 	@PerFragment
-	ItemsFragment provideItemsFragment() {
-		return this.itemsFragment;
+	ItemTemplatesFragment provideItemTemplatesFragment() {
+		return this.itemTemplatesFragment;
 	}
 }

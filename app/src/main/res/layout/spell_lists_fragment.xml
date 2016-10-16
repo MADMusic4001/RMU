@@ -42,7 +42,7 @@
             android:maxLength="30"
             android:hint="@string/hint_spell_list_name"/>
         <EditText
-            android:id="@+id/description_edit"
+            android:id="@+id/notes_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"

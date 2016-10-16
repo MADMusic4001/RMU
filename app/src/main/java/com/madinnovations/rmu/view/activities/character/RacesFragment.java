@@ -110,7 +110,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_race_name_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_race_description_required);
 		devPointsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.dp_edit,
 											   R.string.validation_race_dev_points_required);
@@ -222,7 +222,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			case R.id.name_edit:
 				result = currentInstance.getName();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 			case R.id.dp_edit:
@@ -261,7 +261,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 				case R.id.name_edit:
 					currentInstance.setName(newString);
 					break;
-				case R.id.description_edit:
+				case R.id.notes_edit:
 					currentInstance.setDescription(newString);
 					break;
 				case R.id.dp_edit:

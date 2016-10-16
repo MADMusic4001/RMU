@@ -28,14 +28,13 @@ public interface CharacterSkillRanksSchema {
     String COLUMN_RANKS = "ranks";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_NAME
-            + " ("
-            + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL, "
-            + COLUMN_SKILL_ID + " INTEGER NOT NULL, "
+            + TABLE_NAME + "("
+            + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
+                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+            + COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
             + COLUMN_RANKS  + " INTEGER NOT NULL, "
-            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_CHARACTER_ID + ") REFERENCES " + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + ")"
             + ")";
 
     String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_RANKS};

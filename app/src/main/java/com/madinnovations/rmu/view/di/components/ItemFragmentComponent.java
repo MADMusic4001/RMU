@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
-import com.madinnovations.rmu.view.activities.item.ItemsFragment;
+import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 
@@ -28,5 +28,5 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = ItemFragmentModule.class)
 public interface ItemFragmentComponent {
-	void injectInto(ItemsFragment itemsFragment);
+	void injectInto(ItemTemplatesFragment itemTemplatesFragment);
 }

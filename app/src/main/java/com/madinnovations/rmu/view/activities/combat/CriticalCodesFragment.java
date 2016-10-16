@@ -20,8 +20,6 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -81,7 +79,7 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 
 		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.code_edit,
 										  R.string.validation_critical_code_required);
-		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.description_edit,
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 												 R.string.validation_critical_code_description_required);
 		initListView(layout);
 
@@ -173,7 +171,7 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 			case R.id.code_edit:
 				result = currentInstance.getCode();
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				result = currentInstance.getDescription();
 				break;
 		}
@@ -187,7 +185,7 @@ public class CriticalCodesFragment extends Fragment implements TwoFieldListAdapt
 			case R.id.code_edit:
 				currentInstance.setCode(newString);
 				break;
-			case R.id.description_edit:
+			case R.id.notes_edit:
 				currentInstance.setDescription(newString);
 				break;
 		}

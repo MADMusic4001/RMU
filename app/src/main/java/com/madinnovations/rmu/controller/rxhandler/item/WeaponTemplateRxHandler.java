@@ -15,8 +15,8 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.item;
 
-import com.madinnovations.rmu.data.dao.item.WeaponDao;
-import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import java.util.Collection;
 
@@ -28,18 +28,18 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Creates reactive observable for requesting operations on {@link Weapon} instances with persistent storage.
+ * Creates reactive observable for requesting operations on {@link WeaponTemplate} instances with persistent storage.
  */
-public class WeaponRxHandler {
-	private WeaponDao dao;
+public class WeaponTemplateRxHandler {
+	private WeaponTemplateDao dao;
 
 	/**
 	 * Creates a new WeaponRxHandler
 	 *
-	 * @param dao  a WeaponDao instance
+	 * @param dao  a WeaponTemplateDao instance
 	 */
 	@Inject
-	public WeaponRxHandler(WeaponDao dao) {
+	public WeaponTemplateRxHandler(WeaponTemplateDao dao) {
 		this.dao = dao;
 	}
 
@@ -49,11 +49,11 @@ public class WeaponRxHandler {
 	 * @param id  the id of the Weapon to retrieve from persistent storage
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Weapon instance.
 	 */
-	public Observable<Weapon> getById(final int id) {
+	public Observable<WeaponTemplate> getById(final int id) {
 		return Observable.create(
-				new Observable.OnSubscribe<Weapon>() {
+				new Observable.OnSubscribe<WeaponTemplate>() {
 					@Override
-					public void call(Subscriber<? super Weapon> subscriber) {
+					public void call(Subscriber<? super WeaponTemplate> subscriber) {
 						try {
 							subscriber.onNext(dao.getById(id));
 							subscriber.onCompleted();
@@ -73,11 +73,11 @@ public class WeaponRxHandler {
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Weapon
 	 * instances.
 	 */
-	public Observable<Collection<Weapon>> getAll() {
+	public Observable<Collection<WeaponTemplate>> getAll() {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<Weapon>>() {
+				new Observable.OnSubscribe<Collection<WeaponTemplate>>() {
 					@Override
-					public void call(Subscriber<? super Collection<Weapon>> subscriber) {
+					public void call(Subscriber<? super Collection<WeaponTemplate>> subscriber) {
 						try {
 							subscriber.onNext(dao.getAll());
 							subscriber.onCompleted();
@@ -94,17 +94,17 @@ public class WeaponRxHandler {
 	/**
 	 * Creates an Observable that, when subscribed to, will save a Weapon instance to persistent storage.
 	 *
-	 * @param weapon  the Weapon instance to be saved
+	 * @param weaponTemplate  the Weapon instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Weapon instance.
 	 */
-	public Observable<Weapon> save(final Weapon weapon) {
+	public Observable<WeaponTemplate> save(final WeaponTemplate weaponTemplate) {
 		return Observable.create(
-				new Observable.OnSubscribe<Weapon>() {
+				new Observable.OnSubscribe<WeaponTemplate>() {
 					@Override
-					public void call(Subscriber<? super Weapon> subscriber) {
+					public void call(Subscriber<? super WeaponTemplate> subscriber) {
 						try {
-							dao.save(weapon);
-							subscriber.onNext(weapon);
+							dao.save(weaponTemplate);
+							subscriber.onNext(weaponTemplate);
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
@@ -144,13 +144,13 @@ public class WeaponRxHandler {
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to delete the Weapon instances.
 	 */
-	public Observable<Collection<Weapon>> deleteAll() {
+	public Observable<Collection<WeaponTemplate>> deleteAll() {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<Weapon>>() {
+				new Observable.OnSubscribe<Collection<WeaponTemplate>>() {
 					@Override
-					public void call(Subscriber<? super Collection<Weapon>> subscriber) {
+					public void call(Subscriber<? super Collection<WeaponTemplate>> subscriber) {
 						try {
-							Collection<Weapon> weaponsDeleted = dao.getAll();
+							Collection<WeaponTemplate> weaponsDeleted = dao.getAll();
 							dao.deleteAll();
 							subscriber.onNext(weaponsDeleted);
 							subscriber.onCompleted();
