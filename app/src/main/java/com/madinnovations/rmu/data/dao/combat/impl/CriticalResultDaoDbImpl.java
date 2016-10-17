@@ -111,11 +111,11 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(19);
+            values = new ContentValues(20);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(18);
+            values = new ContentValues(19);
         }
         values.put(COLUMN_SEVERITY_CODE, String.valueOf(instance.getSeverityCode()));
         values.put(COLUMN_RESULT_TEXT, instance.getResultText());
@@ -125,15 +125,26 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         values.put(COLUMN_HITS, instance.getHits());
         values.put(COLUMN_BLEEDING, instance.getBleeding());
         values.put(COLUMN_FATIGUE, instance.getFatigue());
-        values.put(COLUMN_BREAKAGE, instance.getBreakage());
+		if(instance.getBreakage() == null) {
+			values.putNull(COLUMN_BREAKAGE);
+		}
+		else {
+			values.put(COLUMN_BREAKAGE, instance.getBreakage());
+		}
         values.put(COLUMN_INJURY, instance.getInjury());
         values.put(COLUMN_DAZED, instance.getDazed());
         values.put(COLUMN_STUNNED, instance.getStunned());
         values.put(COLUMN_NO_PARRY, instance.getNoParry());
-        values.put(COLUMN_STAGGERED, instance.isStaggered());
+        values.put(COLUMN_STAGGERED, instance.getStaggered());
         values.put(COLUMN_KNOCK_BACK, instance.getKnockBack());
-        values.put(COLUMN_PRONE, instance.isProne());
+        values.put(COLUMN_PRONE, instance.getProne());
         values.put(COLUMN_GRAPPLED, instance.getGrappled());
+		if(instance.getDeath() == null) {
+			values.putNull(COLUMN_DEATH);
+		}
+		else {
+			values.put(COLUMN_DEATH, instance.getDeath());
+		}
         values.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
 
         return values;
@@ -223,20 +234,20 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
         instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));
         instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FATIGUE)));
-        if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE))) {
-            instance.setBreakage(null);
-        }
-        else {
+        if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE))) {
             instance.setBreakage(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BREAKAGE)));
         }
         instance.setInjury(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INJURY)));
         instance.setDazed(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DAZED)));
         instance.setStunned(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STUNNED)));
         instance.setNoParry(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NO_PARRY)));
-        instance.setStaggered(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAGGERED)) != 0);
+        instance.setStaggered(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STAGGERED)));
         instance.setKnockBack(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_KNOCK_BACK)));
-        instance.setProne(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRONE)) != 0);
+        instance.setProne(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_PRONE)));
         instance.setGrappled(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRAPPLED)));
+		if(!cursor.isNull(cursor.getColumnIndex(COLUMN_DEATH))) {
+			instance.setDeath(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_DEATH)));
+		}
         instance.setCriticalType(criticalType);
 
         return instance;

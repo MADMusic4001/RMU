@@ -44,10 +44,11 @@ public class CriticalResult {
     private short dazed = 0;
     private short stunned = 0;
     private short noParry = 0;
-    private boolean staggered = false;
+    private short staggered = 0;
     private short knockBack = 0;
-    private boolean prone = false;
+    private short prone = 0;
     private short grappled = 0;
+	private Short death = null;
     private CriticalType criticalType = null;
 
 	/**
@@ -137,6 +138,7 @@ public class CriticalResult {
                 .append("prone", prone)
                 .append("grappled", grappled)
                 .append("criticalType", criticalType)
+				.append("death", death)
                 .toString();
     }
 
@@ -240,25 +242,25 @@ public class CriticalResult {
     public void setNoParry(short noParry) {
         this.noParry = noParry;
     }
-    public boolean isStaggered() {
-        return staggered;
-    }
-    public void setStaggered(boolean staggered) {
-        this.staggered = staggered;
-    }
-    public short getKnockBack() {
+	public short getStaggered() {
+		return staggered;
+	}
+	public void setStaggered(short staggered) {
+		this.staggered = staggered;
+	}
+	public short getKnockBack() {
         return knockBack;
     }
     public void setKnockBack(short knockBack) {
         this.knockBack = knockBack;
     }
-    public boolean isProne() {
-        return prone;
-    }
-    public void setProne(boolean prone) {
-        this.prone = prone;
-    }
-    public short getGrappled() {
+	public short getProne() {
+		return prone;
+	}
+	public void setProne(short prone) {
+		this.prone = prone;
+	}
+	public short getGrappled() {
         return grappled;
     }
     public void setGrappled(short grappled) {
@@ -270,4 +272,10 @@ public class CriticalResult {
     public void setCriticalType(CriticalType criticalType) {
         this.criticalType = criticalType;
     }
+	public Short getDeath() {
+		return death;
+	}
+	public void setDeath(Short death) {
+		this.death = death;
+	}
 }

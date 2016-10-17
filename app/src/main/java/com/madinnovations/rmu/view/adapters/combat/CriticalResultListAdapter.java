@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -34,8 +33,8 @@ import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
-import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
+import com.madinnovations.rmu.view.widgets.NoPasteBreakEditText;
 
 import java.util.Collection;
 
@@ -88,11 +87,12 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 									(EditText) rowView.findViewById(R.id.dazed_edit),
 									(EditText) rowView.findViewById(R.id.stunned_edit),
 									(EditText) rowView.findViewById(R.id.stunned_no_parry_edit),
-									(CheckBox) rowView.findViewById(R.id.staggered_checkbox),
+									(EditText) rowView.findViewById(R.id.staggered_edit),
 									(EditText) rowView.findViewById(R.id.knock_back_edit),
-									(CheckBox) rowView.findViewById(R.id.prone_checkbox),
+									(EditText) rowView.findViewById(R.id.prone_edit),
 									(EditText) rowView.findViewById(R.id.grappled_edit),
-									(EditText) rowView.findViewById(R.id.result_text_edit),
+									(EditText) rowView.findViewById(R.id.death_edit),
+									(NoPasteBreakEditText) rowView.findViewById(R.id.result_text_edit),
 									(EditText) rowView.findViewById(R.id.right_roll_view));
 			rowView.setTag(holder);
 		}
@@ -113,7 +113,18 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 						criticalResult.getMaxRoll());
 			}
 			holder.leftRollView.setText(rollString);
-			holder.bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(criticalResult.getBodyPart()));
+			if(criticalResult.getBodyPart() == null) {
+				if(holder.bodyPartSpinner.getSelectedItem() != null) {
+					criticalResult.setBodyPart((BodyPart)holder.bodyPartSpinner.getSelectedItem());
+				}
+				else if(holder.bodyPartSpinner.getCount() > 0) {
+					holder.bodyPartSpinner.setSelection(0);
+					criticalResult.setBodyPart((BodyPart)holder.bodyPartSpinner.getSelectedItem());
+				}
+			}
+			else {
+				holder.bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(criticalResult.getBodyPart()));
+			}
 			holder.hitsEdit.setText(String.valueOf(criticalResult.getHits()));
 			holder.bleedingEdit.setText(String.valueOf(criticalResult.getBleeding()));
 			holder.fatigueEdit.setText(String.valueOf(criticalResult.getFatigue()));
@@ -127,10 +138,16 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			holder.dazedEdit.setText(String.valueOf(criticalResult.getDazed()));
 			holder.stunnedEdit.setText(String.valueOf(criticalResult.getStunned()));
 			holder.noParryEdit.setText(String.valueOf(criticalResult.getNoParry()));
-			holder.staggeredCheckBox.setChecked(criticalResult.isStaggered());
+			holder.staggeredEdit.setText(String.valueOf(criticalResult.getStaggered()));
 			holder.knockBackEdit.setText(String.valueOf(criticalResult.getKnockBack()));
-			holder.proneCheckBox.setChecked(criticalResult.isProne());
+			holder.proneEdit.setText(String.valueOf(criticalResult.getProne()));
 			holder.grappledEdit.setText(String.valueOf(criticalResult.getGrappled()));
+			if(criticalResult.getDeath() == null) {
+				holder.deathEdit.setText(null);
+			}
+			else {
+				holder.deathEdit.setText(String.valueOf(criticalResult.getDeath()));
+			}
 			if(criticalResult.getResultText() == null || criticalResult.getResultText().isEmpty()) {
 				holder.resultTextEdit.setText(null);
 				holder.resultTextEdit.setError(getContext().getString(R.string.validation_critical_result_text_required));
@@ -144,29 +161,31 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 		return rowView;
 	}
 
-	private class ViewHolder implements EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback {
-		private CriticalResult currentInstance;
-		private EditText leftRollView;
-		private Spinner  bodyPartSpinner;
-		private EditText hitsEdit;
-		private EditText bleedingEdit;
-		private EditText fatigueEdit;
-		private EditText breakageEdit;
-		private EditText injuryEdit;
-		private EditText dazedEdit;
-		private EditText stunnedEdit;
-		private EditText noParryEdit;
-		private CheckBox staggeredCheckBox;
-		private EditText knockBackEdit;
-		private CheckBox proneCheckBox;
-		private EditText grappledEdit;
-		private EditText resultTextEdit;
-		private EditText rightRollView;
+	private class ViewHolder implements EditTextUtils.ValuesCallback {
+		private CriticalResult       currentInstance;
+		private EditText             leftRollView;
+		private Spinner              bodyPartSpinner;
+		private EditText             hitsEdit;
+		private EditText             bleedingEdit;
+		private EditText             fatigueEdit;
+		private EditText             breakageEdit;
+		private EditText             injuryEdit;
+		private EditText             dazedEdit;
+		private EditText             stunnedEdit;
+		private EditText             noParryEdit;
+		private EditText             staggeredEdit;
+		private EditText             knockBackEdit;
+		private EditText             proneEdit;
+		private EditText             grappledEdit;
+		private EditText             deathEdit;
+		private NoPasteBreakEditText resultTextEdit;
+		private EditText             rightRollView;
 
-		public ViewHolder(EditText leftRollView, Spinner bodyPartSpinner, EditText hitsEdit, EditText bleedingEdit, EditText fatigueEdit,
-						  EditText breakageEdit, EditText injuryEdit, EditText dazedEdit, EditText stunnedEdit, EditText noParryEdit,
-						  CheckBox staggeredCheckBox, EditText knockBackEdit, CheckBox proneCheckBox, EditText grappledEdit,
-						  EditText resultTextEdit, EditText rightRollView) {
+		public ViewHolder(EditText leftRollView, Spinner bodyPartSpinner, EditText hitsEdit, EditText bleedingEdit,
+						  EditText fatigueEdit, EditText breakageEdit, EditText injuryEdit, EditText dazedEdit,
+						  EditText stunnedEdit, EditText noParryEdit, EditText staggeredEdit, EditText knockBackEdit,
+						  EditText proneEdit, EditText grappledEdit, EditText deathEdit, NoPasteBreakEditText resultTextEdit,
+						  EditText rightRollView) {
 			this.leftRollView = leftRollView;
 			this.bodyPartSpinner = bodyPartSpinner;
 			initBodyPartSpinner();
@@ -187,49 +206,21 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			this.noParryEdit = noParryEdit;
 			EditTextUtils.initEdit(noParryEdit, getContext(), this, R.id.stunned_no_parry_edit,
 								   R.string.validation_no_parry_required);
-			this.staggeredCheckBox = staggeredCheckBox;
-			CheckBoxUtils.initCheckBox(staggeredCheckBox, this, R.id.staggered_checkbox);
+			this.staggeredEdit = staggeredEdit;
+			EditTextUtils.initEdit(staggeredEdit, getContext(), this, R.id.staggered_edit, 0);
 			this.knockBackEdit = knockBackEdit;
 			EditTextUtils.initEdit(knockBackEdit, getContext(), this, R.id.knock_back_edit,
 								   R.string.validation_knock_back_required);
-			this.proneCheckBox = proneCheckBox;
-			CheckBoxUtils.initCheckBox(proneCheckBox, this, R.id.prone_checkbox);
+			this.proneEdit = proneEdit;
+			EditTextUtils.initEdit(proneEdit, getContext(), this, R.id.prone_edit, 0);
 			this.grappledEdit = grappledEdit;
 			EditTextUtils.initEdit(grappledEdit, getContext(), this, R.id.grappled_edit, R.string.validation_grappled_required);
+			this.deathEdit = deathEdit;
+			EditTextUtils.initEdit(deathEdit, getContext(), this, R.id.death_edit, 0);
 			this.resultTextEdit = resultTextEdit;
 			EditTextUtils.initEdit(resultTextEdit, getContext(), this, R.id.result_text_edit,
 								   R.string.validation_critical_result_text_required);
 			this.rightRollView = rightRollView;
-		}
-
-		@Override
-		public boolean getValueForCheckBox(@IdRes int checkBoxId) {
-			boolean result = false;
-
-			switch (checkBoxId) {
-				case R.id.staggered_checkbox:
-					result = currentInstance.isStaggered();
-					break;
-				case R.id.prone_checkbox:
-					result = currentInstance.isProne();
-					break;
-			}
-
-			return result;
-		}
-
-		@Override
-		public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
-			switch (checkBoxId) {
-				case R.id.staggered_checkbox:
-					currentInstance.setStaggered(newBoolean);
-					saveItem();
-					break;
-				case R.id.prone_checkbox:
-					currentInstance.setProne(newBoolean);
-					saveItem();
-					break;
-			}
 		}
 
 		@Override
@@ -266,8 +257,19 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 				case R.id.knock_back_edit:
 					result = String.valueOf(currentInstance.getKnockBack());
 					break;
+				case R.id.staggered_edit:
+					result = String.valueOf(currentInstance.getStaggered());
+					break;
 				case R.id.grappled_edit:
 					result = String.valueOf(currentInstance.getGrappled());
+					break;
+				case R.id.prone_edit:
+					result = String.valueOf(currentInstance.getProne());
+					break;
+				case R.id.death_edit:
+					if(currentInstance.getDeath() != null) {
+						result = String.valueOf(currentInstance.getDazed());
+					}
 					break;
 				case R.id.result_text_edit:
 					result = currentInstance.getResultText();
@@ -295,12 +297,11 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 				case R.id.breakage_edit:
 					if(newString != null && newString.length() > 0) {
 						currentInstance.setBreakage(Short.valueOf(newString));
-						saveItem();
 					}
 					else {
 						currentInstance.setBreakage(null);
-						saveItem();
 					}
+					saveItem();
 					break;
 				case R.id.injury_edit:
 					currentInstance.setInjury(Short.valueOf(newString));
@@ -322,8 +323,29 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					currentInstance.setKnockBack(Short.valueOf(newString));
 					saveItem();
 					break;
+				case R.id.staggered_edit:
+					if(newString.length() > 0) {
+						currentInstance.setStaggered(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
 				case R.id.grappled_edit:
 					currentInstance.setGrappled(Short.valueOf(newString));
+					saveItem();
+					break;
+				case R.id.prone_edit:
+					if(newString.length() > 0) {
+						currentInstance.setProne(Short.valueOf(newString));
+						saveItem();
+					}
+					break;
+				case R.id.death_edit:
+					if(newString != null && newString.length() > 0) {
+						currentInstance.setDeath(Short.valueOf(newString));
+					}
+					else {
+						currentInstance.setDeath(null);
+					}
 					saveItem();
 					break;
 				case R.id.result_text_edit:

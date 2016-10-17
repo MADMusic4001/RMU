@@ -22,34 +22,30 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 
 import com.madinnovations.rmu.view.RMUApp;
-import com.madinnovations.rmu.view.adapters.combat.DamageResultsGridAdapter;
 
 /**
- * Custom EditText used by Damage Results UI to handle pasting entire row of damage results
+ * EditText subclass that strips line breaks from text being pasted into an EditText
  */
-public class MultiPasteEditText extends EditText {
-	private MultiPasteEditText nextMultiPaste;
-	private DamageResultsGridAdapter.ViewHolder         viewHolder;
-	private int                                         atIndex;
+public class NoPasteBreakEditText extends EditText {
 
 	/**
 	 * @see EditText#EditText(Context)
 	 */
-	public MultiPasteEditText(Context context) {
+	public NoPasteBreakEditText(Context context) {
 		super(context);
 	}
 
 	/**
 	 * @see EditText#EditText(Context, AttributeSet)
 	 */
-	public MultiPasteEditText(Context context, AttributeSet attrs) {
+	public NoPasteBreakEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
 	/**
 	 * @see EditText#EditText(Context, AttributeSet, int)
 	 */
-	public MultiPasteEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+	public NoPasteBreakEditText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 	}
 
@@ -69,33 +65,8 @@ public class MultiPasteEditText extends EditText {
 		if(clipboardManager.hasPrimaryClip() && clipboardManager.getPrimaryClipDescription().hasMimeType(
 				ClipDescription.MIMETYPE_TEXT_PLAIN)) {
 			CharSequence text = clipboardManager.getPrimaryClip().getItemAt(0).getText();
-			String[] results = text.toString().split("\\s");
-			MultiPasteEditText nextEditText = this;
-			for(String result : results) {
-				boolean matched = viewHolder.setResult(result, nextEditText, nextEditText.atIndex);
-				if(!matched) {
-					break;
-				}
-				nextEditText.setText(result);
-				nextEditText = nextEditText.getNextMultiPaste();
-				if(nextEditText == null) {
-					break;
-				}
-			}
+			String newString = text.toString().replace("\n", " ");
+			setText(newString);
 		}
-	}
-
-	// Getters and setters
-	public MultiPasteEditText getNextMultiPaste() {
-		return nextMultiPaste;
-	}
-	public void setNextMultiPaste(MultiPasteEditText nextMultiPaste) {
-		this.nextMultiPaste = nextMultiPaste;
-	}
-	public void setViewHolder(DamageResultsGridAdapter.ViewHolder viewHolder) {
-		this.viewHolder = viewHolder;
-	}
-	public void setAtIndex(int atIndex) {
-		this.atIndex = atIndex;
 	}
 }

@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import android.util.Log;
-
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
@@ -95,7 +93,6 @@ public class Profession {
 				}
 			}
 		}
-		Log.d("RMU", "Saving " + this.print());
 		return isValid;
 	}
 

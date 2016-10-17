@@ -39,6 +39,7 @@ public interface CriticalResultSchema {
     String COLUMN_KNOCK_BACK = "knockBack";
     String COLUMN_PRONE = "prone";
     String COLUMN_GRAPPLED = "grappled";
+    String COLUMN_DEATH = "death";
     String COLUMN_CRITICAL_TYPE_ID = "criticalTypeId";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
@@ -62,6 +63,7 @@ public interface CriticalResultSchema {
             + COLUMN_KNOCK_BACK + " INTEGER NOT NULL, "
             + COLUMN_PRONE + " INTEGER NOT NULL, "
             + COLUMN_GRAPPLED + " INTEGER NOT NULL, "
+			+ COLUMN_DEATH + " INTEGER, "
             + COLUMN_CRITICAL_TYPE_ID + " INTEGER NOT NULL, "
             + "FOREIGN KEY (" + COLUMN_BODY_PART_ID + ") REFERENCES " + BodyPartSchema.TABLE_NAME + "(" + BodyPartSchema.COLUMN_ID + "), "
             + "FOREIGN KEY (" + COLUMN_CRITICAL_TYPE_ID + ") REFERENCES " + CriticalTypeSchema.TABLE_NAME + "(" + CriticalTypeSchema.COLUMN_ID + ")"
@@ -73,5 +75,5 @@ public interface CriticalResultSchema {
     String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SEVERITY_CODE, COLUMN_RESULT_TEXT, COLUMN_MIN_ROLL,
             COLUMN_MAX_ROLL, COLUMN_BODY_PART_ID, COLUMN_HITS, COLUMN_BLEEDING, COLUMN_FATIGUE, COLUMN_BREAKAGE, COLUMN_INJURY,
             COLUMN_DAZED, COLUMN_STUNNED, COLUMN_NO_PARRY, COLUMN_STAGGERED, COLUMN_KNOCK_BACK, COLUMN_PRONE, COLUMN_GRAPPLED,
-            COLUMN_CRITICAL_TYPE_ID};
+            COLUMN_DEATH, COLUMN_CRITICAL_TYPE_ID};
 }

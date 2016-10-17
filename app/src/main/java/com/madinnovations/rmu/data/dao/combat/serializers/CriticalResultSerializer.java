@@ -48,10 +48,13 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 		out.name(COLUMN_DAZED).value(value.getDazed());
 		out.name(COLUMN_STUNNED).value(value.getStunned());
 		out.name(COLUMN_NO_PARRY).value(value.getNoParry());
-		out.name(COLUMN_STAGGERED).value(value.isStaggered());
+		out.name(COLUMN_STAGGERED).value(value.getStaggered());
 		out.name(COLUMN_KNOCK_BACK).value(value.getKnockBack());
-		out.name(COLUMN_PRONE).value(value.isProne());
+		out.name(COLUMN_PRONE).value(value.getStaggered());
 		out.name(COLUMN_GRAPPLED).value(value.getGrappled());
+		if(value.getDeath() != null) {
+			out.name(COLUMN_DEATH).value(value.getDeath());
+		}
 		out.name(COLUMN_BODY_PART_ID).value(value.getBodyPart().getId());
 		out.name(COLUMN_CRITICAL_TYPE_ID).value(value.getCriticalType().getId());
 		out.endObject();
@@ -104,16 +107,19 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 					criticalResult.setNoParry((short)in.nextInt());
 					break;
 				case COLUMN_STAGGERED:
-					criticalResult.setStaggered(in.nextBoolean());
+					criticalResult.setStaggered((short)in.nextInt());
 					break;
 				case COLUMN_KNOCK_BACK:
 					criticalResult.setKnockBack((short)in.nextInt());
 					break;
 				case COLUMN_PRONE:
-					criticalResult.setProne(in.nextBoolean());
+					criticalResult.setProne((short)in.nextInt());
 					break;
 				case COLUMN_GRAPPLED:
 					criticalResult.setGrappled((short)in.nextInt());
+					break;
+				case COLUMN_DEATH:
+					criticalResult.setDeath((short)in.nextInt());
 					break;
 				case COLUMN_BODY_PART_ID:
 					criticalResult.setBodyPart(new BodyPart(in.nextInt()));

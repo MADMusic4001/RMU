@@ -19,7 +19,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -251,7 +250,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 
 		do {
 			parentView = (View) startView.getParent();
-			Log.d("RMU", "parentView = " + parentView);
 		} while (parentView != null && !(parentView instanceof ViewGroup));
 
 		if(parentView != null && parentView instanceof ListView) {
@@ -593,7 +591,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			SkillCost skillCost = null;
 
 			if(skillCategoryCost.isAssignable()) {
-				Log.d("RMU", "position = " + position);
 				List<SkillCost> skillCosts = callbackImpl.getProfessionInstance().getAssignableSkillCosts().get(
 						skillCategoryCost.getSkillCategory());
 				if(skillCosts == null) {

@@ -258,6 +258,7 @@
   <string name="label_choose_talents">Choose Talents</string>
   <string name="label_combat_category">Combat Category</string>
   <string name="label_dazed">Dazed</string>
+  <string name="label_death">Death</string>
   <string name="label_fatigue">Fatigue</string>
   <string name="label_grapple">Grapple</string>
   <string name="label_hits">Hits</string>

@@ -386,7 +386,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	@Override
 	public void saveItem() {
 		if(currentInstance.isValid()) {
-			Log.d(LOG_TAG, "currentInstance = " + currentInstance);
 			final boolean wasNew = isNew;
 			isNew = false;
 			professionRxHandler.save(currentInstance)
