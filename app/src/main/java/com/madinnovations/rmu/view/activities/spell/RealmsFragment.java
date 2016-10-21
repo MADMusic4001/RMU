@@ -40,7 +40,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
@@ -62,8 +61,6 @@ import rx.schedulers.Schedulers;
 public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Realm> {
 	@Inject
 	protected RealmRxHandler             realmRxHandler;
-	@Inject
-	protected StatRxHandler              statRxHandler;
 	private   ArrayAdapter<Statistic>         statSpinnerAdapter;
 	private   TwoFieldListAdapter<Realm> listAdapter;
 	private   ListView                   listView;

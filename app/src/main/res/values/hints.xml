@@ -25,6 +25,16 @@
   <string name="hint_weight">Weight</string>
 
   <!-- Character -->
+  <string name="hint_agility">Agility</string>
+  <string name="hint_constitution">Constitution</string>
+  <string name="hint_empathy">Empathy</string>
+  <string name="hint_intuition">Intuition</string>
+  <string name="hint_memory">Memory</string>
+  <string name="hint_presence">Presence</string>
+  <string name="hint_quickness">Quickness</string>
+  <string name="hint_reasoning">Reasoning</string>
+  <string name="hint_self_discipline">Self Discipline</string>
+  <string name="hint_strength">Strength</string>
   <string name="hint_character_current_dps">Current DP</string>
   <string name="hint_character_current_lvl">Current Level</string>
   <string name="hint_character_description">Character Description</string>

@@ -29,23 +29,17 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.CultureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
-import java.util.Collection;
-
 import javax.inject.Inject;
-
-import rx.Subscriber;
 
 /**
  * Handles interactions with the UI for character creation.
@@ -60,8 +54,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	protected RaceRxHandler            raceRxHandler;
 	@Inject
 	protected RealmRxHandler           realmRxHandler;
-	@Inject
-	protected StatRxHandler            statRxHandler;
 	private   CharactersFragment       charactersFragment;
 	private   EditText                 firstNameEdit;
 	private   EditText                 lastNameEdit;
@@ -322,23 +314,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	private void initStatsRows(View layout) {
-		statRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Stat instances.", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> statCollection) {
-						for(Stat stat : statCollection) {
-							switch (stat.getAbbreviation()) {
-								case "Ag":
-							}
-						}
-					}
-				});
 		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
 		textView.setText(String.format(getString(R.string.stat_format_string), "", ""));
 

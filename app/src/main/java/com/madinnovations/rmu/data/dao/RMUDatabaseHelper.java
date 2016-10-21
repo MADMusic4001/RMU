@@ -52,7 +52,6 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
@@ -117,7 +116,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
 			sqLiteDatabase.execSQL(TalentCategorySchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(StatSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellSubTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellListTypeSchema.TABLE_CREATE);
@@ -275,7 +273,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(SkillCategorySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellListTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellSubTypeSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(StatSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentCategorySchema.TABLE_NAME, null, null);
 	}
 }

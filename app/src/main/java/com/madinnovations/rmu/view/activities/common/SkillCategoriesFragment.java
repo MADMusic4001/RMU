@@ -42,7 +42,6 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -65,8 +64,6 @@ import rx.schedulers.Schedulers;
 public class SkillCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<SkillCategory> {
 	@Inject
 	protected SkillCategoryRxHandler skillCategoryRxHandler;
-	@Inject
-	protected StatRxHandler statRxHandler;
 	private ArrayAdapter<Statistic> stat1SpinnerAdapter;
 	private ArrayAdapter<Statistic> stat2SpinnerAdapter;
 	private ArrayAdapter<Statistic> stat3SpinnerAdapter;

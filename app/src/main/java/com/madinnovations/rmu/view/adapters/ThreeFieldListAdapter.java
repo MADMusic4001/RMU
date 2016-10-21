@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.common.Stat;
 
 /**
- * Populates a ListView with {@link Stat} information
+ * Populates a ListView with three text views
  */
 public class ThreeFieldListAdapter<T> extends ArrayAdapter<T> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_3_field_row;
@@ -41,9 +41,12 @@ public class ThreeFieldListAdapter<T> extends ArrayAdapter<T> {
 	 * Creates a new StatListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
-	 * @param field1Weight  the width weight to be used for feild 1. If a value of 0 is given then the width will be set to WRAP_CONTENT
-	 * @param field2Weight  the width weight to be used for feild 2. If a value of 0 is given then the width will be set to WRAP_CONTENT
-	 * @param field3Weight  the width weight to be used for feild 3. If a value of 0 is given then the width will be set to WRAP_CONTENT
+	 * @param field1Weight  the width weight to be used for feild 1. If a value of 0 is given then the width will be set to
+	 *                      WRAP_CONTENT
+	 * @param field2Weight  the width weight to be used for feild 2. If a value of 0 is given then the width will be set to
+	 *                      WRAP_CONTENT
+	 * @param field3Weight  the width weight to be used for feild 3. If a value of 0 is given then the width will be set to
+	 *                      WRAP_CONTENT
 	 * @param getValues  An instance of the {@link GetValues} interface that will be used to get the text values for each field
 	 */
 	public ThreeFieldListAdapter(Context context, float field1Weight, float field2Weight, float field3Weight,
@@ -56,8 +59,9 @@ public class ThreeFieldListAdapter<T> extends ArrayAdapter<T> {
 		this.getValues = getValues;
 	}
 
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 

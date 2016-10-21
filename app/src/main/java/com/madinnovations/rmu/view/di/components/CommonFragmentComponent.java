@@ -19,7 +19,6 @@ import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillsFragment;
 import com.madinnovations.rmu.view.activities.common.SpecializationsFragment;
-import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
@@ -38,7 +37,6 @@ public interface CommonFragmentComponent {
 	void injectInto(SkillCategoriesFragment skillCategoriesFragment);
 	void injectInto(SkillsFragment skillsFragment);
 	void injectInto(SpecializationsFragment specializationsFragment);
-	void injectInto(StatsFragment statsFragment);
 	void injectInto(TalentCategoriesFragment talentCategoriesFragment);
 	void injectInto(TalentsFragment talentsFragment);
 }

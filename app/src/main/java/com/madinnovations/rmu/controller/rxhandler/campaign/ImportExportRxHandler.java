@@ -49,7 +49,6 @@ import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.common.serializers.SkillCategorySerializer;
@@ -94,7 +93,6 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
@@ -183,7 +181,6 @@ public class ImportExportRxHandler {
 	private SpellListTypeDao            spellListTypeDao;
 	private SpellSubTypeDao             spellSubTypeDao;
 	private SpellTypeDao                spellTypeDao;
-	private StatDao                     statDao;
 	private TalentDao                   talentDao;
 	private TalentSerializer            talentSerializer = new TalentSerializer();
 	private TalentCategoryDao           talentCategoryDao;
@@ -205,7 +202,7 @@ public class ImportExportRxHandler {
 						  RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
 						  SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
 						  SpellListTypeDao spellListTypeDao, SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao,
-						  StatDao statDao, TalentDao talentDao, TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao,
+						  TalentDao talentDao, TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao,
 						  RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
@@ -236,7 +233,6 @@ public class ImportExportRxHandler {
 		this.spellListTypeDao = spellListTypeDao;
 		this.spellSubTypeDao = spellSubTypeDao;
 		this.spellTypeDao = spellTypeDao;
-		this.statDao = statDao;
 		this.talentDao = talentDao;
 		this.talentCategoryDao = talentCategoryDao;
 		this.weaponTemplateDao = weaponTemplateDao;
@@ -305,17 +301,6 @@ public class ImportExportRxHandler {
 								int numTypesRead = 0;
 								while (jsonReader.hasNext()) {
 									switch (jsonReader.nextName()) {
-										case Stat.JSON_NAME:
-											List<Stat> stats = new ArrayList<>();
-											jsonReader.beginArray();
-											while (jsonReader.hasNext()) {
-												Stat stat = gson.fromJson(jsonReader, Stat.class);
-												stats.add(stat);
-											}
-											jsonReader.endArray();
-											statDao.save(stats, true);
-											stats = null;
-											break;
 										case Size.JSON_NAME:
 											List<Size> sizes = new ArrayList<>();
 											jsonReader.beginArray();
@@ -772,8 +757,6 @@ public class ImportExportRxHandler {
 							jsonWriter.beginObject()
 									.name(VERSION)
 									.value(RMUDatabaseHelper.DATABASE_VERSION)
-									.name(Stat.JSON_NAME)
-									.jsonValue(gson.toJson(statDao.getAll()))
 									.name(Size.JSON_NAME)
 									.jsonValue(gson.toJson(sizeDao.getAll()))
 									.name(SkillCategory.JSON_NAME)

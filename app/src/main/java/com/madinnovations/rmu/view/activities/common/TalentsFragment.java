@@ -45,7 +45,6 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
@@ -93,8 +92,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	SpecializationRxHandler              specializationRxHandler;
 	@Inject
 	SpellRxHandler                       spellRxHandler;
-	@Inject
-	StatRxHandler                        statRxHandler;
 	@Inject
 	TalentRxHandler                      talentRxHandler;
 	@Inject

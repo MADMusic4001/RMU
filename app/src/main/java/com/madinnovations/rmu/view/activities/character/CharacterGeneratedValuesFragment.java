@@ -25,7 +25,6 @@ import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -47,8 +46,6 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	private static final String LOG_TAG = "GeneratedValuesFrag";
 	@Inject
 	protected SkillRxHandler   skillRxHandler;
-	@Inject
-	protected StatRxHandler    statRxHandler;
 	@Inject
 	protected RealmRxHandler   realmRxHandler;
 	private Skill              bodyDevelopmentSkill = null;

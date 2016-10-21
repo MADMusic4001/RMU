@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.common.Stat;
 
 /**
- * Populates a ListView with {@link Stat} information
+ * Populates a ListView with 2 text views
  */
 public class TwoFieldListAdapter<T> extends ArrayAdapter<T> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_2_field_row;
@@ -52,8 +52,9 @@ public class TwoFieldListAdapter<T> extends ArrayAdapter<T> {
 		this.getValues = getValues;
 	}
 
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 

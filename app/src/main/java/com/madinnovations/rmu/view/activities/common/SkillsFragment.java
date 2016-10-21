@@ -40,7 +40,6 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -71,8 +70,6 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler      skillCategoryRxHandler;
-	@Inject
-	protected StatRxHandler               statRxHandler;
 	private   ArrayAdapter<SkillCategory> skillCategoryFilterSpinnerAdapter;
 	private   ArrayAdapter<SkillCategory> skillCategorySpinnerAdapter;
 	protected ArrayAdapter<Statistic>     stat1SpinnerAdapter;

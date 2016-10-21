@@ -42,7 +42,6 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxHandler;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -67,8 +66,6 @@ import rx.schedulers.Schedulers;
 public class CreatureArchetypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureArchetype> {
 	@Inject
 	protected CreatureArchetypeRxHandler             creatureArchetypeRxHandler;
-	@Inject
-	protected StatRxHandler                          statRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler                 skillCategoryRxHandler;
 	private   ArrayAdapter<Statistic>                stat1SpinnerAdapter;

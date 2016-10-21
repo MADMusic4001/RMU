@@ -42,11 +42,9 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -75,8 +73,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	protected RealmRxHandler      realmRxHandler;
 	@Inject
 	protected SizeRxHandler       sizeRxHandler;
-	@Inject
-	protected StatRxHandler                statRxHandler;
 	private   ArrayAdapter<Size>           sizeSpinnerAdapter;
 	private   TwoFieldListAdapter<Race>    listAdapter;
 	private   ListView                     listView;
@@ -620,50 +616,25 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	}
 
 	private void initStatMods(View layout) {
-		final LinearLayout statModLabels1 = (LinearLayout)layout.findViewById(R.id.stat_mod_labels_row1);
-		final LinearLayout statModLabels2 = (LinearLayout)layout.findViewById(R.id.stat_mod_labels_row2);
-		final LinearLayout statModEdits1 = (LinearLayout)layout.findViewById(R.id.stat_mod_edits_row1);
-		final LinearLayout statModEdits2 = (LinearLayout)layout.findViewById(R.id.stat_mod_edits_row2);
+		statEditViews = new HashMap<>(10);
 
-		statRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Stat instances", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> stats) {
-						statEditViews = new HashMap<>(stats.size());
-						int i = 0;
-						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT,
-								1f);
-						int numStats = stats.size();
-						for(Statistic stat : Statistic.values()) {
-							if(!Statistic.NON_REALM.equals(stat)) {
-								if (numStats <= 6 || i < numStats / 2) {
-									initStatViews(stat, params, statModLabels1, statModEdits1);
-								}
-								else {
-									initStatViews(stat, params, statModLabels2, statModEdits2);
-								}
-								i++;
-							}
-						}
-					}
-				});
+		initStatViews(layout, R.id.agility_label, R.id.agility_edit, Statistic.AGILITY);
+		initStatViews(layout, R.id.constitution_label, R.id.constitution_edit, Statistic.CONSTITUTION);
+		initStatViews(layout, R.id.empathy_label, R.id.empathy_edit, Statistic.EMPATHY);
+		initStatViews(layout, R.id.intuition_label, R.id.intuition_edit, Statistic.INTUITION);
+		initStatViews(layout, R.id.memory_label, R.id.memory_edit, Statistic.MEMORY);
+		initStatViews(layout, R.id.presence_label, R.id.presence_edit, Statistic.PRESENCE);
+		initStatViews(layout, R.id.quickness_label, R.id.quickness_edit, Statistic.QUICKNESS);
+		initStatViews(layout, R.id.reasoning_label, R.id.reasoning_edit, Statistic.REASONING);
+		initStatViews(layout, R.id.self_discipline_label, R.id.self_discipline_edit, Statistic.SELF_DISCIPLINE);
+		initStatViews(layout, R.id.strength_label, R.id.strength_edit, Statistic.STRENGTH);
 	}
 
-	private void initStatViews(final Statistic stat, LinearLayout.LayoutParams params, LinearLayout labelsRow, LinearLayout
-			editsRow) {
-		TextView textView = new TextView(getActivity());
-		textView.setLayoutParams(params);
+	private void initStatViews(View layout, @IdRes int labelId, @IdRes int editID, final Statistic stat) {
+		TextView textView = (TextView)layout.findViewById(labelId);
 		textView.setText(stat.getName());
 
-		final EditText editText = new EditText(getActivity());
-		editText.setHint(getString(R.string.hint_race_stat_mod));
-		editText.setLayoutParams(params);
+		final EditText editText = (EditText)layout.findViewById(editID);
 		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -682,8 +653,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			}
 		});
 		statEditViews.put(stat, editText);
-		labelsRow.addView(textView);
-		editsRow.addView(editText);
 	}
 
 	private void initRRMods(View layout) {

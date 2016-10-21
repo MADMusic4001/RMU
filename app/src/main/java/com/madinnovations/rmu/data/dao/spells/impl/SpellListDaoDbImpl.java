@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
@@ -45,12 +44,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 	 * Creates a new instance of SpellListDaoImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
-	 * @param realmDao  a {@link StatDao} instance
+	 * @param realmDao  a {@link RealmDao} instance
 	 * @param spellListTypeDao  a {@link SpellListTypeDao} instance
 	 */
 	@Inject
-	public SpellListDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull RealmDao realmDao, @NonNull SpellListTypeDao spellListTypeDao,
-							  @NonNull ProfessionDao professionDao) {
+	public SpellListDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull RealmDao realmDao,
+							  @NonNull SpellListTypeDao spellListTypeDao, @NonNull ProfessionDao professionDao) {
 		super(helper);
 		this.realmDao = realmDao;
 		this.spellListTypeDao = spellListTypeDao;

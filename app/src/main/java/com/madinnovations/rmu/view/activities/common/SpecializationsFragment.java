@@ -42,7 +42,6 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -73,8 +72,6 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 	protected SpecializationRxHandler             specializationRxHandler;
 	@Inject
 	protected SkillRxHandler                      skillRxHandler;
-	@Inject
-	protected StatRxHandler                       statRxHandler;
 	private   ArrayAdapter<Skill>                 skillFilterSpinnerAdapter;
 	private   ArrayAdapter<Skill>                 skillSpinnerAdapter;
 	private   ArrayAdapter<Statistic>             stat1SpinnerAdapter;

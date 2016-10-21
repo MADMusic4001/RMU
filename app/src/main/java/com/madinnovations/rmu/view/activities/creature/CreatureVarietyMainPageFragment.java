@@ -38,7 +38,6 @@ import android.widget.Spinner;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
@@ -87,8 +86,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	protected RealmRxHandler             realmRxHandler;
 	@Inject
 	protected SizeRxHandler              sizeRxHandler;
-	@Inject
-	protected StatRxHandler              statRxHandler;
 	@Inject
 	protected TalentRxHandler            talentRxHandler;
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;

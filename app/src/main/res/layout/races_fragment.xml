@@ -255,6 +255,31 @@
           android:layout_alignParentLeft="true"
           android:layout_alignParentStart="true"
           android:layout_below="@id/stat_mods">
+        <TextView
+            android:id="@+id/agility_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/constitution_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/empathy_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/intuition_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/memory_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
       </LinearLayout>
 
       <LinearLayout
@@ -265,6 +290,46 @@
           android:layout_alignParentLeft="true"
           android:layout_alignParentStart="true"
           android:layout_below="@id/stat_mod_labels_row1">
+        <EditText
+            android:id="@+id/agility_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_agility"/>
+        <EditText
+            android:id="@+id/constitution_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_constitution"/>
+        <EditText
+            android:id="@+id/empathy_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_empathy"/>
+        <EditText
+            android:id="@+id/intuition_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_intuition"/>
+        <EditText
+            android:id="@+id/memory_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_memory"/>
       </LinearLayout>
 
       <LinearLayout
@@ -275,6 +340,31 @@
           android:layout_alignParentLeft="true"
           android:layout_alignParentStart="true"
           android:layout_below="@id/stat_mod_edits_row1">
+        <TextView
+            android:id="@+id/presence_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/quickness_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/reasoning_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/self_discipline_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/strength_label"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
       </LinearLayout>
 
       <LinearLayout
@@ -285,6 +375,46 @@
           android:layout_alignParentLeft="true"
           android:layout_alignParentStart="true"
           android:layout_below="@id/stat_mod_labels_row2">
+        <EditText
+            android:id="@+id/presence_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_presence"/>
+        <EditText
+            android:id="@+id/quickness_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_quickness"/>
+        <EditText
+            android:id="@+id/reasoning_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_reasoning"/>
+        <EditText
+            android:id="@+id/self_discipline_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_self_discipline"/>
+        <EditText
+            android:id="@+id/strength_edit"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:hint="@string/hint_strength"/>
       </LinearLayout>
 
       <LinearLayout

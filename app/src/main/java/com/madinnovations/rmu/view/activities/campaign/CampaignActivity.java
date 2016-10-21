@@ -45,7 +45,6 @@ import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillsFragment;
 import com.madinnovations.rmu.view.activities.common.SpecializationsFragment;
-import com.madinnovations.rmu.view.activities.common.StatsFragment;
 import com.madinnovations.rmu.view.activities.common.TalentCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.TalentsFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
@@ -108,7 +107,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private SpellsFragment             spellsFragment;
 	private SpellSubTypesFragment      spellSubTypesFragment;
 	private SpellTypesFragment         spellTypesFragment;
-	private StatsFragment              statsFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
 
@@ -424,13 +422,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			spellTypesFragment = new SpellTypesFragment();
 		}
 		replaceDetailFragment(spellTypesFragment);
-	}
-
-	public void showStats() {
-		if(statsFragment == null) {
-			statsFragment = new StatsFragment();
-		}
-		replaceDetailFragment(statsFragment);
 	}
 
 	public void showTalentCategories() {

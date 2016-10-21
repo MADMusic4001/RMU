@@ -20,14 +20,12 @@ import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.common.impl.SizeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SkillCategoryDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SkillDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SpecializationDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.impl.StatDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.TalentCategoryDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.TalentDaoDbImpl;
 
@@ -59,11 +57,6 @@ public class CommonDaoSqlModule {
 	@Provides @Singleton
 	SpecializationDao provideSpecializationDao(RMUDatabaseHelper helper, SkillDao skillDao) {
 		return new SpecializationDaoDbImpl(helper, skillDao);
-	}
-
-	@Provides @Singleton
-	StatDao provideStatDao(RMUDatabaseHelper helper) {
-		return new StatDaoDbImpl(helper);
 	}
 
 	@Provides @Singleton
