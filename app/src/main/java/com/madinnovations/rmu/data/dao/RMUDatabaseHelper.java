@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterItemsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
@@ -178,6 +179,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterSkillRanksSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterSkillCostsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterItemsSchema.TABLE_CREATE);
             sqLiteDatabase.setTransactionSuccessful();
         }
         finally {
@@ -213,6 +215,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	 */
     public void clearDatabase() {
 		SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+		sqLiteDatabase.delete(CharacterItemsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSkillCostsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSkillRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterStatsSchema.TABLE_NAME, null, null);

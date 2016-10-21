@@ -24,14 +24,14 @@ import android.support.annotation.NonNull;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,18 +43,17 @@ import javax.inject.Singleton;
 @Singleton
 public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, SkillSchema {
     private SkillCategoryDao skillCategoryDao;
-	private StatDao statDao;
 
     /**
      * Creates a new instance of SkillDaoDbImpl
      *
+	 * @param skillCategoryDao  a {@link SkillCategoryDao} instance
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public SkillDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao, StatDao statDao) {
+    public SkillDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao) {
         super(helper);
         this.skillCategoryDao = skillCategoryDao;
-		this.statDao = statDao;
     }
 
     @Override
@@ -155,9 +154,9 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
         db.delete(SkillStatsSchema.TABLE_NAME, selection, selectionArgs);
 
 		if(instance.getStats() != null) {
-			for (Stat stat : instance.getStats()) {
+			for (Statistic stat : instance.getStats()) {
 				result &= (db.insertWithOnConflict(SkillStatsSchema.TABLE_NAME, null,
-												   getSkillStat(instance.getId(), stat.getId()),
+												   getSkillStatContentValues(instance.getId(), stat),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
@@ -265,6 +264,40 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 		return list;
 	}
 
+	@Override
+	public Collection<Skill> getCharacterPurchasableSkills() {
+		final String selectionArgs[] = {"0"};
+		final String selection = COLUMN_REQUIRES_SPECIALIZATION + " = ?";
+		List<Skill> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Skill instance = cursorToEntity(cursor);
+
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
 	protected Skill cursorToEntity(@NonNull Cursor cursor, SkillCategory skillCategory) {
 		Skill instance = new Skill();
 
@@ -286,29 +319,25 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 		return instance;
 	}
 
-	private ContentValues getSkillStat(int skillId, int statId) {
+	private ContentValues getSkillStatContentValues(int skillId, Statistic stat) {
         ContentValues values = new ContentValues(3);
 
         values.put(SkillStatsSchema.COLUMN_SKILL_ID, skillId);
-        values.put(SkillStatsSchema.COLUMN_STAT_ID, statId);
+        values.put(SkillStatsSchema.COLUMN_STAT_NAME, stat.name());
 
         return values;
     }
 
-	private List<Stat> getStats(int skillId) {
+	private List<Statistic> getStats(int skillId) {
 		final String selectionArgs[] = { String.valueOf(skillId) };
 		final String selection = SkillStatsSchema.COLUMN_SKILL_ID + " = ?";
 
 		Cursor cursor = super.query(SkillStatsSchema.TABLE_NAME, SkillStatsSchema.COLUMNS, selection,
-									selectionArgs, SkillStatsSchema.COLUMN_STAT_ID);
-		List<Stat> list = new ArrayList<>(cursor.getCount());
+									selectionArgs, SkillStatsSchema.COLUMN_STAT_NAME);
+		List<Statistic> list = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int id = cursor.getInt(cursor.getColumnIndexOrThrow(SkillStatsSchema.COLUMN_STAT_ID));
-			Stat instance = statDao.getById(id);
-			if(instance != null) {
-				list.add(instance);
-			}
+			list.add(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(SkillStatsSchema.COLUMN_STAT_NAME))));
 			cursor.moveToNext();
 		}
 		cursor.close();

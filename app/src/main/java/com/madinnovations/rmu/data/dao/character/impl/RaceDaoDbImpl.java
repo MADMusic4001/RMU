@@ -28,11 +28,10 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -50,20 +49,21 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
     private TalentDao talentDao;
 	private RealmDao realmDao;
 	private SizeDao sizeDao;
-	private StatDao statDao;
 
     /**
      * Creates a new instance of RaceDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
+	 * @param talentDao  a {@link TalentDao} instance
+	 * @param realmDao  a {@link RealmDao} instance
+	 * @param sizeDao  a {@link SizeDao} instance
      */
     @Inject
-    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao, StatDao statDao) {
+    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao) {
         super(helper);
         this.talentDao = talentDao;
  		this.realmDao = realmDao;
 		this.sizeDao = sizeDao;
-		this.statDao = statDao;
     }
 
     @Override
@@ -194,14 +194,14 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return values;
 	}
 
-	private boolean saveSatMods(SQLiteDatabase db, int raceId, Map<Stat, Short> statMods) {
+	private boolean saveSatMods(SQLiteDatabase db, int raceId, Map<Statistic, Short> statMods) {
 		boolean result = true;
 		final String selectionArgs[] = {String.valueOf(raceId) };
 		final String selection = RaceStatModSchema.COLUMN_RACE_ID + " = ?";
 
 		db.delete(RaceStatModSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Stat, Short> entry : statMods.entrySet()) {
+		for(Map.Entry<Statistic, Short> entry : statMods.entrySet()) {
 			result &= (db.insertWithOnConflict(RaceStatModSchema.TABLE_NAME, null, getRaceStatModValues(raceId, entry),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
@@ -243,20 +243,18 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
         return map;
     }
 
-	private Map<Stat, Short> getStatModifiers(int id) {
+	private Map<Statistic, Short> getStatModifiers(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = RaceStatModSchema.COLUMN_RACE_ID + " = ?";
 
 		Cursor cursor = super.query(RaceStatModSchema.TABLE_NAME, RaceStatModSchema.COLUMNS, selection,
-									selectionArgs, RaceStatModSchema.COLUMN_STAT_ID);
-		Map<Stat, Short> map = new HashMap<>(cursor.getCount());
+									selectionArgs, RaceStatModSchema.COLUMN_STAT_NAME);
+		Map<Statistic, Short> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceStatModSchema.COLUMN_STAT_ID));
-			Stat instance = statDao.getById(mappedId);
-			if(instance != null) {
-				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceStatModSchema.COLUMN_MODIFIER)));
-			}
+			Statistic statistic = Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
+					RaceStatModSchema.COLUMN_STAT_NAME)));
+			map.put(statistic, cursor.getShort(cursor.getColumnIndexOrThrow(RaceStatModSchema.COLUMN_MODIFIER)));
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -285,10 +283,10 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return map;
 	}
 
-	private ContentValues getRaceStatModValues(int raceId, Map.Entry<Stat, Short> statModEntry) {
+	private ContentValues getRaceStatModValues(int raceId, Map.Entry<Statistic, Short> statModEntry) {
 		ContentValues values = new ContentValues();
 		values.put(RaceStatModSchema.COLUMN_RACE_ID, raceId);
-		values.put(RaceStatModSchema.COLUMN_STAT_ID, statModEntry.getKey().getId());
+		values.put(RaceStatModSchema.COLUMN_STAT_NAME, statModEntry.getKey().name());
 		values.put(RaceStatModSchema.COLUMN_MODIFIER, statModEntry.getValue());
 		return values;
 	}

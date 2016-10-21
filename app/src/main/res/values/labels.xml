@@ -257,6 +257,7 @@
   <string name="label_choose_skills">Choose Skills</string>
   <string name="label_choose_talents">Choose Talents</string>
   <string name="label_combat_category">Combat Category</string>
+  <string name="label_creature_only">Creature Only</string>
   <string name="label_dazed">Dazed</string>
   <string name="label_death">Death</string>
   <string name="label_fatigue">Fatigue</string>
@@ -410,6 +411,7 @@
   <string name="export_status">Export %1$d%% complete.</string>
   <string name="import_status">Import %1$d%% complete.</string>
   <string name="assignable_skill_name">Skill %1$d</string>
+  <string name="stat_format_string">%1$s (%2$s)</string>
 
   <!-- ViewPager title strings -->
   <string name="title_creature_variety_main_page">General Attributes</string>

@@ -28,7 +28,8 @@ public class Specialization {
 	private String description = null;
 	private Skill skill = null;
 	private boolean useSkillStats = true;
-	private List<Stat> stats = new ArrayList<>();
+	private boolean creatureOnly = false;
+	private List<Statistic> stats = new ArrayList<>();
 
 	/**
 	 * Creates a new Specialization instance
@@ -101,10 +102,16 @@ public class Specialization {
 	public void setUseSkillStats(boolean useSkillStats) {
 		this.useSkillStats = useSkillStats;
 	}
-	public List<Stat> getStats() {
+	public boolean isCreatureOnly() {
+		return creatureOnly;
+	}
+	public void setCreatureOnly(boolean creatureOnly) {
+		this.creatureOnly = creatureOnly;
+	}
+	public List<Statistic> getStats() {
 		return stats;
 	}
-	public void setStats(List<Stat> stats) {
+	public void setStats(List<Statistic> stats) {
 		this.stats = stats;
 	}
 }

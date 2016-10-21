@@ -25,16 +25,16 @@ import java.util.List;
  */
 public class Skill implements Comparable {
 	public static final String JSON_NAME = "Skills";
-	private int           id                     = -1;
-	private String        name                   = null;
-	private String        description            = null;
-	private SkillCategory category               = null;
-	private boolean       requiresSpecialization = false;
-	private boolean       useCategoryStats       = true;
-	private boolean       requiresConcentration  = false;
-	private boolean       lore                   = false;  // Used to allow skill ranks > 2x level with Intense Training
+	private int             id                     = -1;
+	private String          name                   = null;
+	private String          description            = null;
+	private SkillCategory   category               = null;
+	private boolean         requiresSpecialization = false;
+	private boolean         useCategoryStats       = true;
+	private boolean         requiresConcentration  = false;
+	private boolean         lore                   = false;  // Used to allow skill ranks > 2x level with Intense Training
 	                                                       // optional rule
-	private List<Stat>    stats                  = new ArrayList<>();
+	private List<Statistic> stats                  = new ArrayList<>();
 
 	/**
 	 * Creates a new empty Skill instance.
@@ -165,10 +165,10 @@ public class Skill implements Comparable {
 	public void setLore(boolean lore) {
 		this.lore = lore;
 	}
-	public List<Stat> getStats() {
+	public List<Statistic> getStats() {
 		return stats;
 	}
-	public void setStats(List<Stat> stats) {
+	public void setStats(List<Statistic> stats) {
 		this.stats = stats;
 	}
 }

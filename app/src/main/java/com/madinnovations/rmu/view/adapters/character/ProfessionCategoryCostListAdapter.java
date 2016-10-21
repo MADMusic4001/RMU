@@ -305,29 +305,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		}
 
 		private void initInitialCostEdit() {
-			initialCostEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if(editable.length() > 0) {
-						short newValue = Short.valueOf(editable.toString());
-						int otherValue;
-						if(additionalCostEdit.length() > 0) {
-							otherValue = Integer.valueOf(additionalCostEdit.getText().toString());
-							if(otherValue < newValue) {
-								additionalCostEdit.setError(context.getString(R.string.validation_initial_cost_gt_additional_cost));
-							}
-							else {
-								initialCostEdit.setError(null);
-								additionalCostEdit.setError(null);
-							}
-						}
-					}
-				}
-			});
 			initialCostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View view, boolean hasFocus) {
@@ -343,29 +320,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		}
 
 		private void initAdditionalCostEdit() {
-			additionalCostEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if(editable.length() > 0) {
-						Short newValue = Short.valueOf(editable.toString());
-						Short otherValue;
-						if(initialCostEdit.length() > 0) {
-							otherValue = Short.valueOf(initialCostEdit.getText().toString());
-							if(newValue < otherValue) {
-								additionalCostEdit.setError(context.getString(R.string.validation_initial_cost_gt_additional_cost));
-							}
-							else {
-								additionalCostEdit.setError(null);
-								initialCostEdit.setError(null);
-							}
-						}
-					}
-				}
-			});
 			additionalCostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View view, boolean hasFocus) {

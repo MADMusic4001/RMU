@@ -22,7 +22,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import java.io.IOException;
 
@@ -37,11 +37,12 @@ public class SpecializationSerializer extends TypeAdapter<Specialization> implem
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_SKILL_STATS).value(value.isUseSkillStats());
+		out.name(COLUMN_CREATURE_ONLY).value(value.isCreatureOnly());
 		out.name(COLUMN_SKILL_ID).value(value.getSkill().getId());
 
 		out.name(SpecializationStatsSchema.TABLE_NAME).beginArray();
-		for(Stat stat : value.getStats()) {
-			out.value(stat.getId());
+		for(Statistic stat : value.getStats()) {
+			out.value(stat.name());
 		}
 		out.endArray();
 
@@ -66,13 +67,16 @@ public class SpecializationSerializer extends TypeAdapter<Specialization> implem
 				case COLUMN_SKILL_STATS:
 					specialization.setUseSkillStats(in.nextBoolean());
 					break;
+				case COLUMN_CREATURE_ONLY:
+					specialization.setCreatureOnly(in.nextBoolean());
+					break;
 				case COLUMN_SKILL_ID:
 					specialization.setSkill(new Skill(in.nextInt()));
 					break;
 				case SpecializationStatsSchema.TABLE_NAME:
 					in.beginArray();
 					while (in.hasNext()) {
-						specialization.getStats().add(new Stat(in.nextInt()));
+						specialization.getStats().add(Statistic.valueOf(in.nextString()));
 					}
 					in.endArray();
 					break;

@@ -28,7 +28,7 @@ import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
@@ -49,7 +49,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_TYPICAL_LEVEL).value(value.getTypicalLevel());
-		out.name(COLUMN_LEVEL_SPREAD).value(value.getLevelSpread());
+		out.name(COLUMN_LEVEL_SPREAD).value(String.valueOf(value.getLevelSpread()));
 		out.name(COLUMN_HEIGHT).value(value.getHeight());
 		out.name(COLUMN_LENGTH).value(value.getLength());
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
@@ -77,9 +77,9 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		if (value.getRacialStatBonuses() != null && !value.getRacialStatBonuses().isEmpty()) {
 			out.name(VarietyStatsSchema.TABLE_NAME);
 			out.beginArray();
-			for (Map.Entry<Stat, Short> entry : value.getRacialStatBonuses().entrySet()) {
+			for (Map.Entry<Statistic, Short> entry : value.getRacialStatBonuses().entrySet()) {
 				out.beginObject();
-				out.name(VarietyStatsSchema.COLUMN_STAT_ID).value(entry.getKey().getId());
+				out.name(VarietyStatsSchema.COLUMN_STAT_NAME).value(entry.getKey().name());
 				out.name(VarietyStatsSchema.COLUMN_BONUS).value(entry.getValue());
 				out.endObject();
 			}
@@ -243,13 +243,14 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	private void readRacialStatBonuses(JsonReader in, CreatureVariety creatureVariety) throws IOException {
 		in.beginArray();
 		while(in.hasNext()) {
-			Stat newStat = null;
+			Statistic newStat = null;
 			short newBonus = 0;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case VarietyStatsSchema.COLUMN_STAT_ID:
-						newStat = new Stat(in.nextInt());
+					case VarietyStatsSchema.COLUMN_STAT_NAME:
+					case "statId":
+						newStat = Statistic.valueOf(in.nextString());
 						break;
 					case VarietyStatsSchema.COLUMN_BONUS:
 						newBonus = (short) in.nextInt();

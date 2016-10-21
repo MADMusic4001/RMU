@@ -94,9 +94,11 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 										  R.string.validation_attack_code_required);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_attack_name_required);
 		damageTableSpinner = new SpinnerUtils<>();
-		damageTableSpinner.initSpinner(layout, getActivity(), damageTableRxHandler.getAll(), this, R.id.damage_table_spinner, null);
+		damageTableSpinner.initSpinner(layout, getActivity(), damageTableRxHandler.getAll(), this, R.id.damage_table_spinner,
+									   null);
 		specializationSpinner = new SpinnerUtils<>();
-		specializationSpinner.initSpinner(layout, getActivity(), specializationRxHandler.getAll(), this, R.id.specialization_spinner, noSpecialization);
+		specializationSpinner.initSpinner(layout, getActivity(), specializationRxHandler.getAll(), this,
+										  R.id.attack_specialization_spinner, noSpecialization);
 		initListView(layout);
 
 		setHasOptionsMenu(true);

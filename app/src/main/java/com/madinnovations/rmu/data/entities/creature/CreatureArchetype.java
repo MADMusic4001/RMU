@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -28,19 +28,19 @@ import java.util.List;
  * Class containing Creature Archetype attributes.
  */
 public class CreatureArchetype {
-	public static final String JSON_NAME = "CreatureArchetypes";
-	private int                 id              = -1;
-	private String              name            = null;
-	private String              description     = null;
-	private boolean             realmStat1      = false;
-	private Stat                stat1           = null;
-	private boolean             realmStat2      = false;
-	private Stat                stat2           = null;
-	private List<SkillCategory> primarySkills   = new ArrayList<>();
-	private List<SkillCategory> secondarySkills = new ArrayList<>();
-	private List<SkillCategory> tertiarySkills  = new ArrayList<>();
-	private String              spells          = null;
-	private String              roles           = null;
+	public static final String              JSON_NAME       = "CreatureArchetypes";
+	private             int                 id              = -1;
+	private             String              name            = null;
+	private             String              description     = null;
+	private             boolean             realmStat1      = false;
+	private             Statistic           stat1           = null;
+	private             boolean             realmStat2      = false;
+	private             Statistic           stat2           = null;
+	private             List<SkillCategory> primarySkills   = new ArrayList<>();
+	private             List<SkillCategory> secondarySkills = new ArrayList<>();
+	private             List<SkillCategory> tertiarySkills  = new ArrayList<>();
+	private             String              spells          = null;
+	private             String              roles           = null;
 
 	/**
 	 * Checks the validity of the CreatureArchetype instance.
@@ -129,10 +129,10 @@ public class CreatureArchetype {
 	public void setRealmStat1(boolean realmStat1) {
 		this.realmStat1 = realmStat1;
 	}
-	public Stat getStat1() {
+	public Statistic getStat1() {
 		return stat1;
 	}
-	public void setStat1(Stat stat1) {
+	public void setStat1(Statistic stat1) {
 		this.stat1 = stat1;
 	}
 	public boolean isRealmStat2() {
@@ -141,10 +141,10 @@ public class CreatureArchetype {
 	public void setRealmStat2(boolean realmStat2) {
 		this.realmStat2 = realmStat2;
 	}
-	public Stat getStat2() {
+	public Statistic getStat2() {
 		return stat2;
 	}
-	public void setStat2(Stat stat2) {
+	public void setStat2(Statistic stat2) {
 		this.stat2 = stat2;
 	}
 	public List<SkillCategory> getPrimarySkills() {

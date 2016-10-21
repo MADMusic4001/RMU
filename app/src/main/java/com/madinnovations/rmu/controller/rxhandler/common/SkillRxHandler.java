@@ -190,10 +190,11 @@ public class SkillRxHandler {
 	}
 
 	/**
-	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that require
-	 * specialization.
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that
+	 * require specialization.
 	 *
-	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization instances.
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
+	 * instances.
 	 */
 	public Observable<Collection<Skill>> getSpecializationSkills() {
 		return Observable.create(
@@ -239,9 +240,10 @@ public class SkillRxHandler {
 	}
 
 	/**
-	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that reference
-	 * the given SkillCategory.
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that
+	 * reference the given SkillCategory.
 	 *
+	 * @param filter  a SkillCategory instance to use as to filter the Skill instances returned by the query
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill instances.
 	 */
 	public Observable<Collection<Skill>> getSkillsForCategory(final SkillCategory filter) {
@@ -251,6 +253,30 @@ public class SkillRxHandler {
 					public void call(Subscriber<? super Collection<Skill>> subscriber) {
 						try {
 							subscriber.onNext(dao.getSkillsForCategory(filter));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that
+	 * can be purchased by player characters.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill instances.
+	 */
+	public Observable<Collection<Skill>> getCharacterPurchasableSkills() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Skill>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Skill>> subscriber) {
+						try {
+							subscriber.onNext(dao.getCharacterPurchasableSkills());
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

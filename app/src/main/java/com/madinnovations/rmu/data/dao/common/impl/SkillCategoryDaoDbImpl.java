@@ -25,11 +25,10 @@ import android.util.LruCache;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,6 @@ import javax.inject.Singleton;
 @Singleton
 public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> implements SkillCategoryDao, SkillCategorySchema {
     private LruCache<Integer, SkillCategory> skillCategories = new LruCache<>(CacheConfig.SKILL_CATEGORY_CACHE_SIZE);
-    private StatDao statDao;
 
     /**
      * Creates a new instance of SkillCategoryDaoDbImpl
@@ -51,9 +49,8 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public SkillCategoryDaoDbImpl(SQLiteOpenHelper helper, StatDao statDao) {
+    public SkillCategoryDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-        this.statDao = statDao;
     }
 
     @Override
@@ -173,9 +170,9 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
         db.delete(SkillCategoryStatsSchema.TABLE_NAME, selection, selectionArgs);
 
         if(instance.getStats() != null) {
-            for (Stat stat : instance.getStats()) {
+            for (Statistic stat : instance.getStats()) {
                 result &= (db.insertWithOnConflict(SkillCategoryStatsSchema.TABLE_NAME, null,
-												   getSkillCategoryStat(instance.getId(), stat.getId()),
+												   getSkillCategoryStat(instance.getId(), stat),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
             }
         }
@@ -190,29 +187,25 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
         return db.delete(SkillCategoryStatsSchema.TABLE_NAME, selection, selectionArgs) >= 0;
     }
 
-    private ContentValues getSkillCategoryStat(int skillCategoryId, int statId) {
+    private ContentValues getSkillCategoryStat(int skillCategoryId, Statistic stat) {
         ContentValues values = new ContentValues(2);
 
         values.put(SkillCategoryStatsSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
-        values.put(SkillCategoryStatsSchema.COLUMN_STAT_ID, statId);
+        values.put(SkillCategoryStatsSchema.COLUMN_STAT_NAME, stat.name());
 
         return values;
     }
 
-    private List<Stat> getStats(int skillCategoryId) {
+    private List<Statistic> getStats(int skillCategoryId) {
         final String selectionArgs[] = { String.valueOf(skillCategoryId) };
         final String selection = SkillCategoryStatsSchema.COLUMN_SKILL_CATEGORY_ID + " = ?";
 
         Cursor cursor = super.query(SkillCategoryStatsSchema.TABLE_NAME, SkillCategoryStatsSchema.COLUMNS, selection,
-                selectionArgs, SkillCategoryStatsSchema.COLUMN_STAT_ID);
-        List<Stat> list = new ArrayList<>(cursor.getCount());
+                selectionArgs, SkillCategoryStatsSchema.COLUMN_STAT_NAME);
+        List<Statistic> list = new ArrayList<>(cursor.getCount());
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_ID));
-            Stat instance = statDao.getById(id);
-            if(instance != null) {
-                list.add(instance);
-            }
+			list.add(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_NAME))));
             cursor.moveToNext();
         }
         cursor.close();

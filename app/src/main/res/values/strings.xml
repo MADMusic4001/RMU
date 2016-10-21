@@ -32,4 +32,8 @@
   <string name="toast_db_export_failed">Database export failed.</string>
   <string name="toast_db_imported">Database successfully imported.</string>
   <string name="toast_db_import_failed">Database import failed.</string>
+
+  <!-- ImageButton content descriptions -->
+  <string name="decrement">Decrement</string>
+  <string name="increment">Increment</string>
 </resources>

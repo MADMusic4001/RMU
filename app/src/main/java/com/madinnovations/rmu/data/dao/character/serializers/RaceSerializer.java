@@ -24,7 +24,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -61,9 +61,9 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.endArray();
 
 		out.name(RaceStatModSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Stat, Short> entry : value.getStatModifiers().entrySet()) {
+		for(Map.Entry<Statistic, Short> entry : value.getStatModifiers().entrySet()) {
 			out.beginObject();
-			out.name(RaceStatModSchema.COLUMN_STAT_ID).value(entry.getKey().getId());
+			out.name(RaceStatModSchema.COLUMN_STAT_NAME).value(entry.getKey().name());
 			out.name(RaceStatModSchema.COLUMN_MODIFIER).value(entry.getValue());
 			out.endObject();
 		}
@@ -168,13 +168,14 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 	private void readRaceStatMods(JsonReader in, Race race) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
-			Stat newStat = null;
+			Statistic newStat = null;
 			Short mods = null;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case RaceStatModSchema.COLUMN_STAT_ID:
-						newStat = new Stat(in.nextInt());
+					case RaceStatModSchema.COLUMN_STAT_NAME:
+					case "statId":
+						newStat = Statistic.valueOf(in.nextString());
 						break;
 					case RaceStatModSchema.COLUMN_MODIFIER:
 						mods = (short)in.nextInt();

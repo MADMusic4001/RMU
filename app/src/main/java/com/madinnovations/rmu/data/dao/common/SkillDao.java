@@ -109,4 +109,11 @@ public interface SkillDao {
 	 * @return  a List containing all Skill objects that reference the given SkillCategory currently in persistent storage.
 	 */
 	public List<Skill> getSkillsForCategory(SkillCategory filter);
+
+	/**
+	 * Retrieves all Skill objects that can be purchased by a player character.
+	 *
+	 * @return  a Collection of Skill instances.
+	 */
+	public Collection<Skill> getCharacterPurchasableSkills();
 }

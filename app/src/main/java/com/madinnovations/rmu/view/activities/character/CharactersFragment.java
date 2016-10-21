@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -58,14 +59,25 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	@Inject
 	protected CharacterRxHandler               characterRxHandler;
 	private   ThreeFieldListAdapter<Character> listAdapter;
-	private CharacterMainPageFragment          mainPageFragment = null;
-	private CharacterBackgroundPageFragment    backgroundPageFragment = null;
-	private CharacterSkillsPageFragment        skillsPageFragment = null;
-	private CharacterGeneratedValuesFragment   generatedValuesFragment = null;
-	private ListView                           listView;
-	CharacterFragmentPagerAdapter              pagerAdapter = null;
-	private Character currentInstance = new Character();
-	private boolean   isNew           = true;
+	private   ListView                         listView;
+	private   CharacterFragmentPagerAdapter    pagerAdapter = null;
+	private   Character                        currentInstance = new Character();
+	private   boolean                          isNew = true;
+
+	// Getter
+	public Character getCurrentInstance() {
+		return this.currentInstance;
+	}
+
+	/**
+	 * Propagates a change made to the profession on the main page to the skills page.
+	 */
+	public void changeProfession() {
+		CharacterSkillsPageFragment skillsPageFragment = pagerAdapter.getSkillsPageFragment();
+		if(skillsPageFragment != null) {
+			skillsPageFragment.changeProfession();
+		}
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -167,40 +179,42 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		return character.getKnownAs();
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-
-		if(this.mainPageFragment != null && getFragmentManager().findFragmentById(this.mainPageFragment.getId()) != null) {
-			getFragmentManager().beginTransaction().remove(this.mainPageFragment).commit();
-			this.mainPageFragment = null;
-		}
-
-		if(this.backgroundPageFragment != null && getFragmentManager().findFragmentById(this.backgroundPageFragment.getId()) != null) {
-			getFragmentManager().beginTransaction().remove(this.backgroundPageFragment).commit();
-			this.backgroundPageFragment = null;
-		}
-
-		if(this.skillsPageFragment != null && getFragmentManager().findFragmentById(this.skillsPageFragment.getId()) != null) {
-			getFragmentManager().beginTransaction().remove(this.skillsPageFragment).commit();
-			this.skillsPageFragment = null;
-		}
-
-		if(this.generatedValuesFragment != null &&
-				getFragmentManager().findFragmentById(this.generatedValuesFragment.getId()) != null) {
-			this.generatedValuesFragment = null;
-		}
-	}
+//	@Override
+//	public void onDestroyView() {
+//		super.onDestroyView();
+//
+//		if(this.mainPageFragment != null && getFragmentManager().findFragmentById(this.mainPageFragment.getId()) != null) {
+//			this.mainPageFragment = null;
+//		}
+//
+//		if(this.backgroundPageFragment != null && getFragmentManager().findFragmentById(this.backgroundPageFragment.getId()) != null) {
+//			this.backgroundPageFragment = null;
+//		}
+//
+//		if(this.skillsPageFragment != null && getFragmentManager().findFragmentById(this.skillsPageFragment.getId()) != null) {
+//			this.skillsPageFragment = null;
+//		}
+//
+//		if(this.generatedValuesFragment != null &&
+//				getFragmentManager().findFragmentById(this.generatedValuesFragment.getId()) != null) {
+//			this.generatedValuesFragment = null;
+//		}
+//	}
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		CharacterMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
 		if(mainPageFragment != null) {
 			changed = mainPageFragment.copyViewsToItem();
 		}
+
+		CharacterBackgroundPageFragment backgroundPageFragment = pagerAdapter.getBackgroundPageFragment();
 		if(backgroundPageFragment != null) {
 			changed |= backgroundPageFragment.copyViewsToItem();
 		}
+
+		CharacterSkillsPageFragment skillsPageFragment = pagerAdapter.getSkillsPageFragment();
 		if(skillsPageFragment != null) {
 			changed |= skillsPageFragment.copyViewsToItem();
 		}
@@ -209,15 +223,22 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	}
 
 	private void copyItemToViews() {
+		CharacterMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
 		if(mainPageFragment != null) {
 			mainPageFragment.copyItemToViews();
 		}
+
+		CharacterBackgroundPageFragment backgroundPageFragment = pagerAdapter.getBackgroundPageFragment();
 		if(backgroundPageFragment != null) {
 			backgroundPageFragment.copyItemToViews();
 		}
+
+		CharacterSkillsPageFragment skillsPageFragment = pagerAdapter.getSkillsPageFragment();
 		if(skillsPageFragment != null) {
 			skillsPageFragment.copyItemToViews();
 		}
+
+		CharacterGeneratedValuesFragment generatedValuesFragment = pagerAdapter.getGeneratedValuesPageFragment();
 		if(generatedValuesFragment != null) {
 			generatedValuesFragment.copyItemToViews();
 		}
@@ -327,6 +348,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 							listView.setSelection(0);
 							listView.setItemChecked(0, true);
 							listAdapter.notifyDataSetChanged();
+							Log.d(LOG_TAG, "Character = " + currentInstance);
 							copyItemToViews();
 						}
 					}
@@ -356,7 +378,10 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				if(copyViewsToItem()) {
 					saveItem();
 				}
+				Log.d(LOG_TAG, "count = " + listAdapter.getCount());
+				Log.d(LOG_TAG, "position = " + position);
 				currentInstance = (Character) listView.getItemAtPosition(position);
+				Log.d(LOG_TAG, "Character = " + currentInstance);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new Character();
@@ -368,14 +393,22 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		registerForContextMenu(listView);
 	}
 
-	public Character getCurrentInstance() {
-		return this.currentInstance;
-	}
-
 	/**
 	 * Manages the page fragments for a ViewPager
 	 */
 	private class CharacterFragmentPagerAdapter extends FragmentPagerAdapter {
+		static final int NUM_PAGES = 4;
+		static final int MAIN_PAGE_INDEX = 0;
+		static final int SKILLS_PAGE_INDEX = 1;
+		static final int BACKGROUND_PAGE_INDEX = 2;
+		static final int GENERATED_PAGE_INDEX = 3;
+		private SparseArray<Fragment> registeredFragments = new SparseArray<>();
+
+		/**
+		 * Creates a new CharacterFragmentPagerAdapter instance.
+		 *
+		 * @param fm  the FragmentManager instance to use to manage the pages
+		 */
 		CharacterFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
@@ -385,21 +418,25 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			Fragment fragment = null;
 
 			switch (position) {
-				case 0:
-					fragment = Fragment.instantiate(getActivity(), CharacterMainPageFragment.class.getName());
-					((CharacterMainPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
+				case MAIN_PAGE_INDEX:
+//					fragment = Fragment.instantiate(getActivity(), CharacterMainPageFragment.class.getName());
+					fragment = CharacterMainPageFragment.newInstance(CharactersFragment.this);
+//					((CharacterMainPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
-				case 1:
-					fragment = Fragment.instantiate(getActivity(), CharacterSkillsPageFragment.class.getName());
-					((CharacterSkillsPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
+				case SKILLS_PAGE_INDEX:
+//					fragment = Fragment.instantiate(getActivity(), CharacterSkillsPageFragment.class.getName());
+					fragment = CharacterSkillsPageFragment.newInstance(CharactersFragment.this);
+//					((CharacterSkillsPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
-				case 2:
-					fragment = Fragment.instantiate(getActivity(), CharacterBackgroundPageFragment.class.getName());
-					((CharacterBackgroundPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
+				case BACKGROUND_PAGE_INDEX:
+//					fragment = Fragment.instantiate(getActivity(), CharacterBackgroundPageFragment.class.getName());
+					fragment = CharacterBackgroundPageFragment.newInstance(CharactersFragment.this);
+//					((CharacterBackgroundPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
-				case 3:
-					fragment = Fragment.instantiate(getActivity(), CharacterGeneratedValuesFragment.class.getName());
-					((CharacterGeneratedValuesFragment)fragment).setCharactersFragment(CharactersFragment.this);
+				case GENERATED_PAGE_INDEX:
+//					fragment = Fragment.instantiate(getActivity(), CharacterGeneratedValuesFragment.class.getName());
+					fragment = CharacterGeneratedValuesFragment.newInstance(CharactersFragment.this);
+//					((CharacterGeneratedValuesFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
 			}
 			return fragment;
@@ -407,7 +444,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 		@Override
 		public int getCount() {
-			return 4;
+			return NUM_PAGES;
 		}
 
 		@Override
@@ -415,16 +452,16 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			String title = null;
 
 			switch (position) {
-				case 0:
+				case MAIN_PAGE_INDEX:
 					title = getString(R.string.title_character_main_page);
 					break;
-				case 1:
+				case SKILLS_PAGE_INDEX:
 					title = getString(R.string.title_character_skills_page);
 					break;
-				case 2:
+				case BACKGROUND_PAGE_INDEX:
 					title = getString(R.string.title_character_background_page);
 					break;
-				case 3:
+				case GENERATED_PAGE_INDEX:
 					title = getString(R.string.title_character_generated_values_page);
 					break;
 			}
@@ -434,47 +471,54 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
 			Fragment createdFragment = (Fragment)super.instantiateItem(container, position);
-			switch (position) {
-				case 0:
-					mainPageFragment = (CharacterMainPageFragment)createdFragment;
-					break;
-				case 1:
-					skillsPageFragment= (CharacterSkillsPageFragment)createdFragment;
-					break;
-				case 2:
-					backgroundPageFragment = (CharacterBackgroundPageFragment)createdFragment;
-					break;
-				case 3:
-					generatedValuesFragment = (CharacterGeneratedValuesFragment)createdFragment;
-					break;
+			if(position == MAIN_PAGE_INDEX) {
+				Log.d(LOG_TAG, "Main Page Fragment = " + createdFragment);
 			}
-
+			registeredFragments.put(position, createdFragment);
 			return createdFragment;
 		}
 
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
+			registeredFragments.remove(position);
 			super.destroyItem(container, position, object);
-			switch (position) {
-				case 0:
-					mainPageFragment = null;
-					break;
-				case 1:
-					skillsPageFragment = null;
-					break;
-				case 2:
-					backgroundPageFragment= null;
-					break;
-				case 3:
-					generatedValuesFragment = null;
-					break;
-			}
 		}
-	}
 
-	public void changeProfession() {
-		if(skillsPageFragment != null) {
-			skillsPageFragment.changeProfession();
+		/**
+		 * Returns the main page fragment instance if it has been created.
+		 *
+		 * @return  the main page fragment instance.
+		 */
+		CharacterMainPageFragment getMainPageFragment() {
+			return (CharacterMainPageFragment)registeredFragments
+					.get(MAIN_PAGE_INDEX);
+		}
+
+		/**
+		 * Returns the skills page fragment instance if it has been created.
+		 *
+		 * @return  the skills page fragment instance.
+		 */
+		CharacterSkillsPageFragment getSkillsPageFragment() {
+			return (CharacterSkillsPageFragment)registeredFragments.get(SKILLS_PAGE_INDEX);
+		}
+
+		/**
+		 * Returns the background information page fragment instance if it has been created.
+		 *
+		 * @return  the background information page fragment instance.
+		 */
+		CharacterBackgroundPageFragment getBackgroundPageFragment() {
+			return (CharacterBackgroundPageFragment)registeredFragments.get(BACKGROUND_PAGE_INDEX);
+		}
+
+		/**
+		 * Returns the generated values page fragment instance if it has been created.
+		 *
+		 * @return  the generated values page fragment instance.
+		 */
+		CharacterGeneratedValuesFragment getGeneratedValuesPageFragment() {
+			return (CharacterGeneratedValuesFragment)registeredFragments.get(GENERATED_PAGE_INDEX);
 		}
 	}
 }

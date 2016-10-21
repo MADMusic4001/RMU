@@ -31,7 +31,7 @@ public class SkillCategory implements Comparable {
 	private boolean combat = false;
 	private boolean noStats = false;
 	private boolean realmStats = false;
-	private List<Stat> stats = new ArrayList<>();
+	private List<Statistic> stats = new ArrayList<>();
 
 	/**
 	 * Creates a new SkillCategory instance
@@ -157,10 +157,10 @@ public class SkillCategory implements Comparable {
 	public void setRealmStats(boolean realmStats) {
 		this.realmStats = realmStats;
 	}
-	public List<Stat> getStats() {
+	public List<Statistic> getStats() {
 		return stats;
 	}
-	public void setStats(List<Stat> stats) {
+	public void setStats(List<Statistic> stats) {
 		this.stats = stats;
 	}
 }

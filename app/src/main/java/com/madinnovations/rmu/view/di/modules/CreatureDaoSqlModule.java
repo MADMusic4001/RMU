@@ -21,7 +21,6 @@ import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
@@ -48,8 +47,8 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class CreatureDaoSqlModule {
 	@Provides @Singleton
-	CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper, StatDao statDao, SkillCategoryDao skillCategoryDao) {
-		return new CreatureArchetypeDaoDbImpl(helper, statDao, skillCategoryDao);
+	CreatureArchetypeDao provideCreatureArchetypeDao(RMUDatabaseHelper helper, SkillCategoryDao skillCategoryDao) {
+		return new CreatureArchetypeDaoDbImpl(helper, skillCategoryDao);
 	}
 	@Provides @Singleton
 	CreatureCategoryDao provideCreatureCategoryDao(RMUDatabaseHelper helper, TalentDao talentDao) {
@@ -67,8 +66,8 @@ public class CreatureDaoSqlModule {
 	@Provides @Singleton
 	CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,
 														CriticalCodeDao criticalCodeDao, RealmDao realmDao, OutlookDao outlookDao,
-														StatDao statDao, SkillDao skillDao, TalentDao talentDao, AttackDao attackDao) {
-		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao, sizeDao, criticalCodeDao, realmDao, outlookDao, statDao, skillDao,
+														SkillDao skillDao, TalentDao talentDao, AttackDao attackDao) {
+		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao, sizeDao, criticalCodeDao, realmDao, outlookDao, skillDao,
 				talentDao, attackDao);
 	}
 	@Provides @Singleton

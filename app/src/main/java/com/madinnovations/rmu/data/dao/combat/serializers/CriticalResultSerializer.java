@@ -34,7 +34,7 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 	public void write(JsonWriter out, CriticalResult value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
-		out.name(COLUMN_SEVERITY_CODE).value(value.getSeverityCode());
+		out.name(COLUMN_SEVERITY_CODE).value(String.valueOf(value.getSeverityCode()));
 		out.name(COLUMN_RESULT_TEXT).value(value.getResultText());
 		out.name(COLUMN_MIN_ROLL).value(value.getMinRoll());
 		out.name(COLUMN_MAX_ROLL).value(value.getMaxRoll());

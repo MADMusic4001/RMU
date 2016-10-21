@@ -79,7 +79,7 @@
           android:layout_height="wrap_content"
           android:gravity="center"
           android:inputType="numberSigned"
-          android:maxLength="3"
+          android:maxLength="4"
           android:background="@null"/>
       <EditText
           android:id="@+id/injury_edit"

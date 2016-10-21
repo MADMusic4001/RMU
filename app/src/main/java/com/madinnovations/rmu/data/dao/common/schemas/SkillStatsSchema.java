@@ -21,19 +21,18 @@ package com.madinnovations.rmu.data.dao.common.schemas;
 public interface SkillStatsSchema {
 	String TABLE_NAME = "skill_stats";
 
-	String COLUMN_ID = "id";
-	String COLUMN_SKILL_ID = "skillId";
-	String COLUMN_STAT_ID = "statId";
+	String COLUMN_ID        = "id";
+	String COLUMN_SKILL_ID  = "skillId";
+	String COLUMN_STAT_NAME = "statName";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
-			+ COLUMN_STAT_ID + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
+			+ COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
+			+ COLUMN_STAT_NAME + " TEXT NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SKILL_ID, COLUMN_STAT_ID};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SKILL_ID, COLUMN_STAT_NAME};
 }

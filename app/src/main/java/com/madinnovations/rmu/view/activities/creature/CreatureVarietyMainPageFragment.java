@@ -44,7 +44,7 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureTypeRxHandle
 import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentTier;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
@@ -185,7 +185,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		char newLevelSpread;
 		SparseBooleanArray checkedItemPositions;
 		RacialStatBonus racialStatBonus;
-		Map<Stat, Short> newStatBonusMap;
+		Map<Statistic, Short> newStatBonusMap;
 		Map<Talent, Short> newTalentTiersMap;
 		TalentTier newTalentTier;
 		Realm newRealm;
@@ -440,9 +440,11 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	public void copyItemToViews() {
 		nameEdit.setText(varietiesFragment.getCurrentInstance().getName());
-		creatureTypeSpinner.setSelection(creatureTypeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getType()));
+		creatureTypeSpinner.setSelection(creatureTypeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance()
+																						.getType()));
 		typicalLevelEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getTypicalLevel()));
-		levelSpreadSpinner.setSelection(levelSpreadSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getLevelSpread()));
+		levelSpreadSpinner.setSelection(levelSpreadSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance()
+																					  .getLevelSpread()));
 		descriptionEdit.setText(varietiesFragment.getCurrentInstance().getDescription());
 		sizeSpinner.setSelection(sizeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getSize()));
 		heightEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getHeight()));
@@ -468,7 +470,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		outlookSpinner.setSelection(outlookSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getOutlook()));
 
 		racialStatBonusListAdapter.clear();
-		for(Map.Entry<Stat, Short> entry : varietiesFragment.getCurrentInstance().getRacialStatBonuses().entrySet()) {
+		for(Map.Entry<Statistic, Short> entry : varietiesFragment.getCurrentInstance().getRacialStatBonuses().entrySet()) {
 			RacialStatBonus racialStatBonus = new RacialStatBonus(entry.getKey(), entry.getValue());
 			racialStatBonusListAdapter.add(racialStatBonus);
 		}
@@ -1176,32 +1178,19 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		racialStatBonusListAdapter = new RacialStatBonusListAdapter(this.getActivity(), this);
 		racialStatBonusList.setAdapter(racialStatBonusListAdapter);
 
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG,
-							  "Exception caught getting all Stat instances in initRacialStatBonusList", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> stats) {
-						for(Stat stat : stats) {
-							if(!varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(stat)) {
-								varietiesFragment.getCurrentInstance().getRacialStatBonuses().put(stat, (short)0);
-							}
-						}
-						Collection<RacialStatBonus> listItems = new ArrayList<>(varietiesFragment.getCurrentInstance().getRacialStatBonuses().size());
-						for(Map.Entry<Stat, Short> entry : varietiesFragment.getCurrentInstance().getRacialStatBonuses().entrySet()) {
-							listItems.add(new RacialStatBonus(entry.getKey(), entry.getValue()));
-						}
-						racialStatBonusListAdapter.clear();
-						racialStatBonusListAdapter.addAll(listItems);
-						racialStatBonusListAdapter.notifyDataSetChanged();
-					}
-				});
+		for(Statistic statistic : Statistic.values()) {
+			if(!varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(statistic)) {
+				varietiesFragment.getCurrentInstance().getRacialStatBonuses().put(statistic, (short)0);
+			}
+		}
+		Collection<RacialStatBonus> listItems = new ArrayList<>(varietiesFragment.getCurrentInstance().getRacialStatBonuses()
+																		.size());
+		for(Map.Entry<Statistic, Short> entry : varietiesFragment.getCurrentInstance().getRacialStatBonuses().entrySet()) {
+			listItems.add(new RacialStatBonus(entry.getKey(), entry.getValue()));
+		}
+		racialStatBonusListAdapter.clear();
+		racialStatBonusListAdapter.addAll(listItems);
+		racialStatBonusListAdapter.notifyDataSetChanged();
 	}
 
 	private void initTalentNamesList(View layout) {

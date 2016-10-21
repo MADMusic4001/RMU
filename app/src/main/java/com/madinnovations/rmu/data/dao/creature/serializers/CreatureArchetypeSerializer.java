@@ -20,7 +20,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 
 import java.io.IOException;
@@ -41,11 +41,11 @@ public class CreatureArchetypeSerializer extends TypeAdapter<CreatureArchetype> 
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_STAT1_IS_REALM).value(value.isRealmStat1());
 		if(value.getStat1() != null) {
-			out.name(COLUMN_STAT1_ID).value(value.getStat1().getId());
+			out.name(COLUMN_STAT1_NAME).value(value.getStat1().name());
 		}
 		out.name(COLUMN_STAT2_IS_REALM).value(value.isRealmStat2());
 		if(value.getStat2() != null) {
-			out.name(COLUMN_STAT2_ID).value(value.getStat2().getId());
+			out.name(COLUMN_STAT2_NAME).value(value.getStat2().name());
 		}
 		out.name(COLUMN_SPELLS).value(value.getSpells());
 		out.name(COLUMN_ROLES).value(value.getRoles());
@@ -90,14 +90,16 @@ public class CreatureArchetypeSerializer extends TypeAdapter<CreatureArchetype> 
 				case COLUMN_STAT1_IS_REALM:
 					creatureArchetype.setRealmStat1(in.nextBoolean());
 					break;
-				case COLUMN_STAT1_ID:
-					creatureArchetype.setStat1(new Stat(in.nextInt()));
+				case COLUMN_STAT1_NAME:
+				case "stat1Id":
+					creatureArchetype.setStat1(Statistic.valueOf(in.nextString()));
 					break;
 				case COLUMN_STAT2_IS_REALM:
 					creatureArchetype.setRealmStat2(in.nextBoolean());
 					break;
-				case COLUMN_STAT2_ID:
-					creatureArchetype.setStat2(new Stat(in.nextInt()));
+				case COLUMN_STAT2_NAME:
+				case "stat2Id":
+					creatureArchetype.setStat2(Statistic.valueOf(in.nextString()));
 					break;
 				case COLUMN_SPELLS:
 					creatureArchetype.setSpells(in.nextString());

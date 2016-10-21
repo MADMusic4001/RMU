@@ -17,7 +17,7 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -28,27 +28,27 @@ import java.util.Map;
  * Creature template attributes
  */
 public class CreatureTemplate {
-	private int               id = -1;
-	private String            name;
-	private String            description;
-	private CreatureArchetype archetype;
-	private short             level;
-	private char              levelSpread;
-	private CreatureVariety   variety;
-	private Map<Stat, Short>  stats;
-	private short             height;
-	private short             length;
-	private short             weight;
-	private float             healingRate;
-	private short             baseHits;
-	private short             baseEndurance;
-	private Size              size;
-	private short             armorType;
-	private CriticalCode      criticalCode;
-	private int               baseMovementRate;
-	private int               defensiveBonus;
-	private int               endurance;
-	private int               offensiveBonus;
+	private int                   id = -1;
+	private String                name;
+	private String                description;
+	private CreatureArchetype     archetype;
+	private short                 level;
+	private char                  levelSpread;
+	private CreatureVariety       variety;
+	private Map<Statistic, Short> stats;
+	private short                 height;
+	private short                 length;
+	private short                 weight;
+	private float                 healingRate;
+	private short                 baseHits;
+	private short                 baseEndurance;
+	private Size                  size;
+	private short                 armorType;
+	private CriticalCode          criticalCode;
+	private int                   baseMovementRate;
+	private int                   defensiveBonus;
+	private int                   endurance;
+	private int                   offensiveBonus;
 
 	/**
 	 * Checks the validity of the CreatureCategory instance.
@@ -145,10 +145,10 @@ public class CreatureTemplate {
 	public void setVariety(CreatureVariety variety) {
 		this.variety = variety;
 	}
-	public Map<Stat, Short> getStats() {
+	public Map<Statistic, Short> getStats() {
 		return stats;
 	}
-	public void setStats(Map<Stat, Short> stats) {
+	public void setStats(Map<Statistic, Short> stats) {
 		this.stats = stats;
 	}
 	public short getHeight() {

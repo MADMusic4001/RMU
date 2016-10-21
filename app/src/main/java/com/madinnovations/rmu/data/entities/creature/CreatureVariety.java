@@ -19,7 +19,7 @@ import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -42,7 +42,7 @@ public class CreatureVariety {
 	private String description = null;
 	private short typicalLevel = 1;
 	private char levelSpread = 'A';
-	private Map<Stat, Short> racialStatBonuses = new HashMap<>();
+	private Map<Statistic, Short> racialStatBonuses = new HashMap<>();
 	private short height = 60;
 	private short length = 60;
 	private short weight = 200;
@@ -78,8 +78,8 @@ public class CreatureVariety {
 				attackSequence != null && realm1 != null && outlook != null;
 	}
 
-	public void initRacialStatBonusList(List<Stat> stats) {
-		for(Stat stat : stats) {
+	public void initRacialStatBonusList(List<Statistic> stats) {
+		for(Statistic stat : stats) {
 			racialStatBonuses.put(stat, (short)0);
 		}
 	}
@@ -173,10 +173,10 @@ public class CreatureVariety {
 	public void setLevelSpread(char levelSpread) {
 		this.levelSpread = levelSpread;
 	}
-	public Map<Stat, Short> getRacialStatBonuses() {
+	public Map<Statistic, Short> getRacialStatBonuses() {
 		return racialStatBonuses;
 	}
-	public void setRacialStatBonuses(Map<Stat, Short> racialStatBonuses) {
+	public void setRacialStatBonuses(Map<Statistic, Short> racialStatBonuses) {
 		this.racialStatBonuses = racialStatBonuses;
 	}
 	public short getHeight() {

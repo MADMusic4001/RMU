@@ -29,7 +29,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
@@ -53,7 +53,6 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	protected RealmRxHandler   realmRxHandler;
 	private Skill              bodyDevelopmentSkill = null;
 	private Skill              powerDevelopmentSkill = null;
-	private Collection<Stat>   stats = null;
 	private Collection<Realm>  realms = null;
 	private CharactersFragment charactersFragment;
 	private TextView           currentLevelText;
@@ -74,6 +73,18 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	private TextView           mentalismRRText;
 	private TextView           physicalRRText;
 	private TextView           fearRRText;
+
+	/**
+	 * Creates new CharacterGeneratedValuesFragment instance.
+	 *
+	 * @param charactersFragment  the CharactersFragment instance this fragment is attached to.
+	 * @return the new instance.
+	 */
+	public static CharacterGeneratedValuesFragment newInstance(CharactersFragment charactersFragment) {
+		CharacterGeneratedValuesFragment fragment = new CharacterGeneratedValuesFragment();
+		fragment.charactersFragment = charactersFragment;
+		return fragment;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -149,21 +160,6 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	}
 
 	private void initStatBonusValues() {
-		statRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught loading stats", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> statCollection) {
-						stats = statCollection;
-						setStatViews();
-						setStatAndRealmViews();
-					}
-				});
 	}
 
 	public void initPowerDevelopmentSkill() {
@@ -216,21 +212,19 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	}
 
 	private void setStatViews() {
-		if(stats != null) {
-			Character character = charactersFragment.getCurrentInstance();
-			for(Stat stat : stats) {
-				if(character.getRace() != null && character.getStatTemps().get(stat) != null) {
-					short statBonus = Stat.getBonus(character.getStatTemps().get(stat));
-					if ("Qu".equals(stat.getAbbreviation())) {
-						defensiveBonusText.setText(String.valueOf(statBonus * 3));
-						initiativeText.setText(String.valueOf(statBonus));
-					}
-					if ("Co".equals(stat.getAbbreviation())) {
-						physicalRRText.setText(String.valueOf(character.getRace().getPhysicalResistanceModifier() + statBonus));
-					}
-					if ("SD".equals(stat.getAbbreviation())) {
-						fearRRText.setText(String.valueOf(statBonus));
-					}
+		Character character = charactersFragment.getCurrentInstance();
+		for(Statistic stat : Statistic.values()) {
+			if(character.getRace() != null && character.getStatTemps().get(stat) != null) {
+				short statBonus = Statistic.getBonus(character.getStatTemps().get(stat));
+				if (Statistic.QUICKNESS.equals(stat)) {
+					defensiveBonusText.setText(String.valueOf(statBonus * 3));
+					initiativeText.setText(String.valueOf(statBonus));
+				}
+				if (Statistic.CONSTITUTION.equals(stat)) {
+					physicalRRText.setText(String.valueOf(character.getRace().getPhysicalResistanceModifier() + statBonus));
+				}
+				if (Statistic.SELF_DISCIPLINE.equals(stat)) {
+					fearRRText.setText(String.valueOf(statBonus));
 				}
 			}
 		}
@@ -238,40 +232,38 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 
 	private void setStatAndRealmViews() {
 		if(realms != null) {
-			if(stats != null) {
-				Character character = charactersFragment.getCurrentInstance();
-				for(Stat stat : stats) {
-					if(character.getRace() != null && character.getProfession() != null &&
-							character.getStatTemps().get(stat) != null) {
-						short statBonus = Stat.getBonus(character.getStatTemps().get(stat));
-						for (Realm realm : realms) {
-							Short raceRRBonus = character.getRace().getRealmResistancesModifiers().get(realm);
-							if(raceRRBonus != null) {
-								short realmRRBonus = 0;
-								if (realm.getName().equals("Channeling") && realm.getStat().equals(stat)) {
-									if (realm.equals(character.getProfession().getRealm1()) ||
-											realm.equals(character.getProfession().getRealm2()) ||
-											realm.equals(character.getRealm())) {
-										realmRRBonus = 10;
-									}
-									channelingRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
+			Character character = charactersFragment.getCurrentInstance();
+			for(Statistic stat : Statistic.values()) {
+				if(character.getRace() != null && character.getProfession() != null &&
+						character.getStatTemps().get(stat) != null) {
+					short statBonus = Statistic.getBonus(character.getStatTemps().get(stat));
+					for (Realm realm : realms) {
+						Short raceRRBonus = character.getRace().getRealmResistancesModifiers().get(realm);
+						if(raceRRBonus != null) {
+							short realmRRBonus = 0;
+							if (realm.getName().equals("Channeling") && realm.getStat().equals(stat)) {
+								if (realm.equals(character.getProfession().getRealm1()) ||
+										realm.equals(character.getProfession().getRealm2()) ||
+										realm.equals(character.getRealm())) {
+									realmRRBonus = 10;
 								}
-								if (realm.getName().equals("Essence") && realm.getStat().equals(stat)) {
-									if (realm.equals(character.getProfession().getRealm1()) ||
-											realm.equals(character.getProfession().getRealm2()) ||
-											realm.equals(character.getRealm())) {
-										realmRRBonus = 10;
-									}
-									essenceRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
+								channelingRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
+							}
+							if (realm.getName().equals("Essence") && realm.getStat().equals(stat)) {
+								if (realm.equals(character.getProfession().getRealm1()) ||
+										realm.equals(character.getProfession().getRealm2()) ||
+										realm.equals(character.getRealm())) {
+									realmRRBonus = 10;
 								}
-								if (realm.getName().equals("Mentalism") && realm.getStat().equals(stat)) {
-									if (realm.equals(character.getProfession().getRealm1()) ||
-											realm.equals(character.getProfession().getRealm2()) ||
-											realm.equals(character.getRealm())) {
-										realmRRBonus = 10;
-									}
-									mentalismRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
+								essenceRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
+							}
+							if (realm.getName().equals("Mentalism") && realm.getStat().equals(stat)) {
+								if (realm.equals(character.getProfession().getRealm1()) ||
+										realm.equals(character.getProfession().getRealm2()) ||
+										realm.equals(character.getRealm())) {
+									realmRRBonus = 10;
 								}
+								mentalismRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
 							}
 						}
 					}
@@ -290,9 +282,5 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 				currentPowerPointsText.setText(String.valueOf(basePowerPoints - character.getPowerPointLoss()));
 			}
 		}
-	}
-
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
 	}
 }

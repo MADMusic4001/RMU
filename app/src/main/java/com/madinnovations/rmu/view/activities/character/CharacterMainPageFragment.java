@@ -18,50 +18,73 @@ package com.madinnovations.rmu.view.activities.character;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.CultureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.Stat;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
+import java.util.Collection;
+
 import javax.inject.Inject;
+
+import rx.Subscriber;
 
 /**
  * Handles interactions with the UI for character creation.
  */
 public class CharacterMainPageFragment extends Fragment implements EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+	private static final String LOG_TAG = "CharacterMainPageFrag";
 	@Inject
-	protected CultureRxHandler       cultureRxHandler;
+	protected CultureRxHandler         cultureRxHandler;
 	@Inject
-	protected ProfessionRxHandler    professionRxHandler;
+	protected ProfessionRxHandler      professionRxHandler;
 	@Inject
-	protected RaceRxHandler          raceRxHandler;
+	protected RaceRxHandler            raceRxHandler;
 	@Inject
-	protected RealmRxHandler         realmRxHandler;
-	private CharactersFragment       charactersFragment;
-	private EditText                 firstNameEdit;
-	private EditText                 lastNameEdit;
-	private EditText                 knownAsEdit;
-	private EditText                 descriptionEdit;
-	private SpinnerUtils<Race>       raceSpinner;
-	private SpinnerUtils<Culture>    cultureSpinner;
-	private SpinnerUtils<Profession> professionSpinner;
-	private SpinnerUtils<Realm>      realmSpinner;
-	private EditText                 heightEdit;
-	private EditText                 weightEdit;
+	protected RealmRxHandler           realmRxHandler;
+	@Inject
+	protected StatRxHandler            statRxHandler;
+	private   CharactersFragment       charactersFragment;
+	private   EditText                 firstNameEdit;
+	private   EditText                 lastNameEdit;
+	private   EditText                 knownAsEdit;
+	private   EditText                 descriptionEdit;
+	private   SpinnerUtils<Race>       raceSpinner;
+	private   SpinnerUtils<Culture>    cultureSpinner;
+	private   SpinnerUtils<Profession> professionSpinner;
+	private   SpinnerUtils<Realm>      realmSpinner;
+	private   EditText                 heightEdit;
+	private   EditText                 weightEdit;
+
+	/**
+	 * Creates new CharacterMainPageFragment instance.
+	 *
+	 * @param charactersFragment  the CharactersFragment instance this fragment is attached to.
+	 * @return the new instance.
+	 */
+	public static CharacterMainPageFragment newInstance(CharactersFragment charactersFragment) {
+		CharacterMainPageFragment fragment = new CharacterMainPageFragment();
+		fragment.charactersFragment = charactersFragment;
+		return fragment;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,6 +111,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
 		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit, R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit, R.string.validation_character_weight_required);
+		initStatsRows(layout);
 
 		return layout;
 	}
@@ -109,6 +133,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
+		Log.d("RMU", "Fragment = " + this);
 		switch (editTextId) {
 			case R.id.first_name_edit:
 				result = charactersFragment.getCurrentInstance().getFirstName();
@@ -139,42 +164,30 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		switch (editTextId) {
 			case R.id.first_name_edit:
-				if(!newString.equals(charactersFragment.getCurrentInstance().getFirstName())) {
-					charactersFragment.getCurrentInstance().setFirstName(newString);
-					charactersFragment.saveItem();
-				}
+				charactersFragment.getCurrentInstance().setFirstName(newString);
+				charactersFragment.saveItem();
 				break;
 			case R.id.last_name_edit:
-				if(!newString.equals(charactersFragment.getCurrentInstance().getLastName())) {
-					charactersFragment.getCurrentInstance().setLastName(newString);
-					charactersFragment.saveItem();
-				}
+				charactersFragment.getCurrentInstance().setLastName(newString);
+				charactersFragment.saveItem();
 				break;
 			case R.id.known_as_edit:
-				if(!newString.equals(charactersFragment.getCurrentInstance().getKnownAs())) {
-					charactersFragment.getCurrentInstance().setKnownAs(newString);
-					charactersFragment.saveItem();
-				}
+				charactersFragment.getCurrentInstance().setKnownAs(newString);
+				charactersFragment.saveItem();
 				break;
 			case R.id.notes_edit:
-				if(!newString.equals(charactersFragment.getCurrentInstance().getDescription())) {
-					charactersFragment.getCurrentInstance().setDescription(newString);
-					charactersFragment.saveItem();
-				}
+				charactersFragment.getCurrentInstance().setDescription(newString);
+				charactersFragment.saveItem();
 				break;
 			case R.id.height_edit:
 				newShort = Short.valueOf(newString);
-				if(newShort != charactersFragment.getCurrentInstance().getHeight()) {
-					charactersFragment.getCurrentInstance().setHeight(newShort);
-					charactersFragment.saveItem();
-				}
+				charactersFragment.getCurrentInstance().setHeight(newShort);
+				charactersFragment.saveItem();
 				break;
 			case R.id.weight_edit:
 				newShort = Short.valueOf(newString);
-				if(newShort != charactersFragment.getCurrentInstance().getWeight()) {
-					charactersFragment.getCurrentInstance().setWeight(newShort);
-					charactersFragment.saveItem();
-				}
+				charactersFragment.getCurrentInstance().setWeight(newShort);
+				charactersFragment.saveItem();
 				break;
 		}
 	}
@@ -295,6 +308,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	public void copyItemToViews() {
+		Log.d("RMU", "Character = " + charactersFragment.getCurrentInstance());
 		firstNameEdit.setText(charactersFragment.getCurrentInstance().getFirstName());
 		lastNameEdit.setText(charactersFragment.getCurrentInstance().getLastName());
 		knownAsEdit.setText(charactersFragment.getCurrentInstance().getKnownAs());
@@ -307,7 +321,26 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
 	}
 
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
+	private void initStatsRows(View layout) {
+		statRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<Stat>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(LOG_TAG, "Exception caught getting all Stat instances.", e);
+					}
+					@Override
+					public void onNext(Collection<Stat> statCollection) {
+						for(Stat stat : statCollection) {
+							switch (stat.getAbbreviation()) {
+								case "Ag":
+							}
+						}
+					}
+				});
+		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
+		textView.setText(String.format(getString(R.string.stat_format_string), "", ""));
+
 	}
 }

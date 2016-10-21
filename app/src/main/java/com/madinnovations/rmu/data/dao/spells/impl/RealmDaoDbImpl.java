@@ -23,9 +23,9 @@ import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.CacheConfig;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import javax.inject.Inject;
@@ -37,18 +37,15 @@ import javax.inject.Singleton;
 @Singleton
 public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, RealmSchema {
 	private LruCache<Integer, Realm> realmsCache = new LruCache<>(CacheConfig.REALM_CACHE_SIZE);
-	private StatDao statDao;
 
 	/**
 	 * Creates a new instance of RealmDaoImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
-	 * @param statDao  a {@link StatDao} instance
 	 */
 	@Inject
-	public RealmDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull StatDao statDao) {
+	public RealmDaoDbImpl(@NonNull SQLiteOpenHelper helper) {
 		super(helper);
-		this.statDao = statDao;
 	}
 
 	@Override
@@ -88,7 +85,7 @@ public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, Re
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		instance.setStat(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT_ID))));
+		instance.setStat(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STAT_NAME))));
 
 		return instance;
 	}
@@ -106,7 +103,7 @@ public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, Re
 		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
-		values.put(COLUMN_STAT_ID, instance.getStat().getId());
+		values.put(COLUMN_STAT_NAME, instance.getStat().name());
 
 		return values;
 	}

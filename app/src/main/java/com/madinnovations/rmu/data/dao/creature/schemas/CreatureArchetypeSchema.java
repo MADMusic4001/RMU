@@ -15,23 +15,21 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
-
 /**
  * Database schema data for the creature_archetypes table
 */
 public interface CreatureArchetypeSchema {
 	String TABLE_NAME = "creature_archetypes";
 
-	String COLUMN_ID = "id";
-	String COLUMN_NAME = "name";
-	String COLUMN_DESCRIPTION = "description";
+	String COLUMN_ID             = "id";
+	String COLUMN_NAME           = "name";
+	String COLUMN_DESCRIPTION    = "description";
 	String COLUMN_STAT1_IS_REALM = "stat1IsRealm";
-	String COLUMN_STAT1_ID = "stat1Id";
+	String COLUMN_STAT1_NAME     = "stat1Name";
 	String COLUMN_STAT2_IS_REALM = "stat2IsRealm";
-	String COLUMN_STAT2_ID = "stat2Id";
-	String COLUMN_SPELLS = "spells";
-	String COLUMN_ROLES = "roles";
+	String COLUMN_STAT2_NAME     = "stat2Name";
+	String COLUMN_SPELLS         = "spells";
+	String COLUMN_ROLES          = "roles";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -40,15 +38,13 @@ public interface CreatureArchetypeSchema {
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_STAT1_IS_REALM + " INTEGER NOT NULL, "
-			+ COLUMN_STAT1_ID + " INTEGER, "
+			+ COLUMN_STAT1_NAME + " TEXT, "
 			+ COLUMN_STAT2_IS_REALM + " INTEGER NOT NULL, "
-			+ COLUMN_STAT2_ID + " INTEGER, "
+			+ COLUMN_STAT2_NAME + " TEXT, "
 			+ COLUMN_SPELLS + " TEXT NOT NULL,"
-			+ COLUMN_ROLES + " TEXT NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_STAT1_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_STAT2_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
+			+ COLUMN_ROLES + " TEXT NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT1_IS_REALM, COLUMN_STAT1_ID,
-			COLUMN_STAT2_IS_REALM, COLUMN_STAT2_ID, COLUMN_SPELLS, COLUMN_ROLES};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT1_IS_REALM, COLUMN_STAT1_NAME,
+			COLUMN_STAT2_IS_REALM, COLUMN_STAT2_NAME, COLUMN_SPELLS, COLUMN_ROLES};
 }

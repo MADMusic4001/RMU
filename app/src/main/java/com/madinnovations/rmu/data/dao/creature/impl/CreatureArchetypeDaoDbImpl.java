@@ -23,11 +23,11 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 
 import java.util.ArrayList;
@@ -42,18 +42,17 @@ import javax.inject.Singleton;
 @Singleton
 public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		implements CreatureArchetypeDao, CreatureArchetypeSchema {
-	private StatDao statDao;
 	private SkillCategoryDao skillCategoryDao;
 
 	/**
 	 * Creates a new instance of CreatureArchetypeDaoImpl
 	 *
+	 * @param skillCategoryDao  a {@link SkillCategoryDao} instance
 	 * @param helper  an SQLiteOpenHelper instance
 	 */
 	@Inject
-	public CreatureArchetypeDaoDbImpl(SQLiteOpenHelper helper, StatDao statDao, SkillCategoryDao skillCategoryDao) {
+	public CreatureArchetypeDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao) {
 		super(helper);
-		this.statDao = statDao;
 		this.skillCategoryDao = skillCategoryDao;
 	}
 
@@ -90,18 +89,18 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
 		instance.setRealmStat1(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_IS_REALM)) == 1);
-		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))) {
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_STAT1_NAME))) {
 			instance.setStat1(null);
 		}
 		else {
-			instance.setStat1(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT1_ID))));
+			instance.setStat1(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STAT1_NAME))));
 		}
 		instance.setRealmStat2(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_IS_REALM)) == 1);
-		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))) {
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_STAT2_NAME))) {
 			instance.setStat2(null);
 		}
 		else {
-			instance.setStat2(statDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STAT2_ID))));
+			instance.setStat2(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STAT2_NAME))));
 		}
 		setSkillCategories(instance);
 		instance.setSpells(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SPELLS)));
@@ -125,17 +124,17 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 		values.put(COLUMN_STAT1_IS_REALM, instance.isRealmStat1());
 		if(instance.getStat1() == null) {
-			values.putNull(COLUMN_STAT1_ID);
+			values.putNull(COLUMN_STAT1_NAME);
 		}
 		else {
-			values.put(COLUMN_STAT1_ID, instance.getStat1().getId());
+			values.put(COLUMN_STAT1_NAME, instance.getStat1().name());
 		}
 		values.put(COLUMN_STAT2_IS_REALM, instance.isRealmStat2());
 		if(instance.getStat2() == null) {
-			values.putNull(COLUMN_STAT2_ID);
+			values.putNull(COLUMN_STAT2_NAME);
 		}
 		else {
-			values.put(COLUMN_STAT2_ID, instance.getStat2().getId());
+			values.put(COLUMN_STAT2_NAME, instance.getStat2().name());
 		}
 		values.put(COLUMN_SPELLS, instance.getSpells());
 		values.put(COLUMN_ROLES, instance.getRoles());

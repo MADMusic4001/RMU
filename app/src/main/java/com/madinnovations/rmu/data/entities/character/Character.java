@@ -17,7 +17,8 @@ package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
@@ -35,38 +36,39 @@ import java.util.Map;
  */
 public class Character {
 	public static final String JSON_NAME = "Characters";
-	private int                   id = -1;
-	private int                   experiencePoints = 0;
-	private String                firstName = null;
-	private String                lastName = null;
-	private String                knownAs = null;
-	private String                description = null;
-	private String                hairColor = null;
-	private String                hairStyle = null;
-	private String                eyeColor = null;
-	private String                skinComplexion = null;
-	private String                facialFeatures = null;
-	private String                identifyingMarks = null;
-	private String                personality = null;
-	private String                mannerisms = null;
-	private String                hometown = null;
-	private String                familyInfo = null;
-	private Race                  race = null;
-	private Culture               culture = null;
-	private Profession            profession = null;
-	private Realm                 realm = null;
-	private short                 height = 70;
-	private short                 weight = 185;
-	private int                   hitPointLoss = 0;
-	private short                 currentDevelopmentPoints = 50;
-	private short                 enduranceLoss;
-	private short                 powerPointLoss;
-	private Map<Skill, SkillCost> skillCosts = new HashMap<>();
-	private Map<Skill, Short>     skillRanks = new HashMap<>();
-	private Map<Talent, Short>    talentTiers = new HashMap<>();
-	private Map<Stat, Short>      statTemps = new HashMap<>();
-	private Map<Stat, Short>      statPotentials = new HashMap<>();
-	private List<Item>            items = new ArrayList<>();
+	private int                        id = -1;
+	private int                        experiencePoints = 0;
+	private String                     firstName = null;
+	private String                     lastName = null;
+	private String                     knownAs = null;
+	private String                     description = null;
+	private String                     hairColor = null;
+	private String                     hairStyle = null;
+	private String                     eyeColor = null;
+	private String                     skinComplexion = null;
+	private String                     facialFeatures = null;
+	private String                     identifyingMarks = null;
+	private String                     personality = null;
+	private String                     mannerisms = null;
+	private String                     hometown = null;
+	private String                     familyInfo = null;
+	private Race                       race = null;
+	private Culture                    culture = null;
+	private Profession                 profession = null;
+	private Realm                      realm = null;
+	private short                      height = 70;
+	private short                      weight = 185;
+	private int                        hitPointLoss = 0;
+	private short                      currentDevelopmentPoints = 50;
+	private short                      enduranceLoss;
+	private short                      powerPointLoss;
+	private Map<Skill, SkillCost>      skillCosts          = new HashMap<>();
+	private Map<Skill, Short>          skillRanks          = new HashMap<>();
+	private Map<Specialization, Short> specializationRanks = new HashMap<>();
+	private Map<Talent, Short>         talentTiers         = new HashMap<>();
+	private Map<Statistic, Short>      statTemps           = new HashMap<>();
+	private Map<Statistic, Short>      statPotentials      = new HashMap<>();
+	private List<Item>                 items               = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -110,6 +112,7 @@ public class Character {
 				.append("powerPointLoss", powerPointLoss)
 				.append("skillCosts", skillCosts)
 				.append("skillRanks", skillRanks)
+				.append("specializationRanks", specializationRanks)
 				.append("talentTiers", talentTiers)
 				.append("statTemps", statTemps)
 				.append("statPotentials", statPotentials)
@@ -301,22 +304,29 @@ public class Character {
 	public void setSkillRanks(Map<Skill, Short> skillRanks) {
 		this.skillRanks = skillRanks;
 	}
+	public Map<Specialization, Short> getSpecializationRanks() {
+		return specializationRanks;
+	}
+	public void setSpecializationRanks(
+			Map<Specialization, Short> specializationRanks) {
+		this.specializationRanks = specializationRanks;
+	}
 	public Map<Talent, Short> getTalentTiers() {
 		return talentTiers;
 	}
 	public void setTalentTiers(Map<Talent, Short> talentTiers) {
 		this.talentTiers = talentTiers;
 	}
-	public Map<Stat, Short> getStatTemps() {
+	public Map<Statistic, Short> getStatTemps() {
 		return statTemps;
 	}
-	public void setStatTemps(Map<Stat, Short> statTemps) {
+	public void setStatTemps(Map<Statistic, Short> statTemps) {
 		this.statTemps = statTemps;
 	}
-	public Map<Stat, Short> getStatPotentials() {
+	public Map<Statistic, Short> getStatPotentials() {
 		return statPotentials;
 	}
-	public void setStatPotentials(Map<Stat, Short> statPotentials) {
+	public void setStatPotentials(Map<Statistic, Short> statPotentials) {
 		this.statPotentials = statPotentials;
 	}
 	public List<Item> getItems() {

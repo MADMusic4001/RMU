@@ -43,7 +43,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
@@ -75,9 +75,9 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	protected StatRxHandler               statRxHandler;
 	private   ArrayAdapter<SkillCategory> skillCategoryFilterSpinnerAdapter;
 	private   ArrayAdapter<SkillCategory> skillCategorySpinnerAdapter;
-	protected ArrayAdapter<Stat>          stat1SpinnerAdapter;
-	protected ArrayAdapter<Stat>          stat2SpinnerAdapter;
-	protected ArrayAdapter<Stat>          stat3SpinnerAdapter;
+	protected ArrayAdapter<Statistic>     stat1SpinnerAdapter;
+	protected ArrayAdapter<Statistic>     stat2SpinnerAdapter;
+	protected ArrayAdapter<Statistic>     stat3SpinnerAdapter;
 	private   TwoFieldListAdapter<Skill>  listAdapter;
 	private   Spinner                     skillCategoryFilterSpinner;
 	private   ListView                    listView;
@@ -268,7 +268,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
-		Stat newStat;
+		Statistic newStat;
 		boolean newBoolean;
 
 		String newValue = nameEdit.getText().toString();
@@ -328,7 +328,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			}
 		}
 		else {
-			List<Stat> stats = currentInstance.getStats();
+			List<Statistic> stats = currentInstance.getStats();
 			if(stats == null) {
 				stats = new ArrayList<>(3);
 				changed = true;
@@ -629,7 +629,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				List<Stat> stats = currentInstance.getStats();
+				List<Statistic> stats = currentInstance.getStats();
 				if(stats == null || stats.isEmpty() || stat1SpinnerAdapter.getPosition(stats.get(0)) != position) {
 					if(stats == null) {
 						stats = new ArrayList<>(3);
@@ -662,7 +662,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				List<Stat> stats = currentInstance.getStats();
+				List<Statistic> stats = currentInstance.getStats();
 				if(stats != null && (stats.size() == 1 ||
 						(stats.size() > 1 && stat2SpinnerAdapter.getPosition(stats.get(1)) != position))) {
 					if(stats.size() == 1) {
@@ -693,7 +693,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				List<Stat> stats = currentInstance.getStats();
+				List<Statistic> stats = currentInstance.getStats();
 				if(stats != null && (stats.size() == 2 || (stats.size() == 3 &&
 						stat3SpinnerAdapter.getPosition(stats.get(2)) != position))) {
 					if(stats.size() == 2) {
@@ -741,35 +741,45 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	}
 
 	private void loadStatSpinners() {
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Stat instances", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> items) {
-						stat1SpinnerAdapter.clear();
-						stat1SpinnerAdapter.addAll(items);
-						stat1SpinnerAdapter.notifyDataSetChanged();
+//		statRxHandler.getAll()
+//				.observeOn(AndroidSchedulers.mainThread())
+//				.subscribe(new Subscriber<Collection<Stat>>() {
+//					@Override
+//					public void onCompleted() {}
+//					@Override
+//					public void onError(Throwable e) {
+//						Log.e(LOG_TAG, "Exception caught getting all Stat instances", e);
+//					}
+//					@Override
+//					public void onNext(Collection<Stat> items) {
+//						stat1SpinnerAdapter.clear();
+//						stat1SpinnerAdapter.addAll(items);
+//						stat1SpinnerAdapter.notifyDataSetChanged();
+//
+//						stat2SpinnerAdapter.clear();
+//						stat2SpinnerAdapter.addAll(items);
+//						stat2SpinnerAdapter.notifyDataSetChanged();
+//
+//						stat3SpinnerAdapter.clear();
+//						stat3SpinnerAdapter.addAll(items);
+//						stat3SpinnerAdapter.notifyDataSetChanged();
+//					}
+//				});
+		stat1SpinnerAdapter.clear();
+		stat1SpinnerAdapter.addAll(Statistic.values());
+		stat1SpinnerAdapter.notifyDataSetChanged();
 
-						stat2SpinnerAdapter.clear();
-						stat2SpinnerAdapter.addAll(items);
-						stat2SpinnerAdapter.notifyDataSetChanged();
+		stat2SpinnerAdapter.clear();
+		stat2SpinnerAdapter.addAll(Statistic.values());
+		stat2SpinnerAdapter.notifyDataSetChanged();
 
-						stat3SpinnerAdapter.clear();
-						stat3SpinnerAdapter.addAll(items);
-						stat3SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
-
+		stat3SpinnerAdapter.clear();
+		stat3SpinnerAdapter.addAll(Statistic.values());
+		stat3SpinnerAdapter.notifyDataSetChanged();
 	}
 
 	private void copyStatsToSpinners() {
-		List<Stat> stats = currentInstance.getStats();
+		List<Statistic> stats = currentInstance.getStats();
 		if(stats == null) {
 			stats = new ArrayList<>(3);
 		}
@@ -779,7 +789,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		currentInstance.setStats(stats);
 	}
 
-	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, ArrayAdapter<Stat> adapter, int statIndex) {
+	private void setStatSpinnerValue(List<Statistic> stats, Spinner spinner, ArrayAdapter<Statistic> adapter, int statIndex) {
 		int position;
 
 		if(stats.size() <= statIndex) {

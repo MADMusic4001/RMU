@@ -47,6 +47,7 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
@@ -90,7 +91,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	private   EditText                     averageHeightEdit;
 	private   EditText                     averageWeightEdit;
 	private   EditText                     poundsPerInchEdit;
-	private   Map<Stat, EditText>          statEditViews;
+	private   Map<Statistic, EditText>     statEditViews;
 	private   Map<Realm, EditText>         rrEditViews;
 	private   EditText                     physicalRREdit;
 	private   Race              currentInstance = new Race();
@@ -395,7 +396,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			}
 		}
 
-		for(Map.Entry<Stat, EditText> entry : statEditViews.entrySet()) {
+		for(Map.Entry<Statistic, EditText> entry : statEditViews.entrySet()) {
 			EditText editText = entry.getValue();
 			oldShort = currentInstance.getStatModifiers().get(entry.getKey());
 			if(editText.getText().length() > 0) {
@@ -476,7 +477,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		poundsPerInchEdit.setText(String.valueOf(currentInstance.getPoundsPerInch()));
 		poundsPerInchEdit.setError(null);
 
-		for(Map.Entry<Stat, EditText> entry : statEditViews.entrySet()) {
+		for(Map.Entry<Statistic, EditText> entry : statEditViews.entrySet()) {
 			if(currentInstance.getStatModifiers().get(entry.getKey()) == null) {
 				entry.getValue().setText(null);
 			}
@@ -639,20 +640,23 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT,
 								1f);
 						int numStats = stats.size();
-						for(Stat stat : stats) {
-							if(numStats <= 6  || i < numStats/2) {
-								initStatViews(stat, params, statModLabels1, statModEdits1);
+						for(Statistic stat : Statistic.values()) {
+							if(!Statistic.NON_REALM.equals(stat)) {
+								if (numStats <= 6 || i < numStats / 2) {
+									initStatViews(stat, params, statModLabels1, statModEdits1);
+								}
+								else {
+									initStatViews(stat, params, statModLabels2, statModEdits2);
+								}
+								i++;
 							}
-							else {
-								initStatViews(stat, params, statModLabels2, statModEdits2);
-							}
-							i++;
 						}
 					}
 				});
 	}
 
-	private void initStatViews(final Stat stat, LinearLayout.LayoutParams params, LinearLayout labelsRow, LinearLayout editsRow) {
+	private void initStatViews(final Statistic stat, LinearLayout.LayoutParams params, LinearLayout labelsRow, LinearLayout
+			editsRow) {
 		TextView textView = new TextView(getActivity());
 		textView.setLayoutParams(params);
 		textView.setText(stat.getName());

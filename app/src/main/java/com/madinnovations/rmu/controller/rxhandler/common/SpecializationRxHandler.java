@@ -54,7 +54,8 @@ public class SpecializationRxHandler {
 	}
 
 	/**
-	 * Creates an Observable that, when subscribed to, will query persistent storage for a Specialization instance with the given id.
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a Specialization instance with the given
+	 * id.
 	 *
 	 * @param id  the id of the Specialization to retrieve from persistent storage
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Specialization instance.
@@ -78,7 +79,8 @@ public class SpecializationRxHandler {
 	}
 
 	/**
-	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization instances.
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
 	 * instances.
@@ -175,7 +177,8 @@ public class SpecializationRxHandler {
 	}
 
 	/**
-	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization instances.
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
 	 * instances.
@@ -199,8 +202,8 @@ public class SpecializationRxHandler {
 	}
 
 	/**
-	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization instances from
-	 * combat skill categories.
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances from combat skill categories.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
 	 * instances.
@@ -223,6 +226,30 @@ public class SpecializationRxHandler {
 									subscriber.onNext(specializations);
 								}
 							}
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances that a player character can purchase.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
+	 * instances.
+	 */
+	public Observable<Collection<Specialization>> getCharacterPurchasableSpecializations() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Specialization>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Specialization>> subscriber) {
+						try {
+							subscriber.onNext(dao.getCharacterPurchasableSpecializations());
 							subscriber.onCompleted();
 						} catch (Exception e) {
 							subscriber.onError(e);

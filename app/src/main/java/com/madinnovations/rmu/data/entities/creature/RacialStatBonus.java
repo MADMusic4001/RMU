@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -24,8 +24,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Stat bonus attributes
  */
 public class RacialStatBonus {
-	private Stat stat = null;
-	private short bonus = 0;
+	private Statistic stat  = null;
+	private short     bonus = 0;
 
 	/**
 	 * Creates a new RacialStatBonus with the given attribute values
@@ -33,7 +33,7 @@ public class RacialStatBonus {
 	 * @param stat  a Stat instance to set the stat value for the new RacialStatBonus instance
 	 * @param bonus  a short to set the bonus value for the new RacialStatBonus instance
 	 */
-	public RacialStatBonus(Stat stat, short bonus) {
+	public RacialStatBonus(Statistic stat, short bonus) {
 		this.stat = stat;
 		this.bonus = bonus;
 	}
@@ -62,10 +62,10 @@ public class RacialStatBonus {
 	}
 
 	// Getters and setters
-	public Stat getStat() {
+	public Statistic getStat() {
 		return stat;
 	}
-	public void setStat(Stat stat) {
+	public void setStat(Statistic stat) {
 		this.stat = stat;
 	}
 	public short getBonus() {

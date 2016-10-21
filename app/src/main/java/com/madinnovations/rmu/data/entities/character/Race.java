@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -32,7 +32,7 @@ public class Race {
 	private String           name                         = null;
 	private String           description                  = null;
 	private short            bonusDevelopmentPoints       = 0;
-	private Map<Stat, Short> statModifiers                = new HashMap<>();
+	private Map<Statistic, Short> statModifiers                = new HashMap<>();
 	private Map<Realm, Short> realmResistancesModifiers   = new HashMap<>();
 	private short physicalResistanceModifier = 0;
 	private short enduranceModifier = 0;
@@ -113,10 +113,10 @@ public class Race {
 	public void setBonusDevelopmentPoints(short bonusDevelopmentPoints) {
 		this.bonusDevelopmentPoints = bonusDevelopmentPoints;
 	}
-	public Map<Stat, Short> getStatModifiers() {
+	public Map<Statistic, Short> getStatModifiers() {
 		return statModifiers;
 	}
-	public void setStatModifiers(Map<Stat, Short> statModifiers) {
+	public void setStatModifiers(Map<Statistic, Short> statModifiers) {
 		this.statModifiers = statModifiers;
 	}
 	public Map<Realm, Short> getRealmResistancesModifiers() {

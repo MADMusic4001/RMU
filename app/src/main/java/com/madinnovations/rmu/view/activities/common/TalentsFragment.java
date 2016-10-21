@@ -55,7 +55,7 @@ import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
@@ -121,7 +121,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private SparseArray<Skill>           skillSparseArray          = null;
 	private SparseArray<Specialization>  specializationSparseArray = null;
 	private SparseArray<Spell>           spellSparseArray          = null;
-	private SparseArray<Stat>            statSparseArray           = null;
+	private SparseArray<Statistic>       statSparseArray           = null;
 	private Map<View, Integer>           indexMap                  = new HashMap<>();
 
 	@Nullable
@@ -1169,7 +1169,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initStats(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
-		final ArrayAdapter<Stat> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
 		if(statSparseArray != null) {
 			adapter.clear();
@@ -1178,45 +1178,29 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Stat currentStat = statSparseArray.get(
+			Statistic currentStat = statSparseArray.get(
 					currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
 			spinner.setSelection(adapter.getPosition(currentStat));
 		}
 		else {
-			statRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Stat>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception getting all Stat instances", e);
-						}
-						@Override
-						public void onNext(Collection<Stat> stats) {
-							statSparseArray = new SparseArray<>(stats.size());
-							for(Stat stat : stats) {
-								statSparseArray.put(stat.getId(), stat);
-							}
-							adapter.clear();
-							adapter.addAll(stats);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Stat currentStat = statSparseArray.get(
-									currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-							spinner.setSelection(adapter.getPosition(currentStat));
-						}
-					});
+			adapter.clear();
+			adapter.addAll(Statistic.values());
+			adapter.notifyDataSetChanged();
+			spinner.setAdapter(adapter);
+			Statistic currentStat = statSparseArray.get(
+					currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+			spinner.setSelection(adapter.getPosition(currentStat));
 		}
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Stat stat = adapter.getItem(position);
-				if(stat != null) {
-					Stat currentStat = statSparseArray.get(
+				Statistic statistic = adapter.getItem(position);
+				if(statistic != null) {
+					Statistic currentStat = statSparseArray.get(
 							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-					if(!stat.equals(currentStat)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(stat.getId());
+					if(!statistic.equals(currentStat)) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(statistic.name());
 						saveItem();
 					}
 				}

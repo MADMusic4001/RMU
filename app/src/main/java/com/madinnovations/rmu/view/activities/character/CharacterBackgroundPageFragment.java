@@ -44,6 +44,18 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 	private EditText familyInformationEdit;
 	private EditText hometownEdit;
 
+	/**
+	 * Creates new CharacterBackgroundPageFragment instance.
+	 *
+	 * @param charactersFragment  the CharactersFragment instance this fragment is attached to.
+	 * @return the new instance.
+	 */
+	public static CharacterBackgroundPageFragment newInstance(CharactersFragment charactersFragment) {
+		CharacterBackgroundPageFragment fragment = new CharacterBackgroundPageFragment();
+		fragment.charactersFragment = charactersFragment;
+		return fragment;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
@@ -263,9 +275,5 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		mannerismsEdit.setText(charactersFragment.getCurrentInstance().getMannerisms());
 		familyInformationEdit.setText(charactersFragment.getCurrentInstance().getFamilyInfo());
 		hometownEdit.setText(charactersFragment.getCurrentInstance().getHometown());
-	}
-
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
 	}
 }

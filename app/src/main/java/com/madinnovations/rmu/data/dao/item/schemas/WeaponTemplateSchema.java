@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.data.dao.item.schemas;
 
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.OutlookSchema;
 
 /**
  * Database schema data for the weapons table

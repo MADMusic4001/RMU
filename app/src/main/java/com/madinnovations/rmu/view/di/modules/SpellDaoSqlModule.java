@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
@@ -42,8 +41,8 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class SpellDaoSqlModule {
 	@Provides @Singleton
-	RealmDao provideRealmDao(RMUDatabaseHelper helper, StatDao statDao) {
-		return new RealmDaoDbImpl(helper, statDao);
+	RealmDao provideRealmDao(RMUDatabaseHelper helper) {
+		return new RealmDaoDbImpl(helper);
 	}
 	@Provides @Singleton
 	SpellDao provideSpellDao(RMUDatabaseHelper helper, SpellListDao spellListDao, SpellTypeDao spellTypeDao,

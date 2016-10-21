@@ -33,14 +33,13 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSche
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.object.Item;
 
@@ -60,7 +59,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	private RaceDao raceDao;
 	private SkillDao skillDao;
 	private TalentDao talentDao;
-	private StatDao statDao;
 	private CultureDao cultureDao;
 	private ProfessionDao professionDao;
 	private RealmDao realmDao;
@@ -70,15 +68,21 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	 * Creates a new instance of CharacterDaoImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
+	 * @param raceDao  a {@link RaceDao} instance
+	 * @param skillDao  a {@link SkillDao} instance
+	 * @param talentDao  a {@link TalentDao} instance
+	 * @param cultureDao  a {@link CultureDao} instance
+	 * @param professionDao  a {@link ProfessionDao} instance
+	 * @param realmDao  a {@link RealmDao} instance
+	 * @param itemDao  an {@link ItemDao} instance
 	 */
 	@Inject
-	public CharacterDaoDbImpl(SQLiteOpenHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao, StatDao statDao,
+	public CharacterDaoDbImpl(SQLiteOpenHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
 							  CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao) {
 		super(helper);
 		this.raceDao = raceDao;
 		this.skillDao = skillDao;
 		this.talentDao = talentDao;
-		this.statDao = statDao;
 		this.cultureDao = cultureDao;
 		this.professionDao = professionDao;
 		this.realmDao = realmDao;
@@ -196,12 +200,13 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(10);
+			values = new ContentValues(26);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(9);
+			values = new ContentValues(25);
 		}
+		values.put(COLUMN_EXPERIENCE_POINTS, instance.getExperiencePoints());
 		values.put(COLUMN_FIRST_NAME, instance.getFirstName());
 		values.put(COLUMN_LAST_NAME, instance.getLastName());
 		values.put(COLUMN_KNOWN_AS, instance.getKnownAs());
@@ -279,6 +284,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_WEIGHT, instance.getWeight());
 		values.put(COLUMN_CURRENT_HP_LOSS, instance.getHitPointLoss());
 		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
+		values.put(COLUMN_CURRENT_ENDURANCE_LOSS, instance.getEnduranceLoss());
+		values.put(COLUMN_CURRENT_PP_LOSS, instance.getPowerPointLoss());
 
 		return values;
 	}
@@ -330,12 +337,12 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		selection = CharacterStatsSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterStatsSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Stat, Short> entry : instance.getStatTemps().entrySet()) {
+		for(Map.Entry<Statistic, Short> entry : instance.getStatTemps().entrySet()) {
 			Short potential = instance.getStatPotentials().get(entry.getKey());
 			if(entry.getValue() != null && potential != null) {
 				result &= (db.insertWithOnConflict(CharacterStatsSchema.TABLE_NAME, null,
 												   getStatsContentValues(instance.getId(),
-																		 entry.getKey().getId(),
+																		 entry.getKey(),
 																		 entry.getValue(),
 																		 potential),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
@@ -452,11 +459,11 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		return map;
 	}
 
-	private ContentValues getStatsContentValues(int characterId, int statId, short currentValue, short potentialValue) {
+	private ContentValues getStatsContentValues(int characterId, Statistic stat, short currentValue, short potentialValue) {
 		ContentValues values = new ContentValues(4);
 
 		values.put(CharacterStatsSchema.COLUMN_CHARACTER_ID, characterId);
-		values.put(CharacterStatsSchema.COLUMN_STAT_ID, statId);
+		values.put(CharacterStatsSchema.COLUMN_STAT_NAME, stat.name());
 		values.put(CharacterStatsSchema.COLUMN_CURRENT_VALUE, currentValue);
 		values.put(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE, potentialValue);
 
@@ -468,17 +475,17 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		final String selection = CharacterStatsSchema.COLUMN_CHARACTER_ID + " = ?";
 
 		Cursor cursor = super.query(CharacterStatsSchema.TABLE_NAME, CharacterStatsSchema.COLUMNS, selection,
-				selectionArgs, CharacterStatsSchema.COLUMN_STAT_ID);
-		Map<Stat, Short> tempsMap = new HashMap<>(cursor.getCount());
-		Map<Stat, Short> potentialsMap = new HashMap<>(cursor.getCount());
+				selectionArgs, CharacterStatsSchema.COLUMN_STAT_NAME);
+		Map<Statistic, Short> tempsMap = new HashMap<>(cursor.getCount());
+		Map<Statistic, Short> potentialsMap = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_STAT_ID));
-			Stat stat = statDao.getById(mappedId);
-			if(stat != null) {
-				tempsMap.put(stat, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_CURRENT_VALUE)));
-				potentialsMap.put(stat, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE)));
-			}
+			Statistic statistic = Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
+					CharacterStatsSchema.COLUMN_STAT_NAME)));
+			tempsMap.put(statistic, cursor.getShort(cursor.getColumnIndexOrThrow(
+					CharacterStatsSchema.COLUMN_CURRENT_VALUE)));
+			potentialsMap.put(statistic, cursor.getShort(cursor.getColumnIndexOrThrow(
+					CharacterStatsSchema.COLUMN_POTENTIAL_VALUE)));
 			cursor.moveToNext();
 		}
 		cursor.close();

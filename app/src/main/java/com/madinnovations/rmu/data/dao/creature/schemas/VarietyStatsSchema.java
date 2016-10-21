@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
-
 /**
  * Database schema data for the variety_stats table
  */
@@ -24,19 +22,18 @@ public interface VarietyStatsSchema {
 	String TABLE_NAME = "variety_stats";
 
 	String COLUMN_VARIETY_ID = "varietyId";
-	String COLUMN_STAT_ID = "statId";
-	String COLUMN_BONUS = "bonus";
+	String COLUMN_STAT_NAME  = "statName";
+	String COLUMN_BONUS      = "bonus";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
-			+ COLUMN_STAT_ID + " INTEGER NOT NULL, "
+			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL REFERENCES "
+				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
+			+ COLUMN_STAT_NAME + " TEXT NOT NULL, "
 			+ COLUMN_BONUS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_STAT_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_VARIETY_ID + ") REFERENCES " + CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + ")"
-			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_STAT_NAME + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_STAT_ID, COLUMN_BONUS};
+	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_STAT_NAME, COLUMN_BONUS};
 }

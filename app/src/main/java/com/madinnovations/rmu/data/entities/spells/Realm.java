@@ -15,17 +15,17 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 /**
  * Realm attributes
  */
 public class Realm {
 	public static final String JSON_NAME = "Realms";
-	private int id = -1;
-	private String name;
-	private String description;
-	private Stat   stat;
+	private int       id = -1;
+	private String    name;
+	private String    description;
+	private Statistic stat;
 
 	/**
 	 * Creates a new Realm instance
@@ -90,10 +90,10 @@ public class Realm {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Stat getStat() {
+	public Statistic getStat() {
 		return stat;
 	}
-	public void setStat(Stat stat) {
+	public void setStat(Statistic stat) {
 		this.stat = stat;
 	}
 }

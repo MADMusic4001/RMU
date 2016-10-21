@@ -42,7 +42,7 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
@@ -64,7 +64,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	protected RealmRxHandler             realmRxHandler;
 	@Inject
 	protected StatRxHandler              statRxHandler;
-	private   ArrayAdapter<Stat>         statSpinnerAdapter;
+	private   ArrayAdapter<Statistic>         statSpinnerAdapter;
 	private   TwoFieldListAdapter<Realm> listAdapter;
 	private   ListView                   listView;
 	private   EditText                   nameEdit;
@@ -163,7 +163,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
-		Stat newStat;
+		Statistic newStat;
 		int position;
 
 		newString = nameEdit.getText().toString();
@@ -349,26 +349,12 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStatSpinner(View layout) {
 		statSpinner = (Spinner)layout.findViewById(R.id.stat_spinner);
-		statSpinnerAdapter = new ArrayAdapter<Stat>(getActivity(), R.layout.spinner_row);
+		statSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		statSpinner.setAdapter(statSpinnerAdapter);
 
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("RealmsFragment", "Exception caught getting all Stat instances", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> stats) {
-						statSpinnerAdapter.clear();
-						statSpinnerAdapter.addAll(stats);
-						statSpinnerAdapter.notifyDataSetChanged();
-					}
-				});
+		statSpinnerAdapter.clear();
+		statSpinnerAdapter.addAll(Statistic.values());
+		statSpinnerAdapter.notifyDataSetChanged();
 		statSpinner.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -381,7 +367,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		statSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Stat newStat = statSpinnerAdapter.getItem(position);
+				Statistic newStat = statSpinnerAdapter.getItem(position);
 				if(newStat != null && !newStat.equals(currentInstance.getStat()) ||
 						newStat == null && currentInstance.getStat() != null) {
 					currentInstance.setStat(newStat);

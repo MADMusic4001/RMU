@@ -44,7 +44,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
@@ -67,9 +67,9 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	protected SkillCategoryRxHandler skillCategoryRxHandler;
 	@Inject
 	protected StatRxHandler statRxHandler;
-	private ArrayAdapter<Stat> stat1SpinnerAdapter;
-	private ArrayAdapter<Stat> stat2SpinnerAdapter;
-	private ArrayAdapter<Stat> stat3SpinnerAdapter;
+	private ArrayAdapter<Statistic> stat1SpinnerAdapter;
+	private ArrayAdapter<Statistic> stat2SpinnerAdapter;
+	private ArrayAdapter<Statistic> stat3SpinnerAdapter;
 	private TwoFieldListAdapter<SkillCategory> listAdapter = null;
 	private ListView listView;
 	private EditText nameEdit;
@@ -179,9 +179,9 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
-		Stat newStat;
+		Statistic newStat;
 		int position;
-		List<Stat> stats;
+		List<Statistic> stats;
 
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
@@ -301,7 +301,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		return changed;
 	}
 
-	private boolean setStat(List<Stat> stats, Stat newStat, int currentIndex) {
+	private boolean setStat(List<Statistic> stats, Statistic newStat, int currentIndex) {
 		boolean changed = false;
 
 		if (newStat != null) {
@@ -336,7 +336,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		else {
 			realmStatsCheckBox.setVisibility(View.VISIBLE);
 			realmStatsCheckBox.setChecked(currentInstance.isRealmStats());
-			List<Stat> stats = currentInstance.getStats() != null ? currentInstance.getStats() : new ArrayList<Stat>(1);
+			List<Statistic> stats = currentInstance.getStats() != null ? currentInstance.getStats() : new ArrayList<Statistic>(1);
 			stat1Spinner.setVisibility(View.VISIBLE);
 			stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 			setStatSpinnerValue(stats, stat1Spinner, stat1SpinnerAdapter, 0);
@@ -526,7 +526,8 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 						realmStatsCheckBox.setVisibility(View.VISIBLE);
 						realmStatsCheckBox.setChecked(currentInstance.isRealmStats());
 						stat1Spinner.setVisibility(View.VISIBLE);
-						List<Stat> stats = currentInstance.getStats() != null ? currentInstance.getStats() : new ArrayList<Stat>(1);
+						List<Statistic> stats = currentInstance.getStats() != null ? currentInstance.getStats() : new
+								ArrayList<Statistic>(1);
 						setStatSpinnerValue(stats, stat1Spinner, stat1SpinnerAdapter, 0);
 						if (realmStatsCheckBox.isChecked()) {
 							stat2Spinner.setVisibility(View.GONE);
@@ -557,13 +558,14 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 					if(realmStatsCheckBox.isChecked()) {
 						stat2Spinner.setVisibility(View.GONE);
 						stat3Spinner.setVisibility(View.GONE);
-						List<Stat> stats = currentInstance.getStats();
+						List<Statistic> stats = currentInstance.getStats();
 						while(stats != null && stats.size() > 1) {
 							stats.remove(1);
 						}
 					}
 					else {
-						List<Stat> stats = currentInstance.getStats() != null ? currentInstance.getStats() : new ArrayList<Stat>(3);
+						List<Statistic> stats = currentInstance.getStats() != null ? currentInstance.getStats() : new
+								ArrayList<Statistic>(3);
 						((ArrayList)stats).ensureCapacity(3);
 						stat2Spinner.setVisibility(View.VISIBLE);
 						setStatSpinnerValue(stats, stat2Spinner, stat2SpinnerAdapter, 1);
@@ -596,7 +598,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				List<Stat> stats = currentInstance.getStats();
+				List<Statistic> stats = currentInstance.getStats();
 				if(stats == null || stats.isEmpty() || stat1SpinnerAdapter.getPosition(stats.get(0)) != position) {
 					copySpinnersToStats();
 					currentInstance.setStats(stats);
@@ -711,37 +713,47 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	}
 
 	private void loadStatSpinners() {
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> items) {
-						stat1SpinnerAdapter.clear();
-						stat1SpinnerAdapter.addAll(items);
-						stat1SpinnerAdapter.notifyDataSetChanged();
+//		statRxHandler.getAll()
+//				.observeOn(AndroidSchedulers.mainThread())
+//				.subscribe(new Subscriber<Collection<Stat>>() {
+//					@Override
+//					public void onCompleted() {}
+//					@Override
+//					public void onError(Throwable e) {
+//						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+//					}
+//					@Override
+//					public void onNext(Collection<Stat> items) {
+//						stat1SpinnerAdapter.clear();
+//						stat1SpinnerAdapter.addAll(items);
+//						stat1SpinnerAdapter.notifyDataSetChanged();
+//
+//						stat2SpinnerAdapter.clear();
+//						stat2SpinnerAdapter.addAll(items);
+//						stat2SpinnerAdapter.notifyDataSetChanged();
+//
+//						stat3SpinnerAdapter.clear();
+//						stat3SpinnerAdapter.addAll(items);
+//						stat3SpinnerAdapter.notifyDataSetChanged();
+//					}
+//				});
+		stat1SpinnerAdapter.clear();
+		stat1SpinnerAdapter.addAll(Statistic.values());
+		stat1SpinnerAdapter.notifyDataSetChanged();
 
-						stat2SpinnerAdapter.clear();
-						stat2SpinnerAdapter.addAll(items);
-						stat2SpinnerAdapter.notifyDataSetChanged();
+		stat2SpinnerAdapter.clear();
+		stat2SpinnerAdapter.addAll(Statistic.values());
+		stat2SpinnerAdapter.notifyDataSetChanged();
 
-						stat3SpinnerAdapter.clear();
-						stat3SpinnerAdapter.addAll(items);
-						stat3SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
-
+		stat3SpinnerAdapter.clear();
+		stat3SpinnerAdapter.addAll(Statistic.values());
+		stat3SpinnerAdapter.notifyDataSetChanged();
 	}
 
 	private boolean copySpinnersToStats() {
 		boolean changed;
 
-		List<Stat> stats = currentInstance.getStats();
+		List<Statistic> stats = currentInstance.getStats();
 		if(stats == null) {
 			stats = new ArrayList<>(3);
 		}
@@ -755,10 +767,10 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		return changed;
 	}
 
-	private boolean getStatSpinnerValue(List<Stat> stats, Spinner spinner, ArrayAdapter<Stat> adapter, int statIndex) {
+	private boolean getStatSpinnerValue(List<Statistic> stats, Spinner spinner, ArrayAdapter<Statistic> adapter, int statIndex) {
 		boolean changed = false;
 		int position;
-		Stat newStat = null;
+		Statistic newStat = null;
 
 		if(spinner.getVisibility() != View.VISIBLE) {
 			if(stats.size() >= statIndex + 1) {
@@ -798,7 +810,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		return changed;
 	}
 
-	private void setStatSpinnerValue(List<Stat> stats, Spinner spinner, ArrayAdapter<Stat> adapter, int statIndex) {
+	private void setStatSpinnerValue(List<Statistic> stats, Spinner spinner, ArrayAdapter<Statistic> adapter, int statIndex) {
 		int position;
 
 		while(stats.size() <= statIndex) {

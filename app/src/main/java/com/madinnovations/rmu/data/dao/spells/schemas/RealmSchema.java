@@ -15,18 +15,16 @@
  */
 package com.madinnovations.rmu.data.dao.spells.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
-
 /**
  * Database schema data for the realms table
  */
 public interface RealmSchema {
 	String TABLE_NAME = "realms";
 
-	String COLUMN_ID = "id";
-	String COLUMN_NAME = "name";
+	String COLUMN_ID          = "id";
+	String COLUMN_NAME        = "name";
 	String COLUMN_DESCRIPTION = "description";
-	String COLUMN_STAT_ID = "statId";
+	String COLUMN_STAT_NAME   = "statName";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -34,9 +32,8 @@ public interface RealmSchema {
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
-			+ COLUMN_STAT_ID + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_STAT_ID + ") REFERENCES " + StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + ")"
+			+ COLUMN_STAT_NAME + " TEXT NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT_ID};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_STAT_NAME};
 }

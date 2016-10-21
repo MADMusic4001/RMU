@@ -87,4 +87,11 @@ public interface SpecializationDao {
 	 * @return  a List containing all Specialization objects that reference the given skill currently in persistent storage.
 	 */
 	public List<Specialization> getSpecializationsForSkill(Skill filter);
+
+	/**
+	 * Retrieves all Specialization objects that a player character can purchase.
+	 *
+	 * @return  a Collection of Specialization instances.
+	 */
+	public Collection<Specialization> getCharacterPurchasableSpecializations();
 }

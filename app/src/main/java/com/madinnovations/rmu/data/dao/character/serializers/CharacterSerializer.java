@@ -29,7 +29,7 @@ import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -99,9 +99,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterStatsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Stat, Short> entry : value.getStatTemps().entrySet()) {
+		for(Map.Entry<Statistic, Short> entry : value.getStatTemps().entrySet()) {
 			out.beginObject();
-			out.name(CharacterStatsSchema.COLUMN_STAT_ID).value(entry.getKey().getId());
+			out.name(CharacterStatsSchema.COLUMN_STAT_NAME).value(entry.getKey().name());
 			out.name(CharacterStatsSchema.COLUMN_CURRENT_VALUE).value(entry.getValue());
 			out.name(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE).value(value.getStatPotentials().get(entry.getKey()));
 			out.endObject();
@@ -295,14 +295,14 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 	private void readStats(JsonReader in, Character character) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
-			Stat newStat = null;
+			Statistic newStat = null;
 			Short tempValue = null;
 			Short potentialValue = null;
 			in.beginObject();
 			while(in.hasNext()) {
 				switch(in.nextName()) {
-					case CharacterStatsSchema.COLUMN_STAT_ID:
-						newStat = new Stat(in.nextInt());
+					case CharacterStatsSchema.COLUMN_STAT_NAME:
+						newStat = Statistic.valueOf(in.nextString());
 						break;
 					case CharacterStatsSchema.COLUMN_CURRENT_VALUE:
 						tempValue = (short)in.nextInt();

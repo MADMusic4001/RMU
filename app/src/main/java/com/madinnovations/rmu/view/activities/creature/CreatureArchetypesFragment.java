@@ -45,7 +45,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler
 import com.madinnovations.rmu.controller.rxhandler.common.StatRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxHandler;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
@@ -71,8 +71,8 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	protected StatRxHandler                          statRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler                 skillCategoryRxHandler;
-	private   ArrayAdapter<Stat>                     stat1SpinnerAdapter;
-	private   ArrayAdapter<Stat>                     stat2SpinnerAdapter;
+	private   ArrayAdapter<Statistic>                stat1SpinnerAdapter;
+	private   ArrayAdapter<Statistic>                stat2SpinnerAdapter;
 	private   ArrayAdapter<SkillCategory>            primarySkillCategoriesListAdapter;
 	private   ArrayAdapter<SkillCategory>            secondarySkillCategoriesListAdapter;
 	private   ArrayAdapter<SkillCategory>            tertiarySkillCategoriesListAdapter;
@@ -89,19 +89,16 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private ListView                     tertiarySkillCategoriesList;
 	private EditText                     spellsEdit;
 	private EditText                     rolesEdit;
-	private CreatureArchetype currentInstance = new CreatureArchetype();
-	private boolean          isNew            = true;
+	private CreatureArchetype   currentInstance        = new CreatureArchetype();
+	private boolean             isNew                  = true;
 	private List<SkillCategory> newSkillCategoriesList = new ArrayList<>();
-	private Stat realmStat = new Stat();
+	private Statistic           realmStat              = Statistic.NON_REALM;
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
-
-		realmStat.setAbbreviation("-");
-		realmStat.setName(getString(R.string.label_non_realm_stat));
 
 		View layout = inflater.inflate(R.layout.creature_archetypes_fragment, container, false);
 
@@ -195,7 +192,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
-		Stat newStat;
+		Statistic newStat;
 		int position;
 
 		newString = nameEdit.getText().toString();
@@ -535,28 +532,30 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> items) {
-						stat1SpinnerAdapter.clear();
-						stat1SpinnerAdapter.add(realmStat);
-						stat1SpinnerAdapter.addAll(items);
-						stat1SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
-
+//		statRxHandler.getAll()
+//				.observeOn(AndroidSchedulers.mainThread())
+//				.subscribe(new Subscriber<Collection<Stat>>() {
+//					@Override
+//					public void onCompleted() {}
+//					@Override
+//					public void onError(Throwable e) {
+//						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
+//					}
+//					@Override
+//					public void onNext(Collection<Stat> items) {
+//						stat1SpinnerAdapter.clear();
+//						stat1SpinnerAdapter.add(realmStat);
+//						stat1SpinnerAdapter.addAll(items);
+//						stat1SpinnerAdapter.notifyDataSetChanged();
+//					}
+//				});
+		stat1SpinnerAdapter.clear();
+		stat1SpinnerAdapter.addAll(Statistic.values());
+		stat1SpinnerAdapter.notifyDataSetChanged();
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Stat newStat = stat1SpinnerAdapter.getItem(position);
+				Statistic newStat = stat1SpinnerAdapter.getItem(position);
 				if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat1() != null) {
 					currentInstance.setStat1(null);
 					saveItem();
@@ -597,28 +596,30 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
-		statRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Stat>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
-					}
-					@Override
-					public void onNext(Collection<Stat> items) {
-						stat2SpinnerAdapter.clear();
-						stat2SpinnerAdapter.add(realmStat);
-						stat2SpinnerAdapter.addAll(items);
-						stat2SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
-
+//		statRxHandler.getAll()
+//				.observeOn(AndroidSchedulers.mainThread())
+//				.subscribe(new Subscriber<Collection<Stat>>() {
+//					@Override
+//					public void onCompleted() {}
+//					@Override
+//					public void onError(Throwable e) {
+//						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
+//					}
+//					@Override
+//					public void onNext(Collection<Stat> items) {
+//						stat2SpinnerAdapter.clear();
+//						stat2SpinnerAdapter.add(realmStat);
+//						stat2SpinnerAdapter.addAll(items);
+//						stat2SpinnerAdapter.notifyDataSetChanged();
+//					}
+//				});
+		stat2SpinnerAdapter.clear();
+		stat2SpinnerAdapter.addAll(Statistic.values());
+		stat2SpinnerAdapter.notifyDataSetChanged();
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Stat newStat = stat2SpinnerAdapter.getItem(position);
+				Statistic newStat = stat2SpinnerAdapter.getItem(position);
 				if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat2() != null) {
 					currentInstance.setStat2(null);
 					saveItem();

@@ -24,15 +24,15 @@ import android.support.annotation.NonNull;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,18 +44,17 @@ import javax.inject.Singleton;
 @Singleton
 public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> implements SpecializationDao, SpecializationSchema {
     private SkillDao skillDao;
-    private StatDao statDao;
 
     /**
      * Creates a new instance of SpecializationDaoDbImpl
      *
+	 * @param skillDao  a {@link SkillDao} instance
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public SpecializationDaoDbImpl(SQLiteOpenHelper helper, SkillDao skillDao, StatDao statDao) {
+    public SpecializationDaoDbImpl(SQLiteOpenHelper helper, SkillDao skillDao) {
         super(helper);
         this.skillDao = skillDao;
-        this.statDao = statDao;
     }
 
     @Override
@@ -93,16 +92,17 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(5);
+            values = new ContentValues(6);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(4);
+            values = new ContentValues(5);
         }
         values.put(COLUMN_NAME, instance.getName());
         values.put(COLUMN_DESCRIPTION, instance.getDescription());
         values.put(COLUMN_SKILL_ID, instance.getSkill().getId());
         values.put(COLUMN_SKILL_STATS, instance.isUseSkillStats());
+        values.put(COLUMN_CREATURE_ONLY, instance.isCreatureOnly());
 
         return values;
     }
@@ -116,9 +116,9 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         db.delete(SpecializationStatsSchema.TABLE_NAME, selection, selectionArgs);
 
         if(instance.getStats() != null){
-            for (Stat stat : instance.getStats()) {
+            for (Statistic stat : instance.getStats()) {
                 result &= (db.insertWithOnConflict(SpecializationStatsSchema.TABLE_NAME, null,
-												   getSpecializationStat(instance.getId(), stat.getId()),
+												   getSpecializationStat(instance.getId(), stat),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
             }
         }
@@ -159,20 +159,50 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         return list;
     }
 
-    private List<Stat> getStats(int specializationId) {
+	@Override
+	public Collection<Specialization> getCharacterPurchasableSpecializations() {
+		final String selectionArgs[] = {"0"};
+		final String selection = COLUMN_CREATURE_ONLY + " = ?";
+		Collection<Specialization> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Specialization instance = cursorToEntity(cursor);
+
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	private List<Statistic> getStats(int specializationId) {
         final String selectionArgs[] = { String.valueOf(specializationId) };
         final String selection = SpecializationStatsSchema.COLUMN_SPECIALIZATION_ID + " = ?";
 
         Cursor cursor = super.query(SpecializationStatsSchema.TABLE_NAME, SpecializationStatsSchema.COLUMNS, selection,
-                selectionArgs, SpecializationStatsSchema.COLUMN_STAT_ID);
-        List<Stat> list = new ArrayList<>(cursor.getCount());
+                selectionArgs, SpecializationStatsSchema.COLUMN_STAT_NAME);
+        List<Statistic> list = new ArrayList<>(cursor.getCount());
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_ID));
-            Stat instance = statDao.getById(id);
-            if(instance != null) {
-                list.add(instance);
-            }
+			list.add(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(SkillCategoryStatsSchema.COLUMN_STAT_NAME))));
             cursor.moveToNext();
         }
         cursor.close();
@@ -180,11 +210,11 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         return list;
     }
 
-    private ContentValues getSpecializationStat(int specializationId, int statId) {
+    private ContentValues getSpecializationStat(int specializationId, Statistic stat) {
         ContentValues values = new ContentValues(2);
 
         values.put(SpecializationStatsSchema.COLUMN_SPECIALIZATION_ID, specializationId);
-        values.put(SpecializationStatsSchema.COLUMN_STAT_ID, statId);
+        values.put(SpecializationStatsSchema.COLUMN_STAT_NAME, stat.name());
 
         return values;
     }
@@ -197,6 +227,7 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
         instance.setSkill(filterSkill);
         instance.setUseSkillStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SKILL_STATS)) != 0);
+		instance.setCreatureOnly(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CREATURE_ONLY)) != 0);
         if(!instance.isUseSkillStats()) {
             instance.setStats(getStats(instance.getId()));
         }

@@ -50,7 +50,8 @@ public final class SpinnerUtils<T> {
 	 * @return  the {@link Spinner} instance that was initialized or null if not found.
 	 */
 	public Spinner initSpinner(@NonNull View layout, @NonNull final Context context, @NonNull Observable<Collection<T>> loader,
-							   @NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId, T dummmyInstance) {
+							   @NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
+							   T dummmyInstance) {
 		spinner = (Spinner) layout.findViewById(spinnerId);
 		if(spinner != null) {
 			initSpinner(spinner, context, loader, valuesCallback, spinnerId, dummmyInstance);
@@ -69,8 +70,10 @@ public final class SpinnerUtils<T> {
 	 * @param spinnerId  the resource ID of the Spinner to be initialized
 	 */
 	@SuppressWarnings("WeakerAccess")
-	public void initSpinner(@NonNull final Spinner spinner, @NonNull final Context context, @NonNull Observable<Collection<T>> loader,
-							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId, final T dummyInstance) {
+	public void initSpinner(@NonNull final Spinner spinner, @NonNull final Context context,
+							@NonNull Observable<Collection<T>> loader,
+							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
+							final T dummyInstance) {
 		this.spinner = spinner;
 		adapter = new ArrayAdapter<>(context, R.layout.spinner_row);
 		spinner.setAdapter(adapter);

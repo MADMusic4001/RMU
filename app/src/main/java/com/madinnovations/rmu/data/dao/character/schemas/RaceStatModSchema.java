@@ -15,27 +15,24 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.StatSchema;
-
 /**
  * Database schema data for the race_stat_mods table
  */
 public interface RaceStatModSchema {
 	String TABLE_NAME = "race_stat_mods";
 
-	String COLUMN_RACE_ID = "raceId";
-	String COLUMN_STAT_ID = "statId";
-	String COLUMN_MODIFIER = "modifier";
+	String COLUMN_RACE_ID   = "raceId";
+	String COLUMN_STAT_NAME = "statName";
+	String COLUMN_MODIFIER  = "modifier";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME + "("
 			+ COLUMN_RACE_ID + " INTEGER NOT NULL REFERENCES "
 				+ RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
-			+ COLUMN_STAT_ID + " INTEGER NOT NULL REFERENCES "
-				+ StatSchema.TABLE_NAME + "(" + StatSchema.COLUMN_ID + "), "
+			+ COLUMN_STAT_NAME + " TEXT NOT NULL, "
 			+ COLUMN_MODIFIER + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY (" + COLUMN_RACE_ID + "," + COLUMN_STAT_ID + ")"
+			+ "PRIMARY KEY (" + COLUMN_RACE_ID + "," + COLUMN_STAT_NAME + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_STAT_ID, COLUMN_MODIFIER};
+	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_STAT_NAME, COLUMN_MODIFIER};
 }

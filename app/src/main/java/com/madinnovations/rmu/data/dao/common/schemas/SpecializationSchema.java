@@ -26,6 +26,7 @@ public interface SpecializationSchema {
 	String COLUMN_DESCRIPTION = "description";
 	String COLUMN_SKILL_ID = "skillId";
 	String COLUMN_SKILL_STATS = "skillStats";
+	String COLUMN_CREATURE_ONLY = "creatureOnly";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -35,8 +36,10 @@ public interface SpecializationSchema {
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_STATS + " INTEGER NOT NULL, "
+			+ COLUMN_CREATURE_ONLY + " INTEGER NOT NULL, "
 			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SKILL_ID, COLUMN_SKILL_STATS};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SKILL_ID, COLUMN_SKILL_STATS,
+			COLUMN_CREATURE_ONLY};
 }

@@ -27,7 +27,6 @@ import com.madinnovations.rmu.data.dao.character.impl.RaceDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
@@ -44,10 +43,8 @@ import dagger.Provides;
 public class CharacterDaoSqlModule {
 	@Provides @Singleton
 	CharacterDao provideCharacterDao(RMUDatabaseHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
-									 StatDao statDao, CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao,
-									 ItemDao itemDao) {
-		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, statDao, cultureDao, professionDao, realmDao,
-									  itemDao);
+									 CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao) {
+		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, cultureDao, professionDao, realmDao, itemDao);
 	}
 
 	@Provides @Singleton
@@ -62,8 +59,7 @@ public class CharacterDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	RaceDao provideRaceDao(RMUDatabaseHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao,
-								  StatDao statDao) {
-		return new RaceDaoDbImpl(helper, talentDao, realmDao, sizeDao, statDao);
+	RaceDao provideRaceDao(RMUDatabaseHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao) {
+		return new RaceDaoDbImpl(helper, talentDao, realmDao, sizeDao);
 	}
 }

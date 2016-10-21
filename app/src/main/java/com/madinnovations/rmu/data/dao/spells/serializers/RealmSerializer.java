@@ -19,7 +19,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class RealmSerializer extends TypeAdapter<Realm> implements RealmSchema {
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
-		out.name(COLUMN_STAT_ID).value(value.getStat().getId());
+		out.name(COLUMN_STAT_NAME).value(value.getStat().name());
 		out.endObject().flush();
 	}
 
@@ -53,8 +53,9 @@ public class RealmSerializer extends TypeAdapter<Realm> implements RealmSchema {
 				case COLUMN_DESCRIPTION:
 					realm.setDescription(in.nextString());
 					break;
-				case COLUMN_STAT_ID:
-					realm.setStat(new Stat(in.nextInt()));
+				case COLUMN_STAT_NAME:
+				case "statId":
+					realm.setStat(Statistic.valueOf(in.nextString()));
 					break;
 			}
 		}

@@ -26,7 +26,6 @@ import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.common.StatDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
@@ -41,7 +40,7 @@ import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Stat;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 
@@ -63,7 +62,6 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	private CriticalCodeDao criticalCodeDao;
 	private RealmDao realmDao;
 	private OutlookDao outlookDao;
-	private StatDao statDao;
 	private SkillDao skillDao;
 	private TalentDao talentDao;
 	private AttackDao attackDao;
@@ -76,23 +74,22 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	 * @param sizeDao  a {@link SizeDao} instance
 	 * @param criticalCodeDao  a {@link CriticalCodeDao} instance
 	 * @param realmDao  a {@link RealmDao} instance
-	 * @param outlookDao  a {@link OutlookDao} instance
-	 * @param statDao  a {@link StatDao} instance
+	 * @param outlookDao  an {@link OutlookDao} instance
 	 * @param skillDao  a {@link SkillDao} instance
 	 * @param talentDao  a {@link TalentDao} instance
+	 * @param attackDao  an {@link AttackDao} instance
 	 */
 	@Inject
-	public CreatureVarietyDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull CreatureTypeDao creatureTypeDao, @NonNull SizeDao sizeDao,
-									@NonNull CriticalCodeDao criticalCodeDao, @NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao,
-									@NonNull StatDao statDao, @NonNull SkillDao skillDao, @NonNull TalentDao talentDao,
-									@NonNull AttackDao attackDao) {
+	public CreatureVarietyDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull CreatureTypeDao creatureTypeDao,
+									@NonNull SizeDao sizeDao, @NonNull CriticalCodeDao criticalCodeDao,
+									@NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao, @NonNull SkillDao skillDao,
+									@NonNull TalentDao talentDao, @NonNull AttackDao attackDao) {
 		super(helper);
 		this.creatureTypeDao = creatureTypeDao;
 		this.sizeDao = sizeDao;
 		this.criticalCodeDao = criticalCodeDao;
 		this.realmDao = realmDao;
 		this.outlookDao = outlookDao;
-		this.statDao = statDao;
 		this.skillDao = skillDao;
 		this.talentDao = talentDao;
 		this.attackDao = attackDao;
@@ -216,7 +213,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return result;
 	}
 
-	private boolean saveRacialStatBonuses(SQLiteDatabase db, int creatureVarietyId, Map<Stat, Short> statBonusesMap) {
+	private boolean saveRacialStatBonuses(SQLiteDatabase db, int creatureVarietyId, Map<Statistic, Short> statBonusesMap) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
 		final String selection = VarietyStatsSchema.COLUMN_VARIETY_ID + " = ?";
@@ -224,9 +221,9 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		db.delete(VarietyStatsSchema.TABLE_NAME, selection, selectionArgs);
 
 		ContentValues values = new ContentValues(3);
-		for(Map.Entry<Stat, Short> entry : statBonusesMap.entrySet()) {
+		for(Map.Entry<Statistic, Short> entry : statBonusesMap.entrySet()) {
 			values.put(VarietyStatsSchema.COLUMN_VARIETY_ID, creatureVarietyId);
-			values.put(VarietyStatsSchema.COLUMN_STAT_ID, entry.getKey().getId());
+			values.put(VarietyStatsSchema.COLUMN_STAT_NAME, entry.getKey().name());
 			values.put(VarietyStatsSchema.COLUMN_BONUS, entry.getValue());
 			result &= (db.insertWithOnConflict(VarietyStatsSchema.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
@@ -304,21 +301,18 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return result;
 	}
 
-	private Map<Stat, Short> getRacialStatBonuses(int creatureVarietyId) {
+	private Map<Statistic, Short> getRacialStatBonuses(int creatureVarietyId) {
 		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
 		final String selection = VarietyStatsSchema.COLUMN_VARIETY_ID + " = ?";
 
 		Cursor cursor = super.query(VarietyStatsSchema.TABLE_NAME, VarietyStatsSchema.COLUMNS, selection,
-				selectionArgs, VarietyStatsSchema.COLUMN_STAT_ID);
-		Map<Stat, Short> statShortMap = new HashMap<>();
+				selectionArgs, VarietyStatsSchema.COLUMN_STAT_NAME);
+		Map<Statistic, Short> statShortMap = new HashMap<>();
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietyStatsSchema.COLUMN_STAT_ID));
 			short bonus = cursor.getShort(cursor.getColumnIndexOrThrow(VarietyStatsSchema.COLUMN_BONUS));
-			Stat stat = statDao.getById(mappedId);
-			if(stat != null) {
-				statShortMap.put(stat, bonus);
-			}
+			statShortMap.put(Statistic.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
+					VarietyStatsSchema.COLUMN_STAT_NAME))), bonus);
 			cursor.moveToNext();
 		}
 		cursor.close();
