@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Container class for grouping culture Skill ranks to SkillCategory
  */
-public class CultureSkillCategoryRanks {
+public class CultureSkillCategoryRanks implements Comparable {
 	private SkillCategory skillCategory;
 	private List<CultureSkillRank> skillRanksList = new ArrayList<>();
 
@@ -65,6 +65,34 @@ public class CultureSkillCategoryRanks {
 	@Override
 	public int hashCode() {
 		return getSkillCategory().hashCode();
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		int result;
+
+		if(!(o instanceof CultureSkillCategoryRanks)) {
+			result = 1;
+		}
+		else {
+			CultureSkillCategoryRanks o2 = (CultureSkillCategoryRanks)o;
+			result = this.skillCategory.compareTo(o2.skillCategory);
+			if(result == 0) {
+				if(this.skillCategory == null) {
+					if(o2.skillCategory != null) {
+						result = -1;
+					}
+				}
+				else if(o2.skillCategory == null) {
+					result = 1;
+				}
+				else {
+					result = this.skillCategory.getName().compareTo(o2.skillCategory.getName());
+				}
+			}
+		}
+
+		return result;
 	}
 
 	// Getters and setters

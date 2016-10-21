@@ -33,6 +33,7 @@ public enum Statistic {
 	REASONING("Re", "Reasoning", ""),
 	SELF_DISCIPLINE("SD", "Self Discipline", ""),
 	STRENGTH("St", "Strength", "");
+	public static final int NUM_STATS = 10;
 	private static final short[] bonusRangeStart = {1, 2, 3, 4, 5, 6, 7, 9, 12, 15, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78,
 			84, 87, 90, 93, 95, 96, 97, 98, 99, 100};
 	private String abbreviation;

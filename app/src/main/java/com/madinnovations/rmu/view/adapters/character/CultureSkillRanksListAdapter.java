@@ -32,6 +32,7 @@ import com.madinnovations.rmu.data.entities.character.CultureSkillRank;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -53,10 +54,12 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 
 	public void add(CultureSkillCategoryRanks professionSkillCategoryCost) {
 		listData.add(professionSkillCategoryCost);
+		Collections.sort(listData);
 	}
 
 	public void addAll(Collection<CultureSkillCategoryRanks> professionSkillCategoryCosts) {
 		listData.addAll(professionSkillCategoryCosts);
+		Collections.sort(listData);
 	}
 
 	/**

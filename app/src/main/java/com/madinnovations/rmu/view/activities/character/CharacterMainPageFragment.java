@@ -33,11 +33,15 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -65,6 +69,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   SpinnerUtils<Realm>      realmSpinner;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
+	private Map<Statistic, EditText>   tempStatsMap = new HashMap<>(Statistic.NUM_STATS);
+	private Map<Statistic, EditText>   potentialStatsMap = new HashMap<>(Statistic.NUM_STATS);
 
 	/**
 	 * Creates new CharacterMainPageFragment instance.
