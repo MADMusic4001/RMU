@@ -24,6 +24,9 @@
   <string name="hint_stride">Stride</string>
   <string name="hint_weight">Weight</string>
 
+  <!-- Campaign -->
+  <string name="hint_campaign_name">Campaign Name</string>
+
   <!-- Character -->
   <string name="hint_agility">Agility</string>
   <string name="hint_constitution">Constitution</string>

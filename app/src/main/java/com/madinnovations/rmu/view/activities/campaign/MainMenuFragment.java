@@ -189,21 +189,25 @@ public class MainMenuFragment extends Fragment {
 					case 6:
 						switch (childPosition) {
 							case 0:
-//								((CampaignActivity)getActivity()).showGenerateEncounters();
+								((CampaignActivity)getActivity()).showCampaigns();
 								break;
 							case 1:
-//								((CampaignActivity)getActivity()).showGenerateLoot();
+//								((CampaignActivity)getActivity()).showGenerateEncounters();
 								break;
 							case 2:
-//								((CampaignActivity)getActivity()).showAttemptManeuver();
+//								((CampaignActivity)getActivity()).showGenerateLoot();
 								break;
 							case 3:
-//								((CampaignActivity)getActivity()).showResolveCombat();
+//								((CampaignActivity)getActivity()).showAttemptManeuver();
 								break;
 							case 4:
+//								((CampaignActivity)getActivity()).showResolveCombat();
+								break;
+							case 5:
 //								((CampaignActivity)getActivity()).showAdvanceTime();
 								break;
 						}
+						break;
 					case 7:
 						((CampaignActivity)getActivity()).showAbout();
 						break;
@@ -268,7 +272,8 @@ public class MainMenuFragment extends Fragment {
 		spellItems.add(getString(R.string.manage_spell_sub_types));
 		spellItems.add(getString(R.string.manage_spell_types));
 
-		List<String> playItems = new ArrayList<>(5);
+		List<String> playItems = new ArrayList<>(6);
+		playItems.add(getString(R.string.generate_campaign));
 		playItems.add(getString(R.string.generate_encounter));
 		playItems.add(getString(R.string.generate_loot));
 		playItems.add(getString(R.string.attempt_maneuver));

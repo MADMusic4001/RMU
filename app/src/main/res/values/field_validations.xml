@@ -24,6 +24,7 @@
   <string name="validation_body_part_required">Please select a body part.</string>
   <string name="validation_body_part_description_required">Please enter a body part resultText.</string>
   <string name="validation_body_part_name_required">Please enter a body part name.</string>
+  <string name="validation_campaign_name_required">PLease enter a name for the campaign.</string>
   <string name="validation_character_current_hits_required">Please enter the character\'s current hits.</string>
   <string name="validation_character_current_level_required">Please enter the character\'s current level.</string>
   <string name="validation_character_description_required">Please enter a brief description of the character.</string>

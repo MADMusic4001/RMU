@@ -203,6 +203,31 @@ public class SpecializationRxHandler {
 
 	/**
 	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances for the given skill that are not creature only specializations.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
+	 * instances.
+	 */
+	public Observable<Collection<Specialization>> getCharacterSpecializationsForSkill(final Skill filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Specialization>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Specialization>> subscriber) {
+						try {
+							subscriber.onNext(dao.getCharacterSpecializationsForSkill(filter));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
 	 * instances from combat skill categories.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
@@ -222,6 +247,41 @@ public class SpecializationRxHandler {
 									List<Specialization> specializations = new ArrayList<>();
 									for (Skill skill : skills) {
 										specializations.addAll(dao.getSpecializationsForSkill(skill));
+									}
+									subscriber.onNext(specializations);
+								}
+							}
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances from combat skill categories.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
+	 * instances.
+	 */
+	public Observable<Collection<Specialization>> getAllCharacterAttackSpecializations() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Specialization>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Specialization>> subscriber) {
+						try {
+							List<SkillCategory> skillCategories = skillCategoryDao.getCombatCategories();
+							if (skillCategories != null) {
+								List<Skill> skills = new ArrayList<>();
+								for (SkillCategory category : skillCategories) {
+									skills.addAll(skillDao.getSkillsForCategory(category));
+									List<Specialization> specializations = new ArrayList<>();
+									for (Skill skill : skills) {
+										specializations.addAll(dao.getCharacterSpecializationsForSkill(skill));
 									}
 									subscriber.onNext(specializations);
 								}

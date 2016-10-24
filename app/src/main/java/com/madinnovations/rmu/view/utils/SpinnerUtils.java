@@ -44,17 +44,86 @@ public final class SpinnerUtils<T> {
 	 *
 	 * @param layout  the layout that contains the EditText to be initialized
 	 * @param context  an android Context that can be used to obtain resources, etc.
+	 * @param values  the collection if items with which the spinner will be populated
 	 * @param valuesCallback  an implementation of the {@link SpinnerUtils.ValuesCallback} interface that can be used to update the object
 	 *                        backing the UI
 	 * @param spinnerId  the resource ID of the Spinner to be initialized
+	 * @param dummyInstance  an instance ot T that can be used to represent no selection or null if not needed
 	 * @return  the {@link Spinner} instance that was initialized or null if not found.
 	 */
-	public Spinner initSpinner(@NonNull View layout, @NonNull final Context context, @NonNull Observable<Collection<T>> loader,
+	public Spinner initSpinner(@NonNull View layout, @NonNull final Context context, @NonNull Collection<T> values,
 							   @NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
-							   T dummmyInstance) {
+							   T dummyInstance) {
 		spinner = (Spinner) layout.findViewById(spinnerId);
 		if(spinner != null) {
-			initSpinner(spinner, context, loader, valuesCallback, spinnerId, dummmyInstance);
+			initSpinner(spinner, context, values, valuesCallback, spinnerId, dummyInstance);
+		}
+
+		return spinner;
+	}
+
+	/**
+	 * Initializes a Spinner with onItemSelected method implementations.
+	 *
+	 * @param spinner  the Spinner instance to use
+	 * @param context  an android Context that can be used to obtain resources, etc.
+	 * @param values  the collection if items with which the spinner will be populated
+	 * @param valuesCallback  an implementation of the {@link SpinnerUtils.ValuesCallback} interface that can be used to update the object
+	 *                        backing the UI
+	 * @param spinnerId  the resource ID of the Spinner to be initialized
+	 * @param dummyInstance  an instance ot T that can be used to represent no selection or null if not needed
+	 */
+	@SuppressWarnings("WeakerAccess")
+	public void initSpinner(@NonNull final Spinner spinner, @NonNull final Context context, @NonNull Collection<T> values,
+							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
+							final T dummyInstance) {
+			this.spinner = spinner;
+			adapter = new ArrayAdapter<>(context, R.layout.spinner_row);
+			spinner.setAdapter(adapter);
+
+			adapter.clear();
+			if(dummyInstance != null) {
+				adapter.add(dummyInstance);
+			}
+			adapter.addAll(values);
+			adapter.notifyDataSetChanged();
+
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				T newItem = adapter.getItem(position);
+				if(newItem != null && !newItem.equals(valuesCallback.getValueForSpinner(spinnerId))) {
+					valuesCallback.setValueFromSpinner(spinnerId, newItem);
+				}
+			}
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if(valuesCallback.getValueForSpinner(spinnerId) != null) {
+					valuesCallback.setValueFromSpinner(spinnerId, null);
+				}
+			}
+		});
+	}
+
+		/**
+		 * Initializes a Spinner with onItemSelected method implementation.
+		 *
+		 * @param layout  the layout that contains the EditText to be initialized
+		 * @param context  an android Context that can be used to obtain resources, etc.
+		 * @param valuesCallback  an implementation of the {@link SpinnerUtils.ValuesCallback} interface that can be used to update the object
+		 *                        backing the UI
+		 * @param spinnerId  the resource ID of the Spinner to be initialized
+		 * @param dummyInstance  an instance ot T that can be used to represent no selection or null if not needed
+		 * @return  the {@link Spinner} instance that was initialized or null if not found.
+		 */
+	public Spinner initSpinner(@NonNull View layout, @NonNull final Context context, @NonNull Observable<Collection<T>> loader,
+							   @NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
+							   T dummyInstance) {
+		spinner = (Spinner) layout.findViewById(spinnerId);
+		if(spinner != null) {
+			initSpinner(spinner, context, loader, valuesCallback, spinnerId, dummyInstance);
 		}
 
 		return spinner;
@@ -68,6 +137,7 @@ public final class SpinnerUtils<T> {
 	 * @param valuesCallback  an implementation of the {@link SpinnerUtils.ValuesCallback} interface that can be used to update the object
 	 *                        backing the UI
 	 * @param spinnerId  the resource ID of the Spinner to be initialized
+	 * @param dummyInstance  an instance ot T that can be used to represent no selection or null if not needed
 	 */
 	@SuppressWarnings("WeakerAccess")
 	public void initSpinner(@NonNull final Spinner spinner, @NonNull final Context context,

@@ -18,10 +18,10 @@ package com.madinnovations.rmu.data.dao.character.schemas;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
- * Database schema data for the character_skill_ranks table
+ * Database schema data for the character_current_level_skill_ranks table
  */
-public interface CharacterSkillRanksSchema {
-    String TABLE_NAME = "character_skill_ranks";
+public interface CharacterCurrentLevelSkillRanksSchema {
+    String TABLE_NAME = "character_current_level_skill_ranks";
 
     String COLUMN_CHARACTER_ID = "characterId";
     String COLUMN_SKILL_ID = "skillId";

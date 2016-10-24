@@ -42,6 +42,11 @@ public enum PowerLevel {
 		this.statPoints = statPoints;
 	}
 
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 	// Getters
 	public String getName() {
 		return name;

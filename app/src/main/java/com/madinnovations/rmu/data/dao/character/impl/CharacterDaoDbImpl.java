@@ -22,23 +22,29 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.character.RaceDao;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterItemsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.object.Item;
@@ -63,6 +69,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	private ProfessionDao professionDao;
 	private RealmDao realmDao;
 	private ItemDao itemDao;
+	private SpecializationDao specializationDao;
+	private CampaignDao campaignDao;
 
 	/**
 	 * Creates a new instance of CharacterDaoImpl
@@ -75,10 +83,13 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	 * @param professionDao  a {@link ProfessionDao} instance
 	 * @param realmDao  a {@link RealmDao} instance
 	 * @param itemDao  an {@link ItemDao} instance
+	 * @param specializationDao  a {@link SpecializationDao} instance
+	 * @param campaignDao  a {@link CampaignDao} instance
 	 */
 	@Inject
 	public CharacterDaoDbImpl(SQLiteOpenHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
-							  CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao) {
+							  CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao,
+							  SpecializationDao specializationDao, CampaignDao campaignDao) {
 		super(helper);
 		this.raceDao = raceDao;
 		this.skillDao = skillDao;
@@ -87,7 +98,10 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		this.professionDao = professionDao;
 		this.realmDao = realmDao;
 		this.itemDao = itemDao;
+		this.specializationDao = specializationDao;
+		this.campaignDao = campaignDao;
 	}
+
 	@Override
 	public Character getById(int id) {
 		return super.getById(id);
@@ -139,6 +153,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		Character instance = new Character();
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		instance.setCampaign(campaignDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CAMPAIGN_ID))));
+		instance.setCurrentLevel(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_LEVEL)));
 		instance.setExperiencePoints(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EXPERIENCE_POINTS)));
 		instance.setFirstName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME)));
 		instance.setLastName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME)));
@@ -187,9 +203,12 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setEnduranceLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_ENDURANCE_LOSS)));
 		instance.setPowerPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_PP_LOSS)));
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
+		instance.setSpecializationRanks(getSpecializationRanks(instance.getId()));
 		instance.setSkillCosts(getSkillCosts(instance.getId()));
 		instance.setTalentTiers(getTalentTiers(instance.getId()));
 		instance.setItems(getItems(instance.getId()));
+		instance.setCurrentLevelSkillRanks(getCurrentLevelSkillRanks(instance.getId()));
+		instance.setCurrentLevelSpecializationRanks(getCurrentLevelSpecializationRanks(instance.getId()));
 		setStatValues(instance);
 
 		return instance;
@@ -200,12 +219,14 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(26);
+			values = new ContentValues(28);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(25);
+			values = new ContentValues(27);
 		}
+		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
+		values.put(COLUMN_CURRENT_LEVEL, instance.getCurrentLevel());
 		values.put(COLUMN_EXPERIENCE_POINTS, instance.getExperiencePoints());
 		values.put(COLUMN_FIRST_NAME, instance.getFirstName());
 		values.put(COLUMN_LAST_NAME, instance.getLastName());
@@ -307,6 +328,17 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 			}
 		}
 
+		db.delete(CharacterSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Specialization, Short> entry : instance.getSpecializationRanks().entrySet()) {
+			if(entry.getValue() != null) {
+				result &= (db.insertWithOnConflict(CharacterSpecializationRanksSchema.TABLE_NAME, null,
+						getSpecializationRanksContentValues(instance.getId(), entry.getKey().getId(),
+								entry.getValue()),
+						SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
 		selection = CharacterSkillCostsSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterSkillCostsSchema.TABLE_NAME, selection, selectionArgs);
 
@@ -358,6 +390,29 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 																	 item.getId()),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
+
+		db.delete(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Skill, Short> entry : instance.getCurrentLevelSkillRanks().entrySet()) {
+			if(entry.getValue() != null) {
+				result &= (db.insertWithOnConflict(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, null,
+						getCurrentLevelSkillRanksContentValues(instance.getId(), entry.getKey().getId(),
+								entry.getValue()),
+						SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
+		db.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Specialization, Short> entry : instance.getCurrentLevelSpecializationRanks().entrySet()) {
+			if(entry.getValue() != null) {
+				result &= (db.insertWithOnConflict(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null,
+						getCurrentLevelSpecializationRanksContentValues(instance.getId(), entry.getKey().getId(),
+								entry.getValue()),
+						SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
 		return result;
 	}
 
@@ -367,6 +422,36 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(CharacterSkillRanksSchema.COLUMN_CHARACTER_ID, characterId);
 		values.put(CharacterSkillRanksSchema.COLUMN_SKILL_ID, skillId);
 		values.put(CharacterSkillRanksSchema.COLUMN_RANKS, skillRanks);
+
+		return values;
+	}
+
+	private ContentValues getSpecializationRanksContentValues(int characterId, int specializationId, short skillRanks) {
+		ContentValues values = new ContentValues(3);
+
+		values.put(CharacterSpecializationRanksSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID, specializationId);
+		values.put(CharacterSpecializationRanksSchema.COLUMN_RANKS, skillRanks);
+
+		return values;
+	}
+
+	private ContentValues getCurrentLevelSkillRanksContentValues(int characterId, int skillId, short skillRanks) {
+		ContentValues values = new ContentValues(3);
+
+		values.put(CharacterCurrentLevelSkillRanksSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID, skillId);
+		values.put(CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS, skillRanks);
+
+		return values;
+	}
+
+	private ContentValues getCurrentLevelSpecializationRanksContentValues(int characterId, int specializationId, short skillRanks) {
+		ContentValues values = new ContentValues(3);
+
+		values.put(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID, specializationId);
+		values.put(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS, skillRanks);
 
 		return values;
 	}
@@ -384,6 +469,72 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 			Skill instance = skillDao.getById(mappedId);
 			if(instance != null) {
 				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillRanksSchema.COLUMN_RANKS)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private Map<Specialization, Short> getSpecializationRanks(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterSpecializationRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterSpecializationRanksSchema.TABLE_NAME, CharacterSpecializationRanksSchema.COLUMNS, selection,
+				selectionArgs, CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID);
+		Map<Specialization, Short> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID));
+			Specialization instance = specializationDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSpecializationRanksSchema.COLUMN_RANKS)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private Map<Skill, Short> getCurrentLevelSkillRanks(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterCurrentLevelSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, CharacterCurrentLevelSkillRanksSchema.COLUMNS,
+				selection, selectionArgs, CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID);
+		Map<Skill, Short> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID));
+			Skill instance = skillDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private Map<Specialization, Short> getCurrentLevelSpecializationRanks(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterCurrentLevelSpecializationRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME,
+				CharacterCurrentLevelSpecializationRanksSchema.COLUMNS, selection, selectionArgs,
+				CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID);
+		Map<Specialization, Short> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(
+					CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID));
+			Specialization instance = specializationDao.getById(mappedId);
+			if(instance != null) {
+				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(
+						CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS)));
 			}
 			cursor.moveToNext();
 		}

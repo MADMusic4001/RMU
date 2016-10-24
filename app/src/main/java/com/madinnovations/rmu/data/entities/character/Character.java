@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Specialization;
@@ -37,6 +38,8 @@ import java.util.Map;
 public class Character {
 	public static final String JSON_NAME = "Characters";
 	private int                        id = -1;
+	private Campaign                   campaign = null;
+	private short                      currentLevel = 0;
 	private int                        experiencePoints = 0;
 	private String                     firstName = null;
 	private String                     lastName = null;
@@ -69,6 +72,8 @@ public class Character {
 	private Map<Statistic, Short>      statTemps           = new HashMap<>();
 	private Map<Statistic, Short>      statPotentials      = new HashMap<>();
 	private List<Item>                 items               = new ArrayList<>();
+	private Map<Skill, Short>          currentLevelSkillRanks = new HashMap<>();
+	private Map<Specialization, Short> currentLevelSpecializationRanks = new HashMap<>();
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -76,8 +81,8 @@ public class Character {
 	 * @return true if the Character instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty() && description != null
-				&& !description.isEmpty() && race != null && profession != null && culture != null
+		return campaign != null && firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()
+				&& description != null && !description.isEmpty() && race != null && profession != null && culture != null
 				&& (profession.getRealm1() != null || realm != null);
 	}
 
@@ -85,6 +90,8 @@ public class Character {
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
+				.append("campaign", campaign)
+				.append("currentLevel", currentLevel)
 				.append("experiencePoints", experiencePoints)
 				.append("firstName", firstName)
 				.append("lastName", lastName)
@@ -117,6 +124,8 @@ public class Character {
 				.append("statTemps", statTemps)
 				.append("statPotentials", statPotentials)
 				.append("items", items)
+				.append("currentLevelSkillRanks", currentLevelSkillRanks)
+				.append("currentLevelSpecializationRanks", currentLevelSpecializationRanks)
 				.toString();
 	}
 
@@ -141,6 +150,18 @@ public class Character {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public Campaign getCampaign() {
+		return campaign;
+	}
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
+	}
+	public short getCurrentLevel() {
+		return currentLevel;
+	}
+	public void setCurrentLevel(short currentLevel) {
+		this.currentLevel = currentLevel;
 	}
 	public int getExperiencePoints() {
 		return experiencePoints;
@@ -334,5 +355,17 @@ public class Character {
 	}
 	public void setItems(List<Item> items) {
 		this.items = items;
+	}
+	public Map<Skill, Short> getCurrentLevelSkillRanks() {
+		return currentLevelSkillRanks;
+	}
+	public void setCurrentLevelSkillRanks(Map<Skill, Short> currentLevelSkillRanks) {
+		this.currentLevelSkillRanks = currentLevelSkillRanks;
+	}
+	public Map<Specialization, Short> getCurrentLevelSpecializationRanks() {
+		return currentLevelSpecializationRanks;
+	}
+	public void setCurrentLevelSpecializationRanks(Map<Specialization, Short> currentLevelSpecializationRanks) {
+		this.currentLevelSpecializationRanks = currentLevelSpecializationRanks;
 	}
 }

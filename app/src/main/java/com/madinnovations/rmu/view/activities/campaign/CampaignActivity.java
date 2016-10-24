@@ -83,6 +83,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private AboutFragment              aboutFragment;
 	private AttacksFragment            attacksFragment;
 	private BodyPartsFragment          bodyPartsFragment;
+	private CampaignsFragment          campaignsFragment;
 	private CharactersFragment         charactersFragment;
 	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
@@ -254,6 +255,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			bodyPartsFragment = new BodyPartsFragment();
 		}
 		replaceDetailFragment(bodyPartsFragment);
+	}
+
+	public void showCampaigns() {
+		if(campaignsFragment == null) {
+			campaignsFragment = new CampaignsFragment();
+		}
+		replaceDetailFragment(campaignsFragment);
 	}
 
 	public void showCharacters() {

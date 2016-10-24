@@ -20,10 +20,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignAttackRestrictionsSchema;
+import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterItemsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
@@ -155,6 +160,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(TalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpecializationSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpecializationStatsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CampaignSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CampaignAttackRestrictionsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(DamageResultSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(DamageResultRowSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
@@ -175,7 +182,10 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterCurrentLevelSkillRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterCurrentLevelSpecializationRanksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterSkillRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterSpecializationRanksSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterSkillCostsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterItemsSchema.TABLE_CREATE);
             sqLiteDatabase.setTransactionSuccessful();
@@ -216,6 +226,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CharacterItemsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSkillCostsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSkillRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterSpecializationRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, null, null);
@@ -236,6 +249,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CriticalResultSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CampaignAttackRestrictionsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);

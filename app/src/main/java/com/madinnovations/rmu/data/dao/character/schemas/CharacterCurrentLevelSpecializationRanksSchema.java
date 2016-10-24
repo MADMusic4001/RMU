@@ -15,27 +15,27 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 
 /**
- * Database schema data for the character_skill_ranks table
+ * Database schema data for the character_current_level_specialization_ranks table
  */
-public interface CharacterSkillRanksSchema {
-    String TABLE_NAME = "character_skill_ranks";
+public interface CharacterCurrentLevelSpecializationRanksSchema {
+    String TABLE_NAME = "character_current_level_specialization_ranks";
 
     String COLUMN_CHARACTER_ID = "characterId";
-    String COLUMN_SKILL_ID = "skillId";
+    String COLUMN_SPECIALIZATION_ID = "specializationId";
     String COLUMN_RANKS = "ranks";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
                 + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
-            + COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
-				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
+            + COLUMN_SPECIALIZATION_ID + " INTEGER NOT NULL REFERENCES "
+				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + "), "
             + COLUMN_RANKS  + " INTEGER NOT NULL, "
-            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + ")"
+            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SPECIALIZATION_ID + ")"
             + ")";
 
-    String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_RANKS};
+    String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SPECIALIZATION_ID, COLUMN_RANKS};
 }

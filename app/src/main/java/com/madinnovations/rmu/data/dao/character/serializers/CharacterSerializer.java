@@ -18,9 +18,12 @@ package com.madinnovations.rmu.data.dao.character.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.entities.character.Character;
@@ -29,6 +32,7 @@ import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
@@ -44,6 +48,8 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 	public void write(JsonWriter out, Character value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_CAMPAIGN_ID).value(value.getCampaign().getId());
+		out.name(COLUMN_CURRENT_LEVEL).value(value.getCurrentLevel());
 		out.name(COLUMN_EXPERIENCE_POINTS).value(value.getExperiencePoints());
 		out.name(COLUMN_FIRST_NAME).value(value.getFirstName());
 		out.name(COLUMN_LAST_NAME).value(value.getLastName());
@@ -89,6 +95,15 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		}
 		out.endArray();
 
+		out.name(CharacterSpecializationRanksSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Specialization, Short> entry : value.getSpecializationRanks().entrySet()) {
+			out.beginObject();
+			out.name(CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
+			out.name(CharacterSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
 		out.name(CharacterTalentsSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Talent, Short> entry : value.getTalentTiers().entrySet()) {
 			out.beginObject();
@@ -104,6 +119,24 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			out.name(CharacterStatsSchema.COLUMN_STAT_NAME).value(entry.getKey().name());
 			out.name(CharacterStatsSchema.COLUMN_CURRENT_VALUE).value(entry.getValue());
 			out.name(CharacterStatsSchema.COLUMN_POTENTIAL_VALUE).value(value.getStatPotentials().get(entry.getKey()));
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Skill, Short> entry : value.getCurrentLevelSkillRanks().entrySet()) {
+			out.beginObject();
+			out.name(CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
+			out.name(CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Specialization, Short> entry : value.getCurrentLevelSpecializationRanks().entrySet()) {
+			out.beginObject();
+			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
+			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
 			out.endObject();
 		}
 		out.endArray();
@@ -205,11 +238,20 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case CharacterSkillRanksSchema.TABLE_NAME:
 					readSkillRanks(in, character);
 					break;
+				case CharacterSpecializationRanksSchema.TABLE_NAME:
+					readSpecializationRanks(in, character);
+					break;
 				case CharacterTalentsSchema.TABLE_NAME:
 					readTalentTiers(in, character);
 					break;
 				case CharacterStatsSchema.TABLE_NAME:
 					readStats(in, character);
+					break;
+				case CharacterCurrentLevelSkillRanksSchema.TABLE_NAME:
+					readCurrentLevelSkillRanks(in, character);
+					break;
+				case CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME:
+					readCurrentLevelSpecializationRanks(in, character);
 					break;
 			}
 		}
@@ -268,6 +310,30 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		in.endArray();
 	}
 
+	private void readSpecializationRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Specialization newSpecialization = null;
+			Short ranks = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID:
+						newSpecialization = new Specialization(in.nextInt());
+						break;
+					case CharacterSkillRanksSchema.COLUMN_RANKS:
+						ranks = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newSpecialization != null) {
+				character.getSpecializationRanks().put(newSpecialization, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
 	private void readTalentTiers(JsonReader in, Character character) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
@@ -315,6 +381,54 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			if(newStat != null) {
 				character.getStatTemps().put(newStat, tempValue);
 				character.getStatPotentials().put(newStat, potentialValue);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readCurrentLevelSkillRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Skill newSkill = null;
+			Short ranks = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS:
+						ranks = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newSkill != null) {
+				character.getCurrentLevelSkillRanks().put(newSkill, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readCurrentLevelSpecializationRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Specialization newSpecialization = null;
+			Short ranks = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID:
+						newSpecialization = new Specialization(in.nextInt());
+						break;
+					case CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS:
+						ranks = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newSpecialization != null) {
+				character.getCurrentLevelSpecializationRanks().put(newSpecialization, ranks);
 			}
 			in.endObject();
 		}

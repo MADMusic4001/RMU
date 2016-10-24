@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 import com.madinnovations.rmu.view.di.modules.ApplicationModule;
+import com.madinnovations.rmu.view.di.modules.CampaignDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CharacterDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CombatDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CommonDaoSqlModule;
@@ -32,8 +33,8 @@ import dagger.Component;
  * The ApplicationComponent dependency injection interface
  */
 @Singleton
-@Component(modules = {ApplicationModule.class, CharacterDaoSqlModule.class, CommonDaoSqlModule.class, CombatDaoSqlModule.class,
-		CreatureDaoSqlModule.class, ItemDaoSqlModule.class, SpellDaoSqlModule.class})
+@Component(modules = {ApplicationModule.class, CampaignDaoSqlModule.class, CharacterDaoSqlModule.class, CommonDaoSqlModule.class,
+		CombatDaoSqlModule.class, CreatureDaoSqlModule.class, ItemDaoSqlModule.class, SpellDaoSqlModule.class})
 public interface ApplicationComponent {
 	ActivityComponent newActivityComponent(ActivityModule activityModule);
 }

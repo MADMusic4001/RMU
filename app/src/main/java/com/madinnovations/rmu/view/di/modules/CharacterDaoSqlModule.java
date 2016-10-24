@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
@@ -27,6 +28,7 @@ import com.madinnovations.rmu.data.dao.character.impl.RaceDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
@@ -43,8 +45,10 @@ import dagger.Provides;
 public class CharacterDaoSqlModule {
 	@Provides @Singleton
 	CharacterDao provideCharacterDao(RMUDatabaseHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
-									 CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao) {
-		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, cultureDao, professionDao, realmDao, itemDao);
+									 CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao,
+									 SpecializationDao specializationDao, CampaignDao campaignDao) {
+		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, cultureDao, professionDao, realmDao, itemDao,
+				specializationDao, campaignDao);
 	}
 
 	@Provides @Singleton

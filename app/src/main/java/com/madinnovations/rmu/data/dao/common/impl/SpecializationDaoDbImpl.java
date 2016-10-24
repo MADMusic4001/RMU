@@ -160,6 +160,40 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
     }
 
 	@Override
+	public List<Specialization> getCharacterSpecializationsForSkill(@NonNull Skill filter) {
+		final String selectionArgs[] = { String.valueOf(filter.getId()), "0" };
+		final String selection = COLUMN_SKILL_ID + " = ? AND " + COLUMN_CREATURE_ONLY + " = ?";
+		List<Specialization> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Specialization instance = cursorToEntity(cursor, filter);
+
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
 	public Collection<Specialization> getCharacterPurchasableSpecializations() {
 		final String selectionArgs[] = {"0"};
 		final String selection = COLUMN_CREATURE_ONLY + " = ?";

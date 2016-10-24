@@ -15,6 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +52,23 @@ public class Specialization {
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && skill != null &&
 				(useSkillStats || (stats != null && stats.size() == 3));
+	}
+
+	/**
+	 * Outputs a formatted string listing all of the instances attributes.
+	 *
+	 * @return  a formatted String with the instances attributes.
+	 */
+	public String print() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("skill", skill)
+				.append("useSkillStats", useSkillStats)
+				.append("creatureOnly", creatureOnly)
+				.append("stats", stats)
+				.toString();
 	}
 
 	@Override

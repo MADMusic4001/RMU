@@ -18,18 +18,23 @@ package com.madinnovations.rmu.view.activities.character;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.CultureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
@@ -42,6 +47,7 @@ import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -51,6 +57,8 @@ import javax.inject.Inject;
 public class CharacterMainPageFragment extends Fragment implements EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	private static final String LOG_TAG = "CharacterMainPageFrag";
 	@Inject
+	protected CampaignRxHandler        campaignRxHandler;
+	@Inject
 	protected CultureRxHandler         cultureRxHandler;
 	@Inject
 	protected ProfessionRxHandler      professionRxHandler;
@@ -59,6 +67,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	@Inject
 	protected RealmRxHandler           realmRxHandler;
 	private   CharactersFragment       charactersFragment;
+	private   TextView                 currentLevelView;
+	private   TextView                 experiencePointsView;
+	private   TextView                 developmentPointsView;
+	private   Button                   levelUpButton;
+	private   Spinner                  campaignSpinner;
 	private   EditText                 firstNameEdit;
 	private   EditText                 lastNameEdit;
 	private   EditText                 knownAsEdit;
@@ -67,10 +80,13 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   SpinnerUtils<Culture>    cultureSpinner;
 	private   SpinnerUtils<Profession> professionSpinner;
 	private   SpinnerUtils<Realm>      realmSpinner;
+	private   Button                   generateStatsButton;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
-	private Map<Statistic, EditText>   tempStatsMap = new HashMap<>(Statistic.NUM_STATS);
-	private Map<Statistic, EditText>   potentialStatsMap = new HashMap<>(Statistic.NUM_STATS);
+	private   LinearLayout             newCharacterRow;
+	private Map<Statistic, TextView>   tempStatsMap = new HashMap<>(Statistic.NUM_STATS);
+	private Map<Statistic, TextView>   potentialStatsMap = new HashMap<>(Statistic.NUM_STATS);
+	private boolean                    purchased;
 
 	/**
 	 * Creates new CharacterMainPageFragment instance.
@@ -91,6 +107,12 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		View layout = inflater.inflate(R.layout.character_main_page_fragment, container, false);
 
+		currentLevelView = (TextView)layout.findViewById(R.id.current_level_view);
+		experiencePointsView = (TextView)layout.findViewById(R.id.experience_points_view);
+		developmentPointsView = (TextView)layout.findViewById(R.id.development_points_view);
+		initLevelUpButton(layout);
+		campaignSpinner = new SpinnerUtils<Campaign>().initSpinner(layout, getActivity(), campaignRxHandler.getAll(), this,
+				R.id.campaign_spinner, null);
 		firstNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.first_name_edit,
 				R.string.validation_character_first_name_required);
 		lastNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.last_name_edit,
@@ -109,6 +131,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
 		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit, R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit, R.string.validation_character_weight_required);
+		initGenerateStatsButton(layout);
 		initStatsRows(layout);
 
 		return layout;
@@ -131,7 +154,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
-		Log.d("RMU", "Fragment = " + this);
 		switch (editTextId) {
 			case R.id.first_name_edit:
 				result = charactersFragment.getCurrentInstance().getFirstName();
@@ -195,6 +217,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		Object result = null;
 
 		switch (spinnerId) {
+			case R.id.campaign_spinner:
+				result = charactersFragment.getCurrentInstance().getCampaign();
+				break;
 			case R.id.race_spinner:
 				result = charactersFragment.getCurrentInstance().getRace();
 				break;
@@ -215,6 +240,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	@Override
 	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
 		switch (spinnerId) {
+			case R.id.campaign_spinner:
+				Campaign newCampaign = (Campaign)newItem;
+				charactersFragment.getCurrentInstance().setCampaign(newCampaign);
+				charactersFragment.saveItem();
+				break;
 			case R.id.race_spinner:
 				Race newRace = (Race)newItem;
 				charactersFragment.getCurrentInstance().setRace(newRace);
@@ -238,66 +268,74 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
+		Character character = charactersFragment.getCurrentInstance();
 		boolean changed = false;
 		String newString;
 		short newShort;
 
+		Campaign newCampaign = (Campaign)campaignSpinner.getSelectedItem();
+		if(newCampaign != null && !newCampaign.equals(character.getCampaign()) ||
+				(newCampaign == null && character.getCampaign() != null)) {
+			character.setCampaign(newCampaign);
+			changed = true;
+		}
+
 		newString = firstNameEdit.getText().toString();
-		if(!newString.equals(charactersFragment.getCurrentInstance().getFirstName())) {
-			charactersFragment.getCurrentInstance().setFirstName(newString);
+		if(!newString.equals(character.getFirstName())) {
+			character.setFirstName(newString);
 			changed = true;
 		}
 		newString = lastNameEdit.getText().toString();
-		if(!newString.equals(charactersFragment.getCurrentInstance().getLastName())) {
-			charactersFragment.getCurrentInstance().setLastName(newString);
+		if(!newString.equals(character.getLastName())) {
+			character.setLastName(newString);
 			changed = true;
 		}
 		newString = knownAsEdit.getText().toString();
-		if(!newString.equals(charactersFragment.getCurrentInstance().getKnownAs())) {
-			charactersFragment.getCurrentInstance().setKnownAs(newString);
+		if(!newString.equals(character.getKnownAs())) {
+			character.setKnownAs(newString);
 			changed = true;
 		}
 		newString = descriptionEdit.getText().toString();
-		if(!newString.equals(charactersFragment.getCurrentInstance().getDescription())) {
-			charactersFragment.getCurrentInstance().setDescription(newString);
+		if(!newString.equals(character.getDescription())) {
+			character.setDescription(newString);
 			changed = true;
 		}
 		Race newRace = raceSpinner.getSelectedItem();
-		Race oldRace = charactersFragment.getCurrentInstance().getRace();
+		Race oldRace = character.getRace();
 		if((newRace != null && !newRace.equals(oldRace)) || (oldRace != null && !oldRace.equals(newRace))) {
-			charactersFragment.getCurrentInstance().setRace(newRace);
+			character.setRace(newRace);
 			changed = true;
 		}
 		Culture newCulture = cultureSpinner.getSelectedItem();
-		Culture oldCulture = charactersFragment.getCurrentInstance().getCulture();
+		Culture oldCulture = character.getCulture();
 		if((newCulture != null && !newCulture.equals(oldCulture)) || (oldCulture != null && !oldCulture.equals(newCulture))) {
-			charactersFragment.getCurrentInstance().setCulture(newCulture);
+			character.setCulture(newCulture);
 			changed = true;
 		}
 		Profession newProfession = professionSpinner.getSelectedItem();
-		Profession oldProfession = charactersFragment.getCurrentInstance().getProfession();
+		Profession oldProfession = character.getProfession();
 		if((newProfession != null && !newProfession.equals(oldProfession)) ||
 				(oldProfession != null && !oldProfession.equals(newProfession))) {
-			charactersFragment.getCurrentInstance().setProfession(newProfession);
+			character.setProfession(newProfession);
 			changed = true;
 		}
 		Realm newRealm = realmSpinner.getSelectedItem();
-		Realm oldRealm = charactersFragment.getCurrentInstance().getRealm();
+		Realm oldRealm = character.getRealm();
 		if((newRealm != null && !newRealm.equals(oldRealm)) || (oldRealm != null && !oldRealm.equals(newRealm))) {
-			charactersFragment.getCurrentInstance().setRealm(newRealm);
+			character.setRealm(newRealm);
 			changed = true;
 		}
 		if(heightEdit.getText().length() > 0) {
 			newShort = Short.valueOf(heightEdit.getText().toString());
-			if(newShort != charactersFragment.getCurrentInstance().getHeight()) {
-				charactersFragment.getCurrentInstance().setHeight(newShort);
+			if(newShort != character.getHeight()) {
+				character.setHeight(newShort);
 				changed = true;
 			}
 		}
 		if(weightEdit.getText().length() > 0) {
 			newShort = Short.valueOf(weightEdit.getText().toString());
-			if(newShort != charactersFragment.getCurrentInstance().getWeight()) {
-				charactersFragment.getCurrentInstance().setWeight(newShort);
+			if(newShort != character.getWeight()) {
+				character.setWeight(newShort);
 				changed = true;
 			}
 		}
@@ -306,7 +344,20 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	public void copyItemToViews() {
-		Log.d("RMU", "Character = " + charactersFragment.getCurrentInstance());
+		Character character = charactersFragment.getCurrentInstance();
+
+		short currentLevel = character.getCurrentLevel();
+		currentLevelView.setText(String.valueOf(currentLevel));
+		if(currentLevel > 0) {
+			newCharacterRow.setVisibility(View.GONE);
+		}
+		else {
+			newCharacterRow.setVisibility(View.VISIBLE);
+		}
+		experiencePointsView.setText(String.valueOf(character.getExperiencePoints()));
+		developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
+		levelUpButton.setEnabled((currentLevel < (short)(character.getExperiencePoints()/10000)));
+
 		firstNameEdit.setText(charactersFragment.getCurrentInstance().getFirstName());
 		lastNameEdit.setText(charactersFragment.getCurrentInstance().getLastName());
 		knownAsEdit.setText(charactersFragment.getCurrentInstance().getKnownAs());
@@ -317,11 +368,162 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.setSelection(charactersFragment.getCurrentInstance().getRealm());
 		heightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getHeight()));
 		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
+		for(Map.Entry<Statistic, TextView> entry : tempStatsMap.entrySet()) {
+			entry.getValue().setText(String.valueOf(character.getStatTemps().get(entry.getKey())));
+		}
+		for(Map.Entry<Statistic, TextView> entry : potentialStatsMap.entrySet()) {
+			entry.getValue().setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
+		}
+		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && !character.getCampaign().isBuyStats());
+	}
+
+	private void initLevelUpButton(View layout) {
+		levelUpButton = (Button)layout.findViewById(R.id.level_up_button);
+
+		levelUpButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Character character = charactersFragment.getCurrentInstance();
+				if(character.getCurrentLevel() < ((short)(character.getExperiencePoints()/10000) - 1)) {
+					character.setCurrentLevel((short)(character.getCurrentLevel() + 1));
+					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() + 50));
+				}
+			}
+		});
+	}
+
+	private void initGenerateStatsButton(View layout) {
+		newCharacterRow = (LinearLayout)layout.findViewById(R.id.new_character_row);
+		generateStatsButton = (Button)layout.findViewById(R.id.generate_stats_button);
+		generateStatsButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Character character = charactersFragment.getCurrentInstance();
+				if(character.getCurrentLevel() == 0 && !character.getCampaign().isBuyStats()) {
+					generateStat(Statistic.AGILITY, tempStatsMap.get(Statistic.AGILITY), potentialStatsMap.get(Statistic.AGILITY));
+					generateStat(Statistic.CONSTITUTION, tempStatsMap.get(Statistic.CONSTITUTION), potentialStatsMap.get(Statistic.CONSTITUTION));
+					generateStat(Statistic.EMPATHY, tempStatsMap.get(Statistic.EMPATHY), potentialStatsMap.get(Statistic.EMPATHY));
+					generateStat(Statistic.INTUITION, tempStatsMap.get(Statistic.INTUITION), potentialStatsMap.get(Statistic.INTUITION));
+					generateStat(Statistic.MEMORY, tempStatsMap.get(Statistic.MEMORY), potentialStatsMap.get(Statistic.MEMORY));
+					generateStat(Statistic.PRESENCE, tempStatsMap.get(Statistic.PRESENCE), potentialStatsMap.get(Statistic.PRESENCE));
+					generateStat(Statistic.QUICKNESS, tempStatsMap.get(Statistic.QUICKNESS), potentialStatsMap.get(Statistic.QUICKNESS));
+					generateStat(Statistic.REASONING, tempStatsMap.get(Statistic.REASONING), potentialStatsMap.get(Statistic.REASONING));
+					generateStat(Statistic.SELF_DISCIPLINE, tempStatsMap.get(Statistic.SELF_DISCIPLINE), potentialStatsMap.get(Statistic.SELF_DISCIPLINE));
+					generateStat(Statistic.STRENGTH, tempStatsMap.get(Statistic.STRENGTH), potentialStatsMap.get(Statistic.STRENGTH));
+				}
+			}
+		});
+	}
+
+	private void generateStat(Statistic statistic, TextView tempStatView, TextView potentialStatView) {
+		Character character = charactersFragment.getCurrentInstance();
+		short roll;
+		short rolls[] = new short[2];
+		Random random = new Random();
+
+		for(int i = 0; i < 3;) {
+			roll = (short)(random.nextInt(99) + 1);
+			if(roll >= character.getCampaign().getPowerLevel().getRerollUnder()) {
+				switch (i) {
+					case 2:
+						if (roll > rolls[1]) {
+							rolls[0] = rolls[1];
+							rolls[1] = roll;
+						} else if (roll > rolls[0]) {
+							rolls[0] = roll;
+						}
+						break;
+					case 1:
+						if(roll >= rolls[0]) {
+							rolls[1] = roll;
+						}
+						else {
+							rolls[1] = rolls[0];
+							rolls[0] = roll;
+						}
+						break;
+					case 0:
+						rolls[0] = roll;
+						break;
+				}
+				i++;
+			}
+			character.getStatTemps().put(statistic, rolls[0]);
+			character.getStatPotentials().put(statistic, rolls[1]);
+			tempStatView.setText(String.valueOf(rolls[0]));
+			potentialStatView.setText(String.valueOf(rolls[1]));
+		}
 	}
 
 	private void initStatsRows(View layout) {
 		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
-		textView.setText(String.format(getString(R.string.stat_format_string), "", ""));
+		textView.setText(Statistic.AGILITY.toString());
+		textView = (TextView) layout.findViewById(R.id.agility_temp_view);
+		tempStatsMap.put(Statistic.AGILITY, textView);
+		textView = (TextView) layout.findViewById(R.id.agility_potential_view);
+		potentialStatsMap.put(Statistic.AGILITY, textView);
 
+		textView = (TextView) layout.findViewById(R.id.constitution_label);
+		textView.setText(Statistic.CONSTITUTION.toString());
+		textView = (TextView) layout.findViewById(R.id.constitution_temp_view);
+		tempStatsMap.put(Statistic.CONSTITUTION, textView);
+		textView = (TextView) layout.findViewById(R.id.constitution_potential_view);
+		potentialStatsMap.put(Statistic.CONSTITUTION, textView);
+
+		textView = (TextView) layout.findViewById(R.id.empathy_label);
+		textView.setText(Statistic.EMPATHY.toString());
+		textView = (TextView) layout.findViewById(R.id.empathy_temp_view);
+		tempStatsMap.put(Statistic.EMPATHY, textView);
+		textView = (TextView) layout.findViewById(R.id.empathy_potential_view);
+		potentialStatsMap.put(Statistic.EMPATHY, textView);
+
+		textView = (TextView) layout.findViewById(R.id.intuition_label);
+		textView.setText(Statistic.INTUITION.toString());
+		textView = (TextView) layout.findViewById(R.id.intuition_temp_view);
+		tempStatsMap.put(Statistic.INTUITION, textView);
+		textView = (TextView) layout.findViewById(R.id.intuition_potential_view);
+		potentialStatsMap.put(Statistic.INTUITION, textView);
+
+		textView = (TextView) layout.findViewById(R.id.memory_label);
+		textView.setText(Statistic.MEMORY.toString());
+		textView = (TextView) layout.findViewById(R.id.memory_temp_view);
+		tempStatsMap.put(Statistic.MEMORY, textView);
+		textView = (TextView) layout.findViewById(R.id.memory_potential_view);
+		potentialStatsMap.put(Statistic.MEMORY, textView);
+
+		textView = (TextView) layout.findViewById(R.id.presence_label);
+		textView.setText(Statistic.PRESENCE.toString());
+		textView = (TextView) layout.findViewById(R.id.presence_temp_view);
+		tempStatsMap.put(Statistic.PRESENCE, textView);
+		textView = (TextView) layout.findViewById(R.id.presence_potential_view);
+		potentialStatsMap.put(Statistic.PRESENCE, textView);
+
+		textView = (TextView) layout.findViewById(R.id.quickness_label);
+		textView.setText(Statistic.QUICKNESS.toString());
+		textView = (TextView) layout.findViewById(R.id.quickness_temp_view);
+		tempStatsMap.put(Statistic.QUICKNESS, textView);
+		textView = (TextView) layout.findViewById(R.id.quickness_potential_view);
+		potentialStatsMap.put(Statistic.QUICKNESS, textView);
+
+		textView = (TextView) layout.findViewById(R.id.reasoning_label);
+		textView.setText(Statistic.REASONING.toString());
+		textView = (TextView) layout.findViewById(R.id.reasoning_temp_view);
+		tempStatsMap.put(Statistic.REASONING, textView);
+		textView = (TextView) layout.findViewById(R.id.reasoning_potential_view);
+		potentialStatsMap.put(Statistic.REASONING, textView);
+
+		textView = (TextView) layout.findViewById(R.id.self_discipline_label);
+		textView.setText(Statistic.SELF_DISCIPLINE.toString());
+		textView = (TextView) layout.findViewById(R.id.self_discipline_temp_view);
+		tempStatsMap.put(Statistic.SELF_DISCIPLINE, textView);
+		textView = (TextView) layout.findViewById(R.id.self_discipline_potential_view);
+		potentialStatsMap.put(Statistic.SELF_DISCIPLINE, textView);
+
+		textView = (TextView) layout.findViewById(R.id.strength_label);
+		textView.setText(Statistic.STRENGTH.toString());
+		textView = (TextView) layout.findViewById(R.id.strength_temp_view);
+		tempStatsMap.put(Statistic.STRENGTH, textView);
+		textView = (TextView) layout.findViewById(R.id.strength_potential_view);
+		potentialStatsMap.put(Statistic.STRENGTH, textView);
 	}
 }

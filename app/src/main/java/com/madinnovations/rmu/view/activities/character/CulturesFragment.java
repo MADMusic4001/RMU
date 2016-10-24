@@ -60,7 +60,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Handles interactions with the UI for body parts.
+ * Handles interactions with the UI for cultures.
  */
 public class CulturesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Culture>,
 		CultureSkillRanksListAdapter.CultureRanksCallbacks, EditTextUtils.ValuesCallback {

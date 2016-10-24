@@ -5,42 +5,84 @@
               android:layout_height="match_parent">
 
   <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_current_lvl"/>
+    <TextView
+        android:id="@+id/current_level_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_experience_points"/>
+    <TextView
+        android:id="@+id/experience_points_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_dev_points"/>
+    <TextView
+        android:id="@+id/development_points_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/level_up_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_level_up"/>
+  </LinearLayout>
+
+  <LinearLayout
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/input_label_first_name"/>
-  <EditText
-      android:id="@+id/first_name_edit"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:maxLength="30"
-      android:nextFocusDown="@+id/last_name_edit"
-      android:hint="@string/hint_character_first_name"/>
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/input_label_last_name"/>
-  <EditText
-      android:id="@+id/last_name_edit"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:maxLength="30"
-      android:nextFocusDown="@+id/known_as_edit"
-      android:hint="@string/hint_character_last_name"/>
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/input_label_known_as"/>
-  <EditText
-      android:id="@+id/known_as_edit"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:maxLength="30"
-      android:nextFocusDown="@+id/notes_edit"
-      android:hint="@string/hint_character_known_as"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_campaign"/>
+    <Spinner
+        android:id="@+id/campaign_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_first_name"/>
+    <EditText
+        android:id="@+id/first_name_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLength="30"
+        android:nextFocusDown="@+id/last_name_edit"
+        android:hint="@string/hint_character_first_name"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_last_name"/>
+    <EditText
+        android:id="@+id/last_name_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLength="30"
+        android:nextFocusDown="@+id/known_as_edit"
+        android:hint="@string/hint_character_last_name"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_known_as"/>
+    <EditText
+        android:id="@+id/known_as_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLength="30"
+        android:nextFocusDown="@+id/notes_edit"
+        android:hint="@string/hint_character_known_as"/>
   </LinearLayout>
 
   <LinearLayout
@@ -132,6 +174,17 @@
       android:hint="@string/hint_weight"/>
   </LinearLayout>
 
+  <LinearLayout
+      android:id="@+id/new_character_row"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/generate_stats_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_generate_stats"/>
+  </LinearLayout>
 
   <LinearLayout
       android:orientation="horizontal"

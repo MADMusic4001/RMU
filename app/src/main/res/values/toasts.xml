@@ -29,6 +29,13 @@
   <string name="toast_body_part_deleted">Body Part deleted.</string>
   <string name="toast_body_part_delete_failed">Body Part deletion failed.</string>
 
+  <string name="toast_campaigns_load_failed">Failed to load Campaigns</string>
+  <string name="toast_campaigns_loaded">%1$d Campaigns loaded.</string>
+  <string name="toast_campaign_saved">Campaign saved.</string>
+  <string name="toast_campaign_save_failed">Campaign save failed.</string>
+  <string name="toast_campaign_deleted">Campaign deleted.</string>
+  <string name="toast_campaign_delete_failed">Campaign deletion failed.</string>
+
   <string name="toast_characters_load_failed">Failed to load Characters</string>
   <string name="toast_characters_loaded">%1$d Characters loaded.</string>
   <string name="toast_character_saved">Character saved.</string>
