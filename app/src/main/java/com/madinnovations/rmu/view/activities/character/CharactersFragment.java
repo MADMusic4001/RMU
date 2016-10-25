@@ -121,6 +121,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				saveItem();
 			}
 			currentInstance = new Character();
+			currentInstance.generateStats();
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -149,6 +150,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					saveItem();
 				}
 				currentInstance = new Character();
+				currentInstance.generateStats();
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();

@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -47,7 +48,6 @@ import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -129,9 +129,12 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		professionSpinner.initSpinner(layout, getActivity(), professionRxHandler.getAll(), this, R.id.profession_spinner, null);
 		realmSpinner = new SpinnerUtils<>();
 		realmSpinner.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
-		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit, R.string.validation_character_height_required);
-		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit, R.string.validation_character_weight_required);
+		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit,
+											R.string.validation_character_height_required);
+		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
+											R.string.validation_character_weight_required);
 		initGenerateStatsButton(layout);
+		initPurchaseButtons(layout);
 		initStatsRows(layout);
 
 		return layout;
@@ -239,28 +242,32 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	@Override
 	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
+		Character character = charactersFragment.getCurrentInstance();
+
 		switch (spinnerId) {
 			case R.id.campaign_spinner:
 				Campaign newCampaign = (Campaign)newItem;
-				charactersFragment.getCurrentInstance().setCampaign(newCampaign);
+				character.setCampaign(newCampaign);
+				generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+													   &&!character.getCampaign().isBuyStats());
 				charactersFragment.saveItem();
 				break;
 			case R.id.race_spinner:
 				Race newRace = (Race)newItem;
-				charactersFragment.getCurrentInstance().setRace(newRace);
+				character.setRace(newRace);
 				charactersFragment.saveItem();
 				break;
 			case R.id.culture_spinner:
-				charactersFragment.getCurrentInstance().setCulture((Culture)newItem);
+				character.setCulture((Culture)newItem);
 				charactersFragment.saveItem();
 				break;
 			case R.id.profession_spinner:
-				charactersFragment.getCurrentInstance().setProfession((Profession) newItem);
+				character.setProfession((Profession) newItem);
 				charactersFragment.changeProfession();
 				charactersFragment.saveItem();
 				break;
 			case R.id.realm_spinner:
-				charactersFragment.getCurrentInstance().setRealm((Realm)newItem);
+				character.setRealm((Realm)newItem);
 				charactersFragment.saveItem();
 				break;
 		}
@@ -374,7 +381,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		for(Map.Entry<Statistic, TextView> entry : potentialStatsMap.entrySet()) {
 			entry.getValue().setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
 		}
-		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && !character.getCampaign().isBuyStats());
+		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+				&&!character.getCampaign().isBuyStats());
 	}
 
 	private void initLevelUpButton(View layout) {
@@ -395,104 +403,136 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private void initGenerateStatsButton(View layout) {
 		newCharacterRow = (LinearLayout)layout.findViewById(R.id.new_character_row);
 		generateStatsButton = (Button)layout.findViewById(R.id.generate_stats_button);
+		Character character = charactersFragment.getCurrentInstance();
+		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+											   &&!character.getCampaign().isBuyStats());
 		generateStatsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Character character = charactersFragment.getCurrentInstance();
-				if(character.getCurrentLevel() == 0 && !character.getCampaign().isBuyStats()) {
-					generateStat(Statistic.AGILITY, tempStatsMap.get(Statistic.AGILITY), potentialStatsMap.get(Statistic.AGILITY));
-					generateStat(Statistic.CONSTITUTION, tempStatsMap.get(Statistic.CONSTITUTION), potentialStatsMap.get(Statistic.CONSTITUTION));
-					generateStat(Statistic.EMPATHY, tempStatsMap.get(Statistic.EMPATHY), potentialStatsMap.get(Statistic.EMPATHY));
-					generateStat(Statistic.INTUITION, tempStatsMap.get(Statistic.INTUITION), potentialStatsMap.get(Statistic.INTUITION));
-					generateStat(Statistic.MEMORY, tempStatsMap.get(Statistic.MEMORY), potentialStatsMap.get(Statistic.MEMORY));
-					generateStat(Statistic.PRESENCE, tempStatsMap.get(Statistic.PRESENCE), potentialStatsMap.get(Statistic.PRESENCE));
-					generateStat(Statistic.QUICKNESS, tempStatsMap.get(Statistic.QUICKNESS), potentialStatsMap.get(Statistic.QUICKNESS));
-					generateStat(Statistic.REASONING, tempStatsMap.get(Statistic.REASONING), potentialStatsMap.get(Statistic.REASONING));
-					generateStat(Statistic.SELF_DISCIPLINE, tempStatsMap.get(Statistic.SELF_DISCIPLINE), potentialStatsMap.get(Statistic.SELF_DISCIPLINE));
-					generateStat(Statistic.STRENGTH, tempStatsMap.get(Statistic.STRENGTH), potentialStatsMap.get(Statistic.STRENGTH));
+				if(character.getCurrentLevel() == 0) {
+					character.generateStats();
 				}
+				tempStatsMap.get(Statistic.AGILITY).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.AGILITY)));
+				potentialStatsMap.get(Statistic.AGILITY).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.AGILITY)));
+				tempStatsMap.get(Statistic.CONSTITUTION).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.CONSTITUTION)));
+				potentialStatsMap.get(Statistic.CONSTITUTION).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.CONSTITUTION)));
+				tempStatsMap.get(Statistic.EMPATHY).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.EMPATHY)));
+				potentialStatsMap.get(Statistic.EMPATHY).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.EMPATHY)));
+				tempStatsMap.get(Statistic.INTUITION).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.INTUITION)));
+				potentialStatsMap.get(Statistic.INTUITION).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.INTUITION)));
+				tempStatsMap.get(Statistic.MEMORY).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.MEMORY)));
+				potentialStatsMap.get(Statistic.MEMORY).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.MEMORY)));
+				tempStatsMap.get(Statistic.PRESENCE).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.PRESENCE)));
+				potentialStatsMap.get(Statistic.PRESENCE).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.PRESENCE)));
+				tempStatsMap.get(Statistic.QUICKNESS).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.QUICKNESS)));
+				potentialStatsMap.get(Statistic.QUICKNESS).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.QUICKNESS)));
+				tempStatsMap.get(Statistic.REASONING).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.REASONING)));
+				potentialStatsMap.get(Statistic.REASONING).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.REASONING)));
+				tempStatsMap.get(Statistic.SELF_DISCIPLINE).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.SELF_DISCIPLINE)));
+				potentialStatsMap.get(Statistic.SELF_DISCIPLINE).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.SELF_DISCIPLINE)));
+				tempStatsMap.get(Statistic.STRENGTH).setText(
+						String.valueOf(character.getStatTemps().get(Statistic.STRENGTH)));
+				potentialStatsMap.get(Statistic.STRENGTH).setText(
+						String.valueOf(character.getStatPotentials().get(Statistic.STRENGTH)));
 			}
 		});
 	}
 
-	private void generateStat(Statistic statistic, TextView tempStatView, TextView potentialStatView) {
+	private void copyStatsToViews(Statistic statistic, TextView tempStatView, TextView potentialStatView) {
 		Character character = charactersFragment.getCurrentInstance();
-		short roll;
-		short rolls[] = new short[2];
-		Random random = new Random();
+		tempStatView.setText(String.valueOf(character.getStatTemps().get(statistic)));
+		potentialStatView.setText(String.valueOf(character.getStatPotentials().get(statistic)));
+	}
 
-		for(int i = 0; i < 3;) {
-			roll = (short)(random.nextInt(99) + 1);
-			if(roll >= character.getCampaign().getPowerLevel().getRerollUnder()) {
-				switch (i) {
-					case 2:
-						if (roll > rolls[1]) {
-							rolls[0] = rolls[1];
-							rolls[1] = roll;
-						} else if (roll > rolls[0]) {
-							rolls[0] = roll;
-						}
-						break;
-					case 1:
-						if(roll >= rolls[0]) {
-							rolls[1] = roll;
-						}
-						else {
-							rolls[1] = rolls[0];
-							rolls[0] = roll;
-						}
-						break;
-					case 0:
-						rolls[0] = roll;
-						break;
-				}
-				i++;
+	private void generatePurchaseStat(Statistic statistic, TextView tempStatView, TextView potentialStatView) {
+		Character character = charactersFragment.getCurrentInstance();
+		short tempStat = 53;
+		short potentialStat = 100;
+		character.getStatTemps().put(statistic, tempStat);
+		character.getStatPotentials().put(statistic, potentialStat);
+		tempStatView.setText(String.valueOf(tempStat));
+		potentialStatView.setText(String.valueOf(potentialStat));
+	}
+
+	private void initPurchaseButtons(View layout) {
+		initPurchaseButtons(layout, R.id.agility_increment, R.id.agility_decrement, Statistic.AGILITY);
+		initPurchaseButtons(layout, R.id.constitution_increment, R.id.constitution_decrement, Statistic.CONSTITUTION);
+		initPurchaseButtons(layout, R.id.empathy_increment, R.id.empathy_decrement, Statistic.EMPATHY);
+		initPurchaseButtons(layout, R.id.intuition_increment, R.id.intuition_decrement, Statistic.INTUITION);
+		initPurchaseButtons(layout, R.id.memory_increment, R.id.memory_decrement, Statistic.MEMORY);
+		initPurchaseButtons(layout, R.id.presence_increment, R.id.presence_decrement, Statistic.PRESENCE);
+		initPurchaseButtons(layout, R.id.quickness_increment, R.id.quickness_decrement, Statistic.QUICKNESS);
+		initPurchaseButtons(layout, R.id.reasoning_increment, R.id.reasoning_decrement, Statistic.REASONING);
+		initPurchaseButtons(layout, R.id.self_discipline_increment, R.id.self_discipline_decrement, Statistic.SELF_DISCIPLINE);
+		initPurchaseButtons(layout, R.id.strength_increment, R.id.strength_decrement, Statistic.STRENGTH);
+	}
+
+	private void initPurchaseButtons(View layout, @IdRes int buyButtonId, @IdRes int sellButtonId, final Statistic statistic) {
+		ImageButton imageButton = (ImageButton)layout.findViewById(buyButtonId);
+		imageButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				buyStat(statistic, tempStatsMap.get(statistic));
 			}
-			character.getStatTemps().put(statistic, rolls[0]);
-			character.getStatPotentials().put(statistic, rolls[1]);
-			tempStatView.setText(String.valueOf(rolls[0]));
-			potentialStatView.setText(String.valueOf(rolls[1]));
+		});
+
+		imageButton = (ImageButton)layout.findViewById(sellButtonId);
+		imageButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sellStat(statistic, tempStatsMap.get(statistic));
+			}
+		});
+	}
+
+	private void buyStat(Statistic statistic, TextView tempStatView) {
+		Character character = charactersFragment.getCurrentInstance();
+		short statPurchasePoints = character.getStatPurchasePoints();
+
+		if(statPurchasePoints > 0) {
+			short currentBonus = Statistic.getBonus(character.getStatTemps().get(statistic));
+			if(currentBonus < 15) {
+				currentBonus += 1;
+				short newTemp = Statistic.getRangeForBonus(currentBonus)[1];
+				character.getStatTemps().put(statistic, newTemp);
+				tempStatView.setText(String.valueOf(newTemp));
+				statPurchasePoints -= 1;
+				character.setStatPurchasePoints(statPurchasePoints);
+			}
 		}
 	}
 
-	private void buyStat(Statistic statistic, short offsetRanks, TextView tempStatView, TextView potentialStatView) {
+	private void sellStat(Statistic statistic, TextView tempStatView) {
 		Character character = charactersFragment.getCurrentInstance();
-		short statPurchasePoints = character.getCampaign().getPowerLevel().getStatPoints();
-		short rolls[] = new short[2];
-		Random random = new Random();
-		short roll;
+		short statPurchasePoints = character.getStatPurchasePoints();
 
-		short currentBonus = character.getStatTemps().get(statistic);
-		for(int i = 0; i < 3;) {
-			roll = (short) (random.nextInt(99) + 1);
-			if (roll >= character.getCampaign().getPowerLevel().getRerollUnder()) {
-				switch (i) {
-					case 2:
-						if (roll > rolls[1]) {
-							rolls[0] = rolls[1];
-							rolls[1] = roll;
-						} else if (roll > rolls[0]) {
-							rolls[0] = roll;
-						}
-						break;
-					case 1:
-						if (roll >= rolls[0]) {
-							rolls[1] = roll;
-						} else {
-							rolls[1] = rolls[0];
-							rolls[0] = roll;
-						}
-						break;
-					case 0:
-						rolls[0] = roll;
-						break;
-				}
-				i++;
-			}
-			character.getStatTemps().put(statistic, rolls[0]);
-			character.getStatPotentials().put(statistic, rolls[1]);
-			tempStatView.setText(String.valueOf(rolls[0]));
-			potentialStatView.setText(String.valueOf(rolls[1]));
+		short currentBonus = Statistic.getBonus(character.getStatTemps().get(statistic));
+		if(currentBonus > -15) {
+			currentBonus -= 1;
+			short newTemp = Statistic.getRangeForBonus(currentBonus)[1];
+			character.getStatTemps().put(statistic, newTemp);
+			tempStatView.setText(String.valueOf(newTemp));
+			statPurchasePoints += 1;
+			character.setStatPurchasePoints(statPurchasePoints);
 		}
 	}
 

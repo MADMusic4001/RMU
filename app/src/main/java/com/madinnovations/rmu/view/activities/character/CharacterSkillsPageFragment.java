@@ -233,18 +233,22 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	public void copyItemToViews() {
 		Character character = charactersFragment.getCurrentInstance();
 		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-		for (Map.Entry<SkillCategory, List<SkillCost>> entry : character.getProfession().getAssignableSkillCosts().entrySet()) {
-			int index = Arrays.asList(skillCategories).indexOf(entry.getKey());
-			if (index != -1) {
-				setSkillCosts((AssignableCostsAdapter) skillCostsListViews[index].getAdapter(), new ArrayList<Skill>(),
-							  skillCategories[index]);
-			}
-			else {
-				for (int i = 0; i < skillCategories.length; i++) {
-					SkillCategory category = skillCategories[i];
-					if (category == null || ((!entry.getKey().equals(category)) &&
-							(!character.getProfession().getAssignableSkillCosts().containsKey(category)))) {
-						hideAssignableList(i);
+		if(character.getProfession() != null) {
+			for (Map.Entry<SkillCategory, List<SkillCost>> entry : character.getProfession()
+					.getAssignableSkillCosts()
+					.entrySet()) {
+				int index = Arrays.asList(skillCategories).indexOf(entry.getKey());
+				if (index != -1) {
+					setSkillCosts((AssignableCostsAdapter) skillCostsListViews[index].getAdapter(), new ArrayList<Skill>(),
+								  skillCategories[index]);
+				}
+				else {
+					for (int i = 0; i < skillCategories.length; i++) {
+						SkillCategory category = skillCategories[i];
+						if (category == null || ((!entry.getKey().equals(category)) &&
+								(!character.getProfession().getAssignableSkillCosts().containsKey(category)))) {
+							hideAssignableList(i);
+						}
 					}
 				}
 			}
@@ -316,10 +320,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					}
 				});
 	}
-
-//	private void initTalentTiersListView(View layout) {
-//		ListView talentTiersListView = (ListView) layout.findViewById(R.id.talent_tiers_list);
-//	}
 
 	private void hideAssignableList(int index) {
 		if(skillCostsListViews.length > index) {

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Character attributes
@@ -41,7 +42,7 @@ public class Character {
 	private Campaign                   campaign = null;
 	private short                      currentLevel = 0;
 	private int                        experiencePoints = 0;
-	private int                        statPurchasePoints = 0;
+	private short                      statPurchasePoints = 0;
 	private String                     firstName = null;
 	private String                     lastName = null;
 	private String                     knownAs = null;
@@ -87,6 +88,48 @@ public class Character {
 				&& (profession.getRealm1() != null || realm != null);
 	}
 
+	/**
+	 * Generates initial stats for this character. If the Campaign for this character is not null and returns true for
+	 * isBuyStats() then the temps are set to 53 (0 bonus) and the potentials are set to 100. Otherwise the temps and
+	 * potentials are randomly generated using the method specified in the section 3.5 of A&CL.
+	 */
+	public void generateStats() {
+		if(getCampaign() != null && !getCampaign().isBuyStats()) {
+			getStatTemps().put(Statistic.AGILITY, (short)53);
+			getStatPotentials().put(Statistic.AGILITY, (short)100);
+			getStatTemps().put(Statistic.CONSTITUTION, (short)53);
+			getStatPotentials().put(Statistic.CONSTITUTION, (short)100);
+			getStatTemps().put(Statistic.EMPATHY, (short)53);
+			getStatPotentials().put(Statistic.EMPATHY, (short)100);
+			getStatTemps().put(Statistic.INTUITION, (short)53);
+			getStatPotentials().put(Statistic.INTUITION, (short)100);
+			getStatTemps().put(Statistic.MEMORY, (short)53);
+			getStatPotentials().put(Statistic.MEMORY, (short)100);
+			getStatTemps().put(Statistic.PRESENCE, (short)53);
+			getStatPotentials().put(Statistic.PRESENCE, (short)100);
+			getStatTemps().put(Statistic.QUICKNESS, (short)53);
+			getStatPotentials().put(Statistic.QUICKNESS, (short)100);
+			getStatTemps().put(Statistic.REASONING, (short)53);
+			getStatPotentials().put(Statistic.REASONING, (short)100);
+			getStatTemps().put(Statistic.SELF_DISCIPLINE, (short)53);
+			getStatPotentials().put(Statistic.SELF_DISCIPLINE, (short)100);
+			getStatTemps().put(Statistic.STRENGTH, (short)53);
+			getStatPotentials().put(Statistic.STRENGTH, (short)100);
+		}
+		else {
+			generateRandomStat(Statistic.AGILITY);
+			generateRandomStat(Statistic.CONSTITUTION);
+			generateRandomStat(Statistic.EMPATHY);
+			generateRandomStat(Statistic.INTUITION);
+			generateRandomStat(Statistic.MEMORY);
+			generateRandomStat(Statistic.PRESENCE);
+			generateRandomStat(Statistic.QUICKNESS);
+			generateRandomStat(Statistic.REASONING);
+			generateRandomStat(Statistic.SELF_DISCIPLINE);
+			generateRandomStat(Statistic.STRENGTH);
+		}
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -94,6 +137,7 @@ public class Character {
 				.append("campaign", campaign)
 				.append("currentLevel", currentLevel)
 				.append("experiencePoints", experiencePoints)
+				.append("statPurchasePoints", statPurchasePoints)
 				.append("firstName", firstName)
 				.append("lastName", lastName)
 				.append("knownAs", knownAs)
@@ -145,6 +189,47 @@ public class Character {
 		return id;
 	}
 
+	private void generateRandomStat(Statistic statistic) {
+		short roll;
+		short rolls[] = new short[2];
+		Random random = new Random();
+
+		for(int i = 0; i < 3;) {
+			roll = (short)(random.nextInt(99) + 1);
+			short rerollUnder = 11;
+			if(getCampaign() != null && getCampaign().getPowerLevel() != null) {
+				rerollUnder = getCampaign().getPowerLevel().getRerollUnder();
+			}
+			if(roll >= rerollUnder) {
+				switch (i) {
+					case 2:
+						if (roll > rolls[1]) {
+							rolls[0] = rolls[1];
+							rolls[1] = roll;
+						} else if (roll > rolls[0]) {
+							rolls[0] = roll;
+						}
+						break;
+					case 1:
+						if(roll >= rolls[0]) {
+							rolls[1] = roll;
+						}
+						else {
+							rolls[1] = rolls[0];
+							rolls[0] = roll;
+						}
+						break;
+					case 0:
+						rolls[0] = roll;
+						break;
+				}
+				i++;
+			}
+		}
+		getStatTemps().put(statistic, rolls[0]);
+		getStatPotentials().put(statistic, rolls[1]);
+	}
+
 	// Getters and setters
 	public int getId() {
 		return id;
@@ -169,6 +254,12 @@ public class Character {
 	}
 	public void setExperiencePoints(int experiencePoints) {
 		this.experiencePoints = experiencePoints;
+	}
+	public short getStatPurchasePoints() {
+		return statPurchasePoints;
+	}
+	public void setStatPurchasePoints(short statPurchasePoints) {
+		this.statPurchasePoints = statPurchasePoints;
 	}
 	public String getFirstName() {
 		return firstName;
