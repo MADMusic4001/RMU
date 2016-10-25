@@ -41,6 +41,7 @@ public class Character {
 	private Campaign                   campaign = null;
 	private short                      currentLevel = 0;
 	private int                        experiencePoints = 0;
+	private int                        statPurchasePoints = 0;
 	private String                     firstName = null;
 	private String                     lastName = null;
 	private String                     knownAs = null;

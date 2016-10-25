@@ -65,6 +65,17 @@ public enum Statistic {
 		return (short)(i - 15);
 	}
 
+	public static short[] getRangeForBonus(short bonus) {
+		short[] range = new short[2];
+		if(bonus < -15 || bonus > 15) {
+			throw new IllegalArgumentException("BOnus must be between -15 and 15 inclusive.");
+		}
+
+		range[0] = bonusRangeStart[bonus + 15];
+		range[1] = (short)(bonusRangeStart[bonus + 16] - 1);
+		return range;
+	}
+
 	@Override
 	public String toString() {
 		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), abbreviation, name);

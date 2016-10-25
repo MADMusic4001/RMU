@@ -455,6 +455,47 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		}
 	}
 
+	private void buyStat(Statistic statistic, short offsetRanks, TextView tempStatView, TextView potentialStatView) {
+		Character character = charactersFragment.getCurrentInstance();
+		short statPurchasePoints = character.getCampaign().getPowerLevel().getStatPoints();
+		short rolls[] = new short[2];
+		Random random = new Random();
+		short roll;
+
+		short currentBonus = character.getStatTemps().get(statistic);
+		for(int i = 0; i < 3;) {
+			roll = (short) (random.nextInt(99) + 1);
+			if (roll >= character.getCampaign().getPowerLevel().getRerollUnder()) {
+				switch (i) {
+					case 2:
+						if (roll > rolls[1]) {
+							rolls[0] = rolls[1];
+							rolls[1] = roll;
+						} else if (roll > rolls[0]) {
+							rolls[0] = roll;
+						}
+						break;
+					case 1:
+						if (roll >= rolls[0]) {
+							rolls[1] = roll;
+						} else {
+							rolls[1] = rolls[0];
+							rolls[0] = roll;
+						}
+						break;
+					case 0:
+						rolls[0] = roll;
+						break;
+				}
+				i++;
+			}
+			character.getStatTemps().put(statistic, rolls[0]);
+			character.getStatPotentials().put(statistic, rolls[1]);
+			tempStatView.setText(String.valueOf(rolls[0]));
+			potentialStatView.setText(String.valueOf(rolls[1]));
+		}
+	}
+
 	private void initStatsRows(View layout) {
 		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
 		textView.setText(Statistic.AGILITY.toString());

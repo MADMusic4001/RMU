@@ -182,6 +182,7 @@
   <string name="label_item_template_name">Item Template Name</string>
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
+  <string name="label_potential">Potential</string>
   <string name="label_profession_cat_list_additional_cost">Additional Cost</string>
   <string name="label_profession_cat_list_assignable">Is Assignable?</string>
   <string name="label_profession_cat_list_initial_cost">Initial Cost</string>
@@ -222,6 +223,7 @@
   <string name="label_talent_category_name">Talent Category Name</string>
   <string name="label_talent_category_description">Talent Category Description</string>
   <string name="label_talent_tier">Talent Tiers</string>
+  <string name="label_temporary">Temporary</string>
 
   <!-- Filter default labels -->
   <string name="label_all_skill_categories">All Skill Categories</string>
