@@ -61,6 +61,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	private   ThreeFieldListAdapter<Character> listAdapter;
 	private   ListView                         listView;
 	private   CharacterFragmentPagerAdapter    pagerAdapter = null;
+	private   ViewPager                        viewPager;
 	private   Character                        currentInstance = new Character();
 	private   boolean                          isNew = true;
 
@@ -328,10 +329,20 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	}
 
 	private void initViewPager(View layout) {
-		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
+		viewPager = (ViewPager) layout.findViewById(R.id.pager);
 		pagerAdapter = new CharacterFragmentPagerAdapter(getFragmentManager());
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(0);
+		viewPager.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+			@Override
+			public void onChildViewAdded(View parent, View child) {
+				Log.d(LOG_TAG, "Added child: " + child);
+			}
+			@Override
+			public void onChildViewRemoved(View parent, View child) {
+				Log.d(LOG_TAG, "Removed child: " + child);
+			}
+		});
 	}
 
 	private void initListView(View layout) {
@@ -350,14 +361,12 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 							listView.setSelection(0);
 							listView.setItemChecked(0, true);
 							listAdapter.notifyDataSetChanged();
-							Log.d(LOG_TAG, "Character = " + currentInstance);
 							copyItemToViews();
 						}
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG,
-								"Exception caught getting all Character instances in initListView", e);
+						Log.e(LOG_TAG, "Exception caught getting all Character instances in initListView", e);
 						Toast.makeText(CharactersFragment.this.getActivity(),
 								getString(R.string.toast_characters_load_failed),
 								Toast.LENGTH_SHORT).show();
@@ -380,10 +389,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				Log.d(LOG_TAG, "count = " + listAdapter.getCount());
-				Log.d(LOG_TAG, "position = " + position);
 				currentInstance = (Character) listView.getItemAtPosition(position);
-				Log.d(LOG_TAG, "Character = " + currentInstance);
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new Character();
@@ -405,6 +411,18 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		static final int BACKGROUND_PAGE_INDEX = 2;
 		static final int GENERATED_PAGE_INDEX = 3;
 		private SparseArray<Fragment> registeredFragments = new SparseArray<>();
+
+		@Override
+		public void startUpdate(ViewGroup container) {
+			super.startUpdate(container);
+			Log.d(LOG_TAG, "Starting view pager update. Container = " + container);
+		}
+
+		@Override
+		public void finishUpdate(ViewGroup container) {
+			super.finishUpdate(container);
+			Log.d(LOG_TAG, "Finishing view pager update. Container = " + container);
+		}
 
 		/**
 		 * Creates a new CharacterFragmentPagerAdapter instance.
@@ -473,8 +491,27 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
 			Fragment createdFragment = (Fragment)super.instantiateItem(container, position);
-			if(position == MAIN_PAGE_INDEX) {
-				Log.d(LOG_TAG, "Main Page Fragment = " + createdFragment);
+			switch (position) {
+				case MAIN_PAGE_INDEX:
+					((CharacterMainPageFragment)createdFragment).restoreView();
+					View child = viewPager.findViewById(R.id.character_main_page_fragment);
+					Log.d(LOG_TAG, "viewPager.visibility = " + viewPager.getVisibility());
+					Log.d(LOG_TAG, "child = " + child);
+					Log.d(LOG_TAG, "Main Page Fragment = " + createdFragment);
+					if(child != null) {
+						Log.d(LOG_TAG, "child.enabled = " + child.isEnabled());
+						Log.d(LOG_TAG, "child.visibility = " + child.getVisibility());
+					}
+					break;
+				case SKILLS_PAGE_INDEX:
+					Log.d(LOG_TAG, "Skills Page Fragment = " + createdFragment);
+					break;
+				case BACKGROUND_PAGE_INDEX:
+					Log.d(LOG_TAG, "Background Page Fragment = " + createdFragment);
+					break;
+				case GENERATED_PAGE_INDEX:
+					Log.d(LOG_TAG, "Generated Values Page Fragment = " + createdFragment);
+					break;
 			}
 			registeredFragments.put(position, createdFragment);
 			return createdFragment;

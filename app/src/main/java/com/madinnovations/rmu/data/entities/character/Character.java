@@ -94,7 +94,7 @@ public class Character {
 	 * potentials are randomly generated using the method specified in the section 3.5 of A&CL.
 	 */
 	public void generateStats() {
-		if(getCampaign() != null && !getCampaign().isBuyStats()) {
+		if(getCampaign() != null && getCampaign().isBuyStats()) {
 			getStatTemps().put(Statistic.AGILITY, (short)53);
 			getStatPotentials().put(Statistic.AGILITY, (short)100);
 			getStatTemps().put(Statistic.CONSTITUTION, (short)53);
@@ -196,11 +196,11 @@ public class Character {
 
 		for(int i = 0; i < 3;) {
 			roll = (short)(random.nextInt(99) + 1);
-			short rerollUnder = 11;
+			short reRollUnder = 11;
 			if(getCampaign() != null && getCampaign().getPowerLevel() != null) {
-				rerollUnder = getCampaign().getPowerLevel().getRerollUnder();
+				reRollUnder = getCampaign().getPowerLevel().getRerollUnder();
 			}
-			if(roll >= rerollUnder) {
+			if(roll >= reRollUnder) {
 				switch (i) {
 					case 2:
 						if (roll > rolls[1]) {

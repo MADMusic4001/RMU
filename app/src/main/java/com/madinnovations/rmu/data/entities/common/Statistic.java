@@ -23,6 +23,7 @@ import com.madinnovations.rmu.view.RMUApp;
  */
 public enum Statistic {
 	NON_REALM("NR", "Non-Realm Stat", ""),
+	REALM("R", "Realm Stat", ""),
 	AGILITY("Ag", "Agility", ""),
 	CONSTITUTION("Co", "Constitution", ""),
 	EMPATHY("Em", "Empathy", ""),
@@ -34,8 +35,10 @@ public enum Statistic {
 	SELF_DISCIPLINE("SD", "Self Discipline", ""),
 	STRENGTH("St", "Strength", "");
 	public static final int NUM_STATS = 10;
+	private static final Statistic[] allStats = new Statistic[] {AGILITY, CONSTITUTION, EMPATHY, INTUITION, MEMORY, PRESENCE,
+			QUICKNESS, REASONING, SELF_DISCIPLINE, STRENGTH};
 	private static final short[] bonusRangeStart = {1, 2, 3, 4, 5, 6, 7, 9, 12, 15, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78,
-			84, 87, 90, 93, 95, 96, 97, 98, 99, 100};
+			84, 87, 90, 93, 95, 96, 97, 98, 99, 100, 101};
 	private String abbreviation;
 	private String name;
 	private String description;
@@ -57,18 +60,24 @@ public enum Statistic {
 	 */
 	public static short getBonus(short statValue) {
 		int i;
-		for(i = 0; i < bonusRangeStart.length; i++) {
-			if(statValue <= bonusRangeStart[i]) {
+		for(i = 0; i < bonusRangeStart.length - 1; i++) {
+			if(statValue < bonusRangeStart[i]) {
 				break;
 			}
 		}
-		return (short)(i - 15);
+		return (short)(i - 16);
 	}
 
+	/**
+	 * Gets the range of stat values that provide the given bonus.
+	 *
+	 * @param bonus  the bonus amount
+	 * @return  a short array of length 2 with the min and max stat values that provide the given bonus.
+	 */
 	public static short[] getRangeForBonus(short bonus) {
 		short[] range = new short[2];
 		if(bonus < -15 || bonus > 15) {
-			throw new IllegalArgumentException("BOnus must be between -15 and 15 inclusive.");
+			throw new IllegalArgumentException("Bonus must be between -15 and 15 inclusive.");
 		}
 
 		range[0] = bonusRangeStart[bonus + 15];
@@ -90,5 +99,8 @@ public enum Statistic {
 	}
 	public String getDescription() {
 		return description;
+	}
+	public static Statistic[] getAllStats() {
+		return allStats;
 	}
 }

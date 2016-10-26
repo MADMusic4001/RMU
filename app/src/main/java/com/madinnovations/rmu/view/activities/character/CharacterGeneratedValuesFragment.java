@@ -85,6 +85,10 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if(charactersFragment == null) {
+			return null;
+		}
+
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
@@ -279,5 +283,13 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 				currentPowerPointsText.setText(String.valueOf(basePowerPoints - character.getPowerPointLoss()));
 			}
 		}
+	}
+
+	// Getters and setters
+	public CharactersFragment getCharactersFragment() {
+		return charactersFragment;
+	}
+	public void setCharactersFragment(CharactersFragment charactersFragment) {
+		this.charactersFragment = charactersFragment;
 	}
 }

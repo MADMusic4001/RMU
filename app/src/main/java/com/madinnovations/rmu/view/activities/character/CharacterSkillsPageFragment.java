@@ -95,6 +95,10 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if(charactersFragment == null) {
+			return null;
+		}
+
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
@@ -612,5 +616,13 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			newNameView.setLayoutParams(params);
 			return newNameView;
 		}
+	}
+
+	// Getters and setters
+	public CharactersFragment getCharactersFragment() {
+		return charactersFragment;
+	}
+	public void setCharactersFragment(CharactersFragment charactersFragment) {
+		this.charactersFragment = charactersFragment;
 	}
 }

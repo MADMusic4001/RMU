@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.activities.character;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ import javax.inject.Inject;
  * Handles interactions with the UI for character creation.
  */
 public class CharacterMainPageFragment extends Fragment implements EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "CharacterMainPageFrag";
 	@Inject
 	protected CampaignRxHandler        campaignRxHandler;
@@ -84,9 +86,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
 	private   LinearLayout             newCharacterRow;
-	private Map<Statistic, TextView>   tempStatsMap = new HashMap<>(Statistic.NUM_STATS);
-	private Map<Statistic, TextView>   potentialStatsMap = new HashMap<>(Statistic.NUM_STATS);
-	private boolean                    purchased;
+	private Map<Statistic, ViewHolder> viewHolderMap = new HashMap<>(Statistic.NUM_STATS);
 
 	/**
 	 * Creates new CharacterMainPageFragment instance.
@@ -95,6 +95,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	 * @return the new instance.
 	 */
 	public static CharacterMainPageFragment newInstance(CharactersFragment charactersFragment) {
+		Log.d(LOG_TAG, "In newInstance");
 		CharacterMainPageFragment fragment = new CharacterMainPageFragment();
 		fragment.charactersFragment = charactersFragment;
 		return fragment;
@@ -102,6 +103,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Log.d(LOG_TAG, "In onCreateView");
+		if(charactersFragment == null) {
+			return  null;
+		}
+
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
@@ -113,6 +119,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		initLevelUpButton(layout);
 		campaignSpinner = new SpinnerUtils<Campaign>().initSpinner(layout, getActivity(), campaignRxHandler.getAll(), this,
 				R.id.campaign_spinner, null);
+		campaignSpinner.setEnabled(charactersFragment.getCurrentInstance().getCurrentLevel() == 0);
 		firstNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.first_name_edit,
 				R.string.validation_character_first_name_required);
 		lastNameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.last_name_edit,
@@ -133,6 +140,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 											R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
 											R.string.validation_character_weight_required);
+		for(Statistic statistic : Statistic.getAllStats()) {
+			viewHolderMap.put(statistic, new ViewHolder());
+		}
 		initGenerateStatsButton(layout);
 		initPurchaseButtons(layout);
 		initStatsRows(layout);
@@ -140,8 +150,19 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		return layout;
 	}
 
+	public void restoreView() {
+		if(getView() != null) {
+			LinearLayout linearLayout = (LinearLayout)getView().findViewById(R.id.character_main_page_fragment);
+			Log.d(LOG_TAG, "fragment layout = " + linearLayout);
+			linearLayout.setVisibility(View.INVISIBLE);
+			linearLayout.setVisibility(View.VISIBLE);
+			campaignSpinner.setEnabled(!campaignSpinner.isEnabled());
+		}
+	}
+
 	@Override
 	public void onPause() {
+		Log.d(LOG_TAG, "In onPause");
 		if(copyViewsToItem()) {
 			charactersFragment.saveItem();
 		}
@@ -150,6 +171,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	@Override
 	public void onResume() {
+		Log.d(LOG_TAG, "In onResume");
 		super.onResume();
 	}
 
@@ -246,10 +268,25 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		switch (spinnerId) {
 			case R.id.campaign_spinner:
+				Campaign oldCampaign = character.getCampaign();
 				Campaign newCampaign = (Campaign)newItem;
 				character.setCampaign(newCampaign);
-				generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
-													   &&!character.getCampaign().isBuyStats());
+				if(oldCampaign == null || oldCampaign.isBuyStats() != newCampaign.isBuyStats()) {
+					character.generateStats();
+					character.setStatPurchasePoints(character.getCampaign().getPowerLevel().getStatPoints());
+					generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+														   &&!character.getCampaign().isBuyStats());
+					boolean enable = character.getCurrentLevel() == 0 && character.getCampaign() != null &&
+							character.getCampaign().isBuyStats();
+					for(Statistic statistic : Statistic.getAllStats()) {
+						viewHolderMap.get(statistic).sellButton.setEnabled(enable);
+						viewHolderMap.get(statistic).buyButton.setEnabled(enable);
+						viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(
+								character.getStatTemps().get(statistic)));
+						viewHolderMap.get(statistic).potentialStatView.setText(String.valueOf(
+								character.getStatPotentials().get(statistic)));
+					}
+				}
 				charactersFragment.saveItem();
 				break;
 			case R.id.race_spinner:
@@ -375,12 +412,17 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.setSelection(charactersFragment.getCurrentInstance().getRealm());
 		heightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getHeight()));
 		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
-		for(Map.Entry<Statistic, TextView> entry : tempStatsMap.entrySet()) {
-			entry.getValue().setText(String.valueOf(character.getStatTemps().get(entry.getKey())));
+		campaignSpinner.setEnabled(character.getCurrentLevel() == 0);
+
+		boolean enable = character.getCurrentLevel() == 0 && character.getCampaign() != null && character.getCampaign()
+				.isBuyStats();
+		for(Map.Entry<Statistic, ViewHolder> entry : viewHolderMap.entrySet()) {
+			entry.getValue().tempStatView.setText(String.valueOf(character.getStatTemps().get(entry.getKey())));
+			entry.getValue().potentialStatView.setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
+			entry.getValue().buyButton.setEnabled(enable);
+			entry.getValue().sellButton.setEnabled(enable);
 		}
-		for(Map.Entry<Statistic, TextView> entry : potentialStatsMap.entrySet()) {
-			entry.getValue().setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
-		}
+
 		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
 				&&!character.getCampaign().isBuyStats());
 	}
@@ -412,65 +454,16 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				Character character = charactersFragment.getCurrentInstance();
 				if(character.getCurrentLevel() == 0) {
 					character.generateStats();
+					charactersFragment.saveItem();
+					for(Statistic statistic : Statistic.getAllStats()) {
+						viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(
+								character.getStatTemps().get(statistic)));
+						viewHolderMap.get(statistic).potentialStatView.setText(String.valueOf(
+								character.getStatPotentials().get(statistic)));
+					}
 				}
-				tempStatsMap.get(Statistic.AGILITY).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.AGILITY)));
-				potentialStatsMap.get(Statistic.AGILITY).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.AGILITY)));
-				tempStatsMap.get(Statistic.CONSTITUTION).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.CONSTITUTION)));
-				potentialStatsMap.get(Statistic.CONSTITUTION).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.CONSTITUTION)));
-				tempStatsMap.get(Statistic.EMPATHY).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.EMPATHY)));
-				potentialStatsMap.get(Statistic.EMPATHY).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.EMPATHY)));
-				tempStatsMap.get(Statistic.INTUITION).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.INTUITION)));
-				potentialStatsMap.get(Statistic.INTUITION).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.INTUITION)));
-				tempStatsMap.get(Statistic.MEMORY).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.MEMORY)));
-				potentialStatsMap.get(Statistic.MEMORY).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.MEMORY)));
-				tempStatsMap.get(Statistic.PRESENCE).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.PRESENCE)));
-				potentialStatsMap.get(Statistic.PRESENCE).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.PRESENCE)));
-				tempStatsMap.get(Statistic.QUICKNESS).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.QUICKNESS)));
-				potentialStatsMap.get(Statistic.QUICKNESS).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.QUICKNESS)));
-				tempStatsMap.get(Statistic.REASONING).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.REASONING)));
-				potentialStatsMap.get(Statistic.REASONING).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.REASONING)));
-				tempStatsMap.get(Statistic.SELF_DISCIPLINE).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.SELF_DISCIPLINE)));
-				potentialStatsMap.get(Statistic.SELF_DISCIPLINE).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.SELF_DISCIPLINE)));
-				tempStatsMap.get(Statistic.STRENGTH).setText(
-						String.valueOf(character.getStatTemps().get(Statistic.STRENGTH)));
-				potentialStatsMap.get(Statistic.STRENGTH).setText(
-						String.valueOf(character.getStatPotentials().get(Statistic.STRENGTH)));
 			}
 		});
-	}
-
-	private void copyStatsToViews(Statistic statistic, TextView tempStatView, TextView potentialStatView) {
-		Character character = charactersFragment.getCurrentInstance();
-		tempStatView.setText(String.valueOf(character.getStatTemps().get(statistic)));
-		potentialStatView.setText(String.valueOf(character.getStatPotentials().get(statistic)));
-	}
-
-	private void generatePurchaseStat(Statistic statistic, TextView tempStatView, TextView potentialStatView) {
-		Character character = charactersFragment.getCurrentInstance();
-		short tempStat = 53;
-		short potentialStat = 100;
-		character.getStatTemps().put(statistic, tempStat);
-		character.getStatPotentials().put(statistic, potentialStat);
-		tempStatView.setText(String.valueOf(tempStat));
-		potentialStatView.setText(String.valueOf(potentialStat));
 	}
 
 	private void initPurchaseButtons(View layout) {
@@ -487,24 +480,32 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	private void initPurchaseButtons(View layout, @IdRes int buyButtonId, @IdRes int sellButtonId, final Statistic statistic) {
-		ImageButton imageButton = (ImageButton)layout.findViewById(buyButtonId);
-		imageButton.setOnClickListener(new View.OnClickListener() {
+		ImageButton buyButton = (ImageButton)layout.findViewById(buyButtonId);
+		ImageButton sellButton = (ImageButton)layout.findViewById(sellButtonId);
+		boolean enable = (charactersFragment.getCurrentInstance().getCurrentLevel() == 0 &&
+				charactersFragment.getCurrentInstance().getCampaign()!= null &&
+				charactersFragment.getCurrentInstance().getCampaign().isBuyStats());
+		buyButton.setEnabled(enable);
+		sellButton.setEnabled(enable);
+		viewHolderMap.get(statistic).buyButton = buyButton;
+		viewHolderMap.get(statistic).sellButton = sellButton;
+
+		buyButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				buyStat(statistic, tempStatsMap.get(statistic));
+				buyStat(statistic);
 			}
 		});
 
-		imageButton = (ImageButton)layout.findViewById(sellButtonId);
-		imageButton.setOnClickListener(new View.OnClickListener() {
+		sellButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sellStat(statistic, tempStatsMap.get(statistic));
+				sellStat(statistic);
 			}
 		});
 	}
 
-	private void buyStat(Statistic statistic, TextView tempStatView) {
+	private void buyStat(Statistic statistic) {
 		Character character = charactersFragment.getCurrentInstance();
 		short statPurchasePoints = character.getStatPurchasePoints();
 
@@ -514,14 +515,14 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				currentBonus += 1;
 				short newTemp = Statistic.getRangeForBonus(currentBonus)[1];
 				character.getStatTemps().put(statistic, newTemp);
-				tempStatView.setText(String.valueOf(newTemp));
+				viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(newTemp));
 				statPurchasePoints -= 1;
 				character.setStatPurchasePoints(statPurchasePoints);
 			}
 		}
 	}
 
-	private void sellStat(Statistic statistic, TextView tempStatView) {
+	private void sellStat(Statistic statistic) {
 		Character character = charactersFragment.getCurrentInstance();
 		short statPurchasePoints = character.getStatPurchasePoints();
 
@@ -530,7 +531,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			currentBonus -= 1;
 			short newTemp = Statistic.getRangeForBonus(currentBonus)[1];
 			character.getStatTemps().put(statistic, newTemp);
-			tempStatView.setText(String.valueOf(newTemp));
+			viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(newTemp));
 			statPurchasePoints += 1;
 			character.setStatPurchasePoints(statPurchasePoints);
 		}
@@ -540,71 +541,86 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
 		textView.setText(Statistic.AGILITY.toString());
 		textView = (TextView) layout.findViewById(R.id.agility_temp_view);
-		tempStatsMap.put(Statistic.AGILITY, textView);
+		viewHolderMap.get(Statistic.AGILITY).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.agility_potential_view);
-		potentialStatsMap.put(Statistic.AGILITY, textView);
+		viewHolderMap.get(Statistic.AGILITY).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.constitution_label);
 		textView.setText(Statistic.CONSTITUTION.toString());
 		textView = (TextView) layout.findViewById(R.id.constitution_temp_view);
-		tempStatsMap.put(Statistic.CONSTITUTION, textView);
+		viewHolderMap.get(Statistic.CONSTITUTION).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.constitution_potential_view);
-		potentialStatsMap.put(Statistic.CONSTITUTION, textView);
+		viewHolderMap.get(Statistic.CONSTITUTION).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.empathy_label);
 		textView.setText(Statistic.EMPATHY.toString());
 		textView = (TextView) layout.findViewById(R.id.empathy_temp_view);
-		tempStatsMap.put(Statistic.EMPATHY, textView);
+		viewHolderMap.get(Statistic.EMPATHY).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.empathy_potential_view);
-		potentialStatsMap.put(Statistic.EMPATHY, textView);
+		viewHolderMap.get(Statistic.EMPATHY).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.intuition_label);
 		textView.setText(Statistic.INTUITION.toString());
 		textView = (TextView) layout.findViewById(R.id.intuition_temp_view);
-		tempStatsMap.put(Statistic.INTUITION, textView);
+		viewHolderMap.get(Statistic.INTUITION).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.intuition_potential_view);
-		potentialStatsMap.put(Statistic.INTUITION, textView);
+		viewHolderMap.get(Statistic.INTUITION).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.memory_label);
 		textView.setText(Statistic.MEMORY.toString());
 		textView = (TextView) layout.findViewById(R.id.memory_temp_view);
-		tempStatsMap.put(Statistic.MEMORY, textView);
+		viewHolderMap.get(Statistic.MEMORY).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.memory_potential_view);
-		potentialStatsMap.put(Statistic.MEMORY, textView);
+		viewHolderMap.get(Statistic.MEMORY).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.presence_label);
 		textView.setText(Statistic.PRESENCE.toString());
 		textView = (TextView) layout.findViewById(R.id.presence_temp_view);
-		tempStatsMap.put(Statistic.PRESENCE, textView);
+		viewHolderMap.get(Statistic.PRESENCE).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.presence_potential_view);
-		potentialStatsMap.put(Statistic.PRESENCE, textView);
+		viewHolderMap.get(Statistic.PRESENCE).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.quickness_label);
 		textView.setText(Statistic.QUICKNESS.toString());
 		textView = (TextView) layout.findViewById(R.id.quickness_temp_view);
-		tempStatsMap.put(Statistic.QUICKNESS, textView);
+		viewHolderMap.get(Statistic.QUICKNESS).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.quickness_potential_view);
-		potentialStatsMap.put(Statistic.QUICKNESS, textView);
+		viewHolderMap.get(Statistic.QUICKNESS).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.reasoning_label);
 		textView.setText(Statistic.REASONING.toString());
 		textView = (TextView) layout.findViewById(R.id.reasoning_temp_view);
-		tempStatsMap.put(Statistic.REASONING, textView);
+		viewHolderMap.get(Statistic.REASONING).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.reasoning_potential_view);
-		potentialStatsMap.put(Statistic.REASONING, textView);
+		viewHolderMap.get(Statistic.REASONING).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.self_discipline_label);
 		textView.setText(Statistic.SELF_DISCIPLINE.toString());
 		textView = (TextView) layout.findViewById(R.id.self_discipline_temp_view);
-		tempStatsMap.put(Statistic.SELF_DISCIPLINE, textView);
+		viewHolderMap.get(Statistic.SELF_DISCIPLINE).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.self_discipline_potential_view);
-		potentialStatsMap.put(Statistic.SELF_DISCIPLINE, textView);
+		viewHolderMap.get(Statistic.SELF_DISCIPLINE).potentialStatView = textView;
 
 		textView = (TextView) layout.findViewById(R.id.strength_label);
 		textView.setText(Statistic.STRENGTH.toString());
 		textView = (TextView) layout.findViewById(R.id.strength_temp_view);
-		tempStatsMap.put(Statistic.STRENGTH, textView);
+		viewHolderMap.get(Statistic.STRENGTH).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.strength_potential_view);
-		potentialStatsMap.put(Statistic.STRENGTH, textView);
+		viewHolderMap.get(Statistic.STRENGTH).potentialStatView = textView;
+	}
+
+	// Getters and setters
+	public CharactersFragment getCharactersFragment() {
+		return charactersFragment;
+	}
+	public void setCharactersFragment(CharactersFragment charactersFragment) {
+		this.charactersFragment = charactersFragment;
+	}
+
+	class ViewHolder {
+		TextView tempStatView;
+		TextView potentialStatView;
+		ImageButton buyButton;
+		ImageButton sellButton;
 	}
 }

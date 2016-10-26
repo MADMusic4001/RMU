@@ -58,6 +58,10 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if(charactersFragment == null) {
+			return null;
+		}
+
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
@@ -275,5 +279,13 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		mannerismsEdit.setText(charactersFragment.getCurrentInstance().getMannerisms());
 		familyInformationEdit.setText(charactersFragment.getCurrentInstance().getFamilyInfo());
 		hometownEdit.setText(charactersFragment.getCurrentInstance().getHometown());
+	}
+
+	// Getters and setters
+	public CharactersFragment getCharactersFragment() {
+		return charactersFragment;
+	}
+	public void setCharactersFragment(CharactersFragment charactersFragment) {
+		this.charactersFragment = charactersFragment;
 	}
 }
