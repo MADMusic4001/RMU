@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.NonNull;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class SkillCategory implements Comparable {
 	private String name = null;
 	private String description = null;
 	private boolean combat = false;
+	private boolean craftAndTrade = false;
 	private boolean noStats = false;
 	private boolean realmStats = false;
 	private List<Statistic> stats = new ArrayList<>();
@@ -59,18 +63,23 @@ public class SkillCategory implements Comparable {
 				(realmStats || (stats != null && stats.size() == 3))));
 	}
 
-//	@Override
-//	public String toString() {
-//		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-//				.append("id", id)
-//				.append("name", name)
-//				.append("description", description)
-//				.append("combat", combat)
-//				.append("noStats", noStats)
-//				.append("realmStats", realmStats)
-//				.append("stats", stats)
-//				.toString();
-//	}
+	/**
+	 * Builds a formatted string containing this instances attributes.
+	 *
+	 * @return  a formatted string containing this instances attributes.
+	 */
+	public String print() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("name", name)
+				.append("description", description)
+				.append("combat", combat)
+				.append("craftAndTrade", craftAndTrade)
+				.append("noStats", noStats)
+				.append("realmStats", realmStats)
+				.append("stats", stats)
+				.toString();
+	}
 
 	@Override
 	public String toString() {
@@ -144,6 +153,12 @@ public class SkillCategory implements Comparable {
 	}
 	public void setCombat(boolean combat) {
 		this.combat = combat;
+	}
+	public boolean isCraftAndTrade() {
+		return craftAndTrade;
+	}
+	public void setCraftAndTrade(boolean craftAndTrade) {
+		this.craftAndTrade = craftAndTrade;
 	}
 	public boolean isNoStats() {
 		return noStats;

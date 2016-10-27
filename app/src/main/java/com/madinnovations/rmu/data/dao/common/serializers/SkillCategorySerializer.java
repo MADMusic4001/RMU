@@ -36,6 +36,7 @@ public class SkillCategorySerializer extends TypeAdapter<SkillCategory> implemen
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_IS_COMBAT).value(value.isCombat());
+		out.name(COLUMN_IS_CRAFT_AND_TRADE).value(value.isCraftAndTrade());
 		out.name(COLUMN_NO_STATS).value(value.isNoStats());
 		out.name(COLUMN_REALM_STATS).value(value.isRealmStats());
 
@@ -65,6 +66,9 @@ public class SkillCategorySerializer extends TypeAdapter<SkillCategory> implemen
 					break;
 				case COLUMN_IS_COMBAT:
 					skillCategory.setCombat(in.nextBoolean());
+					break;
+				case COLUMN_IS_CRAFT_AND_TRADE:
+					skillCategory.setCraftAndTrade(in.nextBoolean());
 					break;
 				case COLUMN_NO_STATS:
 					skillCategory.setNoStats(in.nextBoolean());

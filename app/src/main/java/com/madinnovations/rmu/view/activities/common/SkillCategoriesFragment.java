@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.activities.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -47,6 +48,9 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
+import com.madinnovations.rmu.view.utils.CheckBoxUtils;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
+import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +65,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for skill categories.
  */
-public class SkillCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<SkillCategory> {
+public class SkillCategoriesFragment extends Fragment implements TwoFieldListAdapter.GetValues<SkillCategory>,
+		EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	@Inject
 	protected SkillCategoryRxHandler skillCategoryRxHandler;
 	private ArrayAdapter<Statistic> stat1SpinnerAdapter;
@@ -71,6 +76,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	private ListView listView;
 	private EditText nameEdit;
 	private EditText descriptionEdit;
+	private CheckBox skillsAndCraftsCheckBox;
 	private CheckBox combatCheckBox;
 	private CheckBox noStatsCheckBox;
 	private CheckBox realmStatsCheckBox;
@@ -91,11 +97,17 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_skill_category_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_skill_category_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
-		initCombatCheckBox(layout);
-		initNoStatsCheckBox(layout);
-		initRealmStatsCheckBox(layout);
+		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
+										  R.string.validation_skill_category_name_required);
+		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
+												 R.string.validation_skill_category_description_required);
+		combatCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.combat_check_box);
+		noStatsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.no_stats_check_box);
+		realmStatsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.realm_stats_check_box);
+//		stat1Spinner = new SpinnerUtils<Statistic>().initSpinner(layout, getActivity(), Statistic.getAllStats(), this,
+//																 Statistic.values(), R.id.stat1_spinner, null);
+																 //getActivity(), Statistic.getAllStats(), this,
+																 //Statistic.values(), R.id.stat1_spinner, null);
 		initStat1Spinner(layout);
 		initStat2Spinner(layout);
 		initStat3Spinner(layout);
@@ -171,6 +183,65 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 				break;
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	@Override
+	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
+		boolean result = false;
+
+		switch (checkBoxId) {
+			case R.id.combat_check_box:
+				result = currentInstance.isCombat();
+				break;
+			case R.id.trades_and_crafts_check_box:
+				result = currentInstance.isCraftAndTrade();
+				break;
+			case R.id.no_stats_check_box:
+				result = currentInstance.isNoStats();
+				break;
+			case R.id.realm_stats_check_box:
+				result = currentInstance.isRealmStats();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
+		switch (checkBoxId) {
+			case R.id.combat_check_box:
+				break;
+			case R.id.trades_and_crafts_check_box:
+				break;
+			case R.id.no_stats_check_box:
+				break;
+			case R.id.realm_stats_check_box:
+				break;
+		}
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		switch (editTextId) {
+			case R.id.name_edit:
+		}
+		return null;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+
+	}
+
+	@Override
+	public Object getValueForSpinner(@IdRes int spinnerId) {
+		return null;
+	}
+
+	@Override
+	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
+
 	}
 
 	private boolean copyViewsToItem() {
@@ -434,76 +505,6 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 						}
 					}
 				});
-	}
-
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_skill_category_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.notes_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_skill_category_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initCombatCheckBox(View layout) {
-		combatCheckBox = (CheckBox)layout.findViewById(R.id.combat_check_box);
-		combatCheckBox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if(combatCheckBox.isChecked() != currentInstance.isCombat()) {
-					currentInstance.setCombat(combatCheckBox.isChecked());
-					saveItem();
-				}
-			}
-		});
-
 	}
 
 	private void initNoStatsCheckBox(View layout) {

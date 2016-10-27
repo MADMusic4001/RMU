@@ -26,6 +26,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSche
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
@@ -154,6 +155,12 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_ID:
 					character.setId(in.nextInt());
 					break;
+				case COLUMN_CAMPAIGN_ID:
+					character.setCampaign(new Campaign(in.nextInt()));
+					break;
+				case COLUMN_CURRENT_LEVEL:
+					character.setCurrentLevel((short)in.nextInt());
+					break;
 				case COLUMN_EXPERIENCE_POINTS:
 					character.setExperiencePoints(in.nextInt());
 					break;
@@ -219,9 +226,6 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case COLUMN_CURRENT_HP_LOSS:
 					character.setHitPointLoss(in.nextInt());
-				case "currentHits":
-					break;
-				case "maxHits":
 					break;
 				case COLUMN_CURRENT_DEVELOPMENT_POINTS:
 					character.setCurrentDevelopmentPoints((short)in.nextInt());

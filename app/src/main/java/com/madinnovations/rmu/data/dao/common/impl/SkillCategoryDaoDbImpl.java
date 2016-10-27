@@ -132,6 +132,7 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
         instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
         instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
         instance.setCombat(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_COMBAT)) != 0);
+		instance.setCraftAndTrade(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_CRAFT_AND_TRADE)) != 0);
         instance.setNoStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NO_STATS)) != 0);
         instance.setRealmStats(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_STATS)) != 0);
         if(!instance.isNoStats()) {
@@ -146,15 +147,16 @@ public class SkillCategoryDaoDbImpl extends BaseDaoDbImpl<SkillCategory> impleme
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(6);
+            values = new ContentValues(7);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(5);
+            values = new ContentValues(6);
         }
         values.put(COLUMN_NAME, instance.getName());
         values.put(COLUMN_DESCRIPTION, instance.getDescription());
         values.put(COLUMN_IS_COMBAT, instance.isCombat());
+		values.put(COLUMN_IS_CRAFT_AND_TRADE, instance.isCraftAndTrade());
         values.put(COLUMN_NO_STATS, instance.isNoStats());
         values.put(COLUMN_REALM_STATS, instance.isRealmStats());
 

@@ -38,6 +38,7 @@ import java.util.Random;
  */
 public class Character {
 	public static final String JSON_NAME = "Characters";
+	public static final short INITIAL_DP = 50;
 	private int                        id = -1;
 	private Campaign                   campaign = null;
 	private short                      currentLevel = 0;
@@ -64,7 +65,7 @@ public class Character {
 	private short                      height = 70;
 	private short                      weight = 185;
 	private int                        hitPointLoss = 0;
-	private short                      currentDevelopmentPoints = 50;
+	private short                      currentDevelopmentPoints = INITIAL_DP;
 	private short                      enduranceLoss;
 	private short                      powerPointLoss;
 	private Map<Skill, SkillCost>      skillCosts          = new HashMap<>();

@@ -18,7 +18,6 @@ package com.madinnovations.rmu.view.activities.character;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +39,10 @@ import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
+import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
@@ -95,7 +97,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	 * @return the new instance.
 	 */
 	public static CharacterMainPageFragment newInstance(CharactersFragment charactersFragment) {
-		Log.d(LOG_TAG, "In newInstance");
 		CharacterMainPageFragment fragment = new CharacterMainPageFragment();
 		fragment.charactersFragment = charactersFragment;
 		return fragment;
@@ -103,7 +104,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.d(LOG_TAG, "In onCreateView");
 		if(charactersFragment == null) {
 			return  null;
 		}
@@ -150,29 +150,12 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		return layout;
 	}
 
-	public void restoreView() {
-		if(getView() != null) {
-			LinearLayout linearLayout = (LinearLayout)getView().findViewById(R.id.character_main_page_fragment);
-			Log.d(LOG_TAG, "fragment layout = " + linearLayout);
-			linearLayout.setVisibility(View.INVISIBLE);
-			linearLayout.setVisibility(View.VISIBLE);
-			campaignSpinner.setEnabled(!campaignSpinner.isEnabled());
-		}
-	}
-
 	@Override
 	public void onPause() {
-		Log.d(LOG_TAG, "In onPause");
 		if(copyViewsToItem()) {
 			charactersFragment.saveItem();
 		}
 		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		Log.d(LOG_TAG, "In onResume");
-		super.onResume();
 	}
 
 	@Override
@@ -291,6 +274,22 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				break;
 			case R.id.race_spinner:
 				Race newRace = (Race)newItem;
+				Race oldRace = character.getRace();
+				short bonusDP = newRace.getBonusDevelopmentPoints();
+				if(oldRace != null) {
+					bonusDP -= oldRace.getBonusDevelopmentPoints();
+				}
+				if(character.getCurrentDevelopmentPoints() > bonusDP) {
+					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - bonusDP));
+				}
+				else {
+					character.setCurrentDevelopmentPoints((short)(Character.INITIAL_DP + newRace.getBonusDevelopmentPoints()));
+					character.setCurrentLevelSkillRanks(new HashMap<Skill, Short>());
+					character.setCurrentLevelSpecializationRanks(new HashMap<Specialization, Short>());
+					character.setSkillRanks(new HashMap<Skill, Short>());
+					character.setSpecializationRanks(new HashMap<Specialization, Short>());
+					character.setTalentTiers(new HashMap<Talent, Short>());
+				}
 				character.setRace(newRace);
 				charactersFragment.saveItem();
 				break;
@@ -607,14 +606,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.STRENGTH).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.strength_potential_view);
 		viewHolderMap.get(Statistic.STRENGTH).potentialStatView = textView;
-	}
-
-	// Getters and setters
-	public CharactersFragment getCharactersFragment() {
-		return charactersFragment;
-	}
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
 	}
 
 	class ViewHolder {

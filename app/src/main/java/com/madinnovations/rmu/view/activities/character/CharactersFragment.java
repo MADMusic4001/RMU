@@ -61,7 +61,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	private   ThreeFieldListAdapter<Character> listAdapter;
 	private   ListView                         listView;
 	private   CharacterFragmentPagerAdapter    pagerAdapter = null;
-	private   ViewPager                        viewPager;
 	private   Character                        currentInstance = new Character();
 	private   boolean                          isNew = true;
 
@@ -181,28 +180,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	public CharSequence getField3Value(Character character) {
 		return character.getKnownAs();
 	}
-
-//	@Override
-//	public void onDestroyView() {
-//		super.onDestroyView();
-//
-//		if(this.mainPageFragment != null && getFragmentManager().findFragmentById(this.mainPageFragment.getId()) != null) {
-//			this.mainPageFragment = null;
-//		}
-//
-//		if(this.backgroundPageFragment != null && getFragmentManager().findFragmentById(this.backgroundPageFragment.getId()) != null) {
-//			this.backgroundPageFragment = null;
-//		}
-//
-//		if(this.skillsPageFragment != null && getFragmentManager().findFragmentById(this.skillsPageFragment.getId()) != null) {
-//			this.skillsPageFragment = null;
-//		}
-//
-//		if(this.generatedValuesFragment != null &&
-//				getFragmentManager().findFragmentById(this.generatedValuesFragment.getId()) != null) {
-//			this.generatedValuesFragment = null;
-//		}
-//	}
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
@@ -329,20 +306,10 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	}
 
 	private void initViewPager(View layout) {
-		viewPager = (ViewPager) layout.findViewById(R.id.pager);
+		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
 		pagerAdapter = new CharacterFragmentPagerAdapter(getFragmentManager());
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(0);
-		viewPager.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
-			@Override
-			public void onChildViewAdded(View parent, View child) {
-				Log.d(LOG_TAG, "Added child: " + child);
-			}
-			@Override
-			public void onChildViewRemoved(View parent, View child) {
-				Log.d(LOG_TAG, "Removed child: " + child);
-			}
-		});
 	}
 
 	private void initListView(View layout) {
@@ -412,18 +379,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		static final int GENERATED_PAGE_INDEX = 3;
 		private SparseArray<Fragment> registeredFragments = new SparseArray<>();
 
-		@Override
-		public void startUpdate(ViewGroup container) {
-			super.startUpdate(container);
-			Log.d(LOG_TAG, "Starting view pager update. Container = " + container);
-		}
-
-		@Override
-		public void finishUpdate(ViewGroup container) {
-			super.finishUpdate(container);
-			Log.d(LOG_TAG, "Finishing view pager update. Container = " + container);
-		}
-
 		/**
 		 * Creates a new CharacterFragmentPagerAdapter instance.
 		 *
@@ -439,24 +394,16 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 			switch (position) {
 				case MAIN_PAGE_INDEX:
-//					fragment = Fragment.instantiate(getActivity(), CharacterMainPageFragment.class.getName());
 					fragment = CharacterMainPageFragment.newInstance(CharactersFragment.this);
-//					((CharacterMainPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
 				case SKILLS_PAGE_INDEX:
-//					fragment = Fragment.instantiate(getActivity(), CharacterSkillsPageFragment.class.getName());
 					fragment = CharacterSkillsPageFragment.newInstance(CharactersFragment.this);
-//					((CharacterSkillsPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
 				case BACKGROUND_PAGE_INDEX:
-//					fragment = Fragment.instantiate(getActivity(), CharacterBackgroundPageFragment.class.getName());
 					fragment = CharacterBackgroundPageFragment.newInstance(CharactersFragment.this);
-//					((CharacterBackgroundPageFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
 				case GENERATED_PAGE_INDEX:
-//					fragment = Fragment.instantiate(getActivity(), CharacterGeneratedValuesFragment.class.getName());
 					fragment = CharacterGeneratedValuesFragment.newInstance(CharactersFragment.this);
-//					((CharacterGeneratedValuesFragment)fragment).setCharactersFragment(CharactersFragment.this);
 					break;
 			}
 			return fragment;
@@ -491,28 +438,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
 			Fragment createdFragment = (Fragment)super.instantiateItem(container, position);
-			switch (position) {
-				case MAIN_PAGE_INDEX:
-					((CharacterMainPageFragment)createdFragment).restoreView();
-					View child = viewPager.findViewById(R.id.character_main_page_fragment);
-					Log.d(LOG_TAG, "viewPager.visibility = " + viewPager.getVisibility());
-					Log.d(LOG_TAG, "child = " + child);
-					Log.d(LOG_TAG, "Main Page Fragment = " + createdFragment);
-					if(child != null) {
-						Log.d(LOG_TAG, "child.enabled = " + child.isEnabled());
-						Log.d(LOG_TAG, "child.visibility = " + child.getVisibility());
-					}
-					break;
-				case SKILLS_PAGE_INDEX:
-					Log.d(LOG_TAG, "Skills Page Fragment = " + createdFragment);
-					break;
-				case BACKGROUND_PAGE_INDEX:
-					Log.d(LOG_TAG, "Background Page Fragment = " + createdFragment);
-					break;
-				case GENERATED_PAGE_INDEX:
-					Log.d(LOG_TAG, "Generated Values Page Fragment = " + createdFragment);
-					break;
-			}
 			registeredFragments.put(position, createdFragment);
 			return createdFragment;
 		}

@@ -318,6 +318,7 @@
   <string name="label_stunned">Stunned</string>
   <string name="label_tertiary_skills">Tertiary Skills</string>
   <string name="label_tiers">Tiers</string>
+  <string name="label_trades_and_crafts_category">Trades and Crafts Category</string>
   <string name="label_use_skill_stats">Use Skill Stats</string>
 
   <!-- Input field labels -->

@@ -43,6 +43,21 @@ public class Campaign {
 	private List<Specialization> restrictedSpecializations = new ArrayList<>();
 
 	/**
+	 * Creates a new Campaign instance.
+	 */
+	public Campaign() {
+	}
+
+	/**
+	 * Creates a new Campaign instance with the given id.
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public Campaign(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * Checks the validity of the Campaign instance.
 	 *
 	 * @return true if the Campaign instance is valid, otherwise false.

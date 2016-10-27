@@ -25,6 +25,7 @@ public interface SkillCategorySchema {
 	String COLUMN_NAME = "name";
 	String COLUMN_DESCRIPTION = "description";
 	String COLUMN_IS_COMBAT = "isCombat";
+	String COLUMN_IS_CRAFT_AND_TRADE = "isCraftAndTrade";
 	String COLUMN_NO_STATS = "noStats";
 	String COLUMN_REALM_STATS = "realmStats";
 
@@ -35,10 +36,11 @@ public interface SkillCategorySchema {
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_IS_COMBAT + " INTEGER NOT NULL, "
+			+ COLUMN_IS_CRAFT_AND_TRADE + " INTEGER NOT NULL, "
 			+ COLUMN_NO_STATS + " INTEGER NOT NULL, "
 			+ COLUMN_REALM_STATS + " INTEGER NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_IS_COMBAT, COLUMN_NO_STATS,
-			COLUMN_REALM_STATS};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_IS_COMBAT, COLUMN_IS_CRAFT_AND_TRADE,
+			COLUMN_NO_STATS, COLUMN_REALM_STATS};
 }
