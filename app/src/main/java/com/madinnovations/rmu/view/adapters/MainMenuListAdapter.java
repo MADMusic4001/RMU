@@ -18,9 +18,6 @@ package com.madinnovations.rmu.view.adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +34,12 @@ import java.util.Map;
  * Populates an expandable list view with menu items
  */
 public class MainMenuListAdapter extends BaseExpandableListAdapter {
+	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "MainMenuListAdapter";
 	private LayoutInflater layoutInflater;
 	private ExpandableListView listView;
 	private List<String> groupHeaders;
 	private Map<String, List<String>> groupItems;
-	private Drawable defaultBackground = null;
 
 	/**
 	 * Creates a new MainMenuListAdapter instance
@@ -116,21 +113,12 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 			convertView = layoutInflater.inflate(R.layout.main_menu_item_row, parent, false);
 		}
 
-		if(defaultBackground == null) {
-			defaultBackground = convertView.getBackground();
-		}
 		int index = listView.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
-		Log.d(LOG_TAG, "Item " + index + " itemChecked = " + listView.isItemChecked(index));
 		if(listView.isItemChecked(index)) {
 			convertView.setBackgroundColor(Color.BLUE);
 		}
 		else {
-//			if(defaultBackground != null) {
-//				convertView.setBackground(defaultBackground);
-//			}
-//			else {
-				convertView.setBackgroundColor(Color.DKGRAY);
-//			}
+			convertView.setBackgroundColor(Color.DKGRAY);
 		}
 		TextView txtListChild = (TextView) convertView.findViewById(R.id.expandable_list_item);
 
