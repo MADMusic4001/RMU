@@ -118,7 +118,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private SparseArray<Skill>           skillSparseArray          = null;
 	private SparseArray<Specialization>  specializationSparseArray = null;
 	private SparseArray<Spell>           spellSparseArray          = null;
-	private SparseArray<Statistic>       statSparseArray           = null;
 	private Map<View, Integer>           indexMap                  = new HashMap<>();
 
 	@Nullable
@@ -1168,34 +1167,20 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
 		final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
-		if(statSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < statSparseArray.size(); i++) {
-				adapter.add(statSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Statistic currentStat = statSparseArray.get(
-					currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-			spinner.setSelection(adapter.getPosition(currentStat));
-		}
-		else {
-			adapter.clear();
-			adapter.addAll(Statistic.values());
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Statistic currentStat = statSparseArray.get(
-					currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-			spinner.setSelection(adapter.getPosition(currentStat));
-		}
+		adapter.clear();
+		adapter.addAll(Statistic.getAllStats());
+		adapter.notifyDataSetChanged();
+		spinner.setAdapter(adapter);
+		Statistic currentStat = adapter.getItem(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+		spinner.setSelection(adapter.getPosition(currentStat));
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Statistic statistic = adapter.getItem(position);
 				if(statistic != null) {
-					Statistic currentStat = statSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+					Statistic currentStat = adapter.getItem(currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+																	.getValue());
 					if(!statistic.equals(currentStat)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(statistic.name());
 						saveItem();

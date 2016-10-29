@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
@@ -77,6 +78,7 @@ import com.madinnovations.rmu.data.dao.spells.SpellTypeDao;
 import com.madinnovations.rmu.data.dao.spells.serializers.RealmSerializer;
 import com.madinnovations.rmu.data.dao.spells.serializers.SpellListSerializer;
 import com.madinnovations.rmu.data.dao.spells.serializers.SpellSerializer;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
@@ -136,6 +138,7 @@ public class ImportExportRxHandler {
 	private AttackDao                   attackDao;
 	private AttackSerializer            attackSerializer = new AttackSerializer();
 	private BodyPartDao                 bodyPartDao;
+	private CampaignDao                 campaignDao;
 	private CharacterDao                characterDao;
 	private CharacterSerializer         characterSerializer = new CharacterSerializer();
 	private CreatureArchetypeDao        creatureArchetypeDao;
@@ -192,7 +195,7 @@ public class ImportExportRxHandler {
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CharacterDao characterDao,
+	ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CampaignDao campaignDao, CharacterDao characterDao,
 						  CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
 						  CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
 						  CriticalCodeDao criticalCodeDao, CriticalResultDao criticalResultDao,
@@ -206,6 +209,7 @@ public class ImportExportRxHandler {
 						  RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
+		this.campaignDao = campaignDao;
 		this.characterDao = characterDao;
 		this.creatureArchetypeDao = creatureArchetypeDao;
 		this.creatureCategoryDao = creatureCategoryDao;
@@ -588,6 +592,18 @@ public class ImportExportRxHandler {
 											Log.i(LOG_TAG, "Loaded " + attacks.size() + " attacks.");
 											attacks = null;
 											break;
+										case Campaign.JSON_NAME:
+											List<Campaign> campaigns = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Campaign campaign = gson.fromJson(jsonReader, Campaign.class);
+												campaigns.add(campaign);
+											}
+											jsonReader.endArray();
+											campaignDao.save(campaigns, true);
+											Log.i(LOG_TAG, "Loaded " + campaigns.size() + " campaigns.");
+											campaigns = null;
+											break;
 										case CreatureArchetype.JSON_NAME:
 											List<CreatureArchetype> creatureArchetypes = new ArrayList<>();
 											jsonReader.beginArray();
@@ -826,6 +842,8 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(specializationDao.getAll()))
 									.name(Attack.JSON_NAME)
 									.jsonValue(gson.toJson(attackDao.getAll()))
+									.name(Campaign.JSON_NAME)
+									.jsonValue(gson.toJson(campaignDao.getAll()))
 									.name(CreatureArchetype.JSON_NAME)
 									.jsonValue(gson.toJson(creatureArchetypeDao.getAll()))
 									.name(SpellListType.JSON_NAME)

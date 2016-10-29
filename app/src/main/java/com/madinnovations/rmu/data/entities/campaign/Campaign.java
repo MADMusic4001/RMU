@@ -29,6 +29,7 @@ import java.util.List;
  * Campaign settings
  */
 public class Campaign {
+	public static final String JSON_NAME = "Campaigns";
 	private int id = -1;
 	private String name = null;
 	private Calendar createDate = Calendar.getInstance();
@@ -37,7 +38,7 @@ public class Campaign {
 	private boolean intenseTrainingAllowed = false;
 	private boolean individualStride = false;
 	private boolean noProfessions = false;
-	private boolean buyStats;
+	private boolean buyStats = false;
 	private boolean openRounds = false;
 	private boolean grittyPoisonAndDisease;
 	private List<Specialization> restrictedSpecializations = new ArrayList<>();

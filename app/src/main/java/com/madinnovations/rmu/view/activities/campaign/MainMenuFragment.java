@@ -37,8 +37,12 @@ import java.util.Map;
  * Fragment class for interacting with the Menu section of the campaign activity.
  */
 public class MainMenuFragment extends Fragment {
+	@SuppressWarnings("unused")
+	private static final String LOG_TAG = "MainMenuFragment";
 	private List<String> groupNames;
 	private Map<String, List<String>> groupItems;
+	private int checkedFlatIndex = -1;
+	private int checkedGroupPosition = -1;
 
 	@Nullable
 	@Override
@@ -56,7 +60,7 @@ public class MainMenuFragment extends Fragment {
 
 	private void initListView(final ExpandableListView listView) {
 		createMenuData();
-		ExpandableListAdapter adapter = new MainMenuListAdapter(this.getActivity(), groupNames, groupItems);
+		final ExpandableListAdapter adapter = new MainMenuListAdapter(this.getActivity(), groupNames, groupItems, listView);
 		listView.setAdapter(adapter);
 		listView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 			@Override
@@ -66,11 +70,30 @@ public class MainMenuFragment extends Fragment {
 						listView.collapseGroup(i);
 					}
 				}
+				if(checkedFlatIndex != -1) {
+					listView.setItemChecked(checkedFlatIndex, listView.isGroupExpanded(checkedGroupPosition));
+				}
 			}
 		});
 		listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+				int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition,
+																									childPosition));
+				int flatIndex = 0;
+				for(int i = 0; i < adapter.getGroupCount(); i ++) {
+					flatIndex++;
+					if(listView.isGroupExpanded(i)) {
+						for(int j = 0; j < adapter.getChildrenCount(i); j++) {
+							listView.setItemChecked(flatIndex, flatIndex == index);
+							if(flatIndex == index) {
+								checkedFlatIndex = flatIndex;
+								checkedGroupPosition = i;
+							}
+							flatIndex++;
+						}
+					}
+				}
 				switch (groupPosition) {
 					case 0:
 						switch (childPosition) {

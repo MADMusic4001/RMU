@@ -16,11 +16,16 @@
 package com.madinnovations.rmu.view.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
@@ -32,9 +37,12 @@ import java.util.Map;
  * Populates an expandable list view with menu items
  */
 public class MainMenuListAdapter extends BaseExpandableListAdapter {
+	private static final String LOG_TAG = "MainMenuListAdapter";
 	private LayoutInflater layoutInflater;
+	private ExpandableListView listView;
 	private List<String> groupHeaders;
 	private Map<String, List<String>> groupItems;
+	private Drawable defaultBackground = null;
 
 	/**
 	 * Creates a new MainMenuListAdapter instance
@@ -43,9 +51,11 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 	 * @param groupHeaders  a list of group header strings
 	 * @param groupItems  a map with the group header strings as the keys and a list of group item strings as the values
 	 */
-	public MainMenuListAdapter(Context context, List<String> groupHeaders, Map<String, List<String>> groupItems) {
+	public MainMenuListAdapter(Context context, List<String> groupHeaders, Map<String, List<String>> groupItems,
+							   ExpandableListView listView) {
 		this.groupHeaders = groupHeaders;
 		this.groupItems = groupItems;
+		this.listView = listView;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -106,8 +116,23 @@ public class MainMenuListAdapter extends BaseExpandableListAdapter {
 			convertView = layoutInflater.inflate(R.layout.main_menu_item_row, parent, false);
 		}
 
-		TextView txtListChild = (TextView) convertView
-				.findViewById(R.id.expandable_list_item);
+		if(defaultBackground == null) {
+			defaultBackground = convertView.getBackground();
+		}
+		int index = listView.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
+		Log.d(LOG_TAG, "Item " + index + " itemChecked = " + listView.isItemChecked(index));
+		if(listView.isItemChecked(index)) {
+			convertView.setBackgroundColor(Color.BLUE);
+		}
+		else {
+//			if(defaultBackground != null) {
+//				convertView.setBackground(defaultBackground);
+//			}
+//			else {
+				convertView.setBackgroundColor(Color.DKGRAY);
+//			}
+		}
+		TextView txtListChild = (TextView) convertView.findViewById(R.id.expandable_list_item);
 
 		txtListChild.setText(childText);
 		return convertView;
