@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
@@ -43,6 +44,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> implements SpecializationDao, SpecializationSchema {
+	private static final String  LOG_TAG = "SpecializationDaoImp";
     private SkillDao skillDao;
 
     /**
@@ -125,7 +127,20 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         return result;
     }
 
-    @Override
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = SpecializationStatsSchema.COLUMN_SPECIALIZATION_ID + " = ?";
+
+		int numDeleted = db.delete(SpecializationStatsSchema.TABLE_NAME, selection, selectionArgs);
+		Log.d(LOG_TAG, "Deleted " + numDeleted + " relationships.");
+		result = (numDeleted >= 0);
+
+		return result;
+	}
+
+	@Override
     public List<Specialization> getSpecializationsForSkill(@NonNull Skill filter) {
         final String selectionArgs[] = { String.valueOf(filter.getId()) };
         final String selection = COLUMN_SKILL_ID + " = ?";

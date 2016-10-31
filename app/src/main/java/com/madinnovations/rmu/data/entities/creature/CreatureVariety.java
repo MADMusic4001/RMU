@@ -65,6 +65,7 @@ public class CreatureVariety {
 	private Outlook outlook = null;
 	private Map<Talent, Short> talentTiersMap = new HashMap<>();
 	private Map<Attack, Short> attackBonusesMap = new HashMap<>();
+	private Size criticalSizeModifier = null;
 	private String attackSequence = null;
 	private Map<Skill, Short> skillBonusesMap = new HashMap<>();
 
@@ -116,6 +117,7 @@ public class CreatureVariety {
 				.append("outlook", outlook)
 				.append("talentTiersMap", talentTiersMap)
 				.append("attackBonusesMap", attackBonusesMap)
+				.append("criticalSizeModifier", criticalSizeModifier)
 				.append("attackSequence", attackSequence)
 				.append("skillBonusesMap", skillBonusesMap)
 				.toString();
@@ -310,6 +312,12 @@ public class CreatureVariety {
 	}
 	public void setAttackBonusesMap(Map<Attack, Short> attackBonusesMap) {
 		this.attackBonusesMap = attackBonusesMap;
+	}
+	public Size getCriticalSizeModifier() {
+		return criticalSizeModifier;
+	}
+	public void setCriticalSizeModifier(Size criticalSizeModifier) {
+		this.criticalSizeModifier = criticalSizeModifier;
 	}
 	public String getAttackSequence() {
 		return attackSequence;

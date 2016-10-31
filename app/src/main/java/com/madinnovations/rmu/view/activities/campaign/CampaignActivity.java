@@ -37,7 +37,6 @@ import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
 import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
-import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.activities.combat.DamageResultsFragment;
@@ -89,7 +88,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 	private CreatureTypesFragment      creatureTypesFragment;
 	private CreatureVarietiesFragment  creatureVarietiesFragment;
-	private CriticalCodesFragment      criticalCodesFragment;
 	private CriticalResultsFragment    criticalResultsFragment;
 	private CriticalTypesFragment      criticalTypesFragment;
 	private CulturesFragment           culturesFragment;
@@ -297,13 +295,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			creatureVarietiesFragment = new CreatureVarietiesFragment();
 		}
 		replaceDetailFragment(creatureVarietiesFragment);
-	}
-
-	public void showCriticalCodes() {
-		if(criticalCodesFragment == null) {
-			criticalCodesFragment = new CriticalCodesFragment();
-		}
-		replaceDetailFragment(criticalCodesFragment);
 	}
 
 	public void showCriticalResults() {

@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
-import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.activities.combat.DamageResultsFragment;
@@ -35,7 +34,6 @@ import dagger.Subcomponent;
 public interface CombatFragmentComponent {
 	void injectInto(AttacksFragment attacksFragment);
 	void injectInto(BodyPartsFragment bodyPartsFragment);
-	void injectInto(CriticalCodesFragment criticalCodesFragment);
 	void injectInto(CriticalResultsFragment criticalResultsFragment);
 	void injectInto(CriticalTypesFragment criticalTypesFragment);
 	void injectInto(DamageResultsFragment damageResultsFragment);

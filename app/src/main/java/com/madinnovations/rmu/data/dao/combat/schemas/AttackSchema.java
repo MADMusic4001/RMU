@@ -37,8 +37,10 @@ public interface AttackSchema {
             + COLUMN_NAME  + " TEXT NOT NULL, "
             + COLUMN_DAMAGE_TABLE_ID + " INTEGER NOT NULL, "
             + COLUMN_SPECIALIZATION_ID + " INTEGER, "
-            + "FOREIGN KEY (" + COLUMN_DAMAGE_TABLE_ID + ") REFERENCES " + DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + "), "
-            + "FOREIGN KEY (" + COLUMN_SPECIALIZATION_ID + ") REFERENCES " + SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + ")"
+            + "FOREIGN KEY (" + COLUMN_DAMAGE_TABLE_ID + ") REFERENCES "
+				+ DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_SPECIALIZATION_ID + ") REFERENCES "
+            	+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + ") ON DELETE CASCADE"
             + ");";
 
     String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CODE, COLUMN_NAME, COLUMN_DAMAGE_TABLE_ID,

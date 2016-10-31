@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
 import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
-import com.madinnovations.rmu.view.activities.combat.CriticalCodesFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.activities.combat.DamageResultsFragment;
@@ -33,7 +32,6 @@ import dagger.Provides;
 public class CombatFragmentModule {
 	private AttacksFragment attacksFragment;
 	private BodyPartsFragment bodyPartsFragment;
-	private CriticalCodesFragment criticalCodesFragment;
 	private CriticalResultsFragment criticalResultsFragment;
 	private CriticalTypesFragment criticalTypesFragment;
 	private DamageResultsFragment damageResultsFragment;
@@ -43,9 +41,6 @@ public class CombatFragmentModule {
 	}
 	public CombatFragmentModule(BodyPartsFragment bodyPartsFragment) {
 		this.bodyPartsFragment = bodyPartsFragment;
-	}
-	public CombatFragmentModule(CriticalCodesFragment criticalCodesFragment) {
-		this.criticalCodesFragment = criticalCodesFragment;
 	}
 	public CombatFragmentModule(CriticalResultsFragment criticalResultsFragment) {
 		this.criticalResultsFragment = criticalResultsFragment;
@@ -64,10 +59,6 @@ public class CombatFragmentModule {
 	@Provides @PerFragment
 	BodyPartsFragment provideBodyPartsFragment() {
 		return this.bodyPartsFragment;
-	}
-	@Provides @PerFragment
-	CriticalCodesFragment provideCriticalCodesFragment() {
-		return this.criticalCodesFragment;
 	}
 	@Provides @PerFragment
 	CriticalResultsFragment provideCriticalResultsFragment() {

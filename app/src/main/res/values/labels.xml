@@ -347,6 +347,7 @@
   <string name="input_label_category_filter">Category Filter:</string>
   <string name="input_label_channeling_rr">Channeling RR:</string>
   <string name="input_label_critical_codes">Critical Codes:</string>
+  <string name="input_label_critical_size_modifier">Critical Size Modifier:</string>
   <string name="input_label_critical_type">Critical Type:</string>
   <string name="input_label_critical_severity_filter">Critical Severity Filter:</string>
   <string name="input_label_critical_type_filter">Critical Type Filter:</string>
@@ -449,4 +450,5 @@
 
   <!-- Adapter extra instance names -->
   <string name="no_specialization">No Specialization</string>
+  <string name="no_size_modifier">No Size Modifier</string>
 </resources>

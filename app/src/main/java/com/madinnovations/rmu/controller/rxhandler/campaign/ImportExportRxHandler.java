@@ -35,7 +35,6 @@ import com.madinnovations.rmu.data.dao.character.serializers.ProfessionSerialize
 import com.madinnovations.rmu.data.dao.character.serializers.RaceSerializer;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
-import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
@@ -85,7 +84,6 @@ import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.BodyPart;
-import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
@@ -149,7 +147,6 @@ public class ImportExportRxHandler {
 	private CreatureTypeSerializer      creatureTypeSerializer = new CreatureTypeSerializer();
 	private CreatureVarietyDao          creatureVarietyDao;
 	private CreatureVarietySerializer   creatureVarietySerializer = new CreatureVarietySerializer();
-	private CriticalCodeDao             criticalCodeDao;
 	private CriticalResultDao           criticalResultDao;
 	private CriticalResultSerializer    criticalResultSerializer = new CriticalResultSerializer();
 	private CriticalTypeDao             criticalTypeDao;
@@ -198,11 +195,11 @@ public class ImportExportRxHandler {
 	ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao, CampaignDao campaignDao, CharacterDao characterDao,
 						  CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
 						  CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
-						  CriticalCodeDao criticalCodeDao, CriticalResultDao criticalResultDao,
-						  CriticalTypeDao criticalTypeDao, CultureDao cultureDao, DamageResultDao damageResultDao,
-						  DamageResultRowDao damageResultRowDao, DamageTableDao damageTableDao, ItemDao itemDao,
-						  ItemTemplateDao itemTemplateDao, OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao,
-						  RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
+						  CriticalResultDao criticalResultDao, CriticalTypeDao criticalTypeDao, CultureDao cultureDao,
+						  DamageResultDao damageResultDao, DamageResultRowDao damageResultRowDao,
+						  DamageTableDao damageTableDao, ItemDao itemDao, ItemTemplateDao itemTemplateDao,
+						  OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao,
+						  SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
 						  SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
 						  SpellListTypeDao spellListTypeDao, SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao,
 						  TalentDao talentDao, TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao,
@@ -215,7 +212,6 @@ public class ImportExportRxHandler {
 		this.creatureCategoryDao = creatureCategoryDao;
 		this.creatureTypeDao = creatureTypeDao;
 		this.creatureVarietyDao = creatureVarietyDao;
-		this.criticalCodeDao = criticalCodeDao;
 		this.criticalResultDao = criticalResultDao;
 		this.criticalTypeDao = criticalTypeDao;
 		this.cultureDao = cultureDao;
@@ -399,18 +395,6 @@ public class ImportExportRxHandler {
 											bodyPartDao.save(bodyParts, true);
 											Log.i(LOG_TAG, "Loaded " + bodyParts.size() + " bodyParts.");
 											bodyParts = null;
-											break;
-										case CriticalCode.JSON_NAME:
-											List<CriticalCode> criticalCodes = new ArrayList<>();
-											jsonReader.beginArray();
-											while (jsonReader.hasNext()) {
-												CriticalCode criticalCode = gson.fromJson(jsonReader, CriticalCode.class);
-												criticalCodes.add(criticalCode);
-											}
-											jsonReader.endArray();
-											criticalCodeDao.save(criticalCodes, true);
-											Log.i(LOG_TAG, "Loaded " + criticalCodes.size() + " criticalCodes.");
-											criticalCodes = null;
 											break;
 										case CriticalType.JSON_NAME:
 											List<CriticalType> criticalTypes = new ArrayList<>();
@@ -795,8 +779,6 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(itemDao.getAll()))
 									.name(BodyPart.JSON_NAME)
 									.jsonValue(gson.toJson(bodyPartDao.getAll()))
-									.name(CriticalCode.JSON_NAME)
-									.jsonValue(gson.toJson(criticalCodeDao.getAll()))
 							;
 							subscriber.onNext(30);
 							jsonWriter

@@ -32,7 +32,7 @@ public interface CharacterCurrentLevelSpecializationRanksSchema {
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
                 + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
             + COLUMN_SPECIALIZATION_ID + " INTEGER NOT NULL REFERENCES "
-				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + "), "
+				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_RANKS  + " INTEGER NOT NULL, "
             + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SPECIALIZATION_ID + ")"
             + ")";

@@ -36,7 +36,9 @@ public class AttackSerializer extends TypeAdapter<Attack> implements AttackSchem
 		out.name(COLUMN_CODE).value(value.getCode());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DAMAGE_TABLE_ID).value(value.getDamageTable().getId());
-		out.name(COLUMN_SPECIALIZATION_ID).value(value.getSpecialization().getId());
+		if(value.getSpecialization() != null) {
+			out.name(COLUMN_SPECIALIZATION_ID).value(value.getSpecialization().getId());
+		}
 		out.endObject();
 	}
 

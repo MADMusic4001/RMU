@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
-import com.madinnovations.rmu.data.dao.combat.CriticalCodeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
@@ -43,6 +42,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
+import com.madinnovations.rmu.view.RMUAppException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +59,6 @@ import javax.inject.Singleton;
 public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> implements CreatureVarietyDao, CreatureVarietySchema {
 	private CreatureTypeDao creatureTypeDao;
 	private SizeDao sizeDao;
-	private CriticalCodeDao criticalCodeDao;
 	private RealmDao realmDao;
 	private OutlookDao outlookDao;
 	private SkillDao skillDao;
@@ -72,7 +71,6 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	 * @param helper  an SQLiteOpenHelper instance
 	 * @param creatureTypeDao  a {@link CreatureTypeDao} instance
 	 * @param sizeDao  a {@link SizeDao} instance
-	 * @param criticalCodeDao  a {@link CriticalCodeDao} instance
 	 * @param realmDao  a {@link RealmDao} instance
 	 * @param outlookDao  an {@link OutlookDao} instance
 	 * @param skillDao  a {@link SkillDao} instance
@@ -81,13 +79,11 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	 */
 	@Inject
 	public CreatureVarietyDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull CreatureTypeDao creatureTypeDao,
-									@NonNull SizeDao sizeDao, @NonNull CriticalCodeDao criticalCodeDao,
-									@NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao, @NonNull SkillDao skillDao,
-									@NonNull TalentDao talentDao, @NonNull AttackDao attackDao) {
+									@NonNull SizeDao sizeDao, @NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao,
+									@NonNull SkillDao skillDao, @NonNull TalentDao talentDao, @NonNull AttackDao attackDao) {
 		super(helper);
 		this.creatureTypeDao = creatureTypeDao;
 		this.sizeDao = sizeDao;
-		this.criticalCodeDao = criticalCodeDao;
 		this.realmDao = realmDao;
 		this.outlookDao = outlookDao;
 		this.skillDao = skillDao;
@@ -158,6 +154,10 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setOutlook(outlookDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_OUTLOOK_ID))));
 		instance.setTalentTiersMap(getTalentTiers(instance.getId()));
 		instance.setAttackSequence(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ATTACK_SEQUENCE)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SIZE_MODIFIER_ID))) {
+			instance.setCriticalSizeModifier(sizeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
+					COLUMN_CRITICAL_SIZE_MODIFIER_ID))));
+		}
 		instance.setAttackBonusesMap(getAttackBonuses(instance.getId()));
 		instance.setSkillBonusesMap(getSkillBonuses(instance.getId()));
 
@@ -169,11 +169,11 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(27);
+			values = new ContentValues(28);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(26);
+			values = new ContentValues(27);
 		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
@@ -199,6 +199,12 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		values.put(COLUMN_BASE_STRIDE, instance.getBaseStride());
 		values.put(COLUMN_LEFTOVER_DP, instance.getLeftoverDP());
 		values.put(COLUMN_OUTLOOK_ID, instance.getOutlook().getId());
+		if(instance.getCriticalSizeModifier() == null) {
+			values.putNull(COLUMN_CRITICAL_SIZE_MODIFIER_ID);
+		}
+		else {
+			values.put(COLUMN_CRITICAL_SIZE_MODIFIER_ID, instance.getCriticalSizeModifier().getId());
+		}
 		values.put(COLUMN_ATTACK_SEQUENCE, instance.getAttackSequence());
 		return values;
 	}
@@ -240,7 +246,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		ContentValues values = new ContentValues(2);
 		for(CriticalCode criticalCode : criticalCodeList) {
 			values.put(VarietyCriticalCodesSchema.COLUMN_VARIETY_ID, creatureVarietyId);
-			values.put(VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID, criticalCode.getId());
+			values.put(VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID, criticalCode.name());
 			result &= (db.insertWithOnConflict(VarietyCriticalCodesSchema.TABLE_NAME, null, values,
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
@@ -329,10 +335,14 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		List<CriticalCode> criticalCodesList = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID));
-			CriticalCode criticalCode = criticalCodeDao.getById(mappedId);
-			if(criticalCode != null) {
+			String criticalCodeName = cursor.getString(cursor.getColumnIndexOrThrow(
+					VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID));
+			try {
+				CriticalCode criticalCode = CriticalCode.valueOf(criticalCodeName);
 				criticalCodesList.add(criticalCode);
+			}
+			catch(IllegalArgumentException e) {
+				throw new RMUAppException("Invalid CriticalCode name");
 			}
 			cursor.moveToNext();
 		}

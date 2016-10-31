@@ -21,9 +21,8 @@ import android.content.ClipDescription;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.content.res.ResourcesCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.DragEvent;
@@ -34,16 +33,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.combat.CriticalCodeRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.AttackBonus;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
+import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
+import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.AttackBonusListAdapter;
@@ -51,6 +53,8 @@ import com.madinnovations.rmu.view.adapters.combat.AttacksAdapter;
 import com.madinnovations.rmu.view.adapters.combat.CriticalCodesListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillBonusListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
+import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,32 +72,34 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietyAttackPageFragment extends Fragment implements AttackBonusListAdapter.SetAttackBonus,
-		SkillBonusListAdapter.SetSkillBonus {
+		SkillBonusListAdapter.SetSkillBonus, EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	private static final String LOG_TAG = "CVAttackPageFragment";
 	private static final String DRAG_ADD_ATTACK = "add-attack";
 	private static final String DRAG_REMOVE_ATTACK = "remove-attack";
 	private static final String DRAG_ADD_SKILL = "add-skill";
 	private static final String DRAG_REMOVE_SKILL = "remove-skill";
 	@Inject
-	protected AttackRxHandler          attackRxHandler;
+	protected AttackRxHandler           attackRxHandler;
 	@Inject
-	protected CriticalCodeRxHandler    criticalCodeRxHandler;
+	protected SizeRxHandler             sizeRxHandler;
 	@Inject
-	protected SkillRxHandler           skillRxHandler;
+	protected SkillRxHandler            skillRxHandler;
 	@Inject
-	protected AttacksAdapter           attacksListAdapter;
-	protected ArrayAdapter<Skill>      skillsListAdapter;
+	protected AttacksAdapter            attacksListAdapter;
+	protected ArrayAdapter<Skill>       skillsListAdapter;
 	@Inject
-	protected CriticalCodesListAdapter criticalCodesListAdapter;
-	protected AttackBonusListAdapter   attackBonusesListAdapter;
-	protected SkillBonusListAdapter    skillBonusesListAdapter;
-	private   ListView                 attacksList;
-	private   ListView                 attackBonusesList;
-	private   EditText                 attackSequenceEdit;
+	protected CriticalCodesListAdapter  criticalCodesListAdapter;
+	protected AttackBonusListAdapter    attackBonusesListAdapter;
+	protected SkillBonusListAdapter     skillBonusesListAdapter;
+	private   ListView                  attacksList;
+	private   ListView                  attackBonusesList;
+	private   Spinner                   criticalSizeSpinner;
+	private   EditText                  attackSequenceEdit;
 	private   ListView                  skillsList;
 	private   ListView                  skillBonusesList;
 	private   ListView                  criticalCodesList;
 	private   CreatureVarietiesFragment varietiesFragment;
+	private   Size                      noSizeModifier = new Size();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,7 +110,12 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 		initAttacksList(layout);
 		initAttackBonusesList(layout);
-		initAttackSequenceEdit(layout);
+		noSizeModifier.setCode("-");
+		noSizeModifier.setName(getString(R.string.no_size_modifier));
+		criticalSizeSpinner = new SpinnerUtils<Size>().initSpinner(layout, getActivity(), sizeRxHandler.getAll(), this,
+																   R.id.critical_size_spinner, noSizeModifier);
+		attackSequenceEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.attack_sequence_edit,
+													R.string.validation_creature_variety_attack_sequence_required);
 		initSkillsList(layout);
 		initSkillBonusesList(layout);
 		initCriticalCodesList(layout);
@@ -122,7 +133,61 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		super.onPause();
 	}
 
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.attack_sequence_edit:
+				result = varietiesFragment.getCurrentInstance().getAttackSequence();
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.attack_sequence_edit:
+				varietiesFragment.getCurrentInstance().setAttackSequence(newString);
+				varietiesFragment.saveItem();
+				break;
+		}
+	}
+
+	@Override
+	public Object getValueForSpinner(@IdRes int spinnerId) {
+		Size result = null;
+
+		switch (spinnerId) {
+			case R.id.critical_size_spinner:
+				result = varietiesFragment.getCurrentInstance().getCriticalSizeModifier();
+				if(result == null) {
+					result = noSizeModifier;
+				}
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
+		switch (spinnerId) {
+			case R.id.critical_size_spinner:
+				if(noSizeModifier.equals(newItem)) {
+					varietiesFragment.getCurrentInstance().setCriticalSizeModifier(null);
+				}
+				else {
+					varietiesFragment.getCurrentInstance().setCriticalSizeModifier((Size)newItem);
+				}
+				break;
+		}
+	}
+
 	public boolean copyViewsToItem() {
+		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
 		boolean changed = false;
 		SparseBooleanArray checkedItemPositions;
 		List<CriticalCode> newCriticalCodesList;
@@ -131,85 +196,107 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		AttackBonus newAttackBonus;
 		Map<Skill, Short> newSkillMap;
 		SkillBonus newSkillBonus;
+		String newString;
+		Size newSize;
 
 		if(this.getView() != null) {
 			newAttackMap = new HashMap<>(attackBonusesListAdapter.getCount());
 			for (int i = 0; i < attackBonusesListAdapter.getCount(); i++) {
 				newAttackBonus = attackBonusesListAdapter.getItem(i);
 				if(newAttackBonus != null) {
-					if (varietiesFragment.getCurrentInstance().getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
-						if (!varietiesFragment.getCurrentInstance()
+					if (creatureVariety.getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
+						if (!creatureVariety
 								.getAttackBonusesMap()
 								.get(newAttackBonus.getAttack())
 								.equals(newAttackBonus.getBonus())) {
 							changed = true;
 						}
-						varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(newAttackBonus.getAttack());
+						creatureVariety.getAttackBonusesMap().remove(newAttackBonus.getAttack());
 					} else {
 						changed = true;
 					}
 					newAttackMap.put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
 				}
 			}
-			if (!varietiesFragment.getCurrentInstance().getAttackBonusesMap().isEmpty() && !newAttackMap.isEmpty()) {
+			if (!creatureVariety.getAttackBonusesMap().isEmpty() && !newAttackMap.isEmpty()) {
 				changed = true;
 			}
-			varietiesFragment.getCurrentInstance().setAttackBonusesMap(newAttackMap);
+			creatureVariety.setAttackBonusesMap(newAttackMap);
 
 			newSkillMap = new HashMap<>(skillBonusesListAdapter.getCount());
 			for (int i = 0; i < skillBonusesListAdapter.getCount(); i++) {
 				newSkillBonus = skillBonusesListAdapter.getItem(i);
 				if(newSkillBonus != null) {
-					if (varietiesFragment.getCurrentInstance().getSkillBonusesMap().containsKey(
+					if (creatureVariety.getSkillBonusesMap().containsKey(
 							newSkillBonus.getSkill())) {
-						if (!varietiesFragment.getCurrentInstance()
+						if (!creatureVariety
 								.getSkillBonusesMap()
 								.get(newSkillBonus.getSkill())
 								.equals(newSkillBonus.getBonus())) {
 							changed = true;
 						}
-						varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(newSkillBonus.getSkill());
+						creatureVariety.getSkillBonusesMap().remove(newSkillBonus.getSkill());
 					} else {
 						changed = true;
 					}
 					newSkillMap.put(newSkillBonus.getSkill(), newSkillBonus.getBonus());
 				}
 			}
-			if (!varietiesFragment.getCurrentInstance().getSkillBonusesMap().isEmpty() && !newSkillMap.isEmpty()) {
+			if (!creatureVariety.getSkillBonusesMap().isEmpty() && !newSkillMap.isEmpty()) {
 				changed = true;
 			}
-			varietiesFragment.getCurrentInstance().setSkillBonusesMap(newSkillMap);
+			creatureVariety.setSkillBonusesMap(newSkillMap);
 
 			checkedItemPositions = criticalCodesList.getCheckedItemPositions();
 			if (checkedItemPositions != null) {
 				newCriticalCodesList = new ArrayList<>(checkedItemPositions.size());
 				for (int i = 0; i < checkedItemPositions.size(); i++) {
 					newCriticalCode = criticalCodesListAdapter.getItem(checkedItemPositions.keyAt(i));
-					if (!varietiesFragment.getCurrentInstance().getCriticalCodes().contains(newCriticalCode)) {
+					if (!creatureVariety.getCriticalCodes().contains(newCriticalCode)) {
 						changed = true;
 					}
 					else {
-						varietiesFragment.getCurrentInstance().getCriticalCodes().remove(newCriticalCode);
+						creatureVariety.getCriticalCodes().remove(newCriticalCode);
 					}
 					newCriticalCodesList.add(newCriticalCode);
 				}
-				if (!varietiesFragment.getCurrentInstance().getCriticalCodes().isEmpty() && !newCriticalCodesList.isEmpty()) {
+				if (!creatureVariety.getCriticalCodes().isEmpty() && !newCriticalCodesList.isEmpty()) {
 					changed = true;
 				}
-				varietiesFragment.getCurrentInstance().setCriticalCodes(newCriticalCodesList);
+				creatureVariety.setCriticalCodes(newCriticalCodesList);
 			}
 			else {
-				varietiesFragment.getCurrentInstance().getCriticalCodes().clear();
+				creatureVariety.getCriticalCodes().clear();
 			}
+		}
+
+		newString = attackSequenceEdit.getText().toString();
+		if((newString == null && creatureVariety.getAttackSequence() != null) ||
+				(newString != null && !newString.equals(creatureVariety.getAttackSequence()))) {
+			creatureVariety.setAttackSequence(newString);
+			changed = true;
+		}
+
+		newSize = (Size)criticalSizeSpinner.getSelectedItem();
+		if((newSize == null || newSize.equals(noSizeModifier)) && creatureVariety.getCriticalSizeModifier() != null) {
+			creatureVariety.setCriticalSizeModifier(null);
+			changed = true;
+		}
+		else if(newSize != null && !newSize.equals(creatureVariety.getCriticalSizeModifier())) {
+			creatureVariety.setCriticalSizeModifier(newSize);
+			changed = true;
 		}
 
 		return changed;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void copyItemToViews() {
+		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
+
 		attackBonusesList.clearChoices();
 		attackBonusesListAdapter.clear();
-		for(Map.Entry<Attack, Short> entry : varietiesFragment.getCurrentInstance().getAttackBonusesMap().entrySet()) {
+		for(Map.Entry<Attack, Short> entry : creatureVariety.getAttackBonusesMap().entrySet()) {
 			AttackBonus attackBonus = new AttackBonus(entry.getKey(), entry.getValue());
 			attackBonusesListAdapter.add(attackBonus);
 		}
@@ -217,15 +304,24 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 		skillBonusesList.clearChoices();
 		skillBonusesListAdapter.clear();
-		for(Map.Entry<Skill, Short> entry : varietiesFragment.getCurrentInstance().getSkillBonusesMap().entrySet()) {
+		for(Map.Entry<Skill, Short> entry : creatureVariety.getSkillBonusesMap().entrySet()) {
 			SkillBonus skillBonus = new SkillBonus(entry.getKey(), entry.getValue());
 			skillBonusesListAdapter.add(skillBonus);
 		}
 		skillBonusesListAdapter.notifyDataSetChanged();
 
 		criticalCodesList.clearChoices();
-		for(CriticalCode criticalCode : varietiesFragment.getCurrentInstance().getCriticalCodes()) {
+		for(CriticalCode criticalCode : creatureVariety.getCriticalCodes()) {
 			criticalCodesList.setItemChecked(criticalCodesListAdapter.getPosition(criticalCode), true);
+		}
+
+		attackSequenceEdit.setText(creatureVariety.getAttackSequence());
+		if(creatureVariety.getCriticalSizeModifier() == null) {
+			criticalSizeSpinner.setSelection(((ArrayAdapter)criticalSizeSpinner.getAdapter()).getPosition(noSizeModifier));
+		}
+		else {
+			criticalSizeSpinner.setSelection(((ArrayAdapter)criticalSizeSpinner.getAdapter()).getPosition(
+					creatureVariety.getCriticalSizeModifier()));
 		}
 	}
 
@@ -267,10 +363,11 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					int currentPosition = checkedItems.keyAt(i);
 					Attack attack = attacksListAdapter.getItem(currentPosition);
 					if(attack != null) {
-						String attackIdString = String.valueOf(adapterView.getId());
+						String attackIdString = String.valueOf(attack.getId());
 						ClipData.Item clipDataItem = new ClipData.Item(attackIdString);
 						if(dragData == null) {
-							dragData = new ClipData(DRAG_ADD_ATTACK, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+							dragData = new ClipData(DRAG_ADD_ATTACK, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+													clipDataItem);
 						}
 						else {
 							dragData.addItem(clipDataItem);
@@ -346,34 +443,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		attackBonusesList.setOnDragListener(new AttackBonusDragListener());
 	}
 
-	private void initAttackSequenceEdit(View layout) {
-		attackSequenceEdit = (EditText)layout.findViewById(R.id.attack_sequence_edit);
-		attackSequenceEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					attackSequenceEdit.setError(getString(R.string.validation_creature_variety_attack_sequence_required));
-				}
-			}
-		});
-		attackSequenceEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newAttackSequence = attackSequenceEdit.getText().toString();
-					if (!newAttackSequence.equals(varietiesFragment.getCurrentInstance().getAttackSequence())) {
-						varietiesFragment.getCurrentInstance().setAttackSequence(newAttackSequence);
-						varietiesFragment.saveItem();
-					}
-				}
-			}
-		});
-	}
-
 	private void initSkillsList(View layout) {
 		skillsList = (ListView) layout.findViewById(R.id.skills_list);
 		skillsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -413,7 +482,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					int currentPosition = checkedItems.keyAt(i);
 					Skill skill = skillsListAdapter.getItem(currentPosition);
 					if(skill != null) {
-						String skillIdString = String.valueOf(adapterView.getId());
+						String skillIdString = String.valueOf(skill.getId());
 						ClipData.Item clipDataItem = new ClipData.Item(skillIdString);
 						if(dragData == null) {
 							dragData = new ClipData(DRAG_ADD_SKILL, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
@@ -495,24 +564,9 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	private void initCriticalCodesList(View layout) {
 		criticalCodesList = (ListView) layout.findViewById(R.id.critical_codes_list);
 		criticalCodesList.setAdapter(criticalCodesListAdapter);
-
-		criticalCodeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<CriticalCode>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught loading all CriticalCode instances", e);
-					}
-					@Override
-					public void onNext(Collection<CriticalCode> criticalCodes) {
-						criticalCodesListAdapter.clear();
-						criticalCodesListAdapter.addAll(criticalCodes);
-						criticalCodesListAdapter.notifyDataSetChanged();
-					}
-				});
+		criticalCodesListAdapter.clear();
+		criticalCodesListAdapter.addAll(CriticalCode.values());
+		criticalCodesListAdapter.notifyDataSetChanged();
 
 		criticalCodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -577,8 +631,10 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	}
 
 	protected class AttackBonusDragListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_target_background, null);
+		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_hover_background, null);
 		private Drawable normalShape = attackBonusesList.getBackground();
 
 		@Override
@@ -618,12 +674,11 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						boolean changed = false;
 						for(int i = 0; i < event.getClipData().getItemCount(); i++) {
 							ClipData.Item item = event.getClipData().getItemAt(i);
-							// We just send attack ID but since that is the only field used in the Attack.equals method we can create a
-							// temporary attack and set its id field then use the new Attack to find the position of the actual Attack
-							// instance in the adapter
+							// We just send attack ID but since that is the only field used in the Attack.equals method we can
+							// create a temporary attack and set its id field then use the new Attack to find the position of
+							// the actual Attack instance in the adapter
 							int attackId = Integer.valueOf(item.getText().toString());
-							Attack newAttack = new Attack();
-							newAttack.setId(attackId);
+							Attack newAttack = new Attack(attackId);
 							int position = attacksListAdapter.getPosition(newAttack);
 							if(position != -1) {
 								Attack attack = attacksListAdapter.getItem(position);

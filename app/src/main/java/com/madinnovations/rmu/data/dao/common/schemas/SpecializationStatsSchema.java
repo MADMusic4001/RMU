@@ -30,7 +30,7 @@ public interface SpecializationStatsSchema {
 			+ " ("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_SPECIALIZATION_ID + " INTEGER NOT NULL REFERENCES "
-				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + "), "
+				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + ") ON DELETE CASCADE, "
 			+ COLUMN_STAT_NAME + " TEXT NOT NULL"
 			+ ")";
 

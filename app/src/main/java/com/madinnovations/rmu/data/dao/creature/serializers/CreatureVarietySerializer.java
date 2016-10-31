@@ -65,11 +65,14 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		out.name(COLUMN_BASE_FEAR_RR).value(value.getBaseFearRR());
 		out.name(COLUMN_BASE_STRIDE).value(value.getBaseStride());
 		out.name(COLUMN_LEFTOVER_DP).value(value.getLeftoverDP());
+		if(value.getCriticalSizeModifier() != null) {
+			out.name(COLUMN_CRITICAL_SIZE_MODIFIER_ID).value(value.getCriticalSizeModifier().getId());
+		}
 		out.name(COLUMN_ATTACK_SEQUENCE).value(value.getAttackSequence());
 		out.name(COLUMN_TYPE_ID).value(value.getType().getId());
 		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
 		out.name(COLUMN_REALM1_ID).value(value.getRealm1().getId());
-		if (value.getRealm2() == null) {
+		if (value.getRealm2() != null) {
 			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
 		}
 		out.name(COLUMN_OUTLOOK_ID).value(value.getOutlook().getId());
@@ -90,7 +93,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			out.name(VarietyCriticalCodesSchema.TABLE_NAME);
 			out.beginArray();
 			for (CriticalCode criticalCode : value.getCriticalCodes()) {
-				out.value(criticalCode.getId());
+				out.value(criticalCode.name());
 			}
 			out.endArray();
 		}
@@ -201,6 +204,8 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 				case COLUMN_LEFTOVER_DP:
 					creatureVariety.setLeftoverDP((short) in.nextInt());
 					break;
+				case COLUMN_CRITICAL_SIZE_MODIFIER_ID:
+					creatureVariety.setCriticalSizeModifier(new Size(in.nextInt()));
 				case COLUMN_ATTACK_SEQUENCE:
 					creatureVariety.setAttackSequence(in.nextString());
 					break;
@@ -268,7 +273,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	private void readCriticalCodes(JsonReader in, CreatureVariety creatureVariety) throws IOException {
 		in.beginArray();
 		while(in.hasNext()) {
-			creatureVariety.getCriticalCodes().add(new CriticalCode(in.nextInt()));
+			creatureVariety.getCriticalCodes().add(CriticalCode.valueOf(in.nextString()));
 		}
 		in.endArray();
 	}

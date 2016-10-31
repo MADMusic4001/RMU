@@ -287,6 +287,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 		newBoolean = useSkillStatsCheckBox.isChecked();
 		if(newBoolean != currentInstance.isUseSkillStats()) {
 			currentInstance.setUseSkillStats(newBoolean);
+			changed = true;
 		}
 		if(newBoolean) {
 			if(currentInstance.getStats() != null && !currentInstance.getStats().isEmpty()) {

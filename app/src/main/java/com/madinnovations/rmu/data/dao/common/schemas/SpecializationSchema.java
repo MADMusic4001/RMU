@@ -37,7 +37,8 @@ public interface SpecializationSchema {
 			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SKILL_STATS + " INTEGER NOT NULL, "
 			+ COLUMN_CREATURE_ONLY + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ") ON DELETE CASCADE"
 			+ ")";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SKILL_ID, COLUMN_SKILL_STATS,
