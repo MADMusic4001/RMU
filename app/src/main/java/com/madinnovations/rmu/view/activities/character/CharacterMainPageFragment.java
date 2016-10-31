@@ -16,8 +16,14 @@
 package com.madinnovations.rmu.view.activities.character;
 
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.content.res.ResourcesCompat;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,12 +50,15 @@ import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -60,6 +69,7 @@ import javax.inject.Inject;
 public class CharacterMainPageFragment extends Fragment implements EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "CharacterMainPageFrag";
+	private static final String DRAG_SWAP_STATS = "swap-stats";
 	@Inject
 	protected CampaignRxHandler        campaignRxHandler;
 	@Inject
@@ -537,12 +547,19 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	private void initStatsRows(View layout) {
+		LinearLayout dragGroup;
+
 		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
 		textView.setText(Statistic.AGILITY.toString());
 		textView = (TextView) layout.findViewById(R.id.agility_temp_view);
 		viewHolderMap.get(Statistic.AGILITY).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.agility_potential_view);
 		viewHolderMap.get(Statistic.AGILITY).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.agility_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.AGILITY,
+																		R.id.agility_temp_view,
+																		R.id.agility_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.AGILITY, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.constitution_label);
 		textView.setText(Statistic.CONSTITUTION.toString());
@@ -550,6 +567,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.CONSTITUTION).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.constitution_potential_view);
 		viewHolderMap.get(Statistic.CONSTITUTION).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.constitution_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.CONSTITUTION,
+																		R.id.constitution_temp_view,
+																		R.id.constitution_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.CONSTITUTION, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.empathy_label);
 		textView.setText(Statistic.EMPATHY.toString());
@@ -557,6 +579,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.EMPATHY).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.empathy_potential_view);
 		viewHolderMap.get(Statistic.EMPATHY).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.empathy_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.EMPATHY,
+																		R.id.empathy_temp_view,
+																		R.id.empathy_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.EMPATHY, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.intuition_label);
 		textView.setText(Statistic.INTUITION.toString());
@@ -564,6 +591,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.INTUITION).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.intuition_potential_view);
 		viewHolderMap.get(Statistic.INTUITION).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.intuition_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.INTUITION,
+																		R.id.intuition_temp_view,
+																		R.id.intuition_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.INTUITION, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.memory_label);
 		textView.setText(Statistic.MEMORY.toString());
@@ -571,6 +603,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.MEMORY).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.memory_potential_view);
 		viewHolderMap.get(Statistic.MEMORY).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.memory_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.MEMORY,
+																		R.id.memory_temp_view,
+																		R.id.memory_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.MEMORY, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.presence_label);
 		textView.setText(Statistic.PRESENCE.toString());
@@ -578,6 +615,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.PRESENCE).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.presence_potential_view);
 		viewHolderMap.get(Statistic.PRESENCE).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.presence_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.PRESENCE,
+																		R.id.presence_temp_view,
+																		R.id.presence_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.PRESENCE, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.quickness_label);
 		textView.setText(Statistic.QUICKNESS.toString());
@@ -585,6 +627,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.QUICKNESS).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.quickness_potential_view);
 		viewHolderMap.get(Statistic.QUICKNESS).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.quickness_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.QUICKNESS,
+																		R.id.quickness_temp_view,
+																		R.id.quickness_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.QUICKNESS, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.reasoning_label);
 		textView.setText(Statistic.REASONING.toString());
@@ -592,6 +639,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.REASONING).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.reasoning_potential_view);
 		viewHolderMap.get(Statistic.REASONING).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.reasoning_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.REASONING,
+																		R.id.reasoning_temp_view,
+																		R.id.reasoning_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.REASONING, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.self_discipline_label);
 		textView.setText(Statistic.SELF_DISCIPLINE.toString());
@@ -599,6 +651,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.SELF_DISCIPLINE).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.self_discipline_potential_view);
 		viewHolderMap.get(Statistic.SELF_DISCIPLINE).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.self_discipline_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.SELF_DISCIPLINE,
+																		R.id.self_discipline_temp_view,
+																		R.id.self_discipline_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.SELF_DISCIPLINE, dragGroup));
 
 		textView = (TextView) layout.findViewById(R.id.strength_label);
 		textView.setText(Statistic.STRENGTH.toString());
@@ -606,6 +663,63 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		viewHolderMap.get(Statistic.STRENGTH).tempStatView = textView;
 		textView = (TextView) layout.findViewById(R.id.strength_potential_view);
 		viewHolderMap.get(Statistic.STRENGTH).potentialStatView = textView;
+		dragGroup = (LinearLayout)layout.findViewById(R.id.strength_drag_group);
+		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.STRENGTH,
+																		R.id.strength_temp_view,
+																		R.id.strength_potential_view));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.STRENGTH, dragGroup));
+	}
+
+	private class StatGroupLongClickListener implements View.OnLongClickListener {
+		LinearLayout dragView;
+		Statistic statistic;
+		@IdRes int tempStatId;
+		@IdRes int potentialStatId;
+
+		/**
+		 * Creates a new StatGroupLongClickListener instance.
+		 *
+		 * @param dragView  the LinearLayout being dragged
+		 * @param statistic  the Statistic instance being dragged
+		 * @param tempStatId  the resource ID of the TextView displaying the temp stat value being dragged
+		 * @param potentialStatId  the resource ID of the TextView displaying the potential stat value being dragged
+		 */
+		StatGroupLongClickListener(LinearLayout dragView, Statistic statistic, int tempStatId, int potentialStatId) {
+			this.dragView = dragView;
+			this.statistic = statistic;
+			this.tempStatId = tempStatId;
+			this.potentialStatId = potentialStatId;
+		}
+
+		@Override
+		public boolean onLongClick(View v) {
+			ClipData dragData;
+			List<View> dragViews = new ArrayList<>(1);
+			dragViews.add(dragView);
+
+			String statisticName = statistic.name();
+			ClipData.Item statNameDataItem = new ClipData.Item(statisticName);
+			dragData = new ClipData(DRAG_SWAP_STATS, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, statNameDataItem);
+
+			String tempViewId = String.valueOf(tempStatId);
+			ClipData.Item tempStatViewItem = new ClipData.Item(tempViewId);
+			dragData.addItem(tempStatViewItem);
+
+			String potentialViewId = String.valueOf(potentialStatId);
+			ClipData.Item potentialStatViewItem = new ClipData.Item(potentialViewId);
+			dragData.addItem(potentialStatViewItem);
+
+			View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(dragViews);
+
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+				v.startDragAndDrop(dragData, myShadow, null, 0);
+			}
+			else {
+				//noinspection deprecation
+				v.startDrag(dragData, myShadow, null, 0);
+			}
+			return false;
+		}
 	}
 
 	class ViewHolder {
@@ -613,5 +727,95 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		TextView potentialStatView;
 		ImageButton buyButton;
 		ImageButton sellButton;
+	}
+
+	protected class StatSwapDragListener implements View.OnDragListener {
+		private Statistic destStatistic;
+		private LinearLayout dragGroup;
+
+		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_target_background, null);
+		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_hover_background, null);
+		private Drawable normalShape;
+
+		StatSwapDragListener(Statistic destStatistic, LinearLayout dragGroup) {
+			this.destStatistic = destStatistic;
+			this.dragGroup = dragGroup;
+		}
+
+		@Override
+		public boolean onDrag(View v, DragEvent event) {
+			final int action = event.getAction();
+			if(normalShape == null) {
+				normalShape = dragGroup.getBackground();
+			}
+
+			switch(action) {
+				case DragEvent.ACTION_DRAG_STARTED:
+					if(event.getClipDescription() != null && DRAG_SWAP_STATS.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(targetShape);
+						v.invalidate();
+						break;
+					}
+					return false;
+				case DragEvent.ACTION_DRAG_ENTERED:
+					if(event.getClipDescription() != null && DRAG_SWAP_STATS.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(hoverShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_LOCATION:
+					break;
+				case DragEvent.ACTION_DRAG_EXITED:
+					if(event.getClipDescription() != null && DRAG_SWAP_STATS.equals(event.getClipDescription().getLabel())) {
+						v.setBackground(targetShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DROP:
+					if(event.getClipDescription() != null && DRAG_SWAP_STATS.equals(event.getClipDescription().getLabel())) {
+						Character character = charactersFragment.getCurrentInstance();
+						ClipData.Item item = event.getClipData().getItemAt(0);
+						// We just send attack ID but since that is the only field used in the Attack.equals method we can
+						// create a temporary attack and set its id field then use the new Attack to find the position of
+						// the actual Attack instance in the adapter
+						Statistic srcStatistic = Statistic.valueOf(item.getText().toString());
+						short srcTempStatValue = character.getStatTemps().get(srcStatistic);
+						short srcPotentialStatValue = character.getStatPotentials().get(srcStatistic);
+						short destTempStatValue = character.getStatTemps().get(destStatistic);
+						short destPotentialStatValue = character.getStatPotentials().get(destStatistic);
+						if(srcTempStatValue != destTempStatValue || srcPotentialStatValue != destPotentialStatValue) {
+							viewHolderMap.get(destStatistic).tempStatView.setText(String.valueOf(srcTempStatValue));
+							character.getStatTemps().put(srcStatistic, destTempStatValue);
+							viewHolderMap.get(destStatistic).potentialStatView.setText(String.valueOf(srcPotentialStatValue));
+							character.getStatPotentials().put(srcStatistic, destPotentialStatValue);
+							viewHolderMap.get(srcStatistic).tempStatView.setText(String.valueOf(destTempStatValue));
+							character.getStatTemps().put(destStatistic, srcTempStatValue);
+							viewHolderMap.get(srcStatistic).potentialStatView.setText(String.valueOf(destPotentialStatValue));
+							character.getStatPotentials().put(destStatistic, srcPotentialStatValue);
+							charactersFragment.saveItem();
+						}
+						v.setBackground(normalShape);
+						v.invalidate();
+					}
+					else {
+						return false;
+					}
+					break;
+				case DragEvent.ACTION_DRAG_ENDED:
+					v.setBackground(normalShape);
+					v.invalidate();
+					break;
+			}
+
+			return true;
+		}
 	}
 }
