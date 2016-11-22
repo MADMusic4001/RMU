@@ -16,13 +16,14 @@
 package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseBooleanArray;
+import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,28 +32,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxHandler;
-import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -68,28 +61,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	protected CreatureArchetypeRxHandler             creatureArchetypeRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler                 skillCategoryRxHandler;
-	private   ArrayAdapter<Statistic>                stat1SpinnerAdapter;
-	private   ArrayAdapter<Statistic>                stat2SpinnerAdapter;
-	private   ArrayAdapter<SkillCategory>            primarySkillCategoriesListAdapter;
-	private   ArrayAdapter<SkillCategory>            secondarySkillCategoriesListAdapter;
-	private   ArrayAdapter<SkillCategory>            tertiarySkillCategoriesListAdapter;
 	private   TwoFieldListAdapter<CreatureArchetype> listAdapter;
 	private   ListView                               listView;
-	private   EditText                               nameEdit;
-	private EditText                     descriptionEdit;
-	private CheckBox                     stat1IsRealmCheckBox;
-	private Spinner                      stat1Spinner;
-	private CheckBox                     stat2IsRealmCheckBox;
-	private Spinner                      stat2Spinner;
-	private ListView                     primarySkillCategoriesList;
-	private ListView                     secondarySkillCategoriesList;
-	private ListView                     tertiarySkillCategoriesList;
-	private EditText                     spellsEdit;
-	private EditText                     rolesEdit;
-	private CreatureArchetype   currentInstance        = new CreatureArchetype();
-	private boolean             isNew                  = true;
-	private List<SkillCategory> newSkillCategoriesList = new ArrayList<>();
-	private Statistic           realmStat              = Statistic.NON_REALM;
+	private   CreatureArchetypesFragmentPagerAdapter pagerAdapter    = null;
+	private CreatureArchetype                                currentInstance = new CreatureArchetype();
+	private boolean                                          isNew           = true;
 
 	@Nullable
 	@Override
@@ -103,17 +79,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field2).getLayoutParams()).weight = 4;
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_creature_archetype_description));
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
-		initStat1IsRealmCheckBox(layout);
-		initStat1Spinner(layout);
-		initStat2IsRealmCheckBox(layout);
-		initStat2Spinner(layout);
-		initPrimarySkillCategoriesList(layout);
-		initSecondarySkillCategoriesList(layout);
-		initTertiarySkillCategoriesList(layout);
-		initSpellsEdit(layout);
-		initRolesEdit(layout);
+		initViewPager(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -188,192 +154,33 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
-		String newString;
-		Statistic newStat;
-		int position;
 
-		newString = nameEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && currentInstance.getName() != null) ||
-				(newString != null && !newString.equals(currentInstance.getName()))) {
-			currentInstance.setName(newString);
-			changed = true;
+		CreatureArchetypesMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
+		if(mainPageFragment != null) {
+			changed = mainPageFragment.copyViewsToItem();
 		}
 
-		newString = descriptionEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && currentInstance.getDescription() != null) ||
-				(newString != null && !newString.equals(currentInstance.getDescription()))) {
-			currentInstance.setDescription(newString);
-			changed = true;
-		}
-
-		if(currentInstance.isRealmStat1() != stat1IsRealmCheckBox.isChecked()) {
-			currentInstance.setRealmStat1(stat1IsRealmCheckBox.isChecked());
-			changed = true;
-		}
-
-		position = stat1Spinner.getSelectedItemPosition();
-		if(position != -1) {
-			newStat = stat1SpinnerAdapter.getItem(position);
-			if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat1() != null) {
-				currentInstance.setStat1(null);
-				changed = true;
-			}
-			else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
-				currentInstance.setStat1(newStat);
-				changed = true;
-			}
-		}
-
-		if(currentInstance.isRealmStat2() != stat2IsRealmCheckBox.isChecked()) {
-			currentInstance.setRealmStat2(stat2IsRealmCheckBox.isChecked());
-			changed = true;
-		}
-
-		position = stat2Spinner.getSelectedItemPosition();
-		if(position != -1) {
-			newStat = stat2SpinnerAdapter.getItem(position);
-			if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat2() != null) {
-				currentInstance.setStat2(null);
-				changed = true;
-			}
-			else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
-				currentInstance.setStat2(newStat);
-				changed = true;
-			}
-		}
-
-		if(updateSkillCategoriesList(primarySkillCategoriesList, primarySkillCategoriesListAdapter, currentInstance.getPrimarySkills())) {
-			currentInstance.setPrimarySkills(newSkillCategoriesList);
-			changed = true;
-		}
-
-		if(updateSkillCategoriesList(secondarySkillCategoriesList, secondarySkillCategoriesListAdapter,
-				currentInstance.getSecondarySkills())) {
-			currentInstance.setSecondarySkills(newSkillCategoriesList);
-			changed = true;
-		}
-
-		if(updateSkillCategoriesList(tertiarySkillCategoriesList, tertiarySkillCategoriesListAdapter,
-				currentInstance.getTertiarySkills())) {
-			currentInstance.setTertiarySkills(newSkillCategoriesList);
-			changed = true;
-		}
-
-		newString = spellsEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && currentInstance.getSpells() != null) ||
-				(newString != null && !newString.equals(currentInstance.getSpells()))) {
-			currentInstance.setSpells(newString);
-			changed = true;
-		}
-
-		newString = rolesEdit.getText().toString();
-		if(newString.isEmpty()) {
-			newString = null;
-		}
-		if((newString == null && currentInstance.getRoles() != null) ||
-				(newString != null && !newString.equals(currentInstance.getRoles()))) {
-			currentInstance.setRoles(newString);
-			changed = true;
-		}
-
-		return changed;
-	}
-
-	private boolean updateSkillCategoriesList(ListView sourceListView, ArrayAdapter<SkillCategory> sourceAdapter,
-											  List<SkillCategory> currentList) {
-		boolean changed = false;
-		SparseBooleanArray checkedSkillCategories;
-		List<SkillCategory> selectedSkillCategories = new ArrayList<>();
-
-		checkedSkillCategories = sourceListView.getCheckedItemPositions();
-		selectedSkillCategories.clear();
-		if(checkedSkillCategories != null) {
-			for (int i = 0; i < checkedSkillCategories.size(); i++) {
-				if (checkedSkillCategories.valueAt(i) && checkedSkillCategories.keyAt(i) != -1) {
-					selectedSkillCategories.add(sourceAdapter.getItem(checkedSkillCategories.keyAt(i)));
-				}
-			}
-			newSkillCategoriesList.clear();
-			for (SkillCategory category : currentList) {
-				if (selectedSkillCategories.contains(category)) {
-					newSkillCategoriesList.add(category);
-					selectedSkillCategories.remove(category);
-				} else {
-					changed = true;
-				}
-			}
-			if (selectedSkillCategories.size() > 0) {
-				newSkillCategoriesList.addAll(selectedSkillCategories);
-				changed = true;
-			}
-		}
-		else if(!currentList.isEmpty()) {
-			newSkillCategoriesList.clear();
-			changed = true;
+		CreatureArchetypesLevelsFragment levelsFragment = pagerAdapter.getLevelsPageFragment();
+		if(levelsFragment != null) {
+			changed = levelsFragment.copyViewsToItem();
 		}
 
 		return changed;
 	}
 
 	private void copyItemToViews() {
-		nameEdit.setText(currentInstance.getName());
-		descriptionEdit.setText(currentInstance.getDescription());
-		stat1IsRealmCheckBox.setChecked(currentInstance.isRealmStat1());
-		if(currentInstance.getStat1() == null) {
-			stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(realmStat));
+		CreatureArchetypesMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
+		if(mainPageFragment != null) {
+			mainPageFragment.copyItemToViews();
 		}
-		else {
-			stat1Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat1()));
-		}
-		stat2IsRealmCheckBox.setChecked(currentInstance.isRealmStat2());
-		if(currentInstance.getStat2() == null) {
-			stat2Spinner.setSelection(stat2SpinnerAdapter.getPosition(realmStat));
-		}
-		else {
-			stat2Spinner.setSelection(stat1SpinnerAdapter.getPosition(currentInstance.getStat2()));
-		}
-		primarySkillCategoriesList.clearChoices();
-		for(SkillCategory skillCategory : currentInstance.getPrimarySkills()) {
-			primarySkillCategoriesList.setItemChecked(primarySkillCategoriesListAdapter.getPosition(skillCategory), true);
-		}
-		primarySkillCategoriesListAdapter.notifyDataSetChanged();
-		secondarySkillCategoriesList.clearChoices();
-		for(SkillCategory skillCategory : currentInstance.getSecondarySkills()) {
-			secondarySkillCategoriesList.setItemChecked(secondarySkillCategoriesListAdapter.getPosition(skillCategory), true);
-		}
-		secondarySkillCategoriesListAdapter.notifyDataSetChanged();
-		tertiarySkillCategoriesList.clearChoices();
-		for(SkillCategory skillCategory : currentInstance.getTertiarySkills()) {
-			tertiarySkillCategoriesList.setItemChecked(tertiarySkillCategoriesListAdapter.getPosition(skillCategory), true);
-		}
-		tertiarySkillCategoriesListAdapter.notifyDataSetChanged();
-		spellsEdit.setText(currentInstance.getSpells());
-		rolesEdit.setText(currentInstance.getRoles());
 
-		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
-			nameEdit.setError(null);
-		}
-		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
-			descriptionEdit.setError(null);
-		}
-		if(currentInstance.getSpells() != null && !currentInstance.getSpells().isEmpty()) {
-			spellsEdit.setError(null);
-		}
-		if(currentInstance.getRoles() != null && !currentInstance.getRoles().isEmpty()) {
-			rolesEdit.setError(null);
+		CreatureArchetypesLevelsFragment levelsPageFragment = pagerAdapter.getLevelsPageFragment();
+		if(levelsPageFragment != null) {
+			levelsPageFragment.copyItemToViews();
 		}
 	}
 
-	private void saveItem() {
+	public void saveItem() {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;
@@ -452,361 +259,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 				});
 	}
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_creature_archetype_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (!newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.notes_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_creature_archetype_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (!newDescription.equals(currentInstance.getDescription())) {
-						currentInstance.setDescription(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initStat1IsRealmCheckBox(View layout) {
-		stat1IsRealmCheckBox = (CheckBox)layout.findViewById(R.id.stat1_is_realm_check_box);
-
-		stat1IsRealmCheckBox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				currentInstance.setRealmStat1(stat1IsRealmCheckBox.isChecked());
-				stat1Spinner.setEnabled(!stat1IsRealmCheckBox.isChecked());
-				if(stat1IsRealmCheckBox.isChecked()) {
-					currentInstance.setStat1(null);
-				}
-				saveItem();
-			}
-		});
-	}
-
-	private void initStat1Spinner(View layout) {
-		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
-		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		stat1Spinner.setAdapter(stat1SpinnerAdapter);
-
-//		statRxHandler.getAll()
-//				.observeOn(AndroidSchedulers.mainThread())
-//				.subscribe(new Subscriber<Collection<Stat>>() {
-//					@Override
-//					public void onCompleted() {}
-//					@Override
-//					public void onError(Throwable e) {
-//						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
-//					}
-//					@Override
-//					public void onNext(Collection<Stat> items) {
-//						stat1SpinnerAdapter.clear();
-//						stat1SpinnerAdapter.add(realmStat);
-//						stat1SpinnerAdapter.addAll(items);
-//						stat1SpinnerAdapter.notifyDataSetChanged();
-//					}
-//				});
-		stat1SpinnerAdapter.clear();
-		stat1SpinnerAdapter.addAll(Statistic.values());
-		stat1SpinnerAdapter.notifyDataSetChanged();
-		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Statistic newStat = stat1SpinnerAdapter.getItem(position);
-				if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat1() != null) {
-					currentInstance.setStat1(null);
-					saveItem();
-				}
-				else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat1())) {
-					currentInstance.setStat1(newStat);
-					saveItem();
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getStat1() != null) {
-					currentInstance.setStat1(null);
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initStat2IsRealmCheckBox(View layout) {
-		stat2IsRealmCheckBox = (CheckBox)layout.findViewById(R.id.stat2_is_realm_check_box);
-
-		stat2IsRealmCheckBox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				currentInstance.setRealmStat2(stat2IsRealmCheckBox.isChecked());
-				stat2Spinner.setEnabled(!stat2IsRealmCheckBox.isChecked());
-				if(stat2IsRealmCheckBox.isChecked()) {
-					currentInstance.setStat2(null);
-				}
-				saveItem();
-			}
-		});
-	}
-
-	private void initStat2Spinner(View layout) {
-		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
-		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		stat2Spinner.setAdapter(stat2SpinnerAdapter);
-
-//		statRxHandler.getAll()
-//				.observeOn(AndroidSchedulers.mainThread())
-//				.subscribe(new Subscriber<Collection<Stat>>() {
-//					@Override
-//					public void onCompleted() {}
-//					@Override
-//					public void onError(Throwable e) {
-//						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
-//					}
-//					@Override
-//					public void onNext(Collection<Stat> items) {
-//						stat2SpinnerAdapter.clear();
-//						stat2SpinnerAdapter.add(realmStat);
-//						stat2SpinnerAdapter.addAll(items);
-//						stat2SpinnerAdapter.notifyDataSetChanged();
-//					}
-//				});
-		stat2SpinnerAdapter.clear();
-		stat2SpinnerAdapter.addAll(Statistic.values());
-		stat2SpinnerAdapter.notifyDataSetChanged();
-		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Statistic newStat = stat2SpinnerAdapter.getItem(position);
-				if(newStat != null && newStat.equals(realmStat) && currentInstance.getStat2() != null) {
-					currentInstance.setStat2(null);
-					saveItem();
-				}
-				else if(newStat != null && !newStat.equals(realmStat) && !newStat.equals(currentInstance.getStat2())) {
-					currentInstance.setStat2(newStat);
-					saveItem();
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				if(currentInstance.getStat2() != null) {
-					currentInstance.setStat2(null);
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initPrimarySkillCategoriesList(View layout) {
-		primarySkillCategoriesList = (ListView) layout.findViewById(R.id.primary_skills_list);
-		primarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		primarySkillCategoriesList.setAdapter(primarySkillCategoriesListAdapter);
-
-		skillCategoryRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<SkillCategory>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all SkillCategory instances", e);
-					}
-					@Override
-					public void onNext(Collection<SkillCategory> items) {
-						primarySkillCategoriesListAdapter.clear();
-						primarySkillCategoriesListAdapter.addAll(items);
-						primarySkillCategoriesListAdapter.notifyDataSetChanged();
-					}
-				});
-		primarySkillCategoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				SkillCategory skillCategory = primarySkillCategoriesListAdapter.getItem(position);
-				boolean checked = primarySkillCategoriesList.isItemChecked(position);
-				if(currentInstance.getPrimarySkills().contains(skillCategory) && !checked) {
-					currentInstance.getPrimarySkills().remove(skillCategory);
-					saveItem();
-				}
-				else if(!currentInstance.getPrimarySkills().contains(skillCategory) && checked) {
-					currentInstance.getPrimarySkills().add(skillCategory);
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initSecondarySkillCategoriesList(View layout) {
-		secondarySkillCategoriesList = (ListView) layout.findViewById(R.id.secondary_skills_list);
-		secondarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		secondarySkillCategoriesList.setAdapter(secondarySkillCategoriesListAdapter);
-
-		skillCategoryRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<SkillCategory>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all SkillCategory instances", e);
-					}
-					@Override
-					public void onNext(Collection<SkillCategory> items) {
-						secondarySkillCategoriesListAdapter.clear();
-						secondarySkillCategoriesListAdapter.addAll(items);
-						secondarySkillCategoriesListAdapter.notifyDataSetChanged();
-					}
-				});
-		secondarySkillCategoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				SkillCategory skillCategory = secondarySkillCategoriesListAdapter.getItem(position);
-				boolean checked = secondarySkillCategoriesList.isItemChecked(position);
-				if(currentInstance.getSecondarySkills().contains(skillCategory) && !checked) {
-					currentInstance.getSecondarySkills().remove(skillCategory);
-					saveItem();
-				}
-				else if(!currentInstance.getSecondarySkills().contains(skillCategory) && checked) {
-					currentInstance.getSecondarySkills().add(skillCategory);
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initTertiarySkillCategoriesList(View layout) {
-		tertiarySkillCategoriesList = (ListView) layout.findViewById(R.id.tertiary_skills_list);
-		tertiarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		tertiarySkillCategoriesList.setAdapter(tertiarySkillCategoriesListAdapter);
-
-		skillCategoryRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<SkillCategory>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all SkillCategory instances", e);
-					}
-					@Override
-					public void onNext(Collection<SkillCategory> items) {
-						tertiarySkillCategoriesListAdapter.clear();
-						tertiarySkillCategoriesListAdapter.addAll(items);
-						tertiarySkillCategoriesListAdapter.notifyDataSetChanged();
-					}
-				});
-		tertiarySkillCategoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				SkillCategory skillCategory = tertiarySkillCategoriesListAdapter.getItem(position);
-				boolean checked = tertiarySkillCategoriesList.isItemChecked(position);
-				if(currentInstance.getTertiarySkills().contains(skillCategory) && !checked) {
-					currentInstance.getTertiarySkills().remove(skillCategory);
-					saveItem();
-				}
-				else if(!currentInstance.getTertiarySkills().contains(skillCategory) && checked) {
-					currentInstance.getTertiarySkills().add(skillCategory);
-					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initSpellsEdit(View layout) {
-		spellsEdit = (EditText)layout.findViewById(R.id.spells_edit);
-		spellsEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && spellsEdit != null) {
-					spellsEdit.setError(getString(R.string.validation_spells_required));
-				}
-			}
-		});
-		spellsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newSpells = spellsEdit.getText().toString();
-					if (!newSpells.equals(currentInstance.getSpells())) {
-						currentInstance.setSpells(newSpells);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initRolesEdit(View layout) {
-		rolesEdit = (EditText)layout.findViewById(R.id.roles_edit);
-		rolesEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && rolesEdit != null) {
-					rolesEdit.setError(getString(R.string.validation_roles_required));
-				}
-			}
-		});
-		rolesEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newRoles = rolesEdit.getText().toString();
-					if (!newRoles.equals(currentInstance.getRoles())) {
-						currentInstance.setRoles(newRoles);
-						saveItem();
-					}
-				}
-			}
-		});
+	private void initViewPager(View layout) {
+		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
+		pagerAdapter = new CreatureArchetypesFragment.CreatureArchetypesFragmentPagerAdapter(getFragmentManager());
+		viewPager.setAdapter(pagerAdapter);
+		viewPager.setCurrentItem(CreatureArchetypesFragmentPagerAdapter.MAIN_PAGE_INDEX);
 	}
 
  	private void initListView(View layout) {
@@ -874,5 +331,95 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	@Override
 	public CharSequence getField2Value(CreatureArchetype creatureArchetype) {
 		return creatureArchetype.getDescription();
+	}
+
+	public CreatureArchetype getCurrentInstance() {
+		return currentInstance;
+	}
+
+	/**
+	 * Manages the page fragments for a ViewPager
+	 */
+	private class CreatureArchetypesFragmentPagerAdapter extends FragmentPagerAdapter {
+		static final int                   NUM_PAGES             = 2;
+		static final int                   MAIN_PAGE_INDEX       = 0;
+		static final int                   LEVELS_PAGE_INDEX     = 1;
+		private      SparseArray<Fragment> registeredFragments   = new SparseArray<>();
+
+		/**
+		 * Creates a new CreatureArchetypesFragmentPagerAdapter instance.
+		 *
+		 * @param fm  the FragmentManager instance to use to manage the pages
+		 */
+		CreatureArchetypesFragmentPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			Fragment fragment = null;
+
+			switch (position) {
+				case MAIN_PAGE_INDEX:
+					fragment = CreatureArchetypesMainPageFragment.newInstance(CreatureArchetypesFragment.this);
+					break;
+				case LEVELS_PAGE_INDEX:
+					fragment = CreatureArchetypesLevelsFragment.newInstance(CreatureArchetypesFragment.this);
+					break;
+			}
+			return fragment;
+		}
+
+		@Override
+		public int getCount() {
+			return NUM_PAGES;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			String title = null;
+
+			switch (position) {
+				case MAIN_PAGE_INDEX:
+					title = getString(R.string.title_character_main_page);
+					break;
+				case LEVELS_PAGE_INDEX:
+					title = getString(R.string.title_character_skills_page);
+					break;
+			}
+			return title;
+		}
+
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			Fragment createdFragment = (Fragment)super.instantiateItem(container, position);
+			registeredFragments.put(position, createdFragment);
+			return createdFragment;
+		}
+
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			registeredFragments.remove(position);
+			super.destroyItem(container, position, object);
+		}
+
+		/**
+		 * Returns the main page fragment instance if it has been created.
+		 *
+		 * @return  the main page fragment instance.
+		 */
+		CreatureArchetypesMainPageFragment getMainPageFragment() {
+			return (CreatureArchetypesMainPageFragment)registeredFragments
+					.get(MAIN_PAGE_INDEX);
+		}
+
+		/**
+		 * Returns the level page fragment instance if it has been created.
+		 *
+		 * @return  the levels page fragment instance.
+		 */
+		CreatureArchetypesLevelsFragment getLevelsPageFragment() {
+			return (CreatureArchetypesLevelsFragment)registeredFragments.get(LEVELS_PAGE_INDEX);
+		}
 	}
 }

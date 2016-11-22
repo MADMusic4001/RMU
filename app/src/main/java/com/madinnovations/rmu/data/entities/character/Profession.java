@@ -15,10 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import android.util.Log;
+
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.view.RMUAppException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -34,14 +37,14 @@ import java.util.Map;
 public class Profession {
 	public static final String JSON_NAME = "Professions";
 	private int                           id                          = -1;
-	private String                        name                        = null;
-	private String                        description                 = null;
-	private Realm                         realm1                      = null;
-	private Realm                         realm2                      = null;
-	private Map<SkillCategory, SkillCost> skillCategoryCosts          = new LinkedHashMap<>();
-	private Map<Skill, SkillCost>         skillCosts                  = new LinkedHashMap<>();
-	private Map<SkillCategory, List<SkillCost>> assignableSkillCosts  = new LinkedHashMap<>();
-	private List<SkillCategory>           professionalSkillCategories = new ArrayList<>();
+	private String                                         name                        = null;
+	private String                                         description                 = null;
+	private Realm                                          realm1                      = null;
+	private Realm                                          realm2                      = null;
+	private Map<SkillCategory, DevelopmentCostGroup>       skillCategoryCosts          = new LinkedHashMap<>();
+	private Map<Skill, DevelopmentCostGroup>               skillCosts                  = new LinkedHashMap<>();
+	private Map<SkillCategory, List<DevelopmentCostGroup>> assignableSkillCostsMap     = new LinkedHashMap<>();
+	private List<SkillCategory>                            professionalSkillCategories = new ArrayList<>();
 
 	/**
 	 * Default constructor
@@ -66,30 +69,21 @@ public class Profession {
 	public boolean isValid() {
 		boolean isValid = (name != null && !name.isEmpty() && description != null && !description.isEmpty());
 		if(isValid) {
-			for (Map.Entry<SkillCategory, SkillCost> entry : skillCategoryCosts.entrySet()) {
-				SkillCost skillCost = entry.getValue();
-				isValid &= (skillCost == null || assignableSkillCosts.containsKey(entry.getKey()) ||
-						(skillCost.getFirstCost() != null && skillCost.getAdditionalCost() != null &&
-							skillCost.getFirstCost() < skillCost.getAdditionalCost()));
+			for (Map.Entry<SkillCategory, DevelopmentCostGroup> entry : skillCategoryCosts.entrySet()) {
+				DevelopmentCostGroup skillCost = entry.getValue();
+				isValid &= (skillCost == null || assignableSkillCostsMap.containsKey(entry.getKey()));
 			}
 		}
 		if(isValid) {
-			for (Map.Entry<Skill, SkillCost> entry : skillCosts.entrySet()) {
-				SkillCost skillCost = entry.getValue();
-				isValid &= (skillCost == null ||
-						(skillCategoryCosts.containsKey(entry.getKey().getCategory()) &&
-								skillCategoryCosts.get(entry.getKey().getCategory()).getFirstCost() != null &&
-								skillCategoryCosts.get(entry.getKey().getCategory()).getAdditionalCost() != null) ||
-						(skillCost.getFirstCost() != null && skillCost.getAdditionalCost() != null &&
-							skillCost.getFirstCost() < skillCost.getAdditionalCost()));
+			for (Map.Entry<Skill, DevelopmentCostGroup> entry : skillCosts.entrySet()) {
+				DevelopmentCostGroup skillCost = entry.getValue();
+				isValid &= (skillCost == null || (skillCategoryCosts.containsKey(entry.getKey().getCategory())));
 			}
 		}
 		if(isValid) {
-			for (Map.Entry<SkillCategory, List<SkillCost>> entry : assignableSkillCosts.entrySet()) {
-				for(SkillCost skillCost : entry.getValue()) {
-					isValid &= (skillCost == null ||
-							(skillCost.getFirstCost() != null && skillCost.getAdditionalCost() != null &&
-								skillCost.getFirstCost() < skillCost.getAdditionalCost()));
+			for (Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : assignableSkillCostsMap.entrySet()) {
+				for(DevelopmentCostGroup skillCost : entry.getValue()) {
+					isValid &= (skillCost == null);
 				}
 			}
 		}
@@ -114,7 +108,7 @@ public class Profession {
 				.append("description", description)
 				.append("realm1", realm1)
 				.append("realm2", realm2)
-				.append("assignableSkillCosts", assignableSkillCosts)
+				.append("assignableSkillCostsMap", assignableSkillCostsMap)
 				.append("skillCategoryCosts", skillCategoryCosts)
 				.append("skillCosts", skillCosts)
 				.append("professionalSkillCategories", professionalSkillCategories)
@@ -167,23 +161,29 @@ public class Profession {
 	public void setRealm2(Realm realm2) {
 		this.realm2 = realm2;
 	}
-	public Map<SkillCategory, SkillCost> getSkillCategoryCosts() {
+	public Map<SkillCategory, DevelopmentCostGroup> getSkillCategoryCosts() {
 		return skillCategoryCosts;
 	}
-	public void setSkillCategoryCosts(Map<SkillCategory, SkillCost> skillCategoryCosts) {
+	public void setSkillCategoryCosts(Map<SkillCategory, DevelopmentCostGroup> skillCategoryCosts) {
 		this.skillCategoryCosts = skillCategoryCosts;
 	}
-	public Map<Skill, SkillCost> getSkillCosts() {
+	public Map<Skill, DevelopmentCostGroup> getSkillCosts() {
 		return skillCosts;
 	}
-	public void setSkillCosts(Map<Skill, SkillCost> skillCosts) {
+	public void setSkillCosts(Map<Skill, DevelopmentCostGroup> skillCosts) {
 		this.skillCosts = skillCosts;
 	}
-	public Map<SkillCategory, List<SkillCost>> getAssignableSkillCosts() {
-		return assignableSkillCosts;
+	public Map<SkillCategory, List<DevelopmentCostGroup>> getAssignableSkillCostsMap() {
+		return assignableSkillCostsMap;
 	}
-	public void setAssignableSkillCosts(Map<SkillCategory, List<SkillCost>> assignableSkillCosts) {
-		this.assignableSkillCosts = assignableSkillCosts;
+	public void setAssignableSkillCostsMap(Map<SkillCategory, List<DevelopmentCostGroup>> assignableSkillCostsMap) {
+		try {
+			throw new RMUAppException();
+		}
+		catch(RMUAppException e) {
+			Log.e("Profession", "Stacktrace for setting new map.", e);
+		}
+		this.assignableSkillCostsMap = assignableSkillCostsMap;
 	}
 	public List<SkillCategory> getProfessionalSkillCategories() {
 		return professionalSkillCategories;

@@ -31,8 +31,8 @@ import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
@@ -78,11 +78,12 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_CURRENT_PP_LOSS).value(value.getPowerPointLoss());
 
 		out.name(CharacterSkillCostsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Skill, SkillCost> entry : value.getSkillCosts().entrySet()) {
+		for(Map.Entry<Skill, DevelopmentCostGroup> entry : value.getSkillCosts().entrySet()) {
 			out.beginObject();
 			out.name(CharacterSkillCostsSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
-			out.name(CharacterSkillCostsSchema.COLUMN_FIRST_COST).value(entry.getValue().getFirstCost());
-			out.name(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST).value(entry.getValue().getAdditionalCost());
+			if(entry.getValue() != null && !DevelopmentCostGroup.NONE.equals(entry.getValue())) {
+				out.name(CharacterSkillCostsSchema.COLUMN_COST_GROUP_NAME).value(entry.getValue().name());
+			}
 			out.endObject();
 		}
 		out.endArray();
@@ -267,23 +268,20 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		in.beginArray();
 		while (in.hasNext()) {
 			Skill newSkill = null;
-			SkillCost skillCost = new SkillCost();
+			DevelopmentCostGroup costGroup = null;
 			in.beginObject();
 			while(in.hasNext()) {
 				switch(in.nextName()) {
 					case CharacterSkillCostsSchema.COLUMN_SKILL_ID:
 						newSkill = new Skill(in.nextInt());
 						break;
-					case CharacterSkillCostsSchema.COLUMN_FIRST_COST:
-						skillCost.setFirstCost((short)in.nextInt());
-						break;
-					case CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST:
-						skillCost.setAdditionalCost((short)in.nextInt());
+					case CharacterSkillCostsSchema.COLUMN_COST_GROUP_NAME:
+						costGroup = DevelopmentCostGroup.valueOf(in.nextString());
 						break;
 				}
 			}
 			if(newSkill != null) {
-				character.getSkillCosts().put(newSkill, skillCost);
+				character.getSkillCosts().put(newSkill, costGroup);
 			}
 			in.endObject();
 		}

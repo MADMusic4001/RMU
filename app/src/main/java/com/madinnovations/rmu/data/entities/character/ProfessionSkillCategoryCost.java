@@ -17,8 +17,8 @@ package com.madinnovations.rmu.data.entities.character;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -27,34 +27,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Container class for associating SkillCost to SkillCategory
+ * Container class for associating DevelopmentCostGroup to SkillCategory
  */
 public class ProfessionSkillCategoryCost implements Comparable {
 	private SkillCategory skillCategory;
-	private List<SkillCostEntry> skillCosts           = new ArrayList<>();
-	private SkillCost           skillCategoryCost    = new SkillCost();
-	private boolean             assignable           = false;
-	private List<SkillCost>     assignableSkillCosts = new ArrayList<>();
+	private List<SkillCostGroup>       skillCostGroups      = new ArrayList<>();
+	private DevelopmentCostGroup       costGroup            = null;
+	private boolean                    assignable           = false;
+	private List<DevelopmentCostGroup> assignableCostGroups = new ArrayList<>();
 
 	/**
 	 * Creates a new ProfessionSkillCategoryCost instance
 	 *
 	 * @param skillCategory  a SkillCategory instance
-	 * @param skillCosts  a list of Skill costs for the skills in this category
-	 * @param skillCategoryCost  the development point costs for this SkillCategory
+	 * @param skillCostGroups  a list of Skill costs for the skills in this category
+	 * @param costGroup  the development point costs for this SkillCategory
 	 * @param assignable  true if characters can assign each skill in the category a different cost
-	 * @param assignableSkillCosts  the list of SkillCosts to be assigned to individual skills when assignable is true
+	 * @param assignableCostGroups  the list of SkillCosts to be assigned to individual skills when assignable is true
 	 */
 	public ProfessionSkillCategoryCost(@NonNull SkillCategory skillCategory,
-									   @NonNull List<SkillCostEntry> skillCosts,
-									   @NonNull SkillCost skillCategoryCost,
+									   @NonNull List<SkillCostGroup> skillCostGroups,
+									   @NonNull DevelopmentCostGroup costGroup,
 									   boolean assignable,
-									   @NonNull List<SkillCost> assignableSkillCosts) {
+									   @NonNull List<DevelopmentCostGroup> assignableCostGroups) {
 		this.skillCategory = skillCategory;
-		this.skillCosts = skillCosts;
-		this.skillCategoryCost = skillCategoryCost;
+		this.skillCostGroups = skillCostGroups;
+		this.costGroup = costGroup;
 		this.assignable = assignable;
-		this.assignableSkillCosts = assignableSkillCosts;
+		this.assignableCostGroups = assignableCostGroups;
 	}
 
 	@Override
@@ -90,10 +90,10 @@ public class ProfessionSkillCategoryCost implements Comparable {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
 				.append("skillCategory", skillCategory)
-				.append("skillCosts", skillCosts)
-				.append("skillCategoryCost", skillCategoryCost)
+				.append("skillCostGroups", skillCostGroups)
+				.append("costGroup", costGroup)
 				.append("assignable", assignable)
-				.append("assignableSkillCosts", assignableSkillCosts)
+				.append("assignableCostGroups", assignableCostGroups)
 				.toString();
 	}
 
@@ -104,14 +104,14 @@ public class ProfessionSkillCategoryCost implements Comparable {
 	public void setSkillCategory(SkillCategory skillCategory) {
 		this.skillCategory = skillCategory;
 	}
-	public List<SkillCostEntry> getSkillCosts() {
-		return skillCosts;
+	public List<SkillCostGroup> getSkillCostGroups() {
+		return skillCostGroups;
 	}
-	public SkillCost getSkillCategoryCost() {
-		return skillCategoryCost;
+	public DevelopmentCostGroup getCostGroup() {
+		return costGroup;
 	}
-	public void setSkillCategoryCost(SkillCost skillCategoryCost) {
-		this.skillCategoryCost = skillCategoryCost;
+	public void setCostGroup(DevelopmentCostGroup costGroup) {
+		this.costGroup = costGroup;
 	}
 	public boolean isAssignable() {
 		return assignable;
@@ -119,7 +119,7 @@ public class ProfessionSkillCategoryCost implements Comparable {
 	public void setAssignable(boolean assignable) {
 		this.assignable = assignable;
 	}
-	public List<SkillCost> getAssignableSkillCosts() {
-		return assignableSkillCosts;
+	public List<DevelopmentCostGroup> getAssignableCostGroups() {
+		return assignableCostGroups;
 	}
 }

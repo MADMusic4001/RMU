@@ -42,8 +42,8 @@ import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
@@ -342,9 +342,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		selection = CharacterSkillCostsSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterSkillCostsSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Skill, SkillCost> entry : instance.getSkillCosts().entrySet()) {
-			if(entry.getValue() != null && entry.getValue().getFirstCost() != null &&
-					entry.getValue().getAdditionalCost() != null) {
+		for(Map.Entry<Skill, DevelopmentCostGroup> entry : instance.getSkillCosts().entrySet()) {
+			if(entry.getValue() != null && !DevelopmentCostGroup.NONE.equals(entry.getValue())) {
 				result &= (db.insertWithOnConflict(CharacterSkillCostsSchema.TABLE_NAME, null,
 												   getSkillCostsContentValues(instance.getId(),
 																			  entry.getKey().getId(),
@@ -543,34 +542,32 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		return map;
 	}
 
-	private ContentValues getSkillCostsContentValues(int characterId, int skillId, SkillCost skillCost) {
-		ContentValues values = new ContentValues(4);
+	private ContentValues getSkillCostsContentValues(int characterId, int skillId, DevelopmentCostGroup costGroup) {
+		ContentValues values = new ContentValues(3);
 
 		values.put(CharacterSkillCostsSchema.COLUMN_CHARACTER_ID, characterId);
 		values.put(CharacterSkillCostsSchema.COLUMN_SKILL_ID, skillId);
-		values.put(CharacterSkillCostsSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
-		values.put(CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST, skillCost.getAdditionalCost());
+		values.put(CharacterSkillCostsSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
 
 		return values;
 	}
 
-	private Map<Skill, SkillCost> getSkillCosts(int id) {
+	private Map<Skill, DevelopmentCostGroup> getSkillCosts(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = CharacterSkillCostsSchema.COLUMN_CHARACTER_ID + " = ?";
 
 		Cursor cursor = super.query(CharacterSkillCostsSchema.TABLE_NAME, CharacterSkillCostsSchema.COLUMNS, selection,
 									selectionArgs, CharacterSkillCostsSchema.COLUMN_SKILL_ID);
-		Map<Skill, SkillCost> map = new HashMap<>(cursor.getCount());
+		Map<Skill, DevelopmentCostGroup> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSkillCostsSchema.COLUMN_SKILL_ID));
 			Skill instance = skillDao.getById(mappedId);
-			SkillCost skillCost = new SkillCost();
-			skillCost.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSkillCostsSchema.COLUMN_FIRST_COST)));
-			skillCost.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(
-					CharacterSkillCostsSchema.COLUMN_ADDITIONAL_COST)));
+			DevelopmentCostGroup costGroup;
+			costGroup = DevelopmentCostGroup.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
+					CharacterSkillCostsSchema.COLUMN_COST_GROUP_NAME)));
 			if(instance != null) {
-				map.put(instance, skillCost);
+				map.put(instance, costGroup);
 			}
 			cursor.moveToNext();
 		}

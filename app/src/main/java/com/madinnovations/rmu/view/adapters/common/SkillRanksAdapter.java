@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
 import com.madinnovations.rmu.data.entities.common.Specialization;
@@ -72,7 +72,15 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 		SkillRanks skillRanks = getItem(position);
 		holder.skillRanks = skillRanks;
 		if(skillRanks != null) {
-			holder.nameView.setText(skillRanks.toString());
+			DevelopmentCostGroup costGroup = callbacks.getSkillCost(skillRanks.getSkill(), skillRanks.getSpecialization());
+			StringBuilder builder = new StringBuilder();
+			builder.append(skillRanks.toString())
+					.append(" (")
+					.append(costGroup.getFirstCost())
+					.append("/")
+					.append(costGroup.getAdditionalCost())
+					.append(")");
+			holder.nameView.setText(builder.toString());
 			holder.ranksView.setText(String.valueOf(skillRanks.getStartingRanks() + skillRanks.getEndingRanks()));
 		}
 
@@ -125,5 +133,6 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 	public interface SkillRanksAdapterCallbacks {
 		boolean purchaseRank(Skill skill, Specialization specialization, short purchasedThisLevel);
 		boolean sellRank(Skill skill, Specialization specialization, short purchasedThisLevel);
+		DevelopmentCostGroup getSkillCost(Skill skill, Specialization specialization);
 	}
 }

@@ -54,7 +54,7 @@ public class CultureSkillRank {
 			return false;
 		}
 
-		SkillCostEntry that = (SkillCostEntry) o;
+		SkillCostGroup that = (SkillCostGroup) o;
 
 		return getSkill().equals(that.getSkill());
 	}

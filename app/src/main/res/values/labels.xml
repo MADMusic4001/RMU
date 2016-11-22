@@ -183,9 +183,8 @@
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
   <string name="label_potential">Potential</string>
-  <string name="label_profession_cat_list_additional_cost">Additional Cost</string>
   <string name="label_profession_cat_list_assignable">Is Assignable?</string>
-  <string name="label_profession_cat_list_initial_cost">Initial Cost</string>
+  <string name="label_profession_cat_list_dp_costs">Development Point Costs</string>
   <string name="label_profession_cat_list_skill_category">Skill Category</string>
   <string name="label_profession_description">Profession Description</string>
   <string name="label_profession_name">Profession Name</string>
@@ -249,6 +248,9 @@
   <string name="label_situational">Situational</string>
   <string name="label_use_category_stats">Use Category Stats</string>
 
+  <!-- ImageButton content descriptions -->
+  <string name="label_fill_range">Fill range</string>
+
   <!-- Button labels -->
   <string name="label_add_parameter">Add Parameter</string>
   <string name="label_remove_parameter">Remove Parameter</string>
@@ -272,7 +274,13 @@
   <string name="label_9">9</string>
   <string name="label_10">10</string>
   <string name="label_attack_bonus">Attack Bonus</string>
+  <string name="label_attack_short">Att</string>
+  <string name="label_attack">Attack</string>
+  <string name="label_attack2_short">Att2</string>
+  <string name="label_attack2">Attack 2</string>
   <string name="label_bleeding">Bleeding</string>
+  <string name="label_body_dev_short">Body dev</string>
+  <string name="label_body_dev">Body Dev</string>
   <string name="label_body_part">Body Part</string>
   <string name="label_break">Break</string>
   <string name="label_choose_attacks">Choose Attacks</string>
@@ -281,12 +289,15 @@
   <string name="label_combat_category">Combat Category</string>
   <string name="label_creature_only">Creature Only</string>
   <string name="label_dazed">Dazed</string>
+  <string name="label_defensive_bonus_short">DB</string>
+  <string name="label_defensive_bonus">Defensive Bonus</string>
   <string name="label_death">Death</string>
   <string name="label_fatigue">Fatigue</string>
   <string name="label_grapple">Grapple</string>
   <string name="label_hits">Hits</string>
   <string name="label_injury">Injury</string>
   <string name="label_knock_back">Knock Back</string>
+  <string name="label_level_short">Lvl</string>
   <string name="label_max_height">Maximum Height</string>
   <string name="label_max_weight">Maximum Weight</string>
   <string name="label_min_height">Minimum Height</string>
@@ -301,21 +312,27 @@
   <string name="label_ph_field2">Field 2</string>
   <string name="label_ph_field3">Field 3</string>
   <string name="label_physical_rr">Physical</string>
+  <string name="label_power_dev_short">Power dev</string>
+  <string name="label_power_dev">Power Dev</string>
   <string name="label_primary_skills">Primary Skills</string>
+  <string name="label_prime_skill">Prime skill</string>
   <string name="label_prone">Prone</string>
   <string name="label_ranks">Ranks</string>
   <string name="label_non_realm_stat">Non-Realm Stat</string>
   <string name="label_realm_stats">Realm Stats</string>
   <string name="label_roll">Roll</string>
   <string name="label_rr_mods">Resistance Roll Modifications</string>
+  <string name="label_secondary_skill">Secondary skill</string>
   <string name="label_secondary_skills">Secondary Skills</string>
   <string name="label_skill_bonus">Skill Bonus</string>
+  <string name="label_spells">Spells</string>
   <string name="label_stagger">Stagger</string>
   <string name="label_stat_bonus">Stat Bonus</string>
   <string name="label_stat_description">Stat Description</string>
   <string name="label_stat_mods">Stat Modifications</string>
   <string name="label_stat_name">Stat Name</string>
   <string name="label_stunned">Stunned</string>
+  <string name="label_talent_dp">Talent DP</string>
   <string name="label_tertiary_skills">Tertiary Skills</string>
   <string name="label_tiers">Tiers</string>
   <string name="label_trades_and_crafts_category">Trades and Crafts Category</string>
@@ -413,6 +430,7 @@
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_skill">Skill:</string>
+  <string name="input_label_skill_costs">Skill Costs:</string>
   <string name="input_label_skin_complexion">Skin Complexion:</string>
   <string name="input_label_specialization">Specialization:</string>
   <string name="input_label_spell_list">Spell List:</string>
@@ -439,8 +457,11 @@
   <string name="import_status">Import %1$d%% complete.</string>
   <string name="assignable_skill_name">Skill %1$d</string>
   <string name="stat_format_string">%1$s (%2$s)</string>
+  <string name="stat_literal_string">%1$s stat</string>
 
   <!-- ViewPager title strings -->
+  <string name="title_creature_archetype_main_page">General Attributes</string>
+  <string name="title_creature_archetype_levels_page">Levels</string>
   <string name="title_creature_variety_main_page">General Attributes</string>
   <string name="title_creature_variety_attacks_page">Attacks and Skills</string>
   <string name="title_character_main_page">General Attributes</string>

@@ -25,7 +25,10 @@ public interface CharacterSkillCostsSchema {
 
 	String COLUMN_CHARACTER_ID = "characterId";
 	String COLUMN_SKILL_ID = "skillId";
+	String COLUMN_COST_GROUP_NAME = "costGroupName";
+	@Deprecated
 	String COLUMN_FIRST_COST = "firstCost";
+	@Deprecated
 	String COLUMN_ADDITIONAL_COST = "additionalCost";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
@@ -34,10 +37,9 @@ public interface CharacterSkillCostsSchema {
 				+ CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
 			+ COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
 				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
-			+ COLUMN_FIRST_COST  + " INTEGER NOT NULL, "
-			+ COLUMN_ADDITIONAL_COST + " INTEGER NOT NULL, "
+			+ COLUMN_COST_GROUP_NAME + " TEXT, "
 			+ "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_SKILL_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_FIRST_COST, COLUMN_ADDITIONAL_COST};
+	String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_SKILL_ID, COLUMN_COST_GROUP_NAME};
 }

@@ -31,9 +31,9 @@ import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +106,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		}
 		instance.setSkillCategoryCosts(getSkillCategoryCostMap(instance));
 		instance.setSkillCosts(getSkillCostMap(instance));
-		instance.setAssignableSkillCosts(getAssignableSkillCostMap(instance));
+		instance.setAssignableSkillCostsMap(getAssignableSkillCostMap(instance));
 
 		return instance;
 	}
@@ -156,93 +156,85 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Skill, SkillCost> entry : instance.getSkillCosts().entrySet()) {
-			if(entry.getValue().getFirstCost() != null && entry.getValue().getAdditionalCost() != null) {
-				result &= (db.insertWithOnConflict(ProfessionSkillCostSchema.TABLE_NAME, null,
-												   getProfessionSkillCostContentValues(instance.getId(), entry.getKey().getId(),
-																					   entry.getValue()),
-												   SQLiteDatabase.CONFLICT_NONE) != -1);
-			}
+		for(Map.Entry<Skill, DevelopmentCostGroup> entry : instance.getSkillCosts().entrySet()) {
+			result &= (db.insertWithOnConflict(ProfessionSkillCostSchema.TABLE_NAME, null,
+											   getProfessionSkillCostContentValues(instance.getId(), entry.getKey().getId(),
+																				   entry.getValue()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		selection = ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID + " = ?";
 		db.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<SkillCategory, SkillCost> entry : instance.getSkillCategoryCosts().entrySet()) {
-			if(entry.getValue().getFirstCost() != null && entry.getValue().getAdditionalCost() != null) {
-				result &= (db.insertWithOnConflict(ProfessionSkillCategoryCostSchema.TABLE_NAME, null,
-												   getProfessionSkillCategoryCostContentValues(instance.getId(),
-																							   entry.getKey().getId(),
-																							   entry.getValue()),
-												   SQLiteDatabase.CONFLICT_NONE) != -1);
-			}
+		for(Map.Entry<SkillCategory, DevelopmentCostGroup> entry : instance.getSkillCategoryCosts().entrySet()) {
+			result &= (db.insertWithOnConflict(ProfessionSkillCategoryCostSchema.TABLE_NAME, null,
+											   getProfessionSkillCategoryCostContentValues(instance.getId(),
+																						   entry.getKey().getId(),
+																						   entry.getValue()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
 		selection = ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 		db.delete(ProfessionAssignableSkillCostSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<SkillCategory, List<SkillCost>> entry : instance.getAssignableSkillCosts().entrySet()) {
-			for(SkillCost skillCost : entry.getValue()) {
+		for(Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : instance.getAssignableSkillCostsMap().entrySet()) {
+			for(DevelopmentCostGroup costGroup : entry.getValue()) {
 				result &= (db.insertWithOnConflict(ProfessionAssignableSkillCostSchema.TABLE_NAME, null,
 												   getProfessionAssignableCostContentValues(instance.getId(),
-																							entry.getKey().getId(), skillCost),
+																							entry.getKey().getId(), costGroup),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 		return result;
 	}
 
-	private ContentValues getProfessionSkillCostContentValues(int professionId, int skillId, SkillCost skillCost) {
-		ContentValues values = new ContentValues(4);
+	private ContentValues getProfessionSkillCostContentValues(int professionId, int skillId, DevelopmentCostGroup costGroup) {
+		ContentValues values = new ContentValues(3);
 
 		values.put(ProfessionSkillCostSchema.COLUMN_PROFESSION_ID, professionId);
 		values.put(ProfessionSkillCostSchema.COLUMN_SKILL_ID, skillId);
-		values.put(ProfessionSkillCostSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
-		values.put(ProfessionSkillCostSchema.COLUMN_SECOND_COST, skillCost.getAdditionalCost());
+		values.put(ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
 
 		return values;
 	}
 
-	private ContentValues getProfessionSkillCategoryCostContentValues(int professionId, int skillCategoryId, SkillCost
-			skillCost) {
-		ContentValues values = new ContentValues(4);
+	private ContentValues getProfessionSkillCategoryCostContentValues(int professionId, int skillCategoryId, DevelopmentCostGroup
+			costGroup) {
+		ContentValues values = new ContentValues(3);
 
 		values.put(ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID, professionId);
 		values.put(ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
-		values.put(ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
-		values.put(ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST, skillCost.getAdditionalCost());
+		values.put(ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
 
 		return values;
 	}
 
-	private ContentValues getProfessionAssignableCostContentValues(int professionId, int skillCategoryId, SkillCost
-			skillCost) {
-		ContentValues values = new ContentValues(4);
+	private ContentValues getProfessionAssignableCostContentValues(int professionId, int skillCategoryId, DevelopmentCostGroup
+			costGroup) {
+		ContentValues values = new ContentValues(3);
 
 		values.put(ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID, professionId);
 		values.put(ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
-		values.put(ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST, skillCost.getFirstCost());
-		values.put(ProfessionAssignableSkillCostSchema.COLUMN_SECOND_COST, skillCost.getAdditionalCost());
+		values.put(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
 
 		return values;
 	}
 
-	private Map<Skill, SkillCost> getSkillCostMap(Profession profession) {
+	private Map<Skill, DevelopmentCostGroup> getSkillCostMap(Profession profession) {
 		final String selectionArgs[] = { String.valueOf(profession.getId()) };
 		final String selection = ProfessionSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 
 		Cursor cursor = super.query(ProfessionSkillCostSchema.TABLE_NAME, ProfessionSkillCostSchema.COLUMNS, selection,
 				selectionArgs, ProfessionSkillCostSchema.COLUMN_SKILL_ID);
-		Map<Skill, SkillCost> map = new TreeMap<>();
+		Map<Skill, DevelopmentCostGroup> map = new TreeMap<>();
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int skillId = cursor.getInt(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_SKILL_ID));
 			Skill skill = skillDao.getById(skillId);
-			SkillCost skillCost = new SkillCost();
-			skillCost.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_FIRST_COST)));
-			skillCost.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_SECOND_COST)));
+			DevelopmentCostGroup costGroup = DevelopmentCostGroup.valueOf(cursor.getString(
+					cursor.getColumnIndexOrThrow(ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME)));
 			if(skill != null) {
-				map.put(skill, skillCost);
+				map.put(skill, costGroup);
 			}
 			cursor.moveToNext();
 		}
@@ -251,25 +243,22 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		return map;
 	}
 
-	private Map<SkillCategory, SkillCost> getSkillCategoryCostMap(Profession profession) {
+	private Map<SkillCategory, DevelopmentCostGroup> getSkillCategoryCostMap(Profession profession) {
 		final String selectionArgs[] = { String.valueOf(profession.getId()) };
 		final String selection = ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID + " = ?";
 
 		Cursor cursor = super.query(ProfessionSkillCategoryCostSchema.TABLE_NAME, ProfessionSkillCategoryCostSchema.COLUMNS,
 									selection, selectionArgs, ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID);
-		Map<SkillCategory, SkillCost> map = new TreeMap<>();
+		Map<SkillCategory, DevelopmentCostGroup> map = new TreeMap<>();
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int skillCategoryId = cursor.getInt(cursor.getColumnIndexOrThrow(
 					ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID));
 			SkillCategory skillCategory = skillCategoryDao.getById(skillCategoryId);
-			SkillCost skillCost = new SkillCost();
-			skillCost.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(
-					ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST)));
-			skillCost.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(
-					ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST)));
+			DevelopmentCostGroup costGroup = DevelopmentCostGroup.valueOf(cursor.getString(
+					cursor.getColumnIndexOrThrow(ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME)));
 			if(skillCategory != null) {
-				map.put(skillCategory, skillCost);
+				map.put(skillCategory, costGroup);
 			}
 			cursor.moveToNext();
 		}
@@ -278,14 +267,14 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		return map;
 	}
 
-	private Map<SkillCategory, List<SkillCost>> getAssignableSkillCostMap(Profession profession) {
+	private Map<SkillCategory, List<DevelopmentCostGroup>> getAssignableSkillCostMap(Profession profession) {
 		final String selectionArgs[] = { String.valueOf(profession.getId()) };
 		final String selection = ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 
 		Cursor cursor = super.query(ProfessionAssignableSkillCostSchema.TABLE_NAME, ProfessionAssignableSkillCostSchema.COLUMNS,
 									selection, selectionArgs, ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID);
-		Map<SkillCategory, List<SkillCost>> map = new TreeMap<>();
-		List<SkillCost> skillCostList = new ArrayList<>();
+		Map<SkillCategory, List<DevelopmentCostGroup>> map = new TreeMap<>();
+		List<DevelopmentCostGroup> skillCostList = new ArrayList<>();
 		SkillCategory skillCategory = null;
 		cursor.moveToFirst();
 		int lastId = -1;
@@ -300,12 +289,9 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 			}
 			lastId = skillCategoryId;
 			skillCategory = skillCategoryDao.getById(skillCategoryId);
-			SkillCost skillCost = new SkillCost();
-			skillCost.setFirstCost(cursor.getShort(cursor.getColumnIndexOrThrow(
-					ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST)));
-			skillCost.setAdditionalCost(cursor.getShort(cursor.getColumnIndexOrThrow(
-					ProfessionAssignableSkillCostSchema.COLUMN_SECOND_COST)));
-			skillCostList.add(skillCost);
+			DevelopmentCostGroup costGroup = DevelopmentCostGroup.valueOf(cursor.getString(
+					cursor.getColumnIndexOrThrow(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME)));
+			skillCostList.add(costGroup);
 			cursor.moveToNext();
 		}
 		cursor.close();

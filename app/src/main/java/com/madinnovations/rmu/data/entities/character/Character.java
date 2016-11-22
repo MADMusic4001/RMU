@@ -16,8 +16,8 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
@@ -68,7 +68,7 @@ public class Character {
 	private short                      currentDevelopmentPoints = INITIAL_DP;
 	private short                      enduranceLoss;
 	private short                      powerPointLoss;
-	private Map<Skill, SkillCost>      skillCosts          = new HashMap<>();
+	private Map<Skill, DevelopmentCostGroup> skillCosts          = new HashMap<>();
 	private Map<Skill, Short>          skillRanks          = new HashMap<>();
 	private Map<Specialization, Short> specializationRanks = new HashMap<>();
 	private Map<Talent, Short>         talentTiers         = new HashMap<>();
@@ -406,10 +406,10 @@ public class Character {
 	public void setPowerPointLoss(short powerPointLoss) {
 		this.powerPointLoss = powerPointLoss;
 	}
-	public Map<Skill, SkillCost> getSkillCosts() {
+	public Map<Skill, DevelopmentCostGroup> getSkillCosts() {
 		return skillCosts;
 	}
-	public void setSkillCosts(Map<Skill, SkillCost> skillCosts) {
+	public void setSkillCosts(Map<Skill, DevelopmentCostGroup> skillCosts) {
 		this.skillCosts = skillCosts;
 	}
 	public Map<Skill, Short> getSkillRanks() {

@@ -25,14 +25,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
+import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
 
 import java.util.Collection;
 
 /**
  * Adapter for allowing user to assign costs to skills.
  */
-public class AssignableCostsAdapter extends ArrayAdapter<SkillCostEntry> {
+public class AssignableCostsAdapter extends ArrayAdapter<SkillCostGroup> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_edit_skill_costs_row;
 	private LayoutInflater layoutInflater;
 	private ViewHolder[] viewHolders = new ViewHolder[0];
@@ -54,7 +54,7 @@ public class AssignableCostsAdapter extends ArrayAdapter<SkillCostEntry> {
 	}
 
 	@Override
-	public void addAll(@NonNull Collection<? extends SkillCostEntry> collection) {
+	public void addAll(@NonNull Collection<? extends SkillCostGroup> collection) {
 		ViewHolder[] views = new ViewHolder[viewHolders.length + collection.size()];
 		if(viewHolders.length > 0) {
 			System.arraycopy(viewHolders, 0, views, 0, viewHolders.length);
@@ -64,7 +64,7 @@ public class AssignableCostsAdapter extends ArrayAdapter<SkillCostEntry> {
 	}
 
 	@Override
-	public void addAll(SkillCostEntry ... items) {
+	public void addAll(SkillCostGroup... items) {
 		ViewHolder[] views = new ViewHolder[viewHolders.length + items.length];
 		if(viewHolders.length > 0) {
 			System.arraycopy(viewHolders, 0, views, 0, viewHolders.length);
@@ -74,7 +74,7 @@ public class AssignableCostsAdapter extends ArrayAdapter<SkillCostEntry> {
 	}
 
 	@Override
-	public void add(SkillCostEntry object) {
+	public void add(SkillCostGroup object) {
 		ViewHolder[] views = new ViewHolder[viewHolders.length + 1];
 		if(viewHolders.length > 0) {
 			System.arraycopy(viewHolders, 0, views, 0, viewHolders.length);
@@ -103,11 +103,11 @@ public class AssignableCostsAdapter extends ArrayAdapter<SkillCostEntry> {
 		}
 
 		viewHolders[position] = holder;
-		SkillCostEntry skillCostEntry = getItem(position);
-		if(skillCostEntry != null && skillCostEntry.getSkill() != null) {
-			holder.nameView.setText(skillCostEntry.getSkill().getName());
-			holder.initialCostView.setText(String.valueOf(skillCostEntry.getSkillCost().getFirstCost()));
-			holder.additionalCostView.setText(String.valueOf(skillCostEntry.getSkillCost().getAdditionalCost()));
+		SkillCostGroup skillCostGroup = getItem(position);
+		if(skillCostGroup != null && skillCostGroup.getSkill() != null) {
+			holder.nameView.setText(skillCostGroup.getSkill().getName());
+			holder.initialCostView.setText(String.valueOf(skillCostGroup.getCostGroup().getFirstCost()));
+			holder.additionalCostView.setText(String.valueOf(skillCostGroup.getCostGroup().getAdditionalCost()));
 		}
 
 		return rowView;

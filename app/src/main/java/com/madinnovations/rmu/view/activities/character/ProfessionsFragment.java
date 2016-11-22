@@ -44,10 +44,10 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
-import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
+import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
@@ -261,35 +261,36 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			changed = true;
 		}
 
-		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new HashMap<>();
-		Map<Skill, SkillCost> newSkillCosts = new HashMap<>();
-		Map<SkillCategory, List<SkillCost>> newAssignableSkillCosts = new HashMap<>();
+		Map<SkillCategory, DevelopmentCostGroup> newSkillCategoryCosts = new HashMap<>();
+		Map<Skill, DevelopmentCostGroup> newSkillCosts = new HashMap<>();
+		Map<SkillCategory, List<DevelopmentCostGroup>> newAssignableSkillCosts = new HashMap<>();
 		for(int i = 0; i < categoryCostListAdapter.getGroupCount(); i++) {
 			ProfessionSkillCategoryCost categoryCost = (ProfessionSkillCategoryCost)categoryCostListAdapter.getGroup(i);
-			if(!categoryCost.isAssignable() && categoryCost.getSkillCategoryCost() != null &&
-					categoryCost.getSkillCategoryCost().getFirstCost() != null &&
-					categoryCost.getSkillCategoryCost().getAdditionalCost() != null) {
-				newSkillCategoryCosts.put(categoryCost.getSkillCategory(), categoryCost.getSkillCategoryCost());
+			if(!categoryCost.isAssignable() && categoryCost.getCostGroup() != null) {
+				newSkillCategoryCosts.put(categoryCost.getSkillCategory(), categoryCost.getCostGroup());
 			}
 			for(int j = 0; j < categoryCostListAdapter.getChildrenCount(i); j++) {
-				SkillCostEntry skillCostEntry = (SkillCostEntry) categoryCostListAdapter.getChild(i, j);
+				SkillCostGroup skillCostGroup = (SkillCostGroup) categoryCostListAdapter.getChild(i, j);
 				if(categoryCost.isAssignable()) {
-					List<SkillCost> assignableCosts = newAssignableSkillCosts.get(categoryCost.getSkillCategory());
+					List<DevelopmentCostGroup> assignableCosts = newAssignableSkillCosts.get(categoryCost.getSkillCategory());
 					if(assignableCosts == null) {
 						assignableCosts = new ArrayList<>(categoryCostListAdapter.getChildrenCount(i));
 						newAssignableSkillCosts.put(categoryCost.getSkillCategory(), assignableCosts);
 					}
-					assignableCosts.add(skillCostEntry.getSkillCost());
+					Log.d(LOG_TAG, "skillCostGroup = " + skillCostGroup);
+					Log.d(LOG_TAG, "skillCostGroup.costGroup = " + skillCostGroup.getCostGroup());
+					assignableCosts.add(skillCostGroup.getCostGroup());
 				}
-				else if(skillCostEntry.getSkillCost() != null && skillCostEntry.getSkillCost().getFirstCost() != null &&
-						skillCostEntry.getSkillCost().getAdditionalCost() != null) {
-					newSkillCosts.put(skillCostEntry.getSkill(), skillCostEntry.getSkillCost());
+				else if(skillCostGroup.getCostGroup() != null) {
+					newSkillCosts.put(skillCostGroup.getSkill(), skillCostGroup.getCostGroup());
 				}
 			}
 		}
 		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
 		currentInstance.setSkillCosts(newSkillCosts);
-		currentInstance.setAssignableSkillCosts(newAssignableSkillCosts);
+		Log.d(LOG_TAG, "oldAssignableSkillCosts = " + currentInstance.getAssignableSkillCostsMap());
+		Log.d(LOG_TAG, "newAssignableSkillCosts = " + newAssignableSkillCosts);
+		currentInstance.setAssignableSkillCostsMap(newAssignableSkillCosts);
 
 		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
 		if(newRealm != null) {
@@ -614,15 +615,15 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	// </editor-fold>
 
 	// <editor-fold desc="Private methods">
-	private Map<SkillCategory, SkillCost> getSkillCategoryCosts() {
-		Map<SkillCategory, SkillCost> oldSkillCategoryCosts = currentInstance.getSkillCategoryCosts();
-		Map<SkillCategory, SkillCost> newSkillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
+	private Map<SkillCategory, DevelopmentCostGroup> getSkillCategoryCosts() {
+		Map<SkillCategory, DevelopmentCostGroup> oldSkillCategoryCosts = currentInstance.getSkillCategoryCosts();
+		Map<SkillCategory, DevelopmentCostGroup> newSkillCategoryCosts = new LinkedHashMap<>(skillCategories.size());
 		if(oldSkillCategoryCosts == null) {
 			oldSkillCategoryCosts = new LinkedHashMap<>(0);
 		}
 		for(SkillCategory skillCategory : skillCategories) {
 			if(!oldSkillCategoryCosts.containsKey(skillCategory)) {
-				newSkillCategoryCosts.put(skillCategory, new SkillCost());
+				newSkillCategoryCosts.put(skillCategory, null);
 			}
 			else {
 				newSkillCategoryCosts.put(skillCategory, oldSkillCategoryCosts.get(skillCategory));
@@ -631,11 +632,11 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		return newSkillCategoryCosts;
 	}
 
-	private Map<Skill, SkillCost> getSkillCosts() {
-		Map<Skill, SkillCost> skillCosts = new LinkedHashMap<>(currentInstance.getSkillCosts());
+	private Map<Skill, DevelopmentCostGroup> getSkillCosts() {
+		Map<Skill, DevelopmentCostGroup> skillCosts = new LinkedHashMap<>(currentInstance.getSkillCosts());
 		for(Skill skill : skills) {
 			if(!skillCosts.containsKey(skill)) {
-				skillCosts.put(skill, new SkillCost());
+				skillCosts.put(skill, null);
 			}
 		}
 
@@ -645,27 +646,30 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	@SuppressWarnings("unchecked")
 	private List<ProfessionSkillCategoryCost> createCostList() {
 		List<ProfessionSkillCategoryCost> costList = new ArrayList<>(skillCategories.size());
-		Map<SkillCategory, SkillCost> skillCategoryCosts = getSkillCategoryCosts();
-		Map<Skill, SkillCost> skillCosts = getSkillCosts();
+		Map<SkillCategory, DevelopmentCostGroup> skillCategoryCosts = getSkillCategoryCosts();
+		Map<Skill, DevelopmentCostGroup> skillCosts = getSkillCosts();
 
-		for(Map.Entry<SkillCategory, SkillCost> entry : skillCategoryCosts.entrySet()) {
-			List<SkillCostEntry> skillCostEntryList = new ArrayList<>();
-			for(Map.Entry<Skill, SkillCost> skillCostEntry : skillCosts.entrySet()) {
+		for(Map.Entry<SkillCategory, DevelopmentCostGroup> entry : skillCategoryCosts.entrySet()) {
+			List<SkillCostGroup> skillCostGroupList = new ArrayList<>();
+			for(Map.Entry<Skill, DevelopmentCostGroup> skillCostEntry : skillCosts.entrySet()) {
 				if(skillCostEntry.getKey().getCategory().equals(entry.getKey())) {
-					SkillCostEntry professionSkillCost = new SkillCostEntry(
+					SkillCostGroup professionSkillCost = new SkillCostGroup(
 							skillCostEntry.getKey(),
 							skillCostEntry.getValue());
-					skillCostEntryList.add(professionSkillCost);
+					skillCostGroupList.add(professionSkillCost);
 				}
 			}
-			Collections.sort(skillCostEntryList);
-			List<SkillCost> assignableCostList = currentInstance.getAssignableSkillCosts().get(entry.getKey());
+			Collections.sort(skillCostGroupList);
+			List<DevelopmentCostGroup> assignableCostList = currentInstance.getAssignableSkillCostsMap().get(entry.getKey());
 			if(assignableCostList != null) {
-				if (assignableCostList.size() > skillCostEntryList.size()) {
+				if (assignableCostList.size() > skillCostGroupList.size()) {
 					assignableCostList = new ArrayList<>();
-					currentInstance.getAssignableSkillCosts().put(entry.getKey(), assignableCostList);
+					currentInstance.getAssignableSkillCostsMap().put(entry.getKey(), assignableCostList);
 				}
 				else {
+					if(assignableCostList.get(0) == null) {
+						Log.d(LOG_TAG, "Null cost group for category " + entry.getKey().getName());
+					}
 					Collections.sort(assignableCostList);
 				}
 			}
@@ -674,7 +678,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			}
 			ProfessionSkillCategoryCost professionSkillCategoryCost = new ProfessionSkillCategoryCost(
 					entry.getKey(),
-					skillCostEntryList,
+					skillCostGroupList,
 					entry.getValue(),
 					!assignableCostList.isEmpty(),
 					assignableCostList);

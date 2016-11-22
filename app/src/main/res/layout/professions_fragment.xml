@@ -89,14 +89,9 @@
                 android:text="@string/label_profession_cat_list_skill_category"/>
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
-                android:text="@string/label_profession_cat_list_initial_cost"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="@string/label_profession_cat_list_additional_cost"/>
+                android:text="@string/label_profession_cat_list_dp_costs"/>
           <TextView
               android:layout_width="0dp"
               android:layout_weight="1"

@@ -24,6 +24,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCategory
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionalSkillCategoriesSchema;
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillCost;
@@ -54,34 +55,31 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 		}
 
 		out.name(ProfessionSkillCategoryCostSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<SkillCategory, SkillCost> entry : value.getSkillCategoryCosts().entrySet()) {
+		for(Map.Entry<SkillCategory, DevelopmentCostGroup> entry : value.getSkillCategoryCosts().entrySet()) {
 			out.beginObject();
 			out.name(ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID).value(entry.getKey().getId());
-			out.name(ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST).value(entry.getValue().getFirstCost());
-			out.name(ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST).value(entry.getValue().getAdditionalCost());
+			out.name(ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME).value(entry.getValue().name());
 			out.endObject();
 		}
 		out.endArray();
 
 		out.name(ProfessionSkillCostSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Skill, SkillCost> entry : value.getSkillCosts().entrySet()) {
+		for(Map.Entry<Skill, DevelopmentCostGroup> entry : value.getSkillCosts().entrySet()) {
 			out.beginObject();
 			out.name(ProfessionSkillCostSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
-			out.name(ProfessionSkillCostSchema.COLUMN_FIRST_COST).value(entry.getValue().getFirstCost());
-			out.name(ProfessionSkillCostSchema.COLUMN_SECOND_COST).value(entry.getValue().getAdditionalCost());
+			out.name(ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME).value(entry.getValue().name());
 			out.endObject();
 		}
 		out.endArray();
 
 		out.name(ProfessionAssignableSkillCostSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<SkillCategory, List<SkillCost>> entry : value.getAssignableSkillCosts().entrySet()) {
+		for(Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : value.getAssignableSkillCostsMap().entrySet()) {
 			out.beginObject();
 			out.name(ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID).value(entry.getKey().getId());
 			out.name(ASSIGNABLE_SKILL_COST_LIST).beginArray();
-			for(SkillCost skillCost : entry.getValue()) {
+			for(DevelopmentCostGroup skillCost : entry.getValue()) {
 				out.beginObject();
-				out.name(ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST).value(skillCost.getFirstCost());
-				out.name(ProfessionAssignableSkillCostSchema.COLUMN_SECOND_COST).value(skillCost.getAdditionalCost());
+				out.name(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME).value(skillCost.name());
 				out.endObject();
 			}
 			out.endArray();
@@ -146,12 +144,16 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 		in.beginArray();
 		while(in.hasNext()) {
 			SkillCategory newSkillCategory = null;
+			DevelopmentCostGroup costGroup = null;
 			SkillCost skillCost = new SkillCost();
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID:
 						newSkillCategory = new SkillCategory(in.nextInt());
+						break;
+					case ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME:
+						costGroup = DevelopmentCostGroup.valueOf(in.nextString());
 						break;
 					case ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST:
 						skillCost.setFirstCost((short)in.nextInt());
@@ -161,8 +163,11 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 						break;
 				}
 			}
+			if(costGroup == null) {
+				costGroup = DevelopmentCostGroup.find(skillCost.getFirstCost(), skillCost.getAdditionalCost());
+			}
 			if(newSkillCategory != null) {
-				profession.getSkillCategoryCosts().put(newSkillCategory, skillCost);
+				profession.getSkillCategoryCosts().put(newSkillCategory, costGroup);
 			}
 			in.endObject();
 		}
@@ -173,12 +178,16 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 		in.beginArray();
 		while(in.hasNext()) {
 			Skill newSkill = null;
+			DevelopmentCostGroup costGroup = null;
 			SkillCost skillCost = new SkillCost();
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case ProfessionSkillCostSchema.COLUMN_SKILL_ID:
 						newSkill = new Skill(in.nextInt());
+						break;
+					case ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME:
+						costGroup = DevelopmentCostGroup.valueOf(in.nextString());
 						break;
 					case ProfessionSkillCostSchema.COLUMN_FIRST_COST:
 						skillCost.setFirstCost((short)in.nextInt());
@@ -188,8 +197,11 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 						break;
 				}
 			}
+			if(costGroup == null) {
+				costGroup = DevelopmentCostGroup.find(skillCost.getFirstCost(), skillCost.getAdditionalCost());
+			}
 			if(newSkill != null) {
-				profession.getSkillCosts().put(newSkill, skillCost);
+				profession.getSkillCosts().put(newSkill, costGroup);
 			}
 			in.endObject();
 		}
@@ -200,7 +212,7 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 		in.beginArray();
 		while(in.hasNext()) {
 			SkillCategory newSkillCategory = null;
-			List<SkillCost> skillCostList = new ArrayList<>();
+			List<DevelopmentCostGroup> skillCostList = new ArrayList<>();
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
@@ -210,10 +222,14 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 					case ASSIGNABLE_SKILL_COST_LIST:
 						in.beginArray();
 						while (in.hasNext()) {
+							DevelopmentCostGroup costGroup = null;
 							SkillCost skillCost = new SkillCost();
 							in.beginObject();
 							while (in.hasNext()) {
 								switch (in.nextName()) {
+									case ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME:
+										costGroup = DevelopmentCostGroup.valueOf(in.nextString());
+										break;
 									case ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST:
 										skillCost.setFirstCost((short) in.nextInt());
 										break;
@@ -222,7 +238,10 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 										break;
 								}
 							}
-							skillCostList.add(skillCost);
+							if(costGroup == null) {
+								costGroup = DevelopmentCostGroup.find(skillCost.getFirstCost(), skillCost.getAdditionalCost());
+							}
+							skillCostList.add(costGroup);
 							in.endObject();
 						}
 						in.endArray();
@@ -230,7 +249,7 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 				}
 			}
 			if(newSkillCategory != null) {
-				profession.getAssignableSkillCosts().put(newSkillCategory, skillCostList);
+				profession.getAssignableSkillCostsMap().put(newSkillCategory, skillCostList);
 			}
 			in.endObject();
 		}

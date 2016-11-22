@@ -38,10 +38,10 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
-import com.madinnovations.rmu.data.entities.character.SkillCostEntry;
+import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
-import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
@@ -128,18 +128,18 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	@Override
 	public boolean purchaseRank(Skill skill, Specialization specialization, short purchasedThisLevel) {
 		boolean result = false;
-		SkillCost skillCost;
+		DevelopmentCostGroup costGroup;
 		short cost;
 		Character character = charactersFragment.getCurrentInstance();
 
-		skillCost = getSkillCost(skill, specialization);
+		costGroup = getSkillCost(skill, specialization);
 
-		if(skillCost != null) {
+		if(costGroup != null) {
 			if(purchasedThisLevel == 0) {
-				cost = skillCost.getFirstCost();
+				cost = costGroup.getFirstCost();
 			}
 			else {
-				cost = skillCost.getAdditionalCost();
+				cost = costGroup.getAdditionalCost();
 			}
 			if(cost < character.getCurrentDevelopmentPoints()) {
 				character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - cost));
@@ -161,18 +161,18 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	@Override
 	public boolean sellRank(Skill skill, Specialization specialization, short purchasedThisLevel) {
 		boolean result = false;
-		SkillCost skillCost;
+		DevelopmentCostGroup costGroup;
 		short cost;
 		Character character = charactersFragment.getCurrentInstance();
 
-		skillCost = getSkillCost(skill, specialization);
+		costGroup = getSkillCost(skill, specialization);
 
-		if(skillCost != null) {
+		if(costGroup != null) {
 			if(purchasedThisLevel == 1) {
-				cost = skillCost.getFirstCost();
+				cost = costGroup.getFirstCost();
 			}
 			else {
-				cost = skillCost.getAdditionalCost();
+				cost = costGroup.getAdditionalCost();
 			}
 			character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() + cost));
 			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
@@ -189,30 +189,31 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		return result;
 	}
 
-	private SkillCost getSkillCost(Skill skill, Specialization specialization) {
-		SkillCost skillCost = null;
+	@Override
+	public DevelopmentCostGroup getSkillCost(Skill skill, Specialization specialization) {
+		DevelopmentCostGroup costGroup = null;
 		Character character = charactersFragment.getCurrentInstance();
 
 		if(skill != null) {
-			skillCost = character.getSkillCosts().get(skill);
-			if(skillCost == null) {
-				skillCost = character.getProfession().getSkillCosts().get(skill);
-				if(skillCost == null) {
-					skillCost = character.getProfession().getSkillCategoryCosts().get(skill.getCategory());
+			costGroup = character.getSkillCosts().get(skill);
+			if(costGroup == null) {
+				costGroup = character.getProfession().getSkillCosts().get(skill);
+				if(costGroup == null) {
+					costGroup = character.getProfession().getSkillCategoryCosts().get(skill.getCategory());
 				}
 			}
 		}
 		else if(specialization != null) {
-			skillCost = character.getSkillCosts().get(specialization.getSkill());
-			if(skillCost == null) {
-				skillCost = character.getProfession().getSkillCosts().get(specialization.getSkill());
-				if(skillCost == null) {
-					skillCost = character.getProfession().getSkillCategoryCosts().get(specialization.getSkill().getCategory());
+			costGroup = character.getSkillCosts().get(specialization.getSkill());
+			if(costGroup == null) {
+				costGroup = character.getProfession().getSkillCosts().get(specialization.getSkill());
+				if(costGroup == null) {
+					costGroup = character.getProfession().getSkillCategoryCosts().get(specialization.getSkill().getCategory());
 				}
 			}
 		}
 
-		return skillCost;
+		return costGroup;
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -224,8 +225,8 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				AssignableCostsAdapter adapter = (AssignableCostsAdapter)listView.getAdapter();
 				if(adapter != null) {
 					for (int i = 0; i < adapter.getCount(); i++) {
-						SkillCostEntry entry = adapter.getItem(i);
-						charactersFragment.getCurrentInstance().getSkillCosts().put(entry.getSkill(), entry.getSkillCost());
+						SkillCostGroup entry = adapter.getItem(i);
+						charactersFragment.getCurrentInstance().getSkillCosts().put(entry.getSkill(), entry.getCostGroup());
 					}
 				}
 			}
@@ -238,9 +239,8 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		Character character = charactersFragment.getCurrentInstance();
 		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 		if(character.getProfession() != null) {
-			for (Map.Entry<SkillCategory, List<SkillCost>> entry : character.getProfession()
-					.getAssignableSkillCosts()
-					.entrySet()) {
+			for (Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : character.getProfession()
+					.getAssignableSkillCostsMap().entrySet()) {
 				int index = Arrays.asList(skillCategories).indexOf(entry.getKey());
 				if (index != -1) {
 					setSkillCosts((AssignableCostsAdapter) skillCostsListViews[index].getAdapter(), new ArrayList<Skill>(),
@@ -250,7 +250,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					for (int i = 0; i < skillCategories.length; i++) {
 						SkillCategory category = skillCategories[i];
 						if (category == null || ((!entry.getKey().equals(category)) &&
-								(!character.getProfession().getAssignableSkillCosts().containsKey(category)))) {
+								(!character.getProfession().getAssignableSkillCostsMap().containsKey(category)))) {
 							hideAssignableList(i);
 						}
 					}
@@ -344,10 +344,10 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	@SuppressLint("DefaultLocale")
 	public void changeProfession() {
 		if (charactersFragment.getCurrentInstance().getProfession() != null &&
-				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size() > 0) {
+				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().size() > 0) {
 			int i = 0;
 			for (final SkillCategory category :
-					charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().keySet()) {
+					charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().keySet()) {
 				final int index = i++;
 				while (skillCostsListViews.length <= index) {
 					addAssignableCostsRow();
@@ -376,7 +376,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			}
 			for (int j = skillCostsListViews.length - 1; j > i; j--) {
 				if (j % 3 == 2
-						&& charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCosts().size() <= j
+						&& charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().size() <= j
 						- 2) {
 					LinearLayout header = (LinearLayout) assignableCostLayoutRows.findViewWithTag(
 							String.format(HEADER_TAG, j - 2));
@@ -395,27 +395,27 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 	@SuppressWarnings("unchecked")
 	private void setSkillCosts(AssignableCostsAdapter adapter, Collection<Skill> skills, SkillCategory category) {
-		List<SkillCost> skillCosts = new ArrayList<>(charactersFragment.getCurrentInstance().getProfession()
-				.getAssignableSkillCosts().get(category));
+		List<DevelopmentCostGroup> skillCosts = new ArrayList<>(charactersFragment.getCurrentInstance().getProfession()
+				.getAssignableSkillCostsMap().get(category));
 		List<Skill> skillsCopy = new ArrayList<>(skills);
 		if (skills.size() == skillCosts.size()) {
-			List<SkillCostEntry> entries = new ArrayList<>(skills.size());
+			List<SkillCostGroup> entries = new ArrayList<>(skills.size());
 			Character character = charactersFragment.getCurrentInstance();
-			SkillCostEntry entry;
+			SkillCostGroup entry;
 			for (Skill skill : skills) {
-				SkillCost skillCost;
+				DevelopmentCostGroup costGroup;
 				if (character != null) {
-					skillCost = character.getSkillCosts().get(skill);
-					if (skillCost != null) {
-						skillCosts.remove(skillCosts.indexOf(skillCost));
+					costGroup = character.getSkillCosts().get(skill);
+					if (costGroup != null) {
+						skillCosts.remove(skillCosts.indexOf(costGroup));
 						skillsCopy.remove(skill);
-						entry = new SkillCostEntry(skill, skillCost);
+						entry = new SkillCostGroup(skill, costGroup);
 						entries.add(entry);
 					}
 				}
 			}
-			for (SkillCost skillCost : skillCosts) {
-				entry = new SkillCostEntry(skillsCopy.get(0), skillCost);
+			for (DevelopmentCostGroup costGroup : skillCosts) {
+				entry = new SkillCostGroup(skillsCopy.get(0), costGroup);
 				entries.add(entry);
 				skillsCopy.remove(0);
 			}
@@ -489,9 +489,9 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 
 	protected class AssignableCostDragListener implements View.OnDragListener {
-		private Animation slideUpAnim;
-		private Animation slideDownAnim;
-		private SkillCostEntry[] entries;
+		private Animation        slideUpAnim;
+		private Animation        slideDownAnim;
+		private SkillCostGroup[] entries;
 		private int draggedPosition = -1;
 		private int currentPosition = -1;
 
@@ -516,7 +516,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			switch(action) {
 				case DragEvent.ACTION_DRAG_STARTED:
 					draggedPosition = currentPosition = (Integer)event.getLocalState();
-					entries = new SkillCostEntry[adapter.getCount()];
+					entries = new SkillCostGroup[adapter.getCount()];
 					for(int i = 0; i < adapter.getCount(); i++) {
 						entries[i] = adapter.getItem(i);
 					}
@@ -551,8 +551,8 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					reset(listView);
 					break;
 				case DragEvent.ACTION_DROP:
-					for(SkillCostEntry entry : entries) {
-						charactersFragment.getCurrentInstance().getSkillCosts().put(entry.getSkill(), entry.getSkillCost());
+					for(SkillCostGroup entry : entries) {
+						charactersFragment.getCurrentInstance().getSkillCosts().put(entry.getSkill(), entry.getCostGroup());
 					}
 					adapter.clear();
 					adapter.addAll(entries);

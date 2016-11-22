@@ -16,6 +16,8 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesLevelsFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesMainPageFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
@@ -33,6 +35,8 @@ import dagger.Provides;
 @Module
 public class CreatureFragmentModule {
 	private CreatureArchetypesFragment creatureArchetypesFragment;
+	private CreatureArchetypesLevelsFragment creatureArchetypesLevelsFragment;
+	private CreatureArchetypesMainPageFragment creatureArchetypesMainPageFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
 	private CreatureTypesFragment      creatureTypesFragment;
 	private CreatureVarietiesFragment  creatureVarietiesFragment;
@@ -42,6 +46,12 @@ public class CreatureFragmentModule {
 
 	public CreatureFragmentModule(CreatureArchetypesFragment creatureArchetypesFragment) {
 		this.creatureArchetypesFragment = creatureArchetypesFragment;
+	}
+	public CreatureFragmentModule(CreatureArchetypesMainPageFragment creatureArchetypesMainPageFragment) {
+		this.creatureArchetypesMainPageFragment = creatureArchetypesMainPageFragment;
+	}
+	public CreatureFragmentModule(CreatureArchetypesLevelsFragment creatureArchetypesLevelsFragment) {
+		this.creatureArchetypesLevelsFragment = creatureArchetypesLevelsFragment;
 	}
 	public CreatureFragmentModule(CreatureCategoriesFragment creatureCategoriesFragment) {
 		this.creatureCategoriesFragment = creatureCategoriesFragment;
@@ -65,6 +75,14 @@ public class CreatureFragmentModule {
 	@Provides @PerFragment
 	CreatureArchetypesFragment provideCreatureArchetypesFragment() {
 		return this.creatureArchetypesFragment;
+	}
+	@Provides @PerFragment
+	CreatureArchetypesMainPageFragment provideCreatureArchetypesMainPageFragment() {
+		return this.creatureArchetypesMainPageFragment;
+	}
+	@Provides @PerFragment
+	CreatureArchetypesLevelsFragment provideCreatureArchetypesLevelsFragment() {
+		return this.creatureArchetypesLevelsFragment;
 	}
 	@Provides @PerFragment
 	CreatureCategoriesFragment provideCreatureCategoriesFragment() {
