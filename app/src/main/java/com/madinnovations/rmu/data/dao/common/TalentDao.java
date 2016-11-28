@@ -15,7 +15,10 @@
  */
 package com.madinnovations.rmu.data.dao.common;
 
+import android.support.annotation.NonNull;
+
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentCategory;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,4 +81,12 @@ public interface TalentDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all Talent objects that reference the given TalentCategory from persistent storage.
+	 *
+	 * @param filter  a TalentCategory instance whose ID will be used to filter the Talent objects returned by the query
+	 * @return  a List containing all Talent objects that reference the given TalentCategory currently in persistent storage.
+	 */
+	public Collection<Talent> getTalentsForTalentCategory(@NonNull TalentCategory filter);
 }

@@ -74,7 +74,7 @@ import rx.schedulers.Schedulers;
  */
 public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Profession>,
 		ProfessionCategoryCostListAdapter.ProfessionCostsCallbacks, EditTextUtils.ValuesCallback {
-	private static final String LOG_TAG = "ProfessionsFragment";
+	private static final String TAG = "ProfessionsFragment";
 	@Inject
 	protected ProfessionRxHandler               professionRxHandler;
 	@Inject
@@ -241,6 +241,11 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		String newString;
 		Realm newRealm;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
 			newString = null;
@@ -277,8 +282,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 						assignableCosts = new ArrayList<>(categoryCostListAdapter.getChildrenCount(i));
 						newAssignableSkillCosts.put(categoryCost.getSkillCategory(), assignableCosts);
 					}
-					Log.d(LOG_TAG, "skillCostGroup = " + skillCostGroup);
-					Log.d(LOG_TAG, "skillCostGroup.costGroup = " + skillCostGroup.getCostGroup());
+					Log.d(TAG, "skillCostGroup = " + skillCostGroup);
+					Log.d(TAG, "skillCostGroup.costGroup = " + skillCostGroup.getCostGroup());
 					assignableCosts.add(skillCostGroup.getCostGroup());
 				}
 				else if(skillCostGroup.getCostGroup() != null) {
@@ -288,8 +293,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		}
 		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
 		currentInstance.setSkillCosts(newSkillCosts);
-		Log.d(LOG_TAG, "oldAssignableSkillCosts = " + currentInstance.getAssignableSkillCostsMap());
-		Log.d(LOG_TAG, "newAssignableSkillCosts = " + newAssignableSkillCosts);
+		Log.d(TAG, "oldAssignableSkillCosts = " + currentInstance.getAssignableSkillCostsMap());
+		Log.d(TAG, "newAssignableSkillCosts = " + newAssignableSkillCosts);
 		currentInstance.setAssignableSkillCostsMap(newAssignableSkillCosts);
 
 		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
@@ -356,7 +361,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e(LOG_TAG, "Exception when deleting: ", e);
+					Log.e(TAG, "Exception when deleting: ", e);
 					Toast.makeText(getActivity(), getString(R.string.toast_profession_delete_failed), Toast.LENGTH_SHORT).show();
 				}
 				@Override
@@ -397,7 +402,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving Profession", e);
+						Log.e(TAG, "Exception saving Profession", e);
 						String toastString = getString(R.string.toast_profession_save_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -440,7 +445,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught loading Realm instances", e);
+						Log.e(TAG, "Exception caught loading Realm instances", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
@@ -483,7 +488,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught loading Realm instances", e);
+						Log.e(TAG, "Exception caught loading Realm instances", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
@@ -528,7 +533,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught loading all SkillCategory instances.", e);
+						Log.e(TAG, "Exception caught loading all SkillCategory instances.", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> skillCategories) {
@@ -541,7 +546,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Skill instances.", e);
+						Log.e(TAG, "Exception caught getting all Skill instances.", e);
 					}
 					@Override
 					public void onNext(Collection<Skill> skills) {
@@ -572,7 +577,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				}
 				@Override
 				public void onError(Throwable e) {
-					Log.e(LOG_TAG, "Exception caught getting all Profession instances", e);
+					Log.e(TAG, "Exception caught getting all Profession instances", e);
 					Toast.makeText(ProfessionsFragment.this.getActivity(),
 							getString(R.string.toast_professions_load_failed),
 							Toast.LENGTH_SHORT).show();
@@ -668,7 +673,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				}
 				else {
 					if(assignableCostList.get(0) == null) {
-						Log.d(LOG_TAG, "Null cost group for category " + entry.getKey().getName());
+						Log.d(TAG, "Null cost group for category " + entry.getKey().getName());
 					}
 					Collections.sort(assignableCostList);
 				}

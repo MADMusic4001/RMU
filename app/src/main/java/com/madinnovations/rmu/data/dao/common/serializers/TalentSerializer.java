@@ -53,8 +53,14 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 			for (TalentParameterRow talentParameterRow : value.getTalentParameterRows()) {
 				out.beginObject();
 				out.name(TalentParametersSchema.COLUMN_EFFECT).value(talentParameterRow.getParameter().name());
-				if(talentParameterRow.getValue() != null) {
-					out.name(TalentParametersSchema.COLUMN_VALUE).value(talentParameterRow.getValue());
+				out.name(TalentParametersSchema.COLUMN_PER_LEVEL).value(talentParameterRow.isPerLevel());
+				out.name(TalentParametersSchema.COLUMN_PER_ROUND).value(talentParameterRow.isPerRound());
+				out.name(TalentParametersSchema.COLUMN_PER_TIER).value(talentParameterRow.isPerTier());
+				if(talentParameterRow.getInitialValue() != null) {
+					out.name(TalentParametersSchema.COLUMN_INITIAL_VALUE).value(talentParameterRow.getInitialValue());
+				}
+				if(talentParameterRow.getValuePer() != null) {
+					out.name(TalentParametersSchema.COLUMN_VALUE_PER).value(talentParameterRow.getValuePer());
 				}
 				if (talentParameterRow.getEnumName() != null) {
 					out.name(TalentParametersSchema.COLUMN_ENUM_NAME).value(talentParameterRow.getEnumName());
@@ -133,11 +139,23 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 					case TalentParametersSchema.COLUMN_EFFECT:
 						talentParameterRow.setParameter(Parameter.valueOf(in.nextString()));
 						break;
-					case TalentParametersSchema.COLUMN_VALUE:
-						talentParameterRow.setValue(in.nextInt());
+					case TalentParametersSchema.COLUMN_INITIAL_VALUE:
+						talentParameterRow.setInitialValue(in.nextInt());
+						break;
+					case TalentParametersSchema.COLUMN_VALUE_PER:
+						talentParameterRow.setValuePer(in.nextInt());
 						break;
 					case TalentParametersSchema.COLUMN_ENUM_NAME:
 						talentParameterRow.setEnumName(in.nextString());
+						break;
+					case TalentParametersSchema.COLUMN_PER_LEVEL:
+						talentParameterRow.setPerLevel(in.nextBoolean());
+						break;
+					case TalentParametersSchema.COLUMN_PER_ROUND:
+						talentParameterRow.setPerRound(in.nextBoolean());
+						break;
+					case TalentParametersSchema.COLUMN_PER_TIER:
+						talentParameterRow.setPerTier(in.nextBoolean());
 						break;
 				}
 			}

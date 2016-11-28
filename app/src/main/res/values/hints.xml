@@ -116,8 +116,10 @@
   <string name="hint_cost_per_tier">Cost per Tier</string>
   <string name="hint_default_movement_rate">Default movement rate</string>
   <string name="hint_example_races">Examples Races/Creatures</string>
+  <string name="hint_experience_points">Experience Points</string>
   <string name="hint_healing_rate">Healing Rate</string>
   <string name="hint_initial_cost">New Initial Cost</string>
+  <string name="hint_initial_value">Initial Value</string>
   <string name="hint_leftover_dp">Leftover DP</string>
   <string name="hint_locomotion_type_description">Locomotion Type Description</string>
   <string name="hint_locomotion_type_name">Locomotion Type Name</string>
@@ -151,6 +153,7 @@
   <string name="hint_talent_category_name">Talent Category Name</string>
   <string name="hint_talent_category_description">Talent Category Description</string>
   <string name="hint_value">Value</string>
+  <string name="hint_value_per">Value Per</string>
 
   <!-- Creature -->
   <string name="hint_creature_archetype_description">Creature Archetype Description</string>

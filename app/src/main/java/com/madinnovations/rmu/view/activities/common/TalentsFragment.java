@@ -71,6 +71,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -83,7 +84,7 @@ import static android.view.View.VISIBLE;
  */
 public class TalentsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Talent>, CheckBoxUtils.ValuesCallback,
 		EditTextUtils.ValuesCallback {
-	private static final String LOG_TAG = "TalentsFragment";
+	private static final String TAG = "TalentsFragment";
 	@Inject
 	AttackRxHandler                      attackRxHandler;
 	@Inject
@@ -96,6 +97,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	TalentRxHandler                      talentRxHandler;
 	@Inject
 	TalentCategoryRxHandler              talentCategoryRxHandler;
+	private ArrayAdapter<TalentCategory> filterSpinnerAdapter;
+	private Spinner                      filterSpinner;
 	private LayoutInflater               layoutInflater;
 	private ArrayAdapter<TalentCategory> categorySpinnerAdapter;
 	private ArrayAdapter<Action>         actionSpinnerAdapter;
@@ -132,6 +135,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_talent_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_talent_description));
 
+		initFilterSpinner(layout);
 		initCategorySpinner(layout);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_talent_name_required);
 		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
@@ -318,7 +322,12 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean copyViewsToItem() {
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
 		boolean changed = false;
 		short newShort;
 		Action newAction;
@@ -395,6 +404,40 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 
+		for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
+			Spinner spinner = (Spinner)entry.getKey().findViewById(R.id.parameter_spinner);
+			ArrayAdapter<Parameter> spinnerAdapter = (ArrayAdapter<Parameter>)spinner.getAdapter();
+			Parameter parameter = spinnerAdapter.getItem(spinner.getSelectedItemPosition());
+			if(parameter != null) {
+				switch (parameter) {
+					case ATTACK:
+						changed |= copyAttackViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					case ELEMENTAL_RR:
+					case FEAR_RR:
+					case FOLLOWER_FEAR_RR:
+					case MAGICAL_RR:
+					case PHYSICAL_RR:
+						changed |= copyResistanceViewsToItem(entry.getKey(), entry.getValue(), parameter);
+						break;
+					case SKILL:
+						changed |= copySkillViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					case SPECIALIZATION:
+						changed |= copySpecializationsViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					case SPELL:
+						changed |= copySpellsViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					case STAT:
+						changed |= copyStatsViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					default:
+						changed |= copyValuesViewsToItem(entry.getKey(), entry.getValue(), parameter);
+				}
+			}
+		}
+
 		return changed;
 	}
 
@@ -411,6 +454,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		actionSpinner.setSelection(actionSpinnerAdapter.getPosition(currentInstance.getAction()));
 
 		parametersList.removeAllViews();
+		indexMap.clear();
 		for(int i = 0; i < currentInstance.getTalentParameterRows().length; i++) {
 			addParameterRow(layoutInflater, i);
 		}
@@ -435,7 +479,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving new Talent: " + currentInstance, e);
+							Log.e(TAG, "Exception saving new Talent: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_talent_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -473,7 +517,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_talent_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -502,6 +546,44 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				});
 	}
 
+	private void initFilterSpinner(View layout) {
+		filterSpinner = (Spinner)layout.findViewById(R.id.talent_category_filter_spinner);
+		filterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		filterSpinner.setAdapter(filterSpinnerAdapter);
+
+		final TalentCategory allCategories = new TalentCategory();
+		allCategories.setName(getString(R.string.label_all_talent_categories));
+		filterSpinnerAdapter.add(allCategories);
+		talentCategoryRxHandler.getAll()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
+					}
+					@Override
+					public void onNext(Collection<TalentCategory> talentCategories) {
+						filterSpinnerAdapter.addAll(talentCategories);
+						filterSpinnerAdapter.notifyDataSetChanged();
+						filterSpinner.setSelection(filterSpinnerAdapter.getPosition(allCategories));
+					}
+				});
+
+		filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+				loadFilteredTalents(filterSpinnerAdapter.getItem(position));
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				loadFilteredTalents(null);
+			}
+		});
+	}
+
 	private void initCategorySpinner(View layout) {
 		categorySpinner = (Spinner)layout.findViewById(R.id.category_spinner);
 		categorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -514,7 +596,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all TalentCategory instances", e);
+						Log.e(TAG, "Exception caught getting all TalentCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<TalentCategory> items) {
@@ -571,7 +653,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
 				int length = currentInstance.getTalentParameterRows().length;
 				TalentParameterRow[] rows = new TalentParameterRow[length + 1];
 				if(length > 0) {
@@ -590,38 +671,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
-		talentRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Talent>>() {
-					@Override
-					public void onCompleted() {
-						if(listAdapter.getCount() > 0) {
-							currentInstance = listAdapter.getItem(0);
-							isNew = false;
-							listView.setSelection(0);
-							listView.setItemChecked(0, true);
-							listAdapter.notifyDataSetChanged();
-							copyItemToViews();
-						}
-					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Talent instances", e);
-						Toast.makeText(TalentsFragment.this.getActivity(),
-								getString(R.string.toast_talents_load_failed),
-								Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(Collection<Talent> talents) {
-						listAdapter.clear();
-						listAdapter.addAll(talents);
-						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_talents_loaded), talents.size());
-						Toast.makeText(TalentsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-				});
-
+		loadFilteredTalents(null);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -637,50 +687,54 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				copyItemToViews();
 			}
 		});
+
 		registerForContextMenu(listView);
 	}
 
 	private void addParameterRow(LayoutInflater inflater, final int index) {
-		View parameterRow = inflater.inflate(R.layout.talent_parameter_row, parametersList, false);
-		indexMap.put(parameterRow, index);
-		initParameterSpinner(parameterRow);
-		initParameterEdit(parameterRow);
-		initParameterCheckBoxes(parameterRow);
-		initRemoveParameterButton(parameterRow);
-		initAttacks(parameterRow);
-		initResistances(parameterRow);
-		initSkills(parameterRow);
-		initSpecializations(parameterRow);
-		initSpells(parameterRow);
-		initStats(parameterRow);
+		View parameterRowView = inflater.inflate(R.layout.talent_parameter_row, parametersList, false);
+		indexMap.put(parameterRowView, index);
+		initRemoveParameterButton(parameterRowView);
+		initParameterSpinner(parameterRowView);
+		initInitialValueEdit(parameterRowView);
+		initValuePerEdit(parameterRowView);
+		initValueCheckBoxes(parameterRowView);
+		initAttacksSpinner(parameterRowView);
+		initResistancesSpinner(parameterRowView);
+		initSkillsSpinner(parameterRowView);
+		initSpecializationsSpinner(parameterRowView);
+		initSpellsSpinner(parameterRowView);
+		initStatsSpinner(parameterRowView);
+
 		Parameter parameter = currentInstance.getTalentParameterRows()[index].getParameter();
 		switch (parameter) {
 			case ATTACK:
-				setAttacksVisibility(parameterRow, VISIBLE);
+				setAttacksVisibility(parameterRowView, VISIBLE);
 				break;
 			case ELEMENTAL_RR:
 			case FEAR_RR:
 			case FOLLOWER_FEAR_RR:
 			case MAGICAL_RR:
 			case PHYSICAL_RR:
-				setResistancesVisibility(parameterRow, VISIBLE);
+				setResistancesVisibility(parameterRowView, VISIBLE);
 				break;
 			case SKILL:
-				setSkillsVisibility(parameterRow, VISIBLE);
+				setSkillsVisibility(parameterRowView, VISIBLE);
 				break;
 			case SPECIALIZATION:
-				setSpecializationsVisibility(parameterRow, VISIBLE);
+				setSpecializationsVisibility(parameterRowView, VISIBLE);
 				break;
 			case SPELL:
-				setSpellsVisibility(parameterRow, VISIBLE);
+				setSpellsVisibility(parameterRowView, VISIBLE);
 				break;
 			case STAT:
-				setStatsVisibility(parameterRow, VISIBLE);
+				setStatsVisibility(parameterRowView, VISIBLE);
 				break;
 			default:
-				setValuesVisibility(parameterRow, VISIBLE);
+				setValuesVisibility(parameterRowView, VISIBLE);
 		}
-		parametersList.addView(parameterRow);
+
+		parametersList.addView(parameterRowView);
 	}
 
 	private void initParameterSpinner(final View layout) {
@@ -796,6 +850,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								setValuesVisibility(layout, VISIBLE);
 								break;
 						}
+						saveItem();
 					}
 				}
 			}
@@ -804,31 +859,73 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initParameterEdit(final View layout) {
-		final EditText editText = (EditText)layout.findViewById(R.id.value_edit);
-		editText.setText(String.valueOf(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue()));
+	private void initInitialValueEdit(final View layout) {
+		final EditText editText = (EditText)layout.findViewById(R.id.initial_value_edit);
+		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+		if(value != null) {
+			editText.setText(String.valueOf(value));
+		}
+		else {
+			editText.setText(null);
+		}
 
 		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if(editText.getText().length() > 0) {
 					Integer newInteger = Integer.valueOf(editText.getText().toString());
-					if(!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue())) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(newInteger);
-						saveItem();
+					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
+						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue())) {
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(newInteger);
+							saveItem();
+						}
 					}
 				}
 				else {
-					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue() != null) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(null);
+					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
+						saveItem();
 					}
 				}
 			}
 		});
 	}
 
-	private void initParameterCheckBoxes(final View layout) {
+	private void initValuePerEdit(final View layout) {
+		final EditText editText = (EditText)layout.findViewById(R.id.value_per_edit);
+		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer();
+		if(value != null) {
+			editText.setText(String.valueOf(value));
+		}
+		else {
+			editText.setText(null);
+		}
+
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					Integer newInteger = Integer.valueOf(editText.getText().toString());
+					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
+						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer())) {
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(newInteger);
+							saveItem();
+						}
+					}
+				}
+				else {
+					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer() != null) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(null);
+						saveItem();
+					}
+				}
+			}
+		});
+	}
+
+	private void initValueCheckBoxes(final View layout) {
 		final CheckBox perTierCheckBox = (CheckBox)layout.findViewById(R.id.per_tier_check_box);
+		perTierCheckBox.setChecked(currentInstance.getTalentParameterRows()[indexMap.get(layout)].isPerTier());
 		perTierCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -842,6 +939,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 
 		final CheckBox perLevelCheckBox = (CheckBox)layout.findViewById(R.id.per_level_check_box);
+		perLevelCheckBox.setChecked(currentInstance.getTalentParameterRows()[indexMap.get(layout)].isPerLevel());
 		perLevelCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -855,6 +953,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 
 		final CheckBox perRoundCheckBox = (CheckBox)layout.findViewById(R.id.per_round_check_box);
+		perRoundCheckBox.setChecked(currentInstance.getTalentParameterRows()[indexMap.get(layout)].isPerRound());
 		perRoundCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -879,23 +978,24 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				int position = index + 1;
 				int newLength = currentInstance.getTalentParameterRows().length -1;
 				TalentParameterRow[] newRows = new TalentParameterRow[newLength];
-				if(index > 0) {
-					System.arraycopy(currentInstance.getTalentParameterRows(), 0, newRows, 0, index);
+				if(indexMap.size() == 1) {
+					indexMap.clear();
 				}
-				if(index < newLength) {
-					System.arraycopy(currentInstance.getTalentParameterRows(), position, newRows, index, newLength - index);
-				}
-				for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
-					if(entry.getValue() > index) {
-						indexMap.put(entry.getKey(), entry.getValue() - 1);
+				else {
+					if (index > 0) {
+						System.arraycopy(currentInstance.getTalentParameterRows(), 0, newRows, 0, index);
 					}
+					if (index < newLength) {
+						System.arraycopy(currentInstance.getTalentParameterRows(), position, newRows, index, newLength - index);
+					}
+					indexMap.remove(layout);
 				}
 				currentInstance.setTalentParameterRows(newRows);
 			}
 		});
 	}
 
-	private void initAttacks(final View layout) {
+	private void initAttacksSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
 		final ArrayAdapter<Attack> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
@@ -906,8 +1006,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Attack currentAttack = new Attack(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-			spinner.setSelection(adapter.getPosition(currentAttack));
+			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			if(index != null) {
+				Attack currentAttack = new Attack(index);
+				spinner.setSelection(adapter.getPosition(currentAttack));
+			}
+			else {
+				spinner.setSelection(0);
+			}
 		}
 		else {
 			attackRxHandler.getAll()
@@ -916,7 +1022,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught getting all Attack instances", e);
+							Log.e(TAG, "Exception caught getting all Attack instances", e);
 						}
 						@Override
 						public void onNext(Collection<Attack> attacks) {
@@ -928,9 +1034,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(attacks);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Attack currentAttack = new Attack(
-									currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-							spinner.setSelection(adapter.getPosition(currentAttack));
+							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							if(index != null) {
+								Attack currentAttack = new Attack(index);
+								spinner.setSelection(adapter.getPosition(currentAttack));
+							}
+							else {
+								spinner.setSelection(0);
+							}
 						}
 					});
 		}
@@ -941,9 +1052,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				Attack attack = adapter.getItem(position);
 				if(attack != null) {
 					Attack currentAttack = attackSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
 					if(!attack.equals(currentAttack)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(attack.getId());
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(attack.getId());
 						saveItem();
 					}
 				}
@@ -953,7 +1064,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initResistances(final View layout) {
+	private void initResistancesSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -987,7 +1098,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName())));
 	}
 
-	private void initSkills(final View layout) {
+	private void initSkillsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
 		final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
@@ -998,8 +1109,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Skill currentSkill = skillSparseArray.get(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-			spinner.setSelection(adapter.getPosition(currentSkill));
+			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+					.getInitialValue();
+			if(index != null) {
+				spinner.setSelection(adapter.getPosition(skillSparseArray.get(index)));
+			}
+			else {
+				spinner.setSelection(0);
+			}
 		}
 		else {
 			skillRxHandler.getNonSpecializationSkills()
@@ -1008,7 +1125,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught loading all non-specialization Skill instances", e);
+							Log.e(TAG, "Exception caught loading all non-specialization Skill instances", e);
 						}
 						@Override
 						public void onNext(Collection<Skill> skills) {
@@ -1020,9 +1137,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(skills);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Skill currentSkill = skillSparseArray.get(
-									currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-							spinner.setSelection(adapter.getPosition(currentSkill));
+							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+									.getInitialValue();
+							if(index != null) {
+								spinner.setSelection(adapter.getPosition(skillSparseArray.get(index)));
+							}
+							else {
+								spinner.setSelection(0);
+							}
 						}
 					});
 		}
@@ -1033,9 +1155,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				Skill skill= adapter.getItem(position);
 				if(skill != null) {
 					Skill currentSkill = skillSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
 					if(!skill.equals(currentSkill)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(skill.getId());
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(skill.getId());
 						saveItem();
 					}
 				}
@@ -1045,7 +1167,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initSpecializations(final View layout) {
+	private void initSpecializationsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
 		final ArrayAdapter<Specialization> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
@@ -1056,9 +1178,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Specialization currentSpecialization = specializationSparseArray.get(
-					currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-			spinner.setSelection(adapter.getPosition(currentSpecialization));
+			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+					.getInitialValue();
+			if(index != null) {
+				spinner.setSelection(adapter.getPosition(specializationSparseArray.get(index)));
+			}
+			else {
+				spinner.setSelection(0);
+			}
 		}
 		else {
 			specializationRxHandler.getAll()
@@ -1067,7 +1194,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught getting all Specialization intances", e);
+							Log.e(TAG, "Exception caught getting all Specialization intances", e);
 						}
 						@Override
 						public void onNext(Collection<Specialization> specializations) {
@@ -1079,9 +1206,15 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(specializations);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Specialization currentSpecialization = specializationSparseArray.get(
-									currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-							spinner.setSelection(adapter.getPosition(currentSpecialization));
+							Log.d(TAG, "onNext: layout index = " + indexMap.get(layout));
+							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+									.getInitialValue();
+							if(index != null) {
+								spinner.setSelection(adapter.getPosition(specializationSparseArray.get(index)));
+							}
+							else {
+								spinner.setSelection(0);
+							}
 						}
 					});
 		}
@@ -1092,9 +1225,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				Specialization specialization= adapter.getItem(position);
 				if(specialization != null) {
 					Specialization currentSpecialization = specializationSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
 					if(!specialization.equals(currentSpecialization)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(specialization.getId());
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(specialization.getId());
 						saveItem();
 					}
 				}
@@ -1104,7 +1237,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initSpells(final View layout) {
+	private void initSpellsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
 		final ArrayAdapter<Spell> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
@@ -1115,9 +1248,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Spell currentSpell = spellSparseArray.get(
-					currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-			spinner.setSelection(adapter.getPosition(currentSpell));
+			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+					.getInitialValue();
+			if(index != null) {
+				spinner.setSelection(adapter.getPosition(spellSparseArray.get(index)));
+			}
+			else {
+				spinner.setSelection(0);
+			}
 		}
 		else {
 			spellRxHandler.getAll()
@@ -1126,7 +1264,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception getting all Stat instances", e);
+							Log.e(TAG, "Exception getting all Stat instances", e);
 						}
 						@Override
 						public void onNext(Collection<Spell> spells) {
@@ -1138,9 +1276,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(spells);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Spell currentSpell = spellSparseArray.get(
-									currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-							spinner.setSelection(adapter.getPosition(currentSpell));
+							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+									.getInitialValue();
+							if(index != null) {
+								spinner.setSelection(adapter.getPosition(spellSparseArray.get(index)));
+							}
+							else {
+								spinner.setSelection(0);
+							}
 						}
 					});
 		}
@@ -1151,9 +1294,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				Spell spell = adapter.getItem(position);
 				if(spell != null) {
 					Spell currentSpell = spellSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
 					if(!spell.equals(currentSpell)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValue(spell.getId());
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(spell.getId());
 						saveItem();
 					}
 				}
@@ -1163,16 +1306,24 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initStats(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
+	private void initStatsSpinner(final View layout) {
+		final Spinner spinner = (Spinner) layout.findViewById(R.id.stat_spinner);
 		final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 
 		adapter.clear();
 		adapter.addAll(Statistic.getAllStats());
 		adapter.notifyDataSetChanged();
 		spinner.setAdapter(adapter);
-		Statistic currentStat = adapter.getItem(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValue());
-		spinner.setSelection(adapter.getPosition(currentStat));
+		TalentParameterRow talentParameterRow = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
+		if (Parameter.STAT.equals(talentParameterRow.getParameter())) {
+			Statistic currentStat = adapter.getItem(talentParameterRow.getInitialValue());
+			if(currentStat != null) {
+				spinner.setSelection(adapter.getPosition(currentStat));
+			}
+			else {
+				spinner.setSelection(0);
+			}
+		}
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
@@ -1180,7 +1331,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				Statistic statistic = adapter.getItem(position);
 				if(statistic != null) {
 					Statistic currentStat = adapter.getItem(currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-																	.getValue());
+																	.getInitialValue());
 					if(!statistic.equals(currentStat)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(statistic.name());
 						saveItem();
@@ -1192,41 +1343,328 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
+	private boolean copyValuesViewsToItem(final View layout, int index, Parameter parameter) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != parameter) {
+			row.setParameter(parameter);
+			changed = true;
+		}
+		String value = ((EditText)layout.findViewById(R.id.initial_value_edit)).getText().toString();
+		if(value.length() > 0) {
+			if(row.getInitialValue() == null || !row.getInitialValue().equals(Integer.valueOf(value))) {
+				row.setInitialValue(Integer.valueOf(value));
+				changed = true;
+			}
+		}
+		else if(row.getInitialValue() != null) {
+			row.setInitialValue(null);
+			changed = true;
+		}
+		value = ((EditText)layout.findViewById(R.id.value_per_edit)).getText().toString();
+		if(value.length() > 0) {
+			if(row.getValuePer() == null || !row.getValuePer().equals(Integer.valueOf(value))) {
+				row.setValuePer(Integer.valueOf(value));
+				changed = true;
+			}
+		}
+		else if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+
+		boolean booleanValue = ((CheckBox)layout.findViewById(R.id.per_level_check_box)).isChecked();
+		if(row.isPerLevel() != booleanValue) {
+			row.setPerLevel(booleanValue);
+			changed = true;
+		}
+
+		booleanValue = ((CheckBox)layout.findViewById(R.id.per_tier_check_box)).isChecked();
+		if(row.isPerTier() != booleanValue) {
+			row.setPerTier(booleanValue);
+			changed = true;
+		}
+
+		booleanValue = ((CheckBox)layout.findViewById(R.id.per_round_check_box)).isChecked();
+		if(row.isPerRound() != booleanValue) {
+			row.setPerRound(booleanValue);
+			changed = true;
+		}
+
+		return changed;
+	}
+
 	private void setValuesVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.value_label).setVisibility(visibility);
-		layout.findViewById(R.id.value_edit).setVisibility(visibility);
+		layout.findViewById(R.id.initial_value_label).setVisibility(visibility);
+		layout.findViewById(R.id.initial_value_edit).setVisibility(visibility);
+		layout.findViewById(R.id.value_per_label).setVisibility(visibility);
+		layout.findViewById(R.id.value_per_edit).setVisibility(visibility);
 		layout.findViewById(R.id.per_level_check_box).setVisibility(visibility);
 		layout.findViewById(R.id.per_tier_check_box).setVisibility(visibility);
 		layout.findViewById(R.id.per_round_check_box).setVisibility(visibility);
 	}
 
+	private boolean copyAttackViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.ATTACK) {
+			row.setParameter(Parameter.ATTACK);
+			changed = true;
+		}
+
+		Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
+		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
+			row.setInitialValue(spinner.getSelectedItemPosition());
+			changed = true;
+		}
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
 	private void setAttacksVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.attack_label).setVisibility(visibility);
 		layout.findViewById(R.id.attack_spinner).setVisibility(visibility);
 	}
 
+	private boolean copyResistanceViewsToItem(final View layout, int index, Parameter parameter) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != parameter) {
+			row.setParameter(parameter);
+			changed = true;
+		}
+		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
+		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
+			row.setInitialValue(spinner.getSelectedItemPosition());
+			changed = true;
+		}
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
 	private void setResistancesVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.resistance_label).setVisibility(visibility);
 		layout.findViewById(R.id.resistance_spinner).setVisibility(visibility);
 	}
 
+	private boolean copySkillViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.SKILL) {
+			row.setParameter(Parameter.SKILL);
+			changed = true;
+		}
+		Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
+		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
+			row.setInitialValue(spinner.getSelectedItemPosition());
+			changed = true;
+		}
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
 	private void setSkillsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.skill_label).setVisibility(visibility);
 		layout.findViewById(R.id.skill_spinner).setVisibility(visibility);
 	}
 
+	private boolean copySpecializationsViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.SPECIALIZATION) {
+			row.setParameter(Parameter.SPECIALIZATION);
+			changed = true;
+		}
+		Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
+		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
+			row.setInitialValue(spinner.getSelectedItemPosition());
+			changed = true;
+		}
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
 	private void setSpecializationsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.specialization_label).setVisibility(visibility);
 		layout.findViewById(R.id.specialization_spinner).setVisibility(visibility);
 	}
 
+	private boolean copySpellsViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.SPELL) {
+			row.setParameter(Parameter.SPELL);
+			changed = true;
+		}
+		Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
+		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
+			row.setInitialValue(spinner.getSelectedItemPosition());
+			changed = true;
+		}
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
 	private void setSpellsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.spell_label).setVisibility(visibility);
 		layout.findViewById(R.id.spell_spinner).setVisibility(visibility);
 	}
 
+	private boolean copyStatsViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.STAT) {
+			row.setParameter(Parameter.STAT);
+			changed = true;
+		}
+		Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
+		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
+			row.setInitialValue(spinner.getSelectedItemPosition());
+			changed = true;
+		}
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
 	private void setStatsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.stat_label).setVisibility(visibility);
 		layout.findViewById(R.id.stat_spinner).setVisibility(visibility);
+	}
+
+	private void loadFilteredTalents(final TalentCategory filter) {
+		Observable<Collection<Talent>> observable;
+
+		if(filter == null || filter.getId() == -1) {
+			observable = talentRxHandler.getAll();
+		}
+		else {
+			observable = talentRxHandler.getTalentsForTalentCategory(filter);
+		}
+		observable.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Talent>>() {
+					@Override
+					public void onCompleted() {
+						int position = listAdapter.getPosition(currentInstance);
+						if (position == -1 && listAdapter.getCount() > 0) {
+							currentInstance = listAdapter.getItem(0);
+							isNew = false;
+							position = 0;
+						}
+						if (position >= 0) {
+							listView.setSelection(position);
+							listView.setItemChecked(position, true);
+							listAdapter.notifyDataSetChanged();
+						}
+						copyItemToViews();
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "Exception caught getting Talent instances", e);
+						Toast.makeText(TalentsFragment.this.getActivity(),
+									   getString(R.string.toast_talents_load_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<Talent> talents) {
+						listAdapter.clear();
+						listAdapter.addAll(talents);
+						listAdapter.notifyDataSetChanged();
+						if(filter == null) {
+							String toastString;
+							toastString = String.format(getString(R.string.toast_talents_loaded), talents.size());
+							Toast.makeText(TalentsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 	}
 }

@@ -55,7 +55,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CharactersFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Character> {
-	private static final String LOG_TAG = "CharactersFragment";
+	private static final String TAG = "CharactersFragment";
 	@Inject
 	protected CharacterRxHandler               characterRxHandler;
 	private   ThreeFieldListAdapter<Character> listAdapter;
@@ -133,12 +133,14 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		Log.d(TAG, "onCreateContextMenu: ");
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getActivity().getMenuInflater().inflate(R.menu.character_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		Log.d(TAG, "onContextItemSelected: ");
 		final Character character;
 
 		AdapterView.AdapterContextMenuInfo info =
@@ -183,6 +185,10 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
 
 		CharacterMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
 		if(mainPageFragment != null) {
@@ -205,6 +211,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	private void copyItemToViews() {
 		CharacterMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
 		if(mainPageFragment != null) {
+			Log.d(TAG, "copyItemToViews: mainPageFragment = " + mainPageFragment);
 			mainPageFragment.copyItemToViews();
 		}
 
@@ -236,7 +243,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving new Character: " + currentInstance, e);
+							Log.e(TAG, "Exception saving new Character: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_character_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -276,7 +283,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_character_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -333,7 +340,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Character instances in initListView", e);
+						Log.e(TAG, "Exception caught getting all Character instances in initListView", e);
 						Toast.makeText(CharactersFragment.this.getActivity(),
 								getString(R.string.toast_characters_load_failed),
 								Toast.LENGTH_SHORT).show();
@@ -406,6 +413,8 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					fragment = CharacterGeneratedValuesFragment.newInstance(CharactersFragment.this);
 					break;
 			}
+			registeredFragments.put(position, fragment);
+
 			return fragment;
 		}
 

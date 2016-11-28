@@ -196,6 +196,11 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		String value = nameEdit.getText().toString();
 		if(value.isEmpty()) {
 			value = null;

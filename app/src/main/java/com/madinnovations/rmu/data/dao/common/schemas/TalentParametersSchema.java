@@ -21,11 +21,15 @@ package com.madinnovations.rmu.data.dao.common.schemas;
 public interface TalentParametersSchema {
 	String TABLE_NAME = "talent_parameter";
 
-	String COLUMN_TALENT_ID = "talentId";
-	String COLUMN_INDEX     = "rowIndex";
-	String COLUMN_EFFECT    = "effect";
-	String COLUMN_ENUM_NAME = "enumName";
-	String COLUMN_VALUE     = "value";
+	String COLUMN_TALENT_ID     = "talentId";
+	String COLUMN_INDEX         = "rowIndex";
+	String COLUMN_EFFECT        = "effect";
+	String COLUMN_ENUM_NAME     = "enumName";
+	String COLUMN_PER_LEVEL     = "perLevel";
+	String COLUMN_PER_ROUND     = "perRound";
+	String COLUMN_PER_TIER      = "perTier";
+	String COLUMN_INITIAL_VALUE = "initialValue";
+	String COLUMN_VALUE_PER     = "valuePerTier";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -34,10 +38,15 @@ public interface TalentParametersSchema {
 			+ COLUMN_INDEX + " INTEGER NOT NULL, "
 			+ COLUMN_EFFECT + " TEXT NOT NULL, "
 			+ COLUMN_ENUM_NAME + " TEXT, "
-			+ COLUMN_VALUE + " INTEGER, "
+			+ COLUMN_PER_LEVEL + " INTEGER NOT NULL, "
+			+ COLUMN_PER_ROUND + " INTEGER NOT NULL, "
+			+ COLUMN_PER_TIER + " INTEGER NOT NULL, "
+			+ COLUMN_INITIAL_VALUE + " INTEGER, "
+			+ COLUMN_VALUE_PER + " INTEGER, "
 			+ "PRIMARY KEY(" + COLUMN_TALENT_ID + "," + COLUMN_INDEX + "), "
 			+ "FOREIGN KEY (" + COLUMN_TALENT_ID + ") REFERENCES " + TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_INDEX, COLUMN_EFFECT, COLUMN_ENUM_NAME, COLUMN_VALUE};
+	String[] COLUMNS = new String[] {COLUMN_TALENT_ID, COLUMN_INDEX, COLUMN_EFFECT, COLUMN_ENUM_NAME, COLUMN_PER_LEVEL,
+			COLUMN_PER_ROUND, COLUMN_PER_TIER, COLUMN_INITIAL_VALUE, COLUMN_VALUE_PER};
 }

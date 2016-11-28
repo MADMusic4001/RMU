@@ -163,6 +163,11 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		Statistic newStat;
 		int position;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
 			newString = null;

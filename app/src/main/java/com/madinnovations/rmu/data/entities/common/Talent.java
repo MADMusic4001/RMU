@@ -17,6 +17,9 @@ package com.madinnovations.rmu.data.entities.common;
 
 import com.madinnovations.rmu.data.entities.combat.Action;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Talent data
  */
@@ -63,6 +66,29 @@ public class Talent {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	/**
+	 * Creates a printable String listing all attributes.
+	 *
+	 * @return a printable String of all attributes.
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", id)
+				.append("category", category)
+				.append("name", name)
+				.append("description", description)
+				.append("flaw", flaw)
+				.append("minTier", minTier)
+				.append("maxTier", maxTier)
+				.append("dpCost", dpCost)
+				.append("dpCostPerTier", dpCostPerTier)
+				.append("situational", situational)
+				.append("action", action)
+				.append("talentParameterRows", talentParameterRows)
+				.toString();
 	}
 
 	@Override

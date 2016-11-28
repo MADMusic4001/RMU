@@ -155,6 +155,11 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		CreatureArchetypesMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
 		if(mainPageFragment != null) {
 			changed = mainPageFragment.copyViewsToItem();

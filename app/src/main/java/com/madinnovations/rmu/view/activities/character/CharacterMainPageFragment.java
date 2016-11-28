@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +69,7 @@ import javax.inject.Inject;
  */
 public class CharacterMainPageFragment extends Fragment implements EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	@SuppressWarnings("unused")
-	private static final String LOG_TAG = "CharacterMainPageFrag";
+	private static final String TAG = "CharacterMainPageFrag";
 	private static final String DRAG_SWAP_STATS = "swap-stats";
 	@Inject
 	protected CampaignRxHandler        campaignRxHandler;
@@ -109,6 +110,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public static CharacterMainPageFragment newInstance(CharactersFragment charactersFragment) {
 		CharacterMainPageFragment fragment = new CharacterMainPageFragment();
 		fragment.charactersFragment = charactersFragment;
+		Log.d(TAG, "newInstance: fragment = " + fragment);
 		return fragment;
 	}
 
@@ -401,12 +403,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		short currentLevel = character.getCurrentLevel();
 		currentLevelView.setText(String.valueOf(currentLevel));
-		if(currentLevel > 0) {
-			newCharacterRow.setVisibility(View.GONE);
-		}
-		else {
-			newCharacterRow.setVisibility(View.VISIBLE);
-		}
 		experiencePointsView.setText(String.valueOf(character.getExperiencePoints()));
 		developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
 		levelUpButton.setEnabled((currentLevel < (short)(character.getExperiencePoints()/10000)));
@@ -421,10 +417,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.setSelection(charactersFragment.getCurrentInstance().getRealm());
 		heightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getHeight()));
 		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
-		campaignSpinner.setEnabled(character.getCurrentLevel() == 0);
 
-		boolean enable = character.getCurrentLevel() == 0 && character.getCampaign() != null && character.getCampaign()
-				.isBuyStats();
+		boolean enable = character.getExperiencePoints() == 0 && character.getCampaign() != null
+				&& character.getCampaign().isBuyStats();
 		for(Map.Entry<Statistic, ViewHolder> entry : viewHolderMap.entrySet()) {
 			entry.getValue().tempStatView.setText(String.valueOf(character.getStatTemps().get(entry.getKey())));
 			entry.getValue().potentialStatView.setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
@@ -434,6 +429,22 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
 				&&!character.getCampaign().isBuyStats());
+
+		if(character.getExperiencePoints() > 0) {
+			newCharacterRow.setVisibility(View.GONE);
+			firstNameEdit.setEnabled(false);
+			lastNameEdit.setEnabled(false);
+			raceSpinner.getSpinner().setEnabled(false);
+			cultureSpinner.getSpinner().setEnabled(false);
+			professionSpinner.getSpinner().setEnabled(false);
+			realmSpinner.getSpinner().setEnabled(false);
+			heightEdit.setEnabled(false);
+			weightEdit.setEnabled(false);
+			campaignSpinner.setEnabled(false);
+		}
+		else {
+			newCharacterRow.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void initLevelUpButton(View layout) {
@@ -732,12 +743,12 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	protected class StatSwapDragListener implements View.OnDragListener {
 		private Statistic destStatistic;
 		private LinearLayout dragGroup;
-
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
 																   R.drawable.drag_target_background, null);
-		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
-																   R.drawable.drag_hover_background, null);
-		private Drawable normalShape;
+		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(),
+																  R.drawable.drag_hover_background, null);
+		private Drawable normalShape = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_normal_background, null);
 
 		StatSwapDragListener(Statistic destStatistic, LinearLayout dragGroup) {
 			this.destStatistic = destStatistic;
@@ -747,9 +758,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		@Override
 		public boolean onDrag(View v, DragEvent event) {
 			final int action = event.getAction();
-			if(normalShape == null) {
-				normalShape = dragGroup.getBackground();
-			}
 
 			switch(action) {
 				case DragEvent.ACTION_DRAG_STARTED:

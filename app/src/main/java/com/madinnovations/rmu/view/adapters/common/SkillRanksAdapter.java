@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import com.madinnovations.rmu.data.entities.common.Specialization;
  * Populates a ListView with {@link SkillRanks} information
  */
 public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
+	private static final String TAG = "SkillRanksAdapter";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_skill_ranks_row;
 	private LayoutInflater layoutInflater;
 	private SkillRanksAdapterCallbacks callbacks;
@@ -63,6 +65,13 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 														   (ImageButton) rowView.findViewById(R.id.increment_button),
 														   (ImageButton)rowView.findViewById(R.id.decrement_button));
 			rowView.setTag(holder);
+			rowView.setOnLongClickListener(new View.OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					Log.d(TAG, "onLongClick: ");
+					return false;
+				}
+			});
 		}
 		else {
 			rowView = convertView;
@@ -73,21 +82,15 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 		holder.skillRanks = skillRanks;
 		if(skillRanks != null) {
 			DevelopmentCostGroup costGroup = callbacks.getSkillCost(skillRanks.getSkill(), skillRanks.getSpecialization());
-			StringBuilder builder = new StringBuilder();
-			builder.append(skillRanks.toString())
-					.append(" (")
-					.append(costGroup.getFirstCost())
-					.append("/")
-					.append(costGroup.getAdditionalCost())
-					.append(")");
-			holder.nameView.setText(builder.toString());
+			String builder = skillRanks.toString() + " (" + costGroup.getFirstCost() + "/" + costGroup.getAdditionalCost() + ")";
+			holder.nameView.setText(builder);
 			holder.ranksView.setText(String.valueOf(skillRanks.getStartingRanks() + skillRanks.getEndingRanks()));
 		}
 
 		return rowView;
 	}
 
-	private class ViewHolder {
+	public class ViewHolder {
 		private SkillRanks skillRanks;
 		private TextView nameView;
 		private TextView ranksView;
@@ -98,8 +101,9 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 			this.nameView = nameView;
 			this.ranksView = ranksView;
 			this.incrementButton = incrementButton;
-			initIncrementButton();
 			this.decrementButton = decrementButton;
+
+			initIncrementButton();
 			initDecrementButton();
 		}
 
@@ -127,6 +131,11 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 					}
 				}
 			});
+		}
+
+		// Getters
+		public SkillRanks getSkillRanks() {
+			return skillRanks;
 		}
 	}
 

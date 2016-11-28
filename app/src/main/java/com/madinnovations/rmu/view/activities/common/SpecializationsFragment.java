@@ -250,6 +250,11 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 		Statistic newStat;
 		boolean newBoolean;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		String newValue = nameEdit.getText().toString();
 		if(newValue.isEmpty()) {
 			newValue = null;

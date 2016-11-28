@@ -187,6 +187,11 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 		boolean changed = false;
 		String value;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		value = nameEdit.getText().toString();
 		if(value.isEmpty()) {
 			value = null;

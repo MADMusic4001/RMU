@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +33,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
@@ -44,10 +47,13 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
 import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentTier;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.character.AssignableCostsAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillRanksAdapter;
+import com.madinnovations.rmu.view.adapters.common.TalentTierListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.ArrayList;
@@ -64,22 +70,27 @@ import rx.Subscriber;
 /**
  * Handles interactions with the UI for character creation.
  */
-public class CharacterSkillsPageFragment extends Fragment implements SkillRanksAdapter.SkillRanksAdapterCallbacks {
-	private static final String LOG_TAG = "CharacterSkillsPageFrag";
+public class CharacterSkillsPageFragment extends Fragment implements SkillRanksAdapter.SkillRanksAdapterCallbacks,
+		TalentTierListAdapter.TalentTiersAdapterCallbacks {
+	private static final String TAG = "CharacterSkillsPageFrag";
 	private static final String DRAG_COST = "drag-cost";
 	private static final String HEADER_TAG = "Header%d";
 	private static final String LISTS_ROW_TAG = "ListsRow%d";
 	@Inject
-	protected SkillRxHandler              skillRxHandler;
+	protected SkillRxHandler          skillRxHandler;
 	@Inject
-	protected SpecializationRxHandler     specializationRxHandler;
-	private SkillRanksAdapter             skillRanksAdapter;
-	private CharactersFragment            charactersFragment;
-	private LinearLayout                  assignableCostLayoutRows;
-	private ListView[]                    skillCostsListViews;
-	private SkillCategory[]               skillCategories = new SkillCategory[0];
-	private TextView                      currentDpText;
-//	private List<SpecializationCostEntry> skillCostsMap;
+	protected SpecializationRxHandler specializationRxHandler;
+	@Inject
+	protected TalentRxHandler         talentRxHandler;
+	private   View                    fragmentView;
+	private   SkillRanksAdapter       skillRanksAdapter;
+	private   TalentTierListAdapter   talentTiersAdapter;
+	private   CharactersFragment      charactersFragment;
+	private   LinearLayout            assignableCostLayoutRows;
+	private   ListView[]              skillCostsListViews;
+	private   SkillCategory[]         skillCategories = new SkillCategory[0];
+	private   Collection<Talent>      talents = null;
+	private   TextView                currentDpText;
 
 	/**
 	 * Creates new CharacterSkillsPageFragment instance.
@@ -102,14 +113,21 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.character_skills_talents_stats_fragment, container, false);
+		fragmentView = inflater.inflate(R.layout.character_skills_talents_stats_fragment, container, false);
 
-		currentDpText = (TextView)layout.findViewById(R.id.current_dp_text);
-		initSkillCostsListView(layout);
-		initSkillRanksListView(layout);
-//		initTalentTiersListView(layout);
+		currentDpText = (TextView)fragmentView.findViewById(R.id.current_dp_text);
+		initSkillCostsListView(fragmentView);
+		initSkillRanksListView(fragmentView);
+		initTalentTiersListView(fragmentView);
 
-		return layout;
+		fragmentView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				Log.d(TAG, "onLongClick: ");
+				return false;
+			}
+		});
+		return fragmentView;
 	}
 
 	@Override
@@ -216,6 +234,59 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		return costGroup;
 	}
 
+	@Override
+	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
+		boolean result = false;
+		short cost = 0;
+		Character character = charactersFragment.getCurrentInstance();
+
+		if(character.getCurrentLevel() == 1 || character.getCampaign().isAllowTalentsBeyondFirst()) {
+			if(purchasedThisLevel == 0 && startingTiers == 0) {
+				cost = talent.getDpCost();
+				result = true;
+			}
+			else if(purchasedThisLevel + startingTiers < talent.getMaxTier()) {
+				cost = talent.getDpCostPerTier();
+				result = true;
+			}
+			if(result) {
+				if (cost < character.getCurrentDevelopmentPoints()) {
+					character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
+					currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+					character.getTalentTiers().put(talent, (short) (character.getTalentTiers().get(talent) + 1));
+				}
+				else {
+					result = false;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel) {
+		boolean result = false;
+		short cost = 0;
+		Character character = charactersFragment.getCurrentInstance();
+
+		if(startingTiers == 0 && purchasedThisLevel == 1) {
+			cost = talent.getDpCost();
+			result = true;
+		}
+		else if (purchasedThisLevel > 0) {
+			cost = talent.getDpCostPerTier();
+			result = true;
+		}
+		if(result) {
+			character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
+			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+			character.getTalentTiers().put(talent, (short) (character.getTalentTiers().get(talent) - 1));
+		}
+
+		return result;
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		boolean changed = false;
@@ -257,6 +328,27 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				}
 			}
 		}
+
+		copyTalentTiers();
+	}
+
+	private void copyTalentTiers() {
+		if(talents != null) {
+			Character character = charactersFragment.getCurrentInstance();
+			List<TalentTier> tiersList = new ArrayList<>();
+			for (Talent talent : talents) {
+				if (character.getTalentTiers().get(talent) == null) {
+					character.getTalentTiers().put(talent, (short) 0);
+				}
+				TalentTier talentTier = new TalentTier();
+				talentTier.setTalent(talent);
+				talentTier.setStartingTiers(character.getTalentTiers().get(talent));
+				talentTier.setEndingTiers(character.getTalentTiers().get(talent));
+				tiersList.add(talentTier);
+			}
+			talentTiersAdapter.addAll(tiersList);
+			talentTiersAdapter.notifyDataSetChanged();
+		}
 	}
 
 	private void initSkillCostsListView(View layout) {
@@ -268,7 +360,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		changeProfession();
 	}
 
-	private void initSkillRanksListView(View layout) {
+	private void initSkillRanksListView(final View layout) {
 		ListView skillRanksListView = (ListView) layout.findViewById(R.id.skill_ranks_list);
 		skillRanksAdapter = new SkillRanksAdapter(getActivity(), this);
 		skillRanksListView.setAdapter(skillRanksAdapter);
@@ -279,7 +371,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.d(LOG_TAG, "Exception caught getting all purchasable Skill instances.", e);
+						Log.d(TAG, "Exception caught getting all purchasable Skill instances.", e);
 					}
 					@Override
 					public void onNext(Collection<Skill> skillCollection) {
@@ -304,7 +396,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all purchasable Specialization instances.", e);
+						Log.e(TAG, "Exception caught getting all purchasable Specialization instances.", e);
 					}
 					@Override
 					public void onNext(Collection<Specialization> specializationCollection) {
@@ -323,6 +415,67 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 						skillRanksAdapter.notifyDataSetChanged();
 					}
 				});
+		skillRanksListView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				Log.d(TAG, "onLongClick: ");
+				TextView popupContent = new TextView(getActivity());
+				popupContent.setMinimumWidth(layout.getWidth()/2);
+				popupContent.setMinimumHeight(layout.getHeight()/2);
+				SkillRanks skillRanks = ((SkillRanksAdapter.ViewHolder)v.getTag()).getSkillRanks();
+				popupContent.setText(skillRanks.getSkill().getDescription());
+				PopupWindow popupWindow = new PopupWindow(popupContent);
+				popupWindow.showAtLocation(fragmentView, Gravity.CENTER, 0, 0);
+				return true;
+			}
+		});
+		registerForContextMenu(skillRanksListView);
+	}
+
+	private void initTalentTiersListView(final View layout) {
+		ListView talentTiersListView = (ListView) layout.findViewById(R.id.talent_tiers_list);
+		talentTiersAdapter = new TalentTierListAdapter(getActivity(), this);
+		talentTiersListView.setAdapter(talentTiersAdapter);
+
+		if(talents == null) {
+			talentRxHandler.getAll()
+					.subscribe(new Subscriber<Collection<Talent>>() {
+						@Override
+						public void onCompleted() {
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							Log.d(TAG, "Exception caught getting all Talent instances.", e);
+						}
+
+						@Override
+						public void onNext(Collection<Talent> talentCollection) {
+							talents = talentCollection;
+							copyTalentTiers();
+						}
+					});
+		}
+		else {
+			copyTalentTiers();
+		}
+
+		talentTiersListView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				Log.d(TAG, "onLongClick: ");
+				TextView popupContent = new TextView(getActivity());
+				popupContent.setMinimumWidth(layout.getWidth()/2);
+				popupContent.setMinimumHeight(layout.getHeight()/2);
+				TalentTier talentTier = ((TalentTierListAdapter.ViewHolder)v.getTag()).getTalentTier();
+				popupContent.setText(talentTier.getTalent().getDescription());
+				PopupWindow popupWindow = new PopupWindow(popupContent);
+				popupWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+				return true;
+			}
+		});
+
+		registerForContextMenu(talentTiersListView);
 	}
 
 	private void hideAssignableList(int index) {
@@ -362,7 +515,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 							@Override
 							public void onError(Throwable e) {
-								Log.e(LOG_TAG, "Exception caught getting Skill for category " + category.getName() + ".", e);
+								Log.e(TAG, "Exception caught getting Skill for category " + category.getName() + ".", e);
 							}
 
 							@SuppressWarnings("unchecked")
@@ -616,13 +769,5 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			newNameView.setLayoutParams(params);
 			return newNameView;
 		}
-	}
-
-	// Getters and setters
-	public CharactersFragment getCharactersFragment() {
-		return charactersFragment;
-	}
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
 	}
 }

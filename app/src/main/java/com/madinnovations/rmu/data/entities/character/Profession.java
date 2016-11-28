@@ -15,13 +15,10 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import android.util.Log;
-
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.spells.Realm;
-import com.madinnovations.rmu.view.RMUAppException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -177,12 +174,6 @@ public class Profession {
 		return assignableSkillCostsMap;
 	}
 	public void setAssignableSkillCostsMap(Map<SkillCategory, List<DevelopmentCostGroup>> assignableSkillCostsMap) {
-		try {
-			throw new RMUAppException();
-		}
-		catch(RMUAppException e) {
-			Log.e("Profession", "Stacktrace for setting new map.", e);
-		}
 		this.assignableSkillCostsMap = assignableSkillCostsMap;
 	}
 	public List<SkillCategory> getProfessionalSkillCategories() {

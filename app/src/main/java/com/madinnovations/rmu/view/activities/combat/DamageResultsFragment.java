@@ -63,7 +63,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for damage results.
  */
 public class DamageResultsFragment extends Fragment implements EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback {
-	private static final String LOG_TAG = "DamageResultsFragment";
+	private static final String TAG = "DamageResultsFragment";
 	@Inject
 	protected DamageResultRxHandler     damageResultRxHandler;
 	@Inject
@@ -182,6 +182,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	}
 
 	private boolean copyViewsToItem() {
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		currentInstance.setName(damageTableNameEdit.getText().toString());
 		currentInstance.setBallTable(ballTableCheckbox.isChecked());
 		return false;
@@ -205,7 +210,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving DamageTable", e);
+						Log.e(TAG, "Exception saving DamageTable", e);
 						if(toast != null) {
 							toast.cancel();
 						}
@@ -250,7 +255,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught saving DamageResultRow", e);
+							Log.e(TAG, "Exception caught saving DamageResultRow", e);
 							if (toast != null) {
 								toast.cancel();
 							}
@@ -294,7 +299,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + damageTable, e);
+						Log.e(TAG, "Exception when deleting: " + damageTable, e);
 						if(toast != null) {
 							toast.cancel();
 						}
@@ -339,7 +344,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all DamageResult instances", e);
+						Log.e(TAG, "Exception caught getting all DamageResult instances", e);
 						if(toast != null) {
 							toast.cancel();
 						}
@@ -398,7 +403,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all DamageResultRow instances", e);
+						Log.e(TAG, "Exception caught getting all DamageResultRow instances", e);
 						if(toast != null) {
 							toast.cancel();
 						}

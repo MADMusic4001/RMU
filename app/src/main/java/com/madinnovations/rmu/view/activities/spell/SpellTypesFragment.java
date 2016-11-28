@@ -172,6 +172,11 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 		boolean changed = false;
 		String stringValue;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		stringValue = nameEdit.getText().toString();
 		if(stringValue.isEmpty()) {
 			stringValue = null;

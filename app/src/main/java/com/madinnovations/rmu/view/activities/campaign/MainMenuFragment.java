@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class MainMenuFragment extends Fragment {
 	@SuppressWarnings("unused")
-	private static final String LOG_TAG = "MainMenuFragment";
+	private static final String TAG = "MainMenuFragment";
 	private List<String> groupNames;
 	private Map<String, List<String>> groupItems;
 	private int checkedFlatIndex = -1;

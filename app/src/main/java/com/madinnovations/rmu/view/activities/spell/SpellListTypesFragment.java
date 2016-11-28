@@ -153,6 +153,11 @@ public class SpellListTypesFragment extends Fragment implements TwoFieldListAdap
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		String value = nameEdit.getText().toString();
 		if(value.isEmpty()) {
 			value = null;

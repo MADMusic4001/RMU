@@ -190,6 +190,30 @@ public class Character {
 		return id;
 	}
 
+	public String getFullName() {
+		StringBuilder builder = new StringBuilder();
+		if(getFirstName() != null) {
+			builder.append(getFirstName());
+			if(getLastName() != null) {
+				builder.append(" ").append(getLastName());
+				if(getKnownAs() != null) {
+					builder.append(" - ").append(getKnownAs());
+				}
+			}
+		}
+		else if(getLastName() != null) {
+			builder.append(getLastName());
+			if(getKnownAs() != null) {
+				builder.append(" - ").append(getKnownAs());
+			}
+		}
+		else if(getKnownAs() != null) {
+			builder.append(getKnownAs());
+		}
+
+		return builder.toString();
+	}
+
 	private void generateRandomStat(Statistic statistic) {
 		short roll;
 		short rolls[] = new short[2];

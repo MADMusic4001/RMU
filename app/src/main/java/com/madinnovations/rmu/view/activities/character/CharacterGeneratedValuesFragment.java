@@ -43,7 +43,7 @@ import rx.Subscriber;
  * Handles interactions with the UI for character creation.
  */
 public class CharacterGeneratedValuesFragment extends Fragment {
-	private static final String LOG_TAG = "GeneratedValuesFrag";
+	private static final String TAG = "GeneratedValuesFrag";
 	@Inject
 	protected SkillRxHandler   skillRxHandler;
 	@Inject
@@ -150,7 +150,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception getting Body Development skill instance.", e);
+						Log.e(TAG, "Exception getting Body Development skill instance.", e);
 					}
 					@Override
 					public void onNext(Skill skill) {
@@ -170,7 +170,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception getting Power Development skill instance.", e);
+						Log.e(TAG, "Exception getting Power Development skill instance.", e);
 					}
 					@Override
 					public void onNext(Skill skill) {
@@ -186,7 +186,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught loading Realm instances.", e);
+						Log.e(TAG, "Exception caught loading Realm instances.", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realmCollection) {

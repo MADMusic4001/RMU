@@ -73,7 +73,7 @@ import rx.schedulers.Schedulers;
  */
 public class CreatureVarietyAttackPageFragment extends Fragment implements AttackBonusListAdapter.SetAttackBonus,
 		SkillBonusListAdapter.SetSkillBonus, EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
-	private static final String LOG_TAG = "CVAttackPageFragment";
+	private static final String TAG = "CVAttackPageFragment";
 	private static final String DRAG_ADD_ATTACK = "add-attack";
 	private static final String DRAG_REMOVE_ATTACK = "remove-attack";
 	private static final String DRAG_ADD_SKILL = "add-skill";
@@ -337,7 +337,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG,
+						Log.e(TAG,
 							  "Exception caught loading all Attack instances in initSecondaryAttacksList", e);
 					}
 					@Override
@@ -456,7 +456,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG,
+						Log.e(TAG,
 							  "Exception caught loading all Skill instances in initSecondaryAttacksList", e);
 					}
 					@Override

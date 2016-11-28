@@ -51,6 +51,11 @@
           android:id="@+id/power_level_spinner"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"/>
+      <Button
+          android:id="@+id/award_xp_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/label_award_xp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -86,6 +91,11 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/label_buy_stats"/>
+      <CheckBox
+          android:id="@+id/allow_talents_beyond_first_check_box"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/label_allow_talents_beyond_first"/>
     </LinearLayout>
 
     <LinearLayout

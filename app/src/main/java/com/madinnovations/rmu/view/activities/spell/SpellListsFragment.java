@@ -62,7 +62,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for body parts.
  */
 public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.GetValues<SpellList> {
-	private static final String LOG_TAG = "SpellListsFragment";
+	private static final String TAG = "SpellListsFragment";
 	@Inject
 	protected ProfessionRxHandler            professionRxHandler;
 	@Inject
@@ -200,6 +200,11 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		Profession profession;
 		SpellListType spellListType;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		stringValue = nameEdit.getText().toString();
 		if(stringValue.isEmpty()) {
 			stringValue = null;
@@ -304,7 +309,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+					Log.e(TAG, "Exception when deleting: " + item, e);
 					Toast.makeText(getActivity(), getString(R.string.toast_spell_list_delete_failed), Toast.LENGTH_SHORT).show();
 				}
 				@Override
@@ -344,7 +349,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving SpellList", e);
+						Log.e(TAG, "Exception saving SpellList", e);
 						String toastString = getString(R.string.toast_spell_list_save_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -450,7 +455,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught getting all Realm instances", e);
+							Log.e(TAG, "Exception caught getting all Realm instances", e);
 						}
 						@Override
 						public void onNext(Collection<Realm> realms) {
@@ -494,7 +499,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught getting all Realm instances", e);
+							Log.e(TAG, "Exception caught getting all Realm instances", e);
 						}
 						@Override
 						public void onNext(Collection<Realm> realms) {
@@ -532,7 +537,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Profession instances", e);
+						Log.e(TAG, "Exception caught getting all Profession instances", e);
 					}
 					@Override
 					public void onNext(Collection<Profession> professions) {
@@ -568,7 +573,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Profession instances", e);
+						Log.e(TAG, "Exception caught getting all Profession instances", e);
 					}
 					@Override
 					public void onNext(Collection<SpellListType> spellListTypes) {
@@ -614,7 +619,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 				}
 				@Override
 				public void onError(Throwable e) {
-					Log.e(LOG_TAG, "Exception caught getting all SpellList instances", e);
+					Log.e(TAG, "Exception caught getting all SpellList instances", e);
 					Toast.makeText(SpellListsFragment.this.getActivity(),
 							getString(R.string.toast_spell_lists_load_failed),
 							Toast.LENGTH_SHORT).show();

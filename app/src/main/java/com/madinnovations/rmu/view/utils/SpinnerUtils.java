@@ -35,7 +35,7 @@ import rx.Subscriber;
  * Generic Spinner handler code
  */
 public final class SpinnerUtils<T> {
-	private static final String LOG_TAG = "SpinnerUtils";
+	private static final String TAG = "SpinnerUtils";
 	private Spinner spinner;
 	private ArrayAdapter<T> adapter;
 
@@ -153,7 +153,7 @@ public final class SpinnerUtils<T> {
 			public void onCompleted() {}
 			@Override
 			public void onError(Throwable e) {
-				Log.e(LOG_TAG, "Exception caught loading spinner data.", e);
+				Log.e(TAG, "Exception caught loading spinner data.", e);
 			}
 			@Override
 			public void onNext(Collection<T> ts) {

@@ -74,8 +74,8 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietyMainPageFragment extends Fragment implements RacialStatBonusListAdapter.SetRacialStatBonus,
-		TalentTierListAdapter.SetTalentTier{
-	private static final String LOG_TAG = "CVMainPageFragment";
+		TalentTierListAdapter.TalentTiersAdapterCallbacks {
+	private static final String TAG = "CVMainPageFragment";
 	private static final String DRAG_ADD_TALENT = "add-talent";
 	private static final String DRAG_REMOVE_TALENT = "remove-talent";
 	@Inject
@@ -169,6 +169,16 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	@Override
 	public void onResume() {
 		super.onResume();
+	}
+
+	@Override
+	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
+		return false;
+	}
+
+	@Override
+	public boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel) {
+		return false;
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -557,7 +567,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all CreatureType instances", e);
+						Log.e(TAG, "Exception caught getting all CreatureType instances", e);
 					}
 					@Override
 					public void onNext(Collection<CreatureType> items) {
@@ -651,7 +661,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Size instances", e);
+						Log.e(TAG, "Exception caught getting all Size instances", e);
 					}
 					@Override
 					public void onNext(Collection<Size> items) {
@@ -1052,7 +1062,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Realm instances in initRealm1Spinner", e);
+						Log.e(TAG, "Exception caught getting all Realm instances in initRealm1Spinner", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
@@ -1093,7 +1103,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Realm instances in initRealm2Spinner", e);
+						Log.e(TAG, "Exception caught getting all Realm instances in initRealm2Spinner", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {
@@ -1142,7 +1152,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Outlook instances", e);
+						Log.e(TAG, "Exception caught getting all Outlook instances", e);
 					}
 					@Override
 					public void onNext(Collection<Outlook> outlooks) {
@@ -1203,7 +1213,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Talent instances in initTalentNamesList", e);
+						Log.e(TAG, "Exception caught getting all Talent instances in initTalentNamesList", e);
 					}
 					@Override
 					public void onNext(Collection<Talent> talents) {
@@ -1325,24 +1335,24 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		}
 	}
 
-	@Override
-	public void setTalentTier(TalentTier talentTier) {
-		boolean changed = false;
-
-		if(varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(talentTier.getTalent())) {
-			if(varietiesFragment.getCurrentInstance().getTalentTiersMap().get(talentTier.getTalent()) != talentTier.getTier()) {
-				varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talentTier.getTalent(), talentTier.getTier());
-				changed = true;
-			}
-		}
-		else {
-			varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talentTier.getTalent(), talentTier.getTier());
-			changed = true;
-		}
-		if(changed) {
-			varietiesFragment.saveItem();
-		}
-	}
+//	@Override
+//	public void setTalentTier(TalentTier talentTier) {
+//		boolean changed = false;
+//
+//		if(varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(talentTier.getTalent())) {
+//			if(varietiesFragment.getCurrentInstance().getTalentTiersMap().get(talentTier.getTalent()) != talentTier.getTier()) {
+//				varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talentTier.getTalent(), talentTier.getTier());
+//				changed = true;
+//			}
+//		}
+//		else {
+//			varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talentTier.getTalent(), talentTier.getTier());
+//			changed = true;
+//		}
+//		if(changed) {
+//			varietiesFragment.saveItem();
+//		}
+//	}
 
 	protected class TalentTierDragListener implements View.OnDragListener {
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);

@@ -77,7 +77,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature types.
  */
 public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureType> {
-	private static final String LOG_TAG = "CreatureTypeFragment";
+	private static final String TAG = "CreatureTypeFragment";
 	private static final String DRAG_ADD_TALENT = "add-talent";
 	private static final String DRAG_REMOVE_TALENT = "remove-talent";
 	@Inject
@@ -205,6 +205,11 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 		int position;
 		CreatureCategory newCategory;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		newValue = nameEdit.getText().toString();
 		if(newValue.isEmpty()) {
 			newValue = null;
@@ -289,7 +294,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving new CreatureType: " + currentInstance, e);
+							Log.e(TAG, "Exception saving new CreatureType: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_creature_type_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -327,7 +332,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_creature_type_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -424,7 +429,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all CreatureCategory instances", e);
+						Log.e(TAG, "Exception caught getting all CreatureCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<CreatureCategory> items) {
@@ -462,7 +467,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all TalentCategory instances.", e);
+						Log.e(TAG, "Exception caught getting all TalentCategory instances.", e);
 					}
 					@Override
 					public void onNext(Collection<TalentCategory> talentCategories) {
@@ -479,7 +484,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Talent instances.", e);
+						Log.e(TAG, "Exception caught getting all Talent instances.", e);
 					}
 					@Override
 					public void onNext(Collection<Talent> talents) {
@@ -624,7 +629,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all CreatureType instances in onCreateView", e);
+						Log.e(TAG, "Exception caught getting all CreatureType instances in onCreateView", e);
 						Toast.makeText(CreatureTypesFragment.this.getActivity(),
 								getString(R.string.toast_creature_types_load_failed),
 								Toast.LENGTH_SHORT).show();

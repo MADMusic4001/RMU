@@ -320,6 +320,11 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		ArrayAdapter<Statistic> stat2SpinnerAdapter = (ArrayAdapter<Statistic>)stat2Spinner.getAdapter();
 		ArrayAdapter<Statistic> stat3SpinnerAdapter = (ArrayAdapter<Statistic>)stat3Spinner.getAdapter();
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
 			newString = null;

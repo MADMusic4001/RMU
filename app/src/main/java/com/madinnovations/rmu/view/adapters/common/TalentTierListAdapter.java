@@ -16,18 +16,17 @@
 package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.DragEvent;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentTier;
 
 /**
@@ -36,22 +35,23 @@ import com.madinnovations.rmu.data.entities.common.TalentTier;
 public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_talent_tiers_row;
 	private ListView listView = null;
-	private LayoutInflater layoutInflater;
-	private SetTalentTier setTalentTierHandler;
+	private LayoutInflater              layoutInflater;
+	private TalentTiersAdapterCallbacks callbacks;
 
 	/**
 	 * Creates a new TalentTierListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
-	public TalentTierListAdapter(Context context, SetTalentTier setTalentTierHandler) {
+	public TalentTierListAdapter(Context context, TalentTiersAdapterCallbacks callbacks) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.setTalentTierHandler = setTalentTierHandler;
+		this.callbacks = callbacks;
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	@NonNull
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 
@@ -61,7 +61,9 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder((TextView) rowView.findViewById(R.id.talent_name_view),
-									(EditText) rowView.findViewById(R.id.talent_tiers_edit));
+									(TextView) rowView.findViewById(R.id.talent_tiers_view),
+									(ImageButton) rowView.findViewById(R.id.increment_button),
+									(ImageButton) rowView.findViewById(R.id.decrement_button));
 			rowView.setTag(holder);
 		}
 		else {
@@ -70,123 +72,71 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 		}
 
 		TalentTier talentTier = getItem(position);
-		holder.currentInstance = talentTier;
-		holder.talentNameView.setText(talentTier.getTalent().getName());
-		holder.tierEdit.setText(String.valueOf(talentTier.getTier()));
+		holder.talentTier = talentTier;
+		if(talentTier != null && talentTier.getTalent() != null) {
+			String builder = talentTier.getTalent().getName() + " (" + talentTier.getTalent().getDpCost() + "/"
+					+ talentTier.getTalent().getDpCostPerTier() + ")";
+			holder.talentNameView.setText(builder);
+			holder.tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
+		}
 
 		return rowView;
 	}
 
-	private class ViewHolder {
-		private TalentTier currentInstance;
-		private TextView talentNameView;
-		private EditText tierEdit;
+	public class ViewHolder {
+		private TalentTier  talentTier;
+		private TextView    talentNameView;
+		private TextView    tiersView;
+		private ImageButton incrementButton;
+		private ImageButton decrementButton;
 
-		ViewHolder(TextView talentNameView, EditText tierEdit) {
+		ViewHolder(TextView talentNameView, TextView tiersView, ImageButton incrementButton, ImageButton decrementButton) {
 			this.talentNameView = talentNameView;
-			initTalentNameView();
-			this.tierEdit = tierEdit;
-			initTierEdit();
+			this.tiersView = tiersView;
+			this.incrementButton = incrementButton;
+			this.decrementButton = decrementButton;
+
+			initIncrementButton();
+			initDecrementButton();
 		}
 
-		private void initTalentNameView() {
-			talentNameView.setOnClickListener(new View.OnClickListener() {
+		private void initIncrementButton() {
+			incrementButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(listView != null) {
-						int position = getPosition(currentInstance);
-						listView.setItemChecked(position, !listView.isItemChecked(position));
+					if(talentTier.getStartingTiers() < 2 && callbacks.purchaseTier(
+							talentTier.getTalent(),
+							talentTier.getStartingTiers(),
+							(short)(talentTier.getEndingTiers() - talentTier.getStartingTiers()))) {
+						talentTier.setEndingTiers((short)(talentTier.getEndingTiers() + 1));
+						tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
 					}
-				}
-			});
-
-			talentNameView.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					if(listView != null) {
-						return listView.performLongClick();
-					}
-					return true;
 				}
 			});
 		}
 
-		private void initTierEdit() {
-			tierEdit.setOnClickListener(new View.OnClickListener() {
+		private void initDecrementButton() {
+			decrementButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(listView != null) {
-						int position = getPosition(currentInstance);
-						listView.setItemChecked(position, !listView.isItemChecked(position));
+					if(talentTier.getEndingTiers() > 0 && callbacks.sellTier(
+							talentTier.getTalent(),
+							talentTier.getStartingTiers(),
+							(short)(talentTier.getEndingTiers() - talentTier.getStartingTiers()))) {
+						talentTier.setEndingTiers((short)(talentTier.getEndingTiers() - 1));
+						tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
 					}
 				}
-				});
+			});
+		}
 
-			tierEdit.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					if(listView != null) {
-						return listView.performLongClick();
-					}
-					return true;
-			}
-			});
-			tierEdit.setOnDragListener(new View.OnDragListener() {
-				@Override
-				public boolean onDrag(View v, DragEvent event) {
-					return true;
-				}
-			});
-			tierEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						tierEdit.setError(getContext().getString(R.string.validation_creature_variety_tier_required));
-					}
-					else {
-						try {
-							Short.valueOf(tierEdit.getText().toString());
-							tierEdit.setError(null);
-						}
-						catch (NumberFormatException ex) {
-							tierEdit.setError(getContext().getString(R.string.validation_creature_variety_tier_required));
-						}
-					}
-				}
-			});
-			tierEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(tierEdit.length() > 0) {
-							try {
-								short newTier = Short.valueOf(tierEdit.getText().toString());
-								if (newTier != currentInstance.getTier()) {
-									currentInstance.setTier(newTier);
-									setTalentTierHandler.setTalentTier(currentInstance);
-								}
-								tierEdit.setError(null);
-							}
-							catch (NumberFormatException ex) {
-								tierEdit.setError(getContext().getString(R.string.validation_creature_variety_tier_required));
-							}
-						}
-					}
-				}
-			});
+		public TalentTier getTalentTier() {
+			return talentTier;
 		}
 	}
 
-	public interface SetTalentTier {
-		/**
-		 * Sets a talent tier
-		 *
-		 * @param talentTier  a TalentTier instance
-		 */
-		public void setTalentTier(TalentTier talentTier);
+	public interface TalentTiersAdapterCallbacks {
+		boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel);
+		boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel);
 	}
 }

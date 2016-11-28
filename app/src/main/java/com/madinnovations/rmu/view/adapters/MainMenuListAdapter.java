@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class MainMenuListAdapter extends BaseExpandableListAdapter {
 	@SuppressWarnings("unused")
-	private static final String LOG_TAG = "MainMenuListAdapter";
+	private static final String TAG = "MainMenuListAdapter";
 	private LayoutInflater layoutInflater;
 	private ExpandableListView listView;
 	private List<String> groupHeaders;

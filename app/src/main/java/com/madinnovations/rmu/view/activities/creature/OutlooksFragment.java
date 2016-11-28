@@ -152,6 +152,11 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		String newValue = nameEdit.getText().toString();
 		if(newValue.isEmpty()) {
 			newValue = null;

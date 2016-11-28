@@ -39,6 +39,7 @@ public class Campaign {
 	private boolean individualStride = false;
 	private boolean noProfessions = false;
 	private boolean buyStats = false;
+	private boolean allowTalentsBeyondFirst = false;
 	private boolean openRounds = false;
 	private boolean grittyPoisonAndDisease;
 	private List<Specialization> restrictedSpecializations = new ArrayList<>();
@@ -83,6 +84,7 @@ public class Campaign {
 				.append("individualStride", individualStride)
 				.append("noProfessions", noProfessions)
 				.append("buyStats", buyStats)
+				.append("allowTalentsBeyondFirst", allowTalentsBeyondFirst)
 				.append("openRounds", openRounds)
 				.append("grittyPoisonAndDisease", grittyPoisonAndDisease)
 				.append("restrictedSpecializations", restrictedSpecializations)
@@ -163,6 +165,12 @@ public class Campaign {
 	}
 	public void setBuyStats(boolean buyStats) {
 		this.buyStats = buyStats;
+	}
+	public boolean isAllowTalentsBeyondFirst() {
+		return allowTalentsBeyondFirst;
+	}
+	public void setAllowTalentsBeyondFirst(boolean allowTalentsBeyondFirst) {
+		this.allowTalentsBeyondFirst = allowTalentsBeyondFirst;
 	}
 	public boolean isOpenRounds() {
 		return openRounds;

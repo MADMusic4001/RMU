@@ -56,7 +56,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for critical results.
  */
 public class CriticalResultsFragment extends Fragment {
-	private static final String LOG_TAG = "CriticalResultsFragment";
+	private static final String TAG = "CriticalResultsFragment";
 	@Inject
 	protected BodyPartRxHandler          bodyPartRxHandler;
 	@Inject
@@ -120,6 +120,11 @@ public class CriticalResultsFragment extends Fragment {
 		int position;
 		CriticalType newCriticalType = null;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		position = criticalTypeFilterSpinner.getSelectedItemPosition();
 		if(position >= 0) {
 			newCriticalType = criticalTypeFilterSpinnerAdapter.getItem(position);
@@ -148,7 +153,7 @@ public class CriticalResultsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving new CriticalResult", e);
+						Log.e(TAG, "Exception saving new CriticalResult", e);
 					}
 					@Override
 					public void onNext(CriticalResult savedCriticalResult) {
@@ -190,7 +195,7 @@ public class CriticalResultsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_critical_result_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -232,7 +237,7 @@ public class CriticalResultsFragment extends Fragment {
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all CriticalType instances", e);
+						Log.e(TAG, "Exception caught getting all CriticalType instances", e);
 					}
 					@Override
 					public void onNext(Collection<CriticalType> criticalTypes) {
@@ -329,7 +334,7 @@ public class CriticalResultsFragment extends Fragment {
 						}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception caught getting all CriticalResult instances", e);
+							Log.e(TAG, "Exception caught getting all CriticalResult instances", e);
 							Toast.makeText(CriticalResultsFragment.this.getActivity(),
 									getString(R.string.toast_critical_results_load_failed),
 									Toast.LENGTH_SHORT).show();

@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
@@ -41,6 +42,7 @@ import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -145,6 +147,39 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	@Override
 	protected void setId(Character instance, int id) {
 		instance.setId(id);
+	}
+
+	@Override
+	public List<Character> getAllForCampaign(Campaign campaign) {
+		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
+		final String selection = CharacterSchema.COLUMN_CAMPAIGN_ID + " = ?";
+		List<Character> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, CharacterSchema.COLUMN_FIRST_NAME);
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Character instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")

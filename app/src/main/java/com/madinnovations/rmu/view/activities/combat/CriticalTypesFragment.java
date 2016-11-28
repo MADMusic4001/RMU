@@ -196,6 +196,11 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 		boolean changed = false;
 		String value;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		value = codeEdit.getText().toString();
 		if(!value.isEmpty() && value.charAt(0) != currentInstance.getCode()) {
 			currentInstance.setCode(value.charAt(0));

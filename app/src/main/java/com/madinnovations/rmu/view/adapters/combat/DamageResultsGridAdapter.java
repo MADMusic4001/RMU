@@ -55,7 +55,7 @@ import rx.schedulers.Schedulers;
  * Populates a ListView with {@link DamageResultRow} information
  */
 public class DamageResultsGridAdapter extends BaseAdapter {
-	private static final String LOG_TAG = "DamageResultsGridAdapt";
+	private static final String TAG = "DamageResultsGridAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_damage_result_row;
 	private SparseArray<DamageResultRow> data;
 	private Context context;
@@ -224,7 +224,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception deleting DamageResult", e);
+						Log.e(TAG, "Exception deleting DamageResult", e);
 						if(toast != null) {
 							toast.cancel();
 						}
@@ -437,7 +437,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 						}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving DamageResult", e);
+							Log.e(TAG, "Exception saving DamageResult", e);
 							if(toast != null) {
 								toast.cancel();
 							}
@@ -465,7 +465,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 						}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
+							Log.e(TAG, "Exception saving DamageResultRow", e);
 							if(toast != null) {
 								toast.cancel();
 							}
@@ -496,7 +496,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 						}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving DamageResultRow", e);
+							Log.e(TAG, "Exception saving DamageResultRow", e);
 							if(toast != null) {
 								toast.cancel();
 							}

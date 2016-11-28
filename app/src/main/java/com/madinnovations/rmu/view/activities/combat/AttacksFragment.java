@@ -60,7 +60,7 @@ import rx.schedulers.Schedulers;
  */
 public class AttacksFragment extends Fragment implements TwoFieldListAdapter.GetValues<Attack>, EditTextUtils.ValuesCallback,
 		SpinnerUtils.ValuesCallback {
-	private static final String LOG_TAG = "AttacksFragment";
+	private static final String TAG = "AttacksFragment";
 	@Inject
 	protected AttackRxHandler              attackRxHandler;
 	@Inject
@@ -245,6 +245,11 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		boolean changed = false;
 		String value;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		if(codeEdit != null) {
 			value = codeEdit.getText().toString();
 			if (value.isEmpty()) {
@@ -321,7 +326,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+					Log.e(TAG, "Exception when deleting: " + item, e);
 					Toast.makeText(getActivity(), getString(R.string.toast_attack_delete_failed), Toast.LENGTH_SHORT).show();
 				}
 				@Override
@@ -361,7 +366,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception saving Attack", e);
+						Log.e(TAG, "Exception saving Attack", e);
 						String toastString = getString(R.string.toast_attack_save_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -409,7 +414,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				public void onCompleted() {}
 				@Override
 				public void onError(Throwable e) {
-					Log.e(LOG_TAG, "Exception caught getting all Attack instances", e);
+					Log.e(TAG, "Exception caught getting all Attack instances", e);
 					Toast.makeText(AttacksFragment.this.getActivity(),
 							getString(R.string.toast_attacks_load_failed),
 							Toast.LENGTH_SHORT).show();

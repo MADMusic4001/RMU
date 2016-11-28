@@ -172,6 +172,11 @@ public class SpellSubTypesFragment extends Fragment implements ThreeFieldListAda
 		boolean changed = false;
 		String stringValue;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		stringValue = nameEdit.getText().toString();
 		if(stringValue.isEmpty()) {
 			stringValue = null;

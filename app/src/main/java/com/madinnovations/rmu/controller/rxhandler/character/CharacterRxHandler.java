@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.controller.rxhandler.character;
 
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 
 import java.util.Collection;
@@ -156,6 +157,31 @@ public class CharacterRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Character
+	 * instances linked to the given Campaign.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Character
+	 * instances.
+	 */
+	public Observable<Collection<Character>> getAllForCampaign(final Campaign campaign) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Character>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Character>> subscriber) {
+						try {
+							subscriber.onNext(dao.getAllForCampaign(campaign));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}

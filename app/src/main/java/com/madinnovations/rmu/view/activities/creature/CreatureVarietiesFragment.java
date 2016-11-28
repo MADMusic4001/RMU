@@ -54,7 +54,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietiesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureVariety> {
-	private static final String LOG_TAG = "CreatureVarietiesFrag";
+	private static final String TAG = "CreatureVarietiesFrag";
 	@Inject
 	protected CreatureVarietyRxHandler           creatureVarietyRxHandler;
 	private TwoFieldListAdapter<CreatureVariety> listAdapter;
@@ -159,6 +159,11 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		if(mainPageFragment != null) {
 			changed = mainPageFragment.copyViewsToItem();
 		}
@@ -192,7 +197,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving new CreatureVariety: " + currentInstance, e);
+							Log.e(TAG, "Exception saving new CreatureVariety: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_creature_variety_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -230,7 +235,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_creature_variety_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -287,7 +292,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG,
+						Log.e(TAG,
 								"Exception caught getting all CreatureVariety instances in initListView", e);
 						Toast.makeText(CreatureVarietiesFragment.this.getActivity(),
 								getString(R.string.toast_creature_varieties_load_failed),

@@ -48,7 +48,7 @@ import rx.schedulers.Schedulers;
  * Populates a ListView with {@link CriticalResult} information
  */
 public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
-	private static final String LOG_TAG = "CriticalResultListAdapt";
+	private static final String TAG = "CriticalResultListAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_critical_result_row;
 	@Inject
 	BodyPartRxHandler              bodyPartRxHandler;
@@ -365,7 +365,7 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 							public void onCompleted() {}
 							@Override
 							public void onError(Throwable e) {
-								Log.e(LOG_TAG, "Exception saving new CriticalResult", e);
+								Log.e(TAG, "Exception saving new CriticalResult", e);
 							}
 							@Override
 							public void onNext(CriticalResult savedCriticalResult) {
@@ -394,7 +394,7 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 							public void onCompleted() {}
 							@Override
 							public void onError(Throwable e) {
-								Log.e(LOG_TAG, "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
+								Log.e(TAG, "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
 							}
 							@Override
 							public void onNext(Collection<BodyPart> bodyPartsResults) {

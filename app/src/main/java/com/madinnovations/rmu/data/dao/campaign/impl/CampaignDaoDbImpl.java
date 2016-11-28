@@ -51,7 +51,7 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
      * @param specializationDao  a {@link SpecializationDao} instance
      */
     @Inject
-    public CampaignDaoDbImpl(SQLiteOpenHelper helper, SpecializationDao specializationDao) {
+	protected CampaignDaoDbImpl(SQLiteOpenHelper helper, SpecializationDao specializationDao) {
         super(helper);
         this.specializationDao = specializationDao;
     }
@@ -97,6 +97,7 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
         instance.setIndividualStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_INDIVIDUAL_STRIDE)) == 1);
         instance.setNoProfessions(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NO_PROFESSIONS)) == 1);
         instance.setBuyStats(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BUY_STATS)) == 1);
+        instance.setAllowTalentsBeyondFirst(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ALLOW_TALENTS)) == 1);
         instance.setOpenRounds(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_OPEN_ROUNDS)) == 1);
         instance.setGrittyPoisonAndDisease(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRITTY_POISON_AND_DISEASE)) == 1);
         instance.setRestrictedSpecializations(getAttackRestrictions(instance.getId()));
@@ -109,11 +110,11 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(11);
+            values = new ContentValues(12);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(10);
+            values = new ContentValues(11);
         }
         values.put(COLUMN_NAME, instance.getName());
         values.put(COLUMN_CREATE_DATE, instance.getCreateDate().getTimeInMillis());
@@ -123,6 +124,7 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
         values.put(COLUMN_INDIVIDUAL_STRIDE, instance.isIndividualStride());
         values.put(COLUMN_NO_PROFESSIONS, instance.isNoProfessions());
         values.put(COLUMN_BUY_STATS, instance.isBuyStats());
+		values.put(COLUMN_ALLOW_TALENTS, instance.isAllowTalentsBeyondFirst());
         values.put(COLUMN_OPEN_ROUNDS, instance.isOpenRounds());
         values.put(COLUMN_GRITTY_POISON_AND_DISEASE, instance.isGrittyPoisonAndDisease());
 

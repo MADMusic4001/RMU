@@ -23,13 +23,21 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class TalentTier {
 	private Talent talent = null;
-	private short tier = 0;
+	private short  tier = 0;
+	private short  startingTiers = 0;
+	private short  endingTiers = 0;
 
 	/**
-	 * Creates a new TalentTier with the given attribute values
+	 * Creates a new TalentTier instance
+	 */
+	public TalentTier() {
+	}
+
+	/**
+	 * Creates a new TalentTier instance for the given Talent and number of tiers
 	 *
-	 * @param talent  a Talent instance to set the talent value for the new TalentTier instance
-	 * @param tier  a short to set the tier value for the new TalentTier instance
+	 * @param talent  a Talent instance
+	 * @param tier  the number of tiers already purchased
 	 */
 	public TalentTier(Talent talent, short tier) {
 		this.talent = talent;
@@ -41,6 +49,8 @@ public class TalentTier {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("talent", talent)
 				.append("tier", tier)
+				.append("startingTiers", startingTiers)
+				.append("endingTiers", endingTiers)
 				.toString();
 	}
 
@@ -71,5 +81,17 @@ public class TalentTier {
 	}
 	public void setTier(short tier) {
 		this.tier = tier;
+	}
+	public short getStartingTiers() {
+		return startingTiers;
+	}
+	public void setStartingTiers(short startingTiers) {
+		this.startingTiers = startingTiers;
+	}
+	public short getEndingTiers() {
+		return endingTiers;
+	}
+	public void setEndingTiers(short endingTiers) {
+		this.endingTiers = endingTiers;
 	}
 }

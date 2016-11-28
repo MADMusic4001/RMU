@@ -33,7 +33,7 @@ public enum Action {
 	PERCEPTION("Perception", (short)1, (short)2, false),
 	RANGED_ATTACK("Ranged Attack", (short)1, (short)3, false),
 	EAT_DRINK("Eat or Drink (herb/potion)", (short)2, (short)2, false),
-	CAST_SPELL("Case Spell", (short)2, (short)4, false),
+	CAST_SPELL("Cast Spell", (short)2, (short)4, false),
 	MELEE_ATTACK("Melee Attack", (short)2, (short)4, false),
 	GET_ITEM_FROM_GROUND("Get Item from Ground", (short)3, (short)3, false),
 	DODGE("Dodge", (short)4, (short)4, false),

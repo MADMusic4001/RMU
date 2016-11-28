@@ -18,6 +18,8 @@ package com.madinnovations.rmu.view.activities.campaign;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.DragEvent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,22 +39,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.PowerLevel;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
+import com.madinnovations.rmu.view.adapters.character.SelectCharacterAdapter;
 import com.madinnovations.rmu.view.di.modules.CampaignFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
@@ -61,8 +69,10 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -74,31 +84,36 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for campaigns.
  */
 public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Campaign>, EditTextUtils.ValuesCallback,
-		CheckBoxUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
-	private static final String LOG_TAG = "CampaignsFragment";
+		CheckBoxUtils.ValuesCallback, SpinnerUtils.ValuesCallback, SelectCharacterAdapter.CharacterAdapterCallbacks {
+	private static final String TAG = "CampaignsFragment";
 	private static final String DRAG_ADD_RESTRICTION = "add-restriction";
 	private static final String DRAG_REMOVE_RESTRICTION = "remove-restriction";
 	@Inject
-	protected CampaignRxHandler          campaignRxHandler;
+	protected CampaignRxHandler            campaignRxHandler;
 	@Inject
-	protected SpecializationRxHandler    specializationsRxHandler;
-	private ArrayAdapter<Specialization> specializationAdapter;
-	private ArrayAdapter<Specialization> restrictionsAdapter;
-	private ArrayAdapter<Campaign> listAdapter;
-	private ListView               listView;
-	private EditText               nameEdit;
-	private Spinner                powerLevelSpinner;
-	private CheckBox               awardDPCheckBox;
-	private CheckBox               intenseTrainingCheckBox;
-	private CheckBox               individualStrideCheckBox;
-	private CheckBox               noProfessionsCheckBox;
-	private CheckBox               buyStatsCheckBox;
-	private CheckBox               openRoundsCheckBox;
-	private CheckBox               grittyPoisonsCheckBox;
-	private ListView               specializationsListView;
-	private ListView               restrictionsListview;
-	private boolean                isNew = true;
-	private Campaign               currentInstance = new Campaign();
+	protected CharacterRxHandler           characterRxHandler;
+	@Inject
+	protected SpecializationRxHandler      specializationsRxHandler;
+	private   ArrayAdapter<Specialization> specializationAdapter;
+	private   ArrayAdapter<Specialization> restrictionsAdapter;
+	private   ArrayAdapter<Campaign>       listAdapter;
+	private   ListView                     listView;
+	private   EditText                     nameEdit;
+	private   Spinner                      powerLevelSpinner;
+	private   CheckBox                     awardDPCheckBox;
+	private   CheckBox                     intenseTrainingCheckBox;
+	private   CheckBox                     individualStrideCheckBox;
+	private   CheckBox                     noProfessionsCheckBox;
+	private   CheckBox                     buyStatsCheckBox;
+	private   CheckBox                     allowTalentsBeyondFirstCheckBox;
+	private   CheckBox                     openRoundsCheckBox;
+	private   CheckBox                     grittyPoisonsCheckBox;
+	private ListView                       specializationsListView;
+	private ListView                       restrictionsListView;
+	private boolean                        isNew = true;
+	private Campaign                       currentInstance = new Campaign();
+	private Map<Character, Boolean>        characterSelectedMap = new HashMap<>();
+	private Toast                          toast = null;
 
 	// <editor-fold desc="method overrides/implementations">
 	@Nullable
@@ -116,11 +131,13 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 				R.string.validation_campaign_name_required);
 		powerLevelSpinner = new SpinnerUtils<PowerLevel>().initSpinner(layout, getActivity(),
 				Arrays.asList(PowerLevel.values()), this, R.id.power_level_spinner, null);
+		initAwardXPButton((ViewGroup)layout);
 		awardDPCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.award_dp_check_box);
 		intenseTrainingCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.intense_training_check_box);
 		individualStrideCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.individual_stride_check_box);
 		noProfessionsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.no_professions_check_box);
 		buyStatsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.buy_stats_check_box);
+		allowTalentsBeyondFirstCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.allow_talents_beyond_first_check_box);
 		openRoundsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.open_rounds_check_box);
 		grittyPoisonsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.gritty_check_box);
 		initSpecializationsViews(layout);
@@ -252,6 +269,9 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 			case R.id.buy_stats_check_box:
 				result = currentInstance.isBuyStats();
 				break;
+			case R.id.allow_talents_beyond_first_check_box:
+				result = currentInstance.isAllowTalentsBeyondFirst();
+				break;
 			case R.id.open_rounds_check_box:
 				result = currentInstance.isOpenRounds();
 				break;
@@ -284,6 +304,10 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 				break;
 			case R.id.buy_stats_check_box:
 				currentInstance.setBuyStats(newBoolean);
+				saveItem();
+				break;
+			case R.id.allow_talents_beyond_first_check_box:
+				currentInstance.setAllowTalentsBeyondFirst(newBoolean);
 				saveItem();
 				break;
 			case R.id.open_rounds_check_box:
@@ -319,7 +343,23 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 				break;
 		}
 	}
-	// </editor-fold>
+
+	@Override
+	public boolean isSelected(Character character) {
+		boolean result = false;
+
+		if(characterSelectedMap.get(character) != null) {
+			result = characterSelectedMap.get(character);
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setSelected(Character character, boolean selected) {
+		characterSelectedMap.put(character, selected);
+	}
+// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
@@ -327,6 +367,11 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		String newString;
 		PowerLevel newPowerLevel;
 		boolean newBoolean;
+
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
 
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
@@ -372,6 +417,12 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		newBoolean = buyStatsCheckBox.isChecked();
 		if(newBoolean != currentInstance.isBuyStats()) {
 			currentInstance.setBuyStats(newBoolean);
+			changed = true;
+		}
+
+		newBoolean = allowTalentsBeyondFirstCheckBox.isChecked();
+		if(newBoolean != currentInstance.isAllowTalentsBeyondFirst()) {
+			currentInstance.setAllowTalentsBeyondFirst(newBoolean);
 			changed = true;
 		}
 
@@ -424,6 +475,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		individualStrideCheckBox.setChecked(currentInstance.isIndividualStride());
 		noProfessionsCheckBox.setChecked(currentInstance.isNoProfessions());
 		buyStatsCheckBox.setChecked(currentInstance.isBuyStats());
+		allowTalentsBeyondFirstCheckBox.setChecked(currentInstance.isAllowTalentsBeyondFirst());
 		openRoundsCheckBox.setChecked(currentInstance.isOpenRounds());
 		grittyPoisonsCheckBox.setChecked(currentInstance.isGrittyPoisonAndDisease());
 		restrictionsAdapter.clear();
@@ -529,6 +581,98 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	// </editor-fold>
 
 	// <editor-fold desc="Widget initialization methods">
+	private void initAwardXPButton(final ViewGroup layout) {
+		Button awardXpButton = (Button)layout.findViewById(R.id.award_xp_button);
+		awardXpButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View popupView = layoutInflater.inflate(R.layout.award_xp_popup, null);
+				popupView.setBackgroundColor(Color.BLACK);
+				final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT,
+																ViewGroup.LayoutParams.WRAP_CONTENT);
+
+				ListView charactersListView = (ListView)popupView.findViewById(R.id.characters_list_view);
+				final SelectCharacterAdapter adapter = new SelectCharacterAdapter(getActivity(), CampaignsFragment.this);
+				charactersListView.setAdapter(adapter);
+
+				characterRxHandler.getAllForCampaign(currentInstance)
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribeOn(Schedulers.io())
+						.subscribe(new Subscriber<Collection<Character>>() {
+							@Override
+							public void onCompleted() {}
+							@Override
+							public void onError(Throwable e) {
+								Log.e(TAG, "Error loading Characters for Campaign", e);
+							}
+							@Override
+							public void onNext(Collection<Character> characters) {
+								for(Character character : characters) {
+									characterSelectedMap.put(character, false);
+								}
+								adapter.clear();
+								adapter.addAll(characters);
+								adapter.notifyDataSetChanged();
+							}
+						});
+
+				final EditText xpEdit = (EditText)popupView.findViewById(R.id.experience_points_edit);
+				Button popupAwardButton = (Button)popupView.findViewById(R.id.award_xp_button);
+				popupAwardButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if(xpEdit.getText().length() > 0) {
+							int xp = Integer.valueOf(xpEdit.getText().toString());
+							for(Map.Entry<Character, Boolean> entry : characterSelectedMap.entrySet()) {
+								if(entry.getValue()) {
+									entry.getKey().setExperiencePoints(entry.getKey().getExperiencePoints() + xp);
+									characterRxHandler.save(entry.getKey())
+											.observeOn(AndroidSchedulers.mainThread())
+											.subscribeOn(Schedulers.io())
+											.subscribe(new Subscriber<Character>() {
+												@Override
+												public void onCompleted() {}
+												@Override
+												public void onError(Throwable e) {
+													Log.e(TAG, "Exception caught saving character xp", e);
+												}
+												@Override
+												public void onNext(Character character) {
+													if(toast != null) {
+														toast.cancel();
+													}
+													toast = Toast.makeText(getActivity(),
+																		   getString(R.string.toast_character_saved),
+																		   Toast.LENGTH_SHORT);
+													toast.show();
+												}
+											});
+								}
+							}
+						}
+						popupWindow.dismiss();
+					}
+				});
+
+				final CheckBox selectAllCheckBox = (CheckBox)popupView.findViewById(R.id.select_all_check_box);
+				selectAllCheckBox.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						for(Character character :  characterSelectedMap.keySet()) {
+							characterSelectedMap.put(character, selectAllCheckBox.isChecked());
+						}
+						adapter.notifyDataSetChanged();
+					}
+				});
+
+				popupWindow.setFocusable(true);
+				popupWindow.update();
+				popupWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+			}
+		});
+	}
+
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
@@ -551,7 +695,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Campaign instances", e);
+						Log.e(TAG, "Exception caught getting all Campaign instances", e);
 						Toast.makeText(CampaignsFragment.this.getActivity(),
 								getString(R.string.toast_campaigns_load_failed),
 								Toast.LENGTH_SHORT).show();
@@ -599,9 +743,9 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		specializationAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
 		specializationsListView.setAdapter(specializationAdapter);
 
-		restrictionsListview = (ListView)layout.findViewById(R.id.restricted_specializations_list);
+		restrictionsListView = (ListView)layout.findViewById(R.id.restricted_specializations_list);
 		restrictionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		restrictionsListview.setAdapter(restrictionsAdapter);
+		restrictionsListView.setAdapter(restrictionsAdapter);
 		restrictionsAdapter.addAll(currentInstance.getRestrictedSpecializations());
 		restrictionsAdapter.notifyDataSetChanged();
 
@@ -611,7 +755,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting character attack Specializations.", e);
+						Log.e(TAG, "Exception caught getting character attack Specializations.", e);
 					}
 					@Override
 					public void onNext(Collection<Specialization> specializations) {
@@ -659,16 +803,16 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 			}
 		});
 
-		restrictionsListview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+		restrictionsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-				if(!restrictionsListview.isItemChecked(position)) {
-					restrictionsListview.setItemChecked(position, true);
+				if(!restrictionsListView.isItemChecked(position)) {
+					restrictionsListView.setItemChecked(position, true);
 				}
 				ClipData dragData = null;
 
-				SparseBooleanArray checkedItems = restrictionsListview.getCheckedItemPositions();
-				List<View> checkedViews = new ArrayList<>(restrictionsListview.getCheckedItemCount());
+				SparseBooleanArray checkedItems = restrictionsListView.getCheckedItemPositions();
+				List<View> checkedViews = new ArrayList<>(restrictionsListView.getCheckedItemCount());
 				for(int i = 0; i < checkedItems.size(); i++) {
 					int currentPosition = checkedItems.keyAt(i);
 					Specialization specialization = restrictionsAdapter.getItem(currentPosition);
@@ -682,7 +826,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 						else {
 							dragData.addItem(clipDataItem);
 						}
-						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), restrictionsListview));
+						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), restrictionsListView));
 					}
 				}
 				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
@@ -699,7 +843,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		});
 
 		specializationsListView.setOnDragListener(new RemoveRestrictionDragListener());
-		restrictionsListview.setOnDragListener(new AddRestrictionDragListener());
+		restrictionsListView.setOnDragListener(new AddRestrictionDragListener());
 	}
 
 	private View getViewByPosition(int pos, ListView listView) {
@@ -718,7 +862,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	protected class AddRestrictionDragListener implements View.OnDragListener {
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
 		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = restrictionsListview.getBackground();
+		private Drawable normalShape = restrictionsListView.getBackground();
 
 		@Override
 		public boolean onDrag(View v, DragEvent event) {
@@ -790,7 +934,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	protected class RemoveRestrictionDragListener implements View.OnDragListener {
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
 		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = restrictionsListview.getBackground();
+		private Drawable normalShape = restrictionsListView.getBackground();
 
 		@Override
 		public boolean onDrag(View v, DragEvent event) {
@@ -840,7 +984,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 							}
 						}
 						CampaignsFragment.this.saveItem();
-						restrictionsListview.clearChoices();
+						restrictionsListView.clearChoices();
 						restrictionsAdapter.notifyDataSetChanged();
 						v.setBackground(normalShape);
 						v.invalidate();

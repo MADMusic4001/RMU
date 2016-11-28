@@ -64,7 +64,7 @@ import rx.schedulers.Schedulers;
  */
 public class CulturesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Culture>,
 		CultureSkillRanksListAdapter.CultureRanksCallbacks, EditTextUtils.ValuesCallback {
-	private static final String LOG_TAG = "CulturesFragment";
+	private static final String TAG = "CulturesFragment";
 	@Inject
 	protected CultureRxHandler             cultureRxHandler;
 	@Inject
@@ -227,6 +227,10 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 
 	// <editor-fold desc="Copy to/from views/entity methods">
 	private boolean copyViewsToItem() {
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
 		boolean changed = false;
 		String newString;
 		short newShort;
@@ -384,7 +388,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Skill instances.", e);
+						Log.e(TAG, "Exception caught getting all Skill instances.", e);
 					}
 					@Override
 					public void onNext(Collection<Skill> skills) {

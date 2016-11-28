@@ -15,16 +15,20 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Talent Effect information
  */
 public class TalentParameterRow {
-	private Parameter      parameter              = Parameter.BONUS;
-	private boolean        perTier                = false;
-	private boolean        perLevel               = false;
-	private boolean        perRound               = false;
-	private String         enumName               = null;
-	private Integer        value                  = 0;
+	private Parameter parameter    = Parameter.BONUS;
+	private boolean   perTier      = false;
+	private boolean   perLevel     = false;
+	private boolean   perRound     = false;
+	private String    enumName     = null;
+	private Integer   initialValue = null;
+	private Integer   valuePer     = null;
 
 	@Override
 	public boolean equals(Object o) {
@@ -45,12 +49,45 @@ public class TalentParameterRow {
 		return getParameter() != null ? getParameter().hashCode() : 0;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("parameter", parameter)
+				.append("perTier", perTier)
+				.append("perLevel", perLevel)
+				.append("perRound", perRound)
+				.append("enumName", enumName)
+				.append("initialValue", initialValue)
+				.append("valuePer", valuePer)
+				.toString();
+	}
+
+	/**
+	 * Prints a debug String of all the attributes.
+	 *
+	 * @return a String listing all the attribute values.
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("parameter", parameter)
+				.append("perTier", perTier)
+				.append("perLevel", perLevel)
+				.append("perRound", perRound)
+				.append("enumName", enumName)
+				.append("initialValue", initialValue)
+				.append("valuePer", valuePer)
+				.toString();
+	}
+
 	// Getters and setters
 	public Parameter getParameter() {
 		return parameter;
 	}
 	public void setParameter(Parameter parameter) {
 		this.parameter = parameter;
+		this.initialValue = 0;
 	}
 	public boolean isPerTier() {
 		return perTier;
@@ -76,10 +113,17 @@ public class TalentParameterRow {
 	public void setEnumName(String enumName) {
 		this.enumName = enumName;
 	}
-	public Integer getValue() {
-		return value;
+	public Integer getInitialValue() {
+		return initialValue;
 	}
-	public void setValue(Integer value) {
-		this.value = value;
+	public void setInitialValue(Integer initialValue) {
+		this.initialValue = initialValue;
+	}
+	public Integer getValuePer() {
+		return valuePer;
+	}
+	public void setValuePer(Integer valuePer)
+	{
+		this.valuePer = valuePer;
 	}
 }

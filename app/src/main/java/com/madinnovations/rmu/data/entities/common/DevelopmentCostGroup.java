@@ -69,6 +69,7 @@ public enum DevelopmentCostGroup {
 	 *
 	 * @return a formatted string containing the attributes of this instance.
 	 */
+	@SuppressWarnings("unused")
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("firstCost", firstCost)

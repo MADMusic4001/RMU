@@ -44,31 +44,51 @@
       android:layout_centerVertical="true"/>
 
   <TextView
-      android:id="@+id/value_label"
+      android:id="@+id/initial_value_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_toRightOf="@id/parameter_spinner"
       android:layout_toEndOf="@id/parameter_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
-      android:text="@string/input_label_value"/>
+      android:text="@string/input_label_initial_value"/>
   <EditText
-      android:id="@+id/value_edit"
+      android:id="@+id/initial_value_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:inputType="numberSigned"
-      android:layout_toRightOf="@id/value_label"
-      android:layout_toEndOf="@id/value_label"
+      android:layout_toRightOf="@id/initial_value_label"
+      android:layout_toEndOf="@id/initial_value_label"
       android:layout_centerVertical="true"
       android:background="@null"
       android:visibility="gone"
-      android:hint="@string/hint_value"/>
+      android:hint="@string/hint_initial_value"/>
+  <TextView
+      android:id="@+id/value_per_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/initial_value_edit"
+      android:layout_toEndOf="@id/initial_value_edit"
+      android:layout_centerVertical="true"
+      android:visibility="gone"
+      android:text="@string/input_label_value_per"/>
+  <EditText
+      android:id="@+id/value_per_edit"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:inputType="numberSigned"
+      android:layout_toRightOf="@id/value_per_label"
+      android:layout_toEndOf="@id/value_per_label"
+      android:layout_centerVertical="true"
+      android:background="@null"
+      android:visibility="gone"
+      android:hint="@string/hint_value_per"/>
   <CheckBox
       android:id="@+id/per_tier_check_box"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/value_edit"
-      android:layout_toEndOf="@id/value_edit"
+      android:layout_toRightOf="@id/value_per_edit"
+      android:layout_toEndOf="@id/value_per_edit"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/label_per_tier"/>

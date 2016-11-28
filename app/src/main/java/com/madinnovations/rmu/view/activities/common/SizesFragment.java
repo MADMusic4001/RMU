@@ -165,6 +165,11 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		String newValue = codeEdit.getText().toString();
 		if(newValue.isEmpty()) {
 			newValue = null;

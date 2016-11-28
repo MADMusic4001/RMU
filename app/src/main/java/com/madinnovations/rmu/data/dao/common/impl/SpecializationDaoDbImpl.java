@@ -44,7 +44,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> implements SpecializationDao, SpecializationSchema {
-	private static final String  LOG_TAG = "SpecializationDaoImp";
+	private static final String  TAG = "SpecializationDaoImp";
     private SkillDao skillDao;
 
     /**
@@ -134,7 +134,7 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
 		final String selection = SpecializationStatsSchema.COLUMN_SPECIALIZATION_ID + " = ?";
 
 		int numDeleted = db.delete(SpecializationStatsSchema.TABLE_NAME, selection, selectionArgs);
-		Log.d(LOG_TAG, "Deleted " + numDeleted + " relationships.");
+		Log.d(TAG, "Deleted " + numDeleted + " relationships.");
 		result = (numDeleted >= 0);
 
 		return result;

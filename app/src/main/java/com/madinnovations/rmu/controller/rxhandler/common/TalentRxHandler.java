@@ -17,6 +17,7 @@ package com.madinnovations.rmu.controller.rxhandler.common;
 
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentCategory;
 
 import java.util.Collection;
 
@@ -156,6 +157,29 @@ public class TalentRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Talent instances.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Talent instances.
+	 */
+	public Observable<Collection<Talent>> getTalentsForTalentCategory(final TalentCategory filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Talent>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Talent>> subscriber) {
+						try {
+							subscriber.onNext(dao.getTalentsForTalentCategory(filter));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}

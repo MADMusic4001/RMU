@@ -131,7 +131,7 @@ import rx.schedulers.Schedulers;
  */
 public class ImportExportRxHandler {
 	private static final int NUM_TYPES = 31;
-	private static final String LOG_TAG = "ImportExportRxHandler";
+	private static final String TAG = "ImportExportRxHandler";
 	private static final String VERSION = "version";
 	private AttackDao                   attackDao;
 	private AttackSerializer            attackSerializer = new AttackSerializer();
@@ -321,7 +321,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											skillCategoryDao.save(skillCategories, true);
-											Log.i(LOG_TAG, "Loaded " + skillCategories.size() + " skillCategories.");
+											Log.i(TAG, "Loaded " + skillCategories.size() + " skillCategories.");
 											skillCategories = null;
 											break;
 										case Skill.JSON_NAME:
@@ -333,7 +333,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											skillDao.save(skills, true);
-											Log.i(LOG_TAG, "Loaded " + skills.size() + " skills.");
+											Log.i(TAG, "Loaded " + skills.size() + " skills.");
 											skills = null;
 											break;
 										case TalentCategory.JSON_NAME:
@@ -345,7 +345,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											talentCategoryDao.save(talentCategories, true);
-											Log.i(LOG_TAG, "Loaded " + talentCategories.size() + " talentCategories.");
+											Log.i(TAG, "Loaded " + talentCategories.size() + " talentCategories.");
 											talentCategories = null;
 											break;
 										case Talent.JSON_NAME:
@@ -357,7 +357,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											talentDao.save(talents, true);
-											Log.i(LOG_TAG, "Loaded " + talents.size() + " talents.");
+											Log.i(TAG, "Loaded " + talents.size() + " talents.");
 											talents = null;
 											break;
 										case ItemTemplate.JSON_NAME:
@@ -369,7 +369,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											itemTemplateDao.save(itemTemplates, true);
-											Log.i(LOG_TAG, "Loaded " + itemTemplates.size() + " itemTemplates.");
+											Log.i(TAG, "Loaded " + itemTemplates.size() + " itemTemplates.");
 											itemTemplates = null;
 											break;
 										case Item.JSON_NAME:
@@ -381,7 +381,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											itemDao.save(items, true);
-											Log.i(LOG_TAG, "Loaded " + items.size() + " items.");
+											Log.i(TAG, "Loaded " + items.size() + " items.");
 											items = null;
 											break;
 										case BodyPart.JSON_NAME:
@@ -393,7 +393,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											bodyPartDao.save(bodyParts, true);
-											Log.i(LOG_TAG, "Loaded " + bodyParts.size() + " bodyParts.");
+											Log.i(TAG, "Loaded " + bodyParts.size() + " bodyParts.");
 											bodyParts = null;
 											break;
 										case CriticalType.JSON_NAME:
@@ -405,7 +405,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											criticalTypeDao.save(criticalTypes, true);
-											Log.i(LOG_TAG, "Loaded " + criticalTypes.size() + " criticalTypes.");
+											Log.i(TAG, "Loaded " + criticalTypes.size() + " criticalTypes.");
 											criticalTypes = null;
 											break;
 										case CriticalResult.JSON_NAME:
@@ -417,7 +417,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											criticalResultDao.save(criticalResults, true);
-											Log.i(LOG_TAG, "Loaded " + criticalResults.size() + " criticalResults.");
+											Log.i(TAG, "Loaded " + criticalResults.size() + " criticalResults.");
 											criticalResults = null;
 											break;
 										case DamageTable.JSON_NAME:
@@ -429,7 +429,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											damageTableDao.save(damageTables, true);
-											Log.i(LOG_TAG, "Loaded " + damageTables.size() + " damageTables.");
+											Log.i(TAG, "Loaded " + damageTables.size() + " damageTables.");
 											damageTables = null;
 											break;
 										case DamageResultRow.JSON_NAME:
@@ -441,7 +441,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											damageResultRowDao.save(damageResultRows, true);
-											Log.i(LOG_TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
+											Log.i(TAG, "Loaded " + damageResultRows.size() + " damageResultRows.");
 											damageResultRows = null;
 											break;
 										case DamageResult.JSON_NAME:
@@ -453,7 +453,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											damageResultDao.save(damageResults, true);
-											Log.i(LOG_TAG, "Loaded " + damageResults.size() + " damageResults.");
+											Log.i(TAG, "Loaded " + damageResults.size() + " damageResults.");
 											damageResults = null;
 											break;
 										case WeaponTemplate.JSON_NAME:
@@ -465,7 +465,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											weaponTemplateDao.save(weaponTemplates, true);
-											Log.i(LOG_TAG, "Loaded " + weaponTemplates.size() + " weaponTemplates.");
+											Log.i(TAG, "Loaded " + weaponTemplates.size() + " weaponTemplates.");
 											weaponTemplates = null;
 											break;
 										case CreatureCategory.JSON_NAME:
@@ -477,7 +477,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											creatureCategoryDao.save(creatureCategories, true);
-											Log.i(LOG_TAG, "Loaded " + creatureCategories.size() + " creatureCategories.");
+											Log.i(TAG, "Loaded " + creatureCategories.size() + " creatureCategories.");
 											creatureCategories = null;
 											break;
 										case CreatureType.JSON_NAME:
@@ -489,7 +489,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											creatureTypeDao.save(creatureTypes, true);
-											Log.i(LOG_TAG, "Loaded " + creatureTypes.size() + " creatureTypes.");
+											Log.i(TAG, "Loaded " + creatureTypes.size() + " creatureTypes.");
 											creatureTypes = null;
 											break;
 										case Outlook.JSON_NAME:
@@ -501,7 +501,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											outlookDao.save(outlooks, true);
-											Log.i(LOG_TAG, "Loaded " + outlooks.size() + " outlooks.");
+											Log.i(TAG, "Loaded " + outlooks.size() + " outlooks.");
 											outlooks = null;
 											break;
 										case Realm.JSON_NAME:
@@ -513,7 +513,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											realmDao.save(realms, true);
-											Log.i(LOG_TAG, "Loaded " + realms.size() + " realms.");
+											Log.i(TAG, "Loaded " + realms.size() + " realms.");
 											realms = null;
 											break;
 										case Profession.JSON_NAME:
@@ -525,7 +525,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											professionDao.save(professions, true);
-											Log.i(LOG_TAG, "Loaded " + professions.size() + " professions.");
+											Log.i(TAG, "Loaded " + professions.size() + " professions.");
 											professions = null;
 											break;
 										case Culture.JSON_NAME:
@@ -537,7 +537,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											cultureDao.save(cultures, true);
-											Log.i(LOG_TAG, "Loaded " + cultures.size() + " cultures.");
+											Log.i(TAG, "Loaded " + cultures.size() + " cultures.");
 											cultures = null;
 											break;
 										case Race.JSON_NAME:
@@ -549,7 +549,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											raceDao.save(races, true);
-											Log.i(LOG_TAG, "Loaded " + races.size() + " races.");
+											Log.i(TAG, "Loaded " + races.size() + " races.");
 											races = null;
 											break;
 										case Specialization.JSON_NAME:
@@ -561,7 +561,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											specializationDao.save(specializations, true);
-											Log.i(LOG_TAG, "Loaded " + specializations.size() + " specializations.");
+											Log.i(TAG, "Loaded " + specializations.size() + " specializations.");
 											specializations = null;
 											break;
 										case Attack.JSON_NAME:
@@ -573,7 +573,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											attackDao.save(attacks, true);
-											Log.i(LOG_TAG, "Loaded " + attacks.size() + " attacks.");
+											Log.i(TAG, "Loaded " + attacks.size() + " attacks.");
 											attacks = null;
 											break;
 										case Campaign.JSON_NAME:
@@ -585,7 +585,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											campaignDao.save(campaigns, true);
-											Log.i(LOG_TAG, "Loaded " + campaigns.size() + " campaigns.");
+											Log.i(TAG, "Loaded " + campaigns.size() + " campaigns.");
 											campaigns = null;
 											break;
 										case CreatureArchetype.JSON_NAME:
@@ -597,7 +597,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											creatureArchetypeDao.save(creatureArchetypes, true);
-											Log.i(LOG_TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
+											Log.i(TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
 											creatureArchetypes = null;
 											break;
 										case SpellListType.JSON_NAME:
@@ -609,7 +609,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											spellListTypeDao.save(spellListTypes, true);
-											Log.i(LOG_TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
+											Log.i(TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
 											spellListTypes = null;
 											break;
 										case SpellSubType.JSON_NAME:
@@ -621,7 +621,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											spellSubTypeDao.save(spellSubTypes, true);
-											Log.i(LOG_TAG, "Loaded " + spellSubTypes.size() + " spellSubTypes.");
+											Log.i(TAG, "Loaded " + spellSubTypes.size() + " spellSubTypes.");
 											spellSubTypes = null;
 											break;
 										case SpellType.JSON_NAME:
@@ -633,7 +633,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											spellTypeDao.save(spellTypes, true);
-											Log.i(LOG_TAG, "Loaded " + spellTypes.size() + " spellTypes.");
+											Log.i(TAG, "Loaded " + spellTypes.size() + " spellTypes.");
 											spellTypes = null;
 											break;
 										case SpellList.JSON_NAME:
@@ -645,7 +645,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											spellListDao.save(spellLists, true);
-											Log.i(LOG_TAG, "Loaded " + spellLists.size() + " spellLists.");
+											Log.i(TAG, "Loaded " + spellLists.size() + " spellLists.");
 											spellLists = null;
 											break;
 										case Spell.JSON_NAME:
@@ -657,7 +657,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											spellDao.save(spells, true);
-											Log.i(LOG_TAG, "Loaded " + spells.size() + " spells.");
+											Log.i(TAG, "Loaded " + spells.size() + " spells.");
 											spells = null;
 											break;
 										case Character.JSON_NAME:
@@ -669,7 +669,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											characterDao.save(characters, true);
-											Log.i(LOG_TAG, "Loaded " + characters.size() + " characters.");
+											Log.i(TAG, "Loaded " + characters.size() + " characters.");
 											characters = null;
 											break;
 										case CreatureVariety.JSON_NAME:
@@ -681,7 +681,7 @@ public class ImportExportRxHandler {
 											}
 											jsonReader.endArray();
 											creatureVarietyDao.save(creatureVarieties, true);
-											Log.i(LOG_TAG, "Loaded " + creatureVarieties.size() + " creatureVarieties.");
+											Log.i(TAG, "Loaded " + creatureVarieties.size() + " creatureVarieties.");
 											creatureVarieties = null;
 											break;
 									}
@@ -693,7 +693,7 @@ public class ImportExportRxHandler {
 								db.setTransactionSuccessful();
 							}
 							catch(Exception e) {
-								Log.e(LOG_TAG, "Caught exception", e);
+								Log.e(TAG, "Caught exception", e);
 								throw new RMUAppException(e);
 							}
 							finally {

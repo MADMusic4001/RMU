@@ -57,6 +57,10 @@ public class Attack {
 
 	@Override
 	public String toString() {
+		return String.format("%1$s - %2$s", code, name);
+	}
+
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", id)
 				.append("code", code)

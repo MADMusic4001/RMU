@@ -66,7 +66,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for body parts.
  */
 public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Race>, EditTextUtils.ValuesCallback {
-	private static final String LOG_TAG = "RacesFragment";
+	private static final String TAG = "RacesFragment";
 	@Inject
 	protected RaceRxHandler       raceRxHandler;
 	@Inject
@@ -299,6 +299,11 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		Short oldShort;
 		float newFloat;
 		Size newSize;
+
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
 
 		newString = nameEdit.getText().toString();
 		if(newString.isEmpty()) {
@@ -591,7 +596,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Size instances", e);
+						Log.e(TAG, "Exception caught getting all Size instances", e);
 					}
 					@Override
 					public void onNext(Collection<Size> sizes) {
@@ -665,7 +670,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Realm instances", e);
+						Log.e(TAG, "Exception caught getting all Realm instances", e);
 					}
 					@Override
 					public void onNext(Collection<Realm> realms) {

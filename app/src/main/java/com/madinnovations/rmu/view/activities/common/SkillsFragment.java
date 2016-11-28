@@ -65,7 +65,7 @@ import rx.schedulers.Schedulers;
  */
 public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Skill>, EditTextUtils.ValuesCallback,
 		CheckBoxUtils.ValuesCallback {
-	private static final String LOG_TAG = "SkillsFragment";
+	private static final String TAG = "SkillsFragment";
 	@Inject
 	protected SkillRxHandler              skillRxHandler;
 	@Inject
@@ -268,6 +268,11 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		Statistic newStat;
 		boolean newBoolean;
 
+		View currentFocusView = getActivity().getCurrentFocus();
+		if(currentFocusView != null) {
+			currentFocusView.clearFocus();
+		}
+
 		String newValue = nameEdit.getText().toString();
 		if(newValue.isEmpty()) {
 			newValue = null;
@@ -408,7 +413,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						Toast.makeText(getActivity(), getString(R.string.toast_skill_delete_failed), Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -448,7 +453,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(LOG_TAG, "Exception saving Skill", e);
+							Log.e(TAG, "Exception saving Skill", e);
 							String toastString = getString(R.string.toast_skill_save_failed);
 							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 						}
@@ -515,7 +520,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all SkillCategory instances", e);
+						Log.e(TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> skillCategories) {
@@ -551,7 +556,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all SkillCategory instances", e);
+						Log.e(TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> skillCategories) {
@@ -745,7 +750,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 //					public void onCompleted() {}
 //					@Override
 //					public void onError(Throwable e) {
-//						Log.e(LOG_TAG, "Exception caught getting all Stat instances", e);
+//						Log.e(TAG, "Exception caught getting all Stat instances", e);
 //					}
 //					@Override
 //					public void onNext(Collection<Stat> items) {
@@ -835,7 +840,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(LOG_TAG, "Exception caught getting all Skill instances", e);
+						Log.e(TAG, "Exception caught getting all Skill instances", e);
 						Toast.makeText(SkillsFragment.this.getActivity(),
 								getString(R.string.toast_skills_load_failed),
 								Toast.LENGTH_SHORT).show();
