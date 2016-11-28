@@ -64,8 +64,8 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	private   TwoFieldListAdapter<CreatureArchetype> listAdapter;
 	private   ListView                               listView;
 	private   CreatureArchetypesFragmentPagerAdapter pagerAdapter    = null;
-	private CreatureArchetype                                currentInstance = new CreatureArchetype();
-	private boolean                                          isNew           = true;
+	private   CreatureArchetype                      currentInstance = new CreatureArchetype();
+	private   boolean                                isNew           = true;
 
 	@Nullable
 	@Override
@@ -266,7 +266,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initViewPager(View layout) {
 		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
-		pagerAdapter = new CreatureArchetypesFragment.CreatureArchetypesFragmentPagerAdapter(getFragmentManager());
+		pagerAdapter = new CreatureArchetypesFragment.CreatureArchetypesFragmentPagerAdapter(getChildFragmentManager());
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(CreatureArchetypesFragmentPagerAdapter.MAIN_PAGE_INDEX);
 	}

@@ -61,7 +61,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	private CreatureVarietyMainPageFragment      mainPageFragment = null;
 	private CreatureVarietyAttackPageFragment    attackPageFragment = null;
 	private ListView                             listView;
-	CreatureVarietyFragmentPagerAdapter          pagerAdapter = null;
+	private CreatureVarietyFragmentPagerAdapter  pagerAdapter = null;
 	private CreatureVariety currentInstance = new CreatureVariety();
 	private boolean         isNew           = true;
 
@@ -266,7 +266,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 	private void initViewPager(View layout) {
 		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
-		pagerAdapter = new CreatureVarietyFragmentPagerAdapter(getFragmentManager());
+		pagerAdapter = new CreatureVarietyFragmentPagerAdapter(getChildFragmentManager());
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(0);
 	}

@@ -314,7 +314,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 	private void initViewPager(View layout) {
 		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
-		pagerAdapter = new CharacterFragmentPagerAdapter(getFragmentManager());
+		pagerAdapter = new CharacterFragmentPagerAdapter(getChildFragmentManager());
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(0);
 	}
