@@ -616,20 +616,21 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-					ClipData dragData;
+					if(charactersFragment.getCurrentInstance().getExperiencePoints() == 0) {
+						ClipData dragData;
 
-					ClipData.Item clipDataItem = new ClipData.Item(String.valueOf(position));
-					dragData = new ClipData(DRAG_COST, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-					List<View> dragViewList = new ArrayList<>(1);
-					dragViewList.add(view);
-					View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(dragViewList);
+						ClipData.Item clipDataItem = new ClipData.Item(String.valueOf(position));
+						dragData = new ClipData(DRAG_COST, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+						List<View> dragViewList = new ArrayList<>(1);
+						dragViewList.add(view);
+						View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(dragViewList);
 
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-						view.startDragAndDrop(dragData, myShadow, position, 0);
-					}
-					else {
-						//noinspection deprecation
-						view.startDrag(dragData, myShadow, position, 0);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+							view.startDragAndDrop(dragData, myShadow, position, 0);
+						} else {
+							//noinspection deprecation
+							view.startDrag(dragData, myShadow, position, 0);
+						}
 					}
 					return false;
 				}
@@ -711,6 +712,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					adapter.addAll(entries);
 					adapter.notifyDataSetChanged();
 					v.invalidate();
+					charactersFragment.saveItem();
 					break;
 				case DragEvent.ACTION_DRAG_ENDED:
 					if(!event.getResult()) {

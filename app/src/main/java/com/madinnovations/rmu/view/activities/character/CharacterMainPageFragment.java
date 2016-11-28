@@ -457,6 +457,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				if(character.getCurrentLevel() < ((short)(character.getExperiencePoints()/10000) - 1)) {
 					character.setCurrentLevel((short)(character.getCurrentLevel() + 1));
 					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() + 50));
+					charactersFragment.saveItem();
 				}
 			}
 		});
@@ -570,7 +571,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.AGILITY,
 																		R.id.agility_temp_view,
 																		R.id.agility_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.AGILITY, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.AGILITY));
 
 		textView = (TextView) layout.findViewById(R.id.constitution_label);
 		textView.setText(Statistic.CONSTITUTION.toString());
@@ -582,7 +583,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.CONSTITUTION,
 																		R.id.constitution_temp_view,
 																		R.id.constitution_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.CONSTITUTION, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.CONSTITUTION));
 
 		textView = (TextView) layout.findViewById(R.id.empathy_label);
 		textView.setText(Statistic.EMPATHY.toString());
@@ -594,7 +595,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.EMPATHY,
 																		R.id.empathy_temp_view,
 																		R.id.empathy_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.EMPATHY, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.EMPATHY));
 
 		textView = (TextView) layout.findViewById(R.id.intuition_label);
 		textView.setText(Statistic.INTUITION.toString());
@@ -606,7 +607,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.INTUITION,
 																		R.id.intuition_temp_view,
 																		R.id.intuition_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.INTUITION, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.INTUITION));
 
 		textView = (TextView) layout.findViewById(R.id.memory_label);
 		textView.setText(Statistic.MEMORY.toString());
@@ -618,7 +619,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.MEMORY,
 																		R.id.memory_temp_view,
 																		R.id.memory_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.MEMORY, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.MEMORY));
 
 		textView = (TextView) layout.findViewById(R.id.presence_label);
 		textView.setText(Statistic.PRESENCE.toString());
@@ -630,7 +631,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.PRESENCE,
 																		R.id.presence_temp_view,
 																		R.id.presence_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.PRESENCE, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.PRESENCE));
 
 		textView = (TextView) layout.findViewById(R.id.quickness_label);
 		textView.setText(Statistic.QUICKNESS.toString());
@@ -642,7 +643,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.QUICKNESS,
 																		R.id.quickness_temp_view,
 																		R.id.quickness_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.QUICKNESS, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.QUICKNESS));
 
 		textView = (TextView) layout.findViewById(R.id.reasoning_label);
 		textView.setText(Statistic.REASONING.toString());
@@ -654,7 +655,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.REASONING,
 																		R.id.reasoning_temp_view,
 																		R.id.reasoning_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.REASONING, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.REASONING));
 
 		textView = (TextView) layout.findViewById(R.id.self_discipline_label);
 		textView.setText(Statistic.SELF_DISCIPLINE.toString());
@@ -666,7 +667,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.SELF_DISCIPLINE,
 																		R.id.self_discipline_temp_view,
 																		R.id.self_discipline_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.SELF_DISCIPLINE, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.SELF_DISCIPLINE));
 
 		textView = (TextView) layout.findViewById(R.id.strength_label);
 		textView.setText(Statistic.STRENGTH.toString());
@@ -678,7 +679,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.STRENGTH,
 																		R.id.strength_temp_view,
 																		R.id.strength_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.STRENGTH, dragGroup));
+		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.STRENGTH));
 	}
 
 	private class StatGroupLongClickListener implements View.OnLongClickListener {
@@ -742,7 +743,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	protected class StatSwapDragListener implements View.OnDragListener {
 		private Statistic destStatistic;
-		private LinearLayout dragGroup;
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
 																   R.drawable.drag_target_background, null);
 		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(),
@@ -750,9 +750,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		private Drawable normalShape = ResourcesCompat.getDrawable(getActivity().getResources(),
 																   R.drawable.drag_normal_background, null);
 
-		StatSwapDragListener(Statistic destStatistic, LinearLayout dragGroup) {
+		StatSwapDragListener(Statistic destStatistic) {
 			this.destStatistic = destStatistic;
-			this.dragGroup = dragGroup;
 		}
 
 		@Override

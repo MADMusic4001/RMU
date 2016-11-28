@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.utils.DevelopmentCostGroupComparator;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -50,21 +51,20 @@ public class SkillCostGroup implements Comparable {
 		}
 		else {
 			SkillCostGroup o2 = (SkillCostGroup)o;
-			if(this.getSkill() != null) {
-				result = this.getSkill().getName().compareTo(o2.getSkill().getName());
-			}
-			else if (o2.getSkill() != null) {
-				result = 1;
-			}
-			else {
-				if(this.getCostGroup() != null) {
-					result = this.getCostGroup().compareTo(o2.getCostGroup());
-				}
-				else if(o2.getCostGroup() != null) {
-					result = -1;
-				}
-				else {
-					result = 0;
+			result = new DevelopmentCostGroupComparator().compare(this.getCostGroup(), o2.getCostGroup());
+			if(result == 0) {
+				if (this.getSkill() != null) {
+					result = this.getSkill().getName().compareTo(o2.getSkill().getName());
+				} else if (o2.getSkill() != null) {
+					result = 1;
+				} else {
+					if (this.getCostGroup() != null) {
+						result = this.getCostGroup().compareTo(o2.getCostGroup());
+					} else if (o2.getCostGroup() != null) {
+						result = -1;
+					} else {
+						result = 0;
+					}
 				}
 			}
 		}
