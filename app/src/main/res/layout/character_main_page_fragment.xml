@@ -184,6 +184,7 @@
         android:id="@+id/generate_stats_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAllCaps="false"
         android:text="@string/label_generate_stats"/>
   </LinearLayout>
 
@@ -299,6 +300,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_agility_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/agility_increment"
           android:layout_width="35dp"
@@ -331,6 +339,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_constitution_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/constitution_increment"
           android:layout_width="35dp"
@@ -363,6 +378,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_empathy_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/empathy_increment"
           android:layout_width="35dp"
@@ -395,6 +417,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_intuition_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/intuition_increment"
           android:layout_width="35dp"
@@ -427,6 +456,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_memory_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/memory_increment"
           android:layout_width="35dp"
@@ -567,6 +603,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_presence_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/presence_increment"
           android:layout_width="35dp"
@@ -599,6 +642,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_quickness_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/quickness_increment"
           android:layout_width="35dp"
@@ -631,6 +681,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_reasoning_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/reasoning_increment"
           android:layout_width="35dp"
@@ -663,6 +720,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_self_discipline_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/self_discipline_increment"
           android:layout_width="35dp"
@@ -695,6 +759,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/increase_strength_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:textAllCaps="false"
+          android:text="@string/label_increase_temp"/>
       <ImageButton
           android:id="@+id/strength_increment"
           android:layout_width="35dp"

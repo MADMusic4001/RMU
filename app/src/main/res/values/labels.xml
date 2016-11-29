@@ -260,6 +260,7 @@
   <!-- Button labels -->
   <string name="label_add_parameter">Add Parameter</string>
   <string name="label_award_xp">Award XP</string>
+  <string name="label_increase_temp">Increase Temp</string>
   <string name="label_remove_parameter">Remove Parameter</string>
   <string name="label_remove_damage_table">Remove Damage Table</string>
   <string name="label_generate_stats">Generate Stats</string>

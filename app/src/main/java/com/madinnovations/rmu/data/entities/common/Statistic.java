@@ -18,6 +18,8 @@ package com.madinnovations.rmu.data.entities.common;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
+import java.util.Random;
+
 /**
  * Class representing a RoleMaster statistic.
  */
@@ -83,6 +85,41 @@ public enum Statistic {
 		range[0] = bonusRangeStart[bonus + 15];
 		range[1] = (short)(bonusRangeStart[bonus + 16] - 1);
 		return range;
+	}
+
+	/**
+	 * Generates a stat gain roll.
+	 *
+	 * @param temp  the current stat temp value
+	 * @return  the amount to increase the stat (if not constrained by the potential).
+	 */
+	public short statGain(short temp) {
+		Random random = new Random();
+		short result = 0;
+
+		if(temp <= 6) {
+			result = (short) random.nextInt(3);
+		}
+		else if(temp <= 8) {
+			result = (short)(random.nextInt(3) + 1);
+		}
+		else if(temp <= 18) {
+			result = (short)(random.nextInt(6) + 1);
+		}
+		else if(temp <= 81) {
+			result = (short)(random.nextInt(10) + 1);
+		}
+		else if(temp <= 90) {
+			result = (short)(random.nextInt(6) + 1);
+		}
+		else if(temp <= 92) {
+			result = (short)(random.nextInt(3) + 1);
+		}
+		else if(temp <= 99) {
+			result = (short)random.nextInt(3);
+		}
+
+		return result;
 	}
 
 	@Override

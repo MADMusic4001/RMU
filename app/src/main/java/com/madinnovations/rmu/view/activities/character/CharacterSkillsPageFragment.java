@@ -127,6 +127,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				return false;
 			}
 		});
+		copyAssignableCosts();
 		return fragmentView;
 	}
 
@@ -309,6 +310,13 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	public void copyItemToViews() {
 		Character character = charactersFragment.getCurrentInstance();
 		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+		copyAssignableCosts();
+		copyTalentTiers();
+	}
+
+	private void copyAssignableCosts() {
+		Character character = charactersFragment.getCurrentInstance();
+
 		if(character.getProfession() != null) {
 			for (Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : character.getProfession()
 					.getAssignableSkillCostsMap().entrySet()) {
@@ -328,8 +336,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				}
 			}
 		}
-
-		copyTalentTiers();
 	}
 
 	private void copyTalentTiers() {

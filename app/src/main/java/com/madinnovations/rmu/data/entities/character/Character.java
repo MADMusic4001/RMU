@@ -77,6 +77,7 @@ public class Character {
 	private List<Item>                 items               = new ArrayList<>();
 	private Map<Skill, Short>          currentLevelSkillRanks = new HashMap<>();
 	private Map<Specialization, Short> currentLevelSpecializationRanks = new HashMap<>();
+	private int                        statIncreases = 0;
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -212,6 +213,59 @@ public class Character {
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Adds a Statistic to the statistics that have been increased this level.
+	 *
+	 * @param statistic  the Statistic that is being increased
+	 */
+	public void addStatIncrease(Statistic statistic) {
+		statIncreases |= (1 << statistic.ordinal());
+	}
+
+	/**
+	 * Checks if a Statistic has been increase this level.
+	 *
+	 * @param statistic  the Statistic to check
+	 * @return true if the Statistic has been increased this level, otherwise false.
+	 */
+	public boolean isStatIncreased(Statistic statistic) {
+		return (statIncreases & (1 << statistic.ordinal())) != 0;
+	}
+
+	/**
+	 * Sets the value of statIncreases to a specific value. Typically this should only be used when the value is read from
+	 * persistent storage.
+	 *
+	 * @param statIncreases the value to set
+	 */
+	public void setStatIncreases(int statIncreases) {
+		this.statIncreases = statIncreases;
+	}
+
+	/**
+	 * Clears the value of statIncreases to indicate that no stats have been increased this level.
+	 */
+	public void clearStatIncreases() {
+		this.statIncreases = 0;
+	}
+
+	/**
+	 * Returns the count of how many Statistics have been increased this level.
+	 *
+	 * @return  the count of how many Statistics have been increased this level.
+	 */
+	public int statsIncreasedCount() {
+		int result = 0;
+
+		for(int i = 1; i < Integer.MAX_VALUE; i <<= 1) {
+			if((statIncreases & i) != 0) {
+				result++;
+			}
+		}
+
+		return result;
 	}
 
 	private void generateRandomStat(Statistic statistic) {

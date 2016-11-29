@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
@@ -156,7 +157,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			viewHolderMap.put(statistic, new ViewHolder());
 		}
 		initGenerateStatsButton(layout);
-		initPurchaseButtons(layout);
+		initStatViews(layout);
 		initStatsRows(layout);
 
 		return layout;
@@ -263,26 +264,41 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		switch (spinnerId) {
 			case R.id.campaign_spinner:
-				Campaign oldCampaign = character.getCampaign();
-				Campaign newCampaign = (Campaign)newItem;
-				character.setCampaign(newCampaign);
-				if(oldCampaign == null || oldCampaign.isBuyStats() != newCampaign.isBuyStats()) {
-					character.generateStats();
-					character.setStatPurchasePoints(character.getCampaign().getPowerLevel().getStatPoints());
-					generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
-														   &&!character.getCampaign().isBuyStats());
-					boolean enable = character.getCurrentLevel() == 0 && character.getCampaign() != null &&
-							character.getCampaign().isBuyStats();
-					for(Statistic statistic : Statistic.getAllStats()) {
-						viewHolderMap.get(statistic).sellButton.setEnabled(enable);
-						viewHolderMap.get(statistic).buyButton.setEnabled(enable);
-						viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(
-								character.getStatTemps().get(statistic)));
-						viewHolderMap.get(statistic).potentialStatView.setText(String.valueOf(
-								character.getStatPotentials().get(statistic)));
+				if(character.getExperiencePoints() == 0) {
+					Campaign oldCampaign = character.getCampaign();
+					Campaign newCampaign = (Campaign) newItem;
+					character.setCampaign(newCampaign);
+					if (oldCampaign == null || oldCampaign.isBuyStats() != newCampaign.isBuyStats()) {
+						character.generateStats();
+						character.setStatPurchasePoints(character.getCampaign().getPowerLevel().getStatPoints());
+						generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+															   && !character.getCampaign().isBuyStats());
+						int visibility = View.GONE;
+						if(character.getExperiencePoints() == 0 && character.getCampaign() != null &&
+								character.getCampaign().isBuyStats()) {
+							visibility = View.VISIBLE;
+						}
+						for (Statistic statistic : Statistic.getAllStats()) {
+							viewHolderMap.get(statistic).sellButton.setVisibility(visibility);
+							viewHolderMap.get(statistic).buyButton.setVisibility(visibility);
+							if(visibility == View.VISIBLE) {
+								viewHolderMap.get(statistic).increaseTempButton.setVisibility(View.GONE);
+							}
+							else {
+								viewHolderMap.get(statistic).increaseTempButton.setVisibility(View.VISIBLE);
+								boolean enable = character.getCurrentLevel() == (character.getExperiencePoints() / 10000)
+										&& character.getCampaign() != null && !character.isStatIncreased(statistic)
+										&& (character.statsIncreasedCount() < 2 || character.getCurrentDevelopmentPoints() >= 5);
+								viewHolderMap.get(statistic).increaseTempButton.setEnabled(enable);
+							}
+							viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(
+									character.getStatTemps().get(statistic)));
+							viewHolderMap.get(statistic).potentialStatView.setText(String.valueOf(
+									character.getStatPotentials().get(statistic)));
+						}
 					}
+					charactersFragment.saveItem();
 				}
-				charactersFragment.saveItem();
 				break;
 			case R.id.race_spinner:
 				Race newRace = (Race)newItem;
@@ -487,29 +503,54 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		});
 	}
 
-	private void initPurchaseButtons(View layout) {
-		initPurchaseButtons(layout, R.id.agility_increment, R.id.agility_decrement, Statistic.AGILITY);
-		initPurchaseButtons(layout, R.id.constitution_increment, R.id.constitution_decrement, Statistic.CONSTITUTION);
-		initPurchaseButtons(layout, R.id.empathy_increment, R.id.empathy_decrement, Statistic.EMPATHY);
-		initPurchaseButtons(layout, R.id.intuition_increment, R.id.intuition_decrement, Statistic.INTUITION);
-		initPurchaseButtons(layout, R.id.memory_increment, R.id.memory_decrement, Statistic.MEMORY);
-		initPurchaseButtons(layout, R.id.presence_increment, R.id.presence_decrement, Statistic.PRESENCE);
-		initPurchaseButtons(layout, R.id.quickness_increment, R.id.quickness_decrement, Statistic.QUICKNESS);
-		initPurchaseButtons(layout, R.id.reasoning_increment, R.id.reasoning_decrement, Statistic.REASONING);
-		initPurchaseButtons(layout, R.id.self_discipline_increment, R.id.self_discipline_decrement, Statistic.SELF_DISCIPLINE);
-		initPurchaseButtons(layout, R.id.strength_increment, R.id.strength_decrement, Statistic.STRENGTH);
+	private void initStatViews(View layout) {
+		initStatButton(layout, R.id.agility_increment, R.id.agility_decrement,
+					   R.id.increase_agility_button, Statistic.AGILITY);
+		initStatButton(layout, R.id.constitution_increment, R.id.constitution_decrement,
+					   R.id.increase_constitution_button, Statistic.CONSTITUTION);
+		initStatButton(layout, R.id.empathy_increment, R.id.empathy_decrement,
+					   R.id.increase_empathy_button, Statistic.EMPATHY);
+		initStatButton(layout, R.id.intuition_increment, R.id.intuition_decrement,
+					   R.id.increase_intuition_button, Statistic.INTUITION);
+		initStatButton(layout, R.id.memory_increment, R.id.memory_decrement,
+					   R.id.increase_memory_button, Statistic.MEMORY);
+		initStatButton(layout, R.id.presence_increment, R.id.presence_decrement,
+					   R.id.increase_presence_button, Statistic.PRESENCE);
+		initStatButton(layout, R.id.quickness_increment, R.id.quickness_decrement,
+					   R.id.increase_quickness_button, Statistic.QUICKNESS);
+		initStatButton(layout, R.id.reasoning_increment, R.id.reasoning_decrement,
+					   R.id.increase_reasoning_button, Statistic.REASONING);
+		initStatButton(layout, R.id.self_discipline_increment, R.id.self_discipline_decrement,
+					   R.id.increase_self_discipline_button, Statistic.SELF_DISCIPLINE);
+		initStatButton(layout, R.id.strength_increment, R.id.strength_decrement,
+					   R.id.increase_strength_button, Statistic.STRENGTH);
 	}
 
-	private void initPurchaseButtons(View layout, @IdRes int buyButtonId, @IdRes int sellButtonId, final Statistic statistic) {
+	private void initStatButton(View layout, @IdRes int buyButtonId, @IdRes int sellButtonId, @IdRes int increaseTempButtonId,
+								final Statistic statistic) {
+		Character character = charactersFragment.getCurrentInstance();
 		ImageButton buyButton = (ImageButton)layout.findViewById(buyButtonId);
 		ImageButton sellButton = (ImageButton)layout.findViewById(sellButtonId);
-		boolean enable = (charactersFragment.getCurrentInstance().getCurrentLevel() == 0 &&
-				charactersFragment.getCurrentInstance().getCampaign()!= null &&
-				charactersFragment.getCurrentInstance().getCampaign().isBuyStats());
-		buyButton.setEnabled(enable);
-		sellButton.setEnabled(enable);
+		Button increaseTempButton = (Button)layout.findViewById(increaseTempButtonId);
+		if((character.getExperiencePoints() == 0 &&
+				character.getCampaign()!= null &&
+				character.getCampaign().isBuyStats())) {
+			buyButton.setVisibility(View.VISIBLE);
+			sellButton.setVisibility(View.VISIBLE);
+			increaseTempButton.setVisibility(View.GONE);
+		}
+		else {
+			buyButton.setVisibility(View.GONE);
+			sellButton.setVisibility(View.GONE);
+			increaseTempButton.setVisibility(View.VISIBLE);
+		}
+
+		boolean enabled = character.getCurrentLevel() >= 1 && !character.isStatIncreased(statistic) &&
+				(character.statsIncreasedCount() < 2 || character.getCurrentDevelopmentPoints() > 5);
+		increaseTempButton.setEnabled(enabled);
 		viewHolderMap.get(statistic).buyButton = buyButton;
 		viewHolderMap.get(statistic).sellButton = sellButton;
+		viewHolderMap.get(statistic).increaseTempButton = increaseTempButton;
 
 		buyButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -517,11 +558,16 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				buyStat(statistic);
 			}
 		});
-
 		sellButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sellStat(statistic);
+			}
+		});
+		increaseTempButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				increaseTemp(statistic);
 			}
 		});
 	}
@@ -558,128 +604,68 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		}
 	}
 
+	private void increaseTemp(Statistic statistic) {
+		Character character = charactersFragment.getCurrentInstance();
+		if(!character.isStatIncreased(statistic)) {
+			if(character.statsIncreasedCount() < 2 || character.getCurrentDevelopmentPoints() >= 5) {
+				short gain = statistic.statGain(character.getStatTemps().get(statistic));
+				Toast.makeText(getActivity(),
+							   String.format(getString(R.string.toast_stat_gain), statistic.getName(), gain),
+							   Toast.LENGTH_LONG).show();
+				if(character.statsIncreasedCount() >= 2) {
+					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - 5));
+				}
+				character.addStatIncrease(statistic);
+				short newTemp = (short)(character.getStatTemps().get(statistic) + gain);
+				if(newTemp > character.getStatPotentials().get(statistic)) {
+					newTemp = character.getStatPotentials().get(statistic);
+				}
+				character.getStatTemps().put(statistic, newTemp);
+				charactersFragment.saveItem();
+			}
+		}
+	}
+
 	private void initStatsRows(View layout) {
+		initStatRow(layout, R.id.agility_label, Statistic.AGILITY, R.id.agility_temp_view,
+					R.id.agility_potential_view, R.id.agility_drag_group);
+		initStatRow(layout, R.id.constitution_label, Statistic.CONSTITUTION, R.id.constitution_temp_view,
+					R.id.constitution_potential_view, R.id.constitution_drag_group);
+		initStatRow(layout, R.id.empathy_label, Statistic.EMPATHY, R.id.empathy_temp_view,
+					R.id.empathy_potential_view, R.id.empathy_drag_group);
+		initStatRow(layout, R.id.intuition_label, Statistic.INTUITION, R.id.intuition_temp_view,
+					R.id.intuition_potential_view, R.id.intuition_drag_group);
+		initStatRow(layout, R.id.memory_label, Statistic.MEMORY, R.id.memory_temp_view,
+					R.id.memory_potential_view, R.id.memory_drag_group);
+		initStatRow(layout, R.id.presence_label, Statistic.PRESENCE, R.id.presence_temp_view,
+					R.id.presence_potential_view, R.id.presence_drag_group);
+		initStatRow(layout, R.id.quickness_label, Statistic.QUICKNESS, R.id.quickness_temp_view,
+					R.id.quickness_potential_view, R.id.quickness_drag_group);
+		initStatRow(layout, R.id.reasoning_label, Statistic.REASONING, R.id.reasoning_temp_view,
+					R.id.reasoning_potential_view, R.id.reasoning_drag_group);
+		initStatRow(layout, R.id.self_discipline_label, Statistic.SELF_DISCIPLINE, R.id.self_discipline_temp_view,
+					R.id.self_discipline_potential_view, R.id.self_discipline_drag_group);
+		initStatRow(layout, R.id.strength_label, Statistic.STRENGTH, R.id.strength_temp_view,
+					R.id.strength_potential_view, R.id.strength_drag_group);
+	}
+
+	private void initStatRow(View layout, @IdRes int labelViewId, Statistic statistic, @IdRes int tempStatViewId,
+							 @IdRes int potStatViewId, @IdRes int dragGroupId) {
 		LinearLayout dragGroup;
 
-		TextView textView = (TextView) layout.findViewById(R.id.agility_label);
-		textView.setText(Statistic.AGILITY.toString());
-		textView = (TextView) layout.findViewById(R.id.agility_temp_view);
-		viewHolderMap.get(Statistic.AGILITY).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.agility_potential_view);
-		viewHolderMap.get(Statistic.AGILITY).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.agility_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.AGILITY,
-																		R.id.agility_temp_view,
-																		R.id.agility_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.AGILITY));
-
-		textView = (TextView) layout.findViewById(R.id.constitution_label);
-		textView.setText(Statistic.CONSTITUTION.toString());
-		textView = (TextView) layout.findViewById(R.id.constitution_temp_view);
-		viewHolderMap.get(Statistic.CONSTITUTION).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.constitution_potential_view);
-		viewHolderMap.get(Statistic.CONSTITUTION).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.constitution_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.CONSTITUTION,
-																		R.id.constitution_temp_view,
-																		R.id.constitution_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.CONSTITUTION));
-
-		textView = (TextView) layout.findViewById(R.id.empathy_label);
-		textView.setText(Statistic.EMPATHY.toString());
-		textView = (TextView) layout.findViewById(R.id.empathy_temp_view);
-		viewHolderMap.get(Statistic.EMPATHY).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.empathy_potential_view);
-		viewHolderMap.get(Statistic.EMPATHY).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.empathy_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.EMPATHY,
-																		R.id.empathy_temp_view,
-																		R.id.empathy_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.EMPATHY));
-
-		textView = (TextView) layout.findViewById(R.id.intuition_label);
-		textView.setText(Statistic.INTUITION.toString());
-		textView = (TextView) layout.findViewById(R.id.intuition_temp_view);
-		viewHolderMap.get(Statistic.INTUITION).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.intuition_potential_view);
-		viewHolderMap.get(Statistic.INTUITION).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.intuition_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.INTUITION,
-																		R.id.intuition_temp_view,
-																		R.id.intuition_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.INTUITION));
-
-		textView = (TextView) layout.findViewById(R.id.memory_label);
-		textView.setText(Statistic.MEMORY.toString());
-		textView = (TextView) layout.findViewById(R.id.memory_temp_view);
-		viewHolderMap.get(Statistic.MEMORY).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.memory_potential_view);
-		viewHolderMap.get(Statistic.MEMORY).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.memory_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.MEMORY,
-																		R.id.memory_temp_view,
-																		R.id.memory_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.MEMORY));
-
-		textView = (TextView) layout.findViewById(R.id.presence_label);
-		textView.setText(Statistic.PRESENCE.toString());
-		textView = (TextView) layout.findViewById(R.id.presence_temp_view);
-		viewHolderMap.get(Statistic.PRESENCE).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.presence_potential_view);
-		viewHolderMap.get(Statistic.PRESENCE).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.presence_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.PRESENCE,
-																		R.id.presence_temp_view,
-																		R.id.presence_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.PRESENCE));
-
-		textView = (TextView) layout.findViewById(R.id.quickness_label);
-		textView.setText(Statistic.QUICKNESS.toString());
-		textView = (TextView) layout.findViewById(R.id.quickness_temp_view);
-		viewHolderMap.get(Statistic.QUICKNESS).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.quickness_potential_view);
-		viewHolderMap.get(Statistic.QUICKNESS).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.quickness_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.QUICKNESS,
-																		R.id.quickness_temp_view,
-																		R.id.quickness_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.QUICKNESS));
-
-		textView = (TextView) layout.findViewById(R.id.reasoning_label);
-		textView.setText(Statistic.REASONING.toString());
-		textView = (TextView) layout.findViewById(R.id.reasoning_temp_view);
-		viewHolderMap.get(Statistic.REASONING).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.reasoning_potential_view);
-		viewHolderMap.get(Statistic.REASONING).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.reasoning_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.REASONING,
-																		R.id.reasoning_temp_view,
-																		R.id.reasoning_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.REASONING));
-
-		textView = (TextView) layout.findViewById(R.id.self_discipline_label);
-		textView.setText(Statistic.SELF_DISCIPLINE.toString());
-		textView = (TextView) layout.findViewById(R.id.self_discipline_temp_view);
-		viewHolderMap.get(Statistic.SELF_DISCIPLINE).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.self_discipline_potential_view);
-		viewHolderMap.get(Statistic.SELF_DISCIPLINE).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.self_discipline_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.SELF_DISCIPLINE,
-																		R.id.self_discipline_temp_view,
-																		R.id.self_discipline_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.SELF_DISCIPLINE));
-
-		textView = (TextView) layout.findViewById(R.id.strength_label);
-		textView.setText(Statistic.STRENGTH.toString());
-		textView = (TextView) layout.findViewById(R.id.strength_temp_view);
-		viewHolderMap.get(Statistic.STRENGTH).tempStatView = textView;
-		textView = (TextView) layout.findViewById(R.id.strength_potential_view);
-		viewHolderMap.get(Statistic.STRENGTH).potentialStatView = textView;
-		dragGroup = (LinearLayout)layout.findViewById(R.id.strength_drag_group);
-		dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, Statistic.STRENGTH,
-																		R.id.strength_temp_view,
-																		R.id.strength_potential_view));
-		dragGroup.setOnDragListener(new StatSwapDragListener(Statistic.STRENGTH));
+		TextView textView = (TextView) layout.findViewById(labelViewId);
+		textView.setText(statistic.toString());
+		textView = (TextView) layout.findViewById(tempStatViewId);
+		viewHolderMap.get(statistic).tempStatView = textView;
+		textView = (TextView) layout.findViewById(potStatViewId);
+		viewHolderMap.get(statistic).potentialStatView = textView;
+		if(charactersFragment.getCurrentInstance().getExperiencePoints() == 0) {
+			dragGroup = (LinearLayout) layout.findViewById(dragGroupId);
+			dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, statistic,
+																			tempStatViewId,
+																			potStatViewId));
+			dragGroup.setOnDragListener(new StatSwapDragListener(statistic));
+		}
 	}
 
 	private class StatGroupLongClickListener implements View.OnLongClickListener {
@@ -735,10 +721,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	class ViewHolder {
-		TextView tempStatView;
-		TextView potentialStatView;
+		TextView    tempStatView;
+		TextView    potentialStatView;
 		ImageButton buyButton;
 		ImageButton sellButton;
+		Button      increaseTempButton;
 	}
 
 	protected class StatSwapDragListener implements View.OnDragListener {

@@ -18,7 +18,7 @@ package com.madinnovations.rmu.data.entities.common;
 /**
  * How powerful characters are in the game relative to average NPCs
  */
-public enum PowerLevel {
+public enum 	PowerLevel {
 	AVERAGE("Average", (short)0, (short)0, (short)0, (short)5, (short)0),
 	SUPERIOR("Superior", (short)11, (short)10, (short)5, (short)4, (short)10),
 	HEROIC("Heroic", (short)21, (short)20, (short)10, (short)3, (short)20),
