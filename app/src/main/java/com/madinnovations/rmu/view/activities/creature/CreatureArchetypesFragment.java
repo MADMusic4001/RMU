@@ -16,14 +16,11 @@
 package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +40,7 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxH
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
+import com.madinnovations.rmu.view.adapters.ViewPagerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
 import java.util.Collection;
@@ -56,16 +54,20 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature archetypes.
  */
-public class CreatureArchetypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureArchetype> {
+public class CreatureArchetypesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureArchetype>,
+		ViewPagerAdapter.Instantiator {
+	private static final int                         NUM_PAGES             = 2;
+	private static final int                         MAIN_PAGE_INDEX       = 0;
+	private static final int                         LEVELS_PAGE_INDEX     = 1;
 	@Inject
 	protected CreatureArchetypeRxHandler             creatureArchetypeRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler                 skillCategoryRxHandler;
 	private   TwoFieldListAdapter<CreatureArchetype> listAdapter;
 	private   ListView                               listView;
-	private   CreatureArchetypesFragmentPagerAdapter pagerAdapter    = null;
-	private   CreatureArchetype                      currentInstance = new CreatureArchetype();
-	private   boolean                                isNew           = true;
+	private ViewPagerAdapter                         pagerAdapter    = null;
+	private CreatureArchetype                        currentInstance = new CreatureArchetype();
+	private boolean                                  isNew           = true;
 
 	@Nullable
 	@Override
@@ -91,6 +93,12 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	public void onPause() {
 		if(copyViewsToItem()) {
 			saveItem();
+		}
+		if(pagerAdapter.getFragment(MAIN_PAGE_INDEX) != null) {
+			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(MAIN_PAGE_INDEX)).commit();
+		}
+		if(pagerAdapter.getFragment(LEVELS_PAGE_INDEX) != null) {
+			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(LEVELS_PAGE_INDEX)).commit();
 		}
 		super.onPause();
 	}
@@ -152,6 +160,22 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public Fragment newInstance(int position) {
+		Fragment fragment = null;
+
+		switch (position) {
+			case MAIN_PAGE_INDEX:
+				fragment = CreatureArchetypesMainPageFragment.newInstance(this);
+				break;
+			case LEVELS_PAGE_INDEX:
+				fragment = CreatureArchetypesLevelsFragment.newInstance(this);
+				break;
+		}
+
+		return fragment;
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 
@@ -160,12 +184,14 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 			currentFocusView.clearFocus();
 		}
 
-		CreatureArchetypesMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
+		CreatureArchetypesMainPageFragment mainPageFragment = (CreatureArchetypesMainPageFragment)pagerAdapter
+				.getFragment(MAIN_PAGE_INDEX);
 		if(mainPageFragment != null) {
 			changed = mainPageFragment.copyViewsToItem();
 		}
 
-		CreatureArchetypesLevelsFragment levelsFragment = pagerAdapter.getLevelsPageFragment();
+		CreatureArchetypesLevelsFragment levelsFragment = (CreatureArchetypesLevelsFragment)pagerAdapter
+				.getFragment(LEVELS_PAGE_INDEX);
 		if(levelsFragment != null) {
 			changed = levelsFragment.copyViewsToItem();
 		}
@@ -174,14 +200,16 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 	}
 
 	private void copyItemToViews() {
-		CreatureArchetypesMainPageFragment mainPageFragment = pagerAdapter.getMainPageFragment();
+		CreatureArchetypesMainPageFragment mainPageFragment = (CreatureArchetypesMainPageFragment)pagerAdapter
+				.getFragment(MAIN_PAGE_INDEX);
 		if(mainPageFragment != null) {
 			mainPageFragment.copyItemToViews();
 		}
 
-		CreatureArchetypesLevelsFragment levelsPageFragment = pagerAdapter.getLevelsPageFragment();
-		if(levelsPageFragment != null) {
-			levelsPageFragment.copyItemToViews();
+		CreatureArchetypesLevelsFragment levelsFragment = (CreatureArchetypesLevelsFragment)pagerAdapter
+				.getFragment(LEVELS_PAGE_INDEX);
+		if(levelsFragment != null) {
+			levelsFragment.copyItemToViews();
 		}
 	}
 
@@ -266,9 +294,10 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 	private void initViewPager(View layout) {
 		ViewPager viewPager = (ViewPager) layout.findViewById(R.id.pager);
-		pagerAdapter = new CreatureArchetypesFragment.CreatureArchetypesFragmentPagerAdapter(getChildFragmentManager());
+		pagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity(), NUM_PAGES, this,
+											R.array.creature_archetype_page_names);
 		viewPager.setAdapter(pagerAdapter);
-		viewPager.setCurrentItem(CreatureArchetypesFragmentPagerAdapter.MAIN_PAGE_INDEX);
+		viewPager.setCurrentItem(MAIN_PAGE_INDEX);
 	}
 
  	private void initListView(View layout) {
@@ -338,93 +367,8 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 		return creatureArchetype.getDescription();
 	}
 
+	// Getter
 	public CreatureArchetype getCurrentInstance() {
 		return currentInstance;
-	}
-
-	/**
-	 * Manages the page fragments for a ViewPager
-	 */
-	private class CreatureArchetypesFragmentPagerAdapter extends FragmentPagerAdapter {
-		static final int                   NUM_PAGES             = 2;
-		static final int                   MAIN_PAGE_INDEX       = 0;
-		static final int                   LEVELS_PAGE_INDEX     = 1;
-		private      SparseArray<Fragment> registeredFragments   = new SparseArray<>();
-
-		/**
-		 * Creates a new CreatureArchetypesFragmentPagerAdapter instance.
-		 *
-		 * @param fm  the FragmentManager instance to use to manage the pages
-		 */
-		CreatureArchetypesFragmentPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-
-		@Override
-		public Fragment getItem(int position) {
-			Fragment fragment = null;
-
-			switch (position) {
-				case MAIN_PAGE_INDEX:
-					fragment = CreatureArchetypesMainPageFragment.newInstance(CreatureArchetypesFragment.this);
-					break;
-				case LEVELS_PAGE_INDEX:
-					fragment = CreatureArchetypesLevelsFragment.newInstance(CreatureArchetypesFragment.this);
-					break;
-			}
-			return fragment;
-		}
-
-		@Override
-		public int getCount() {
-			return NUM_PAGES;
-		}
-
-		@Override
-		public CharSequence getPageTitle(int position) {
-			String title = null;
-
-			switch (position) {
-				case MAIN_PAGE_INDEX:
-					title = getString(R.string.title_character_main_page);
-					break;
-				case LEVELS_PAGE_INDEX:
-					title = getString(R.string.title_character_skills_page);
-					break;
-			}
-			return title;
-		}
-
-		@Override
-		public Object instantiateItem(ViewGroup container, int position) {
-			Fragment createdFragment = (Fragment)super.instantiateItem(container, position);
-			registeredFragments.put(position, createdFragment);
-			return createdFragment;
-		}
-
-		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			registeredFragments.remove(position);
-			super.destroyItem(container, position, object);
-		}
-
-		/**
-		 * Returns the main page fragment instance if it has been created.
-		 *
-		 * @return  the main page fragment instance.
-		 */
-		CreatureArchetypesMainPageFragment getMainPageFragment() {
-			return (CreatureArchetypesMainPageFragment)registeredFragments
-					.get(MAIN_PAGE_INDEX);
-		}
-
-		/**
-		 * Returns the level page fragment instance if it has been created.
-		 *
-		 * @return  the levels page fragment instance.
-		 */
-		CreatureArchetypesLevelsFragment getLevelsPageFragment() {
-			return (CreatureArchetypesLevelsFragment)registeredFragments.get(LEVELS_PAGE_INDEX);
-		}
 	}
 }

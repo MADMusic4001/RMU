@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="character_page_names">
+    <item>@string/title_character_main_page</item>
+    <item>@string/title_character_skills_page</item>
+    <item>@string/title_character_background_page</item>
+    <item>@string/title_character_generated_values_page</item>
+  </string-array>
+  <string-array name="creature_archetype_page_names">
+    <item>@string/title_creature_archetype_main_page</item>
+    <item>@string/title_creature_archetype_levels_page</item>
+  </string-array>
+  <string-array name="creature_variety_page_names">
+    <item>@string/title_creature_variety_main_page</item>
+    <item>@string/title_creature_variety_attacks_page</item>
+  </string-array>
+  <string-array name="race_page_names">
+    <item>@string/title_race_main_page</item>
+    <item>@string/title_race_talents_page</item>
+  </string-array>
+</resources>

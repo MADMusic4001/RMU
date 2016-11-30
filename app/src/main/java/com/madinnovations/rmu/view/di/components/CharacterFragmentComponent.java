@@ -23,6 +23,8 @@ import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
+import com.madinnovations.rmu.view.activities.character.RacesMainPageFragment;
+import com.madinnovations.rmu.view.activities.character.RacesTalentsPageFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
@@ -43,4 +45,6 @@ public interface CharacterFragmentComponent {
 	void injectInto(CulturesFragment culturesFragment);
 	void injectInto(ProfessionsFragment professionsFragment);
 	void injectInto(RacesFragment racesFragment);
+	void injectInto(RacesMainPageFragment racesMainPageFragment);
+	void injectInto(RacesTalentsPageFragment racesTalentsPageFragment);
 }

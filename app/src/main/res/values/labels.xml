@@ -479,6 +479,8 @@
   <string name="title_character_skills_page">Skills, Talents and Stats</string>
   <string name="title_character_background_page">Background Information</string>
   <string name="title_character_generated_values_page">Generated Values</string>
+  <string name="title_race_main_page">General Attributes</string>
+  <string name="title_race_talents_page">Talents and Flaws</string>
 
   <!-- Adapter extra instance names -->
   <string name="no_specialization">No Specialization</string>

@@ -172,6 +172,22 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return result;
 	}
 
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		String selectionArgs[] = { String.valueOf(id) };
+
+		String selection = RaceTalentsSchema.COLUMN_RACE_ID + " = ?";
+		db.delete(RaceTalentsSchema.TABLE_NAME, selection, selectionArgs);
+
+		selection = RaceStatModSchema.COLUMN_RACE_ID + " = ?";
+		db.delete(RaceStatModSchema.TABLE_NAME, selection, selectionArgs);
+
+		selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
+		db.delete(RaceRealmRRModSchema.TABLE_NAME, selection, selectionArgs);
+
+		return true;
+	}
+
 	private boolean saveTalentsAndFlaws(SQLiteDatabase db, int raceId, Map<Talent, Short> talentTiersMap) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(raceId) };

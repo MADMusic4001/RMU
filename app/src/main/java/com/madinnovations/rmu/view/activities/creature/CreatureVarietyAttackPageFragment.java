@@ -101,6 +101,19 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	private   CreatureVarietiesFragment varietiesFragment;
 	private   Size                      noSizeModifier = new Size();
 
+	/**
+	 * Creates a new CreatureVarietyAttackPageFragment instance.
+	 *
+	 * @param varietiesFragment  the CreatureVarietiesFragment instance this fragment is attached to.
+	 * @return the new instance.
+	 */
+	public static CreatureVarietyAttackPageFragment newInstance(CreatureVarietiesFragment varietiesFragment) {
+		CreatureVarietyAttackPageFragment fragment = new CreatureVarietyAttackPageFragment();
+		fragment.varietiesFragment = varietiesFragment;
+		Log.d(TAG, "newInstance: fragment = " + fragment);
+		return fragment;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
@@ -271,8 +284,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 
 		newString = attackSequenceEdit.getText().toString();
-		if((newString == null && creatureVariety.getAttackSequence() != null) ||
-				(newString != null && !newString.equals(creatureVariety.getAttackSequence()))) {
+		if(!newString.equals(creatureVariety.getAttackSequence())) {
 			creatureVariety.setAttackSequence(newString);
 			changed = true;
 		}

@@ -23,6 +23,8 @@ import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
+import com.madinnovations.rmu.view.activities.character.RacesMainPageFragment;
+import com.madinnovations.rmu.view.activities.character.RacesTalentsPageFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -33,14 +35,16 @@ import dagger.Provides;
  */
 @Module
 public class CharacterFragmentModule {
-	private CharacterBackgroundPageFragment characterBackgroundPageFragment;
+	private CharacterBackgroundPageFragment  characterBackgroundPageFragment;
 	private CharacterGeneratedValuesFragment characterGeneratedValuesFragment;
-	private CharacterMainPageFragment       characterMainPageFragment;
-	private CharactersFragment              charactersFragment;
-	private CharacterSkillsPageFragment     characterSkillsPageFragment;
-	private CulturesFragment                culturesFragment;
-	private ProfessionsFragment             professionsFragment;
-	private RacesFragment                   racesFragment;
+	private CharacterMainPageFragment        characterMainPageFragment;
+	private CharactersFragment               charactersFragment;
+	private CharacterSkillsPageFragment      characterSkillsPageFragment;
+	private CulturesFragment                 culturesFragment;
+	private ProfessionsFragment              professionsFragment;
+	private RacesFragment                    racesFragment;
+	private RacesMainPageFragment            racesMainPageFragment;
+	private RacesTalentsPageFragment         racesTalentsPageFragment;
 
 	public CharacterFragmentModule(CharacterBackgroundPageFragment characterBackgroundPageFragment) {
 		this.characterBackgroundPageFragment = characterBackgroundPageFragment;
@@ -65,6 +69,12 @@ public class CharacterFragmentModule {
 	}
 	public CharacterFragmentModule(RacesFragment racesFragment) {
 		this.racesFragment = racesFragment;
+	}
+	public CharacterFragmentModule(RacesMainPageFragment racesMainPageFragment) {
+		this.racesMainPageFragment = racesMainPageFragment;
+	}
+	public CharacterFragmentModule(RacesTalentsPageFragment racesTalentsPageFragment) {
+		this.racesTalentsPageFragment = racesTalentsPageFragment;
 	}
 
 	@Provides
@@ -106,5 +116,15 @@ public class CharacterFragmentModule {
 	@PerFragment
 	RacesFragment provideRacesFragment() {
 		return this.racesFragment;
+	}
+	@Provides
+	@PerFragment
+	RacesMainPageFragment provideRacesMainPageFragment() {
+		return this.racesMainPageFragment;
+	}
+	@Provides
+	@PerFragment
+	RacesTalentsPageFragment provideRacesTalentsPageFragment() {
+		return this.racesTalentsPageFragment;
 	}
 }

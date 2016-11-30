@@ -123,6 +123,19 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	private   ListView                   talentTiersList;
 	private   CreatureVarietiesFragment  varietiesFragment;
 
+	/**
+	 * Creates a new CreatureVarietyMainPageFragment instance.
+	 *
+	 * @param varietiesFragment  the CreatureVarietiesFragment instance this fragment is attached to.
+	 * @return the new instance.
+	 */
+	public static CreatureVarietyMainPageFragment newInstance(CreatureVarietiesFragment varietiesFragment) {
+		CreatureVarietyMainPageFragment fragment = new CreatureVarietyMainPageFragment();
+		fragment.varietiesFragment = varietiesFragment;
+		Log.d(TAG, "newInstance: fragment = " + fragment);
+		return fragment;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
