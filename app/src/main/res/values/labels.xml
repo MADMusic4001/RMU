@@ -470,6 +470,9 @@
   <string name="stat_format_string">%1$s (%2$s)</string>
   <string name="stat_literal_string">%1$s stat</string>
 
+  <!-- Static Spinner selection strings -->
+  <string name="choice_label">Choice</string>
+
   <!-- ViewPager title strings -->
   <string name="title_creature_archetype_main_page">General Attributes</string>
   <string name="title_creature_archetype_levels_page">Levels</string>

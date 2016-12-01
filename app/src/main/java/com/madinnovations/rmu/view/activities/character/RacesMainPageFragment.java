@@ -88,7 +88,6 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 	public static RacesMainPageFragment newInstance(RacesFragment racesFragment) {
 		RacesMainPageFragment fragment = new RacesMainPageFragment();
 		fragment.racesFragment = racesFragment;
-		Log.d(TAG, "newInstance: fragment = " + fragment);
 		return fragment;
 	}
 
@@ -184,33 +183,43 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 			switch (editTextId) {
 				case R.id.name_edit:
 					currentInstance.setName(newString);
+					racesFragment.saveItem();
 					break;
 				case R.id.notes_edit:
 					currentInstance.setDescription(newString);
+					racesFragment.saveItem();
 					break;
 				case R.id.dp_edit:
 					currentInstance.setBonusDevelopmentPoints(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.endurance_mod_edit:
 					currentInstance.setEnduranceModifier(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.base_hits_edit:
 					currentInstance.setBaseHits(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.recovery_mult_edit:
 					currentInstance.setRecoveryMultiplier(Float.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.stride_mod_edit:
 					currentInstance.setStrideModifier(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.average_height_edit:
 					currentInstance.setAverageHeight(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.average_weight_edit:
 					currentInstance.setAverageWeight(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 				case R.id.pounds_per_inch_edit:
 					currentInstance.setPoundsPerInch(Short.valueOf(newString));
+					racesFragment.saveItem();
 					break;
 			}
 		}

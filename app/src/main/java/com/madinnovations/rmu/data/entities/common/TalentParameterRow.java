@@ -51,26 +51,7 @@ public class TalentParameterRow {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this,
-								   ToStringStyle.MULTI_LINE_STYLE)
-				.append("parameter", parameter)
-				.append("perTier", perTier)
-				.append("perLevel", perLevel)
-				.append("perRound", perRound)
-				.append("enumName", enumName)
-				.append("initialValue", initialValue)
-				.append("valuePer", valuePer)
-				.toString();
-	}
-
-	/**
-	 * Prints a debug String of all the attributes.
-	 *
-	 * @return a String listing all the attribute values.
-	 */
-	public String print() {
-		return new ToStringBuilder(this,
-								   ToStringStyle.MULTI_LINE_STYLE)
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("parameter", parameter)
 				.append("perTier", perTier)
 				.append("perLevel", perLevel)
@@ -87,7 +68,7 @@ public class TalentParameterRow {
 	}
 	public void setParameter(Parameter parameter) {
 		this.parameter = parameter;
-		this.initialValue = 0;
+		this.initialValue = null;
 	}
 	public boolean isPerTier() {
 		return perTier;

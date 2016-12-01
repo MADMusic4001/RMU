@@ -122,6 +122,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private SparseArray<Specialization>  specializationSparseArray = null;
 	private SparseArray<Spell>           spellSparseArray          = null;
 	private Map<View, Integer>           indexMap                  = new HashMap<>();
+	private Skill choice = null;
 
 	@Nullable
 	@Override
@@ -1119,6 +1120,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 		else {
+			choice = new Skill();
+			choice.setName(getString(R.string.choice_label));
 			skillRxHandler.getNonSpecializationSkills()
 					.subscribe(new Subscriber<Collection<Skill>>() {
 						@Override
@@ -1129,7 +1132,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						}
 						@Override
 						public void onNext(Collection<Skill> skills) {
-							skillSparseArray = new SparseArray<>(skills.size());
+							skillSparseArray = new SparseArray<>(skills.size() + 1);
+							skillSparseArray.put(choice.getId(), choice);
 							for(Skill skill : skills) {
 								skillSparseArray.put(skill.getId(), skill);
 							}
@@ -1154,8 +1158,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Skill skill= adapter.getItem(position);
 				if(skill != null) {
-					Skill currentSkill = skillSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
+					Integer skillId = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+					Skill currentSkill = null;
+					if(skillId != null) {
+						currentSkill = skillSparseArray.get(skillId);
+					}
 					if(!skill.equals(currentSkill)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(skill.getId());
 						saveItem();
@@ -1414,7 +1421,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 		Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
 		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(spinner.getSelectedItemPosition());
+			row.setInitialValue(((Attack)spinner.getSelectedItem()).getId());
 			changed = true;
 		}
 		if(row.getValuePer() != null) {
@@ -1449,8 +1456,13 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
-		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(spinner.getSelectedItemPosition());
+		String newEnumName = ((Resistance)spinner.getSelectedItem()).name();
+		if(row.getEnumName() == null || !row.getEnumName().equals(newEnumName)) {
+			row.setEnumName(newEnumName);
+			changed = true;
+		}
+		if(row.getInitialValue() != null) {
+			row.setInitialValue(null);
 			changed = true;
 		}
 		if(row.getValuePer() != null) {
@@ -1486,7 +1498,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		}
 		Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
 		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(spinner.getSelectedItemPosition());
+			row.setInitialValue(((Skill)spinner.getSelectedItem()).getId());
+			changed = true;
+		}
+		if(row.getEnumName() != null) {
+			row.setEnumName(null);
 			changed = true;
 		}
 		if(row.getValuePer() != null) {
@@ -1521,8 +1537,13 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 		Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
-		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(spinner.getSelectedItemPosition());
+		int newInitialValue = ((Specialization)spinner.getSelectedItem()).getId();
+		if(row.getInitialValue() == null ||  newInitialValue != row.getInitialValue()) {
+			row.setInitialValue(newInitialValue);
+			changed = true;
+		}
+		if(row.getEnumName() != null) {
+			row.setEnumName(null);
 			changed = true;
 		}
 		if(row.getValuePer() != null) {
@@ -1557,8 +1578,13 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 		Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
-		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(spinner.getSelectedItemPosition());
+		int newInitialValue = ((Spell)spinner.getSelectedItem()).getId();
+		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
+			row.setInitialValue(newInitialValue);
+			changed = true;
+		}
+		if(row.getEnumName() != null) {
+			row.setEnumName(null);
 			changed = true;
 		}
 		if(row.getValuePer() != null) {
@@ -1592,9 +1618,15 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			row.setParameter(Parameter.STAT);
 			changed = true;
 		}
+		if(row.getInitialValue() != null) {
+			row.setInitialValue(null);
+			changed = true;
+		}
 		Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
-		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(spinner.getSelectedItemPosition());
+		String newEnumName = ((Statistic)spinner.getSelectedItem()).name();
+		if((newEnumName == null && row.getEnumName() != null)
+				|| (newEnumName != null && !newEnumName.equals(row.getEnumName()))) {
+			row.setEnumName(newEnumName);
 			changed = true;
 		}
 		if(row.getValuePer() != null) {
