@@ -1007,7 +1007,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			Integer index = null;
+			if(indexMap.get(layout) != null) {
+				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			}
 			if(index != null) {
 				Attack currentAttack = new Attack(index);
 				spinner.setSelection(adapter.getPosition(currentAttack));
@@ -1035,7 +1038,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(attacks);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							Integer index = null;
+							if(indexMap.get(layout) != null) {
+								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							}
 							if(index != null) {
 								Attack currentAttack = new Attack(index);
 								spinner.setSelection(adapter.getPosition(currentAttack));
@@ -1110,8 +1116,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-					.getInitialValue();
+			Integer index = null;
+			if(indexMap.get(layout) != null) {
+				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			}
 			if(index != null) {
 				spinner.setSelection(adapter.getPosition(skillSparseArray.get(index)));
 			}
@@ -1141,8 +1149,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(skills);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-									.getInitialValue();
+							Integer index = null;
+							if(indexMap.get(layout) != null) {
+								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							}
 							if(index != null) {
 								spinner.setSelection(adapter.getPosition(skillSparseArray.get(index)));
 							}
@@ -1185,8 +1195,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-					.getInitialValue();
+			Integer index = null;
+			if(indexMap.get(layout) != null) {
+				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			}
 			if(index != null) {
 				spinner.setSelection(adapter.getPosition(specializationSparseArray.get(index)));
 			}
@@ -1213,8 +1225,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(specializations);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-									.getInitialValue();
+							Integer index = null;
+							if(indexMap.get(layout) != null) {
+								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							}
 							if(index != null) {
 								spinner.setSelection(adapter.getPosition(specializationSparseArray.get(index)));
 							}
@@ -1254,8 +1268,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			adapter.notifyDataSetChanged();
 			spinner.setAdapter(adapter);
-			Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-					.getInitialValue();
+			Integer index = null;
+			if(indexMap.get(layout) != null) {
+				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			}
 			if(index != null) {
 				spinner.setSelection(adapter.getPosition(spellSparseArray.get(index)));
 			}
@@ -1282,8 +1298,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(spells);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-									.getInitialValue();
+							Integer index = null;
+							if(indexMap.get(layout) != null) {
+								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							}
 							if(index != null) {
 								spinner.setSelection(adapter.getPosition(spellSparseArray.get(index)));
 							}

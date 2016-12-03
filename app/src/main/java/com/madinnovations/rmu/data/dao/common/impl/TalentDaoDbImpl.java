@@ -222,12 +222,13 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 		Cursor cursor = super.query(TalentParametersSchema.TABLE_NAME, TalentParametersSchema.COLUMNS, selection,
 									selectionArgs, TalentParametersSchema.COLUMN_INDEX);
 		TalentParameterRow[] rows = new TalentParameterRow[cursor.getCount()];
-		TalentParameterRow row = new TalentParameterRow();
 		int index;
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
+			TalentParameterRow row = new TalentParameterRow();
 			index = cursor.getInt(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_INDEX));
-			Parameter parameter = Parameter.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_EFFECT)));
+			Parameter parameter = Parameter.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
+					TalentParametersSchema.COLUMN_EFFECT)));
 			row.setParameter(parameter);
 			if(cursor.isNull(cursor.getColumnIndexOrThrow(TalentParametersSchema.COLUMN_INITIAL_VALUE))) {
 				row.setInitialValue(null);
