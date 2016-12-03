@@ -407,8 +407,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 		for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
 			Spinner spinner = (Spinner)entry.getKey().findViewById(R.id.parameter_spinner);
-			ArrayAdapter<Parameter> spinnerAdapter = (ArrayAdapter<Parameter>)spinner.getAdapter();
-			Parameter parameter = spinnerAdapter.getItem(spinner.getSelectedItemPosition());
+			Parameter parameter = (Parameter)spinner.getSelectedItem();
 			if(parameter != null) {
 				switch (parameter) {
 					case ATTACK:
@@ -992,6 +991,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					indexMap.remove(layout);
 				}
 				currentInstance.setTalentParameterRows(newRows);
+				saveItem();
 			}
 		});
 	}
@@ -1213,7 +1213,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							adapter.addAll(specializations);
 							adapter.notifyDataSetChanged();
 							spinner.setAdapter(adapter);
-							Log.d(TAG, "onNext: layout index = " + indexMap.get(layout));
 							Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)]
 									.getInitialValue();
 							if(index != null) {
@@ -1359,8 +1358,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		}
 		String value = ((EditText)layout.findViewById(R.id.initial_value_edit)).getText().toString();
 		if(value.length() > 0) {
-			if(row.getInitialValue() == null || !row.getInitialValue().equals(Integer.valueOf(value))) {
-				row.setInitialValue(Integer.valueOf(value));
+			int intValue = Integer.valueOf(value);
+			if(row.getInitialValue() == null || row.getInitialValue() != intValue) {
+				row.setInitialValue(intValue);
 				changed = true;
 			}
 		}
@@ -1368,10 +1368,12 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			row.setInitialValue(null);
 			changed = true;
 		}
+
 		value = ((EditText)layout.findViewById(R.id.value_per_edit)).getText().toString();
 		if(value.length() > 0) {
-			if(row.getValuePer() == null || !row.getValuePer().equals(Integer.valueOf(value))) {
-				row.setValuePer(Integer.valueOf(value));
+			int intValue = Integer.valueOf(value);
+			if(row.getValuePer() == null || row.getValuePer() != intValue) {
+				row.setValuePer(intValue);
 				changed = true;
 			}
 		}
@@ -1420,22 +1422,30 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		}
 
 		Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
-		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(((Attack)spinner.getSelectedItem()).getId());
+		int id = -1;
+		if(spinner.getSelectedItem() != null) {
+			id = ((Attack) spinner.getSelectedItem()).getId();
+		}
+		if(row.getInitialValue() == null || id != row.getInitialValue()) {
+			row.setInitialValue(id);
 			changed = true;
 		}
+
 		if(row.getValuePer() != null) {
 			row.setValuePer(null);
 			changed = true;
 		}
+
 		if(row.isPerLevel()) {
 			row.setPerLevel(false);
 			changed = true;
 		}
+
 		if(row.isPerRound()) {
 			row.setPerRound(false);
 			changed = true;
 		}
+
 		if(row.isPerTier()) {
 			row.setPerTier(false);
 			changed = true;
@@ -1456,27 +1466,35 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
-		String newEnumName = ((Resistance)spinner.getSelectedItem()).name();
+		String newEnumName = null;
+		if(spinner.getSelectedItem() != null) {
+			newEnumName = ((Resistance) spinner.getSelectedItem()).name();
+		}
 		if(row.getEnumName() == null || !row.getEnumName().equals(newEnumName)) {
 			row.setEnumName(newEnumName);
 			changed = true;
 		}
+
 		if(row.getInitialValue() != null) {
 			row.setInitialValue(null);
 			changed = true;
 		}
+
 		if(row.getValuePer() != null) {
 			row.setValuePer(null);
 			changed = true;
 		}
+
 		if(row.isPerLevel()) {
 			row.setPerLevel(false);
 			changed = true;
 		}
+
 		if(row.isPerRound()) {
 			row.setPerRound(false);
 			changed = true;
 		}
+
 		if(row.isPerTier()) {
 			row.setPerTier(false);
 			changed = true;
@@ -1496,27 +1514,37 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			row.setParameter(Parameter.SKILL);
 			changed = true;
 		}
+
 		Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
-		if(row.getInitialValue() == null || spinner.getSelectedItemPosition() != row.getInitialValue()) {
-			row.setInitialValue(((Skill)spinner.getSelectedItem()).getId());
+		int newInitialValue = -1;
+		if(spinner.getSelectedItem() != null) {
+			newInitialValue = ((Skill)spinner.getSelectedItem()).getId();
+		}
+		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
+			row.setInitialValue(newInitialValue);
 			changed = true;
 		}
+
 		if(row.getEnumName() != null) {
 			row.setEnumName(null);
 			changed = true;
 		}
+
 		if(row.getValuePer() != null) {
 			row.setValuePer(null);
 			changed = true;
 		}
+
 		if(row.isPerLevel()) {
 			row.setPerLevel(false);
 			changed = true;
 		}
+
 		if(row.isPerRound()) {
 			row.setPerRound(false);
 			changed = true;
 		}
+
 		if(row.isPerTier()) {
 			row.setPerTier(false);
 			changed = true;
@@ -1536,28 +1564,37 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			row.setParameter(Parameter.SPECIALIZATION);
 			changed = true;
 		}
+
 		Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
-		int newInitialValue = ((Specialization)spinner.getSelectedItem()).getId();
+		int newInitialValue = -1;
+		if (spinner.getSelectedItem() != null) {
+			newInitialValue = ((Specialization) spinner.getSelectedItem()).getId();
+		}
 		if(row.getInitialValue() == null ||  newInitialValue != row.getInitialValue()) {
 			row.setInitialValue(newInitialValue);
 			changed = true;
 		}
+
 		if(row.getEnumName() != null) {
 			row.setEnumName(null);
 			changed = true;
 		}
+
 		if(row.getValuePer() != null) {
 			row.setValuePer(null);
 			changed = true;
 		}
+
 		if(row.isPerLevel()) {
 			row.setPerLevel(false);
 			changed = true;
 		}
+
 		if(row.isPerRound()) {
 			row.setPerRound(false);
 			changed = true;
 		}
+
 		if(row.isPerTier()) {
 			row.setPerTier(false);
 			changed = true;
@@ -1577,28 +1614,37 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			row.setParameter(Parameter.SPELL);
 			changed = true;
 		}
+
 		Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
-		int newInitialValue = ((Spell)spinner.getSelectedItem()).getId();
+		int newInitialValue = -1;
+		if(spinner.getSelectedItem() != null) {
+			newInitialValue = ((Spell) spinner.getSelectedItem()).getId();
+		}
 		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
 			row.setInitialValue(newInitialValue);
 			changed = true;
 		}
+
 		if(row.getEnumName() != null) {
 			row.setEnumName(null);
 			changed = true;
 		}
+
 		if(row.getValuePer() != null) {
 			row.setValuePer(null);
 			changed = true;
 		}
+
 		if(row.isPerLevel()) {
 			row.setPerLevel(false);
 			changed = true;
 		}
+
 		if(row.isPerRound()) {
 			row.setPerRound(false);
 			changed = true;
 		}
+
 		if(row.isPerTier()) {
 			row.setPerTier(false);
 			changed = true;
@@ -1618,29 +1664,38 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			row.setParameter(Parameter.STAT);
 			changed = true;
 		}
+
 		if(row.getInitialValue() != null) {
 			row.setInitialValue(null);
 			changed = true;
 		}
+
 		Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
-		String newEnumName = ((Statistic)spinner.getSelectedItem()).name();
+		String newEnumName = null;
+		if(spinner.getSelectedItem() != null) {
+			newEnumName = ((Statistic) spinner.getSelectedItem()).name();
+		}
 		if((newEnumName == null && row.getEnumName() != null)
 				|| (newEnumName != null && !newEnumName.equals(row.getEnumName()))) {
 			row.setEnumName(newEnumName);
 			changed = true;
 		}
+
 		if(row.getValuePer() != null) {
 			row.setValuePer(null);
 			changed = true;
 		}
+
 		if(row.isPerLevel()) {
 			row.setPerLevel(false);
 			changed = true;
 		}
+
 		if(row.isPerRound()) {
 			row.setPerRound(false);
 			changed = true;
 		}
+
 		if(row.isPerTier()) {
 			row.setPerTier(false);
 			changed = true;

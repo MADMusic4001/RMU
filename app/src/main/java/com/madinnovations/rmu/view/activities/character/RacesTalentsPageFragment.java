@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.activities.character;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
  * Handles interactions with the UI for Race talents.
  */
 public class RacesTalentsPageFragment extends Fragment {
+	@SuppressWarnings("unused")
 	private static final String TAG = "RacesTalentsPageFragmen";
 	private   RacesFragment                racesFragment;
 
@@ -43,7 +43,6 @@ public class RacesTalentsPageFragment extends Fragment {
 	public static RacesTalentsPageFragment newInstance(RacesFragment racesFragment) {
 		RacesTalentsPageFragment fragment = new RacesTalentsPageFragment();
 		fragment.racesFragment = racesFragment;
-		Log.d(TAG, "newInstance: fragment = " + fragment);
 		return fragment;
 	}
 
@@ -52,9 +51,7 @@ public class RacesTalentsPageFragment extends Fragment {
 		((CampaignActivity) getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.races_talents_page, container, false);
-
-		return layout;
+		return inflater.inflate(R.layout.races_talents_page, container, false);
 	}
 
 	// <editor-fold desc="Copy to/from views/entity methods">

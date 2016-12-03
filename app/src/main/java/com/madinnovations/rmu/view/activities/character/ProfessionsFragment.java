@@ -282,8 +282,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 						assignableCosts = new ArrayList<>(categoryCostListAdapter.getChildrenCount(i));
 						newAssignableSkillCosts.put(categoryCost.getSkillCategory(), assignableCosts);
 					}
-					Log.d(TAG, "skillCostGroup = " + skillCostGroup);
-					Log.d(TAG, "skillCostGroup.costGroup = " + skillCostGroup.getCostGroup());
 					assignableCosts.add(skillCostGroup.getCostGroup());
 				}
 				else if(skillCostGroup.getCostGroup() != null) {
@@ -293,8 +291,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		}
 		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
 		currentInstance.setSkillCosts(newSkillCosts);
-		Log.d(TAG, "oldAssignableSkillCosts = " + currentInstance.getAssignableSkillCostsMap());
-		Log.d(TAG, "newAssignableSkillCosts = " + newAssignableSkillCosts);
 		currentInstance.setAssignableSkillCostsMap(newAssignableSkillCosts);
 
 		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());

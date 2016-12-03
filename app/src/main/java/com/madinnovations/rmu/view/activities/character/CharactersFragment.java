@@ -149,14 +149,12 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		Log.d(TAG, "onCreateContextMenu: ");
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getActivity().getMenuInflater().inflate(R.menu.character_context_menu, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		Log.d(TAG, "onContextItemSelected: ");
 		final Character character;
 
 		AdapterView.AdapterContextMenuInfo info =

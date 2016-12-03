@@ -132,7 +132,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	public static CreatureVarietyMainPageFragment newInstance(CreatureVarietiesFragment varietiesFragment) {
 		CreatureVarietyMainPageFragment fragment = new CreatureVarietyMainPageFragment();
 		fragment.varietiesFragment = varietiesFragment;
-		Log.d(TAG, "newInstance: fragment = " + fragment);
 		return fragment;
 	}
 
@@ -1534,6 +1533,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void setVarietiesFragment(CreatureVarietiesFragment varietiesFragment) {
 		this.varietiesFragment = varietiesFragment;
 	}

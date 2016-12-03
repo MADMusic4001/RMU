@@ -19,16 +19,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.widget.TextView;
 
 /**
  * Custom TextView that draws text vertically instead of horizontally
  */
 public class VerticalTextView extends TextView {
-	private static final String TAG = "VerticalTextView";
-	private float rotationAngleDegrees = 90;
+	@SuppressWarnings("unused")
+	private static final String TAG                  = "VerticalTextView";
+	private              float  rotationAngleDegrees = 90;
 
 	/**
 	 * Creates a new VerticalTextView instance.
@@ -43,13 +42,11 @@ public class VerticalTextView extends TextView {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
-		super.onMeasure(heightMeasureSpec, widthMeasureSpec);
 		setMeasuredDimension(getMeasuredHeight(), getMeasuredWidth());
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas){
-		Log.d(TAG, "onDraw: text = " + getText().toString());
 		TextPaint textPaint = getPaint();
 		textPaint.setColor(getCurrentTextColor());
 		textPaint.drawableState = getDrawableState();

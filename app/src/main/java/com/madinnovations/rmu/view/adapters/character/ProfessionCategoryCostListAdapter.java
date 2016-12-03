@@ -190,10 +190,6 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		holder.skillCategoryCost = skillCategoryCost;
 		SkillCostGroup skillCostGroup = (SkillCostGroup)getChild(groupPosition, childPosition);
 		holder.skillCostGroup = skillCostGroup;
-		if(skillCategoryCost.getSkillCategory().getName().equals("Combat Training")) {
-			Log.d("RMU", "skillCostGroup = " + skillCostGroup);
-			Log.d("RMU", "skillCostGroup.costGroup = " + skillCostGroup.getCostGroup());
-		}
 		if(skillCategoryCost.isAssignable()) {
 			holder.nameView.setText(String.format(context.getString(R.string.assignable_skill_name), childPosition + 1));
 		 	if(skillCategoryCost.getAssignableCostGroups().size() > childPosition) {

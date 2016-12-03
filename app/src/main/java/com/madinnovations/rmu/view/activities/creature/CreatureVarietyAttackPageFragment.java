@@ -110,7 +110,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	public static CreatureVarietyAttackPageFragment newInstance(CreatureVarietiesFragment varietiesFragment) {
 		CreatureVarietyAttackPageFragment fragment = new CreatureVarietyAttackPageFragment();
 		fragment.varietiesFragment = varietiesFragment;
-		Log.d(TAG, "newInstance: fragment = " + fragment);
 		return fragment;
 	}
 
@@ -973,6 +972,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void setVarietiesFragment(CreatureVarietiesFragment varietiesFragment) {
 		this.varietiesFragment = varietiesFragment;
 	}

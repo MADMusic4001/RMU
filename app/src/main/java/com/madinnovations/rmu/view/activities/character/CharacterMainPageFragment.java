@@ -111,7 +111,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public static CharacterMainPageFragment newInstance(CharactersFragment charactersFragment) {
 		CharacterMainPageFragment fragment = new CharacterMainPageFragment();
 		fragment.charactersFragment = charactersFragment;
-		Log.d(TAG, "newInstance: fragment = " + fragment);
 		return fragment;
 	}
 
