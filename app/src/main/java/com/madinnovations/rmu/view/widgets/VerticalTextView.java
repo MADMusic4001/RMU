@@ -59,7 +59,9 @@ public class VerticalTextView extends TextView {
 
 //		canvas.translate(getCompoundPaddingLeft(), getExtendedPaddingTop());
 
-		getLayout().draw(canvas);
+		if(getLayout() != null) {
+			getLayout().draw(canvas);
+		}
 		canvas.restore();
 	}
 

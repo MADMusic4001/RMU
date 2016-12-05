@@ -15,33 +15,96 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Class containing Creature Archetype level attributes.
  */
 public class CreatureArchetypeLevel {
-	private short level;
-	private short attack;
-	private short attack2;
-	private short defensiveBonus;
-	private short bodyDevelopment;
-	private short primeSkill;
-	private short secondarySkill;
-	private short powerDevelopment;
-	private short spells;
-	private short talentDP;
-	private short agility;
-	private short constitutionStat;
-	private short constitution;
-	private short empathy;
-	private short intuition;
-	private short memory;
-	private short presence;
-	private short reasoning;
-	private short quickness;
-	private short selfDiscipline;
-	private short strength;
+	private CreatureArchetype creatureArchetype;
+	private short level = 1;
+	private short attack = 0;
+	private short attack2 = 0;
+	private short defensiveBonus = 0;
+	private short bodyDevelopment = 0;
+	private short primeSkill = 0;
+	private short secondarySkill = 0;
+	private short powerDevelopment = 0;
+	private short spells = 0;
+	private short talentDP = 0;
+	private short agility = 0;
+	private short constitutionStat = 50;
+	private short constitution = 0;
+	private short empathy = 0;
+	private short intuition = 0;
+	private short memory = 0;
+	private short presence = 0;
+	private short reasoning = 0;
+	private short quickness = 0;
+	private short selfDiscipline = 0;
+	private short strength = 0;
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("creatureArchetype", creatureArchetype)
+				.append("level", level)
+				.append("attack", attack)
+				.append("attack2", attack2)
+				.append("defensiveBonus", defensiveBonus)
+				.append("bodyDevelopment", bodyDevelopment)
+				.append("primeSkill", primeSkill)
+				.append("secondarySkill", secondarySkill)
+				.append("powerDevelopment", powerDevelopment)
+				.append("spells", spells)
+				.append("talentDP", talentDP)
+				.append("agility", agility)
+				.append("constitutionStat", constitutionStat)
+				.append("constitution", constitution)
+				.append("empathy", empathy)
+				.append("intuition", intuition)
+				.append("memory", memory)
+				.append("presence", presence)
+				.append("reasoning", reasoning)
+				.append("quickness", quickness)
+				.append("selfDiscipline", selfDiscipline)
+				.append("strength", strength)
+				.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		CreatureArchetypeLevel level1 = (CreatureArchetypeLevel) o;
+
+		if (getLevel() != level1.getLevel()) {
+			return false;
+		}
+		return getCreatureArchetype().equals(level1.getCreatureArchetype());
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = getCreatureArchetype().hashCode();
+		result = 31 * result + (int) getLevel();
+		return result;
+	}
 
 	// Getters and setters
+	public CreatureArchetype getCreatureArchetype() {
+		return creatureArchetype;
+	}
+	public void setCreatureArchetype(CreatureArchetype creatureArchetype) {
+		this.creatureArchetype = creatureArchetype;
+	}
 	public short getLevel() {
 		return level;
 	}

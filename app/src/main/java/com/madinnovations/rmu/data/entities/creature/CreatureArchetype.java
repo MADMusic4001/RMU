@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import android.util.SparseArray;
+
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 
@@ -41,6 +43,7 @@ public class CreatureArchetype {
 	private             List<SkillCategory> tertiarySkills  = new ArrayList<>();
 	private             String              spells          = null;
 	private             String              roles           = null;
+	private SparseArray<CreatureArchetypeLevel> levels      = new SparseArray<>();
 
 	/**
 	 * Checks the validity of the CreatureArchetype instance.
@@ -86,6 +89,7 @@ public class CreatureArchetype {
 				.append("tertiarySkills", tertiarySkills)
 				.append("spells", spells)
 				.append("roles", roles)
+				.append("levels", levels)
 				.toString();
 	}
 
@@ -102,6 +106,16 @@ public class CreatureArchetype {
 	@Override
 	public int hashCode() {
 		return id;
+	}
+
+	public void generateLevels() {
+		levels.clear();
+		for(int i = 1; i <= 50; i++) {
+			CreatureArchetypeLevel level = new CreatureArchetypeLevel();
+			level.setCreatureArchetype(this);
+			level.setLevel((short)i);
+			levels.put(i, level);
+		}
 	}
 
 	// Getters and setters
@@ -176,5 +190,11 @@ public class CreatureArchetype {
 	}
 	public void setRoles(String roles) {
 		this.roles = roles;
+	}
+	public SparseArray<CreatureArchetypeLevel> getLevels() {
+		return levels;
+	}
+	public void setLevels(SparseArray<CreatureArchetypeLevel> levels) {
+		this.levels = levels;
 	}
 }

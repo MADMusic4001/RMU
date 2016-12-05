@@ -173,6 +173,7 @@
   <string name="hint_level">Level</string>
   <string name="hint_outlook_description">Outlook Description</string>
   <string name="hint_outlook_name">Outlook Name</string>
+  <string name="hint_select_start_or_end">Select Range Start or End</string>
 
   <!-- Item -->
   <string name="hint_item_description">Item Description</string>

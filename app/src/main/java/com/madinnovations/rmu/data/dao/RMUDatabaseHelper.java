@@ -62,6 +62,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSpellsSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeLevelsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategorySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategoryTalentsSchema;
@@ -151,6 +152,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(VarietySkillsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureArchetypeSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(ArchetypeLevelsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ArchetypeSpellsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ArchetypeSkillsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(TalentSchema.TABLE_CREATE);
@@ -260,6 +262,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(TalentSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ArchetypeSkillsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ArchetypeSpellsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ArchetypeLevelsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureArchetypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietySkillsSchema.TABLE_NAME, null, null);

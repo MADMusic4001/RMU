@@ -20,15 +20,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
+import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeLevelsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
+import com.madinnovations.rmu.data.entities.creature.CreatureArchetypeLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +108,7 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		setSkillCategories(instance);
 		instance.setSpells(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SPELLS)));
 		instance.setRoles(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLES)));
+		setLevels(instance);
 
 		return instance;
 	}
@@ -145,8 +149,8 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 	@Override
 	protected boolean saveRelationships(SQLiteDatabase db, CreatureArchetype instance) {
 		boolean result = true;
-		final String selectionArgs[] = { String.valueOf(instance.getId()) };
-		final String selection = ArchetypeSkillsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+		String selectionArgs[] = { String.valueOf(instance.getId()) };
+		String selection = ArchetypeSkillsSchema.COLUMN_ARCHETYPE_ID + " = ?";
 
 		db.delete(ArchetypeSkillsSchema.TABLE_NAME, selection, selectionArgs);
 
@@ -168,6 +172,16 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
+		selection = ArchetypeLevelsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+		db.delete(ArchetypeLevelsSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(int i = 0; i < instance.getLevels().size(); i++) {
+			CreatureArchetypeLevel level = instance.getLevels().valueAt(i);
+			result &= (db.insertWithOnConflict(ArchetypeLevelsSchema.TABLE_NAME, null,
+											   getArchetypeLevelValues(level, instance.getId()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
+
 		return result;
 	}
 
@@ -181,7 +195,36 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		return values;
 	}
 
-	private void setSkillCategories(@NonNull  CreatureArchetype instance) {
+	private ContentValues getArchetypeLevelValues(CreatureArchetypeLevel instance, int archetypeId) {
+		ContentValues values = new ContentValues(22);
+
+		values.put(ArchetypeLevelsSchema.COLUMN_ARCHETYPE_ID, archetypeId);
+		values.put(ArchetypeLevelsSchema.COLUMN_LEVEL, instance.getLevel());
+		values.put(ArchetypeLevelsSchema.COLUMN_ATTACK, instance.getAttack());
+		values.put(ArchetypeLevelsSchema.COLUMN_ATTACK2, instance.getAttack2());
+		values.put(ArchetypeLevelsSchema.COLUMN_DEF_BONUS, instance.getDefensiveBonus());
+		values.put(ArchetypeLevelsSchema.COLUMN_BODY_DEV, instance.getBodyDevelopment());
+		values.put(ArchetypeLevelsSchema.COLUMN_PRIME_SKILL, instance.getPrimeSkill());
+		values.put(ArchetypeLevelsSchema.COLUMN_SECONDARY_SKILL, instance.getSecondarySkill());
+		values.put(ArchetypeLevelsSchema.COLUMN_POWER_DEV, instance.getPowerDevelopment());
+		values.put(ArchetypeLevelsSchema.COLUMN_SPELLS, instance.getSpells());
+		values.put(ArchetypeLevelsSchema.COLUMN_TALENT_DP, instance.getTalentDP());
+		values.put(ArchetypeLevelsSchema.COLUMN_AGILITY, instance.getAgility());
+		values.put(ArchetypeLevelsSchema.COLUMN_CONS_STAT, instance.getConstitutionStat());
+		values.put(ArchetypeLevelsSchema.COLUMN_CONSTITUTION, instance.getConstitution());
+		values.put(ArchetypeLevelsSchema.COLUMN_EMPATHY, instance.getEmpathy());
+		values.put(ArchetypeLevelsSchema.COLUMN_INTUITION, instance.getIntuition());
+		values.put(ArchetypeLevelsSchema.COLUMN_MEMORY, instance.getMemory());
+		values.put(ArchetypeLevelsSchema.COLUMN_PRESENCE, instance.getPresence());
+		values.put(ArchetypeLevelsSchema.COLUMN_QUICKNESS, instance.getQuickness());
+		values.put(ArchetypeLevelsSchema.COLUMN_REASONING, instance.getReasoning());
+		values.put(ArchetypeLevelsSchema.COLUMN_SELF_DISC, instance.getSelfDiscipline());
+		values.put(ArchetypeLevelsSchema.COLUMN_STRENGTH, instance.getStrength());
+
+		return values;
+	}
+
+	private void setSkillCategories(@NonNull CreatureArchetype instance) {
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = ArchetypeSkillsSchema.COLUMN_ARCHETYPE_ID + " = ?";
 
@@ -213,5 +256,46 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 		instance.setPrimarySkills(primaryList);
 		instance.setSecondarySkills(secondaryList);
 		instance.setTertiarySkills(tertiaryList);
+	}
+
+	private void setLevels(@NonNull CreatureArchetype instance) {
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+		final String selection = ArchetypeLevelsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+
+		Cursor cursor = super.query(ArchetypeLevelsSchema.TABLE_NAME, ArchetypeLevelsSchema.COLUMNS, selection,
+									selectionArgs, ArchetypeLevelsSchema.COLUMN_LEVEL);
+		SparseArray<CreatureArchetypeLevel> levelSparseArray = new SparseArray<>();
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			CreatureArchetypeLevel level = new CreatureArchetypeLevel();
+			level.setCreatureArchetype(instance);
+			int levelValue = cursor.getInt(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_LEVEL));
+			level.setLevel((short)levelValue);
+			level.setAttack(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_ATTACK)));
+			level.setAttack2(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_ATTACK2)));
+			level.setDefensiveBonus(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_DEF_BONUS)));
+			level.setBodyDevelopment(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_BODY_DEV)));
+			level.setPrimeSkill(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_PRIME_SKILL)));
+			level.setSecondarySkill(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_SECONDARY_SKILL)));
+			level.setPowerDevelopment(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_POWER_DEV)));
+			level.setSpells(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_SPELLS)));
+			level.setTalentDP(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_TALENT_DP)));
+			level.setAgility(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_AGILITY)));
+			level.setConstitutionStat(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_CONS_STAT)));
+			level.setConstitution(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_CONSTITUTION)));
+			level.setEmpathy(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_EMPATHY)));
+			level.setIntuition(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_INTUITION)));
+			level.setMemory(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_MEMORY)));
+			level.setPresence(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_PRESENCE)));
+			level.setQuickness(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_QUICKNESS)));
+			level.setReasoning(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_REASONING)));
+			level.setSelfDiscipline(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_SELF_DISC)));
+			level.setStrength(cursor.getShort(cursor.getColumnIndexOrThrow(ArchetypeLevelsSchema.COLUMN_STRENGTH)));
+			levelSparseArray.put(levelValue, level);
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		instance.setLevels(levelSparseArray);
 	}
 }

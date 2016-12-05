@@ -256,6 +256,7 @@
 
   <!-- ImageButton content descriptions -->
   <string name="label_fill_range">Fill range</string>
+  <string name="label_fill_range_double">Fill range double</string>
 
   <!-- Button labels -->
   <string name="label_add_parameter">Add Parameter</string>
@@ -332,6 +333,7 @@
   <string name="label_rr_mods">Resistance Roll Modifications</string>
   <string name="label_secondary_skill">Secondary skill</string>
   <string name="label_secondary_skills">Secondary Skills</string>
+  <string name="label_select_range">Select Range</string>
   <string name="label_skill_bonus">Skill Bonus</string>
   <string name="label_spells">Spells</string>
   <string name="label_stagger">Stagger</string>
@@ -436,12 +438,14 @@
   <string name="input_label_realm2">Realm 2:</string>
   <string name="input_label_recovery_multiplier">Recovery Mult.:</string>
   <string name="input_label_resistance">Resistance:</string>
+  <string name="input_label_roles">Roles:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_skill">Skill:</string>
   <string name="input_label_skill_costs">Skill Costs:</string>
   <string name="input_label_skin_complexion">Skin Complexion:</string>
   <string name="input_label_specialization">Specialization:</string>
+  <string name="input_label_spells">Spells:</string>
   <string name="input_label_spell_list">Spell List:</string>
   <string name="input_label_spell_list_filter">Spell List Filter:</string>
   <string name="input_label_spell_list_type">Spell List Type:</string>

@@ -7,20 +7,32 @@
   <LinearLayout
       android:orientation="horizontal"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:baselineAligned="false">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
+          android:text="@string/label_select_range"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
+        android:layout_height="wrap_content">
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_level_short"/>
       <ImageButton
           android:id="@+id/level_fill_range_button"
@@ -30,17 +42,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/attack_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_attack_short"/>
       <ImageButton
           android:id="@+id/attack_fill_range_button"
@@ -50,17 +62,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/attack2_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_attack2_short"/>
       <ImageButton
           android:id="@+id/attack2_fill_range_button"
@@ -70,17 +82,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/db_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_defensive_bonus_short"/>
       <ImageButton
           android:id="@+id/db_fill_range_button"
@@ -90,17 +102,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/body_dev_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_body_dev_short"/>
       <ImageButton
           android:id="@+id/body_dev_fill_range_button"
@@ -110,17 +122,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/prime_skill_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_prime_skill"/>
       <ImageButton
           android:id="@+id/prime_skill_fill_range_button"
@@ -130,17 +142,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/secondary_skill_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_secondary_skill"/>
       <ImageButton
           android:id="@+id/secondary_skill_fill_range_button"
@@ -150,17 +162,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/power_dev_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_power_dev"/>
       <ImageButton
           android:id="@+id/power_dev_fill_range_button"
@@ -170,17 +182,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/spells_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_spells"/>
       <ImageButton
           android:id="@+id/spells_fill_range_button"
@@ -190,17 +202,17 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/talent_dp_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"
+      <TextView
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"
           android:text="@string/label_talent_dp"/>
       <ImageButton
           android:id="@+id/talent_dp_fill_range_button"
@@ -210,18 +222,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/agility_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
         android:id="@+id/agility_label"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:rotation="-75"
-        android:background="@drawable/border"
-        android:layout_gravity="start"
-        android:textAlignment="textStart"/>
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:gravity="left|top"
+        android:rotation="-90"/>
       <ImageButton
           android:id="@+id/agility_fill_range_button"
           android:layout_width="match_parent"
@@ -230,18 +242,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/constitution_stat_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/constitution_stat_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/constitution_stat_fill_range_button"
           android:layout_width="match_parent"
@@ -250,18 +262,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/constitution_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/constitution_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/constitution_fill_range_button"
           android:layout_width="match_parent"
@@ -270,18 +282,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/empathy_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/empathy_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/empathy_fill_range_button"
           android:layout_width="match_parent"
@@ -290,18 +302,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/intuition_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/intuition_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/intuition_fill_range_button"
           android:layout_width="match_parent"
@@ -310,18 +322,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/memory_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/memory_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/memory_fill_range_button"
           android:layout_width="match_parent"
@@ -330,18 +342,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/presence_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/presence_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/presence_fill_range_button"
           android:layout_width="match_parent"
@@ -350,18 +362,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/reasoning_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/reasoning_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/reasoning_fill_range_button"
           android:layout_width="match_parent"
@@ -370,18 +382,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/quickness_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/quickness_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/quickness_fill_range_button"
           android:layout_width="match_parent"
@@ -390,18 +402,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/self_discipline_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/self_discipline_label"
-          android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:rotation="-75"
-          android:background="@drawable/border"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/self_discipline_fill_range_button"
           android:layout_width="match_parent"
@@ -410,18 +422,18 @@
           android:contentDescription="@string/label_fill_range"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/strength_layout"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:background="@drawable/drag_normal_background"
         android:layout_height="wrap_content">
-      <com.madinnovations.rmu.view.widgets.VerticalTextView
+      <TextView
           android:id="@+id/strength_label"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:paddingBottom="20dp"
-          android:rotation="-90"
-          android:layout_gravity="start"
-          android:textAlignment="textStart"/>
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:gravity="left|top"
+          android:rotation="-90"/>
       <ImageButton
           android:id="@+id/strength_fill_range_button"
           android:layout_width="match_parent"
@@ -432,6 +444,8 @@
   </LinearLayout>
   <ListView
       android:id="@+id/levels_list_view"
+      android:background="@drawable/drag_target_background"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"/>
+      android:layout_height="wrap_content"
+      android:choiceMode="multipleChoice"/>
 </LinearLayout>
