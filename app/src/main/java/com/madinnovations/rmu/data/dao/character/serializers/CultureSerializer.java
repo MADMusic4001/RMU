@@ -37,6 +37,7 @@ public class CultureSerializer extends TypeAdapter<Culture> implements CultureSc
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		out.name(COLUMN_TRADES_AND_CRAFTS_RANKS).value(value.getTradesAndCraftsRanks());
+		out.name(COLUMN_OTHER_LORE_RANKS).value(value.getOtherLoreRanks());
 		if(value.getSkillRanks() != null &&!value.getSkillRanks().isEmpty()) {
 			out.name(CultureSkillRanksSchema.TABLE_NAME);
 			out.beginArray();
@@ -69,6 +70,9 @@ public class CultureSerializer extends TypeAdapter<Culture> implements CultureSc
 					break;
 				case COLUMN_TRADES_AND_CRAFTS_RANKS:
 					culture.setTradesAndCraftsRanks((short)in.nextInt());
+					break;
+				case COLUMN_OTHER_LORE_RANKS:
+					culture.setOtherLoreRanks((short)in.nextInt());
 					break;
 				case CultureSkillRanksSchema.TABLE_NAME:
 					readSkillRanks(in, culture);

@@ -75,6 +75,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 	private   EditText                     nameEdit;
 	private   EditText                     descriptionEdit;
 	private   EditText                     tradesAndCraftsEdit;
+	private   EditText                     otherLoreEdit;
 	private   Collection<Skill>            skills = null;
 	private   Culture                      currentInstance = new Culture();
 	private   boolean                      isNew           = true;
@@ -97,6 +98,8 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 												 R.string.validation_culture_description_required);
 		tradesAndCraftsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.trades_ranks_edit,
 													 R.string.validation_culture_trades_ranks_required);
+		otherLoreEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.other_lore_ranks_edit,
+													 R.string.validation_culture_other_lore_ranks_required);
 		initSkillRanksListView(layout);
 		initListView(layout);
 
@@ -200,6 +203,9 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 			case R.id.trades_ranks_edit:
 				result = String.valueOf(currentInstance.getTradesAndCraftsRanks());
 				break;
+			case R.id.other_lore_ranks_edit:
+				result = String.valueOf(currentInstance.getOtherLoreRanks());
+				break;
 		}
 
 		return result;
@@ -219,6 +225,11 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 			case R.id.trades_ranks_edit:
 				try {
 					currentInstance.setTradesAndCraftsRanks(Short.valueOf(newString));
+				}
+				catch (NumberFormatException ignored) {}
+			case R.id.other_lore_ranks_edit:
+				try {
+					currentInstance.setOtherLoreRanks(Short.valueOf(newString));
 				}
 				catch (NumberFormatException ignored) {}
 		}
@@ -263,6 +274,14 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 			}
 		}
 
+		if(otherLoreEdit.getText().length() > 0) {
+			newShort = Short.valueOf(otherLoreEdit.getText().toString());
+			if(newShort != currentInstance.getOtherLoreRanks()) {
+				currentInstance.setOtherLoreRanks(newShort);
+				changed = true;
+			}
+		}
+
 		return changed;
 	}
 
@@ -279,6 +298,9 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 
 		tradesAndCraftsEdit.setText(String.valueOf(currentInstance.getTradesAndCraftsRanks()));
 		tradesAndCraftsEdit.setError(null);
+
+		otherLoreEdit.setText(String.valueOf(currentInstance.getOtherLoreRanks()));
+		otherLoreEdit.setError(null);
 
 		if(skills != null) {
 			skillRanksListAdapter.clear();

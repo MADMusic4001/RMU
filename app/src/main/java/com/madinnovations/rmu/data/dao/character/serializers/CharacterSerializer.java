@@ -20,6 +20,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterPurchasedCultureRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
@@ -76,6 +77,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_CURRENT_DEVELOPMENT_POINTS).value(value.getCurrentDevelopmentPoints());
 		out.name(COLUMN_CURRENT_ENDURANCE_LOSS).value(value.getEnduranceLoss());
 		out.name(COLUMN_CURRENT_PP_LOSS).value(value.getPowerPointLoss());
+		out.name(COLUMN_STAT_INCREASES).value(value.getStatIncreases());
 
 		out.name(CharacterSkillCostsSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Skill, DevelopmentCostGroup> entry : value.getSkillCosts().entrySet()) {
@@ -138,6 +140,21 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		for(Map.Entry<Specialization, Short> entry : value.getCurrentLevelSpecializationRanks().entrySet()) {
 			out.beginObject();
 			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
+			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterPurchasedCultureRanksSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Object, Short> entry : value.getPurchasedCultureRanks().entrySet()) {
+			out.beginObject();
+			if(entry.getKey() instanceof Skill) {
+				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID).value(((Skill)entry.getKey()).getId());
+			}
+			else {
+				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID)
+						.value(((Specialization)entry.getKey()).getId());
+			}
 			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
 			out.endObject();
 		}
@@ -237,6 +254,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_CURRENT_PP_LOSS:
 					character.setPowerPointLoss((short)in.nextInt());
 					break;
+				case COLUMN_STAT_INCREASES:
+					character.setStatIncreases((short)in.nextInt());
+					break;
 				case CharacterSkillCostsSchema.TABLE_NAME:
 					readSkillCosts(in, character);
 					break;
@@ -257,6 +277,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME:
 					readCurrentLevelSpecializationRanks(in, character);
+					break;
+				case CharacterPurchasedCultureRanksSchema.TABLE_NAME:
+					readPurchasedCultureRanks(in, character);
 					break;
 			}
 		}
@@ -431,6 +454,37 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			}
 			if(newSpecialization != null) {
 				character.getCurrentLevelSpecializationRanks().put(newSpecialization, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readPurchasedCultureRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Specialization newSpecialization = null;
+			Skill newSkill = null;
+			Short ranks = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID:
+						newSpecialization = new Specialization(in.nextInt());
+						break;
+					case CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS:
+						ranks = (short)in.nextInt();
+						break;
+				}
+			}
+			if(newSpecialization != null) {
+				character.getPurchasedCultureRanks().put(newSpecialization, ranks);
+			}
+			else if(newSkill != null) {
+				character.getPurchasedCultureRanks().put(newSkill, ranks);
 			}
 			in.endObject();
 		}

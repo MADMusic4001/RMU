@@ -186,6 +186,15 @@
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:text="@string/label_generate_stats"/>
+    <TextView
+        android:id="@+id/stat_points_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_stat_points"/>
+    <TextView
+        android:id="@+id/stat_points_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
   </LinearLayout>
 
   <LinearLayout

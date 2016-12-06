@@ -78,6 +78,7 @@
   <string name="validation_critical_type_name_required">Please enter a critical type name.</string>
   <string name="validation_culture_description_required">Please enter a culture notes.</string>
   <string name="validation_culture_name_required">Please enter a culture name.</string>
+  <string name="validation_culture_other_lore_ranks_required">Please enter the number of other lore ranks.</string>
   <string name="validation_culture_trades_ranks_required">Please enter the number of trade and crafts ranks.</string>
   <string name="validation_damage_results_format_invalid">Invalid entry.</string>
   <string name="validation_damage_table_name_required">Please enter a damage table name.</string>

@@ -215,7 +215,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 		if(skill != null) {
 			costGroup = character.getSkillCosts().get(skill);
-			if(costGroup == null) {
+			if(costGroup == null && character.getProfession() != null) {
 				costGroup = character.getProfession().getSkillCosts().get(skill);
 				if(costGroup == null) {
 					costGroup = character.getProfession().getSkillCategoryCosts().get(skill.getCategory());

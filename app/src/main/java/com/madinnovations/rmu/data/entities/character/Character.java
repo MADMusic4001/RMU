@@ -77,6 +77,7 @@ public class Character {
 	private List<Item>                 items               = new ArrayList<>();
 	private Map<Skill, Short>          currentLevelSkillRanks = new HashMap<>();
 	private Map<Specialization, Short> currentLevelSpecializationRanks = new HashMap<>();
+	private Map<Object, Short>         purchasedCultureRanks = new HashMap<>();
 	private int                        statIncreases = 0;
 
 	/**
@@ -173,6 +174,8 @@ public class Character {
 				.append("items", items)
 				.append("currentLevelSkillRanks", currentLevelSkillRanks)
 				.append("currentLevelSpecializationRanks", currentLevelSpecializationRanks)
+				.append("purchasedCultureRanks", purchasedCultureRanks)
+				.append("statIncreases", statIncreases)
 				.toString();
 	}
 
@@ -538,5 +541,14 @@ public class Character {
 	}
 	public void setCurrentLevelSpecializationRanks(Map<Specialization, Short> currentLevelSpecializationRanks) {
 		this.currentLevelSpecializationRanks = currentLevelSpecializationRanks;
+	}
+	public Map<Object, Short> getPurchasedCultureRanks() {
+		return purchasedCultureRanks;
+	}
+	public void setPurchasedCultureRanks(Map<Object, Short> purchasedCultureRanks) {
+		this.purchasedCultureRanks = purchasedCultureRanks;
+	}
+	public int getStatIncreases() {
+		return statIncreases;
 	}
 }

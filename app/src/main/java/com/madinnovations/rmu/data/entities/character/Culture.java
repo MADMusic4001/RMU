@@ -24,12 +24,13 @@ import java.util.Map;
  * Culture attributes
  */
 public class Culture {
-	public static final String JSON_NAME = "Cultures";
-	private int id = -1;
-	private String name = null;
-	private String description = null;
-	private short tradesAndCraftsRanks = 0;
-	private Map<Skill, Short> skillRanks = new HashMap<>();
+	public static final String JSON_NAME            = "Cultures";
+	private int                id                   = -1;
+	private String             name                 = null;
+	private String             description          = null;
+	private short              tradesAndCraftsRanks = 0;
+	private short              otherLoreRanks       = 0;
+	private Map<Skill, Short>  skillRanks           = new HashMap<>();
 
 	/**
 	 * Default constructor
@@ -99,6 +100,12 @@ public class Culture {
 	}
 	public void setTradesAndCraftsRanks(short tradesAndCraftsRanks) {
 		this.tradesAndCraftsRanks = tradesAndCraftsRanks;
+	}
+	public short getOtherLoreRanks() {
+		return otherLoreRanks;
+	}
+	public void setOtherLoreRanks(short otherLoreRanks) {
+		this.otherLoreRanks = otherLoreRanks;
 	}
 	public Map<Skill, Short> getSkillRanks() {
 		return skillRanks;

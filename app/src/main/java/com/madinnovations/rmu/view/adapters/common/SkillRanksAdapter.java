@@ -82,8 +82,11 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 		holder.skillRanks = skillRanks;
 		if(skillRanks != null) {
 			DevelopmentCostGroup costGroup = callbacks.getSkillCost(skillRanks.getSkill(), skillRanks.getSpecialization());
-			String builder = skillRanks.toString() + " (" + costGroup.getFirstCost() + "/" + costGroup.getAdditionalCost() + ")";
-			holder.nameView.setText(builder);
+			if(costGroup != null) {
+				String builder = skillRanks.toString() + " (" + costGroup.getFirstCost() + "/" + costGroup.getAdditionalCost()
+						+ ")";
+				holder.nameView.setText(builder);
+			}
 			holder.ranksView.setText(String.valueOf(skillRanks.getStartingRanks() + skillRanks.getEndingRanks()));
 		}
 

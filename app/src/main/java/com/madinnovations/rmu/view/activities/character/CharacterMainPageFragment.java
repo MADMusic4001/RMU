@@ -98,6 +98,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   Button                   generateStatsButton;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
+	private   TextView                 statPointsLabel;
+	private   TextView                 statPointsView;
 	private   LinearLayout             newCharacterRow;
 	private Map<Statistic, ViewHolder> viewHolderMap = new HashMap<>(Statistic.NUM_STATS);
 
@@ -151,6 +153,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 											R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
 											R.string.validation_character_weight_required);
+		statPointsLabel = (TextView)layout.findViewById(R.id.stat_points_label);
+		statPointsView = (TextView)layout.findViewById(R.id.stat_points_view);
+		setStatPointsViews();
 		for(Statistic statistic : Statistic.getAllStats()) {
 			viewHolderMap.put(statistic, new ViewHolder());
 		}
@@ -335,6 +340,51 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		}
 	}
 
+	/**
+	 * Get currently selected Campaign or null if none is selected.
+	 *
+	 * @return the currently selected Campaign or null if none is selected.
+	 */
+	public Campaign getCampaign() {
+		Campaign campaign = null;
+
+		if(campaignSpinner.getSelectedItem() != null) {
+			campaign = (Campaign)campaignSpinner.getSelectedItem();
+		}
+
+		return campaign;
+	}
+
+	/**
+	 * Get currently selected Race or null if none is selected.
+	 *
+	 * @return the currently selected Race or null if none is selected.
+	 */
+	public Race getRace() {
+		Race race = null;
+
+		if(raceSpinner.getSelectedItem() != null) {
+			race = (Race) raceSpinner.getSelectedItem();
+		}
+
+		return race;
+	}
+
+	/**
+	 * Get currently selected Culture or null if none is selected.
+	 *
+	 * @return the currently selected Culture or null if none is selected.
+	 */
+	public Culture getCulture() {
+		Culture culture = null;
+
+		if(cultureSpinner.getSelectedItem() != null) {
+			culture = (Culture) cultureSpinner.getSelectedItem();
+		}
+
+		return culture;
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		Character character = charactersFragment.getCurrentInstance();
@@ -431,6 +481,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		realmSpinner.setSelection(charactersFragment.getCurrentInstance().getRealm());
 		heightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getHeight()));
 		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
+
+		setStatPointsViews();
 
 		boolean enable = character.getExperiencePoints() == 0 && character.getCampaign() != null
 				&& character.getCampaign().isBuyStats();
@@ -583,6 +635,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(newTemp));
 				statPurchasePoints -= 1;
 				character.setStatPurchasePoints(statPurchasePoints);
+				statPointsView.setText(String.valueOf(statPurchasePoints));
 			}
 		}
 	}
@@ -599,6 +652,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(newTemp));
 			statPurchasePoints += 1;
 			character.setStatPurchasePoints(statPurchasePoints);
+			statPointsView.setText(String.valueOf(statPurchasePoints));
 		}
 	}
 
@@ -664,6 +718,18 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 																			potStatViewId));
 			dragGroup.setOnDragListener(new StatSwapDragListener(statistic));
 		}
+	}
+
+	private void setStatPointsViews() {
+		Character character = charactersFragment.getCurrentInstance();
+		int visible = View.GONE;
+		if(character != null && character.getCampaign() != null && character.getExperiencePoints() == 0
+				&& character.getCampaign().isBuyStats()) {
+			visible = View.VISIBLE;
+			statPointsView.setText(String.valueOf(character.getStatPurchasePoints()));
+		}
+		statPointsLabel.setVisibility(visible);
+		statPointsView.setVisibility(visible);
 	}
 
 	private class StatGroupLongClickListener implements View.OnLongClickListener {

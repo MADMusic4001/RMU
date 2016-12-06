@@ -57,6 +57,7 @@
   <string name="hint_culture_description">Culture Description</string>
   <string name="hint_culture_name">Culture Name</string>
   <string name="hint_dev_points">Dev Points</string>
+  <string name="hint_lore_ranks">Other Lore Ranks</string>
   <string name="hint_profession_description">Profession Description</string>
   <string name="hint_profession_name">Profession Name</string>
   <string name="hint_race_average_height">Average Height</string>

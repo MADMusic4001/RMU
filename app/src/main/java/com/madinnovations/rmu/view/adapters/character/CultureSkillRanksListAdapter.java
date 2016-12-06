@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.character;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,10 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater layoutInflater;
 	private List<CultureSkillCategoryRanks> listData = new ArrayList<>();
 	private CultureRanksCallbacks callbackImpl;
+	private Context context;
+	private int[] colors = new int[]{
+			R.color.list_even_row_background,
+			R.color.list_odd_row_background};
 
 	public void clear() {
 		listData.clear();
@@ -73,6 +78,7 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 	public CultureSkillRanksListAdapter(@NonNull Context context,
 										@NonNull CultureRanksCallbacks callbackImpl,
 										@NonNull ExpandableListView listView) {
+		this.context = context;
 		this.callbackImpl = callbackImpl;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.listView = listView;
@@ -137,6 +143,7 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 			holder = (GroupViewHolder) convertView.getTag();
 		}
 
+		rowView.setBackgroundColor(ContextCompat.getColor(context, colors[groupPosition % colors.length]));
 		CultureSkillCategoryRanks skillCategoryRank = (CultureSkillCategoryRanks)getGroup(groupPosition);
 		holder.skillCategoryRanks = skillCategoryRank;
 		holder.nameView.setText(skillCategoryRank.getSkillCategory().getName());
@@ -159,6 +166,7 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 			holder = (ChildViewHolder) convertView.getTag();
 		}
 
+		rowView.setBackgroundColor(ContextCompat.getColor(context, colors[(groupPosition + childPosition) % colors.length]));
 		CultureSkillRank skillRank = (CultureSkillRank)getChild(groupPosition, childPosition);
 		holder.skillRank = skillRank;
 		holder.nameView.setText(skillRank.getSkill().getName());

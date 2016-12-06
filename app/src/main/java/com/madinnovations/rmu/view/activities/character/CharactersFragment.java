@@ -35,7 +35,9 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.ThreeFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.ViewPagerAdapter;
@@ -136,7 +138,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			if(copyViewsToItem()) {
 				saveItem();
 			}
-			currentInstance = new Character();
+			currentInstance = createNewCharacter();
 			currentInstance.generateStats();
 			isNew = true;
 			copyItemToViews();
@@ -165,7 +167,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = new Character();
+				currentInstance = createNewCharacter();
 				currentInstance.generateStats();
 				isNew = true;
 				copyItemToViews();
@@ -341,7 +343,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 								currentInstance = listAdapter.getItem(position);
 							}
 							else {
-								currentInstance = new Character();
+								currentInstance = createNewCharacter();
 								isNew = true;
 							}
 							copyItemToViews();
@@ -406,12 +408,36 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				currentInstance = (Character) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
-					currentInstance = new Character();
+					currentInstance = createNewCharacter();
 					isNew = true;
 				}
 				copyItemToViews();
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	private Character createNewCharacter() {
+		Character character = new Character();
+
+		CharacterMainPageFragment mainPageFragment = (CharacterMainPageFragment)pagerAdapter.getFragment(MAIN_PAGE_INDEX);
+		if(mainPageFragment != null) {
+			Campaign campaign = mainPageFragment.getCampaign();
+			if(campaign != null) {
+				if(campaign.isBuyStats()) {
+					character.setStatPurchasePoints(campaign.getPowerLevel().getStatPoints());
+				}
+			}
+
+			Race race = mainPageFragment.getRace();
+			if(race != null) {
+				character.setCurrentDevelopmentPoints((short)(race.getBonusDevelopmentPoints() + 50));
+			}
+			else {
+				character.setCurrentDevelopmentPoints((short)50);
+			}
+		}
+
+		return character;
 	}
 }

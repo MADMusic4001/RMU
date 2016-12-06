@@ -20,7 +20,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
@@ -31,6 +30,7 @@ import com.madinnovations.rmu.data.dao.character.RaceDao;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterItemsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterPurchasedCultureRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
@@ -244,6 +244,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setItems(getItems(instance.getId()));
 		instance.setCurrentLevelSkillRanks(getCurrentLevelSkillRanks(instance.getId()));
 		instance.setCurrentLevelSpecializationRanks(getCurrentLevelSpecializationRanks(instance.getId()));
+		instance.setPurchasedCultureRanks(getPurchasedCultureRanks(instance.getId()));
+		instance.setStatIncreases(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STAT_INCREASES)));
 		setStatValues(instance);
 
 		return instance;
@@ -254,11 +256,11 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(28);
+			values = new ContentValues(29);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(27);
+			values = new ContentValues(28);
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CURRENT_LEVEL, instance.getCurrentLevel());
@@ -342,35 +344,72 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
 		values.put(COLUMN_CURRENT_ENDURANCE_LOSS, instance.getEnduranceLoss());
 		values.put(COLUMN_CURRENT_PP_LOSS, instance.getPowerPointLoss());
+		values.put(COLUMN_STAT_INCREASES, instance.getStatIncreases());
 
 		return values;
+	}
+
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
+		final String selectionArgs[] = { String.valueOf(id) };
+
+		String selection = CharacterSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+		result = (db.delete(CharacterSkillRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterSpecializationRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterSkillCostsSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterSkillCostsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterTalentsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterStatsSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterStatsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterItemsSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterItemsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterCurrentLevelSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterCurrentLevelSpecializationRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = CharacterPurchasedCultureRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		return result;
 	}
 
 	@Override
 	protected boolean saveRelationships(SQLiteDatabase db, Character instance) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
-		String selection = CharacterSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
 
+		String selection = CharacterSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterSkillRanksSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Skill, Short> entry : instance.getSkillRanks().entrySet()) {
 			if(entry.getValue() != null) {
 				result &= (db.insertWithOnConflict(CharacterSkillRanksSchema.TABLE_NAME, null,
 												   getSkillRanksContentValues(instance.getId(), entry.getKey().getId(),
-																					   entry.getValue()),
+																			  entry.getValue()),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 
+		selection = CharacterSpecializationRanksSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Specialization, Short> entry : instance.getSpecializationRanks().entrySet()) {
 			if(entry.getValue() != null) {
 				result &= (db.insertWithOnConflict(CharacterSpecializationRanksSchema.TABLE_NAME, null,
-						getSpecializationRanksContentValues(instance.getId(), entry.getKey().getId(),
-								entry.getValue()),
-						SQLiteDatabase.CONFLICT_NONE) != -1);
+												   getSpecializationRanksContentValues(instance.getId(), entry.getKey().getId(),
+																					   entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 
@@ -425,25 +464,49 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
+		selection = CharacterCurrentLevelSkillRanksSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Skill, Short> entry : instance.getCurrentLevelSkillRanks().entrySet()) {
 			if(entry.getValue() != null) {
 				result &= (db.insertWithOnConflict(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, null,
-						getCurrentLevelSkillRanksContentValues(instance.getId(), entry.getKey().getId(),
-								entry.getValue()),
-						SQLiteDatabase.CONFLICT_NONE) != -1);
+												   getCurrentLevelSkillRanksContentValues(instance.getId(), entry.getKey().getId(),
+																						  entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 
+		selection = CharacterCurrentLevelSpecializationRanksSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Specialization, Short> entry : instance.getCurrentLevelSpecializationRanks().entrySet()) {
 			if(entry.getValue() != null) {
 				result &= (db.insertWithOnConflict(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null,
-						getCurrentLevelSpecializationRanksContentValues(instance.getId(), entry.getKey().getId(),
-								entry.getValue()),
-						SQLiteDatabase.CONFLICT_NONE) != -1);
+												   getCurrentLevelSpecializationRanksContentValues(instance.getId(), entry.getKey().getId(),
+																								   entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
+			}
+		}
+
+		selection = CharacterPurchasedCultureRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+		db.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs);
+
+		for(Map.Entry<Object, Short> entry : instance.getPurchasedCultureRanks().entrySet()) {
+			if(entry.getValue() != null) {
+				Integer specializationId = null;
+				Integer skillId = null;
+				if(entry.getKey() != null) {
+					if(entry.getKey() instanceof Specialization) {
+						specializationId = ((Specialization)entry.getKey()).getId();
+					}
+					else if(entry.getKey() instanceof Skill) {
+						skillId = ((Skill)entry.getKey()).getId();
+					}
+				}
+				result &= (db.insertWithOnConflict(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null,
+												   getPurchasedCultureRanksContentValues(instance.getId(), specializationId,
+																						 skillId, entry.getValue()),
+												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
 
@@ -486,6 +549,28 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_CHARACTER_ID, characterId);
 		values.put(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID, specializationId);
 		values.put(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS, skillRanks);
+
+		return values;
+	}
+
+	private ContentValues getPurchasedCultureRanksContentValues(int characterId, Integer specializationId, Integer skillId,
+																short ranks) {
+		ContentValues values = new ContentValues(4);
+
+		values.put(CharacterPurchasedCultureRanksSchema.COLUMN_CHARACTER_ID, characterId);
+		if(specializationId == null) {
+			values.putNull(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID);
+		}
+		else {
+			values.put(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID, specializationId);
+		}
+		if(skillId == null) {
+			values.putNull(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID);
+		}
+		else {
+			values.put(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID, skillId);
+		}
+		values.put(CharacterPurchasedCultureRanksSchema.COLUMN_RANKS, ranks);
 
 		return values;
 	}
@@ -569,6 +654,40 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 			if(instance != null) {
 				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(
 						CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS)));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private Map<Object, Short> getPurchasedCultureRanks(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterPurchasedCultureRanksSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterPurchasedCultureRanksSchema.TABLE_NAME,
+									CharacterPurchasedCultureRanksSchema.COLUMNS, selection, selectionArgs,
+									CharacterPurchasedCultureRanksSchema.COLUMN_RANKS);
+		Map<Object, Short> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			short ranks = cursor.getShort(cursor.getColumnIndexOrThrow(CharacterPurchasedCultureRanksSchema.COLUMN_RANKS));
+			if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID))) {
+				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(
+						CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID));
+				Specialization instance = specializationDao.getById(mappedId);
+				if(instance != null) {
+					map.put(instance, ranks);
+				}
+			}
+			else if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID))) {
+				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(
+						CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID));
+				Skill instance = skillDao.getById(mappedId);
+				if(instance != null) {
+					map.put(instance, ranks);
+				}
 			}
 			cursor.moveToNext();
 		}
