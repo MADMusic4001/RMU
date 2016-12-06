@@ -54,14 +54,15 @@ import rx.schedulers.Schedulers;
  */
 public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Race>, ViewPagerAdapter.Instantiator {
 	private static final String TAG = "RacesFragment";
-	private static final int NUM_PAGES = 2;
+	private static final int NUM_PAGES = 3;
 	private static final int MAIN_PAGE = 0;
 	private static final int TALENTS_PAGE = 1;
+	private static final int CULTURES_PAGE = 2;
 	@Inject
 	protected RaceRxHandler                raceRxHandler;
 	private   TwoFieldListAdapter<Race>    listAdapter;
 	private   ListView                     listView;
-	private ViewPagerAdapter               viewPagerAdapter;
+	private   ViewPagerAdapter             viewPagerAdapter;
 	private   Race                         currentInstance = new Race();
 	private   boolean                      isNew           = true;
 
@@ -99,6 +100,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		}
 		if(viewPagerAdapter.getFragment(TALENTS_PAGE) != null) {
 			getChildFragmentManager().beginTransaction().remove(viewPagerAdapter.getFragment(TALENTS_PAGE)).commit();
+		}
+		if(viewPagerAdapter.getFragment(CULTURES_PAGE) != null) {
+			getChildFragmentManager().beginTransaction().remove(viewPagerAdapter.getFragment(CULTURES_PAGE)).commit();
 		}
 		super.onPause();
 	}
@@ -182,6 +186,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			case TALENTS_PAGE:
 				result = RacesTalentsPageFragment.newInstance(this);
 				break;
+			case CULTURES_PAGE:
+				result = RacesCulturesPageFragment.newInstance(this);
+				break;
 		}
 
 		return result;
@@ -202,6 +209,12 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			changed = racesTalentsPageFragment.copyViewsToItem();
 		}
 
+		RacesCulturesPageFragment racesCulturesPageFragment = (RacesCulturesPageFragment)viewPagerAdapter
+				.getFragment(CULTURES_PAGE);
+		if(racesCulturesPageFragment != null) {
+			changed = racesCulturesPageFragment.copyViewsToItem();
+		}
+
 		return changed;
 	}
 
@@ -214,6 +227,12 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		RacesTalentsPageFragment racesTalentsPageFragment = (RacesTalentsPageFragment)viewPagerAdapter.getFragment(TALENTS_PAGE);
 		if(racesTalentsPageFragment != null) {
 			racesTalentsPageFragment.copyItemToViews();
+		}
+
+		RacesCulturesPageFragment racesCulturesPageFragment = (RacesCulturesPageFragment)viewPagerAdapter
+				.getFragment(CULTURES_PAGE);
+		if(racesCulturesPageFragment != null) {
+			racesCulturesPageFragment.copyItemToViews();
 		}
 	}
 	// </editor-fold>
@@ -340,7 +359,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
-//						copyItemToViews();
 					}
 					String toastString;
 					toastString = String.format(getString(R.string.toast_races_loaded), races.size());

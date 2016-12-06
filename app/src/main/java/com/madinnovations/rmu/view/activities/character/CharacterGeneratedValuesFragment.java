@@ -92,7 +92,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.character_generated_values_fragment, container, false);
+		View layout = inflater.inflate(R.layout.character_generated_values_page, container, false);
 
 		Character character = charactersFragment.getCurrentInstance();
 		currentLevelText = (TextView)layout.findViewById(R.id.current_level_text);

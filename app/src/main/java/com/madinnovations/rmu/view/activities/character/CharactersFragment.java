@@ -250,7 +250,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 	private void copyItemToViews() {
 		CharacterMainPageFragment mainPageFragment = (CharacterMainPageFragment)pagerAdapter.getFragment(MAIN_PAGE_INDEX);
 		if(mainPageFragment != null) {
-			Log.d(TAG, "copyItemToViews: mainPageFragment = " + mainPageFragment);
 			mainPageFragment.copyItemToViews();
 		}
 
@@ -424,6 +423,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		if(mainPageFragment != null) {
 			Campaign campaign = mainPageFragment.getCampaign();
 			if(campaign != null) {
+				character.setCampaign(campaign);
 				if(campaign.isBuyStats()) {
 					character.setStatPurchasePoints(campaign.getPowerLevel().getStatPoints());
 				}
@@ -431,6 +431,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 
 			Race race = mainPageFragment.getRace();
 			if(race != null) {
+				character.setRace(race);
 				character.setCurrentDevelopmentPoints((short)(race.getBonusDevelopmentPoints() + 50));
 			}
 			else {

@@ -17,5 +17,6 @@
   <string-array name="race_page_names">
     <item>@string/title_race_main_page</item>
     <item>@string/title_race_talents_page</item>
+    <item>@string/title_race_cultures_page</item>
   </string-array>
 </resources>

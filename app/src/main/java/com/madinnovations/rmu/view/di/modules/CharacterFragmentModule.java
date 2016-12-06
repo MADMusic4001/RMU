@@ -22,6 +22,7 @@ import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragm
 import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
+import com.madinnovations.rmu.view.activities.character.RacesCulturesPageFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
 import com.madinnovations.rmu.view.activities.character.RacesMainPageFragment;
 import com.madinnovations.rmu.view.activities.character.RacesTalentsPageFragment;
@@ -45,6 +46,7 @@ public class CharacterFragmentModule {
 	private RacesFragment                    racesFragment;
 	private RacesMainPageFragment            racesMainPageFragment;
 	private RacesTalentsPageFragment         racesTalentsPageFragment;
+	private RacesCulturesPageFragment        racesCulturesPageFragment;
 
 	public CharacterFragmentModule(CharacterBackgroundPageFragment characterBackgroundPageFragment) {
 		this.characterBackgroundPageFragment = characterBackgroundPageFragment;
@@ -75,6 +77,9 @@ public class CharacterFragmentModule {
 	}
 	public CharacterFragmentModule(RacesTalentsPageFragment racesTalentsPageFragment) {
 		this.racesTalentsPageFragment = racesTalentsPageFragment;
+	}
+	public CharacterFragmentModule(RacesCulturesPageFragment racesCulturesPageFragment) {
+		this.racesCulturesPageFragment = racesCulturesPageFragment;
 	}
 
 	@Provides
@@ -126,5 +131,10 @@ public class CharacterFragmentModule {
 	@PerFragment
 	RacesTalentsPageFragment provideRacesTalentsPageFragment() {
 		return this.racesTalentsPageFragment;
+	}
+	@Provides
+	@PerFragment
+	RacesCulturesPageFragment provideRacesCulturesPageFragment() {
+		return this.racesCulturesPageFragment;
 	}
 }

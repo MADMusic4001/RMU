@@ -38,6 +38,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionAssignableSki
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCategoryCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceCulturesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
@@ -173,6 +174,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(RaceTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceStatModSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceRealmRRModSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(RaceCulturesSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSkillCostSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSkillCategoryCostSchema.TABLE_CREATE);
@@ -246,6 +248,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionSkillCostSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(RaceCulturesSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceRealmRRModSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceStatModSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceTalentsSchema.TABLE_NAME, null, null);

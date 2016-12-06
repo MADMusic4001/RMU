@@ -20,7 +20,9 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +46,7 @@ public class Race {
 	private short averageHeight = 0;
 	private short averageWeight = 0;
 	private short poundsPerInch = 0;
+	private List<Culture> allowedCultures = new ArrayList<>();
 
 	/**
 	 * Default constructor
@@ -185,5 +188,11 @@ public class Race {
 	}
 	public void setPoundsPerInch(short poundsPerInch) {
 		this.poundsPerInch = poundsPerInch;
+	}
+	public List<Culture> getAllowedCultures() {
+		return allowedCultures;
+	}
+	public void setAllowedCultures(List<Culture> allowedCultures) {
+		this.allowedCultures = allowedCultures;
 	}
 }

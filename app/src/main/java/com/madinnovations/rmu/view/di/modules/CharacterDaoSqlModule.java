@@ -63,7 +63,8 @@ public class CharacterDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	RaceDao provideRaceDao(RMUDatabaseHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao) {
-		return new RaceDaoDbImpl(helper, talentDao, realmDao, sizeDao);
+	RaceDao provideRaceDao(RMUDatabaseHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao,
+						   CultureDao cultureDao) {
+		return new RaceDaoDbImpl(helper, talentDao, realmDao, sizeDao, cultureDao);
 	}
 }

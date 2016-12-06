@@ -124,7 +124,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.character_main_page_fragment, container, false);
+		View layout = inflater.inflate(R.layout.character_main_page, container, false);
 
 		currentLevelView = (TextView)layout.findViewById(R.id.current_level_view);
 		experiencePointsView = (TextView)layout.findViewById(R.id.experience_points_view);
@@ -271,34 +271,33 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 					Campaign oldCampaign = character.getCampaign();
 					Campaign newCampaign = (Campaign) newItem;
 					character.setCampaign(newCampaign);
-					if (oldCampaign == null || oldCampaign.isBuyStats() != newCampaign.isBuyStats()) {
-						character.generateStats();
-						character.setStatPurchasePoints(character.getCampaign().getPowerLevel().getStatPoints());
-						generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
-															   && !character.getCampaign().isBuyStats());
-						int visibility = View.GONE;
-						if(character.getExperiencePoints() == 0 && character.getCampaign() != null &&
-								character.getCampaign().isBuyStats()) {
-							visibility = View.VISIBLE;
+					character.generateStats();
+					character.setStatPurchasePoints(character.getCampaign().getPowerLevel().getStatPoints());
+					generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+														   && !character.getCampaign().isBuyStats());
+					int visibility = View.GONE;
+					if(character.getExperiencePoints() == 0 && character.getCampaign() != null &&
+							character.getCampaign().isBuyStats()) {
+						visibility = View.VISIBLE;
+					}
+					setStatPointsViews();
+					for (Statistic statistic : Statistic.getAllStats()) {
+						viewHolderMap.get(statistic).sellButton.setVisibility(visibility);
+						viewHolderMap.get(statistic).buyButton.setVisibility(visibility);
+						if(visibility == View.VISIBLE) {
+							viewHolderMap.get(statistic).increaseTempButton.setVisibility(View.GONE);
 						}
-						for (Statistic statistic : Statistic.getAllStats()) {
-							viewHolderMap.get(statistic).sellButton.setVisibility(visibility);
-							viewHolderMap.get(statistic).buyButton.setVisibility(visibility);
-							if(visibility == View.VISIBLE) {
-								viewHolderMap.get(statistic).increaseTempButton.setVisibility(View.GONE);
-							}
-							else {
-								viewHolderMap.get(statistic).increaseTempButton.setVisibility(View.VISIBLE);
-								boolean enable = character.getCurrentLevel() == (character.getExperiencePoints() / 10000)
-										&& character.getCampaign() != null && !character.isStatIncreased(statistic)
-										&& (character.statsIncreasedCount() < 2 || character.getCurrentDevelopmentPoints() >= 5);
-								viewHolderMap.get(statistic).increaseTempButton.setEnabled(enable);
-							}
-							viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(
-									character.getStatTemps().get(statistic)));
-							viewHolderMap.get(statistic).potentialStatView.setText(String.valueOf(
-									character.getStatPotentials().get(statistic)));
+						else {
+							viewHolderMap.get(statistic).increaseTempButton.setVisibility(View.VISIBLE);
+							boolean enable = character.getCurrentLevel() == (character.getExperiencePoints() / 10000)
+									&& character.getCampaign() != null && !character.isStatIncreased(statistic)
+									&& (character.statsIncreasedCount() < 2 || character.getCurrentDevelopmentPoints() >= 5);
+							viewHolderMap.get(statistic).increaseTempButton.setEnabled(enable);
 						}
+						viewHolderMap.get(statistic).tempStatView.setText(String.valueOf(
+								character.getStatTemps().get(statistic)));
+						viewHolderMap.get(statistic).potentialStatView.setText(String.valueOf(
+								character.getStatPotentials().get(statistic)));
 					}
 					charactersFragment.saveItem();
 				}
@@ -310,17 +309,18 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				if(oldRace != null) {
 					bonusDP -= oldRace.getBonusDevelopmentPoints();
 				}
-				if(character.getCurrentDevelopmentPoints() > bonusDP) {
-					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - bonusDP));
+				if((character.getCurrentDevelopmentPoints() + bonusDP) > 0) {
+					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() + bonusDP));
 				}
 				else {
-					character.setCurrentDevelopmentPoints((short)(Character.INITIAL_DP + newRace.getBonusDevelopmentPoints()));
+					character.setCurrentDevelopmentPoints((short)(Character.INITIAL_DP + bonusDP));
 					character.setCurrentLevelSkillRanks(new HashMap<Skill, Short>());
 					character.setCurrentLevelSpecializationRanks(new HashMap<Specialization, Short>());
 					character.setSkillRanks(new HashMap<Skill, Short>());
 					character.setSpecializationRanks(new HashMap<Specialization, Short>());
 					character.setTalentTiers(new HashMap<Talent, Short>());
 				}
+				developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
 				character.setRace(newRace);
 				charactersFragment.saveItem();
 				break;

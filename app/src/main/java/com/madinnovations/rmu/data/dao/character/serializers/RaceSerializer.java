@@ -18,10 +18,12 @@ package com.madinnovations.rmu.data.dao.character.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceCulturesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
+import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -78,6 +80,13 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		}
 		out.endArray();
 
+		if(value.getAllowedCultures() != null && !value.getAllowedCultures().isEmpty()) {
+			out.name(RaceCulturesSchema.TABLE_NAME).beginArray();
+			for(Culture culture : value.getAllowedCultures()) {
+				out.value(culture.getId());
+			}
+			out.endArray();
+		}
 		out.endObject().flush();
 	}
 
@@ -134,6 +143,12 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 					break;
 				case RaceTalentsSchema.TABLE_NAME:
 					readTalentsAndFlawsTiers(in, race);
+					break;
+				case RaceCulturesSchema.TABLE_NAME:
+					in.beginArray();
+					while(in.hasNext()) {
+						race.getAllowedCultures().add(new Culture(in.nextInt()));
+					}
 					break;
 			}
 		}

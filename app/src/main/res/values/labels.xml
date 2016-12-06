@@ -234,6 +234,7 @@
   <string name="label_all_talent_categories">All Talent Categories</string>
 
   <!-- CheckBox labels -->
+  <string name="label_allow_any">Allow Any</string>
   <string name="label_allow_talents_beyond_first">Allow purchasing talents beyond level 1</string>
   <string name="label_award_dp">Award Development Points</string>
   <string name="label_ball_table">Ball Table</string>
@@ -490,6 +491,7 @@
   <string name="title_character_generated_values_page">Generated Values</string>
   <string name="title_race_main_page">General Attributes</string>
   <string name="title_race_talents_page">Talents and Flaws</string>
+  <string name="title_race_cultures_page">Allowed Cultures</string>
 
   <!-- Adapter extra instance names -->
   <string name="no_specialization">No Specialization</string>

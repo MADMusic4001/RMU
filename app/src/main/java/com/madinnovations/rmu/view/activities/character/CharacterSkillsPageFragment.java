@@ -113,7 +113,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		fragmentView = inflater.inflate(R.layout.character_skills_talents_stats_fragment, container, false);
+		fragmentView = inflater.inflate(R.layout.character_skills_talents_stats_page, container, false);
 
 		currentDpText = (TextView)fragmentView.findViewById(R.id.current_dp_text);
 		initSkillCostsListView(fragmentView);

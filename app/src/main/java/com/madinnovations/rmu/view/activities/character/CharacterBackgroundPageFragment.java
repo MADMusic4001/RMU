@@ -65,7 +65,7 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		View layout = inflater.inflate(R.layout.character_background_fragment, container, false);
+		View layout = inflater.inflate(R.layout.character_background_page, container, false);
 
 		hairColorEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hair_color_edit,
 				R.string.validation_character_hair_color_required);
