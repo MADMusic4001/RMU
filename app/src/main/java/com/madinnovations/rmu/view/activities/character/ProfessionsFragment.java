@@ -663,14 +663,16 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			Collections.sort(skillCostGroupList);
 			List<DevelopmentCostGroup> assignableCostList = currentInstance.getAssignableSkillCostsMap().get(entry.getKey());
 			if(assignableCostList != null) {
+				for(int i = assignableCostList.size() - 1; i >=0; i--) {
+					if(assignableCostList.get(i) == null) {
+						assignableCostList.remove(i);
+					}
+				}
 				if (assignableCostList.size() > skillCostGroupList.size()) {
 					assignableCostList = new ArrayList<>();
 					currentInstance.getAssignableSkillCostsMap().put(entry.getKey(), assignableCostList);
 				}
 				else {
-					if(assignableCostList.get(0) == null) {
-						Log.d(TAG, "Null cost group for category " + entry.getKey().getName());
-					}
 					Collections.sort(assignableCostList);
 				}
 			}

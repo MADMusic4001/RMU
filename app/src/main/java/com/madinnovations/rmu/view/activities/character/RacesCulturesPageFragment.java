@@ -62,6 +62,7 @@ public class RacesCulturesPageFragment extends Fragment {
 	 * @return the new instance.
 	 */
 	public static RacesCulturesPageFragment newInstance(RacesFragment racesFragment) {
+		Log.d(TAG, "newInstance: ");
 		RacesCulturesPageFragment fragment = new RacesCulturesPageFragment();
 		fragment.racesFragment = racesFragment;
 		return fragment;
@@ -72,10 +73,12 @@ public class RacesCulturesPageFragment extends Fragment {
 		((CampaignActivity) getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
+		Log.d(TAG, "onCreateView: ");
 		View layout = inflater.inflate(R.layout.races_cultures_page, container, false);
 
 		initAllowAnyCheckBox(layout);
 		initCulturesListView(layout);
+		copyItemToViews();
 		return layout;
 	}
 
@@ -94,6 +97,7 @@ public class RacesCulturesPageFragment extends Fragment {
 	}
 
 	public void copyItemToViews() {
+		Log.d(TAG, "copyItemToViews: ");
 		Race currentInstance = racesFragment.getCurrentInstance();
 		allowAnyCheckBox.setChecked(currentInstance.getAllowedCultures().isEmpty());
 		culturesListView.setEnabled(!currentInstance.getAllowedCultures().isEmpty());
