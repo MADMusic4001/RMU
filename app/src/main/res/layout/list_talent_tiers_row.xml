@@ -48,4 +48,10 @@
         android:src="@drawable/ic_remove_black"
         android:contentDescription="@string/decrement"/>
   </LinearLayout>
+  <LinearLayout
+      android:id="@+id/parameters_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"/>
 </LinearLayout>

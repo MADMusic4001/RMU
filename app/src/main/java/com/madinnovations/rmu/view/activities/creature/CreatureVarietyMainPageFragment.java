@@ -37,14 +37,21 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.common.TalentTier;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
@@ -79,6 +86,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	private static final String DRAG_ADD_TALENT = "add-talent";
 	private static final String DRAG_REMOVE_TALENT = "remove-talent";
 	@Inject
+	protected AttackRxHandler            attackRxHandler;
+	@Inject
 	protected CreatureTypeRxHandler      creatureTypeRxHandler;
 	@Inject
 	protected OutlookRxHandler           outlookRxHandler;
@@ -87,7 +96,16 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	@Inject
 	protected SizeRxHandler              sizeRxHandler;
 	@Inject
+	protected SkillRxHandler             skillRxHandler;
+	@Inject
+	protected SpecializationRxHandler    specializationRxHandler;
+	@Inject
+	protected SpellRxHandler             spellRxHandler;
+	@Inject
+	protected SpellListRxHandler         spellListRxHandler;
+	@Inject
 	protected TalentRxHandler            talentRxHandler;
+	private   TalentTierListAdapter      talentTiersListAdapter;
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
 	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
 	private   ArrayAdapter<Character>    levelSpreadSpinnerAdapter;
@@ -96,7 +114,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	private   ArrayAdapter<Realm>        realm2SpinnerAdapter;
 	private   ArrayAdapter<Outlook>      outlookSpinnerAdapter;
 	protected RacialStatBonusListAdapter racialStatBonusListAdapter;
-	protected TalentTierListAdapter      talentTiersListAdapter;
 	private   EditText                   nameEdit;
 	private   EditText                   descriptionEdit;
 	private   Spinner                    creatureTypeSpinner;
@@ -193,6 +210,11 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		return false;
 	}
 
+	@Override
+	public void setParameterValue(Talent talent, Parameter parameter, int value, String enumName) {
+
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		boolean changed = false;
@@ -205,7 +227,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		SparseBooleanArray checkedItemPositions;
 		RacialStatBonus racialStatBonus;
 		Map<Statistic, Short> newStatBonusMap;
-		Map<Talent, Short> newTalentTiersMap;
+		Map<Talent, TalentInstance> newTalentInstancesMap;
 		TalentTier newTalentTier;
 		Realm newRealm;
 		Outlook newOutlook;
@@ -429,29 +451,43 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 				varietiesFragment.getCurrentInstance().getRacialStatBonuses().clear();
 			}
 
-			newTalentTiersMap = new HashMap<>(talentTiersListAdapter.getCount());
+			newTalentInstancesMap = new HashMap<>(talentTiersListAdapter.getCount());
 			for (int i = 0; i < talentTiersListAdapter.getCount(); i++) {
 				newTalentTier = talentTiersListAdapter.getItem(i);
 				if(newTalentTier != null) {
-					if (varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(
-							newTalentTier.getTalent())) {
-						if (!varietiesFragment.getCurrentInstance()
-								.getTalentTiersMap()
-								.get(newTalentTier.getTalent())
-								.equals(newTalentTier.getTier())) {
-							changed = true;
+					if(newTalentTier.getTier() > 0) {
+						TalentInstance talentInstance;
+						if (varietiesFragment.getCurrentInstance().getTalentsMap().containsKey(
+								newTalentTier.getTalent())) {
+							talentInstance = varietiesFragment.getCurrentInstance().getTalentsMap().get(
+									newTalentTier.getTalent());
+							if (varietiesFragment.getCurrentInstance().getTalentsMap().get(
+									newTalentTier.getTalent()).getTiers() != newTalentTier.getTier()) {
+								changed = true;
+							}
+							varietiesFragment.getCurrentInstance().getTalentsMap().remove(newTalentTier.getTalent());
 						}
-						varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(newTalentTier.getTalent());
-					} else {
-						changed = true;
+						else {
+							changed = true;
+							talentInstance = new TalentInstance();
+							talentInstance.setTalent(newTalentTier.getTalent());
+						}
+						if(changed) {
+							talentInstance.setTiers(newTalentTier.getTier());
+							newTalentInstancesMap.put(newTalentTier.getTalent(), talentInstance);
+						}
 					}
-					newTalentTiersMap.put(newTalentTier.getTalent(), newTalentTier.getTier());
+					else if (varietiesFragment.getCurrentInstance().getTalentsMap().containsKey(
+							newTalentTier.getTalent())) {
+						changed = true;
+						varietiesFragment.getCurrentInstance().getTalentsMap().remove(newTalentTier.getTalent());
+					}
 				}
 			}
-			if (!varietiesFragment.getCurrentInstance().getTalentTiersMap().isEmpty() && !newTalentTiersMap.isEmpty()) {
+			if (!varietiesFragment.getCurrentInstance().getTalentsMap().isEmpty() && !newTalentInstancesMap.isEmpty()) {
 				changed = true;
 			}
-			varietiesFragment.getCurrentInstance().setTalentTiersMap(newTalentTiersMap);
+			varietiesFragment.getCurrentInstance().setTalentsMap(newTalentInstancesMap);
 		}
 
 		return changed;
@@ -497,8 +533,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 		talentTiersList.clearChoices();
 		talentTiersListAdapter.clear();
-		for(Map.Entry<Talent, Short> entry : varietiesFragment.getCurrentInstance().getTalentTiersMap().entrySet()) {
-			TalentTier talentTier = new TalentTier(entry.getKey(), entry.getValue());
+		for(Map.Entry<Talent, TalentInstance> entry : varietiesFragment.getCurrentInstance().getTalentsMap().entrySet()) {
+			TalentTier talentTier = new TalentTier(entry.getKey(), entry.getValue().getTiers());
 			talentTiersListAdapter.add(talentTier);
 		}
 		talentTiersListAdapter.notifyDataSetChanged();
@@ -1278,12 +1314,13 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initTalentTiersList(View layout) {
 		talentTiersList = (ListView) layout.findViewById(R.id.talent_tiers_list);
-		talentTiersListAdapter = new TalentTierListAdapter(this.getActivity(), this);
+		talentTiersListAdapter = new TalentTierListAdapter(getActivity(), this, attackRxHandler, skillRxHandler,
+														   specializationRxHandler, spellRxHandler, spellListRxHandler);
 		talentTiersList.setAdapter(talentTiersListAdapter);
 
 		talentTiersListAdapter.clear();
-		for(Map.Entry<Talent, Short> entry : varietiesFragment.getCurrentInstance().getTalentTiersMap().entrySet()) {
-			talentTiersListAdapter.add(new TalentTier(entry.getKey(), entry.getValue()));
+		for(Map.Entry<Talent, TalentInstance> entry : varietiesFragment.getCurrentInstance().getTalentsMap().entrySet()) {
+			talentTiersListAdapter.add(new TalentTier(entry.getKey(), entry.getValue().getTiers()));
 		}
 		talentTiersListAdapter.notifyDataSetChanged();
 
@@ -1351,14 +1388,14 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 //	public void setTalentTier(TalentTier talentTier) {
 //		boolean changed = false;
 //
-//		if(varietiesFragment.getCurrentInstance().getTalentTiersMap().containsKey(talentTier.getTalent())) {
-//			if(varietiesFragment.getCurrentInstance().getTalentTiersMap().get(talentTier.getTalent()) != talentTier.getTier()) {
-//				varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talentTier.getTalent(), talentTier.getTier());
+//		if(varietiesFragment.getCurrentInstance().getTalentsMap().containsKey(talentTier.getTalent())) {
+//			if(varietiesFragment.getCurrentInstance().getTalentsMap().get(talentTier.getTalent()) != talentTier.getTier()) {
+//				varietiesFragment.getCurrentInstance().getTalentsMap().put(talentTier.getTalent(), talentTier.getTier());
 //				changed = true;
 //			}
 //		}
 //		else {
-//			varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talentTier.getTalent(), talentTier.getTier());
+//			varietiesFragment.getCurrentInstance().getTalentsMap().put(talentTier.getTalent(), talentTier.getTier());
 //			changed = true;
 //		}
 //		if(changed) {
@@ -1419,7 +1456,10 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 							TalentTier talentTier = new TalentTier(talent, (short) 1);
 							if (talentTiersListAdapter.getPosition(talentTier) == -1) {
 								talentTiersListAdapter.add(talentTier);
-								varietiesFragment.getCurrentInstance().getTalentTiersMap().put(talent, (short)1);
+								TalentInstance talentInstance = new TalentInstance();
+								talentInstance.setTalent(talent);
+								talentInstance.setTiers((short)1);
+								varietiesFragment.getCurrentInstance().getTalentsMap().put(talent, talentInstance);
 								changed = true;
 							}
 						}
@@ -1498,7 +1538,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 							int position = talentTiersListAdapter.getPosition(newTalentTier);
 							TalentTier talentTier = talentTiersListAdapter.getItem(position);
 							if(talentTier != null) {
-								varietiesFragment.getCurrentInstance().getTalentTiersMap().remove(talentTier.getTalent());
+								varietiesFragment.getCurrentInstance().getTalentsMap().remove(talentTier.getTalent());
 								talentTiersListAdapter.remove(talentTier);
 							}
 						}

@@ -18,15 +18,33 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/label_talent_name"/>
+
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="@string/label_talent_name"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="@string/label_ranks"/>
+    <TextView
+        android:id="@+id/talent_parameters_label"
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="wrap_content"
+        android:text="@string/label_talent_parameters"/>
+  </LinearLayout>
   <ListView
-      android:id="@+id/list_view"
+      android:id="@+id/talents_list_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
       android:layout_gravity="center_horizontal"
-      android:choiceMode="singleChoice"/>
+      android:choiceMode="multipleChoice"/>
 </LinearLayout>

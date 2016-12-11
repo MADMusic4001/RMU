@@ -21,6 +21,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -37,48 +38,49 @@ import java.util.Random;
  * Character attributes
  */
 public class Character {
-	public static final String JSON_NAME = "Characters";
-	public static final short INITIAL_DP = 50;
-	private int                        id = -1;
-	private Campaign                   campaign = null;
-	private short                      currentLevel = 0;
-	private int                        experiencePoints = 0;
-	private short                      statPurchasePoints = 0;
-	private String                     firstName = null;
-	private String                     lastName = null;
-	private String                     knownAs = null;
-	private String                     description = null;
-	private String                     hairColor = null;
-	private String                     hairStyle = null;
-	private String                     eyeColor = null;
-	private String                     skinComplexion = null;
-	private String                     facialFeatures = null;
-	private String                     identifyingMarks = null;
-	private String                     personality = null;
-	private String                     mannerisms = null;
-	private String                     hometown = null;
-	private String                     familyInfo = null;
-	private Race                       race = null;
-	private Culture                    culture = null;
-	private Profession                 profession = null;
-	private Realm                      realm = null;
-	private short                      height = 70;
-	private short                      weight = 185;
-	private int                        hitPointLoss = 0;
-	private short                      currentDevelopmentPoints = INITIAL_DP;
-	private short                      enduranceLoss;
-	private short                      powerPointLoss;
-	private Map<Skill, DevelopmentCostGroup> skillCosts          = new HashMap<>();
-	private Map<Skill, Short>          skillRanks          = new HashMap<>();
-	private Map<Specialization, Short> specializationRanks = new HashMap<>();
-	private Map<Talent, Short>         talentTiers         = new HashMap<>();
-	private Map<Statistic, Short>      statTemps           = new HashMap<>();
-	private Map<Statistic, Short>      statPotentials      = new HashMap<>();
-	private List<Item>                 items               = new ArrayList<>();
-	private Map<Skill, Short>          currentLevelSkillRanks = new HashMap<>();
-	private Map<Specialization, Short> currentLevelSpecializationRanks = new HashMap<>();
-	private Map<Object, Short>         purchasedCultureRanks = new HashMap<>();
-	private int                        statIncreases = 0;
+	public static final String               JSON_NAME                       = "Characters";
+	public static final short                INITIAL_DP                      = 50;
+	private int                              id                              = -1;
+	private Campaign                         campaign                        = null;
+	private short                            currentLevel                    = 0;
+	private int                              experiencePoints                = 0;
+	private short                            statPurchasePoints              = 0;
+	private String                           firstName                       = null;
+	private String                           lastName                        = null;
+	private String                           knownAs                         = null;
+	private String                           description                     = null;
+	private String                           hairColor                       = null;
+	private String                           hairStyle                       = null;
+	private String                           eyeColor                        = null;
+	private String                           skinComplexion                  = null;
+	private String                           facialFeatures                  = null;
+	private String                           identifyingMarks                = null;
+	private String                           personality                     = null;
+	private String                           mannerisms                      = null;
+	private String                           hometown                        = null;
+	private String                           familyInfo                      = null;
+	private Race                             race                            = null;
+	private Culture                          culture                         = null;
+	private Profession                       profession                      = null;
+	private Realm                            realm                           = null;
+	private short                            height                          = 70;
+	private short                            weight                          = 185;
+	private int                              hitPointLoss                    = 0;
+	private short                            currentDevelopmentPoints        = INITIAL_DP;
+	private short                            enduranceLoss                   = 0;
+	private short                            powerPointLoss                  = 0;
+	private Map<Skill, DevelopmentCostGroup> skillCosts                      = new HashMap<>();
+	private Map<Skill, Short>                skillRanks                      = new HashMap<>();
+	private Map<Specialization, Short>       specializationRanks             = new HashMap<>();
+	private Map<Talent, TalentInstance>      talentInstances                 = new HashMap<>();
+	private Map<Statistic, Short>            statTemps                       = new HashMap<>();
+	private Map<Statistic, Short>            statPotentials                  = new HashMap<>();
+	private List<Item>                       items                           = new ArrayList<>();
+	private Map<Skill, Short>                currentLevelSkillRanks          = new HashMap<>();
+	private Map<Specialization, Short>       currentLevelSpecializationRanks = new HashMap<>();
+	private Map<Talent, Short>               currentLevelTalentTiers         = new HashMap<>();
+	private Map<Object, Short>               purchasedCultureRanks           = new HashMap<>();
+	private int                              statIncreases                   = 0;
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -168,12 +170,13 @@ public class Character {
 				.append("skillCosts", skillCosts)
 				.append("skillRanks", skillRanks)
 				.append("specializationRanks", specializationRanks)
-				.append("talentTiers", talentTiers)
+				.append("talentInstances", talentInstances)
 				.append("statTemps", statTemps)
 				.append("statPotentials", statPotentials)
 				.append("items", items)
 				.append("currentLevelSkillRanks", currentLevelSkillRanks)
 				.append("currentLevelSpecializationRanks", currentLevelSpecializationRanks)
+				.append("currentLevelTalentTiers", currentLevelTalentTiers)
 				.append("purchasedCultureRanks", purchasedCultureRanks)
 				.append("statIncreases", statIncreases)
 				.toString();
@@ -506,11 +509,11 @@ public class Character {
 			Map<Specialization, Short> specializationRanks) {
 		this.specializationRanks = specializationRanks;
 	}
-	public Map<Talent, Short> getTalentTiers() {
-		return talentTiers;
+	public Map<Talent, TalentInstance> getTalentInstances() {
+		return talentInstances;
 	}
-	public void setTalentTiers(Map<Talent, Short> talentTiers) {
-		this.talentTiers = talentTiers;
+	public void setTalentInstances(Map<Talent, TalentInstance> talentInstances) {
+		this.talentInstances = talentInstances;
 	}
 	public Map<Statistic, Short> getStatTemps() {
 		return statTemps;
@@ -541,6 +544,13 @@ public class Character {
 	}
 	public void setCurrentLevelSpecializationRanks(Map<Specialization, Short> currentLevelSpecializationRanks) {
 		this.currentLevelSpecializationRanks = currentLevelSpecializationRanks;
+	}
+	public Map<Talent, Short> getCurrentLevelTalentTiers() {
+		return currentLevelTalentTiers;
+	}
+	public void setCurrentLevelTalentTiers(
+			Map<Talent, Short> currentLevelTalentTiers) {
+		this.currentLevelTalentTiers = currentLevelTalentTiers;
 	}
 	public Map<Object, Short> getPurchasedCultureRanks() {
 		return purchasedCultureRanks;

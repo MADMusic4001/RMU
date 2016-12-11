@@ -18,18 +18,22 @@ package com.madinnovations.rmu.data.dao.creature.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyAttacksSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyCriticalCodesSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
@@ -98,13 +102,24 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			out.endArray();
 		}
 
-		if (value.getTalentTiersMap() != null && !value.getTalentTiersMap().isEmpty()) {
+		if (value.getTalentsMap() != null && !value.getTalentsMap().isEmpty()) {
 			out.name(VarietyTalentTiersSchema.TABLE_NAME);
 			out.beginArray();
-			for (Map.Entry<Talent, Short> entry : value.getTalentTiersMap().entrySet()) {
+			for (Map.Entry<Talent, TalentInstance> entry : value.getTalentsMap().entrySet()) {
 				out.beginObject();
 				out.name(VarietyTalentTiersSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
-				out.name(VarietyTalentTiersSchema.COLUMN_TIERS).value(entry.getValue());
+				out.name(VarietyTalentTiersSchema.COLUMN_TIERS).value(entry.getValue().getTiers());
+				if(!entry.getValue().getParameterValues().isEmpty()) {
+					out.name(VarietyTalentParametersSchema.TABLE_NAME);
+					out.beginArray();
+					for(Map.Entry<Parameter, Integer> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+						out.name(VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
+						if(entry.getValue() != null) {
+							out.name(VarietyTalentParametersSchema.COLUMN_VALUE).value(paramEntry.getValue());
+						}
+					}
+					out.endArray();
+				}
 				out.endObject();
 			}
 			out.endArray();
@@ -282,6 +297,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		in.beginArray();
 		while(in.hasNext()) {
 			Talent newTalent = null;
+			TalentInstance talentInstance = new TalentInstance();
 			short newTiers = 0;
 			in.beginObject();
 			while (in.hasNext()) {
@@ -292,10 +308,15 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 					case VarietyTalentTiersSchema.COLUMN_TIERS:
 						newTiers = (short) in.nextInt();
 						break;
+					case VarietyTalentParametersSchema.TABLE_NAME:
+						readTalentParameterValues(in, talentInstance);
+						break;
 				}
 			}
-			if (newTalent != null) {
-				creatureVariety.getTalentTiersMap().put(newTalent, newTiers);
+			if(newTalent != null && newTiers > 0) {
+				talentInstance.setTalent(newTalent);
+				talentInstance.setTiers(newTiers);
+				creatureVariety.getTalentsMap().put(newTalent, talentInstance);
 			}
 			in.endObject();
 		}
@@ -346,6 +367,30 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 				creatureVariety.getSkillBonusesMap().put(newSkill, newBonus);
 			}
 			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readTalentParameterValues(JsonReader in, TalentInstance talentInstance) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Parameter parameter = null;
+			Integer value = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case RaceTalentParametersSchema.COLUMN_PARAMETER_NAME:
+						parameter = Parameter.valueOf(in.nextString());
+						break;
+					case RaceTalentParametersSchema.COLUMN_VALUE:
+						value = in.nextInt();
+						break;
+				}
+			}
+			in.endObject();
+			if(parameter != null) {
+				talentInstance.getParameterValues().put(parameter, value);
+			}
 		}
 		in.endArray();
 	}

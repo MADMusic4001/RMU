@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
+import android.util.Log;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -22,12 +24,15 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceCulturesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.io.IOException;
@@ -37,6 +42,7 @@ import java.util.Map;
  * Json serializer and deserializer for the {@link Race} entities
  */
 public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
+	private static final String TAG = "RaceSerializer";
 	@Override
 	public void write(JsonWriter out, Race value) throws IOException {
 		out.beginObject();
@@ -72,10 +78,20 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.endArray();
 
 		out.name(RaceTalentsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Talent, Short> entry : value.getTalentsAndFlawsTiersMap().entrySet()) {
+		for(Map.Entry<Talent, TalentInstance> entry : value.getTalentsAndFlawsMap().entrySet()) {
 			out.beginObject();
 			out.name(RaceTalentsSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
-			out.name(RaceTalentsSchema.COLUMN_TIERS).value(entry.getValue());
+			TalentInstance talentInstance = entry.getValue();
+			out.name(RaceTalentsSchema.COLUMN_TIERS).value(talentInstance.getTiers());
+			if(!talentInstance.getParameterValues().isEmpty()) {
+				out.name(RaceTalentParametersSchema.TABLE_NAME).beginArray();
+				for(Map.Entry<Parameter, Integer> paramEntry : talentInstance.getParameterValues().entrySet()) {
+					out.beginObject();
+					out.name(RaceTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
+					out.name(RaceTalentParametersSchema.COLUMN_VALUE).value(paramEntry.getValue());
+					out.endObject();
+				}
+			}
 			out.endObject();
 		}
 		out.endArray();
@@ -142,6 +158,7 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 					readRaceStatMods(in, race);
 					break;
 				case RaceTalentsSchema.TABLE_NAME:
+					Log.d(TAG, "read: Start reading RaceTalentsSchema");
 					readTalentsAndFlawsTiers(in, race);
 					break;
 				case RaceCulturesSchema.TABLE_NAME:
@@ -149,6 +166,7 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 					while(in.hasNext()) {
 						race.getAllowedCultures().add(new Culture(in.nextInt()));
 					}
+					in.endArray();
 					break;
 			}
 		}
@@ -209,7 +227,8 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		in.beginArray();
 		while (in.hasNext()) {
 			Talent newTalent = null;
-			Short tiers = null;
+			TalentInstance talentInstance = new TalentInstance();
+			short tiers = 0;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
@@ -219,11 +238,40 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 					case RaceTalentsSchema.COLUMN_TIERS:
 						tiers = (short)in.nextInt();
 						break;
+					case RaceTalentParametersSchema.TABLE_NAME:
+						readTalentParameterValues(in, talentInstance);
+						break;
 				}
 			}
 			in.endObject();
-			if(newTalent != null) {
-				race.getTalentsAndFlawsTiersMap().put(newTalent, tiers);
+			if(newTalent != null && tiers > 0) {
+				talentInstance.setTalent(newTalent);
+				talentInstance.setTiers(tiers);
+				race.getTalentsAndFlawsMap().put(newTalent, talentInstance);
+			}
+		}
+		in.endArray();
+	}
+
+	private void readTalentParameterValues(JsonReader in, TalentInstance talentInstance) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Parameter parameter = null;
+			Integer value = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case RaceTalentParametersSchema.COLUMN_PARAMETER_NAME:
+						parameter = Parameter.valueOf(in.nextString());
+						break;
+					case RaceTalentParametersSchema.COLUMN_VALUE:
+						value = in.nextInt();
+						break;
+				}
+			}
+			in.endObject();
+			if(parameter != null) {
+				talentInstance.getParameterValues().put(parameter, value);
 			}
 		}
 		in.endArray();

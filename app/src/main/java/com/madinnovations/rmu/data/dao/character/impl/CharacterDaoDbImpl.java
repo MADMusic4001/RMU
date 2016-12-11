@@ -36,6 +36,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSche
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
@@ -45,10 +46,12 @@ import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
 
 import java.util.ArrayList;
@@ -240,7 +243,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
 		instance.setSpecializationRanks(getSpecializationRanks(instance.getId()));
 		instance.setSkillCosts(getSkillCosts(instance.getId()));
-		instance.setTalentTiers(getTalentTiers(instance.getId()));
+		instance.setTalentInstances(getTalentInstances(instance.getId()));
 		instance.setItems(getItems(instance.getId()));
 		instance.setCurrentLevelSkillRanks(getCurrentLevelSkillRanks(instance.getId()));
 		instance.setCurrentLevelSpecializationRanks(getCurrentLevelSpecializationRanks(instance.getId()));
@@ -366,6 +369,9 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
 		result &= (db.delete(CharacterTalentsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
 
+		selection = CharacterTalentParametersSchema.COLUMN_CHARACTER_ID + " = ?";
+		result &= (db.delete(CharacterTalentParametersSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
 		selection = CharacterStatsSchema.COLUMN_CHARACTER_ID + " = ?";
 		result &= (db.delete(CharacterStatsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
 
@@ -429,12 +435,12 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterTalentsSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Talent, Short> entry : instance.getTalentTiers().entrySet()) {
+		for(Map.Entry<Talent, TalentInstance> entry : instance.getTalentInstances().entrySet()) {
 			if(entry.getValue() != null) {
 				result &= (db.insertWithOnConflict(CharacterTalentsSchema.TABLE_NAME, null,
 												   getTalentTiersContentValues(instance.getId(),
 																			   entry.getKey().getId(),
-																			   entry.getValue()),
+																			   entry.getValue().getTiers()),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
@@ -730,6 +736,31 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		return map;
 	}
 
+	private Map<Talent, TalentInstance> getTalentInstances(int id) {
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
+
+		Cursor cursor = super.query(CharacterTalentsSchema.TABLE_NAME, CharacterTalentsSchema.COLUMNS, selection,
+				selectionArgs, CharacterTalentsSchema.COLUMN_TALENT_ID);
+		Map<Talent, TalentInstance> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TALENT_ID));
+			Talent instance = talentDao.getById(mappedId);
+			if(instance != null) {
+				TalentInstance talentInstance = new TalentInstance();
+				talentInstance.setTalent(instance);
+				talentInstance.setTiers(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TIERS)));
+				map.put(instance, talentInstance);
+				talentInstance.setParameterValues(getTalentParameterInstances(id, mappedId));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
 	private ContentValues getTalentTiersContentValues(int characterId, int talentId, short talentTiers) {
 		ContentValues values = new ContentValues(3);
 
@@ -738,27 +769,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(CharacterTalentsSchema.COLUMN_TIERS, talentTiers);
 
 		return values;
-	}
-
-	private Map<Talent, Short> getTalentTiers(int id) {
-		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
-
-		Cursor cursor = super.query(CharacterTalentsSchema.TABLE_NAME, CharacterTalentsSchema.COLUMNS, selection,
-				selectionArgs, CharacterTalentsSchema.COLUMN_TALENT_ID);
-		Map<Talent, Short> map = new HashMap<>(cursor.getCount());
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TALENT_ID));
-			Talent instance = talentDao.getById(mappedId);
-			if(instance != null) {
-				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TIERS)));
-			}
-			cursor.moveToNext();
-		}
-		cursor.close();
-
-		return map;
 	}
 
 	private ContentValues getStatsContentValues(int characterId, Statistic stat, short currentValue, short potentialValue) {
@@ -824,4 +834,28 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 
 		return list;
 	}
+
+	private Map<Parameter, Integer> getTalentParameterInstances(int characterId, int talentId) {
+		final String selectionArgs[] = { String.valueOf(characterId), String.valueOf(talentId) };
+		final String selection = CharacterTalentParametersSchema.COLUMN_CHARACTER_ID
+				+ " = ? AND "
+				+ CharacterTalentParametersSchema.COLUMN_TALENT_ID
+				+ " = ?";
+
+		Cursor cursor = super.query(CharacterTalentParametersSchema.TABLE_NAME, CharacterTalentParametersSchema.COLUMNS,
+									selection, selectionArgs, CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME);
+		Map<Parameter, Integer> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			String paramName = cursor.getString(cursor.getColumnIndexOrThrow(
+					CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME));
+			Parameter parameter = Parameter.valueOf(paramName);
+			map.put(parameter, cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TIERS)));
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
 }

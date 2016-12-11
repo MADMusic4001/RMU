@@ -26,6 +26,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSche
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
@@ -33,10 +34,12 @@ import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.io.IOException;
@@ -109,10 +112,19 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterTalentsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Talent, Short> entry : value.getTalentTiers().entrySet()) {
+		for(Map.Entry<Talent, TalentInstance> entry : value.getTalentInstances().entrySet()) {
 			out.beginObject();
 			out.name(CharacterTalentsSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
-			out.name(CharacterTalentsSchema.COLUMN_TIERS).value(entry.getValue());
+			out.name(CharacterTalentsSchema.COLUMN_TIERS).value(entry.getValue().getTiers());
+			if(!entry.getValue().getParameterValues().isEmpty()) {
+				out.name(CharacterTalentParametersSchema.TABLE_NAME).beginArray();
+				for(Map.Entry<Parameter, Integer> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+					out.name(CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
+					if(paramEntry.getValue() != null) {
+						out.name(CharacterTalentParametersSchema.COLUMN_VALUE).value(paramEntry.getValue());
+					}
+				}
+			}
 			out.endObject();
 		}
 		out.endArray();
@@ -363,7 +375,8 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		in.beginArray();
 		while (in.hasNext()) {
 			Talent newTalent = null;
-			Short tiers = null;
+			TalentInstance talentInstance = new TalentInstance();
+			short tiers = 0;
 			in.beginObject();
 			while(in.hasNext()) {
 				switch (in.nextName()) {
@@ -373,10 +386,39 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					case CharacterTalentsSchema.COLUMN_TIERS:
 						tiers = (short)in.nextInt();
 						break;
+					case CharacterTalentParametersSchema.TABLE_NAME:
+						readTalentParameterValues(in, talentInstance);
+						break;
 				}
 			}
-			if(newTalent != null) {
-				character.getTalentTiers().put(newTalent, tiers);
+			if(newTalent != null && tiers > 0) {
+				talentInstance.setTalent(newTalent);
+				talentInstance.setTiers(tiers);
+				character.getTalentInstances().put(newTalent, talentInstance);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readTalentParameterValues(JsonReader in, TalentInstance talentInstance) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Parameter newParameter = null;
+			Integer value = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME:
+						newParameter = Parameter.valueOf(in.nextString());
+						break;
+					case CharacterTalentParametersSchema.COLUMN_VALUE:
+						value = in.nextInt();
+						break;
+				}
+			}
+			if(newParameter != null) {
+				talentInstance.getParameterValues().put(newParameter, value);
 			}
 			in.endObject();
 		}

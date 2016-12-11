@@ -19,6 +19,7 @@ import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageF
 import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterTalentsPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
@@ -41,6 +42,7 @@ public class CharacterFragmentModule {
 	private CharacterMainPageFragment        characterMainPageFragment;
 	private CharactersFragment               charactersFragment;
 	private CharacterSkillsPageFragment      characterSkillsPageFragment;
+	private CharacterTalentsPageFragment     characterTalentsPageFragment;
 	private CulturesFragment                 culturesFragment;
 	private ProfessionsFragment              professionsFragment;
 	private RacesFragment                    racesFragment;
@@ -62,6 +64,9 @@ public class CharacterFragmentModule {
 	}
 	public CharacterFragmentModule(CharacterSkillsPageFragment characterSkillsPageFragment) {
 		this.characterSkillsPageFragment = characterSkillsPageFragment;
+	}
+	public CharacterFragmentModule(CharacterTalentsPageFragment characterTalentsPageFragment) {
+		this.characterTalentsPageFragment = characterTalentsPageFragment;
 	}
 	public CharacterFragmentModule(CulturesFragment culturesFragment) {
 		this.culturesFragment = culturesFragment;
@@ -106,6 +111,10 @@ public class CharacterFragmentModule {
 	@PerFragment
 	CharacterSkillsPageFragment provideCharacterSkillsPageFragment() {
 		return this.characterSkillsPageFragment;
+	}
+	@PerFragment
+	CharacterTalentsPageFragment provideCharacterTalentsPageFragment() {
+		return this.characterTalentsPageFragment;
 	}
 	@Provides
 	@PerFragment

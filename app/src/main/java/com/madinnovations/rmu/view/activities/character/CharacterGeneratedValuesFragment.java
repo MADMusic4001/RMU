@@ -105,7 +105,9 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		currentEnduranceText = (TextView)layout.findViewById(R.id.current_endurance_text);
 		defensiveBonusText = (TextView)layout.findViewById(R.id.defensive_bonus_text);
 		maxEnduranceText = (TextView)layout.findViewById(R.id.max_endurance_text);
-		baseMovementRateText.setText(String.valueOf(character.getRace().getStrideModifier()));
+		if(character.getRace() != null) {
+			baseMovementRateText.setText(String.valueOf(character.getRace().getStrideModifier()));
+		}
 		encumbranceText = (TextView)layout.findViewById(R.id.encumbrance_text);
 		encumbranceText.setText(null);
 		armorTypeText = (TextView)layout.findViewById(R.id.armor_type_text);

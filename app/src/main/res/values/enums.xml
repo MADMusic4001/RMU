@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Common -->
+  <string name="enum_all">All</string>
+  <string name="enum_choice">Choice</string>
+
+  <!-- Senses -->
+  <string name="enum_hearing">Hearing</string>
+  <string name="enum_smell">Smell</string>
+  <string name="enum_taste">Taste</string>
+  <string name="enum_touch">Touch</string>
+  <string name="enum_vision">Vision</string>
+</resources>

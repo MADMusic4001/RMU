@@ -28,14 +28,17 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceCulturesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.ArrayList;
@@ -142,7 +145,7 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		instance.setSize(sizeDao.getById(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
 		instance.setRealmResistancesModifiers(getRealmResistanceModifiers(instance.getId()));
 		instance.setStatModifiers(getStatModifiers(instance.getId()));
-		instance.setTalentsAndFlawsTiersMap(getTalentsAndFlaws(instance.getId()));
+		instance.setTalentsAndFlawsMap(getTalentsAndFlaws(instance.getId()));
 		instance.setAllowedCultures(getAllowedCultures(instance.getId()));
 
         return instance;
@@ -176,7 +179,7 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
 	@Override
 	protected boolean saveRelationships(SQLiteDatabase db, Race instance) {
-		boolean result = saveTalentsAndFlaws(db, instance.getId(), instance.getTalentsAndFlawsTiersMap());
+		boolean result = saveTalentsAndFlaws(db, instance.getId(), instance.getTalentsAndFlawsMap());
 		result &= saveSatMods(db, instance.getId(), instance.getStatModifiers());
 		result &= saveRealmRRMods(db, instance.getId(), instance.getRealmResistancesModifiers());
 		result &= saveAllowedCultures(db, instance.getId(), instance.getAllowedCultures());
@@ -202,19 +205,23 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return true;
 	}
 
-	private Map<Talent, Short> getTalentsAndFlaws(int id) {
+	private Map<Talent, TalentInstance> getTalentsAndFlaws(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = RaceTalentsSchema.COLUMN_RACE_ID + " = ?";
 
 		Cursor cursor = super.query(RaceTalentsSchema.TABLE_NAME, RaceTalentsSchema.COLUMNS, selection,
 									selectionArgs, RaceTalentsSchema.COLUMN_TALENT_ID);
-		Map<Talent, Short> map = new HashMap<>(cursor.getCount());
+		Map<Talent, TalentInstance> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TALENT_ID));
 			Talent instance = talentDao.getById(mappedId);
 			if(instance != null) {
-				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TIERS)));
+				TalentInstance talentInstance = new TalentInstance();
+				talentInstance.setTalent(instance);
+				talentInstance.setTiers(cursor.getShort(cursor.getColumnIndexOrThrow(RaceTalentsSchema.COLUMN_TIERS)));
+				map.put(instance, talentInstance);
+				talentInstance.setParameterValues(getTalentParameters(id, mappedId));
 			}
 			cursor.moveToNext();
 		}
@@ -223,16 +230,18 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return map;
 	}
 
-	private boolean saveTalentsAndFlaws(SQLiteDatabase db, int raceId, Map<Talent, Short> talentTiersMap) {
+	private boolean saveTalentsAndFlaws(SQLiteDatabase db, int raceId, Map<Talent, TalentInstance> talentInstancesMap) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(raceId) };
 		final String selection = RaceTalentsSchema.COLUMN_RACE_ID + " = ?";
 
+		db.delete(RaceTalentParametersSchema.TABLE_NAME, selection, selectionArgs);
 		db.delete(RaceTalentsSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Talent, Short> entry : talentTiersMap.entrySet()) {
+		for(Map.Entry<Talent, TalentInstance> entry : talentInstancesMap.entrySet()) {
 			result &= (db.insertWithOnConflict(RaceTalentsSchema.TABLE_NAME, null, getTalentTiersValues(raceId,
-					entry.getKey(), entry.getValue()), SQLiteDatabase.CONFLICT_NONE) != -1);
+					entry.getKey(), entry.getValue().getTiers()), SQLiteDatabase.CONFLICT_NONE) != -1);
+			result &= saveTalentParameterValues(db, raceId, entry.getKey().getId(), entry.getValue().getParameterValues());
 		}
 		return result;
 	}
@@ -242,6 +251,55 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		values.put(RaceTalentsSchema.COLUMN_RACE_ID, raceId);
 		values.put(RaceTalentsSchema.COLUMN_TALENT_ID, talent.getId());
 		values.put(RaceTalentsSchema.COLUMN_TIERS, tiers);
+		return values;
+	}
+
+	private Map<Parameter, Integer> getTalentParameters(int raceId, int talentId) {
+		final String selectionArgs[] = { String.valueOf(raceId), String.valueOf(talentId) };
+		final String selection = RaceTalentParametersSchema.COLUMN_RACE_ID +
+				" = ? AND " +
+				RaceTalentParametersSchema.COLUMN_TALENT_ID +
+				" = ?";
+
+		Cursor cursor = super.query(RaceTalentParametersSchema.TABLE_NAME, RaceTalentParametersSchema.COLUMNS, selection,
+									selectionArgs, RaceTalentParametersSchema.COLUMN_PARAMETER_NAME);
+		Map<Parameter, Integer> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			String parameterName = cursor.getString(cursor.getColumnIndexOrThrow(
+					RaceTalentParametersSchema.COLUMN_PARAMETER_NAME));
+			Parameter instance = Parameter.valueOf(parameterName);
+			map.put(instance, cursor.getInt(cursor.getColumnIndexOrThrow(RaceTalentParametersSchema.COLUMN_VALUE)));
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private boolean saveTalentParameterValues(SQLiteDatabase db, int raceId, int talentId,
+											  Map<Parameter, Integer> parameterValuesMap) {
+		boolean result = true;
+
+		for(Map.Entry<Parameter, Integer> entry : parameterValuesMap.entrySet()) {
+			result &= (db.insertWithOnConflict(RaceTalentParametersSchema.TABLE_NAME, null,
+											   getParameterValuesValues(raceId, talentId, entry.getKey(), entry.getValue()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getParameterValuesValues(int raceId, int talentId, Parameter parameter, Integer value) {
+		ContentValues values = new ContentValues(4);
+		values.put(RaceTalentParametersSchema.COLUMN_RACE_ID, raceId);
+		values.put(RaceTalentParametersSchema.COLUMN_TALENT_ID, talentId);
+		values.put(RaceTalentParametersSchema.COLUMN_PARAMETER_NAME, parameter.name());
+		if(value == null) {
+			values.putNull(RaceTalentParametersSchema.COLUMN_VALUE);
+		}
+		else {
+			values.put(RaceTalentParametersSchema.COLUMN_VALUE, value);
+		}
 		return values;
 	}
 

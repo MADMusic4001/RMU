@@ -31,6 +31,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSche
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CultureSkillRanksSchema;
@@ -42,6 +43,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceCulturesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
@@ -77,6 +79,7 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietyAttacksSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyCriticalCodesSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ArmorSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
@@ -161,6 +164,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(CreatureTypeTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureCategoryTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyTalentTiersSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(VarietyTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(TalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpecializationSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpecializationStatsSchema.TABLE_CREATE);
@@ -172,6 +176,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(AttackSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyAttacksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceTalentsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(RaceTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceStatModSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceRealmRRModSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceCulturesSchema.TABLE_CREATE);
@@ -185,6 +190,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(SpellAreaOfEffectParamSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CultureSkillRanksSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterCurrentLevelSkillRanksSchema.TABLE_CREATE);
@@ -251,6 +257,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(RaceCulturesSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceRealmRRModSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceStatModSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(RaceTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyAttacksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(AttackSchema.TABLE_NAME, null, null);
@@ -262,6 +269,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(VarietyTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyTalentTiersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureCategoryTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureTypeTalentsSchema.TABLE_NAME, null, null);

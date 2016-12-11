@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.entities.character;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.ArrayList;
@@ -30,23 +31,23 @@ import java.util.Map;
  */
 public class Race {
 	public static final String JSON_NAME = "Races";
-	private int              id                           = -1;
-	private String           name                         = null;
-	private String           description                  = null;
-	private short            bonusDevelopmentPoints       = 0;
-	private Map<Statistic, Short> statModifiers                = new HashMap<>();
-	private Map<Realm, Short> realmResistancesModifiers   = new HashMap<>();
-	private short physicalResistanceModifier = 0;
-	private short enduranceModifier = 0;
-	private short baseHits = 0;
-	private float recoveryMultiplier = 1.0f;
-	private Map<Talent, Short> talentsAndFlawsTiersMap = new HashMap<>();
-	private Size size = null;
-	private short strideModifier = 0;
-	private short averageHeight = 0;
-	private short averageWeight = 0;
-	private short poundsPerInch = 0;
-	private List<Culture> allowedCultures = new ArrayList<>();
+	private int                         id                         = -1;
+	private String                      name                       = null;
+	private String                      description                = null;
+	private short                       bonusDevelopmentPoints     = 0;
+	private Map<Statistic, Short>       statModifiers              = new HashMap<>();
+	private Map<Realm, Short>           realmResistancesModifiers  = new HashMap<>();
+	private short                       physicalResistanceModifier = 0;
+	private short                       enduranceModifier          = 0;
+	private short                       baseHits                   = 0;
+	private float                       recoveryMultiplier         = 1.0f;
+	private Map<Talent, TalentInstance> talentsAndFlawsMap         = new HashMap<>();
+	private Size                        size                       = null;
+	private short                       strideModifier             = 0;
+	private short                       averageHeight              = 0;
+	private short                       averageWeight              = 0;
+	private short                       poundsPerInch              = 0;
+	private List<Culture>               allowedCultures            = new ArrayList<>();
 
 	/**
 	 * Default constructor
@@ -153,11 +154,12 @@ public class Race {
 	public void setRecoveryMultiplier(float recoveryMultiplier) {
 		this.recoveryMultiplier = recoveryMultiplier;
 	}
-	public Map<Talent, Short> getTalentsAndFlawsTiersMap() {
-		return talentsAndFlawsTiersMap;
+	public Map<Talent, TalentInstance> getTalentsAndFlawsMap() {
+		return talentsAndFlawsMap;
 	}
-	public void setTalentsAndFlawsTiersMap(Map<Talent, Short> talentsAndFlawsTiersMap) {
-		this.talentsAndFlawsTiersMap = talentsAndFlawsTiersMap;
+	public void setTalentsAndFlawsMap(
+			Map<Talent, TalentInstance> talentsAndFlawsMap) {
+		this.talentsAndFlawsMap = talentsAndFlawsMap;
 	}
 	public Size getSize() {
 		return size;

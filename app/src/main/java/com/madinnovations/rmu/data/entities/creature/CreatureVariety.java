@@ -21,6 +21,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -35,10 +36,10 @@ import java.util.Map;
  * Class containing Creature Variety attributes.
  */
 public class CreatureVariety {
-	public static final String JSON_NAME = "CreatureVarieties";
-	private int id = -1;
-	private CreatureType type = null;
-	private String name = null;
+	public static final String          JSON_NAME            = "CreatureVarieties";
+	private int                         id                   = -1;
+	private CreatureType                type                 = null;
+	private String                      name                 = null;
 	private String description = null;
 	private short typicalLevel = 1;
 	private char levelSpread = 'A';
@@ -49,25 +50,25 @@ public class CreatureVariety {
 	private short healingRate = 1;
 	private short baseHits = 25;
 	private short baseEndurance = 0;
-	private Size size = null;
-	private short armorType = 1;
-	private List<CriticalCode> criticalCodes = new ArrayList<>();
-	private short baseMovementRate = 15;
-	private short baseChannellingRR = 0;
-	private short baseEssenceRR = 0;
-	private short baseMentalismRR = 0;
-	private short basePhysicalRR = 0;
-	private short baseFearRR = 0;
-	private Realm realm1 = null;
-	private Realm realm2 = null;
-	private short baseStride = 0;
-	private short leftoverDP = 200;
-	private Outlook outlook = null;
-	private Map<Talent, Short> talentTiersMap = new HashMap<>();
-	private Map<Attack, Short> attackBonusesMap = new HashMap<>();
-	private Size criticalSizeModifier = null;
-	private String attackSequence = null;
-	private Map<Skill, Short> skillBonusesMap = new HashMap<>();
+	private Size                        size                 = null;
+	private short                       armorType            = 1;
+	private List<CriticalCode>          criticalCodes        = new ArrayList<>();
+	private short                       baseMovementRate     = 15;
+	private short                       baseChannellingRR    = 0;
+	private short                       baseEssenceRR        = 0;
+	private short                       baseMentalismRR      = 0;
+	private short                       basePhysicalRR       = 0;
+	private short                       baseFearRR           = 0;
+	private Realm                       realm1               = null;
+	private Realm                       realm2               = null;
+	private short                       baseStride           = 0;
+	private short                       leftoverDP           = 200;
+	private Outlook                     outlook              = null;
+	private Map<Talent, TalentInstance> talentsMap           = new HashMap<>();
+	private Map<Attack, Short>          attackBonusesMap     = new HashMap<>();
+	private Size                        criticalSizeModifier = null;
+	private String                      attackSequence       = null;
+	private Map<Skill, Short>           skillBonusesMap      = new HashMap<>();
 
 	/**
 	 * Checks the validity of the CreatureVariety instance.
@@ -115,7 +116,7 @@ public class CreatureVariety {
 				.append("baseStride", baseStride)
 				.append("leftoverDP", leftoverDP)
 				.append("outlook", outlook)
-				.append("talentTiersMap", talentTiersMap)
+				.append("talentsMap", talentsMap)
 				.append("attackBonusesMap", attackBonusesMap)
 				.append("criticalSizeModifier", criticalSizeModifier)
 				.append("attackSequence", attackSequence)
@@ -301,11 +302,11 @@ public class CreatureVariety {
 	public void setOutlook(Outlook outlook) {
 		this.outlook = outlook;
 	}
-	public Map<Talent, Short> getTalentTiersMap() {
-		return talentTiersMap;
+	public Map<Talent, TalentInstance> getTalentsMap() {
+		return talentsMap;
 	}
-	public void setTalentTiersMap(Map<Talent, Short> talentTiersMap) {
-		this.talentTiersMap = talentTiersMap;
+	public void setTalentsMap(Map<Talent, TalentInstance> talentsMap) {
+		this.talentsMap = talentsMap;
 	}
 	public Map<Attack, Short> getAttackBonusesMap() {
 		return attackBonusesMap;

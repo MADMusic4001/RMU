@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.creature.schemas;
+package com.madinnovations.rmu.data.dao.character.schemas;
 
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 
 /**
- * Database schema data for the variety_talents table
+ * Database schema data for the race_talent_parameters table
  */
-public interface VarietyTalentTiersSchema {
-	String TABLE_NAME = "variety_talents";
+public interface RaceTalentParametersSchema {
+	String TABLE_NAME = "race_talent_parameters";
 
-	String COLUMN_VARIETY_ID = "varietyId";
+	String COLUMN_RACE_ID = "raceId";
 	String COLUMN_TALENT_ID = "talentId";
-	String COLUMN_TIERS = "tiers";
+	String COLUMN_PARAMETER_NAME = "parameterName";
+	String COLUMN_VALUE = "parameterValue";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_NAME
-			+ " ("
-			+ COLUMN_VARIETY_ID  + " INTEGER NOT NULL REFERENCES "
-				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
+			+ TABLE_NAME + "("
+			+ COLUMN_RACE_ID + " INTEGER NOT NULL REFERENCES "
+				+ RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
 				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
-			+ COLUMN_TIERS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_TALENT_ID + ")"
+			+ COLUMN_PARAMETER_NAME + " TEXT NOT NULL, "
+			+ COLUMN_VALUE + " INTEGER, "
+			+ "PRIMARY KEY(" + COLUMN_RACE_ID + "," + COLUMN_TALENT_ID + "," + COLUMN_PARAMETER_NAME + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
+	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_PARAMETER_NAME, COLUMN_VALUE};
 }

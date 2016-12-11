@@ -3,6 +3,7 @@
   <string-array name="character_page_names">
     <item>@string/title_character_main_page</item>
     <item>@string/title_character_skills_page</item>
+    <item>@string/title_character_talents_page</item>
     <item>@string/title_character_background_page</item>
     <item>@string/title_character_generated_values_page</item>
   </string-array>

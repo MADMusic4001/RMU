@@ -50,6 +50,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -268,7 +269,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		switch (spinnerId) {
 			case R.id.campaign_spinner:
 				if(character.getExperiencePoints() == 0) {
-					Campaign oldCampaign = character.getCampaign();
 					Campaign newCampaign = (Campaign) newItem;
 					character.setCampaign(newCampaign);
 					character.generateStats();
@@ -316,9 +316,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 					character.setCurrentDevelopmentPoints((short)(Character.INITIAL_DP + bonusDP));
 					character.setCurrentLevelSkillRanks(new HashMap<Skill, Short>());
 					character.setCurrentLevelSpecializationRanks(new HashMap<Specialization, Short>());
+					character.setCurrentLevelTalentTiers(new HashMap<Talent, Short>());
 					character.setSkillRanks(new HashMap<Skill, Short>());
 					character.setSpecializationRanks(new HashMap<Specialization, Short>());
-					character.setTalentTiers(new HashMap<Talent, Short>());
+					character.setTalentInstances(new HashMap<Talent, TalentInstance>());
 				}
 				developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
 				character.setRace(newRace);
@@ -364,7 +365,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		Race race = null;
 
 		if(raceSpinner.getSelectedItem() != null) {
-			race = (Race) raceSpinner.getSelectedItem();
+			race = raceSpinner.getSelectedItem();
 		}
 
 		return race;
@@ -379,7 +380,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		Culture culture = null;
 
 		if(cultureSpinner.getSelectedItem() != null) {
-			culture = (Culture) cultureSpinner.getSelectedItem();
+			culture = cultureSpinner.getSelectedItem();
 		}
 
 		return culture;

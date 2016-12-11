@@ -57,11 +57,12 @@ import rx.schedulers.Schedulers;
 public class CharactersFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Character>,
 		ViewPagerAdapter.Instantiator{
 	private static final String TAG = "CharactersFragment";
-	private static final int NUM_PAGES = 4;
+	private static final int NUM_PAGES = 5;
 	private static final int MAIN_PAGE_INDEX = 0;
 	private static final int SKILLS_PAGE_INDEX = 1;
-	private static final int BACKGROUND_PAGE_INDEX = 2;
-	private static final int GENERATED_PAGE_INDEX = 3;
+	private static final int TALENTS_PAGE_INDEX = 2;
+	private static final int BACKGROUND_PAGE_INDEX = 3;
+	private static final int GENERATED_PAGE_INDEX = 4;
 	@Inject
 	protected CharacterRxHandler               characterRxHandler;
 	private   ThreeFieldListAdapter<Character> listAdapter;
@@ -115,6 +116,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		}
 		if(pagerAdapter.getFragment(SKILLS_PAGE_INDEX) != null) {
 			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(SKILLS_PAGE_INDEX)).commit();
+		}
+		if(pagerAdapter.getFragment(TALENTS_PAGE_INDEX) != null) {
+			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(TALENTS_PAGE_INDEX)).commit();
 		}
 		if(pagerAdapter.getFragment(BACKGROUND_PAGE_INDEX) != null) {
 			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(BACKGROUND_PAGE_INDEX)).commit();
@@ -222,6 +226,12 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			changed |= skillsPageFragment.copyViewsToItem();
 		}
 
+		CharacterTalentsPageFragment talentsPageFragment = (CharacterTalentsPageFragment)pagerAdapter.getFragment
+				(TALENTS_PAGE_INDEX);
+		if(talentsPageFragment != null) {
+			changed |= talentsPageFragment.copyViewsToItem();
+		}
+
 		return changed;
 	}
 
@@ -238,6 +248,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				break;
 			case SKILLS_PAGE_INDEX:
 				fragment = CharacterSkillsPageFragment.newInstance(this);
+				break;
+			case TALENTS_PAGE_INDEX:
+				fragment = CharacterTalentsPageFragment.newInstance(this);
 				break;
 			case GENERATED_PAGE_INDEX:
 				fragment = CharacterGeneratedValuesFragment.newInstance(this);
@@ -262,6 +275,12 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		CharacterSkillsPageFragment skillsPageFragment = (CharacterSkillsPageFragment)pagerAdapter.getFragment(SKILLS_PAGE_INDEX);
 		if(skillsPageFragment != null) {
 			skillsPageFragment.copyItemToViews();
+		}
+
+		CharacterTalentsPageFragment talentsPageFragment = (CharacterTalentsPageFragment)pagerAdapter.getFragment
+				(TALENTS_PAGE_INDEX);
+		if(talentsPageFragment != null) {
+			talentsPageFragment.copyItemToViews();
 		}
 
 		CharacterGeneratedValuesFragment generatedValuesFragment = (CharacterGeneratedValuesFragment)pagerAdapter

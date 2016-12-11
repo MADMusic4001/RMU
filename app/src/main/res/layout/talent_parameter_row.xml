@@ -112,6 +112,24 @@
       android:text="@string/label_per_round"/>
 
   <TextView
+      android:id="@+id/sense_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
+      android:layout_centerVertical="true"
+      android:visibility="gone"
+      android:text="@string/input_label_sense"/>
+  <Spinner
+      android:id="@+id/sense_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/sense_label"
+      android:layout_toEndOf="@id/sense_label"
+      android:layout_centerVertical="true"
+      android:visibility="gone"/>
+
+  <TextView
       android:id="@+id/skill_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -216,6 +234,24 @@
       android:layout_height="wrap_content"
       android:layout_toRightOf="@id/spell_label"
       android:layout_toEndOf="@id/spell_label"
+      android:layout_centerVertical="true"
+      android:visibility="gone"/>
+
+  <TextView
+      android:id="@+id/spell_list_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/parameter_spinner"
+      android:layout_toEndOf="@id/parameter_spinner"
+      android:layout_centerVertical="true"
+      android:visibility="gone"
+      android:text="@string/label_spell_list_name"/>
+  <Spinner
+      android:id="@+id/spell_list_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/spell_list_label"
+      android:layout_toEndOf="@id/spell_list_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
 </RelativeLayout>

@@ -57,11 +57,13 @@ public class CultureSkillRanksListAdapter extends BaseExpandableListAdapter {
 		listData.clear();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void add(CultureSkillCategoryRanks professionSkillCategoryCost) {
 		listData.add(professionSkillCategoryCost);
 		Collections.sort(listData);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addAll(Collection<CultureSkillCategoryRanks> professionSkillCategoryCosts) {
 		listData.addAll(professionSkillCategoryCosts);
 		Collections.sort(listData);

@@ -39,7 +39,6 @@ import android.widget.TextView;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
@@ -47,13 +46,10 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Talent;
-import com.madinnovations.rmu.data.entities.common.TalentTier;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.character.AssignableCostsAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillRanksAdapter;
-import com.madinnovations.rmu.view.adapters.common.TalentTierListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
 import java.util.ArrayList;
@@ -70,8 +66,7 @@ import rx.Subscriber;
 /**
  * Handles interactions with the UI for character creation.
  */
-public class CharacterSkillsPageFragment extends Fragment implements SkillRanksAdapter.SkillRanksAdapterCallbacks,
-		TalentTierListAdapter.TalentTiersAdapterCallbacks {
+public class CharacterSkillsPageFragment extends Fragment implements SkillRanksAdapter.SkillRanksAdapterCallbacks {
 	private static final String TAG = "CharacterSkillsPageFrag";
 	private static final String DRAG_COST = "drag-cost";
 	private static final String HEADER_TAG = "Header%d";
@@ -80,16 +75,12 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	protected SkillRxHandler          skillRxHandler;
 	@Inject
 	protected SpecializationRxHandler specializationRxHandler;
-	@Inject
-	protected TalentRxHandler         talentRxHandler;
 	private   View                    fragmentView;
 	private   SkillRanksAdapter       skillRanksAdapter;
-	private   TalentTierListAdapter   talentTiersAdapter;
 	private   CharactersFragment      charactersFragment;
 	private   LinearLayout            assignableCostLayoutRows;
 	private   ListView[]              skillCostsListViews;
 	private   SkillCategory[]         skillCategories = new SkillCategory[0];
-	private   Collection<Talent>      talents = null;
 	private   TextView                currentDpText;
 
 	/**
@@ -113,12 +104,11 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		fragmentView = inflater.inflate(R.layout.character_skills_talents_stats_page, container, false);
+		fragmentView = inflater.inflate(R.layout.character_skills_page, container, false);
 
 		currentDpText = (TextView)fragmentView.findViewById(R.id.current_dp_text);
 		initSkillCostsListView(fragmentView);
 		initSkillRanksListView(fragmentView);
-		initTalentTiersListView(fragmentView);
 
 		fragmentView.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
@@ -235,59 +225,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		return costGroup;
 	}
 
-	@Override
-	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		boolean result = false;
-		short cost = 0;
-		Character character = charactersFragment.getCurrentInstance();
-
-		if(character.getCurrentLevel() == 1 || character.getCampaign().isAllowTalentsBeyondFirst()) {
-			if(purchasedThisLevel == 0 && startingTiers == 0) {
-				cost = talent.getDpCost();
-				result = true;
-			}
-			else if(purchasedThisLevel + startingTiers < talent.getMaxTier()) {
-				cost = talent.getDpCostPerTier();
-				result = true;
-			}
-			if(result) {
-				if (cost < character.getCurrentDevelopmentPoints()) {
-					character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
-					currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-					character.getTalentTiers().put(talent, (short) (character.getTalentTiers().get(talent) + 1));
-				}
-				else {
-					result = false;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		boolean result = false;
-		short cost = 0;
-		Character character = charactersFragment.getCurrentInstance();
-
-		if(startingTiers == 0 && purchasedThisLevel == 1) {
-			cost = talent.getDpCost();
-			result = true;
-		}
-		else if (purchasedThisLevel > 0) {
-			cost = talent.getDpCostPerTier();
-			result = true;
-		}
-		if(result) {
-			character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
-			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-			character.getTalentTiers().put(talent, (short) (character.getTalentTiers().get(talent) - 1));
-		}
-
-		return result;
-	}
-
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		boolean changed = false;
@@ -311,7 +248,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		Character character = charactersFragment.getCurrentInstance();
 		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 		copyAssignableCosts();
-		copyTalentTiers();
 	}
 
 	private void copyAssignableCosts() {
@@ -335,25 +271,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 					}
 				}
 			}
-		}
-	}
-
-	private void copyTalentTiers() {
-		if(talents != null) {
-			Character character = charactersFragment.getCurrentInstance();
-			List<TalentTier> tiersList = new ArrayList<>();
-			for (Talent talent : talents) {
-				if (character.getTalentTiers().get(talent) == null) {
-					character.getTalentTiers().put(talent, (short) 0);
-				}
-				TalentTier talentTier = new TalentTier();
-				talentTier.setTalent(talent);
-				talentTier.setStartingTiers(character.getTalentTiers().get(talent));
-				talentTier.setEndingTiers(character.getTalentTiers().get(talent));
-				tiersList.add(talentTier);
-			}
-			talentTiersAdapter.addAll(tiersList);
-			talentTiersAdapter.notifyDataSetChanged();
 		}
 	}
 
@@ -436,52 +353,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			}
 		});
 		registerForContextMenu(skillRanksListView);
-	}
-
-	private void initTalentTiersListView(final View layout) {
-		ListView talentTiersListView = (ListView) layout.findViewById(R.id.talent_tiers_list);
-		talentTiersAdapter = new TalentTierListAdapter(getActivity(), this);
-		talentTiersListView.setAdapter(talentTiersAdapter);
-
-		if(talents == null) {
-			talentRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Talent>>() {
-						@Override
-						public void onCompleted() {
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							Log.d(TAG, "Exception caught getting all Talent instances.", e);
-						}
-
-						@Override
-						public void onNext(Collection<Talent> talentCollection) {
-							talents = talentCollection;
-							copyTalentTiers();
-						}
-					});
-		}
-		else {
-			copyTalentTiers();
-		}
-
-		talentTiersListView.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				Log.d(TAG, "onLongClick: ");
-				TextView popupContent = new TextView(getActivity());
-				popupContent.setMinimumWidth(layout.getWidth()/2);
-				popupContent.setMinimumHeight(layout.getHeight()/2);
-				TalentTier talentTier = ((TalentTierListAdapter.ViewHolder)v.getTag()).getTalentTier();
-				popupContent.setText(talentTier.getTalent().getDescription());
-				PopupWindow popupWindow = new PopupWindow(popupContent);
-				popupWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
-				return true;
-			}
-		});
-
-		registerForContextMenu(talentTiersListView);
 	}
 
 	private void hideAssignableList(int index) {

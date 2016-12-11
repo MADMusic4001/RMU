@@ -47,11 +47,13 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Parameter;
+import com.madinnovations.rmu.data.entities.common.Sense;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -59,6 +61,7 @@ import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
 import com.madinnovations.rmu.data.entities.spells.Spell;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
@@ -94,6 +97,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	@Inject
 	SpellRxHandler                       spellRxHandler;
 	@Inject
+	SpellListRxHandler                   spellListRxHandler;
+	@Inject
 	TalentRxHandler                      talentRxHandler;
 	@Inject
 	TalentCategoryRxHandler              talentCategoryRxHandler;
@@ -117,12 +122,21 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private LinearLayout                 parametersList;
 	private Talent                       currentInstance           = new Talent();
 	private boolean                      isNew                     = true;
-	private SparseArray<Attack>          attackSparseArray         = null;
-	private SparseArray<Skill>           skillSparseArray          = null;
-	private SparseArray<Specialization>  specializationSparseArray = null;
-	private SparseArray<Spell>           spellSparseArray          = null;
-	private Map<View, Integer>           indexMap                  = new HashMap<>();
-	private Skill choice = null;
+	private SparseArray<Attack>         attackSparseArray         = null;
+	private SparseArray<Skill>          skillSparseArray          = null;
+	private SparseArray<Specialization> specializationSparseArray = null;
+	private SparseArray<Spell>          spellSparseArray          = null;
+	private SparseArray<SpellList>      spellListSparseArray      = null;
+	private Map<View, Integer> indexMap             = new HashMap<>();
+	private Attack             choiceAttack         = null;
+	@SuppressWarnings("unused")
+	private Resistance         choiceResistance     = null;
+	private Skill              choiceSkill          = null;
+	private Specialization     choiceSpecialization = null;
+	private Spell              choiceSpell          = null;
+	private SpellList          choiceSpellList      = null;
+	@SuppressWarnings("unused")
+	private Statistic          choiceStat           = null;
 
 	@Nullable
 	@Override
@@ -420,6 +434,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					case PHYSICAL_RR:
 						changed |= copyResistanceViewsToItem(entry.getKey(), entry.getValue(), parameter);
 						break;
+					case SENSE:
+						changed |= copySenseViewsToItem(entry.getKey(), entry.getValue());
+						break;
 					case SKILL:
 						changed |= copySkillViewsToItem(entry.getKey(), entry.getValue());
 						break;
@@ -428,6 +445,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						break;
 					case SPELL:
 						changed |= copySpellsViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					case SPELL_LIST:
+						changed |= copySpellListsViewsToItem(entry.getKey(), entry.getValue());
 						break;
 					case STAT:
 						changed |= copyStatsViewsToItem(entry.getKey(), entry.getValue());
@@ -701,9 +721,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initValueCheckBoxes(parameterRowView);
 		initAttacksSpinner(parameterRowView);
 		initResistancesSpinner(parameterRowView);
+		initSenseSpinner(parameterRowView);
 		initSkillsSpinner(parameterRowView);
 		initSpecializationsSpinner(parameterRowView);
 		initSpellsSpinner(parameterRowView);
+		initSpellListsSpinner(parameterRowView);
 		initStatsSpinner(parameterRowView);
 
 		Parameter parameter = currentInstance.getTalentParameterRows()[index].getParameter();
@@ -726,6 +748,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				break;
 			case SPELL:
 				setSpellsVisibility(parameterRowView, VISIBLE);
+				break;
+			case SPELL_LIST:
+				setSpellListsVisibility(parameterRowView, VISIBLE);
 				break;
 			case STAT:
 				setStatsVisibility(parameterRowView, VISIBLE);
@@ -757,9 +782,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						switch (parameter) {
 							case ATTACK:
 								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setAttacksVisibility(layout, VISIBLE);
@@ -767,9 +794,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case ELEMENTAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getElementalResistances());
 								setAttacksVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
@@ -778,9 +807,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case FOLLOWER_FEAR_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getFearResistances());
 								setAttacksVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
@@ -788,9 +819,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case MAGICAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getMagicalResistances());
 								setAttacksVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
@@ -798,18 +831,33 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case PHYSICAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getPhysicalResistances());
 								setAttacksVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setResistancesVisibility(layout, VISIBLE);
 								break;
+							case SENSE:
+								setAttacksVisibility(layout, GONE);
+								setResistancesVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								setSenseVisibility(layout, VISIBLE);
+								break;
 							case SKILL:
 								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setSkillsVisibility(layout, VISIBLE);
@@ -817,8 +865,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case SPECIALIZATION:
 								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, VISIBLE);
@@ -826,26 +876,44 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case SPELL:
 								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setSpellsVisibility(layout, VISIBLE);
 								break;
-							case STAT:
+							case SPELL_LIST:
 								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
 								setSpellsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								setSpellListsVisibility(layout, VISIBLE);
+								break;
+							case STAT:
+								setAttacksVisibility(layout, GONE);
+								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setValuesVisibility(layout, GONE);
 								setStatsVisibility(layout, VISIBLE);
 								break;
 							default:
 								setAttacksVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
 								setStatsVisibility(layout, GONE);
 								setValuesVisibility(layout, VISIBLE);
 								break;
@@ -1020,6 +1088,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 		else {
+			choiceAttack = new Attack();
+			choiceAttack.setName(getString(R.string.choice_label));
 			attackRxHandler.getAll()
 					.subscribe(new Subscriber<Collection<Attack>>() {
 						@Override
@@ -1030,7 +1100,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						}
 						@Override
 						public void onNext(Collection<Attack> attacks) {
-							attackSparseArray = new SparseArray<>(attacks.size());
+							attackSparseArray = new SparseArray<>(attacks.size() + 1);
+							attackSparseArray.put(choiceAttack.getId(), choiceAttack);
 							for(Attack attack : attacks) {
 								attackSparseArray.put(attack.getId(), attack);
 							}
@@ -1105,6 +1176,50 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName())));
 	}
 
+	private void initSenseSpinner(final View layout) {
+		final Spinner spinner = (Spinner) layout.findViewById(R.id.sense_spinner);
+		final ArrayAdapter<Sense> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+
+		adapter.clear();
+		adapter.addAll(Sense.values());
+		adapter.notifyDataSetChanged();
+		spinner.setAdapter(adapter);
+		TalentParameterRow talentParameterRow = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
+		if (Parameter.SENSE.equals(talentParameterRow.getParameter())) {
+			Sense currentSense = null;
+			if(talentParameterRow.getInitialValue() != null) {
+				currentSense = adapter.getItem(talentParameterRow.getInitialValue());
+			}
+			if(currentSense != null) {
+				spinner.setSelection(adapter.getPosition(currentSense));
+			}
+			else {
+				spinner.setSelection(0);
+			}
+		}
+
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Sense sense = adapter.getItem(position);
+				if(sense != null) {
+					Sense currentSense = null;
+					if(indexMap.get(layout) != null&& currentInstance.getTalentParameterRows()[indexMap.get(layout)] != null
+							&& currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
+						currentSense = adapter.getItem(currentInstance.getTalentParameterRows()
+																	 [indexMap.get(layout)].getInitialValue());
+					}
+					if(!sense.equals(currentSense)) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(sense.name());
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+	}
+
 	private void initSkillsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
 		final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -1128,8 +1243,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 		else {
-			choice = new Skill();
-			choice.setName(getString(R.string.choice_label));
+			choiceSkill = new Skill();
+			choiceSkill.setName(getString(R.string.choice_label));
 			skillRxHandler.getNonSpecializationSkills()
 					.subscribe(new Subscriber<Collection<Skill>>() {
 						@Override
@@ -1141,7 +1256,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						@Override
 						public void onNext(Collection<Skill> skills) {
 							skillSparseArray = new SparseArray<>(skills.size() + 1);
-							skillSparseArray.put(choice.getId(), choice);
+							skillSparseArray.put(choiceSkill.getId(), choiceSkill);
 							for(Skill skill : skills) {
 								skillSparseArray.put(skill.getId(), skill);
 							}
@@ -1207,6 +1322,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 		else {
+			choiceSpecialization = new Specialization();
+			choiceSpecialization.setName(getString(R.string.choice_label));
 			specializationRxHandler.getAll()
 					.subscribe(new Subscriber<Collection<Specialization>>() {
 						@Override
@@ -1217,7 +1334,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						}
 						@Override
 						public void onNext(Collection<Specialization> specializations) {
-							specializationSparseArray = new SparseArray<>(specializations.size());
+							specializationSparseArray = new SparseArray<>(specializations.size() + 1);
+							specializationSparseArray.put(choiceSpecialization.getId(), choiceSpecialization);
 							for(Specialization specialization : specializations) {
 								specializationSparseArray.put(specialization.getId(), specialization);
 							}
@@ -1280,17 +1398,20 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		}
 		else {
+			choiceSpell = new Spell();
+			choiceSpell.setName(getString(R.string.choice_label));
 			spellRxHandler.getAll()
 					.subscribe(new Subscriber<Collection<Spell>>() {
 						@Override
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(TAG, "Exception getting all Stat instances", e);
+							Log.e(TAG, "Exception getting all Spell instances", e);
 						}
 						@Override
 						public void onNext(Collection<Spell> spells) {
-							spellSparseArray = new SparseArray<>(spells.size());
+							spellSparseArray = new SparseArray<>(spells.size() + 1);
+							spellSparseArray.put(choiceSpell.getId(), choiceSpell);
 							for(Spell spell : spells) {
 								spellSparseArray.put(spell.getId(), spell);
 							}
@@ -1321,6 +1442,82 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
 					if(!spell.equals(currentSpell)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(spell.getId());
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+	}
+
+	private void initSpellListsSpinner(final View layout) {
+		final Spinner spinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
+		final ArrayAdapter<SpellList> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+
+		if(spellListSparseArray != null) {
+			adapter.clear();
+			for(int i = 0; i < spellListSparseArray.size(); i++) {
+				adapter.add(spellListSparseArray.valueAt(i));
+			}
+			adapter.notifyDataSetChanged();
+			spinner.setAdapter(adapter);
+			Integer index = null;
+			if(indexMap.get(layout) != null) {
+				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			}
+			if(index != null) {
+				spinner.setSelection(adapter.getPosition(spellListSparseArray.get(index)));
+			}
+			else {
+				spinner.setSelection(0);
+			}
+		}
+		else {
+			choiceSpellList = new SpellList();
+			choiceSpellList.setName(getString(R.string.choice_label));
+			spellListRxHandler.getAll()
+					.subscribe(new Subscriber<Collection<SpellList>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "Exception getting all Spell List instances", e);
+						}
+						@Override
+						public void onNext(Collection<SpellList> spellLists) {
+							spellListSparseArray = new SparseArray<>(spellLists.size() + 1);
+							spellListSparseArray.put(choiceSpell.getId(), choiceSpellList);
+							for(SpellList spellList : spellLists) {
+								spellListSparseArray.put(spellList.getId(), spellList);
+							}
+							adapter.clear();
+							adapter.addAll(spellLists);
+							adapter.notifyDataSetChanged();
+							spinner.setAdapter(adapter);
+							Integer index = null;
+							if(indexMap.get(layout) != null) {
+								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							}
+							if(index != null) {
+								spinner.setSelection(adapter.getPosition(spellListSparseArray.get(index)));
+							}
+							else {
+								spinner.setSelection(0);
+							}
+						}
+					});
+		}
+
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				SpellList spellList = adapter.getItem(position);
+				if(spellList != null) {
+					SpellList currentSpellList = spellListSparseArray.get(
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
+					if(!spellList.equals(currentSpellList)) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(spellList.getId());
 						saveItem();
 					}
 				}
@@ -1525,6 +1722,56 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		layout.findViewById(R.id.resistance_spinner).setVisibility(visibility);
 	}
 
+	private boolean copySenseViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.SENSE) {
+			row.setParameter(Parameter.SENSE);
+			changed = true;
+		}
+
+		Spinner spinner = (Spinner)layout.findViewById(R.id.sense_spinner);
+		String newInitialValue = null;
+		if(spinner.getSelectedItem() != null) {
+			newInitialValue = ((Sense)spinner.getSelectedItem()).name();
+		}
+		if(row.getEnumName() == null || row.getEnumName().equals(newInitialValue)) {
+			row.setEnumName(newInitialValue);
+			changed = true;
+		}
+
+		if(row.getEnumName() != null) {
+			row.setEnumName(null);
+			changed = true;
+		}
+
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
+	private void setSenseVisibility(final View layout, int visibility) {
+		layout.findViewById(R.id.sense_label).setVisibility(visibility);
+		layout.findViewById(R.id.sense_spinner).setVisibility(visibility);
+	}
+
 	private boolean copySkillViewsToItem(final View layout, int index) {
 		boolean changed = false;
 		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
@@ -1673,6 +1920,56 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void setSpellsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.spell_label).setVisibility(visibility);
 		layout.findViewById(R.id.spell_spinner).setVisibility(visibility);
+	}
+
+	private boolean copySpellListsViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.SPELL_LIST) {
+			row.setParameter(Parameter.SPELL_LIST);
+			changed = true;
+		}
+
+		Spinner spinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
+		int newInitialValue = -1;
+		if(spinner.getSelectedItem() != null) {
+			newInitialValue = ((SpellList) spinner.getSelectedItem()).getId();
+		}
+		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
+			row.setInitialValue(newInitialValue);
+			changed = true;
+		}
+
+		if(row.getEnumName() != null) {
+			row.setEnumName(null);
+			changed = true;
+		}
+
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
+	private void setSpellListsVisibility(final View layout, int visibility) {
+		layout.findViewById(R.id.spell_list_label).setVisibility(visibility);
+		layout.findViewById(R.id.spell_list_spinner).setVisibility(visibility);
 	}
 
 	private boolean copyStatsViewsToItem(final View layout, int index) {

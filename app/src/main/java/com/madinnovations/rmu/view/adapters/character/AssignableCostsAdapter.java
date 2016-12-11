@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.character;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,9 @@ public class AssignableCostsAdapter extends ArrayAdapter<SkillCostGroup> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_edit_skill_costs_row;
 	private LayoutInflater layoutInflater;
 	private ViewHolder[] viewHolders = new ViewHolder[0];
+	private int[] colors = new int[]{
+			R.color.list_even_row_background,
+			R.color.list_odd_row_background};
 
 	/**
 	 * Creates a new AssignableCostsAdapter instance
@@ -102,6 +106,7 @@ public class AssignableCostsAdapter extends ArrayAdapter<SkillCostGroup> {
 			holder = (ViewHolder)convertView.getTag();
 		}
 
+		rowView.setBackgroundColor(ContextCompat.getColor(getContext(), colors[position % colors.length]));
 		viewHolders[position] = holder;
 		SkillCostGroup skillCostGroup = getItem(position);
 		if(skillCostGroup != null && skillCostGroup.getSkill() != null) {

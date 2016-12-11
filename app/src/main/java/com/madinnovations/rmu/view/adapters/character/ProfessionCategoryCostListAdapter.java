@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.character;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,18 +59,9 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 	private List<ProfessionSkillCategoryCost> listData = new ArrayList<>();
 	private ProfessionCostsCallbacks callbackImpl;
 	private ArrayAdapter<DevelopmentCostGroup> dpCostsSpinnerAdapter;
-
-	public void clear() {
-		listData.clear();
-	}
-
-	public void add(ProfessionSkillCategoryCost professionSkillCategoryCost) {
-		listData.add(professionSkillCategoryCost);
-	}
-
-	public void addAll(Collection<ProfessionSkillCategoryCost> professionSkillCategoryCosts) {
-		listData.addAll(professionSkillCategoryCosts);
-	}
+	private int[] colors = new int[]{
+			R.color.list_even_row_background,
+			R.color.list_odd_row_background};
 
 	/**
 	 * Creates a new ProfessionCategoryCostListAdapter instance.
@@ -154,6 +146,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			holder = (GroupViewHolder) convertView.getTag();
 		}
 
+		rowView.setBackgroundColor(ContextCompat.getColor(context, colors[groupPosition % colors.length]));
 		ProfessionSkillCategoryCost skillCategoryCost = (ProfessionSkillCategoryCost)getGroup(groupPosition);
 		holder.position = groupPosition;
 		holder.skillCategoryCost = skillCategoryCost;
@@ -184,6 +177,8 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			holder = (ChildViewHolder) convertView.getTag();
 		}
 
+		rowView.setBackgroundColor(ContextCompat.getColor(context, colors[(groupPosition + childPosition + 1) %
+				colors.length]));
 		holder.groupPosition = groupPosition;
 		holder.position = childPosition;
 		ProfessionSkillCategoryCost skillCategoryCost = (ProfessionSkillCategoryCost)getGroup(groupPosition);
@@ -216,6 +211,18 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		}
 
 		return rowView;
+	}
+
+	public void clear() {
+		listData.clear();
+	}
+
+	public void add(ProfessionSkillCategoryCost professionSkillCategoryCost) {
+		listData.add(professionSkillCategoryCost);
+	}
+
+	public void addAll(Collection<ProfessionSkillCategoryCost> professionSkillCategoryCosts) {
+		listData.addAll(professionSkillCategoryCosts);
 	}
 
 	private ChildViewHolder findChildViewHolder(View startView, int groupPosition, int childPosition) {

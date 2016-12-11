@@ -34,13 +34,16 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietyAttacksSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyCriticalCodesSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
+import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.RMUAppException;
 
@@ -152,7 +155,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setBaseStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_STRIDE)));
 		instance.setLeftoverDP(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_LEFTOVER_DP)));
 		instance.setOutlook(outlookDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_OUTLOOK_ID))));
-		instance.setTalentTiersMap(getTalentTiers(instance.getId()));
+		instance.setTalentsMap(getTalentInstances(instance.getId()));
 		instance.setAttackSequence(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ATTACK_SEQUENCE)));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SIZE_MODIFIER_ID))) {
 			instance.setCriticalSizeModifier(sizeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
@@ -213,7 +216,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	protected boolean saveRelationships(SQLiteDatabase db, CreatureVariety instance) {
 		boolean result = saveRacialStatBonuses(db, instance.getId(), instance.getRacialStatBonuses());
 		result &= saveCriticalCodes(db, instance.getId(), instance.getCriticalCodes());
-		result &= saveTalentTiersMap(db, instance.getId(), instance.getTalentTiersMap());
+		result &= saveTalentInstancesMap(db, instance.getId(), instance.getTalentsMap());
 		result &= saveAttackBonusesMap(db, instance.getId(), instance.getAttackBonusesMap());
 		result &= saveSkillBonusesMap(db, instance.getId(), instance.getSkillBonusesMap());
 		return result;
@@ -253,20 +256,24 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return result;
 	}
 
-	private boolean saveTalentTiersMap(SQLiteDatabase db, int creatureVarietyId, Map<Talent, Short> talentTiersMap) {
+	private boolean saveTalentInstancesMap(SQLiteDatabase db, int creatureVarietyId, Map<Talent,
+			TalentInstance> talentInstancesMap) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
 		final String selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
 
+		db.delete(VarietyTalentParametersSchema.TABLE_NAME, selection, selectionArgs);
 		db.delete(VarietyTalentTiersSchema.TABLE_NAME, selection, selectionArgs);
 
 		ContentValues values = new ContentValues(3);
-		for(Map.Entry<Talent, Short> entry : talentTiersMap.entrySet()) {
+		for(Map.Entry<Talent, TalentInstance> entry : talentInstancesMap.entrySet()) {
 			values.put(VarietyTalentTiersSchema.COLUMN_VARIETY_ID, creatureVarietyId);
 			values.put(VarietyTalentTiersSchema.COLUMN_TALENT_ID, entry.getKey().getId());
-			values.put(VarietyTalentTiersSchema.COLUMN_TIERS, entry.getValue());
+			values.put(VarietyTalentTiersSchema.COLUMN_TIERS, entry.getValue().getTiers());
 			result &= (db.insertWithOnConflict(VarietyTalentTiersSchema.TABLE_NAME, null, values,
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
+			result &= saveTalentParameterValues(db, creatureVarietyId, entry.getKey().getId(),
+												entry.getValue().getParameterValues());
 		}
 		return result;
 	}
@@ -351,20 +358,23 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return criticalCodesList;
 	}
 
-	private Map<Talent, Short> getTalentTiers(int creatureVarietyId) {
+	private Map<Talent, TalentInstance> getTalentInstances(int creatureVarietyId) {
 		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
 		final String selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
 
 		Cursor cursor = super.query(VarietyTalentTiersSchema.TABLE_NAME, VarietyTalentTiersSchema.COLUMNS, selection,
 				selectionArgs, VarietyTalentTiersSchema.COLUMN_TALENT_ID);
-		Map<Talent, Short> talentTiersMap = new HashMap<>(cursor.getCount());
+		Map<Talent, TalentInstance> talentTiersMap = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietyTalentTiersSchema.COLUMN_TALENT_ID));
-			short tiers = cursor.getShort(cursor.getColumnIndexOrThrow(VarietyTalentTiersSchema.COLUMN_TIERS));
 			Talent talent = talentDao.getById(mappedId);
 			if(talent != null) {
-				talentTiersMap.put(talent, tiers);
+				TalentInstance talentInstance = new TalentInstance();
+				talentInstance.setTalent(talent);
+				talentInstance.setTiers(cursor.getShort(cursor.getColumnIndexOrThrow(VarietyTalentTiersSchema.COLUMN_TIERS)));
+				talentTiersMap.put(talent, talentInstance);
+				talentInstance.setParameterValues(getTalentParameters(creatureVarietyId, mappedId));
 			}
 			cursor.moveToNext();
 		}
@@ -415,5 +425,54 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		cursor.close();
 
 		return skillBonusesMap;
+	}
+
+	private Map<Parameter, Integer> getTalentParameters(int varietyId, int talentId) {
+		final String selectionArgs[] = { String.valueOf(varietyId), String.valueOf(talentId) };
+		final String selection = VarietyTalentParametersSchema.COLUMN_VARIETY_ID +
+				" = ? AND " +
+				VarietyTalentParametersSchema.COLUMN_TALENT_ID +
+				" = ?";
+
+		Cursor cursor = super.query(VarietyTalentParametersSchema.TABLE_NAME, VarietyTalentParametersSchema.COLUMNS, selection,
+									selectionArgs, VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME);
+		Map<Parameter, Integer> map = new HashMap<>(cursor.getCount());
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			String parameterName = cursor.getString(cursor.getColumnIndexOrThrow(
+					VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME));
+			Parameter instance = Parameter.valueOf(parameterName);
+			map.put(instance, cursor.getInt(cursor.getColumnIndexOrThrow(VarietyTalentParametersSchema.COLUMN_VALUE)));
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return map;
+	}
+
+	private boolean saveTalentParameterValues(SQLiteDatabase db, int varietyId, int talentId,
+											  Map<Parameter, Integer> parameterValuesMap) {
+		boolean result = true;
+
+		for(Map.Entry<Parameter, Integer> entry : parameterValuesMap.entrySet()) {
+			result &= (db.insertWithOnConflict(VarietyTalentParametersSchema.TABLE_NAME, null,
+											   getParameterValuesValues(varietyId, talentId, entry.getKey(), entry.getValue()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
+		return result;
+	}
+
+	private ContentValues getParameterValuesValues(int varietyId, int talentId, Parameter parameter, Integer value) {
+		ContentValues values = new ContentValues(4);
+		values.put(VarietyTalentParametersSchema.COLUMN_VARIETY_ID, varietyId);
+		values.put(VarietyTalentParametersSchema.COLUMN_TALENT_ID, talentId);
+		values.put(VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME, parameter.name());
+		if(value == null) {
+			values.putNull(VarietyTalentParametersSchema.COLUMN_VALUE);
+		}
+		else {
+			values.put(VarietyTalentParametersSchema.COLUMN_VALUE, value);
+		}
+		return values;
 	}
 }
