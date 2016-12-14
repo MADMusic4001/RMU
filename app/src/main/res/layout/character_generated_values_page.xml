@@ -15,13 +15,14 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:text="@string/input_label_current_lvl"/>
-    <TextView
+    <EditText
         android:id="@+id/current_level_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/current_level_label"
         android:layout_toEndOf="@id/current_level_label"
-        android:layout_alignBaseline="@id/current_level_label"/>
+        android:layout_alignBaseline="@id/current_level_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/experience_points_label"
         android:layout_width="wrap_content"
@@ -30,13 +31,14 @@
         android:layout_toEndOf="@id/current_level_text"
         android:layout_alignBaseline="@id/current_level_label"
         android:text="@string/input_label_experience_points"/>
-    <TextView
+    <EditText
         android:id="@+id/experience_points_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/experience_points_label"
         android:layout_toEndOf="@id/experience_points_label"
-        android:layout_alignBaseline="@id/current_level_label"/>
+        android:layout_alignBaseline="@id/current_level_label"
+        style="@style/ReadOnlyEditText"/>
 
     <TextView
         android:id="@+id/current_hits_label"
@@ -46,13 +48,14 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/current_level_label"
         android:text="@string/input_label_current_hits"/>
-    <TextView
+    <EditText
         android:id="@+id/current_hits_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/current_hits_label"
         android:layout_toEndOf="@id/current_hits_label"
-        android:layout_alignBaseline="@id/current_hits_label"/>
+        android:layout_alignBaseline="@id/current_hits_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/max_hits_label"
         android:layout_width="wrap_content"
@@ -61,13 +64,14 @@
         android:layout_toEndOf="@id/current_hits_text"
         android:layout_alignBaseline="@id/current_hits_label"
         android:text="@string/input_label_max_hits"/>
-    <TextView
+    <EditText
         android:id="@+id/max_hits_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/max_hits_label"
         android:layout_toEndOf="@id/max_hits_label"
-        android:layout_alignBaseline="@id/current_hits_label"/>
+        android:layout_alignBaseline="@id/current_hits_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/current_power_points_label"
         android:layout_width="wrap_content"
@@ -75,14 +79,15 @@
         android:layout_toRightOf="@id/max_hits_text"
         android:layout_toEndOf="@id/max_hits_text"
         android:layout_alignBaseline="@id/current_hits_label"
-        android:text="@string/input_label_power_points"/>
-    <TextView
+        android:text="@string/input_label_current_power_points"/>
+    <EditText
         android:id="@+id/current_power_points_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/current_power_points_label"
         android:layout_toEndOf="@id/current_power_points_label"
-        android:layout_alignBaseline="@id/current_hits_label"/>
+        android:layout_alignBaseline="@id/current_hits_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/max_power_points_label"
         android:layout_width="wrap_content"
@@ -90,14 +95,15 @@
         android:layout_toRightOf="@id/current_power_points_text"
         android:layout_toEndOf="@id/current_power_points_text"
         android:layout_alignBaseline="@id/current_hits_label"
-        android:text="@string/input_label_power_points"/>
-    <TextView
+        android:text="@string/input_label_max_power_points"/>
+    <EditText
         android:id="@+id/max_power_points_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/max_power_points_label"
         android:layout_toEndOf="@id/max_power_points_label"
-        android:layout_alignBaseline="@id/current_hits_label"/>
+        android:layout_alignBaseline="@id/current_hits_label"
+        style="@style/ReadOnlyEditText"/>
 
     <TextView
         android:id="@+id/base_movement_rate_label"
@@ -107,13 +113,14 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/current_hits_label"
         android:text="@string/input_label_base_movement_rate"/>
-    <TextView
+    <EditText
         android:id="@+id/base_movement_rate_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/base_movement_rate_label"
         android:layout_toEndOf="@id/base_movement_rate_label"
-        android:layout_alignBaseline="@id/base_movement_rate_label"/>
+        android:layout_alignBaseline="@id/base_movement_rate_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/defensive_bonus_label"
         android:layout_width="wrap_content"
@@ -122,43 +129,46 @@
         android:layout_toEndOf="@id/base_movement_rate_text"
         android:layout_alignBaseline="@id/base_movement_rate_label"
         android:text="@string/input_label_defensive_bonus"/>
-    <TextView
+    <EditText
         android:id="@+id/defensive_bonus_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/defensive_bonus_label"
         android:layout_toEndOf="@id/defensive_bonus_label"
-        android:layout_alignBaseline="@id/base_movement_rate_label"/>
+        android:layout_alignBaseline="@id/base_movement_rate_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
-        android:id="@+id/current_endurance_label"
+        android:id="@+id/endurance_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/defensive_bonus_text"
         android:layout_toEndOf="@id/defensive_bonus_text"
         android:layout_alignBaseline="@id/base_movement_rate_label"
-        android:text="@string/input_label_current_endurance"/>
-    <TextView
-        android:id="@+id/current_endurance_text"
+        android:text="@string/input_label_endurance"/>
+    <EditText
+        android:id="@+id/endurance_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/current_endurance_label"
-        android:layout_toEndOf="@id/current_endurance_label"
-        android:layout_alignBaseline="@id/base_movement_rate_label"/>
-    <TextView
-        android:id="@+id/max_endurance_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/current_endurance_text"
-        android:layout_toEndOf="@id/current_endurance_text"
+        android:layout_toRightOf="@id/endurance_label"
+        android:layout_toEndOf="@id/endurance_label"
         android:layout_alignBaseline="@id/base_movement_rate_label"
-        android:text="@string/input_label_max_endurance"/>
+        style="@style/ReadOnlyEditText"/>
     <TextView
-        android:id="@+id/max_endurance_text"
+        android:id="@+id/fatigue_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/max_endurance_label"
-        android:layout_toEndOf="@id/max_endurance_label"
-        android:layout_alignBaseline="@id/base_movement_rate_label"/>
+        android:layout_toRightOf="@id/endurance_text"
+        android:layout_toEndOf="@id/endurance_text"
+        android:layout_alignBaseline="@id/base_movement_rate_label"
+        android:text="@string/input_label_fatigue"/>
+    <EditText
+        android:id="@+id/fatigue_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/fatigue_label"
+        android:layout_toEndOf="@id/fatigue_label"
+        android:layout_alignBaseline="@id/base_movement_rate_label"
+        style="@style/ReadOnlyEditText"/>
 
     <TextView
         android:id="@+id/encumbrance_label"
@@ -168,13 +178,14 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/base_movement_rate_label"
         android:text="@string/input_label_encumbrance"/>
-    <TextView
+    <EditText
         android:id="@+id/encumbrance_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/encumbrance_label"
         android:layout_toEndOf="@id/encumbrance_label"
-        android:layout_alignBaseline="@id/encumbrance_label"/>
+        android:layout_alignBaseline="@id/encumbrance_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/armor_type_label"
         android:layout_width="wrap_content"
@@ -183,13 +194,14 @@
         android:layout_toEndOf="@id/encumbrance_text"
         android:layout_alignBaseline="@id/encumbrance_label"
         android:text="@string/input_label_armor_type"/>
-    <TextView
+    <EditText
         android:id="@+id/armor_type_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/armor_type_label"
         android:layout_toEndOf="@id/armor_type_label"
-        android:layout_alignBaseline="@id/encumbrance_label"/>
+        android:layout_alignBaseline="@id/encumbrance_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/initiative_label"
         android:layout_width="wrap_content"
@@ -198,13 +210,14 @@
         android:layout_toEndOf="@id/armor_type_text"
         android:layout_alignBaseline="@id/encumbrance_label"
         android:text="@string/input_label_initiative"/>
-    <TextView
+    <EditText
         android:id="@+id/initiative_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/initiative_label"
         android:layout_toEndOf="@id/initiative_label"
-        android:layout_alignBaseline="@id/encumbrance_label"/>
+        android:layout_alignBaseline="@id/encumbrance_label"
+        style="@style/ReadOnlyEditText"/>
 
     <TextView
         android:id="@+id/channeling_rr_label"
@@ -214,13 +227,14 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/encumbrance_label"
         android:text="@string/input_label_channeling_rr"/>
-    <TextView
+    <EditText
         android:id="@+id/channeling_rr_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/channeling_rr_label"
         android:layout_toEndOf="@id/channeling_rr_label"
-        android:layout_alignBaseline="@id/channeling_rr_label"/>
+        android:layout_alignBaseline="@id/channeling_rr_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/essence_rr_label"
         android:layout_width="wrap_content"
@@ -229,13 +243,14 @@
         android:layout_toEndOf="@id/channeling_rr_text"
         android:layout_alignBaseline="@id/channeling_rr_label"
         android:text="@string/input_label_essence_rr"/>
-    <TextView
+    <EditText
         android:id="@+id/essence_rr_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/essence_rr_label"
         android:layout_toEndOf="@id/essence_rr_label"
-        android:layout_alignBaseline="@id/channeling_rr_label"/>
+        android:layout_alignBaseline="@id/channeling_rr_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/mentalism_rr_label"
         android:layout_width="wrap_content"
@@ -244,13 +259,14 @@
         android:layout_toEndOf="@id/essence_rr_text"
         android:layout_alignBaseline="@id/channeling_rr_label"
         android:text="@string/input_label_mentalism_rr"/>
-    <TextView
+    <EditText
         android:id="@+id/mentalism_rr_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/mentalism_rr_label"
         android:layout_toEndOf="@id/mentalism_rr_label"
-        android:layout_alignBaseline="@id/channeling_rr_label"/>
+        android:layout_alignBaseline="@id/channeling_rr_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/physical_rr_label"
         android:layout_width="wrap_content"
@@ -259,13 +275,14 @@
         android:layout_toEndOf="@id/mentalism_rr_text"
         android:layout_alignBaseline="@id/channeling_rr_label"
         android:text="@string/input_label_physical_rr"/>
-    <TextView
+    <EditText
         android:id="@+id/physical_rr_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/physical_rr_label"
         android:layout_toEndOf="@id/physical_rr_label"
-        android:layout_alignBaseline="@id/channeling_rr_label"/>
+        android:layout_alignBaseline="@id/channeling_rr_label"
+        style="@style/ReadOnlyEditText"/>
     <TextView
         android:id="@+id/fear_rr_label"
         android:layout_width="wrap_content"
@@ -274,12 +291,150 @@
         android:layout_toEndOf="@id/physical_rr_text"
         android:layout_alignBaseline="@id/channeling_rr_label"
         android:text="@string/input_label_fear_rr"/>
-    <TextView
+    <EditText
         android:id="@+id/fear_rr_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/fear_rr_label"
         android:layout_toEndOf="@id/fear_rr_label"
-        android:layout_alignBaseline="@id/channeling_rr_label"/>
+        android:layout_alignBaseline="@id/channeling_rr_label"
+        style="@style/ReadOnlyEditText"/>
+
+    <LinearLayout
+        android:id="@+id/stat1_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/channeling_rr_label">
+    <TextView
+        android:id="@+id/agility_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_agility_bonus"/>
+    <EditText
+        android:id="@+id/agility_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/constitution_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_constitution_bonus"/>
+    <EditText
+        android:id="@+id/constitution_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/empathy_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_empathy_bonus"/>
+    <EditText
+        android:id="@+id/empathy_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/intuition_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_intuition_bonus"/>
+    <EditText
+        android:id="@+id/intuition_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/memory_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_memory_bonus"/>
+    <EditText
+        android:id="@+id/memory_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stat2_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/stat1_layout">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_presence_bonus"/>
+    <EditText
+        android:id="@+id/presence_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/quickness_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_quickness_bonus"/>
+    <EditText
+        android:id="@+id/quickness_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/reasoning_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_reasoning_bonus"/>
+    <EditText
+        android:id="@+id/reasoning_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/self_discipline_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_self_discipline_bonus"/>
+    <EditText
+        android:id="@+id/self_discipline_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    <TextView
+        android:id="@+id/strength_label"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_strength_bonus"/>
+    <EditText
+        android:id="@+id/strength_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
+    </LinearLayout>
   </RelativeLayout>
 </ScrollView>

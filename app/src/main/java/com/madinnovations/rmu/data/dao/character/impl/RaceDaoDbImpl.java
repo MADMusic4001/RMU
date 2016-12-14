@@ -254,7 +254,7 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return values;
 	}
 
-	private Map<Parameter, Integer> getTalentParameters(int raceId, int talentId) {
+	private Map<Parameter, Object> getTalentParameters(int raceId, int talentId) {
 		final String selectionArgs[] = { String.valueOf(raceId), String.valueOf(talentId) };
 		final String selection = RaceTalentParametersSchema.COLUMN_RACE_ID +
 				" = ? AND " +
@@ -263,13 +263,20 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 
 		Cursor cursor = super.query(RaceTalentParametersSchema.TABLE_NAME, RaceTalentParametersSchema.COLUMNS, selection,
 									selectionArgs, RaceTalentParametersSchema.COLUMN_PARAMETER_NAME);
-		Map<Parameter, Integer> map = new HashMap<>(cursor.getCount());
+		Map<Parameter, Object> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			String parameterName = cursor.getString(cursor.getColumnIndexOrThrow(
 					RaceTalentParametersSchema.COLUMN_PARAMETER_NAME));
 			Parameter instance = Parameter.valueOf(parameterName);
-			map.put(instance, cursor.getInt(cursor.getColumnIndexOrThrow(RaceTalentParametersSchema.COLUMN_VALUE)));
+			Object value = null;
+			if(!cursor.isNull(cursor.getColumnIndexOrThrow(RaceTalentParametersSchema.COLUMN_INT_VALUE))) {
+				value = cursor.getInt(cursor.getColumnIndexOrThrow(RaceTalentParametersSchema.COLUMN_INT_VALUE));
+			}
+			else if(!cursor.isNull(cursor.getColumnIndexOrThrow(RaceTalentParametersSchema.COLUMN_ENUM_NAME))) {
+				value = cursor.getString(cursor.getColumnIndexOrThrow(RaceTalentParametersSchema.COLUMN_ENUM_NAME));
+			}
+			map.put(instance, value);
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -278,10 +285,10 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 	}
 
 	private boolean saveTalentParameterValues(SQLiteDatabase db, int raceId, int talentId,
-											  Map<Parameter, Integer> parameterValuesMap) {
+											  Map<Parameter, Object> parameterValuesMap) {
 		boolean result = true;
 
-		for(Map.Entry<Parameter, Integer> entry : parameterValuesMap.entrySet()) {
+		for(Map.Entry<Parameter, Object> entry : parameterValuesMap.entrySet()) {
 			result &= (db.insertWithOnConflict(RaceTalentParametersSchema.TABLE_NAME, null,
 											   getParameterValuesValues(raceId, talentId, entry.getKey(), entry.getValue()),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
@@ -289,16 +296,22 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return result;
 	}
 
-	private ContentValues getParameterValuesValues(int raceId, int talentId, Parameter parameter, Integer value) {
-		ContentValues values = new ContentValues(4);
+	private ContentValues getParameterValuesValues(int raceId, int talentId, Parameter parameter, Object value) {
+		ContentValues values = new ContentValues(5);
 		values.put(RaceTalentParametersSchema.COLUMN_RACE_ID, raceId);
 		values.put(RaceTalentParametersSchema.COLUMN_TALENT_ID, talentId);
 		values.put(RaceTalentParametersSchema.COLUMN_PARAMETER_NAME, parameter.name());
 		if(value == null) {
-			values.putNull(RaceTalentParametersSchema.COLUMN_VALUE);
+			values.putNull(RaceTalentParametersSchema.COLUMN_INT_VALUE);
+			values.putNull(RaceTalentParametersSchema.COLUMN_ENUM_NAME);
+		}
+		else if(value instanceof Integer) {
+			values.put(RaceTalentParametersSchema.COLUMN_INT_VALUE, (Integer)value);
+			values.putNull(RaceTalentParametersSchema.COLUMN_ENUM_NAME);
 		}
 		else {
-			values.put(RaceTalentParametersSchema.COLUMN_VALUE, value);
+			values.putNull(RaceTalentParametersSchema.COLUMN_INT_VALUE);
+			values.put(RaceTalentParametersSchema.COLUMN_ENUM_NAME, (String)value);
 		}
 		return values;
 	}

@@ -15,26 +15,29 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/input_label_current_lvl"/>
-      <TextView
+      <EditText
           android:id="@+id/current_level_view"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content"/>
+          android:layout_height="wrap_content"
+          style="@style/ReadOnlyEditText"/>
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/input_label_experience_points"/>
-      <TextView
+      <EditText
           android:id="@+id/experience_points_view"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content"/>
+          android:layout_height="wrap_content"
+          style="@style/ReadOnlyEditText"/>
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/input_label_dev_points"/>
-      <TextView
+      <EditText
           android:id="@+id/development_points_view"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content"/>
+          android:layout_height="wrap_content"
+          style="@style/ReadOnlyEditText"/>
       <Button
           android:id="@+id/level_up_button"
           android:layout_width="wrap_content"
@@ -194,10 +197,11 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/input_label_stat_points"/>
-      <TextView
+      <EditText
           android:id="@+id/stat_points_view"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content"/>
+          android:layout_height="wrap_content"
+          style="@style/ReadOnlyEditText"/>
     </LinearLayout>
 
     <LinearLayout
@@ -325,25 +329,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/agility_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/agility_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/agility_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/constitution_drag_group"
@@ -364,25 +370,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/constitution_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/constitution_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/constitution_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/empathy_drag_group"
@@ -403,25 +411,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/empathy_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/empathy_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/empathy_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/intuition_drag_group"
@@ -442,25 +452,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/intuition_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/intuition_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/intuition_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/memory_drag_group"
@@ -481,25 +493,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/memory_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/memory_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/memory_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal|center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
     </LinearLayout>
 
@@ -628,25 +642,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/presence_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/presence_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/presence_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/quickness_drag_group"
@@ -667,25 +683,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/quickness_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/quickness_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/quickness_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/reasoning_drag_group"
@@ -706,25 +724,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/reasoning_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/reasoning_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/reasoning_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/self_discipline_drag_group"
@@ -745,25 +765,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/self_discipline_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/self_discipline_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/self_discipline_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
       <LinearLayout
           android:id="@+id/strength_drag_group"
@@ -784,25 +806,27 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_add_black"
             android:contentDescription="@string/increment"/>
-        <TextView
+        <EditText
             android:id="@+id/strength_temp_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
         <ImageButton
             android:id="@+id/strength_decrement"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_remove_black"
             android:contentDescription="@string/decrement"/>
-        <TextView
+        <EditText
             android:id="@+id/strength_potential_view"
             android:layout_width="0dp"
             android:layout_weight="1"
-                android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            style="@style/ReadOnlyEditText"/>
       </LinearLayout>
     </LinearLayout>
   </LinearLayout>

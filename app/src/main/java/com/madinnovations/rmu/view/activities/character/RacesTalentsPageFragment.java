@@ -143,7 +143,18 @@ public class RacesTalentsPageFragment extends Fragment implements TalentTierList
 
 	@Override
 	public void setParameterValue(Talent talent, Parameter parameter, int value, String enumName) {
-
+		TalentInstance talentInstance = racesFragment.getCurrentInstance().getTalentsAndFlawsMap().get(talent);
+		if(talentInstance != null) {
+			Object paramValue = talentInstance.getParameterValues().get(parameter);
+			if(enumName != null && !enumName.equals(paramValue)) {
+				talentInstance.getParameterValues().put(parameter, enumName);
+				racesFragment.saveItem();
+			}
+			else if(enumName == null && (paramValue == null || !Integer.valueOf(value).equals(paramValue))) {
+				talentInstance.getParameterValues().put(parameter, value);
+				racesFragment.saveItem();
+			}
+		}
 	}
 
 	// <editor-fold desc="Copy to/from views/entity methods">

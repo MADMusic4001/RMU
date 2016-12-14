@@ -47,8 +47,8 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
     /**
      * Creates a new instance of SkillDaoDbImpl
      *
+	 * @param helper  an SQLiteOpenHelper instance
 	 * @param skillCategoryDao  a {@link SkillCategoryDao} instance
-     * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
     public SkillDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao) {

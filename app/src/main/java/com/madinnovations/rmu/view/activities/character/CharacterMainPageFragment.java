@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,9 +84,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	@Inject
 	protected RealmRxHandler           realmRxHandler;
 	private   CharactersFragment       charactersFragment;
-	private   TextView                 currentLevelView;
-	private   TextView                 experiencePointsView;
-	private   TextView                 developmentPointsView;
+	private   EditText                 currentLevelView;
+	private   EditText                 experiencePointsView;
+	private   EditText                 developmentPointsView;
 	private   Button                   levelUpButton;
 	private   Spinner                  campaignSpinner;
 	private   EditText                 firstNameEdit;
@@ -100,7 +101,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
 	private   TextView                 statPointsLabel;
-	private   TextView                 statPointsView;
+	private   EditText                 statPointsView;
 	private   LinearLayout             newCharacterRow;
 	private Map<Statistic, ViewHolder> viewHolderMap = new HashMap<>(Statistic.NUM_STATS);
 
@@ -127,9 +128,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		View layout = inflater.inflate(R.layout.character_main_page, container, false);
 
-		currentLevelView = (TextView)layout.findViewById(R.id.current_level_view);
-		experiencePointsView = (TextView)layout.findViewById(R.id.experience_points_view);
-		developmentPointsView = (TextView)layout.findViewById(R.id.development_points_view);
+		currentLevelView = (EditText)layout.findViewById(R.id.current_level_view);
+		experiencePointsView = (EditText)layout.findViewById(R.id.experience_points_view);
+		developmentPointsView = (EditText)layout.findViewById(R.id.development_points_view);
 		initLevelUpButton(layout);
 		campaignSpinner = new SpinnerUtils<Campaign>().initSpinner(layout, getActivity(), campaignRxHandler.getAll(), this,
 				R.id.campaign_spinner, null);
@@ -155,7 +156,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
 											R.string.validation_character_weight_required);
 		statPointsLabel = (TextView)layout.findViewById(R.id.stat_points_label);
-		statPointsView = (TextView)layout.findViewById(R.id.stat_points_view);
+		statPointsView = (EditText)layout.findViewById(R.id.stat_points_view);
 		setStatPointsViews();
 		for(Statistic statistic : Statistic.getAllStats()) {
 			viewHolderMap.put(statistic, new ViewHolder());
@@ -168,17 +169,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	@Override
-	public void onPause() {
-		if(copyViewsToItem()) {
-			charactersFragment.saveItem();
-		}
-		super.onPause();
-	}
-
-	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
+		Log.d(TAG, "getValueForEditText: ");
 		switch (editTextId) {
 			case R.id.first_name_edit:
 				result = charactersFragment.getCurrentInstance().getFirstName();
@@ -464,6 +458,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	public void copyItemToViews() {
+		Log.d(TAG, "copyItemToViews: ");
 		Character character = charactersFragment.getCurrentInstance();
 
 		short currentLevel = character.getCurrentLevel();
@@ -708,10 +703,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 		TextView textView = (TextView) layout.findViewById(labelViewId);
 		textView.setText(statistic.toString());
-		textView = (TextView) layout.findViewById(tempStatViewId);
-		viewHolderMap.get(statistic).tempStatView = textView;
-		textView = (TextView) layout.findViewById(potStatViewId);
-		viewHolderMap.get(statistic).potentialStatView = textView;
+		EditText editText = (EditText) layout.findViewById(tempStatViewId);
+		viewHolderMap.get(statistic).tempStatView = editText;
+		editText = (EditText) layout.findViewById(potStatViewId);
+		viewHolderMap.get(statistic).potentialStatView = editText;
 		if(charactersFragment.getCurrentInstance().getExperiencePoints() == 0) {
 			dragGroup = (LinearLayout) layout.findViewById(dragGroupId);
 			dragGroup.setOnLongClickListener(new StatGroupLongClickListener(dragGroup, statistic,
@@ -744,8 +739,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		 *
 		 * @param dragView  the LinearLayout being dragged
 		 * @param statistic  the Statistic instance being dragged
-		 * @param tempStatId  the resource ID of the TextView displaying the temp stat value being dragged
-		 * @param potentialStatId  the resource ID of the TextView displaying the potential stat value being dragged
+		 * @param tempStatId  the resource ID of the EditText displaying the temp stat value being dragged
+		 * @param potentialStatId  the resource ID of the EditText displaying the potential stat value being dragged
 		 */
 		StatGroupLongClickListener(LinearLayout dragView, Statistic statistic, int tempStatId, int potentialStatId) {
 			this.dragView = dragView;
@@ -786,8 +781,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	class ViewHolder {
-		TextView    tempStatView;
-		TextView    potentialStatView;
+		EditText    tempStatView;
+		EditText    potentialStatView;
 		ImageButton buyButton;
 		ImageButton sellButton;
 		Button      increaseTempButton;

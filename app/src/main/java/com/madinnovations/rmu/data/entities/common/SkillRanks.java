@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.NonNull;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -42,7 +44,7 @@ public class SkillRanks implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(@NonNull Object o) {
 		int result = 0;
 		SkillRanks otherSkillRanks;
 		String thisName = null;
@@ -84,6 +86,7 @@ public class SkillRanks implements Comparable {
 		return result;
 	}
 
+	@SuppressWarnings("unused")
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("skill", skill)

@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.controller.rxhandler.common;
 
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 
@@ -33,6 +34,7 @@ import rx.schedulers.Schedulers;
  */
 public class SkillRxHandler {
 	private SkillDao dao;
+	private SpecializationDao specializationDao;
 
 	/**
 	 * Creates a new SkillRxHandler
@@ -40,8 +42,9 @@ public class SkillRxHandler {
 	 * @param dao  a SkillDao instance
 	 */
 	@Inject
-	public SkillRxHandler(SkillDao dao) {
+	public SkillRxHandler(SkillDao dao, SpecializationDao specializationDao) {
 		this.dao = dao;
+		this.specializationDao = specializationDao;
 	}
 
 	/**
@@ -56,7 +59,11 @@ public class SkillRxHandler {
 					@Override
 					public void call(Subscriber<? super Skill> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							Skill instance = dao.getById(id);
+							if(instance.isRequiresSpecialization()) {
+								instance.setSpecializations(specializationDao.getSpecializationsForSkill(instance));
+							}
+							subscriber.onNext(instance);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -80,7 +87,11 @@ public class SkillRxHandler {
 					@Override
 					public void call(Subscriber<? super Skill> subscriber) {
 						try {
-							subscriber.onNext(dao.getByName(name));
+							Skill instance = dao.getByName(name);
+							if(instance.isRequiresSpecialization()) {
+								instance.setSpecializations(specializationDao.getSpecializationsForSkill(instance));
+							}
+							subscriber.onNext(instance);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -104,7 +115,13 @@ public class SkillRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Skill>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							Collection<Skill> skills = dao.getAll();
+							for(Skill skill : skills) {
+								if(skill.isRequiresSpecialization()) {
+									skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
+								}
+							}
+							subscriber.onNext(skills);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -202,7 +219,11 @@ public class SkillRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Skill>> subscriber) {
 						try {
-							subscriber.onNext(dao.getSpecializationSkills());
+							Collection<Skill> skills = dao.getSpecializationSkills();
+							for(Skill skill : skills) {
+								skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
+							}
+							subscriber.onNext(skills);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -252,7 +273,11 @@ public class SkillRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Skill>> subscriber) {
 						try {
-							subscriber.onNext(dao.getSkillsForCategory(filter));
+							Collection<Skill> skills = dao.getSkillsForCategory(filter);
+							for(Skill skill : skills) {
+								skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
+							}
+							subscriber.onNext(skills);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -276,7 +301,11 @@ public class SkillRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Skill>> subscriber) {
 						try {
-							subscriber.onNext(dao.getCharacterPurchasableSkills());
+							Collection<Skill> skills = dao.getCharacterPurchasableSkills();
+							for(Skill skill : skills) {
+								skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
+							}
+							subscriber.onNext(skills);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

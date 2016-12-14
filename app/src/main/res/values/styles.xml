@@ -51,4 +51,9 @@
     <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     <item name="android:background">?android:attr/activatedBackgroundIndicator</item>
   </style>
+  <style name="ReadOnlyEditText">
+    <item name="android:inputType">none</item>
+    <item name="android:focusable">false</item>
+    <item name="android:background">@null</item>
+  </style>
 </resources>

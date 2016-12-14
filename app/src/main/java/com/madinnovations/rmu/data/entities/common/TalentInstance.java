@@ -15,19 +15,29 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 12/8/2016.
+ * Talent parameter instance attributes
  */
 public class TalentInstance {
-	private Talent                  talent;
-	private short                   tiers = 0;
-	private Map<Parameter, Integer> parameterValues = new HashMap<>();
+	private Talent                 talent;
+	private short                  tiers = 0;
+	private Map<Parameter, Object> parameterValues = new HashMap<>();
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("talent", talent)
+				.append("tiers", tiers)
+				.append("parameterValues", parameterValues)
+				.toString();
+	}
 
 	// Getters and setters
 	public Talent getTalent() {
@@ -42,10 +52,10 @@ public class TalentInstance {
 	public void setTiers(short tiers) {
 		this.tiers = tiers;
 	}
-	public Map<Parameter, Integer> getParameterValues() {
+	public Map<Parameter, Object> getParameterValues() {
 		return parameterValues;
 	}
-	public void setParameterValues(Map<Parameter, Integer> parameterValues) {
+	public void setParameterValues(Map<Parameter, Object> parameterValues) {
 		this.parameterValues = parameterValues;
 	}
 }

@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.Subscriber;
-import rx.schedulers.Schedulers;
 
 /**
  * Populates a ListView with {@link TalentTier} information
@@ -264,7 +263,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addAttackSpinner(Parameter parameter) {
+		private void addAttackSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -275,7 +274,6 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			}
 			else {
 				attackRxHandler.getAll()
-						.observeOn(Schedulers.io())
 						.subscribe(new Subscriber<Collection<Attack>>() {
 							@Override
 							public void onCompleted() {}
@@ -297,7 +295,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view),
+						callbacks.setParameterValue(talentTier.getTalent(), parameter,
 													((Attack)spinner.getSelectedItem()).getId(), null);
 					}
 				}
@@ -306,7 +304,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addResistanceSpinner(Parameter parameter) {
+		private void addResistanceSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -319,7 +317,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view), Short.MIN_VALUE,
+						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
 													((Resistance)spinner.getSelectedItem()).name());
 					}
 				}
@@ -328,7 +326,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addSenseSpinner(Parameter parameter) {
+		private void addSenseSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -341,7 +339,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view), 0,
+						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
 													((Sense)spinner.getSelectedItem()).name());
 					}
 				}
@@ -350,7 +348,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addSkillSpinner(Parameter parameter) {
+		private void addSkillSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -361,7 +359,6 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			}
 			else {
 				skillRxHandler.getNonSpecializationSkills()
-						.observeOn(Schedulers.io())
 						.subscribe(new Subscriber<Collection<Skill>>() {
 							@Override
 							public void onCompleted() {}
@@ -383,7 +380,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view),
+						callbacks.setParameterValue(talentTier.getTalent(), parameter,
 													((Skill)spinner.getSelectedItem()).getId(), null);
 					}
 				}
@@ -392,7 +389,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addSpecializationSpinner(Parameter parameter) {
+		private void addSpecializationSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -403,7 +400,6 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			}
 			else {
 				specializationRxHandler.getCharacterPurchasableSpecializations()
-						.observeOn(Schedulers.io())
 						.subscribe(new Subscriber<Collection<Specialization>>() {
 							@Override
 							public void onCompleted() {}
@@ -425,7 +421,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view),
+						callbacks.setParameterValue(talentTier.getTalent(), parameter,
 													((Specialization)spinner.getSelectedItem()).getId(), null);
 					}
 				}
@@ -434,7 +430,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addSpellSpinner(Parameter parameter) {
+		private void addSpellSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -445,7 +441,6 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			}
 			else {
 				spellRxHandler.getAll()
-						.observeOn(Schedulers.io())
 						.subscribe(new Subscriber<Collection<Spell>>() {
 							@Override
 							public void onCompleted() {}
@@ -467,7 +462,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view),
+						callbacks.setParameterValue(talentTier.getTalent(), parameter,
 													((Spell)spinner.getSelectedItem()).getId(), null);
 					}
 				}
@@ -476,7 +471,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addSpellListSpinner(Parameter parameter) {
+		private void addSpellListSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -487,7 +482,6 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			}
 			else {
 				spellListRxHandler.getAll()
-						.observeOn(Schedulers.io())
 						.subscribe(new Subscriber<Collection<SpellList>>() {
 							@Override
 							public void onCompleted() {}
@@ -509,7 +503,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view),
+						callbacks.setParameterValue(talentTier.getTalent(), parameter,
 													((SpellList)spinner.getSelectedItem()).getId(), null);
 					}
 				}
@@ -518,7 +512,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addStatSpinner(Parameter parameter) {
+		private void addStatSpinner(final Parameter parameter) {
 			final Spinner spinner = new Spinner(getContext());
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
@@ -531,7 +525,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameterViews.get(view), 0,
+						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
 													((Statistic)spinner.getSelectedItem()).name());
 					}
 				}

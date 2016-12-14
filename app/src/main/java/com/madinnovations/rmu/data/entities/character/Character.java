@@ -63,11 +63,13 @@ public class Character {
 	private Culture                          culture                         = null;
 	private Profession                       profession                      = null;
 	private Realm                            realm                           = null;
+	private Realm                            realm2                          = null;
+	private Realm                            realm3                          = null;
 	private short                            height                          = 70;
 	private short                            weight                          = 185;
 	private int                              hitPointLoss                    = 0;
 	private short                            currentDevelopmentPoints        = INITIAL_DP;
-	private short                            enduranceLoss                   = 0;
+	private short                            fatigue                         = 0;
 	private short                            powerPointLoss                  = 0;
 	private Map<Skill, DevelopmentCostGroup> skillCosts                      = new HashMap<>();
 	private Map<Skill, Short>                skillRanks                      = new HashMap<>();
@@ -161,11 +163,13 @@ public class Character {
 				.append("culture", culture)
 				.append("profession", profession)
 				.append("realm", realm)
+				.append("realm2", realm2)
+				.append("realm3", realm3)
 				.append("height", height)
 				.append("weight", weight)
 				.append("hitPointLoss", hitPointLoss)
 				.append("currentDevelopmentPoints", currentDevelopmentPoints)
-				.append("enduranceLoss", enduranceLoss)
+				.append("fatigue", fatigue)
 				.append("powerPointLoss", powerPointLoss)
 				.append("skillCosts", skillCosts)
 				.append("skillRanks", skillRanks)
@@ -454,6 +458,18 @@ public class Character {
 	public void setRealm(Realm realm) {
 		this.realm = realm;
 	}
+	public Realm getRealm2() {
+		return realm2;
+	}
+	public void setRealm2(Realm realm2) {
+		this.realm2 = realm2;
+	}
+	public Realm getRealm3() {
+		return realm3;
+	}
+	public void setRealm3(Realm realm3) {
+		this.realm3 = realm3;
+	}
 	public short getHeight() {
 		return height;
 	}
@@ -478,11 +494,11 @@ public class Character {
 	public void setCurrentDevelopmentPoints(short currentDevelopmentPoints) {
 		this.currentDevelopmentPoints = currentDevelopmentPoints;
 	}
-	public short getEnduranceLoss() {
-		return enduranceLoss;
+	public short getFatigue() {
+		return fatigue;
 	}
-	public void setEnduranceLoss(short enduranceLoss) {
-		this.enduranceLoss = enduranceLoss;
+	public void setFatigue(short fatigue) {
+		this.fatigue = fatigue;
 	}
 	public short getPowerPointLoss() {
 		return powerPointLoss;

@@ -35,6 +35,7 @@ public class Skill implements Comparable {
 	private boolean         lore                   = false;  // Used to allow skill ranks > 2x level with Intense Training
 	                                                       // optional rule
 	private List<Statistic> stats                  = new ArrayList<>();
+	private List<Specialization> specializations   = new ArrayList<>();
 
 	/**
 	 * Creates a new empty Skill instance.
@@ -170,5 +171,11 @@ public class Skill implements Comparable {
 	}
 	public void setStats(List<Statistic> stats) {
 		this.stats = stats;
+	}
+	public List<Specialization> getSpecializations() {
+		return specializations;
+	}
+	public void setSpecializations(List<Specialization> specializations) {
+		this.specializations = specializations;
 	}
 }

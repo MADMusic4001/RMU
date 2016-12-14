@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -42,6 +40,7 @@ import java.util.Map;
  * Json serializer and deserializer for the {@link Race} entities
  */
 public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
+	@SuppressWarnings("unused")
 	private static final String TAG = "RaceSerializer";
 	@Override
 	public void write(JsonWriter out, Race value) throws IOException {
@@ -85,10 +84,17 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			out.name(RaceTalentsSchema.COLUMN_TIERS).value(talentInstance.getTiers());
 			if(!talentInstance.getParameterValues().isEmpty()) {
 				out.name(RaceTalentParametersSchema.TABLE_NAME).beginArray();
-				for(Map.Entry<Parameter, Integer> paramEntry : talentInstance.getParameterValues().entrySet()) {
+				for(Map.Entry<Parameter, Object> paramEntry : talentInstance.getParameterValues().entrySet()) {
 					out.beginObject();
 					out.name(RaceTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
-					out.name(RaceTalentParametersSchema.COLUMN_VALUE).value(paramEntry.getValue());
+					if(paramEntry.getValue() != null) {
+						if(paramEntry.getValue() instanceof Integer) {
+							out.name(RaceTalentParametersSchema.COLUMN_INT_VALUE).value((Integer) paramEntry.getValue());
+						}
+						else {
+							out.name(RaceTalentParametersSchema.COLUMN_ENUM_NAME).value((String) paramEntry.getValue());
+						}
+					}
 					out.endObject();
 				}
 			}
@@ -158,7 +164,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 					readRaceStatMods(in, race);
 					break;
 				case RaceTalentsSchema.TABLE_NAME:
-					Log.d(TAG, "read: Start reading RaceTalentsSchema");
 					readTalentsAndFlawsTiers(in, race);
 					break;
 				case RaceCulturesSchema.TABLE_NAME:
@@ -207,7 +212,6 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case RaceStatModSchema.COLUMN_STAT_NAME:
-					case "statId":
 						newStat = Statistic.valueOf(in.nextString());
 						break;
 					case RaceStatModSchema.COLUMN_MODIFIER:
@@ -257,15 +261,18 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		in.beginArray();
 		while (in.hasNext()) {
 			Parameter parameter = null;
-			Integer value = null;
+			Object value = null;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case RaceTalentParametersSchema.COLUMN_PARAMETER_NAME:
 						parameter = Parameter.valueOf(in.nextString());
 						break;
-					case RaceTalentParametersSchema.COLUMN_VALUE:
+					case RaceTalentParametersSchema.COLUMN_INT_VALUE:
 						value = in.nextInt();
+						break;
+					case RaceTalentParametersSchema.COLUMN_ENUM_NAME:
+						value = in.nextString();
 						break;
 				}
 			}

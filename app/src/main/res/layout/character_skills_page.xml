@@ -18,10 +18,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/input_label_current_dps"/>
-    <TextView
+    <EditText
         android:id="@+id/current_dp_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        style="@style/ReadOnlyEditText"/>
   </LinearLayout>
   <LinearLayout
       android:orientation="horizontal"

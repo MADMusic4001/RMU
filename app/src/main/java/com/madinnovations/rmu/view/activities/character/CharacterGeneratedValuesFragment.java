@@ -21,7 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
@@ -43,7 +43,7 @@ import rx.Subscriber;
  * Handles interactions with the UI for character creation.
  */
 public class CharacterGeneratedValuesFragment extends Fragment {
-	private static final String TAG = "GeneratedValuesFrag";
+	private static final String TAG = "GeneratedValuesFragment";
 	@Inject
 	protected SkillRxHandler   skillRxHandler;
 	@Inject
@@ -52,24 +52,34 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	private Skill              powerDevelopmentSkill = null;
 	private Collection<Realm>  realms = null;
 	private CharactersFragment charactersFragment;
-	private TextView           currentLevelText;
-	private TextView           experiencePointsText;
-	private TextView           currentHitsText;
-	private TextView           maxHitsText;
-	private TextView           baseMovementRateText;
-	private TextView           defensiveBonusText;
-	private TextView           currentEnduranceText;
-	private TextView           maxEnduranceText;
-	private TextView           encumbranceText;
-	private TextView           armorTypeText;
-	private TextView           initiativeText;
-	private TextView           currentPowerPointsText;
-	private TextView           maxPowerPointsText;
-	private TextView		   channelingRRText;
-	private TextView           essenceRRText;
-	private TextView           mentalismRRText;
-	private TextView           physicalRRText;
-	private TextView           fearRRText;
+	private EditText           currentLevelText;
+	private EditText           experiencePointsText;
+	private EditText           currentHitsText;
+	private EditText           maxHitsText;
+	private EditText           baseMovementRateText;
+	private EditText           defensiveBonusText;
+	private EditText           enduranceText;
+	private EditText           fatigueText;
+	private EditText           encumbranceText;
+	private EditText           armorTypeText;
+	private EditText           initiativeText;
+	private EditText           currentPowerPointsText;
+	private EditText           maxPowerPointsText;
+	private EditText           channelingRRText;
+	private EditText           essenceRRText;
+	private EditText           mentalismRRText;
+	private EditText           physicalRRText;
+	private EditText           fearRRText;
+	private EditText           agilityText;
+	private EditText           constitutionText;
+	private EditText           empathyText;
+	private EditText           intuitionText;
+	private EditText           memoryText;
+	private EditText           presenceText;
+	private EditText           quicknessText;
+	private EditText           reasoningText;
+	private EditText           selfDisciplineText;
+	private EditText           strengthText;
 
 	/**
 	 * Creates new CharacterGeneratedValuesFragment instance.
@@ -95,41 +105,38 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		View layout = inflater.inflate(R.layout.character_generated_values_page, container, false);
 
 		Character character = charactersFragment.getCurrentInstance();
-		currentLevelText = (TextView)layout.findViewById(R.id.current_level_text);
+		currentLevelText = (EditText)layout.findViewById(R.id.current_level_text);
 		currentLevelText.setText(String.valueOf(character.getExperiencePoints()/10000));
-		experiencePointsText = (TextView)layout.findViewById(R.id.experience_points_text);
+		experiencePointsText = (EditText)layout.findViewById(R.id.experience_points_text);
 		experiencePointsText.setText(String.valueOf(character.getExperiencePoints()));
-		currentHitsText = (TextView)layout.findViewById(R.id.current_hits_text);
-		maxHitsText = (TextView)layout.findViewById(R.id.max_hits_text);
-		baseMovementRateText = (TextView)layout.findViewById(R.id.base_movement_rate_text);
-		currentEnduranceText = (TextView)layout.findViewById(R.id.current_endurance_text);
-		defensiveBonusText = (TextView)layout.findViewById(R.id.defensive_bonus_text);
-		maxEnduranceText = (TextView)layout.findViewById(R.id.max_endurance_text);
+		currentHitsText = (EditText)layout.findViewById(R.id.current_hits_text);
+		maxHitsText = (EditText)layout.findViewById(R.id.max_hits_text);
+		baseMovementRateText = (EditText)layout.findViewById(R.id.base_movement_rate_text);
+		enduranceText = (EditText) layout.findViewById(R.id.endurance_text);
+		defensiveBonusText = (EditText)layout.findViewById(R.id.defensive_bonus_text);
+		fatigueText = (EditText) layout.findViewById(R.id.fatigue_text);
 		if(character.getRace() != null) {
 			baseMovementRateText.setText(String.valueOf(character.getRace().getStrideModifier()));
 		}
-		encumbranceText = (TextView)layout.findViewById(R.id.encumbrance_text);
+		encumbranceText = (EditText)layout.findViewById(R.id.encumbrance_text);
 		encumbranceText.setText(null);
-		armorTypeText = (TextView)layout.findViewById(R.id.armor_type_text);
+		armorTypeText = (EditText)layout.findViewById(R.id.armor_type_text);
 		armorTypeText.setText(null);
-		initiativeText = (TextView)layout.findViewById(R.id.initiative_text);
-		currentPowerPointsText = (TextView)layout.findViewById(R.id.current_power_points_text);
-		maxPowerPointsText = (TextView)layout.findViewById(R.id.max_power_points_text);
-		channelingRRText = (TextView)layout.findViewById(R.id.channeling_rr_text);
-		essenceRRText = (TextView)layout.findViewById(R.id.essence_rr_text);
-		mentalismRRText = (TextView)layout.findViewById(R.id.mentalism_rr_text);
-		physicalRRText = (TextView)layout.findViewById(R.id.physical_rr_text);
-		fearRRText = (TextView)layout.findViewById(R.id.fear_rr_text);
+		initiativeText = (EditText)layout.findViewById(R.id.initiative_text);
+		currentPowerPointsText = (EditText) layout.findViewById(R.id.current_power_points_text);
+		maxPowerPointsText = (EditText) layout.findViewById(R.id.max_power_points_text);
+		channelingRRText = (EditText)layout.findViewById(R.id.channeling_rr_text);
+		essenceRRText = (EditText)layout.findViewById(R.id.essence_rr_text);
+		mentalismRRText = (EditText)layout.findViewById(R.id.mentalism_rr_text);
+		physicalRRText = (EditText)layout.findViewById(R.id.physical_rr_text);
+		fearRRText = (EditText)layout.findViewById(R.id.fear_rr_text);
 		initBodyDevelopmentSkill();
 		initStatBonusValues();
 		initPowerDevelopmentSkill();
 		initRealms();
+		initStats(layout);
+		setStatViews();
 		return layout;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
 	}
 
 	public void copyItemToViews() {
@@ -177,6 +184,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 					@Override
 					public void onNext(Skill skill) {
 						powerDevelopmentSkill = skill;
+						setPowerDevelopmentViews();
 					}
 				});
 	}
@@ -198,18 +206,34 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 				});
 	}
 
+	private void initStats(View layout) {
+		agilityText = (EditText)layout.findViewById(R.id.agility_text);
+		constitutionText = (EditText)layout.findViewById(R.id.constitution_text);
+		empathyText = (EditText)layout.findViewById(R.id.empathy_text);
+		intuitionText = (EditText)layout.findViewById(R.id.intuition_text);
+		memoryText = (EditText)layout.findViewById(R.id.memory_text);
+		presenceText = (EditText)layout.findViewById(R.id.presence_text);
+		quicknessText = (EditText)layout.findViewById(R.id.quickness_text);
+		reasoningText = (EditText)layout.findViewById(R.id.reasoning_text);
+		selfDisciplineText = (EditText)layout.findViewById(R.id.self_discipline_text);
+		strengthText = (EditText)layout.findViewById(R.id.strength_text);
+	}
+
 	private void setBodyDevelopmentViews() {
 		if(bodyDevelopmentSkill != null) {
 			Character character = charactersFragment.getCurrentInstance();
 			Short bdRanks = character.getSkillRanks().get(bodyDevelopmentSkill);
-			if(bdRanks != null && character.getRace() != null) {
+			if(bdRanks == null) {
+				bdRanks = 0;
+			}
+			if(character.getRace() != null) {
 				short baseHits = character.getRace().getBaseHits();
 				baseHits = (short) (baseHits + bdRanks);
 				maxHitsText.setText(String.valueOf(baseHits));
 				currentHitsText.setText(String.valueOf(baseHits - character.getHitPointLoss()));
-				short maxEndurance = (short) (character.getRace().getEnduranceModifier() + bdRanks);
-				maxEnduranceText.setText(String.valueOf(maxEndurance));
-				currentEnduranceText.setText(String.valueOf(maxEndurance - character.getEnduranceLoss()));
+				short endurance = (short) (character.getRace().getEnduranceModifier() + bdRanks);
+				enduranceText.setText(String.valueOf(endurance));
+				fatigueText.setText(String.valueOf(character.getFatigue()));
 			}
 		}
 	}
@@ -219,15 +243,41 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		for(Statistic stat : Statistic.values()) {
 			if(character.getRace() != null && character.getStatTemps().get(stat) != null) {
 				short statBonus = Statistic.getBonus(character.getStatTemps().get(stat));
-				if (Statistic.QUICKNESS.equals(stat)) {
-					defensiveBonusText.setText(String.valueOf(statBonus * 3));
-					initiativeText.setText(String.valueOf(statBonus));
-				}
-				if (Statistic.CONSTITUTION.equals(stat)) {
-					physicalRRText.setText(String.valueOf(character.getRace().getPhysicalResistanceModifier() + statBonus));
-				}
-				if (Statistic.SELF_DISCIPLINE.equals(stat)) {
-					fearRRText.setText(String.valueOf(statBonus));
+				switch (stat) {
+					case AGILITY:
+						agilityText.setText(String.valueOf(statBonus));
+						break;
+					case CONSTITUTION:
+						constitutionText.setText(String.valueOf(statBonus));
+						physicalRRText.setText(String.valueOf(character.getRace().getPhysicalResistanceModifier() + statBonus));
+						break;
+					case EMPATHY:
+						empathyText.setText(String.valueOf(statBonus));
+						break;
+					case INTUITION:
+						intuitionText.setText(String.valueOf(statBonus));
+						break;
+					case MEMORY:
+						memoryText.setText(String.valueOf(statBonus));
+						break;
+					case PRESENCE:
+						presenceText.setText(String.valueOf(statBonus));
+						break;
+					case QUICKNESS:
+						quicknessText.setText(String.valueOf(statBonus));
+						defensiveBonusText.setText(String.valueOf(statBonus * 3));
+						initiativeText.setText(String.valueOf(statBonus));
+						break;
+					case REASONING:
+						reasoningText.setText(String.valueOf(statBonus));
+						break;
+					case SELF_DISCIPLINE:
+						selfDisciplineText.setText(String.valueOf(statBonus));
+						fearRRText.setText(String.valueOf(statBonus));
+						break;
+					case STRENGTH:
+						strengthText.setText(String.valueOf(statBonus));
+						break;
 				}
 			}
 		}
@@ -235,63 +285,58 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 
 	private void setStatAndRealmViews() {
 		if(realms != null) {
-			Character character = charactersFragment.getCurrentInstance();
-			for(Statistic stat : Statistic.values()) {
-				if(character.getRace() != null && character.getProfession() != null &&
-						character.getStatTemps().get(stat) != null) {
-					short statBonus = Statistic.getBonus(character.getStatTemps().get(stat));
-					for (Realm realm : realms) {
-						Short raceRRBonus = character.getRace().getRealmResistancesModifiers().get(realm);
-						if(raceRRBonus != null) {
-							short realmRRBonus = 0;
-							if (realm.getName().equals("Channeling") && realm.getStat().equals(stat)) {
-								if (realm.equals(character.getProfession().getRealm1()) ||
-										realm.equals(character.getProfession().getRealm2()) ||
-										realm.equals(character.getRealm())) {
-									realmRRBonus = 10;
-								}
-								channelingRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
-							}
-							if (realm.getName().equals("Essence") && realm.getStat().equals(stat)) {
-								if (realm.equals(character.getProfession().getRealm1()) ||
-										realm.equals(character.getProfession().getRealm2()) ||
-										realm.equals(character.getRealm())) {
-									realmRRBonus = 10;
-								}
-								essenceRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
-							}
-							if (realm.getName().equals("Mentalism") && realm.getStat().equals(stat)) {
-								if (realm.equals(character.getProfession().getRealm1()) ||
-										realm.equals(character.getProfession().getRealm2()) ||
-										realm.equals(character.getRealm())) {
-									realmRRBonus = 10;
-								}
-								mentalismRRText.setText(String.valueOf(statBonus + raceRRBonus + realmRRBonus));
-							}
-						}
-					}
+			for(Realm realm : realms) {
+				switch (realm.getStat()) {
+					case INTUITION:
+						channelingRRText.setText(String.valueOf(getRRBonus(Statistic.INTUITION, "Channeling", realm)));
+						break;
+					case EMPATHY:
+						essenceRRText.setText(String.valueOf(getRRBonus(Statistic.EMPATHY, "Essence", realm)));
+						break;
+					case PRESENCE:
+						mentalismRRText.setText(String.valueOf(getRRBonus(Statistic.PRESENCE, "Mentalism", realm)));
+						break;
+					default:
+						physicalRRText.setText(String.valueOf(getRRBonus(Statistic.CONSTITUTION, "Physical", null)));
+						physicalRRText.setText(String.valueOf(getRRBonus(Statistic.SELF_DISCIPLINE, "Fear", null)));
+						break;
 				}
 			}
 		}
+	}
+
+	private short getRRBonus(Statistic statistic, String realmName, Realm realm) {
+		Character character = charactersFragment.getCurrentInstance();
+		Short temp = character.getStatTemps().get(statistic);
+		if(temp == null) {
+			temp = 0;
+		}
+		short statBonus = Statistic.getBonus(temp);
+		short raceBonus = 0;
+		if (realmName.equals("Physical")) {
+			raceBonus = character.getRace().getPhysicalResistanceModifier();
+		}
+		short rrBonus = (short) (statBonus + raceBonus);
+
+		if (realm.equals(character.getRealm()) || realm.equals(character.getRealm2()) || realm.equals(character.getRealm3())) {
+			rrBonus += 10;
+		}
+
+		return rrBonus;
 	}
 
 	public void setPowerDevelopmentViews() {
 		if(powerDevelopmentSkill != null) {
 			Character character = charactersFragment.getCurrentInstance();
 			Short pdRanks = character.getSkillRanks().get(powerDevelopmentSkill);
-			if(pdRanks != null && character.getRace() != null) {
+			if(pdRanks == null) {
+				pdRanks = 0;
+			}
+			if(character.getRace() != null) {
 				short basePowerPoints = (short) (character.getRace().getBaseHits() + pdRanks);
 				maxPowerPointsText.setText(String.valueOf(basePowerPoints));
 				currentPowerPointsText.setText(String.valueOf(basePowerPoints - character.getPowerPointLoss()));
 			}
 		}
-	}
-
-	// Getters and setters
-	public CharactersFragment getCharactersFragment() {
-		return charactersFragment;
-	}
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
 	}
 }

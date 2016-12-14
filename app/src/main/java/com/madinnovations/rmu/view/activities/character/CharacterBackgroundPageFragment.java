@@ -91,19 +91,6 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 	}
 
 	@Override
-	public void onPause() {
-		if(copyViewsToItem()) {
-			charactersFragment.saveItem();
-		}
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
@@ -279,13 +266,5 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		mannerismsEdit.setText(charactersFragment.getCurrentInstance().getMannerisms());
 		familyInformationEdit.setText(charactersFragment.getCurrentInstance().getFamilyInfo());
 		hometownEdit.setText(charactersFragment.getCurrentInstance().getHometown());
-	}
-
-	// Getters and setters
-	public CharactersFragment getCharactersFragment() {
-		return charactersFragment;
-	}
-	public void setCharactersFragment(CharactersFragment charactersFragment) {
-		this.charactersFragment = charactersFragment;
 	}
 }

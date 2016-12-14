@@ -155,6 +155,7 @@ public final class SpinnerUtils<T> {
 			public void onError(Throwable e) {
 				Log.e(TAG, "Exception caught loading spinner data.", e);
 			}
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onNext(Collection<T> ts) {
 				adapter.clear();
@@ -163,6 +164,7 @@ public final class SpinnerUtils<T> {
 				}
 				adapter.addAll(ts);
 				adapter.notifyDataSetChanged();
+				spinner.setSelection(adapter.getPosition((T)valuesCallback.getValueForSpinner(spinnerId)));
 			}
 		});
 

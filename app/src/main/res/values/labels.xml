@@ -352,6 +352,7 @@
 
   <!-- Input field labels -->
   <string name="input_label_action">Action:</string>
+  <string name="input_label_agility_bonus">Agility Bonus:</string>
   <string name="input_label_area_of_effect">Area of Effect:</string>
   <string name="input_label_armor_type">AT:</string>
   <string name="input_label_attack_code">Attack Code:</string>
@@ -375,6 +376,7 @@
   <string name="input_label_campaign">Campaign:</string>
   <string name="input_label_category_filter">Category Filter:</string>
   <string name="input_label_channeling_rr">Channeling RR:</string>
+  <string name="input_label_constitution_bonus">Constitution Bonus:</string>
   <string name="input_label_critical_codes">Critical Codes:</string>
   <string name="input_label_critical_size_modifier">Critical Size Modifier:</string>
   <string name="input_label_critical_type">Critical Type:</string>
@@ -382,16 +384,18 @@
   <string name="input_label_critical_type_filter">Critical Type Filter:</string>
   <string name="input_label_culture">Culture:</string>
   <string name="input_label_current_dps">Current DP:</string>
-  <string name="input_label_current_endurance">Current Endurance:</string>
   <string name="input_label_current_hits">Current Hits:</string>
   <string name="input_label_current_lvl">Current Level:</string>
+  <string name="input_label_current_power_points">Current Power Points:</string>
   <string name="input_label_damage_table">Damage Table:</string>
   <string name="input_label_dazed">Dazed:</string>
   <string name="input_label_defensive_bonus">Defensive Bonus:</string>
   <string name="input_label_description">Description:</string>
   <string name="input_label_dev_points">Development Points:</string>
   <string name="input_label_duration">Duration:</string>
+  <string name="input_label_empathy_bonus">Empathy Bonus:</string>
   <string name="input_label_encumbrance">Encumbrance:</string>
+  <string name="input_label_endurance">Endurance:</string>
   <string name="input_label_endurance_mod">Endurance Mod.:</string>
   <string name="input_label_essence_rr">Essence RR:</string>
   <string name="input_label_experience_points">Experience Points:</string>
@@ -410,6 +414,7 @@
   <string name="input_label_identifying_marks">Identifying Marks:</string>
   <string name="input_label_initiative">Initiative:</string>
   <string name="input_label_initial_value">Initial Value:</string>
+  <string name="input_label_intuition_bonus">Intuition Bonus:</string>
   <string name="input_label_injury">Injury:</string>
   <string name="input_label_is_attack">Is Attack?</string>
   <string name="input_label_is_movement">Is Movement?</string>
@@ -422,6 +427,8 @@
   <string name="input_label_mannerisms">Mannerisms:</string>
   <string name="input_label_max_endurance">Max Endurance:</string>
   <string name="input_label_max_hits">Max Hits:</string>
+  <string name="input_label_max_power_points">Max Power Points:</string>
+  <string name="input_label_memory_bonus">Memory Bonus:</string>
   <string name="input_label_mentalism_rr">Mentalism RR:</string>
   <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
@@ -431,17 +438,20 @@
   <string name="input_label_physical_rr">Physical RR:</string>
   <string name="input_label_pounds_per_inch">Pounds per Inch:</string>
   <string name="input_label_power_level">Power Level:</string>
-  <string name="input_label_power_points">Power Points:</string>
+  <string name="input_label_presence_bonus">Presence Bonus:</string>
   <string name="input_label_profession">Profession:</string>
+  <string name="input_label_quickness_bonus">Quickness Bonus:</string>
   <string name="input_label_race">Race:</string>
   <string name="input_label_race_name">Race Name:</string>
   <string name="input_label_range">Range:</string>
   <string name="input_label_realm">Realm:</string>
   <string name="input_label_realm1">Realm 1:</string>
   <string name="input_label_realm2">Realm 2:</string>
+  <string name="input_label_reasoning_bonus">Reasoning Bonus:</string>
   <string name="input_label_recovery_multiplier">Recovery Mult.:</string>
   <string name="input_label_resistance">Resistance:</string>
   <string name="input_label_roles">Roles:</string>
+  <string name="input_label_self_discipline_bonus">Self Discipline Bonus:</string>
   <string name="input_label_sense">Sense:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
@@ -460,6 +470,7 @@
   <string name="input_label_stat_points">Stat Points:</string>
   <string name="input_label_stat1_is_realm">Stat 1 Is Realm?</string>
   <string name="input_label_stat2_is_realm">Stat 2 Is Realm?</string>
+  <string name="input_label_strength_bonus">Strength Bonus:</string>
   <string name="input_label_stride_mod">Stride Mod.:</string>
   <string name="input_label_stunned">Stunned(rnds):</string>
   <string name="input_label_talent_category_filter">Talent Category Filter:</string>

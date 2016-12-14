@@ -203,6 +203,31 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		return character.getKnownAs();
 	}
 
+	@Override
+	public Fragment newInstance(int position) {
+		Fragment fragment = null;
+
+		switch (position) {
+			case MAIN_PAGE_INDEX:
+				fragment = CharacterMainPageFragment.newInstance(this);
+				break;
+			case BACKGROUND_PAGE_INDEX:
+				fragment = CharacterBackgroundPageFragment.newInstance(this);
+				break;
+			case SKILLS_PAGE_INDEX:
+				fragment = CharacterSkillsPageFragment.newInstance(this);
+				break;
+			case TALENTS_PAGE_INDEX:
+				fragment = CharacterTalentsPageFragment.newInstance(this);
+				break;
+			case GENERATED_PAGE_INDEX:
+				fragment = CharacterGeneratedValuesFragment.newInstance(this);
+				break;
+		}
+
+		return fragment;
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		View currentFocusView = getActivity().getCurrentFocus();
@@ -233,31 +258,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		}
 
 		return changed;
-	}
-
-	@Override
-	public Fragment newInstance(int position) {
-		Fragment fragment = null;
-
-		switch (position) {
-			case MAIN_PAGE_INDEX:
-				fragment = CharacterMainPageFragment.newInstance(this);
-				break;
-			case BACKGROUND_PAGE_INDEX:
-				fragment = CharacterBackgroundPageFragment.newInstance(this);
-				break;
-			case SKILLS_PAGE_INDEX:
-				fragment = CharacterSkillsPageFragment.newInstance(this);
-				break;
-			case TALENTS_PAGE_INDEX:
-				fragment = CharacterTalentsPageFragment.newInstance(this);
-				break;
-			case GENERATED_PAGE_INDEX:
-				fragment = CharacterGeneratedValuesFragment.newInstance(this);
-				break;
-		}
-
-		return fragment;
 	}
 
 	private void copyItemToViews() {

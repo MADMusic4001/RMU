@@ -112,10 +112,15 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 				if(!entry.getValue().getParameterValues().isEmpty()) {
 					out.name(VarietyTalentParametersSchema.TABLE_NAME);
 					out.beginArray();
-					for(Map.Entry<Parameter, Integer> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+					for(Map.Entry<Parameter, Object> paramEntry : entry.getValue().getParameterValues().entrySet()) {
 						out.name(VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
-						if(entry.getValue() != null) {
-							out.name(VarietyTalentParametersSchema.COLUMN_VALUE).value(paramEntry.getValue());
+						if(paramEntry.getValue() != null) {
+							if(paramEntry.getValue() instanceof Integer) {
+								out.name(VarietyTalentParametersSchema.COLUMN_INT_VALUE).value((Integer) paramEntry.getValue());
+							}
+							else {
+								out.name(VarietyTalentParametersSchema.COLUMN_ENUM_NAME).value((String) paramEntry.getValue());
+							}
 						}
 					}
 					out.endArray();
@@ -375,15 +380,18 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		in.beginArray();
 		while (in.hasNext()) {
 			Parameter parameter = null;
-			Integer value = null;
+			Object value = null;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case RaceTalentParametersSchema.COLUMN_PARAMETER_NAME:
 						parameter = Parameter.valueOf(in.nextString());
 						break;
-					case RaceTalentParametersSchema.COLUMN_VALUE:
+					case RaceTalentParametersSchema.COLUMN_INT_VALUE:
 						value = in.nextInt();
+						break;
+					case RaceTalentParametersSchema.COLUMN_ENUM_NAME:
+						value = in.nextString();
 						break;
 				}
 			}

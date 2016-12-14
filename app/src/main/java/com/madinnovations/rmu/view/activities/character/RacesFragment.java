@@ -36,7 +36,6 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.ViewPagerAdapter;
@@ -226,12 +225,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	}
 
 	private void copyItemToViews() {
-		try {
-			throw new RMUAppException();
-		}
-		catch (RMUAppException e) {
-			Log.e(TAG, "copyItemToViews: stack trace", e);
-		}
 		RacesMainPageFragment racesMainPageFragment = (RacesMainPageFragment)viewPagerAdapter.getFragment(MAIN_PAGE);
 		if(racesMainPageFragment != null) {
 			racesMainPageFragment.copyItemToViews();

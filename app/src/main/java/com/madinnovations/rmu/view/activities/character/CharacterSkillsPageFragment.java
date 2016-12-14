@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -79,9 +80,10 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	private   SkillRanksAdapter       skillRanksAdapter;
 	private   CharactersFragment      charactersFragment;
 	private   LinearLayout            assignableCostLayoutRows;
-	private   ListView[]              skillCostsListViews;
+	private   ListView[]              skillCostsListViews = new ListView[0];
 	private   SkillCategory[]         skillCategories = new SkillCategory[0];
-	private   TextView                currentDpText;
+	private   EditText                currentDpText;
+	private   List<Skill>             skillList = null;
 
 	/**
 	 * Creates new CharacterSkillsPageFragment instance.
@@ -106,7 +108,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 		fragmentView = inflater.inflate(R.layout.character_skills_page, container, false);
 
-		currentDpText = (TextView)fragmentView.findViewById(R.id.current_dp_text);
+		currentDpText = (EditText) fragmentView.findViewById(R.id.current_dp_text);
 		initSkillCostsListView(fragmentView);
 		initSkillRanksListView(fragmentView);
 
@@ -119,19 +121,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		});
 		copyAssignableCosts();
 		return fragmentView;
-	}
-
-	@Override
-	public void onPause() {
-		if(copyViewsToItem()) {
-			charactersFragment.saveItem();
-		}
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
 	}
 
 	@Override
@@ -154,11 +143,21 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - cost));
 				currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 				if(skill != null) {
-					character.getSkillRanks().put(skill, (short) (character.getSkillRanks().get(skill) + 1));
+					if(character.getSkillRanks().get(skill) == null) {
+						character.getSkillRanks().put(skill, (short)1);
+					}
+					else {
+						character.getSkillRanks().put(skill, (short) (character.getSkillRanks().get(skill) + 1));
+					}
 				}
 				else {
-					character.getSpecializationRanks().put(
-							specialization, (short)(character.getSpecializationRanks().get(specialization) + 1));
+					if(character.getSpecializationRanks().get(specialization) == null) {
+						character.getSpecializationRanks().put(specialization, (short)1);
+					}
+					else {
+						character.getSpecializationRanks().put(
+								specialization, (short) (character.getSpecializationRanks().get(specialization) + 1));
+					}
 				}
 				result = true;
 			}
@@ -248,6 +247,12 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		Character character = charactersFragment.getCurrentInstance();
 		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 		copyAssignableCosts();
+		if(skillList == null) {
+			initSkillRanksListView(fragmentView);
+		}
+		else {
+			copySkillRanksToView();
+		}
 	}
 
 	private void copyAssignableCosts() {
@@ -278,6 +283,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		assignableCostLayoutRows = (LinearLayout)layout.findViewById(R.id.assignable_cost_layout_rows);
 
 		if(skillCostsListViews == null || skillCostsListViews.length == 0) {
+			Log.d(TAG, "initSkillCostsListView: ");
 			addAssignableCostsRow();
 		}
 		changeProfession();
@@ -288,56 +294,33 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		skillRanksAdapter = new SkillRanksAdapter(getActivity(), this);
 		skillRanksListView.setAdapter(skillRanksAdapter);
 
-		skillRxHandler.getCharacterPurchasableSkills()
-				.subscribe(new Subscriber<Collection<Skill>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.d(TAG, "Exception caught getting all purchasable Skill instances.", e);
-					}
-					@Override
-					public void onNext(Collection<Skill> skillCollection) {
-						Character character = charactersFragment.getCurrentInstance();
-						List<SkillRanks> ranksList = new ArrayList<>();
-						for(Skill skill : skillCollection) {
-							if(character.getSkillRanks().get(skill) == null) {
-								character.getSkillRanks().put(skill, (short)0);
-							}
-							SkillRanks skillRanks = new SkillRanks();
-							skillRanks.setSkill(skill);
-							skillRanks.setStartingRanks(character.getSkillRanks().get(skill));
-							ranksList.add(skillRanks);
+		if(skillList != null) {
+			copySkillRanksToView();
+		}
+		else {
+			skillRxHandler.getCharacterPurchasableSkills()
+					.subscribe(new Subscriber<Collection<Skill>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.d(TAG, "Exception caught getting all purchasable Skill instances.", e);
 						}
-						skillRanksAdapter.addAll(ranksList);
-						skillRanksAdapter.notifyDataSetChanged();
-					}
-				});
-		specializationRxHandler.getCharacterPurchasableSpecializations()
-				.subscribe(new Subscriber<Collection<Specialization>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all purchasable Specialization instances.", e);
-					}
-					@Override
-					public void onNext(Collection<Specialization> specializationCollection) {
-						Character character = charactersFragment.getCurrentInstance();
-						List<SkillRanks> ranksList = new ArrayList<>();
-						for(Specialization specialization : specializationCollection) {
-							if(character.getSpecializationRanks().get(specialization) == null) {
-								character.getSpecializationRanks().put(specialization, (short)0);
+						@SuppressWarnings("unchecked")
+						@Override
+						public void onNext(Collection<Skill> skillCollection) {
+							if(skillCollection instanceof List) {
+								skillList = (List)skillCollection;
 							}
-							SkillRanks skillRanks = new SkillRanks();
-							skillRanks.setSpecialization(specialization);
-							skillRanks.setStartingRanks(character.getSpecializationRanks().get(specialization));
-							ranksList.add(skillRanks);
+							else {
+								skillList = new ArrayList<>(skillCollection);
+							}
+							Collections.sort(skillList);
+							copySkillRanksToView();
 						}
-						skillRanksAdapter.addAll(ranksList);
-						skillRanksAdapter.notifyDataSetChanged();
-					}
-				});
+					});
+		}
+
 		skillRanksListView.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -353,6 +336,40 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			}
 		});
 		registerForContextMenu(skillRanksListView);
+	}
+
+	private void copySkillRanksToView() {
+		Character character = charactersFragment.getCurrentInstance();
+		List<SkillRanks> ranksList = new ArrayList<>();
+		for (Skill skill : skillList) {
+			SkillRanks skillRanks;
+			Short ranks;
+			if(!skill.isRequiresSpecialization()) {
+				skillRanks = new SkillRanks();
+				skillRanks.setSkill(skill);
+				ranks = character.getSkillRanks().get(skill);
+				if(ranks == null) {
+					ranks = 0;
+				}
+				skillRanks.setStartingRanks(ranks);
+				ranksList.add(skillRanks);
+			}
+			else {
+				for (Specialization specialization : skill.getSpecializations()) {
+					skillRanks = new SkillRanks();
+					skillRanks.setSpecialization(specialization);
+					ranks = character.getSpecializationRanks().get(specialization);
+					if(ranks == null) {
+						ranks = 0;
+					}
+					skillRanks.setStartingRanks(ranks);
+					ranksList.add(skillRanks);
+				}
+			}
+		}
+		skillRanksAdapter.clear();
+		skillRanksAdapter.addAll(ranksList);
+		skillRanksAdapter.notifyDataSetChanged();
 	}
 
 	private void hideAssignableList(int index) {
@@ -373,6 +390,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 	@SuppressLint("DefaultLocale")
 	public void changeProfession() {
+		Log.d(TAG, "changeProfession: ");
 		if (charactersFragment.getCurrentInstance().getProfession() != null &&
 				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().size() > 0) {
 			int i = 0;
@@ -436,7 +454,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				DevelopmentCostGroup costGroup;
 				if (character != null) {
 					costGroup = character.getSkillCosts().get(skill);
-					if (costGroup != null) {
+					if (costGroup != null && skillCosts.indexOf(costGroup) != -1) {
 						skillCosts.remove(skillCosts.indexOf(costGroup));
 						skillsCopy.remove(skill);
 						entry = new SkillCostGroup(skill, costGroup);

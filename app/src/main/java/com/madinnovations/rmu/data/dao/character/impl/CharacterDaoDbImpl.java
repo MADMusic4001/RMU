@@ -231,14 +231,18 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
 		instance.setCulture(cultureDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CULTURE_ID))));
 		instance.setProfession(professionDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))) {
-			instance.setRealm(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
+		instance.setRealm(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
+			instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))) {
+			instance.setRealm3(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))));
 		}
 		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
 		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
 		instance.setHitPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_HP_LOSS)));
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
-		instance.setEnduranceLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_ENDURANCE_LOSS)));
+		instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_FATIGUE)));
 		instance.setPowerPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_PP_LOSS)));
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
 		instance.setSpecializationRanks(getSpecializationRanks(instance.getId()));
@@ -259,11 +263,11 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(29);
+			values = new ContentValues(31);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(28);
+			values = new ContentValues(30);
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CURRENT_LEVEL, instance.getCurrentLevel());
@@ -335,17 +339,24 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_RACE_ID, instance.getRace().getId());
 		values.put(COLUMN_CULTURE_ID, instance.getCulture().getId());
 		values.put(COLUMN_PROFESSION_ID, instance.getProfession().getId());
-		if(instance.getRealm() == null) {
-			values.putNull(COLUMN_REALM_ID);
+		values.put(COLUMN_REALM_ID, instance.getRealm().getId());
+		if(instance.getRealm2() == null) {
+			values.putNull(COLUMN_REALM2_ID);
 		}
 		else {
-			values.put(COLUMN_REALM_ID, instance.getRealm().getId());
+			values.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
+		}
+		if(instance.getRealm3() == null) {
+			values.putNull(COLUMN_REALM3_ID);
+		}
+		else {
+			values.put(COLUMN_REALM3_ID, instance.getRealm3().getId());
 		}
 		values.put(COLUMN_HEIGHT, instance.getHeight());
 		values.put(COLUMN_WEIGHT, instance.getWeight());
 		values.put(COLUMN_CURRENT_HP_LOSS, instance.getHitPointLoss());
 		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
-		values.put(COLUMN_CURRENT_ENDURANCE_LOSS, instance.getEnduranceLoss());
+		values.put(COLUMN_CURRENT_FATIGUE, instance.getFatigue());
 		values.put(COLUMN_CURRENT_PP_LOSS, instance.getPowerPointLoss());
 		values.put(COLUMN_STAT_INCREASES, instance.getStatIncreases());
 
@@ -434,6 +445,8 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 
 		selection = CharacterTalentsSchema.COLUMN_CHARACTER_ID + " = ?";
 		db.delete(CharacterTalentsSchema.TABLE_NAME, selection, selectionArgs);
+		selection = CharacterTalentParametersSchema.COLUMN_CHARACTER_ID + " = ?";
+		db.delete(CharacterTalentParametersSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Talent, TalentInstance> entry : instance.getTalentInstances().entrySet()) {
 			if(entry.getValue() != null) {
@@ -442,6 +455,14 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 																			   entry.getKey().getId(),
 																			   entry.getValue().getTiers()),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
+				for(Map.Entry<Parameter, Object> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+					result &= (db.insertWithOnConflict(CharacterTalentParametersSchema.TABLE_NAME, null,
+													   getTalentParametersContentValues(instance.getId(),
+																				    entry.getKey().getId(),
+																					paramEntry.getKey().name(),
+																				    paramEntry.getValue()),
+													   SQLiteDatabase.CONFLICT_NONE) != -1);
+				}
 			}
 		}
 
@@ -771,6 +792,28 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		return values;
 	}
 
+	private ContentValues getTalentParametersContentValues(int characterId, int talentId, String parameterName, Object value) {
+		ContentValues values = new ContentValues(5);
+
+		values.put(CharacterTalentParametersSchema.COLUMN_CHARACTER_ID, characterId);
+		values.put(CharacterTalentParametersSchema.COLUMN_TALENT_ID, talentId);
+		values.put(CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME, parameterName);
+		if(value == null) {
+			values.putNull(CharacterTalentParametersSchema.COLUMN_INT_VALUE);
+			values.putNull(CharacterTalentParametersSchema.COLUMN_ENUM_NAME);
+		}
+		else if(value instanceof Integer) {
+			values.put(CharacterTalentParametersSchema.COLUMN_INT_VALUE, (Integer)value);
+			values.putNull(CharacterTalentParametersSchema.COLUMN_ENUM_NAME);
+		}
+		else {
+			values.putNull(CharacterTalentParametersSchema.COLUMN_INT_VALUE);
+			values.put(CharacterTalentParametersSchema.COLUMN_ENUM_NAME, (String)value);
+		}
+
+		return values;
+	}
+
 	private ContentValues getStatsContentValues(int characterId, Statistic stat, short currentValue, short potentialValue) {
 		ContentValues values = new ContentValues(4);
 
@@ -835,7 +878,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		return list;
 	}
 
-	private Map<Parameter, Integer> getTalentParameterInstances(int characterId, int talentId) {
+	private Map<Parameter, Object> getTalentParameterInstances(int characterId, int talentId) {
 		final String selectionArgs[] = { String.valueOf(characterId), String.valueOf(talentId) };
 		final String selection = CharacterTalentParametersSchema.COLUMN_CHARACTER_ID
 				+ " = ? AND "
@@ -844,13 +887,20 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 
 		Cursor cursor = super.query(CharacterTalentParametersSchema.TABLE_NAME, CharacterTalentParametersSchema.COLUMNS,
 									selection, selectionArgs, CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME);
-		Map<Parameter, Integer> map = new HashMap<>(cursor.getCount());
+		Map<Parameter, Object> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			String paramName = cursor.getString(cursor.getColumnIndexOrThrow(
 					CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME));
 			Parameter parameter = Parameter.valueOf(paramName);
-			map.put(parameter, cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentsSchema.COLUMN_TIERS)));
+			Object value = null;
+			if (!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterTalentParametersSchema.COLUMN_INT_VALUE))) {
+				value = cursor.getInt(cursor.getColumnIndexOrThrow(CharacterTalentParametersSchema.COLUMN_INT_VALUE));
+			}
+			else if (!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterTalentParametersSchema.COLUMN_ENUM_NAME))) {
+				value = cursor.getString(cursor.getColumnIndexOrThrow(CharacterTalentParametersSchema.COLUMN_ENUM_NAME));
+			}
+			map.put(parameter, value);
 			cursor.moveToNext();
 		}
 		cursor.close();

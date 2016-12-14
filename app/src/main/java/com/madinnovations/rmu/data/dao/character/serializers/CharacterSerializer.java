@@ -78,7 +78,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
 		out.name(COLUMN_CURRENT_HP_LOSS).value(value.getHitPointLoss());
 		out.name(COLUMN_CURRENT_DEVELOPMENT_POINTS).value(value.getCurrentDevelopmentPoints());
-		out.name(COLUMN_CURRENT_ENDURANCE_LOSS).value(value.getEnduranceLoss());
+		out.name(COLUMN_CURRENT_FATIGUE).value(value.getFatigue());
 		out.name(COLUMN_CURRENT_PP_LOSS).value(value.getPowerPointLoss());
 		out.name(COLUMN_STAT_INCREASES).value(value.getStatIncreases());
 
@@ -118,12 +118,20 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			out.name(CharacterTalentsSchema.COLUMN_TIERS).value(entry.getValue().getTiers());
 			if(!entry.getValue().getParameterValues().isEmpty()) {
 				out.name(CharacterTalentParametersSchema.TABLE_NAME).beginArray();
-				for(Map.Entry<Parameter, Integer> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+				for(Map.Entry<Parameter, Object> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+					out.beginObject();
 					out.name(CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
 					if(paramEntry.getValue() != null) {
-						out.name(CharacterTalentParametersSchema.COLUMN_VALUE).value(paramEntry.getValue());
+						if(paramEntry.getValue() instanceof Integer) {
+							out.name(CharacterTalentParametersSchema.COLUMN_INT_VALUE).value((Integer) paramEntry.getValue());
+						}
+						else {
+							out.name(CharacterTalentParametersSchema.COLUMN_ENUM_NAME).value((String) paramEntry.getValue());
+						}
 					}
+					out.endObject();
 				}
+				out.endArray();
 			}
 			out.endObject();
 		}
@@ -248,6 +256,12 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_REALM_ID:
 					character.setRealm(new Realm(in.nextInt()));
 					break;
+				case COLUMN_REALM2_ID:
+					character.setRealm2(new Realm(in.nextInt()));
+					break;
+				case COLUMN_REALM3_ID:
+					character.setRealm3(new Realm(in.nextInt()));
+					break;
 				case COLUMN_HEIGHT:
 					character.setHeight((short)in.nextInt());
 					break;
@@ -260,8 +274,8 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_CURRENT_DEVELOPMENT_POINTS:
 					character.setCurrentDevelopmentPoints((short)in.nextInt());
 					break;
-				case COLUMN_CURRENT_ENDURANCE_LOSS:
-					character.setEnduranceLoss((short)in.nextInt());
+				case COLUMN_CURRENT_FATIGUE:
+					character.setFatigue((short)in.nextInt());
 					break;
 				case COLUMN_CURRENT_PP_LOSS:
 					character.setPowerPointLoss((short)in.nextInt());
@@ -405,15 +419,18 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		in.beginArray();
 		while (in.hasNext()) {
 			Parameter newParameter = null;
-			Integer value = null;
+			Object value = null;
 			in.beginObject();
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME:
 						newParameter = Parameter.valueOf(in.nextString());
 						break;
-					case CharacterTalentParametersSchema.COLUMN_VALUE:
+					case CharacterTalentParametersSchema.COLUMN_INT_VALUE:
 						value = in.nextInt();
+						break;
+					case CharacterTalentParametersSchema.COLUMN_ENUM_NAME:
+						value = in.nextString();
 						break;
 				}
 			}

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.common;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,9 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_skill_ranks_row;
 	private LayoutInflater layoutInflater;
 	private SkillRanksAdapterCallbacks callbacks;
+	private int[] colors = new int[]{
+			R.color.list_even_row_background,
+			R.color.list_odd_row_background};
 
 	/**
 	 * Creates a new SkillRanksAdapter instance.
@@ -78,6 +82,7 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 			holder = (ViewHolder)convertView.getTag();
 		}
 
+		rowView.setBackgroundColor(ContextCompat.getColor(getContext(), colors[position % colors.length]));
 		SkillRanks skillRanks = getItem(position);
 		holder.skillRanks = skillRanks;
 		if(skillRanks != null) {

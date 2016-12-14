@@ -427,7 +427,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return skillBonusesMap;
 	}
 
-	private Map<Parameter, Integer> getTalentParameters(int varietyId, int talentId) {
+	private Map<Parameter, Object> getTalentParameters(int varietyId, int talentId) {
 		final String selectionArgs[] = { String.valueOf(varietyId), String.valueOf(talentId) };
 		final String selection = VarietyTalentParametersSchema.COLUMN_VARIETY_ID +
 				" = ? AND " +
@@ -436,13 +436,20 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 
 		Cursor cursor = super.query(VarietyTalentParametersSchema.TABLE_NAME, VarietyTalentParametersSchema.COLUMNS, selection,
 									selectionArgs, VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME);
-		Map<Parameter, Integer> map = new HashMap<>(cursor.getCount());
+		Map<Parameter, Object> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			String parameterName = cursor.getString(cursor.getColumnIndexOrThrow(
 					VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME));
 			Parameter instance = Parameter.valueOf(parameterName);
-			map.put(instance, cursor.getInt(cursor.getColumnIndexOrThrow(VarietyTalentParametersSchema.COLUMN_VALUE)));
+			Object value = null;
+			if(!cursor.isNull(cursor.getColumnIndexOrThrow(VarietyTalentParametersSchema.COLUMN_INT_VALUE))) {
+				value = cursor.getInt(cursor.getColumnIndexOrThrow(VarietyTalentParametersSchema.COLUMN_INT_VALUE));
+			}
+			else if(!cursor.isNull(cursor.getColumnIndexOrThrow(VarietyTalentParametersSchema.COLUMN_ENUM_NAME))) {
+				value = cursor.getString(cursor.getColumnIndexOrThrow(VarietyTalentParametersSchema.COLUMN_ENUM_NAME));
+			}
+			map.put(instance, value);
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -451,10 +458,10 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	}
 
 	private boolean saveTalentParameterValues(SQLiteDatabase db, int varietyId, int talentId,
-											  Map<Parameter, Integer> parameterValuesMap) {
+											  Map<Parameter, Object> parameterValuesMap) {
 		boolean result = true;
 
-		for(Map.Entry<Parameter, Integer> entry : parameterValuesMap.entrySet()) {
+		for(Map.Entry<Parameter, Object> entry : parameterValuesMap.entrySet()) {
 			result &= (db.insertWithOnConflict(VarietyTalentParametersSchema.TABLE_NAME, null,
 											   getParameterValuesValues(varietyId, talentId, entry.getKey(), entry.getValue()),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
@@ -462,17 +469,24 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return result;
 	}
 
-	private ContentValues getParameterValuesValues(int varietyId, int talentId, Parameter parameter, Integer value) {
-		ContentValues values = new ContentValues(4);
+	private ContentValues getParameterValuesValues(int varietyId, int talentId, Parameter parameter, Object value) {
+		ContentValues values = new ContentValues(5);
 		values.put(VarietyTalentParametersSchema.COLUMN_VARIETY_ID, varietyId);
 		values.put(VarietyTalentParametersSchema.COLUMN_TALENT_ID, talentId);
 		values.put(VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME, parameter.name());
 		if(value == null) {
-			values.putNull(VarietyTalentParametersSchema.COLUMN_VALUE);
+			values.putNull(VarietyTalentParametersSchema.COLUMN_INT_VALUE);
+			values.putNull(VarietyTalentParametersSchema.COLUMN_ENUM_NAME);
+		}
+		else if(value instanceof  Integer){
+			values.put(VarietyTalentParametersSchema.COLUMN_INT_VALUE, (Integer)value);
+			values.putNull(VarietyTalentParametersSchema.COLUMN_ENUM_NAME);
 		}
 		else {
-			values.put(VarietyTalentParametersSchema.COLUMN_VALUE, value);
+			values.putNull(VarietyTalentParametersSchema.COLUMN_INT_VALUE);
+			values.put(VarietyTalentParametersSchema.COLUMN_ENUM_NAME, (String)value);
 		}
+
 		return values;
 	}
 }

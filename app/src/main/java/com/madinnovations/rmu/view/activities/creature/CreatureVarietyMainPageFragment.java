@@ -55,6 +55,7 @@ import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.common.TalentTier;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
+import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
 import com.madinnovations.rmu.data.entities.creature.RacialStatBonus;
 import com.madinnovations.rmu.data.entities.spells.Realm;
@@ -202,17 +203,53 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	@Override
 	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		return false;
+		CreatureVariety variety = varietiesFragment.getCurrentInstance();
+
+		TalentInstance talentInstance = variety.getTalentsMap().get(talent);
+		if(talentInstance == null) {
+			talentInstance = new TalentInstance();
+			talentInstance.setTalent(talent);
+		}
+		short oldTiers = talentInstance.getTiers();
+		talentInstance.setTiers((short) (oldTiers + 1));
+		variety.getTalentsMap().put(talent, talentInstance);
+
+		return true;
 	}
 
 	@Override
 	public boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		return false;
+		CreatureVariety variety = varietiesFragment.getCurrentInstance();
+
+		TalentInstance talentInstance = variety.getTalentsMap().get(talent);
+		if(talentInstance != null) {
+			short oldTiers = talentInstance.getTiers();
+			if (oldTiers > 1) {
+				talentInstance.setTiers((short) (oldTiers - 1));
+				variety.getTalentsMap().put(talent, talentInstance);
+			}
+			else {
+				variety.getTalentsMap().remove(talent);
+			}
+		}
+
+		return true;
 	}
 
 	@Override
 	public void setParameterValue(Talent talent, Parameter parameter, int value, String enumName) {
-
+		TalentInstance talentInstance = varietiesFragment.getCurrentInstance().getTalentsMap().get(talent);
+		if(talentInstance != null) {
+			Object paramValue = talentInstance.getParameterValues().get(parameter);
+			if(enumName != null && !enumName.equals(paramValue)) {
+				talentInstance.getParameterValues().put(parameter, enumName);
+				varietiesFragment.saveItem();
+			}
+			else if(enumName == null && (paramValue == null || !Integer.valueOf(value).equals(paramValue))) {
+				talentInstance.getParameterValues().put(parameter, value);
+				varietiesFragment.saveItem();
+			}
+		}
 	}
 
 	@SuppressWarnings("ConstantConditions")

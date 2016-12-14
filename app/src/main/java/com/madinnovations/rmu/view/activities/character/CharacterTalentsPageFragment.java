@@ -22,6 +22,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -70,7 +71,7 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 	private   TalentTierListAdapter   talentTiersAdapter;
 	private   CharactersFragment      charactersFragment;
 	private   Collection<Talent>      talents = null;
-	private   TextView                currentDpText;
+	private   EditText                currentDpText;
 
 	/**
 	 * Creates new CharacterTalentsPageFragment instance.
@@ -95,7 +96,8 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 
 		View fragmentView = inflater.inflate(R.layout.character_talents_page, container, false);
 
-		currentDpText = (TextView) fragmentView.findViewById(R.id.current_dp_text);
+		currentDpText = (EditText) fragmentView.findViewById(R.id.current_dp_text);
+		currentDpText.setText((String.valueOf(charactersFragment.getCurrentInstance().getCurrentDevelopmentPoints())));
 		initTalentTiersListView(fragmentView);
 
 		fragmentView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -110,19 +112,6 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 	}
 
 	@Override
-	public void onPause() {
-		if(copyViewsToItem()) {
-			charactersFragment.saveItem();
-		}
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
 	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
 		boolean result = false;
 		short cost = 0;
@@ -133,7 +122,7 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 				cost = talent.getDpCost();
 				result = true;
 			}
-			else if(purchasedThisLevel + startingTiers < talent.getMaxTier()) {
+			else if(purchasedThisLevel + startingTiers < talent.getMaxTier() && purchasedThisLevel < 2) {
 				cost = talent.getDpCostPerTier();
 				result = true;
 			}
@@ -147,8 +136,11 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 						talentInstance.setTalent(talent);
 					}
 					short oldTiers = talentInstance.getTiers();
+					Log.d(TAG, "purchaseTier: oldTiers = " + oldTiers);
 					talentInstance.setTiers((short) (oldTiers + 1));
 					character.getTalentInstances().put(talent, talentInstance);
+					character.getCurrentLevelTalentTiers().put(talent, purchasedThisLevel);
+					charactersFragment.saveItem();
 				}
 				else {
 					result = false;
@@ -165,6 +157,7 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 		short cost = 0;
 		Character character = charactersFragment.getCurrentInstance();
 
+		Log.d(TAG, "sellTier: purchasedThisLevel = " + purchasedThisLevel);
 		if(startingTiers == 0 && purchasedThisLevel == 1) {
 			cost = talent.getDpCost();
 			result = true;
@@ -177,14 +170,17 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 			character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
 			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 			TalentInstance talentInstance = character.getTalentInstances().get(talent);
+			character.getCurrentLevelTalentTiers().put(talent, purchasedThisLevel);
 			if(talentInstance != null) {
 				short oldTiers = talentInstance.getTiers();
 				if (oldTiers > 1) {
 					talentInstance.setTiers((short) (oldTiers - 1));
 					character.getTalentInstances().put(talent, talentInstance);
+					charactersFragment.saveItem();
 				}
 				else {
 					character.getTalentInstances().remove(talent);
+					charactersFragment.saveItem();
 				}
 			}
 		}
@@ -194,7 +190,18 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 
 	@Override
 	public void setParameterValue(Talent talent, Parameter parameter, int value, String enumName) {
-
+		TalentInstance talentInstance = charactersFragment.getCurrentInstance().getTalentInstances().get(talent);
+		if(talentInstance != null) {
+			Object paramValue = talentInstance.getParameterValues().get(parameter);
+			if(enumName != null && !enumName.equals(paramValue)) {
+				talentInstance.getParameterValues().put(parameter, enumName);
+				charactersFragment.saveItem();
+			}
+			else if(enumName == null && (paramValue == null || !Integer.valueOf(value).equals(paramValue))) {
+				talentInstance.getParameterValues().put(parameter, value);
+				charactersFragment.saveItem();
+			}
+		}
 	}
 
 	public boolean copyViewsToItem() {
@@ -219,8 +226,12 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 					tiers = character.getTalentInstances().get(talent).getTiers();
 				}
 				talentTier.setTier(tiers);
-				talentTier.setStartingTiers(tiers);
-				talentTier.setEndingTiers(tiers);
+				Short purchasedThisLevel = character.getCurrentLevelTalentTiers().get(talent);
+				if(purchasedThisLevel == null) {
+					purchasedThisLevel = (short)0;
+				}
+				talentTier.setStartingTiers(purchasedThisLevel);
+				talentTier.setEndingTiers((short)(tiers - purchasedThisLevel));
 				tiersList.add(talentTier);
 			}
 			talentTiersAdapter.addAll(tiersList);
