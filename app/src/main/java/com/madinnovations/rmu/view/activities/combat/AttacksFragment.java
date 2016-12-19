@@ -211,6 +211,11 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 	}
 
 	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	@Override
 	public Object getValueForSpinner(@IdRes int spinnerId) {
 		Object result = null;
 

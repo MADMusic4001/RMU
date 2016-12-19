@@ -42,6 +42,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.ThreeFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.ViewPagerAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.Boast;
 
 import java.util.Collection;
 
@@ -98,8 +99,8 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field3).getLayoutParams()).weight = 1;
 		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_character_known_as));
 
-		initViewPager(layout);
 		initListView(layout);
+		initViewPager(layout);
 
 		setHasOptionsMenu(true);
 
@@ -143,7 +144,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				saveItem();
 			}
 			currentInstance = createNewCharacter();
-			currentInstance.generateStats();
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -172,7 +172,6 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					saveItem();
 				}
 				currentInstance = createNewCharacter();
-				currentInstance.generateStats();
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
@@ -316,7 +315,8 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_character_saved), Toast.LENGTH_SHORT).show();
+								Boast.makeText(getActivity(), getString(R.string.toast_character_saved),
+											   Toast.LENGTH_SHORT).show(true);
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -343,8 +343,8 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_character_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), getString(R.string.toast_character_delete_failed),
+									   Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -410,9 +410,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 						listAdapter.clear();
 						listAdapter.addAll(creatureVarieties);
 						listAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_characters_loaded), creatureVarieties.size());
-						Toast.makeText(CharactersFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Boast.makeText(CharactersFragment.this.getActivity(),
+									   String.format(getString(R.string.toast_characters_loaded), creatureVarieties.size()),
+									   Toast.LENGTH_SHORT).show(true);
 					}
 				});
 
@@ -457,6 +457,8 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				character.setCurrentDevelopmentPoints((short)50);
 			}
 		}
+
+		character.generateStats();
 
 		return character;
 	}

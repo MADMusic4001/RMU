@@ -22,12 +22,12 @@
   <TextView
       android:id="@+id/name_view"
       android:layout_width="0dp"
-      android:layout_weight="1"
+      android:layout_weight="3"
       android:layout_height="wrap_content"
       android:text="@string/label_ph_field1"/>
   <LinearLayout
       android:layout_width="0dp"
-      android:layout_weight="1"
+      android:layout_weight="3"
       android:layout_height="wrap_content">
     <ImageButton
         android:id="@+id/increment_button"
@@ -48,4 +48,10 @@
         android:src="@drawable/ic_remove_black"
         android:contentDescription="@string/decrement"/>
   </LinearLayout>
+  <EditText
+      android:id="@+id/culture_ranks_view"
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      style="@style/ReadOnlyEditText"/>
 </LinearLayout>

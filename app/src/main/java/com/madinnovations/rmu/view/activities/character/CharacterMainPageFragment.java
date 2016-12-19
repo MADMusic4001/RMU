@@ -23,7 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +55,7 @@ import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.Boast;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
@@ -172,7 +172,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
-		Log.d(TAG, "getValueForEditText: ");
 		switch (editTextId) {
 			case R.id.first_name_edit:
 				result = charactersFragment.getCurrentInstance().getFirstName();
@@ -229,6 +228,31 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				charactersFragment.saveItem();
 				break;
 		}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		boolean handled = false;
+
+		switch (editTextId) {
+			case R.id.height_edit:
+				Boast.makeText(getActivity(), String.format(
+						getString(R.string.average_height_tooltip),
+						charactersFragment.getCurrentInstance().getRace().getAverageHeight()),
+							   Toast.LENGTH_LONG).show(true);
+				handled = true;
+				break;
+			case R.id.weight_edit:
+				Boast.makeText(getActivity(), String.format(
+						getString(R.string.average_weight_tooltip),
+						charactersFragment.getCurrentInstance().getRace().getAverageWeight(),
+						charactersFragment.getCurrentInstance().getRace().getPoundsPerInch()),
+							   Toast.LENGTH_LONG).show(true);
+				handled = true;
+				break;
+		}
+
+		return handled;
 	}
 
 	@Override
@@ -317,6 +341,14 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				}
 				developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
 				character.setRace(newRace);
+				cultureSpinner.getAdapter().clear();
+				if(character.getRace().getAllowedCultures() == null || character.getRace().getAllowedCultures().isEmpty()) {
+					cultureSpinner.getAdapter().addAll(cultureSpinner.getAllItems());
+				}
+				else {
+					cultureSpinner.getAdapter().addAll(character.getRace().getAllowedCultures());
+				}
+				cultureSpinner.setSelection(character.getCulture());
 				charactersFragment.saveItem();
 				break;
 			case R.id.culture_spinner:
@@ -458,7 +490,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	public void copyItemToViews() {
-		Log.d(TAG, "copyItemToViews: ");
 		Character character = charactersFragment.getCurrentInstance();
 
 		short currentLevel = character.getCurrentLevel();
@@ -467,16 +498,41 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
 		levelUpButton.setEnabled((currentLevel < (short)(character.getExperiencePoints()/10000)));
 
-		firstNameEdit.setText(charactersFragment.getCurrentInstance().getFirstName());
-		lastNameEdit.setText(charactersFragment.getCurrentInstance().getLastName());
-		knownAsEdit.setText(charactersFragment.getCurrentInstance().getKnownAs());
-		descriptionEdit.setText(charactersFragment.getCurrentInstance().getDescription());
-		raceSpinner.setSelection(charactersFragment.getCurrentInstance().getRace());
-		cultureSpinner.setSelection(charactersFragment.getCurrentInstance().getCulture());
-		professionSpinner.setSelection(charactersFragment.getCurrentInstance().getProfession());
-		realmSpinner.setSelection(charactersFragment.getCurrentInstance().getRealm());
-		heightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getHeight()));
-		weightEdit.setText(String.valueOf(charactersFragment.getCurrentInstance().getWeight()));
+		firstNameEdit.setText(character.getFirstName());
+		lastNameEdit.setText(character.getLastName());
+		knownAsEdit.setText(character.getKnownAs());
+		descriptionEdit.setText(character.getDescription());
+		raceSpinner.setSelection(character.getRace());
+		cultureSpinner.setSelection(character.getCulture());
+		professionSpinner.setSelection(character.getProfession());
+		realmSpinner.setSelection(character.getRealm());
+		heightEdit.setText(String.valueOf(character.getHeight()));
+		weightEdit.setText(String.valueOf(character.getWeight()));
+
+		if(character.getFirstName() == null) {
+			firstNameEdit.setError(getString(R.string.validation_character_first_name_required));
+		}
+		else {
+			firstNameEdit.setError(null);
+		}
+		if(character.getLastName() == null) {
+			lastNameEdit.setError(getString(R.string.validation_character_last_name_required));
+		}
+		else {
+			lastNameEdit.setError(null);
+		}
+		if(character.getKnownAs() == null) {
+			knownAsEdit.setError(getString(R.string.validation_character_known_as_required));
+		}
+		else {
+			knownAsEdit.setError(null);
+		}
+		if(character.getDescription() == null) {
+			descriptionEdit.setError(getString(R.string.validation_character_description_required));
+		}
+		else {
+			descriptionEdit.setError(null);
+		}
 
 		setStatPointsViews();
 
@@ -657,9 +713,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		if(!character.isStatIncreased(statistic)) {
 			if(character.statsIncreasedCount() < 2 || character.getCurrentDevelopmentPoints() >= 5) {
 				short gain = statistic.statGain(character.getStatTemps().get(statistic));
-				Toast.makeText(getActivity(),
+				Boast.makeText(getActivity(),
 							   String.format(getString(R.string.toast_stat_gain), statistic.getName(), gain),
-							   Toast.LENGTH_LONG).show();
+							   Toast.LENGTH_LONG).show(true);
 				if(character.statsIncreasedCount() >= 2) {
 					character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - 5));
 				}
@@ -697,12 +753,19 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 					R.id.strength_potential_view, R.id.strength_drag_group);
 	}
 
-	private void initStatRow(View layout, @IdRes int labelViewId, Statistic statistic, @IdRes int tempStatViewId,
+	private void initStatRow(View layout, @IdRes int labelViewId, final Statistic statistic, @IdRes int tempStatViewId,
 							 @IdRes int potStatViewId, @IdRes int dragGroupId) {
 		LinearLayout dragGroup;
 
 		TextView textView = (TextView) layout.findViewById(labelViewId);
 		textView.setText(statistic.toString());
+		textView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View view) {
+				Boast.makeText(getActivity(), getString(statistic.getDescriptionId()), Toast.LENGTH_LONG).show(true);
+				return true;
+			}
+		});
 		EditText editText = (EditText) layout.findViewById(tempStatViewId);
 		viewHolderMap.get(statistic).tempStatView = editText;
 		editText = (EditText) layout.findViewById(potStatViewId);

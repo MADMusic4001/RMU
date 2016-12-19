@@ -23,14 +23,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
-import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
-import com.madinnovations.rmu.data.entities.common.Specialization;
 
 /**
  * Populates a ListView with {@link SkillRanks} information
@@ -65,9 +64,10 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder((TextView)rowView.findViewById(R.id.name_view),
-														   (TextView)rowView.findViewById(R.id.ranks_view),
-														   (ImageButton) rowView.findViewById(R.id.increment_button),
-														   (ImageButton)rowView.findViewById(R.id.decrement_button));
+									(TextView)rowView.findViewById(R.id.ranks_view),
+									(ImageButton) rowView.findViewById(R.id.increment_button),
+									(ImageButton)rowView.findViewById(R.id.decrement_button),
+									(EditText)rowView.findViewById(R.id.culture_ranks_view));
 			rowView.setTag(holder);
 			rowView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
@@ -86,13 +86,20 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 		SkillRanks skillRanks = getItem(position);
 		holder.skillRanks = skillRanks;
 		if(skillRanks != null) {
-			DevelopmentCostGroup costGroup = callbacks.getSkillCost(skillRanks.getSkill(), skillRanks.getSpecialization());
+			DevelopmentCostGroup costGroup = callbacks.getSkillCost(skillRanks);
 			if(costGroup != null) {
 				String builder = skillRanks.toString() + " (" + costGroup.getFirstCost() + "/" + costGroup.getAdditionalCost()
 						+ ")";
 				holder.nameView.setText(builder);
 			}
-			holder.ranksView.setText(String.valueOf(skillRanks.getStartingRanks() + skillRanks.getEndingRanks()));
+			holder.ranksView.setText(String.valueOf(callbacks.getRanks(skillRanks)));
+			short cultureRanks = callbacks.getCultureRanks(skillRanks);
+			if(cultureRanks > 0) {
+				holder.cultureRanksView.setText(String.valueOf(cultureRanks));
+			}
+			else {
+				holder.cultureRanksView.setText(null);
+			}
 		}
 
 		return rowView;
@@ -104,12 +111,15 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 		private TextView ranksView;
 		private ImageButton incrementButton;
 		private ImageButton decrementButton;
+		private EditText cultureRanksView;
 
-		public ViewHolder(TextView nameView, TextView ranksView, ImageButton incrementButton, ImageButton decrementButton) {
+		public ViewHolder(TextView nameView, TextView ranksView, ImageButton incrementButton, ImageButton decrementButton,
+						  EditText cultureRanksView) {
 			this.nameView = nameView;
 			this.ranksView = ranksView;
 			this.incrementButton = incrementButton;
 			this.decrementButton = decrementButton;
+			this.cultureRanksView = cultureRanksView;
 
 			initIncrementButton();
 			initDecrementButton();
@@ -119,11 +129,8 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 			incrementButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(skillRanks.getEndingRanks() < 2 && callbacks.purchaseRank(
-							skillRanks.getSkill(), skillRanks.getSpecialization(), skillRanks.getEndingRanks())) {
-						skillRanks.setEndingRanks((short)(skillRanks.getEndingRanks() + 1));
-						ranksView.setText(String.valueOf(skillRanks.getStartingRanks() + skillRanks.getEndingRanks()));
-					}
+					short ranks = callbacks.purchaseRank(skillRanks);
+					ranksView.setText(String.valueOf(ranks));
 				}
 			});
 		}
@@ -132,11 +139,8 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 			decrementButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(skillRanks.getEndingRanks() > 0 && callbacks.sellRank(
-							skillRanks.getSkill(), skillRanks.getSpecialization(), skillRanks.getEndingRanks())) {
-						skillRanks.setEndingRanks((short)(skillRanks.getEndingRanks() - 1));
-						ranksView.setText(String.valueOf(skillRanks.getStartingRanks() + skillRanks.getEndingRanks()));
-					}
+					short ranks = callbacks.sellRank(skillRanks);
+					ranksView.setText(String.valueOf(ranks));
 				}
 			});
 		}
@@ -148,8 +152,10 @@ public class SkillRanksAdapter extends ArrayAdapter<SkillRanks> {
 	}
 
 	public interface SkillRanksAdapterCallbacks {
-		boolean purchaseRank(Skill skill, Specialization specialization, short purchasedThisLevel);
-		boolean sellRank(Skill skill, Specialization specialization, short purchasedThisLevel);
-		DevelopmentCostGroup getSkillCost(Skill skill, Specialization specialization);
+		short purchaseRank(SkillRanks skillRanks);
+		short sellRank(SkillRanks skillRanks);
+		DevelopmentCostGroup getSkillCost(SkillRanks skillRanks);
+		short getRanks(SkillRanks skillRanks);
+		short getCultureRanks(SkillRanks skillRanks);
 	}
 }

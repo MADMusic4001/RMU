@@ -26,8 +26,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class SkillRanks implements Comparable {
 	private Skill          skill = null;
 	private Specialization specialization = null;
-	private short          startingRanks = 0;
-	private short          endingRanks = 0;
 
 	@Override
 	public String toString() {
@@ -91,8 +89,6 @@ public class SkillRanks implements Comparable {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("skill", skill)
 				.append("specialization", specialization)
-				.append("startingRanks", startingRanks)
-				.append("endingRanks", endingRanks)
 				.toString();
 	}
 
@@ -108,17 +104,5 @@ public class SkillRanks implements Comparable {
 	}
 	public void setSpecialization(Specialization specialization) {
 		this.specialization = specialization;
-	}
-	public short getStartingRanks() {
-		return startingRanks;
-	}
-	public void setStartingRanks(short startingRanks) {
-		this.startingRanks = startingRanks;
-	}
-	public short getEndingRanks() {
-		return endingRanks;
-	}
-	public void setEndingRanks(short endingRanks) {
-		this.endingRanks = endingRanks;
 	}
 }

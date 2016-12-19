@@ -81,6 +81,8 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	private EditText           selfDisciplineText;
 	private EditText           strengthText;
 
+	// TODO: Add racial bonuses to stat bonuses display
+
 	/**
 	 * Creates new CharacterGeneratedValuesFragment instance.
 	 *
@@ -131,10 +133,10 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		physicalRRText = (EditText)layout.findViewById(R.id.physical_rr_text);
 		fearRRText = (EditText)layout.findViewById(R.id.fear_rr_text);
 		initBodyDevelopmentSkill();
-		initStatBonusValues();
 		initPowerDevelopmentSkill();
 		initRealms();
 		initStats(layout);
+		initStatBonusValues();
 		setStatViews();
 		return layout;
 	}
@@ -170,6 +172,18 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	}
 
 	private void initStatBonusValues() {
+		Character character = charactersFragment.getCurrentInstance();
+
+		agilityText.setText(String.valueOf(character.getTotalStatBonus(Statistic.AGILITY)));
+		constitutionText.setText(String.valueOf(character.getTotalStatBonus(Statistic.CONSTITUTION)));
+		empathyText.setText(String.valueOf(character.getTotalStatBonus(Statistic.EMPATHY)));
+		intuitionText.setText(String.valueOf(character.getTotalStatBonus(Statistic.INTUITION)));
+		memoryText.setText(String.valueOf(character.getTotalStatBonus(Statistic.MEMORY)));
+		presenceText.setText(String.valueOf(character.getTotalStatBonus(Statistic.PRESENCE)));
+		quicknessText.setText(String.valueOf(character.getTotalStatBonus(Statistic.QUICKNESS)));
+		reasoningText.setText(String.valueOf(character.getTotalStatBonus(Statistic.REASONING)));
+		selfDisciplineText.setText(String.valueOf(character.getTotalStatBonus(Statistic.SELF_DISCIPLINE)));
+		strengthText.setText(String.valueOf(character.getTotalStatBonus(Statistic.STRENGTH)));
 	}
 
 	public void initPowerDevelopmentSkill() {
@@ -242,41 +256,44 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		Character character = charactersFragment.getCurrentInstance();
 		for(Statistic stat : Statistic.values()) {
 			if(character.getRace() != null && character.getStatTemps().get(stat) != null) {
-				short statBonus = Statistic.getBonus(character.getStatTemps().get(stat));
+				short statBonus;
 				switch (stat) {
 					case AGILITY:
-						agilityText.setText(String.valueOf(statBonus));
+						agilityText.setText(String.valueOf(character.getTotalStatBonus(Statistic.AGILITY)));
 						break;
 					case CONSTITUTION:
+						statBonus = character.getTotalStatBonus(Statistic.CONSTITUTION);
 						constitutionText.setText(String.valueOf(statBonus));
 						physicalRRText.setText(String.valueOf(character.getRace().getPhysicalResistanceModifier() + statBonus));
 						break;
 					case EMPATHY:
-						empathyText.setText(String.valueOf(statBonus));
+						empathyText.setText(String.valueOf(character.getTotalStatBonus(Statistic.EMPATHY)));
 						break;
 					case INTUITION:
-						intuitionText.setText(String.valueOf(statBonus));
+						intuitionText.setText(String.valueOf(character.getTotalStatBonus(Statistic.INTUITION)));
 						break;
 					case MEMORY:
-						memoryText.setText(String.valueOf(statBonus));
+						memoryText.setText(String.valueOf(character.getTotalStatBonus(Statistic.MEMORY)));
 						break;
 					case PRESENCE:
-						presenceText.setText(String.valueOf(statBonus));
+						presenceText.setText(String.valueOf(character.getTotalStatBonus(Statistic.PRESENCE)));
 						break;
 					case QUICKNESS:
+						statBonus = character.getTotalStatBonus(Statistic.QUICKNESS);
 						quicknessText.setText(String.valueOf(statBonus));
 						defensiveBonusText.setText(String.valueOf(statBonus * 3));
 						initiativeText.setText(String.valueOf(statBonus));
 						break;
 					case REASONING:
-						reasoningText.setText(String.valueOf(statBonus));
+						reasoningText.setText(String.valueOf(character.getTotalStatBonus(Statistic.REASONING)));
 						break;
 					case SELF_DISCIPLINE:
+						statBonus = character.getTotalStatBonus(Statistic.SELF_DISCIPLINE);
 						selfDisciplineText.setText(String.valueOf(statBonus));
 						fearRRText.setText(String.valueOf(statBonus));
 						break;
 					case STRENGTH:
-						strengthText.setText(String.valueOf(statBonus));
+						strengthText.setText(String.valueOf(character.getTotalStatBonus(Statistic.STRENGTH)));
 						break;
 				}
 			}

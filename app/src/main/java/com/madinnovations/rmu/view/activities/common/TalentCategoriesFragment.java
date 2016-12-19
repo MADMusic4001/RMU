@@ -183,6 +183,11 @@ public class TalentCategoriesFragment extends Fragment implements TwoFieldListAd
 		}
 	}
 
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String value;

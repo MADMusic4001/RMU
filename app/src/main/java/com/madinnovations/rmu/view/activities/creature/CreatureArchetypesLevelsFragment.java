@@ -87,6 +87,16 @@ public class CreatureArchetypesLevelsFragment extends Fragment
 		menuItem.setActionView(v);
 		menuItem = menu.findItem(R.id.context_fill_range_double);
 		menuItem.setActionView(v);
+		menuItem = menu.findItem(R.id.context_fill_range_by_twos);
+		menuItem.setActionView(v);
+		menuItem = menu.findItem(R.id.context_fill_range_by_threes);
+		menuItem.setActionView(v);
+		menuItem = menu.findItem(R.id.context_fill_range_by_fours);
+		menuItem.setActionView(v);
+		menuItem = menu.findItem(R.id.context_fill_range_by_fives);
+		menuItem.setActionView(v);
+		menuItem = menu.findItem(R.id.context_fill_range_by_sixes);
+		menuItem.setActionView(v);
 	}
 
 	@Override
@@ -97,11 +107,31 @@ public class CreatureArchetypesLevelsFragment extends Fragment
 			int actionViewId = item.getActionView().getId();
 			switch (item.getItemId()) {
 				case R.id.context_fill_range:
-					fillRange(actionViewId);
+					fillRangeByMultiples(actionViewId, (short)1);
 					consumed = true;
 					break;
 				case R.id.context_fill_range_double:
 					fillRangeDouble(actionViewId);
+					consumed = true;
+					break;
+				case R.id.context_fill_range_by_twos:
+					fillRangeByMultiples(actionViewId, (short)2);
+					consumed = true;
+					break;
+				case R.id.context_fill_range_by_threes:
+					fillRangeByMultiples(actionViewId, (short)3);
+					consumed = true;
+					break;
+				case R.id.context_fill_range_by_fours:
+					fillRangeByMultiples(actionViewId, (short)4);
+					consumed = true;
+					break;
+				case R.id.context_fill_range_by_fives:
+					fillRangeByMultiples(actionViewId, (short)5);
+					consumed = true;
+					break;
+				case R.id.context_fill_range_by_sixes:
+					fillRangeByMultiples(actionViewId, (short)6);
 					consumed = true;
 					break;
 			}
@@ -411,6 +441,48 @@ public class CreatureArchetypesLevelsFragment extends Fragment
 					currentValue += diff;
 				}
 				changed |= setValueForLevel(j, fieldId, (short)Math.round(currentValue));
+			}
+			startLevel = endLevel;
+		}
+		if(changed) {
+			levelsAdapter.notifyDataSetChanged();
+			creatureArchetypesFragment.saveItem();
+		}
+	}
+
+	private void fillRangeByMultiples(@IdRes int fieldId, short multiple) {
+		boolean changed = false;
+		Iterator<Short> iterator = selectedLevels.iterator();
+		short startLevel = 1;
+		if(iterator.hasNext()) {
+			startLevel = iterator.next();
+		}
+		while(iterator.hasNext()) {
+			short endLevel = iterator.next();
+			short startValue = getValueForLevel(startLevel, fieldId);
+			short endValue = getValueForLevel(endLevel, fieldId);
+			short levels = (short)(endLevel - startLevel);
+			float diff = (float)(endValue - startValue);
+			float divisions = diff/multiple;
+			float divisionsDiff = (levels - divisions)/levels;
+			short currentValue = startValue;
+			float diffAccumulator = 0;
+			int duplicates = 1;
+			int skips = -1;
+			for(short j = (short)(startLevel + 1); j < endLevel; j++) {
+				diffAccumulator += divisionsDiff;
+				while (diffAccumulator <= skips) {
+					currentValue += multiple;
+					skips--;
+				}
+				if(diffAccumulator >= duplicates) {
+					duplicates++;
+					changed |= setValueForLevel(j, fieldId, currentValue);
+				}
+				else {
+					currentValue += multiple;
+					changed |= setValueForLevel(j, fieldId, (short) Math.round(currentValue));
+				}
 			}
 			startLevel = endLevel;
 		}

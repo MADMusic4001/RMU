@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import com.madinnovations.rmu.R;
 
 import java.util.Collection;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -38,6 +39,7 @@ public final class SpinnerUtils<T> {
 	private static final String TAG = "SpinnerUtils";
 	private Spinner spinner;
 	private ArrayAdapter<T> adapter;
+	private Collection<T> allItems = null;
 
 	/**
 	 * Initializes a Spinner with onItemSelected method implementation.
@@ -148,25 +150,34 @@ public final class SpinnerUtils<T> {
 		adapter = new ArrayAdapter<>(context, R.layout.spinner_row);
 		spinner.setAdapter(adapter);
 
-		loader.subscribe(new Subscriber<Collection<T>>() {
-			@Override
-			public void onCompleted() {}
-			@Override
-			public void onError(Throwable e) {
-				Log.e(TAG, "Exception caught loading spinner data.", e);
-			}
-			@SuppressWarnings("unchecked")
-			@Override
-			public void onNext(Collection<T> ts) {
-				adapter.clear();
-				if(dummyInstance != null) {
-					adapter.add(dummyInstance);
+		if(allItems != null) {
+
+		}
+		else {
+			loader.subscribe(new Subscriber<Collection<T>>() {
+				@Override
+				public void onCompleted() {
 				}
-				adapter.addAll(ts);
-				adapter.notifyDataSetChanged();
-				spinner.setSelection(adapter.getPosition((T)valuesCallback.getValueForSpinner(spinnerId)));
-			}
-		});
+
+				@Override
+				public void onError(Throwable e) {
+					Log.e(TAG, "Exception caught loading spinner data.", e);
+				}
+
+				@SuppressWarnings("unchecked")
+				@Override
+				public void onNext(Collection<T> ts) {
+					allItems = ts;
+					adapter.clear();
+					if (dummyInstance != null) {
+						adapter.add(dummyInstance);
+					}
+					adapter.addAll(ts);
+					adapter.notifyDataSetChanged();
+					spinner.setSelection(adapter.getPosition((T) valuesCallback.getValueForSpinner(spinnerId)));
+				}
+			});
+		}
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@SuppressWarnings("unchecked")
@@ -216,6 +227,9 @@ public final class SpinnerUtils<T> {
 	}
 	public ArrayAdapter<T> getAdapter() {
 		return adapter;
+	}
+	public Collection<T> getAllItems() {
+		return allItems;
 	}
 
 	/**

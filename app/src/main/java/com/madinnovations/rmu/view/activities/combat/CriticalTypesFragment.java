@@ -192,6 +192,11 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 		}
 	}
 
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String value;

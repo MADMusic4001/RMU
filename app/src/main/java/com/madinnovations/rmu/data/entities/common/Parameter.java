@@ -27,6 +27,7 @@ public enum Parameter {
 	BASE_MOVEMENT_RATE("Base Movement Rate"),
 	BLEED("Bleed"),
 	BONUS("Bonus"),
+	CONDITION("Condition"),
 	CONE("Cone"),
 	CONE_PARAMETER_INCREASE("Cone Parameter Increase"),
 	CRITICAL_ROLL("Critical Roll"),

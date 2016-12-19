@@ -278,6 +278,29 @@ public class Character {
 		return result;
 	}
 
+	/**
+	 * Calculates the total bonus for the given {@link Statistic}.
+	 *
+	 * @param statistic  a Statistic instance
+	 * @return  the calculated bonus including the current stat value, race bonus, and any talent bonuses.
+	 */
+	public short getTotalStatBonus(Statistic statistic) {
+		// TODO: Add talent stat bonuses to total if they exist.
+		short bonus = 0;
+		Short tempShort = getStatTemps().get(statistic);
+		if(tempShort != null) {
+			bonus = Statistic.getBonus(tempShort);
+		}
+		if(getRace() != null) {
+			tempShort = getRace().getStatModifiers().get(statistic);
+			if (tempShort != null) {
+				bonus += tempShort;
+			}
+		}
+
+		return bonus;
+	}
+
 	private void generateRandomStat(Statistic statistic) {
 		short roll;
 		short rolls[] = new short[2];

@@ -15,11 +15,26 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
+import com.madinnovations.rmu.view.di.PerFragment;
+
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * Provides methods to allow the dependency injection engine to inject dependencies into play package Fragment instances.
  */
 @Module
 public class PlayFragmentModule {
+	private CampaignsFragment campaignsFragment;
+
+	public PlayFragmentModule(CampaignsFragment campaignsFragment) {
+		this.campaignsFragment = campaignsFragment;
+	}
+
+	@Provides
+	@PerFragment
+	CampaignsFragment provideCampaignsFragment() {
+		return this.campaignsFragment;
+	}
 }

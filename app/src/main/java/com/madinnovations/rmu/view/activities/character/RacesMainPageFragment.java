@@ -74,8 +74,8 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 	private   EditText                 averageHeightEdit;
 	private   EditText                 averageWeightEdit;
 	private   EditText                 poundsPerInchEdit;
-	private   Map<Statistic, EditText> statEditViews;
-	private   Map<Realm, EditText>     rrEditViews;
+	private   Map<Statistic, EditText> statEditViews = new HashMap<>();
+	private   Map<Realm, EditText>     rrEditViews = new HashMap<>();
 	private   EditText                 physicalRREdit;
 	private   RacesFragment            racesFragment;
 
@@ -224,6 +224,11 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 			}
 		}
 		catch (NumberFormatException ignored) {}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
 	}
 	// </editor-fold>
 
@@ -437,7 +442,9 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 			}
 		}
 
-		physicalRREdit.setText(String.valueOf(currentInstance.getPhysicalResistanceModifier()));
+		if(physicalRREdit != null) {
+			physicalRREdit.setText(String.valueOf(currentInstance.getPhysicalResistanceModifier()));
+		}
 	}
 	// </editor-fold>
 
@@ -522,6 +529,10 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 	private void initRRMods(View layout) {
 		final LinearLayout rrModLabels = (LinearLayout)layout.findViewById(R.id.rr_mod_labels_row);
 		final LinearLayout rrModEdits = (LinearLayout)layout.findViewById(R.id.rr_mod_edits_row);
+		final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT, 1f);
+		physicalRREdit = new EditText(getActivity());
+		physicalRREdit.setLayoutParams(params);
+		physicalRREdit.setHint(getString(R.string.hint_race_physical_rr));
 
 		realmRxHandler.getAll()
 				.subscribe(new Subscriber<Collection<Realm>>() {
@@ -534,48 +545,43 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 					@Override
 					public void onNext(Collection<Realm> realms) {
 						rrEditViews = new HashMap<>(realms.size());
-						LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0,
-																						 ActionBar.LayoutParams.WRAP_CONTENT,
-																						 1f);
 						TextView textView;
 						for(Realm realm : realms) {
 							initRealmViews(realm, params, rrModLabels, rrModEdits);
 						}
+						rrModEdits.addView(physicalRREdit);
 						textView = new TextView(getActivity());
 						textView.setLayoutParams(params);
 						textView.setText(getString(R.string.label_physical_rr));
 						rrModLabels.addView(textView);
-						physicalRREdit = new EditText(getActivity());
-						physicalRREdit.setLayoutParams(params);
-						physicalRREdit.setHint(getString(R.string.hint_race_physical_rr));
-						rrModEdits.addView(physicalRREdit);
-						physicalRREdit.addTextChangedListener(new TextWatcher() {
-							@Override
-							public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-							@Override
-							public void onTextChanged(CharSequence s, int start, int before, int count) {}
-							@Override
-							public void afterTextChanged(Editable s) {
-								if (s.length() == 0) {
-									physicalRREdit.setError(getString(R.string.validation_race_phyiscal_rr_required));
-								}
-							}
-						});
-						physicalRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-							@Override
-							public void onFocusChange(View v, boolean hasFocus) {
-								Race currentInstance = racesFragment.getCurrentInstance();
-								if(physicalRREdit.getText().length() > 0) {
-									short newShort = Short.valueOf(physicalRREdit.getText().toString());
-									if(newShort != currentInstance.getPhysicalResistanceModifier()) {
-										currentInstance.setPhysicalResistanceModifier(newShort);
-										racesFragment.saveItem();
-									}
-								}
-							}
-						});
 					}
 				});
+
+		physicalRREdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.length() == 0) {
+					physicalRREdit.setError(getString(R.string.validation_race_phyiscal_rr_required));
+				}
+			}
+		});
+		physicalRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				Race currentInstance = racesFragment.getCurrentInstance();
+				if(physicalRREdit.getText().length() > 0) {
+					short newShort = Short.valueOf(physicalRREdit.getText().toString());
+					if(newShort != currentInstance.getPhysicalResistanceModifier()) {
+						currentInstance.setPhysicalResistanceModifier(newShort);
+						racesFragment.saveItem();
+					}
+				}
+			}
+		});
 	}
 
 	private void initRealmViews(final Realm realm, LinearLayout.LayoutParams params, LinearLayout labelsRow,

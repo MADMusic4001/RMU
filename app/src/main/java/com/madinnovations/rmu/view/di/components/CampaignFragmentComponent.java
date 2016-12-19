@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
-import com.madinnovations.rmu.view.activities.campaign.CampaignsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.CampaignFragmentModule;
 
@@ -29,6 +28,5 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = CampaignFragmentModule.class)
 public interface CampaignFragmentComponent {
-	void injectInto(CampaignsFragment campaignsFragment);
 	void injectInto(FileSelectorDialogFragment fsDialogFragment);
 }

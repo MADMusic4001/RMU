@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
@@ -51,6 +52,7 @@ import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Sense;
@@ -91,6 +93,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	@Inject
 	AttackRxHandler                      attackRxHandler;
 	@Inject
+	CriticalTypeRxHandler                criticalTypeRxHandler;
+	@Inject
 	SkillRxHandler                       skillRxHandler;
 	@Inject
 	SpecializationRxHandler              specializationRxHandler;
@@ -127,6 +131,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private SparseArray<Specialization> specializationSparseArray = null;
 	private SparseArray<Spell>          spellSparseArray          = null;
 	private SparseArray<SpellList>      spellListSparseArray      = null;
+	private SparseArray<CriticalType>   criticalTypeSparseArray   = null;
 	private Map<View, Integer> indexMap             = new HashMap<>();
 	private Attack             choiceAttack         = null;
 	@SuppressWarnings("unused")
@@ -135,6 +140,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private Specialization     choiceSpecialization = null;
 	private Spell              choiceSpell          = null;
 	private SpellList          choiceSpellList      = null;
+	private CriticalType       choiceCriticalType   = null;
 	@SuppressWarnings("unused")
 	private Statistic          choiceStat           = null;
 
@@ -337,6 +343,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		}
 	}
 
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	private boolean copyViewsToItem() {
 		View currentFocusView = getActivity().getCurrentFocus();
@@ -452,8 +463,18 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					case STAT:
 						changed |= copyStatsViewsToItem(entry.getKey(), entry.getValue());
 						break;
+					case CONDITION:
+						changed |= copyNoValuesViewsToItem(entry.getValue(), parameter);
+						break;
+					case CRITICAL_TYPE:
+						changed |= copyCriticalTypeViewsToItem(entry.getKey(), entry.getValue());
+						break;
+					case CRITICAL_SEVERITY:
+						changed |= copyCriticalSeverityViewsToItem(entry.getKey(), entry.getValue());
+						break;
 					default:
 						changed |= copyValuesViewsToItem(entry.getKey(), entry.getValue(), parameter);
+						break;
 				}
 			}
 		}
@@ -726,6 +747,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initSpecializationsSpinner(parameterRowView);
 		initSpellsSpinner(parameterRowView);
 		initSpellListsSpinner(parameterRowView);
+		initCriticalTypesSpinner(parameterRowView);
+		initCriticalSeveritiesSpinner(parameterRowView);
+		initInitialAdjustmentEdit(parameterRowView);
+		initAdjustmentPerEdit(parameterRowView);
 		initStatsSpinner(parameterRowView);
 
 		Parameter parameter = currentInstance.getTalentParameterRows()[index].getParameter();
@@ -755,8 +780,17 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			case STAT:
 				setStatsVisibility(parameterRowView, VISIBLE);
 				break;
+			case CRITICAL_TYPE:
+				setCriticalTypeVisibility(parameterRowView, VISIBLE);
+				break;
+			case CRITICAL_SEVERITY:
+				setCriticalSeverityVisibility(parameterRowView, VISIBLE);
+				break;
+			case CONDITION:
+				break;
 			default:
 				setValuesVisibility(parameterRowView, VISIBLE);
+				break;
 		}
 
 		parametersList.addView(parameterRowView);
@@ -781,6 +815,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						row.setParameter(parameter);
 						switch (parameter) {
 							case ATTACK:
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
@@ -791,9 +827,36 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								setValuesVisibility(layout, GONE);
 								setAttacksVisibility(layout, VISIBLE);
 								break;
+							case CRITICAL_TYPE:
+								setAttacksVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, VISIBLE);
+								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
+								break;
+							case CRITICAL_SEVERITY:
+								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, VISIBLE);
+								setCriticalTypeVisibility(layout, GONE);
+								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
+								break;
 							case ELEMENTAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getElementalResistances());
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -807,6 +870,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case FOLLOWER_FEAR_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getFearResistances());
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -819,6 +884,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case MAGICAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getMagicalResistances());
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -831,6 +898,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							case PHYSICAL_RR:
 								setResistanceSpinnerAdapter(layout, Resistance.getPhysicalResistances());
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -842,6 +911,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								break;
 							case SENSE:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -853,6 +924,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								break;
 							case SKILL:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSpecializationsVisibility(layout, GONE);
@@ -864,6 +937,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								break;
 							case SPECIALIZATION:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
@@ -875,6 +950,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								break;
 							case SPELL:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
@@ -886,6 +963,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								break;
 							case SPELL_LIST:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
@@ -897,6 +976,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								break;
 							case STAT:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
@@ -906,8 +987,23 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								setValuesVisibility(layout, GONE);
 								setStatsVisibility(layout, VISIBLE);
 								break;
+							case CONDITION:
+								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
+								setResistancesVisibility(layout, GONE);
+								setSenseVisibility(layout, GONE);
+								setSkillsVisibility(layout, GONE);
+								setSpecializationsVisibility(layout, GONE);
+								setSpellsVisibility(layout, GONE);
+								setSpellListsVisibility(layout, GONE);
+								setStatsVisibility(layout, GONE);
+								setValuesVisibility(layout, GONE);
+								break;
 							default:
 								setAttacksVisibility(layout, GONE);
+								setCriticalSeverityVisibility(layout, GONE);
+								setCriticalTypeVisibility(layout, GONE);
 								setResistancesVisibility(layout, GONE);
 								setSenseVisibility(layout, GONE);
 								setSkillsVisibility(layout, GONE);
@@ -1129,8 +1225,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Attack attack = adapter.getItem(position);
 				if(attack != null) {
-					Attack currentAttack = attackSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
+					Attack currentAttack = null;
+					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+					if(index != null) {
+						currentAttack = attackSparseArray.get(index);
+					}
 					if(!attack.equals(currentAttack)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(attack.getId());
 						saveItem();
@@ -1514,8 +1613,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				SpellList spellList = adapter.getItem(position);
 				if(spellList != null) {
-					SpellList currentSpellList = spellListSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
+					SpellList currentSpellList = null;
+					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+					if(index != null) {
+						currentSpellList = spellListSparseArray.get(index);
+					}
 					if(!spellList.equals(currentSpellList)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(spellList.getId());
 						saveItem();
@@ -1524,6 +1626,190 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+	}
+
+	private void initCriticalTypesSpinner(final View layout) {
+		final Spinner spinner = (Spinner)layout.findViewById(R.id.critical_type_spinner);
+		final ArrayAdapter<CriticalType> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+
+		if(criticalTypeSparseArray != null) {
+			adapter.clear();
+			for(int i = 0; i < criticalTypeSparseArray.size(); i++) {
+				adapter.add(criticalTypeSparseArray.valueAt(i));
+			}
+			adapter.notifyDataSetChanged();
+			spinner.setAdapter(adapter);
+			Integer index = null;
+			if(indexMap.get(layout) != null) {
+				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+			}
+			if(index != null) {
+				spinner.setSelection(adapter.getPosition(criticalTypeSparseArray.get(index)));
+			}
+			else {
+				spinner.setSelection(0);
+			}
+		}
+		else {
+			choiceCriticalType = new CriticalType();
+			choiceCriticalType.setName(getString(R.string.choice_label));
+			criticalTypeRxHandler.getAll()
+					.subscribe(new Subscriber<Collection<CriticalType>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "Exception getting all Spell List instances", e);
+						}
+						@Override
+						public void onNext(Collection<CriticalType> criticalTypes) {
+							criticalTypeSparseArray = new SparseArray<>(criticalTypes.size() + 1);
+							criticalTypeSparseArray.put(choiceSpell.getId(), choiceCriticalType);
+							for(CriticalType criticalType : criticalTypes) {
+								criticalTypeSparseArray.put(criticalType.getId(), criticalType);
+							}
+							adapter.clear();
+							adapter.addAll(criticalTypes);
+							adapter.notifyDataSetChanged();
+							spinner.setAdapter(adapter);
+							Integer index = null;
+							if(indexMap.get(layout) != null) {
+								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+							}
+							if(index != null) {
+								spinner.setSelection(adapter.getPosition(criticalTypeSparseArray.get(index)));
+							}
+							else {
+								spinner.setSelection(0);
+							}
+						}
+					});
+		}
+
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				CriticalType criticalType = adapter.getItem(position);
+				if(criticalType != null) {
+					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+					CriticalType currentCriticalType = null;
+					if(index != null) {
+						currentCriticalType = criticalTypeSparseArray.get(index);
+					}
+					if(!criticalType.equals(currentCriticalType)) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(criticalType.getId());
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+	}
+
+	private void initCriticalSeveritiesSpinner(final View layout) {
+		final Spinner spinner = (Spinner)layout.findViewById(R.id.critical_severity_spinner);
+		final ArrayAdapter<Character> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+
+		adapter.clear();
+		for(char c = 'A'; c <= 'J'; c++) {
+			adapter.add(c);
+		}
+		adapter.notifyDataSetChanged();
+		spinner.setAdapter(adapter);
+		Character severity = null;
+		if(indexMap.get(layout) != null && currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName() != null) {
+			severity = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName().charAt(0);
+		}
+		if(severity != null) {
+			spinner.setSelection(adapter.getPosition(severity));
+		}
+
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Character severity = adapter.getItem(position);
+				if(severity != null) {
+					String severityString = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName();
+					Character currentSeverity = null;
+					if(severityString != null) {
+						currentSeverity = severityString.charAt(0);
+					}
+					if(!severity.equals(currentSeverity)) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+								.setEnumName(severity.toString());
+						saveItem();
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+	}
+
+	private void initInitialAdjustmentEdit(final View layout) {
+		final EditText editText = (EditText)layout.findViewById(R.id.initial_adjustment_edit);
+		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+		if(value != null) {
+			editText.setText(String.valueOf(value));
+		}
+		else {
+			editText.setText(null);
+		}
+
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					Integer newInteger = Integer.valueOf(editText.getText().toString());
+					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
+						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)]
+													   .getInitialValue())) {
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(newInteger);
+							saveItem();
+						}
+					}
+				}
+				else {
+					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
+						saveItem();
+					}
+				}
+			}
+		});
+	}
+
+	private void initAdjustmentPerEdit(final View layout) {
+		final EditText editText = (EditText)layout.findViewById(R.id.adjustment_per_tier_edit);
+		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer();
+		if(value != null) {
+			editText.setText(String.valueOf(value));
+		}
+		else {
+			editText.setText(null);
+		}
+
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					Integer newInteger = Integer.valueOf(editText.getText().toString());
+					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
+						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer())) {
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(newInteger);
+							saveItem();
+						}
+					}
+				}
+				else {
+					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer() != null) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(null);
+						saveItem();
+					}
+				}
+			}
 		});
 	}
 
@@ -1562,6 +1848,42 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {}
 		});
+	}
+
+	private boolean copyNoValuesViewsToItem(int index, Parameter parameter) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != parameter) {
+			row.setParameter(parameter);
+			changed = true;
+		}
+
+		if(row.getInitialValue() != null) {
+			row.setInitialValue(null);
+			changed = true;
+		}
+
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
 	}
 
 	private boolean copyValuesViewsToItem(final View layout, int index, Parameter parameter) {
@@ -1617,7 +1939,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 		return changed;
 	}
-
 	private void setValuesVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.initial_value_label).setVisibility(visibility);
 		layout.findViewById(R.id.initial_value_edit).setVisibility(visibility);
@@ -2021,6 +2342,134 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void setStatsVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.stat_label).setVisibility(visibility);
 		layout.findViewById(R.id.stat_spinner).setVisibility(visibility);
+	}
+
+	private boolean copyCriticalTypeViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.CRITICAL_TYPE) {
+			row.setParameter(Parameter.CRITICAL_TYPE);
+			changed = true;
+		}
+
+		Spinner spinner = (Spinner)layout.findViewById(R.id.critical_type_spinner);
+		int newInitialValue = -1;
+		if(spinner.getSelectedItem() != null) {
+			newInitialValue = ((CriticalType) spinner.getSelectedItem()).getId();
+		}
+		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
+			row.setInitialValue(newInitialValue);
+			changed = true;
+		}
+
+		if(row.getEnumName() != null) {
+			row.setEnumName(null);
+			changed = true;
+		}
+
+		if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
+	private void setCriticalTypeVisibility(final View layout, int visibility) {
+		layout.findViewById(R.id.critical_type_label).setVisibility(visibility);
+		layout.findViewById(R.id.critical_type_spinner).setVisibility(visibility);
+	}
+
+	private boolean copyCriticalSeverityViewsToItem(final View layout, int index) {
+		boolean changed = false;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
+		if(row.getParameter() != Parameter.CRITICAL_SEVERITY) {
+			row.setParameter(Parameter.CRITICAL_SEVERITY);
+			changed = true;
+		}
+
+		Spinner spinner = (Spinner)layout.findViewById(R.id.critical_severity_spinner);
+		Character severity = null;
+		if(spinner.getSelectedItem() != null) {
+			severity = (Character)spinner.getSelectedItem();
+		}
+		Character oldSeverity = null;
+		if(row.getEnumName() != null && !row.getEnumName().isEmpty()) {
+			oldSeverity = row.getEnumName().charAt(0);
+		}
+		if((severity != null && !severity.equals(oldSeverity) || (severity == null && oldSeverity != null))) {
+			if(severity != null) {
+				row.setEnumName(severity.toString());
+			}
+			else {
+				row.setEnumName(null);
+			}
+		}
+
+		String value = ((EditText)layout.findViewById(R.id.initial_adjustment_edit)).getText().toString();
+		if(value.length() > 0) {
+			int intValue = Integer.valueOf(value);
+			if(row.getInitialValue() == null || row.getInitialValue() != intValue) {
+				row.setInitialValue(intValue);
+				changed = true;
+			}
+		}
+		else if(row.getInitialValue() != null) {
+			row.setInitialValue(null);
+			changed = true;
+		}
+
+		value = ((EditText)layout.findViewById(R.id.adjustment_per_tier_edit)).getText().toString();
+		if(value.length() > 0) {
+			int intValue = Integer.valueOf(value);
+			if(row.getValuePer() == null || row.getValuePer() != intValue) {
+				row.setValuePer(intValue);
+				changed = true;
+			}
+		}
+		else if(row.getValuePer() != null) {
+			row.setValuePer(null);
+			changed = true;
+		}
+
+		if(row.isPerLevel()) {
+			row.setPerLevel(false);
+			changed = true;
+		}
+
+		if(row.isPerRound()) {
+			row.setPerRound(false);
+			changed = true;
+		}
+
+		if(row.isPerTier()) {
+			row.setPerTier(false);
+			changed = true;
+		}
+
+		return changed;
+	}
+	private void setCriticalSeverityVisibility(final View layout, int visibility) {
+		layout.findViewById(R.id.critical_severity_spinner).setVisibility(visibility);
+		layout.findViewById(R.id.critical_severity_label).setVisibility(visibility);
+		layout.findViewById(R.id.initial_adjustment_label).setVisibility(visibility);
+		layout.findViewById(R.id.initial_adjustment_edit).setVisibility(visibility);
+		layout.findViewById(R.id.adjustment_per_label).setVisibility(visibility);
+		layout.findViewById(R.id.adjustment_per_tier_edit).setVisibility(visibility);
 	}
 
 	private void loadFilteredTalents(final TalentCategory filter) {

@@ -266,8 +266,8 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 
 	@Override
 	public Collection<Skill> getCharacterPurchasableSkills() {
-		final String selectionArgs[] = {"0"};
-		final String selection = COLUMN_REQUIRES_SPECIALIZATION + " = ?";
+//		final String selectionArgs[] = {"0"};
+//		final String selection = COLUMN_REQUIRES_SPECIALIZATION + " = ?";
 		List<Skill> list = new ArrayList<>();
 
 		SQLiteDatabase db = helper.getReadableDatabase();
@@ -276,7 +276,8 @@ public class SkillDaoDbImpl extends BaseDaoDbImpl<Skill> implements SkillDao, Sk
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+//			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+			Cursor cursor = query(getTableName(), getColumns(), null, null, getIdColumnName());
 
 			if (cursor != null) {
 				cursor.moveToFirst();

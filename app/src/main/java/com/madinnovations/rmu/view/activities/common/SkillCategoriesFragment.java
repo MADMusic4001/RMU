@@ -265,6 +265,11 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 	}
 
 	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	@Override
 	public Object getValueForSpinner(@IdRes int spinnerId) {
 		Statistic result = null;
 

@@ -52,6 +52,7 @@ import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
+import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;

@@ -234,6 +234,11 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				catch (NumberFormatException ignored) {}
 		}
 	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">

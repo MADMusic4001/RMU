@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.StringRes;
+
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
@@ -24,18 +26,18 @@ import java.util.Random;
  * Class representing a RoleMaster statistic.
  */
 public enum Statistic {
-	NON_REALM("NR", "Non-Realm Stat", ""),
-	REALM("R", "Realm Stat", ""),
-	AGILITY("Ag", "Agility", ""),
-	CONSTITUTION("Co", "Constitution", ""),
-	EMPATHY("Em", "Empathy", ""),
-	INTUITION("In", "Intuition", ""),
-	MEMORY("Me", "Memory", ""),
-	PRESENCE("Pr", "Presence", ""),
-	QUICKNESS("Qu", "Quickness", ""),
-	REASONING("Re", "Reasoning", ""),
-	SELF_DISCIPLINE("SD", "Self Discipline", ""),
-	STRENGTH("St", "Strength", "");
+	NON_REALM("NR", "Non-Realm Stat", 0),
+	REALM("R", "Realm Stat", 0),
+	AGILITY("Ag", "Agility", R.string.agility_tooltip),
+	CONSTITUTION("Co", "Constitution", R.string.constitution_tooltip),
+	EMPATHY("Em", "Empathy", R.string.empathy_tooltip),
+	INTUITION("In", "Intuition", R.string.intuition_tooltip),
+	MEMORY("Me", "Memory", R.string.memory_tooltip),
+	PRESENCE("Pr", "Presence", R.string.presence_tooltip),
+	QUICKNESS("Qu", "Quickness", R.string.quickness_tooltip),
+	REASONING("Re", "Reasoning", R.string.reasoning_tooltip),
+	SELF_DISCIPLINE("SD", "Self Discipline", R.string.self_discipline_tooltip),
+	STRENGTH("St", "Strength", R.string.strength_tooltip);
 	public static final int NUM_STATS = 10;
 	private static final Statistic[] allStats = new Statistic[] {AGILITY, CONSTITUTION, EMPATHY, INTUITION, MEMORY, PRESENCE,
 			QUICKNESS, REASONING, SELF_DISCIPLINE, STRENGTH};
@@ -43,15 +45,15 @@ public enum Statistic {
 			84, 87, 90, 93, 95, 96, 97, 98, 99, 100, 101};
 	private String abbreviation;
 	private String name;
-	private String description;
+	private @StringRes int descriptionId;
 
 	/**
 	 * Creates a new Stat instance.
 	 */
-	Statistic(String abbreviation, String name, String description) {
+	Statistic(String abbreviation, String name, @StringRes int descriptionId) {
 		this.abbreviation = abbreviation;
 		this.name = name;
-		this.description = description;
+		this.descriptionId = descriptionId;
 	}
 
 	/**
@@ -127,15 +129,15 @@ public enum Statistic {
 		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), abbreviation, name);
 	}
 
-	// Getters and setters
+	// Getters
 	public String getAbbreviation() {
 		return abbreviation;
 	}
 	public String getName() {
 		return name;
 	}
-	public String getDescription() {
-		return description;
+	public int getDescriptionId() {
+		return descriptionId;
 	}
 	public static Statistic[] getAllStats() {
 		return allStats;

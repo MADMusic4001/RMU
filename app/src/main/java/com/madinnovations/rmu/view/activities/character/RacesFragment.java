@@ -66,6 +66,8 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	private   Race                         currentInstance = new Race();
 	private   boolean                      isNew           = true;
 
+	// TODO: Fix Races tab switching so that old selection is no longer overwritten by first race in list.
+
 	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override

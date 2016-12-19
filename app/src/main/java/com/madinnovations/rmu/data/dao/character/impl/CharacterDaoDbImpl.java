@@ -516,7 +516,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		}
 
 		selection = CharacterPurchasedCultureRanksSchema.COLUMN_CHARACTER_ID + " = ?";
-		db.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs);
+		db.delete(CharacterPurchasedCultureRanksSchema.TABLE_NAME, selection, selectionArgs);
 
 		for(Map.Entry<Object, Short> entry : instance.getPurchasedCultureRanks().entrySet()) {
 			if(entry.getValue() != null) {
@@ -530,7 +530,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 						skillId = ((Skill)entry.getKey()).getId();
 					}
 				}
-				result &= (db.insertWithOnConflict(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null,
+				result &= (db.insertWithOnConflict(CharacterPurchasedCultureRanksSchema.TABLE_NAME, null,
 												   getPurchasedCultureRanksContentValues(instance.getId(), specializationId,
 																						 skillId, entry.getValue()),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);

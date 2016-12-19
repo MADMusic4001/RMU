@@ -49,6 +49,7 @@ import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.character.ProfessionCategoryCostListAdapter;
@@ -185,6 +186,21 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					return true;
 				}
 				break;
+			case R.id.context_copy_profession:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
+				profession = (Profession)listView.getItemAtPosition(info.position);
+				if(profession != null) {
+					currentInstance = new Profession(profession);
+					currentInstance.setName(profession.getName() + getString(R.string.copy_string));
+					copyItemToViews();
+					isNew = true;
+					listView.clearChoices();
+					listAdapter.notifyDataSetChanged();
+					return true;
+				}
+				break;
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -197,11 +213,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	@Override
 	public CharSequence getField2Value(Profession profession) {
 		return profession.getDescription();
-	}
-
-	@Override
-	public Profession getProfessionInstance() {
-		return currentInstance;
 	}
 
 	@Override
@@ -231,6 +242,65 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				currentInstance.setDescription(newString);
 				saveItem();
 				break;
+		}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	@Override
+	public Profession getProfessionInstance() {
+		return currentInstance;
+	}
+
+	@Override
+	public void saveItem() {
+		if(currentInstance.isValid()) {
+			try {
+				throw new RMUAppException();
+			}
+			catch (RMUAppException e) {
+				Log.e(TAG, "saveItem: stack trace", e);
+			}
+			final boolean wasNew = isNew;
+			isNew = false;
+			professionRxHandler.save(currentInstance)
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeOn(Schedulers.io())
+					.subscribe(new Subscriber<Profession>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "Exception saving Profession", e);
+							String toastString = getString(R.string.toast_profession_save_failed);
+							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						}
+						@Override
+						public void onNext(Profession savedProfession) {
+							if (wasNew) {
+								listAdapter.add(savedProfession);
+								if(savedProfession == currentInstance) {
+									listView.setSelection(listAdapter.getPosition(savedProfession));
+									listView.setItemChecked(listAdapter.getPosition(savedProfession), true);
+								}
+								listAdapter.notifyDataSetChanged();
+							}
+							if (getActivity() != null) {
+								Toast.makeText(getActivity(), getString(R.string.toast_profession_saved), Toast.LENGTH_SHORT).show();
+								int position = listAdapter.getPosition(currentInstance);
+								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
+								if (v != null) {
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
+									textView.setText(currentInstance.getName());
+									textView = (TextView) v.findViewById(R.id.row_field2);
+									textView.setText(currentInstance.getDescription());
+								}
+							}
+						}
+					});
 		}
 	}
 	// </editor-fold>
@@ -282,16 +352,55 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 						assignableCosts = new ArrayList<>(categoryCostListAdapter.getChildrenCount(i));
 						newAssignableSkillCosts.put(categoryCost.getSkillCategory(), assignableCosts);
 					}
-					assignableCosts.add(skillCostGroup.getCostGroup());
+					assignableCosts.add(categoryCost.getAssignableCostGroups().get(j));
 				}
 				else if(skillCostGroup.getCostGroup() != null) {
 					newSkillCosts.put(skillCostGroup.getSkill(), skillCostGroup.getCostGroup());
 				}
 			}
 		}
-		currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
-		currentInstance.setSkillCosts(newSkillCosts);
-		currentInstance.setAssignableSkillCostsMap(newAssignableSkillCosts);
+
+		boolean mapChange = false;
+		if(newSkillCategoryCosts.size() != currentInstance.getSkillCategoryCosts().size()) {
+			mapChange = true;
+		}
+		else {
+			for(Map.Entry<SkillCategory, DevelopmentCostGroup> entry : newSkillCategoryCosts.entrySet()) {
+				mapChange |= !entry.getValue().equals(currentInstance.getSkillCategoryCosts().get(entry.getKey()));
+			}
+		}
+		if(mapChange) {
+			currentInstance.setSkillCategoryCosts(newSkillCategoryCosts);
+			changed = true;
+		}
+
+		mapChange = false;
+		if(newSkillCosts.size() != currentInstance.getSkillCosts().size()) {
+			mapChange = true;
+		}
+		else {
+			for(Map.Entry<Skill, DevelopmentCostGroup> entry : newSkillCosts.entrySet()) {
+				mapChange |= !entry.getValue().equals(currentInstance.getSkillCosts().get(entry.getKey()));
+			}
+		}
+		if(mapChange) {
+			currentInstance.setSkillCosts(newSkillCosts);
+			changed = true;
+		}
+
+		mapChange = false;
+		if(newAssignableSkillCosts.size() != currentInstance.getAssignableSkillCostsMap().size()) {
+			mapChange = true;
+		}
+		else {
+			for(Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : newAssignableSkillCosts.entrySet()) {
+				mapChange |= !entry.getValue().equals(currentInstance.getAssignableSkillCostsMap().get(entry.getKey()));
+			}
+		}
+		if(mapChange) {
+			currentInstance.setAssignableSkillCostsMap(newAssignableSkillCosts);
+			changed = true;
+		}
 
 		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
 		if(newRealm != null) {
@@ -383,49 +492,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					}
 				}
 			});
-	}
-
-	@Override
-	public void saveItem() {
-		if(currentInstance.isValid()) {
-			final boolean wasNew = isNew;
-			isNew = false;
-			professionRxHandler.save(currentInstance)
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Profession>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception saving Profession", e);
-						String toastString = getString(R.string.toast_profession_save_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(Profession savedProfession) {
-						if (wasNew) {
-							listAdapter.add(savedProfession);
-							if(savedProfession == currentInstance) {
-								listView.setSelection(listAdapter.getPosition(savedProfession));
-								listView.setItemChecked(listAdapter.getPosition(savedProfession), true);
-							}
-							listAdapter.notifyDataSetChanged();
-						}
-						if (getActivity() != null) {
-							Toast.makeText(getActivity(), getString(R.string.toast_profession_saved), Toast.LENGTH_SHORT).show();
-							int position = listAdapter.getPosition(currentInstance);
-							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
-							if (v != null) {
-								TextView textView = (TextView) v.findViewById(R.id.row_field1);
-								textView.setText(currentInstance.getName());
-								textView = (TextView) v.findViewById(R.id.row_field2);
-								textView.setText(currentInstance.getDescription());
-							}
-						}
-					}
-				});
-		}
 	}
 	// </editor-fold>
 
@@ -665,7 +731,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			if(assignableCostList != null) {
 				for(int i = assignableCostList.size() - 1; i >=0; i--) {
 					if(assignableCostList.get(i) == null) {
-						assignableCostList.remove(i);
+						assignableCostList.set(i, DevelopmentCostGroup.NONE);
 					}
 				}
 				if (assignableCostList.size() > skillCostGroupList.size()) {

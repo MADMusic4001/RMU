@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
@@ -23,7 +24,9 @@ import dagger.Subcomponent;
 /**
  * The PlayFragmentComponent dependency injection interface.
  */
+@SuppressWarnings("WeakerAccess")
 @PerFragment
 @Subcomponent(modules = PlayFragmentModule.class)
-interface PlayFragmentComponent {
+public interface PlayFragmentComponent {
+	void injectInto(CampaignsFragment campaignsFragment);
 }

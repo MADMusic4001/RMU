@@ -22,6 +22,7 @@ import android.content.ClipDescription;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -85,6 +86,8 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	private   EditText                currentDpText;
 	private   List<Skill>             skillList = null;
 
+	// TODO: Check to see if Lore Skill selection on Skills UI is used to determine "Other Lores" when showing Culture Ranks in Character Selection Screen and update label if necessary.
+
 	/**
 	 * Creates new CharacterSkillsPageFragment instance.
 	 *
@@ -124,42 +127,51 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	}
 
 	@Override
-	public boolean purchaseRank(Skill skill, Specialization specialization, short purchasedThisLevel) {
-		boolean result = false;
+	public short purchaseRank(@NonNull SkillRanks skillRanks) {
 		DevelopmentCostGroup costGroup;
 		short cost;
+
 		Character character = charactersFragment.getCurrentInstance();
+		short result = getCurrentRanks(skillRanks);
+		short purchasedThisLevel = getRanksPurchasedThisLevel(skillRanks);
+		short remainingCultureRanks = getRemainingCultureRanks(skillRanks);
 
-		costGroup = getSkillCost(skill, specialization);
+		if(remainingCultureRanks > 0) {
+			result = purchaseWithCultureRanks(skillRanks);
+		}
+		else {
+			costGroup = getSkillCost(skillRanks);
 
-		if(costGroup != null) {
-			if(purchasedThisLevel == 0) {
-				cost = costGroup.getFirstCost();
-			}
-			else {
-				cost = costGroup.getAdditionalCost();
-			}
-			if(cost < character.getCurrentDevelopmentPoints()) {
-				character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() - cost));
-				currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-				if(skill != null) {
-					if(character.getSkillRanks().get(skill) == null) {
-						character.getSkillRanks().put(skill, (short)1);
-					}
-					else {
-						character.getSkillRanks().put(skill, (short) (character.getSkillRanks().get(skill) + 1));
-					}
+			if (costGroup != null) {
+				if (purchasedThisLevel == 0) {
+					cost = costGroup.getFirstCost();
 				}
 				else {
-					if(character.getSpecializationRanks().get(specialization) == null) {
-						character.getSpecializationRanks().put(specialization, (short)1);
+					cost = costGroup.getAdditionalCost();
+				}
+				if (cost < character.getCurrentDevelopmentPoints() && (getRanksPurchasedThisLevel(skillRanks) < 2 ||
+						character.getCampaign().isIntenseTrainingAllowed())) {
+					if (skillRanks.getSkill() != null) {
+						purchasedThisLevel += (short)1;
+						character.getCurrentLevelSkillRanks().put(skillRanks.getSkill(), purchasedThisLevel);
+
+						result += (short)1;
+						character.getSkillRanks().put(skillRanks.getSkill(), result);
+						character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
+						currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+						charactersFragment.saveItem();
 					}
-					else {
-						character.getSpecializationRanks().put(
-								specialization, (short) (character.getSpecializationRanks().get(specialization) + 1));
+					else if(skillRanks.getSpecialization() != null) {
+						purchasedThisLevel += (short)1;
+						character.getCurrentLevelSpecializationRanks().put(skillRanks.getSpecialization(), purchasedThisLevel);
+
+						result += (short)1;
+						character.getSpecializationRanks().put(skillRanks.getSpecialization(), result);
+						character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
+						currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+						charactersFragment.saveItem();
 					}
 				}
-				result = true;
 			}
 		}
 
@@ -167,61 +179,104 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	}
 
 	@Override
-	public boolean sellRank(Skill skill, Specialization specialization, short purchasedThisLevel) {
-		boolean result = false;
-		DevelopmentCostGroup costGroup;
+	public short sellRank(SkillRanks skillRanks) {
 		short cost;
+		boolean changed = false;
 		Character character = charactersFragment.getCurrentInstance();
+		short result = getCurrentRanks(skillRanks);
+		short purchasedThisLevel = getRanksPurchasedThisLevel(skillRanks);
+		short purchasedCultureRanks = getPurchasedCultureRanks(skillRanks);
+		DevelopmentCostGroup costGroup = getSkillCost(skillRanks);
 
-		costGroup = getSkillCost(skill, specialization);
-
-		if(costGroup != null) {
-			if(purchasedThisLevel == 1) {
+		if(purchasedThisLevel > 0 && costGroup != null) {
+			if (purchasedThisLevel == 1) {
 				cost = costGroup.getFirstCost();
 			}
 			else {
 				cost = costGroup.getAdditionalCost();
 			}
-			character.setCurrentDevelopmentPoints((short)(character.getCurrentDevelopmentPoints() + cost));
-			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-			if(skill != null) {
-				character.getSkillRanks().put(skill, (short) (character.getSkillRanks().get(skill) - 1));
+			if (skillRanks.getSkill() != null) {
+				purchasedThisLevel -= (short) 1;
+				if (purchasedThisLevel > 0) {
+					character.getCurrentLevelSkillRanks().put(skillRanks.getSkill(), purchasedThisLevel);
+				}
+				else {
+					character.getCurrentLevelSkillRanks().remove(skillRanks.getSkill());
+				}
+
+				result -= (short) 1;
+				if (result > 0) {
+					character.getSkillRanks().put(skillRanks.getSkill(), result);
+				}
+				else {
+					result = 0;
+					character.getSkillRanks().remove(skillRanks.getSkill());
+				}
+				character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
+				currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+				changed = true;
 			}
-			else {
-				character.getSpecializationRanks().put(
-						specialization, (short)(character.getSpecializationRanks().get(specialization) - 1));
+			else if (skillRanks.getSpecialization() != null) {
+				purchasedThisLevel -= (short) 1;
+				if (purchasedThisLevel > 0) {
+					character.getCurrentLevelSpecializationRanks()
+							.put(skillRanks.getSpecialization(), purchasedThisLevel);
+				}
+				else {
+					character.getCurrentLevelSpecializationRanks().remove(skillRanks.getSpecialization());
+				}
+
+				result -= (short) 1;
+				if (result > 0) {
+					character.getSpecializationRanks().put(skillRanks.getSpecialization(), result);
+				}
+				else {
+					result = 0;
+					character.getSpecializationRanks().remove(skillRanks.getSpecialization());
+				}
+				character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
+				currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+				changed = true;
 			}
-			result = true;
+		}
+		else if(character.getCurrentLevel() == 0 && purchasedCultureRanks > 0) {
+			result = sellCultureRank(skillRanks);
 		}
 
+		if(changed) {
+			charactersFragment.saveItem();
+		}
 		return result;
 	}
 
 	@Override
-	public DevelopmentCostGroup getSkillCost(Skill skill, Specialization specialization) {
-		DevelopmentCostGroup costGroup = null;
+	public DevelopmentCostGroup getSkillCost(SkillRanks skillRanks) {
+		DevelopmentCostGroup costGroup;
 		Character character = charactersFragment.getCurrentInstance();
+		Skill baseSkill = skillRanks.getSkill();
 
-		if(skill != null) {
-			costGroup = character.getSkillCosts().get(skill);
-			if(costGroup == null && character.getProfession() != null) {
-				costGroup = character.getProfession().getSkillCosts().get(skill);
-				if(costGroup == null) {
-					costGroup = character.getProfession().getSkillCategoryCosts().get(skill.getCategory());
-				}
-			}
+		if(skillRanks.getSpecialization() != null) {
+			baseSkill = skillRanks.getSpecialization().getSkill();
 		}
-		else if(specialization != null) {
-			costGroup = character.getSkillCosts().get(specialization.getSkill());
+		costGroup = character.getSkillCosts().get(baseSkill);
+		if(costGroup == null && character.getProfession() != null) {
+			costGroup = character.getProfession().getSkillCosts().get(baseSkill);
 			if(costGroup == null) {
-				costGroup = character.getProfession().getSkillCosts().get(specialization.getSkill());
-				if(costGroup == null) {
-					costGroup = character.getProfession().getSkillCategoryCosts().get(specialization.getSkill().getCategory());
-				}
+				costGroup = character.getProfession().getSkillCategoryCosts().get(baseSkill.getCategory());
 			}
 		}
 
 		return costGroup;
+	}
+
+	@Override
+	public short getCultureRanks(SkillRanks skillRanks) {
+		return getRemainingCultureRanks(skillRanks);
+	}
+
+	@Override
+	public short getRanks(SkillRanks skillRanks) {
+		return getCurrentRanks(skillRanks);
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -253,6 +308,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		else {
 			copySkillRanksToView();
 		}
+		changeProfession();
 	}
 
 	private void copyAssignableCosts() {
@@ -283,7 +339,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		assignableCostLayoutRows = (LinearLayout)layout.findViewById(R.id.assignable_cost_layout_rows);
 
 		if(skillCostsListViews == null || skillCostsListViews.length == 0) {
-			Log.d(TAG, "initSkillCostsListView: ");
 			addAssignableCostsRow();
 		}
 		changeProfession();
@@ -304,7 +359,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.d(TAG, "Exception caught getting all purchasable Skill instances.", e);
+							Log.e(TAG, "Exception caught getting all purchasable Skill instances.", e);
 						}
 						@SuppressWarnings("unchecked")
 						@Override
@@ -315,7 +370,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 							else {
 								skillList = new ArrayList<>(skillCollection);
 							}
-							Collections.sort(skillList);
 							copySkillRanksToView();
 						}
 					});
@@ -339,37 +393,87 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	}
 
 	private void copySkillRanksToView() {
-		Character character = charactersFragment.getCurrentInstance();
 		List<SkillRanks> ranksList = new ArrayList<>();
 		for (Skill skill : skillList) {
 			SkillRanks skillRanks;
-			Short ranks;
 			if(!skill.isRequiresSpecialization()) {
 				skillRanks = new SkillRanks();
 				skillRanks.setSkill(skill);
-				ranks = character.getSkillRanks().get(skill);
-				if(ranks == null) {
-					ranks = 0;
-				}
-				skillRanks.setStartingRanks(ranks);
 				ranksList.add(skillRanks);
 			}
 			else {
 				for (Specialization specialization : skill.getSpecializations()) {
-					skillRanks = new SkillRanks();
-					skillRanks.setSpecialization(specialization);
-					ranks = character.getSpecializationRanks().get(specialization);
-					if(ranks == null) {
-						ranks = 0;
+					if(!specialization.isCreatureOnly()) {
+						skillRanks = new SkillRanks();
+						skillRanks.setSpecialization(specialization);
+						ranksList.add(skillRanks);
 					}
-					skillRanks.setStartingRanks(ranks);
-					ranksList.add(skillRanks);
 				}
 			}
 		}
+		//noinspection unchecked
+		Collections.sort(ranksList);
 		skillRanksAdapter.clear();
 		skillRanksAdapter.addAll(ranksList);
 		skillRanksAdapter.notifyDataSetChanged();
+	}
+
+	private short getRemainingCultureRanks(SkillRanks skillRanks) {
+		Character character = charactersFragment.getCurrentInstance();
+		short remainingRanks = 0;
+		Skill baseSkill = null;
+
+		if(skillRanks.getSkill() != null) {
+			baseSkill = skillRanks.getSkill();
+		}
+		else if(skillRanks.getSpecialization() != null) {
+			baseSkill = skillRanks.getSpecialization().getSkill();
+		}
+
+		if(character.getCulture() != null && baseSkill != null) {
+			Short cultureRanks = character.getCulture().getSkillRanks().get(baseSkill);
+			if (cultureRanks != null) {
+				short purchasedRanks = 0;
+				for(Map.Entry<Object, Short> entry : character.getPurchasedCultureRanks().entrySet()) {
+					if(isSkillOrSpecialization(baseSkill, entry.getKey())) {
+						if(entry.getValue() != null) {
+							purchasedRanks += entry.getValue();
+						}
+					}
+				}
+				remainingRanks = (short)(cultureRanks - purchasedRanks);
+			}
+			else {
+				if(baseSkill.isLore()) {
+					cultureRanks = character.getCulture().getOtherLoreRanks();
+					short purchasedRanks = 0;
+					for(Map.Entry<Object, Short> entry : character.getPurchasedCultureRanks().entrySet()) {
+						if(isSkillOrSpecialization(baseSkill, entry.getKey())) {
+							if(entry.getValue() != null) {
+								purchasedRanks += entry.getValue();
+							}
+						}
+					}
+					remainingRanks = (short)(cultureRanks - purchasedRanks);
+				}
+			}
+		}
+
+		return remainingRanks;
+	}
+
+	private boolean isSkillOrSpecialization(Skill skill, Object skillOrSpecialization) {
+		boolean result = false;
+
+		if(skill.equals(skillOrSpecialization)) {
+			result = true;
+		}
+		else if(skillOrSpecialization instanceof Specialization &&
+				skill.equals(((Specialization)skillOrSpecialization).getSkill())) {
+			result = true;
+		}
+
+		return result;
 	}
 
 	private void hideAssignableList(int index) {
@@ -390,12 +494,12 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 	@SuppressLint("DefaultLocale")
 	public void changeProfession() {
-		Log.d(TAG, "changeProfession: ");
-		if (charactersFragment.getCurrentInstance().getProfession() != null &&
-				charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().size() > 0) {
+		Character character = charactersFragment.getCurrentInstance();
+		if (character.getProfession() != null &&
+				character.getProfession().getAssignableSkillCostsMap().size() > 0) {
 			int i = 0;
 			for (final SkillCategory category :
-					charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().keySet()) {
+					character.getProfession().getAssignableSkillCostsMap().keySet()) {
 				final int index = i++;
 				while (skillCostsListViews.length <= index) {
 					addAssignableCostsRow();
@@ -405,14 +509,11 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				skillRxHandler.getSkillsForCategory(category)
 						.subscribe(new Subscriber<Collection<Skill>>() {
 							@Override
-							public void onCompleted() {
-							}
-
+							public void onCompleted() {}
 							@Override
 							public void onError(Throwable e) {
 								Log.e(TAG, "Exception caught getting Skill for category " + category.getName() + ".", e);
 							}
-
 							@SuppressWarnings("unchecked")
 							@Override
 							public void onNext(Collection<Skill> skillCollection) {
@@ -424,7 +525,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			}
 			for (int j = skillCostsListViews.length - 1; j > i; j--) {
 				if (j % 3 == 2
-						&& charactersFragment.getCurrentInstance().getProfession().getAssignableSkillCostsMap().size() <= j
+						&& character.getProfession().getAssignableSkillCostsMap().size() <= j
 						- 2) {
 					LinearLayout header = (LinearLayout) assignableCostLayoutRows.findViewWithTag(
 							String.format(HEADER_TAG, j - 2));
@@ -666,5 +767,146 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			newNameView.setLayoutParams(params);
 			return newNameView;
 		}
+	}
+
+	private short purchaseWithCultureRanks(SkillRanks skillRanks) {
+		Character character = charactersFragment.getCurrentInstance();
+		short purchasedCultureRanks = getPurchasedCultureRanks(skillRanks);
+		short result = getCurrentRanks(skillRanks);
+
+		if(skillRanks.getSpecialization() != null) {
+			purchasedCultureRanks += (short)1;
+			character.getPurchasedCultureRanks().put(skillRanks.getSpecialization(), purchasedCultureRanks);
+
+			result += 1;
+			character.getSpecializationRanks().put(skillRanks.getSpecialization(), result);
+			charactersFragment.saveItem();
+		}
+		else if(skillRanks.getSkill() != null) {
+			purchasedCultureRanks += (short)1;
+			character.getPurchasedCultureRanks().put(skillRanks.getSkill(), purchasedCultureRanks);
+
+			result += 1;
+			character.getSkillRanks().put(skillRanks.getSkill(), result);
+			charactersFragment.saveItem();
+		}
+
+		skillRanksAdapter.notifyDataSetChanged();
+
+		return result;
+	}
+
+	private short sellCultureRank(SkillRanks skillRanks) {
+		Character character = charactersFragment.getCurrentInstance();
+		short purchasedRanks = getPurchasedCultureRanks(skillRanks);
+		short result = getCurrentRanks(skillRanks);
+		boolean changed = false;
+
+		if(skillRanks.getSpecialization() != null && purchasedRanks > 0) {
+			purchasedRanks -= (short)1;
+			if(purchasedRanks > 0) {
+				character.getPurchasedCultureRanks().put(skillRanks.getSpecialization(), purchasedRanks);
+			}
+			else {
+				character.getPurchasedCultureRanks().remove(skillRanks.getSpecialization());
+			}
+			changed = true;
+
+			if(result > 0) {
+				result -= (short)1;
+				if(result > 0) {
+					character.getSpecializationRanks().put(skillRanks.getSpecialization(), result);
+				}
+				else {
+					character.getSpecializationRanks().remove(skillRanks.getSpecialization());
+				}
+			}
+		}
+		else if(skillRanks.getSkill() != null) {
+			purchasedRanks -= (short)1;
+			if(purchasedRanks > 0) {
+				character.getPurchasedCultureRanks().put(skillRanks.getSkill(), purchasedRanks);
+			}
+			else {
+				character.getPurchasedCultureRanks().remove(skillRanks.getSkill());
+			}
+			changed = true;
+
+			if(result > 0) {
+				result -= (short)1;
+				if(result > 0) {
+					character.getSkillRanks().put(skillRanks.getSkill(), result);
+				}
+				else {
+					character.getSkillRanks().remove(skillRanks.getSkill());
+				}
+			}
+		}
+
+		if(changed) {
+			charactersFragment.saveItem();
+		}
+		skillRanksAdapter.notifyDataSetChanged();
+
+		return purchasedRanks;
+	}
+
+	private short getRanksPurchasedThisLevel(SkillRanks skillRanks) {
+		Character character = charactersFragment.getCurrentInstance();
+		short purchasedThisLevel = 0;
+
+		if(skillRanks.getSkill() != null) {
+			Short tempShort = character.getCurrentLevelSkillRanks().get(skillRanks.getSkill());
+			if(tempShort != null) {
+				purchasedThisLevel = tempShort;
+			}
+		}
+		else {
+			Short tempShort = character.getCurrentLevelSpecializationRanks().get(skillRanks.getSpecialization());
+			if(tempShort != null) {
+				purchasedThisLevel = tempShort;
+			}
+		}
+
+		return purchasedThisLevel;
+	}
+
+	private short getCurrentRanks(@NonNull SkillRanks skillRanks) {
+		Character character = charactersFragment.getCurrentInstance();
+		short purchasedRanks = 0;
+
+		if(skillRanks.getSkill() != null) {
+			Short ranks = character.getSkillRanks().get(skillRanks.getSkill());
+			if (ranks != null) {
+				purchasedRanks = ranks;
+			}
+		}
+		else if(skillRanks.getSpecialization() != null) {
+			Short ranks = character.getSpecializationRanks().get(skillRanks.getSpecialization());
+			if (ranks != null) {
+				purchasedRanks = ranks;
+			}
+		}
+
+		return purchasedRanks;
+	}
+
+	private short getPurchasedCultureRanks(SkillRanks skillRanks) {
+		short purchasedRanks = 0;
+		Character character = charactersFragment.getCurrentInstance();
+		Short tempShort = null;
+
+		if(skillRanks.getSkill() != null) {
+			tempShort = character.getPurchasedCultureRanks().get(skillRanks.getSkill());
+		}
+		else if(skillRanks.getSpecialization() != null) {
+			tempShort = character.getPurchasedCultureRanks().get(skillRanks.getSpecialization());
+		}
+
+		if(tempShort != null) {
+			purchasedRanks = tempShort;
+		}
+
+		return purchasedRanks;
 	}
 }

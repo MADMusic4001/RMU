@@ -142,10 +142,19 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 	@Override
 	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
 		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = ProfessionSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 
-		return db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs) >= 0;
+		String selection = ProfessionSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
+		result = db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs) >= 0;
+
+		selection = ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID + " = ?";
+		result &= db.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, selection, selectionArgs) >= 0;
+
+		selection = ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
+		result &= db.delete(ProfessionAssignableSkillCostSchema.TABLE_NAME, selection, selectionArgs) >= 0;
+
+		return result;
 	}
 
 	@Override
@@ -193,7 +202,12 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		values.put(ProfessionSkillCostSchema.COLUMN_PROFESSION_ID, professionId);
 		values.put(ProfessionSkillCostSchema.COLUMN_SKILL_ID, skillId);
-		values.put(ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
+		if(costGroup == null) {
+			values.put(ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME, DevelopmentCostGroup.NONE.name());
+		}
+		else {
+			values.put(ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
+		}
 
 		return values;
 	}
@@ -204,7 +218,12 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		values.put(ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID, professionId);
 		values.put(ProfessionSkillCategoryCostSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
-		values.put(ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
+		if(costGroup == null) {
+			values.put(ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME, DevelopmentCostGroup.NONE.name());
+		}
+		else {
+			values.put(ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
+		}
 
 		return values;
 	}
@@ -215,7 +234,12 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		values.put(ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID, professionId);
 		values.put(ProfessionAssignableSkillCostSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
-		values.put(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
+		if(costGroup == null) {
+			values.put(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME, DevelopmentCostGroup.NONE.name());
+		}
+		else {
+			values.put(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
+		}
 
 		return values;
 	}

@@ -32,8 +32,7 @@ public class Skill implements Comparable {
 	private boolean         requiresSpecialization = false;
 	private boolean         useCategoryStats       = true;
 	private boolean         requiresConcentration  = false;
-	private boolean         lore                   = false;  // Used to allow skill ranks > 2x level with Intense Training
-	                                                       // optional rule
+	private boolean         lore                   = false;
 	private List<Statistic> stats                  = new ArrayList<>();
 	private List<Specialization> specializations   = new ArrayList<>();
 

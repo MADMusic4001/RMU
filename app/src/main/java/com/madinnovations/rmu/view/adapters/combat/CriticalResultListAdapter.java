@@ -190,19 +190,25 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			this.bodyPartSpinner = bodyPartSpinner;
 			initBodyPartSpinner();
 			this.hitsEdit = hitsEdit;
-			EditTextUtils.initEdit(hitsEdit, getContext(), this, R.id.hits_edit, R.string.validation_hits_required);
+			EditTextUtils.initEdit(hitsEdit, getContext(), this, R.id.hits_edit,
+								   R.string.validation_hits_required);
 			this.bleedingEdit = bleedingEdit;
-			EditTextUtils.initEdit(bleedingEdit, getContext(), this, R.id.bleeding_edit, R.string.validation_bleeding_required);
+			EditTextUtils.initEdit(bleedingEdit, getContext(), this, R.id.bleeding_edit,
+								   R.string.validation_bleeding_required);
 			this.fatigueEdit = fatigueEdit;
-			EditTextUtils.initEdit(fatigueEdit, getContext(), this, R.id.fatigue_edit, R.string.validation_fatigue_required);
+			EditTextUtils.initEdit(fatigueEdit, getContext(), this, R.id.fatigue_edit,
+								   R.string.validation_fatigue_required);
 			this.breakageEdit = breakageEdit;
 			EditTextUtils.initEdit(breakageEdit, getContext(), this, R.id.breakage_edit, 0);
 			this.injuryEdit = injuryEdit;
-			EditTextUtils.initEdit(injuryEdit, getContext(), this, R.id.injury_edit, R.string.validation_injury_required);
+			EditTextUtils.initEdit(injuryEdit, getContext(), this, R.id.injury_edit,
+								   R.string.validation_injury_required);
 			this.dazedEdit = dazedEdit;
-			EditTextUtils.initEdit(dazedEdit, getContext(), this, R.id.dazed_edit, R.string.validation_dazed_required);
+			EditTextUtils.initEdit(dazedEdit, getContext(), this, R.id.dazed_edit,
+								   R.string.validation_dazed_required);
 			this.stunnedEdit = stunnedEdit;
-			EditTextUtils.initEdit(stunnedEdit, getContext(), this, R.id.stunned_edit, R.string.validation_stunned_required);
+			EditTextUtils.initEdit(stunnedEdit, getContext(), this, R.id.stunned_edit,
+								   R.string.validation_stunned_required);
 			this.noParryEdit = noParryEdit;
 			EditTextUtils.initEdit(noParryEdit, getContext(), this, R.id.stunned_no_parry_edit,
 								   R.string.validation_no_parry_required);
@@ -214,7 +220,8 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			this.proneEdit = proneEdit;
 			EditTextUtils.initEdit(proneEdit, getContext(), this, R.id.prone_edit, 0);
 			this.grappledEdit = grappledEdit;
-			EditTextUtils.initEdit(grappledEdit, getContext(), this, R.id.grappled_edit, R.string.validation_grappled_required);
+			EditTextUtils.initEdit(grappledEdit, getContext(), this, R.id.grappled_edit,
+								   R.string.validation_grappled_required);
 			this.deathEdit = deathEdit;
 			EditTextUtils.initEdit(deathEdit, getContext(), this, R.id.death_edit, 0);
 			this.resultTextEdit = resultTextEdit;
@@ -353,6 +360,11 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					saveItem();
 					break;
 			}
+		}
+
+		@Override
+		public boolean performLongClick(@IdRes int editTextId) {
+			return false;
 		}
 
 		private void saveItem() {

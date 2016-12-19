@@ -123,6 +123,7 @@
   <string name="label_new_locomotion_type">New Locomotion Type</string>
   <string name="label_delete_outlook">Delete Outlook</string>
   <string name="label_new_outlook">New Outlook</string>
+  <string name="label_copy_profession">Copy Profession</string>
   <string name="label_delete_profession">Delete Profession</string>
   <string name="label_new_profession">New Profession</string>
   <string name="label_delete_race">Delete Race</string>
@@ -175,10 +176,13 @@
   <string name="label_creature_variety_name">Creature Variety Name</string>
   <string name="label_critical_code">Critical Code</string>
   <string name="label_critical_code_description">Critical Code Description</string>
+  <string name="label_critical_severity_code">Critical Severity Code</string>
   <string name="label_critical_type_code">Critical Type Code</string>
   <string name="label_critical_type_description">Critical Type Description</string>
+  <string name="label_critical_type_name">Critical Type Name</string>
   <string name="label_culture_name">Culture Name</string>
   <string name="label_culture_description">Culture Description</string>
+  <string name="label_culture_ranks_available">Culture Ranks Available</string>
   <string name="label_item_description">Item Description</string>
   <string name="label_item_name">Item Name</string>
   <string name="label_item_template_description">Item Template Description</string>
@@ -259,6 +263,11 @@
   <!-- ImageButton content descriptions -->
   <string name="label_fill_range">Fill range</string>
   <string name="label_fill_range_double">Fill range double</string>
+  <string name="label_fill_range_by_twos">Fill range by 2s</string>
+  <string name="label_fill_range_by_threes">Fill range by 3s</string>
+  <string name="label_fill_range_by_fours">Fill range by 4s</string>
+  <string name="label_fill_range_by_fives">Fill range by 5s</string>
+  <string name="label_fill_range_by_sixes">Fill range by 6s</string>
 
   <!-- Button labels -->
   <string name="label_add_parameter">Add Parameter</string>
@@ -352,6 +361,7 @@
 
   <!-- Input field labels -->
   <string name="input_label_action">Action:</string>
+  <string name="input_label_adjustment_per">Adjustment per Tier:</string>
   <string name="input_label_agility_bonus">Agility Bonus:</string>
   <string name="input_label_area_of_effect">Area of Effect:</string>
   <string name="input_label_armor_type">AT:</string>
@@ -413,6 +423,7 @@
   <string name="input_label_hometown">Hometown:</string>
   <string name="input_label_identifying_marks">Identifying Marks:</string>
   <string name="input_label_initiative">Initiative:</string>
+  <string name="input_label_initial_adjustment">Initial Adjustment:</string>
   <string name="input_label_initial_value">Initial Value:</string>
   <string name="input_label_intuition_bonus">Intuition Bonus:</string>
   <string name="input_label_injury">Injury:</string>

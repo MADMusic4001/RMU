@@ -181,6 +181,11 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 		}
 	}
 
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
 	private boolean copyViewsToItem() {
 		View currentFocusView = getActivity().getCurrentFocus();
 		if(currentFocusView != null) {

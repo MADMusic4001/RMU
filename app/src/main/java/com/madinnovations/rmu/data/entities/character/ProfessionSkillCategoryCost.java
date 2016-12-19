@@ -122,4 +122,8 @@ public class ProfessionSkillCategoryCost implements Comparable {
 	public List<DevelopmentCostGroup> getAssignableCostGroups() {
 		return assignableCostGroups;
 	}
+	public void setAssignableCostGroups(
+			List<DevelopmentCostGroup> assignableCostGroups) {
+		this.assignableCostGroups = assignableCostGroups;
+	}
 }

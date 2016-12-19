@@ -344,6 +344,11 @@ public class CreatureArchetypeLevelAdapter extends ArrayAdapter<CreatureArchetyp
 				callbacks.save();
 			}
 		}
+
+		@Override
+		public boolean performLongClick(@IdRes int editTextId) {
+			return false;
+		}
 	}
 
 	public interface CreatureArchetypeLevelCallbacks {

@@ -223,6 +223,11 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	}
 
 	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	@Override
 	public boolean getValueForCheckBox(@IdRes int checkBoxId) {
 		boolean result = false;
 

@@ -190,6 +190,11 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 				break;
 		}
 	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">

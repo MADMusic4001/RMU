@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
@@ -32,6 +33,8 @@ import com.madinnovations.rmu.view.utils.EditTextUtils;
  * Handles interactions with the UI for character creation.
  */
 public class CharacterBackgroundPageFragment extends Fragment implements EditTextUtils.ValuesCallback {
+	@SuppressWarnings("unused")
+	private static final String TAG = "CharacterBackgroundPage";
 	private CharactersFragment charactersFragment;
 	private EditText hairColorEdit;
 	private EditText hairStyleEdit;
@@ -45,7 +48,7 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 	private EditText hometownEdit;
 
 	/**
-	 * Creates new CharacterBackgroundPageFragment instance.
+	 * Creates a new CharacterBackgroundPageFragment instance.
 	 *
 	 * @param charactersFragment  the CharactersFragment instance this fragment is attached to.
 	 * @return the new instance.
@@ -67,26 +70,27 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 
 		View layout = inflater.inflate(R.layout.character_background_page, container, false);
 
-		hairColorEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hair_color_edit,
-				R.string.validation_character_hair_color_required);
-		hairStyleEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hair_style_edit,
-				R.string.validation_character_hair_style_required);
-		eyeColorEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.eye_color_edit,
-				R.string.validation_character_eye_color_required);
-		skinComplexionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.skin_complexion_edit,
-				R.string.validation_character_skin_complexion_required);
-		facialFeaturesEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.facial_features_edit,
-				R.string.validation_character_facial_features_required);
-		identifyingMarksEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.identifying_marks_edit,
-				R.string.validation_character_identifying_marks_required);
-		personalityEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.personality_edit,
-				R.string.validation_character_personality_required);
-		mannerismsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.mannerisms_edit,
-				R.string.validation_character_mannerisms_required);
-		familyInformationEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.family_info_edit,
-				R.string.validation_character_family_info_required);
-		hometownEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hometown_edit,
-				R.string.validation_character_hometown_required);
+		Character character = charactersFragment.getCurrentInstance();
+		hairColorEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hair_color_edit, 0);
+		hairColorEdit.setText(character.getHairColor());
+		hairStyleEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hair_style_edit, 0);
+		hairStyleEdit.setText(character.getHairStyle());
+		eyeColorEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.eye_color_edit, 0);
+		eyeColorEdit.setText(character.getEyeColor());
+		skinComplexionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.skin_complexion_edit, 0);
+		skinComplexionEdit.setText(character.getSkinComplexion());
+		facialFeaturesEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.facial_features_edit, 0);
+		facialFeaturesEdit.setText(character.getFacialFeatures());
+		identifyingMarksEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.identifying_marks_edit, 0);
+		identifyingMarksEdit.setText(character.getIdentifyingMarks());
+		personalityEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.personality_edit, 0);
+		personalityEdit.setText(character.getPersonality());
+		mannerismsEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.mannerisms_edit, 0);
+		mannerismsEdit.setText(character.getMannerisms());
+		familyInformationEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.family_info_edit, 0);
+		familyInformationEdit.setText(character.getFamilyInfo());
+		hometownEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.hometown_edit, 0);
+		hometownEdit.setText(character.getHometown());
 		return layout;
 	}
 
@@ -196,6 +200,16 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		}
 	}
 
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	/**
+	 * Copies the values in the views on this page to the current Character instance for the Character UI.
+	 *
+	 * @return  false if no values in the current Character instance were modified, otherwise true.
+	 */
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
 		boolean changed = false;
@@ -255,6 +269,9 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 		return changed;
 	}
 
+	/**
+	 * Copies the current Character instance values to the views on this page.
+	 */
 	public void copyItemToViews() {
 		hairColorEdit.setText(charactersFragment.getCurrentInstance().getHairColor());
 		hairStyleEdit.setText(charactersFragment.getCurrentInstance().getHairStyle());

@@ -50,6 +50,22 @@ public class Profession {
 	}
 
 	/**
+	 * Copy constructor.
+	 *
+	 * @param other  a {@link Profession} to copy
+	 */
+	public Profession(Profession other) {
+		this.name = other.name;
+		this.description = other.description;
+		this.realm1 = other.realm1;
+		this.realm2 = other.realm2;
+		this.skillCategoryCosts = other.skillCategoryCosts;
+		this.skillCosts = other.skillCosts;
+		this.assignableSkillCostsMap = other.assignableSkillCostsMap;
+		this.professionalSkillCategories = other.professionalSkillCategories;
+	}
+
+	/**
 	 * ID constructor
 	 *
 	 * @param id  the id of the Profession instance
@@ -68,19 +84,21 @@ public class Profession {
 		if(isValid) {
 			for (Map.Entry<SkillCategory, DevelopmentCostGroup> entry : skillCategoryCosts.entrySet()) {
 				DevelopmentCostGroup skillCost = entry.getValue();
-				isValid &= (skillCost == null || assignableSkillCostsMap.containsKey(entry.getKey()));
-			}
-		}
-		if(isValid) {
-			for (Map.Entry<Skill, DevelopmentCostGroup> entry : skillCosts.entrySet()) {
-				DevelopmentCostGroup skillCost = entry.getValue();
-				isValid &= (skillCost == null || (skillCategoryCosts.containsKey(entry.getKey().getCategory())));
+				boolean allSkillsHaveCosts = true;
+				if(skillCost == null) {
+					for (Map.Entry<Skill, DevelopmentCostGroup> skillEntry : skillCosts.entrySet()) {
+						if(entry.getKey().equals(skillEntry.getKey().getCategory())) {
+							allSkillsHaveCosts &= skillEntry.getValue() != null;
+						}
+					}
+				}
+				isValid &= (skillCost != null || allSkillsHaveCosts || assignableSkillCostsMap.containsKey(entry.getKey()));
 			}
 		}
 		if(isValid) {
 			for (Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : assignableSkillCostsMap.entrySet()) {
 				for(DevelopmentCostGroup skillCost : entry.getValue()) {
-					isValid &= (skillCost == null);
+					isValid &= (skillCost != null);
 				}
 			}
 		}

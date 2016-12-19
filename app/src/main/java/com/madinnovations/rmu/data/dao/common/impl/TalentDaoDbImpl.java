@@ -169,6 +169,17 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 		return instance;
 	}
 
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
+		final String selectionArgs[] = { String.valueOf(id) };
+		final String selection = TalentParametersSchema.COLUMN_TALENT_ID + " = ?";
+
+		// Delete all current effects for this talent and then recreate them
+		result = (db.delete(TalentParametersSchema.TABLE_NAME, selection, selectionArgs) != -1);
+		return result;
+	}
+
 	private boolean saveTalentParameters(SQLiteDatabase db, Talent instance) {
 		boolean result;
 		final String selectionArgs[] = { String.valueOf(	instance.getId()) };

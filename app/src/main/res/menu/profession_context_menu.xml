@@ -19,6 +19,9 @@
         android:id="@+id/context_new_profession"
         android:title="@string/label_new_profession"/>
     <item
+      android:id="@+id/context_copy_profession"
+      android:title="@string/label_copy_profession"/>
+    <item
         android:id="@+id/context_delete_profession"
         android:title="@string/label_delete_profession"/>
 </menu>

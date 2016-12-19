@@ -90,6 +90,12 @@ public final class EditTextUtils {
 				}
 			}
 		});
+		editText.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View view) {
+				return valuesCallback.performLongClick(editTextId);
+			}
+		});
 	}
 
 	/**
@@ -111,5 +117,13 @@ public final class EditTextUtils {
 		 * @param newString  the new value of the field as a String
 		 */
 		void setValueFromEditText(@IdRes int editTextId, String newString);
+
+		/**
+		 * Called when a long click occurs for the given EditText.
+		 *
+		 * @param editTextId  the resource id of the EditText instance that was long clicked
+		 * @return  true if the long click was handled, otherwise false.
+		 */
+		boolean performLongClick(@IdRes int editTextId);
 	}
 }

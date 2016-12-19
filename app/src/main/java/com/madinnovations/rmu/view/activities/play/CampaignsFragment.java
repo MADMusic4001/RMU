@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.view.activities.campaign;
+package com.madinnovations.rmu.view.activities.play;
 
 import android.app.Fragment;
 import android.content.ClipData;
@@ -58,9 +58,10 @@ import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.PowerLevel;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
+import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.character.SelectCharacterAdapter;
-import com.madinnovations.rmu.view.di.modules.CampaignFragmentModule;
+import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
@@ -120,7 +121,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
-				newCampaignFragmentComponent(new CampaignFragmentModule(this)).injectInto(this);
+				newPlayFragmentComponent(new PlayFragmentModule(this)).injectInto(this);
 
 		View layout = inflater.inflate(R.layout.campaigns_fragment, container, false);
 
@@ -247,6 +248,11 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 				saveItem();
 				break;
 		}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
 	}
 
 	@Override

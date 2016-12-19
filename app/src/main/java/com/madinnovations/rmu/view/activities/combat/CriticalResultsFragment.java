@@ -71,7 +71,6 @@ public class CriticalResultsFragment extends Fragment {
 	private   ListView                   listView;
 	private CriticalType criticalTypeFilter = null;
 	private char criticalSeverityFilter = 'A';
-	private Collection<CriticalResult> tempResults = null;
 	private CriticalResult currentInstance = new CriticalResult();
 	private boolean isNew = true;
 
@@ -109,7 +108,6 @@ public class CriticalResultsFragment extends Fragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
 		return super.onOptionsItemSelected(item);
 	}
 	// </editor-fold>
@@ -186,6 +184,7 @@ public class CriticalResultsFragment extends Fragment {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void deleteItem(@NonNull final CriticalResult item) {
 		criticalResultRxHandler.deleteById(item.getId())
 				.observeOn(AndroidSchedulers.mainThread())

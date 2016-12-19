@@ -20,6 +20,7 @@
   <!-- FileSelectorDialogFragment strings -->
   <string name="alert_fs_title">Choose a %1$s file:\nCurrent Path = %2$s</string>
   <string name="folder_image">Folder Image</string>
+  <string name="copy_string"> (copy)</string>
 
   <!-- Delete confirmation strings -->
   <string name="confirm_delete_title">Confirm Delete</string>

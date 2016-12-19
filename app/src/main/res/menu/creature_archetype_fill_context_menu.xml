@@ -16,9 +16,24 @@
  * -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
-    android:id="@+id/context_fill_range"
-    android:title="@string/label_fill_range"/>
+      android:id="@+id/context_fill_range"
+      android:title="@string/label_fill_range"/>
   <item
-    android:id="@+id/context_fill_range_double"
-    android:title="@string/label_fill_range_double"/>
+      android:id="@+id/context_fill_range_double"
+      android:title="@string/label_fill_range_double"/>
+  <item
+      android:id="@+id/context_fill_range_by_twos"
+      android:title="@string/label_fill_range_by_twos"/>
+  <item
+      android:id="@+id/context_fill_range_by_threes"
+      android:title="@string/label_fill_range_by_threes"/>
+  <item
+      android:id="@+id/context_fill_range_by_fours"
+      android:title="@string/label_fill_range_by_fours"/>
+  <item
+      android:id="@+id/context_fill_range_by_fives"
+      android:title="@string/label_fill_range_by_fives"/>
+  <item
+      android:id="@+id/context_fill_range_by_sixes"
+      android:title="@string/label_fill_range_by_sixes"/>
 </menu>

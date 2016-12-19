@@ -49,7 +49,6 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
-import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for specializations.
  */
 public class SpecializationsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Specialization>,
-		EditTextUtils.ValuesCallback, CheckBoxUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+		CheckBoxUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	@Inject
 	protected SpecializationRxHandler             specializationRxHandler;
 	@Inject
@@ -223,16 +222,6 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 				saveItem();
 				break;
 		}
-	}
-
-	@Override
-	public String getValueForEditText(@IdRes int editTextId) {
-		return null;
-	}
-
-	@Override
-	public void setValueFromEditText(@IdRes int editTextId, String newString) {
-
 	}
 
 	@Override

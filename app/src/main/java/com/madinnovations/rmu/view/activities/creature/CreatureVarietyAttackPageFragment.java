@@ -169,6 +169,11 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	}
 
 	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	@Override
 	public Object getValueForSpinner(@IdRes int spinnerId) {
 		Size result = null;
 
