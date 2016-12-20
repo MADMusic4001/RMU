@@ -16,34 +16,11 @@
 package com.madinnovations.rmu.data.entities.common;
 
 /**
- * Representation of a bonus type
+ * Representation of a condition on a character or creature.
  */
-public enum BonusType {
-	CRITICAL_ROLL("Critical Roll"),
-	DEFENSIVE_BONUS("DB"),
-	ENDURANCE_ROLL("Endurance Roll"),
-	INITIATIVE("Initiative"),
-	MANEUVER_ROLL("Maneuver Roll"),
-	OFFENSIVE_BONUS("OB"),
-	RANGE_PENALTY("Range Penalty"),
-	RESISTANCE_ROLL("Resistance Roll"),
-	SKILL_BONUS("Skill Bonus"),
-	SPELL_CASTING_ROLL("SCR"),
-	STAT_BONUS("Stat Bonus");
-
-	private String text;
-
-	BonusType(String text) {
-		this.text = text;
-	}
-
-	@Override
-	public String toString() {
-		return getText();
-	}
-
-	// Getters
-	public String getText() {
-		return text;
-	}
+public class Condition {
+	private ConditionType conditionType;
+	private String        enumName;
+	private Integer       value;
+	private Integer       duration;
 }

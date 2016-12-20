@@ -182,6 +182,26 @@
       android:layout_toEndOf="@id/resistance_label"
       android:layout_centerVertical="true"
       android:visibility="gone"/>
+  <TextView
+      android:id="@+id/resistance_mod_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/resistance_spinner"
+      android:layout_toEndOf="@id/resistance_spinner"
+      android:layout_centerVertical="true"
+      android:visibility="gone"
+      android:text="@string/input_label_resistance_mod"/>
+  <EditText
+      android:id="@+id/resistance_mod_edit"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:inputType="numberSigned"
+      android:layout_toRightOf="@id/resistance_mod_label"
+      android:layout_toEndOf="@id/resistance_mod_label"
+      android:layout_centerVertical="true"
+      android:background="@null"
+      android:visibility="gone"
+      android:hint="@string/hint_resistance_mod"/>
 
   <TextView
       android:id="@+id/stat_label"

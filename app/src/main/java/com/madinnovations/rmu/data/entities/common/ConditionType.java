@@ -16,19 +16,34 @@
 package com.madinnovations.rmu.data.entities.common;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 9/23/2016.
+ * Representation of a condition type
  */
-public enum ConditionType {
-	CREATURE_CATEGORY("CreatureCategory"),
-	CREATURE_TYPE("CreatureType"),
-	CREATURE_VARIETY("CreatureVariety"),
-	ENVIRONMENT("Environment"),
-	RACE("Race"),
-	SIZE("Size"),
-	SPECIAL("Special");
+enum ConditionType {
+	ACTION_POINT_LOSS("Action point loss"),
+	BLEEDING("Bleeding"),
+	CONCENTRATING("Concentrating"),
+	DAZED("Dazed"),
+	DIEING("Dieing"),
+	ENCUMBERED("Encumbered"),
+	FATIGUED("Fatigued"),
+	FLATFOOTED("Flatfooted"),
+	GRAPPLED("Grappled"),
+	HASTED("Hasted"),
+	HP_LOSS("HP Loss"),
+	INJURED("Injured"),
+	MORALE_BONUS("Morale bonus"),
+	NO_PARRY("Unable to parry"),
+	PARALYZED("Paralyzed"),
+	PP_LOSS("PP Loss"),
+	PREPARING_SPELL("Preparing spell"),
+	PRONE("Prone"),
+	STAT_DRAINED("Stat Drained"),
+	STUNNED("Stunned"),
+	STAGGERED("Staggered"),
+	SURPRISED("Surprised"),
+	UNCONSCIOUS("Unconscious"),
+	USED_INSTANTANEOUS("Used instantaneous"),
+	WOUNDED("Wounded");
 
 	private String text;
 

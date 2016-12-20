@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.common.Condition;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
@@ -83,6 +84,7 @@ public class Character {
 	private Map<Talent, Short>               currentLevelTalentTiers         = new HashMap<>();
 	private Map<Object, Short>               purchasedCultureRanks           = new HashMap<>();
 	private int                              statIncreases                   = 0;
+	private List<Condition>                  currentConditions               = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Character instance.

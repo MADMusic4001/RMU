@@ -742,6 +742,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initValueCheckBoxes(parameterRowView);
 		initAttacksSpinner(parameterRowView);
 		initResistancesSpinner(parameterRowView);
+		initResistanceModEdit(parameterRowView);
 		initSenseSpinner(parameterRowView);
 		initSkillsSpinner(parameterRowView);
 		initSpecializationsSpinner(parameterRowView);
@@ -1251,8 +1252,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				Resistance resistance = ((ArrayAdapter<Resistance>)spinner.getAdapter()).getItem(position);
 				if(resistance != null) {
 					int index = indexMap.get(layout);
-					Resistance currentResistance = Resistance.valueOf(
-							currentInstance.getTalentParameterRows()[index].getEnumName());
+					String enumName = currentInstance.getTalentParameterRows()[index].getEnumName();
+					Resistance currentResistance = null;
+					if(enumName != null) {
+						currentResistance = Resistance.valueOf(enumName);
+					}
 					if(!resistance.equals(currentResistance)) {
 						currentInstance.getTalentParameterRows()[index].setEnumName(resistance.name());
 						saveItem();
@@ -1264,6 +1268,38 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
+	private void initResistanceModEdit(final View layout) {
+		final EditText editText = (EditText)layout.findViewById(R.id.resistance_mod_edit);
+		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+		if(value != null) {
+			editText.setText(String.valueOf(value));
+		}
+		else {
+			editText.setText(null);
+		}
+
+		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(editText.getText().length() > 0) {
+					Integer newInteger = Integer.valueOf(editText.getText().toString());
+					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
+						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue())) {
+							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(newInteger);
+							saveItem();
+						}
+					}
+				}
+				else {
+					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
+						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
+						saveItem();
+					}
+				}
+			}
+		});
+	}
+
 	private void setResistanceSpinnerAdapter(View layout, Resistance[] resistances) {
 		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
 		ArrayAdapter<Resistance> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
@@ -1271,8 +1307,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		adapter.addAll(resistances);
 		adapter.notifyDataSetChanged();
 		spinner.setAdapter(adapter);
-		spinner.setSelection(adapter.getPosition(Resistance.valueOf(
-				currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName())));
+		String enumName = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName();
+		if(enumName != null) {
+			spinner.setSelection(adapter.getPosition(Resistance.valueOf(enumName)));
+		}
 	}
 
 	private void initSenseSpinner(final View layout) {
@@ -1823,7 +1861,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		spinner.setAdapter(adapter);
 		TalentParameterRow talentParameterRow = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
 		if (Parameter.STAT.equals(talentParameterRow.getParameter())) {
-			Statistic currentStat = adapter.getItem(talentParameterRow.getInitialValue());
+			Statistic currentStat = null;
+			Integer index = talentParameterRow.getInitialValue();
+			if(index != null) {
+				currentStat = adapter.getItem(index);
+			}
 			if(currentStat != null) {
 				spinner.setSelection(adapter.getPosition(currentStat));
 			}
@@ -1837,8 +1879,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Statistic statistic = adapter.getItem(position);
 				if(statistic != null) {
-					Statistic currentStat = adapter.getItem(currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-																	.getInitialValue());
+					Statistic currentStat = null;
+					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
+					if(index != null) {
+						currentStat = adapter.getItem(index);
+					}
 					if(!statistic.equals(currentStat)) {
 						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(statistic.name());
 						saveItem();
@@ -2011,7 +2056,15 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 
-		if(row.getInitialValue() != null) {
+		String value = ((EditText)layout.findViewById(R.id.resistance_mod_edit)).getText().toString();
+		if(value.length() > 0) {
+			int intValue = Integer.valueOf(value);
+			if(row.getInitialValue() == null || row.getInitialValue() != intValue) {
+				row.setInitialValue(intValue);
+				changed = true;
+			}
+		}
+		else if(row.getInitialValue() != null) {
 			row.setInitialValue(null);
 			changed = true;
 		}
@@ -2041,6 +2094,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void setResistancesVisibility(final View layout, int visibility) {
 		layout.findViewById(R.id.resistance_label).setVisibility(visibility);
 		layout.findViewById(R.id.resistance_spinner).setVisibility(visibility);
+		layout.findViewById(R.id.resistance_mod_label).setVisibility(visibility);
+		layout.findViewById(R.id.resistance_mod_edit).setVisibility(visibility);
 	}
 
 	private boolean copySenseViewsToItem(final View layout, int index) {

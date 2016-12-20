@@ -136,7 +136,8 @@
   <string name="hint_parameter_description">Parameter Description</string>
   <string name="hint_parameter_name">Parameter Name</string>
   <string name="hint_parameter_value">Parameter Value</string>
-  <string name="hint_resistance_value">Resistance Value:</string>
+  <string name="hint_resistance_mod">RR Mod</string>
+  <string name="hint_resistance_value">Resistance Value</string>
   <string name="hint_size_code">Size Code</string>
   <string name="hint_size_name">Size Name</string>
   <string name="hint_skill_bonus">Skill Bonus:</string>
