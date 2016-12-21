@@ -47,6 +47,7 @@ import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
+import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -106,6 +107,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	protected SpellListRxHandler         spellListRxHandler;
 	@Inject
 	protected TalentRxHandler            talentRxHandler;
+	@Inject
+	protected ReactiveUtils              reactiveUtils;
 	private   TalentTierListAdapter      talentTiersListAdapter;
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
 	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
@@ -1351,8 +1354,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initTalentTiersList(View layout) {
 		talentTiersList = (ListView) layout.findViewById(R.id.talent_tiers_list);
-		talentTiersListAdapter = new TalentTierListAdapter(getActivity(), this, attackRxHandler, skillRxHandler,
-														   specializationRxHandler, spellRxHandler, spellListRxHandler);
+		talentTiersListAdapter = new TalentTierListAdapter(getActivity(), this, reactiveUtils, true);
 		talentTiersList.setAdapter(talentTiersListAdapter);
 
 		talentTiersListAdapter.clear();

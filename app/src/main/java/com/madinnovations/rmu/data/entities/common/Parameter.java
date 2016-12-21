@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.entities.common;
 
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
+import com.madinnovations.rmu.data.entities.combat.Resistance;
 
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
 
@@ -25,8 +26,8 @@ import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
 public enum Parameter {
 	ARMOR_PENALTY("Armor Penalty", null, null),
 	ARMOR_TYPE("Armor Type", null, null),
-	ATTACK("Attack", null, null),
-	ATTACK_SIZE("Attack Size", null, null),
+	ATTACK("Attack", ATTACK_RX_HANDLER, null),
+	ATTACK_SIZE("Attack Size", SIZE_RX_HANDLER, null),
 	BASE_HITS("Base Hit Points", null, null),
 	BASE_MOVEMENT_RATE("Base Movement Rate", null, null),
 	BLEED("Bleed", null, null),
@@ -40,28 +41,28 @@ public enum Parameter {
 	CREATURE_VARIETY("Creature Variety", CREATURE_VARIETY_RX_HANDLER, null),
 	CRITICAL_ROLL("Critical Roll", null, null),
 	CRITICAL_SEVERITY("Critical Severity", null, null),
-	CRITICAL_TYPE("Critical Type", null, null),
+	CRITICAL_TYPE("Critical Type", CRITICAL_TYPE_RX_HANDLER, null),
 	DEFENSIVE_BONUS("Defensive Bonus", null, null),
-	DEFENSIVE_SIZE("Defensive Size", null, null),
+	DEFENSIVE_SIZE("Defensive Size", SIZE_RX_HANDLER, null),
 	DISEASE("Disease", null, null),
 	DURATION("Duration", null, null),
 	EFFECT("Effect", null, null),
-	ELEMENTAL_RR("Elemental Resistance Roll", null, null),
+	ELEMENTAL_RR("Elemental Resistance Roll", null, Resistance.getElementalResistances()),
 	ELEMENTAL_DB("Elemental Defensive Bonus", null, null),
 	ELEMENTAL_ENDURANCE("Elemental Endurance", null, null),
 	EMPATHIC_RANGE("Empathic Communication Range", null, null),
 	ENCUMBRANCE_PENALTY("Encumbrance Penalty", null, null),
 	ENDURANCE("Endurance", null, null),
 	FATIGUE_PENALTY("Fatigue Penalty", null, null),
-	FEAR_RR("Fear Resistance Roll", null, null),
-	FOLLOWER_FEAR_RR("Followers Fear Resistance Roll", null, null),
+	FEAR_RR("Fear Resistance Roll", null, Resistance.getFearResistances()),
+	FOLLOWER_FEAR_RR("Followers Fear Resistance Roll", null, Resistance.getFearResistances()),
 	FUMBLE_RANGE("Fumble Range", null, null),
 	HOURS_REST("Hours Rest for PP Recovery", null, null),
 	INITIATIVE("Initiative", null, null),
 	INJURY_PENALTY("Injury Penalty", null, null),
 	INTERVAL("Interval", null, null),
 	LIGHTING_PENALTY("Lighting Penalty (Vision)", null, null),
-	MAGICAL_RR("Magical Resistance Roll", null, null),
+	MAGICAL_RR("Magical Resistance Roll", null, Resistance.getMagicalResistances()),
 	MANEUVER_ROLL("Maneuver Roll", null, null),
 	NUMBER("Number", null, null),
 	OFFENSIVE_BONUS("Offensive Bonus", null, null),
@@ -70,7 +71,7 @@ public enum Parameter {
 	PAIN_PENALTY("Pain Penalty", null, null),
 	PENALTY("Penalty", null, null),
 	PERCENT("Percent", null, null),
-	PHYSICAL_RR("Physical Resistance Roll", null, null),
+	PHYSICAL_RR("Physical Resistance Roll", null, Resistance.getPhysicalResistances()),
 	POISON("Poison", null, null),
 	RADIUS("Radius", null, null),
 	RANGE("Range", null, null),
@@ -78,13 +79,13 @@ public enum Parameter {
 	RANK_BONUS("Rank Bonus", null, null),
 	RECOVERY_RATE("HP Recovery Rate", null, null),
 	RECOVERY_RATE_MULT("HP Recovery Rate Multiplier", null, null),
-	SENSE("Sense", null, null),
+	SENSE("Sense", null, Sense.getNoChoiceSenses()),
 	SIZE_DIFFERENCE("Size Difference", null, null),
-	SKILL("Skill", null, null),
+	SKILL("Skill", SKILL_RX_HANDLER, null),
 	SPECIAL("Special", null, null),
-	SPECIALIZATION("Specialization", null, null),
-	SPELL("Spell", null, null),
-	SPELL_LIST("Spell List", null, null),
+	SPECIALIZATION("Specialization", SPECIALIZATION_RX_HANDLER, null),
+	SPELL("Spell", SPELL_RX_HANDLER, null),
+	SPELL_LIST("Spell List", SPELL_LIST_RX_HANDLER, null),
 	SPELL_CASTING("Spell Casting", null, null),
 	SPELL_CONCENTRATION_DURATION("Spell Concentration Duration", null, null),
 	SPELL_DURATION("Spell Duration", null, null),
@@ -92,7 +93,7 @@ public enum Parameter {
 	SPELL_PREP_ROUNDS("Spell Preparation Rounds", null, null),
 	SPELL_RADIUS("Spell Radius", null, null),
 	SPELL_RANGE("Spell Range", null, null),
-	STAT("Stat", null, null),
+	STAT("Stat", null, Statistic.getAllStats()),
 	TERRAIN("Terrain", null, null),
 	TOUCH_RANGE("Touch Range", null, null),
 	USES("Uses", null, null),
@@ -100,12 +101,12 @@ public enum Parameter {
 
 	private String                    text;
 	private ReactiveUtils.Handler     handler;
-	private Enum<?>                   enumType;
+	private Enum<?>[]                 enumValues;
 
-	Parameter(String text, ReactiveUtils.Handler handler, Enum<?> enumType) {
+	Parameter(String text, ReactiveUtils.Handler handler, Enum<?>[] enumValues) {
 		this.text = text;
 		this.handler = handler;
-		this.enumType = enumType;
+		this.enumValues = enumValues;
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public enum Parameter {
 	public ReactiveUtils.Handler getHandler() {
 		return handler;
 	}
-	public Enum<?> getEnumType() {
-		return enumType;
+	public Enum<?>[] getEnumValues() {
+		return enumValues;
 	}
 }

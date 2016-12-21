@@ -31,24 +31,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
-import com.madinnovations.rmu.data.entities.combat.Attack;
-import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Sense;
-import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
 import com.madinnovations.rmu.data.entities.common.TalentTier;
-import com.madinnovations.rmu.data.entities.spells.Spell;
-import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,21 +51,14 @@ import rx.Subscriber;
 public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 	private static final String TAG = "TalentTierListAdapter";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_talent_tiers_row;
-	private AttackRxHandler             attackRxHandler;
-	private SkillRxHandler              skillRxHandler;
-	private SpecializationRxHandler     specializationRxHandler;
-	private SpellRxHandler              spellRxHandler;
-	private SpellListRxHandler          spellListRxHandler;
-	private Context                     context;
-	private ListView                    listView = null;
-	private LayoutInflater              layoutInflater;
-	private TalentTiersAdapterCallbacks callbacks;
-	private Collection<Attack>          attacksList;
-	private Collection<Skill>           skillsList;
+	private Context                       context;
+	private ListView                      listView = null;
+	private LayoutInflater                layoutInflater;
+	private TalentTiersAdapterCallbacks   callbacks;
 	private Map<Parameter, Collection<?>> parameterCollectionsCache = new HashMap<>();
-	private Collection<Specialization>  specializationsList;
-	private Collection<Spell>           spellsList;
-	private Collection<SpellList>       spellListsList;
+	private ReactiveUtils                 reactiveUtils;
+	private boolean                       addChoiceOption;
+	private Object                        choice;
 	private int[] colors = new int[]{
 			R.color.list_even_row_background,
 			R.color.list_odd_row_background};
@@ -85,19 +67,25 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 	 * Creates a new TalentTierListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
+	 * @param callbacks  an instance of a class that implements the {@link TalentTiersAdapterCallbacks} interface.
+	 * @param reactiveUtils  an instance of the {@link ReactiveUtils} class.
+	 * @param addChoiceOption  true if a "choice" option should be added to the spinners to allow the parameter value to be selected at a
+	 *                         later time, otherwise false.
 	 */
-	public TalentTierListAdapter(Context context, TalentTiersAdapterCallbacks callbacks, AttackRxHandler attackRxHandler,
-								 SkillRxHandler skillRxHandler, SpecializationRxHandler specializationRxHandler,
-								 SpellRxHandler spellRxHandler, SpellListRxHandler spellListRxHandler) {
+	public TalentTierListAdapter(final Context context, TalentTiersAdapterCallbacks callbacks, ReactiveUtils reactiveUtils,
+								 boolean addChoiceOption) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.context = context;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.callbacks = callbacks;
-		this.attackRxHandler = attackRxHandler;
-		this.skillRxHandler = skillRxHandler;
-		this.specializationRxHandler = specializationRxHandler;
-		this.spellRxHandler = spellRxHandler;
-		this.spellListRxHandler = spellListRxHandler;
+		this.reactiveUtils = reactiveUtils;
+		this.addChoiceOption = addChoiceOption;
+		choice = new Object() {
+			@Override
+			public String toString() {
+				return context.getString(R.string.choice_label);
+			}
+		};
 	}
 
 	@Override
@@ -138,20 +126,17 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			holder.talentNameView.setText(builder);
 			holder.tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
 			for(TalentParameterRow row : talentTier.getTalent().getTalentParameterRows()) {
-				Log.d(TAG, "getView: parameter = " + row.getParameter());
-				if(row.getParameter().getEnumType() != null && row.getEnumName() == null) {
-					Log.d(TAG, "getView: Adding spínner" + row.getParameter().getEnumType());
+				if(row.getParameter().getEnumValues() != null && row.getEnumName() == null) {
 					holder.addSpinner(row.getParameter());
 				}
 				if(row.getInitialValue() == null || row.getInitialValue() == -1 && row.getEnumName() == null) {
-					Log.d(TAG, "getView: row.getParameter = " + row.getParameter());
 					switch (row.getParameter()) {
 						case ATTACK:
 							if (row.getInitialValue() == -1) {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addAttackSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case ELEMENTAL_RR:
@@ -163,7 +148,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addResistanceSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case SENSE:
@@ -171,7 +156,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addSenseSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case SKILL:
@@ -179,7 +164,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addSkillSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case SPECIALIZATION:
@@ -187,7 +172,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addSpecializationSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case SPELL:
@@ -195,7 +180,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addSpellSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case SPELL_LIST:
@@ -203,7 +188,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addSpellListSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 						case STAT:
@@ -211,7 +196,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 								if (holder.parameterViews == null) {
 									holder.parameterViews = new HashMap<>();
 								}
-								holder.addStatSpinner(row.getParameter());
+								holder.addSpinner(row.getParameter());
 							}
 							break;
 					}
@@ -273,294 +258,34 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			});
 		}
 
-		private void addAttackSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Attack> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			if(attacksList != null) {
-				adapter.addAll(attacksList);
-				spinner.setAdapter(adapter);
-			}
-			else {
-				attackRxHandler.getAll()
-						.subscribe(new Subscriber<Collection<Attack>>() {
-							@Override
-							public void onCompleted() {}
-							@Override
-							public void onError(Throwable e) {
-								Log.e(TAG, "Exception caught getting non-specialization attacks.", e);
-							}
-							@Override
-							public void onNext(Collection<Attack> attackCollection) {
-								attacksList = attackCollection;
-								adapter.addAll(attacksList);
-								spinner.setAdapter(adapter);
-							}
-						});
-			}
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter,
-													((Attack)spinner.getSelectedItem()).getId(), null);
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addResistanceSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Resistance> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			adapter.addAll(Resistance.values());
-			spinner.setAdapter(adapter);
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
-													((Resistance)spinner.getSelectedItem()).name());
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addSenseSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Sense> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			adapter.addAll(Sense.getNoChoiceSenses());
-			spinner.setAdapter(adapter);
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
-													((Sense)spinner.getSelectedItem()).name());
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addSkillSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			if(skillsList != null) {
-				adapter.addAll(skillsList);
-				spinner.setAdapter(adapter);
-			}
-			else {
-				skillRxHandler.getNonSpecializationSkills()
-						.subscribe(new Subscriber<Collection<Skill>>() {
-							@Override
-							public void onCompleted() {}
-							@Override
-							public void onError(Throwable e) {
-								Log.e(TAG, "Exception caught getting non-specialization skills.", e);
-							}
-							@Override
-							public void onNext(Collection<Skill> skillCollection) {
-								skillsList = skillCollection;
-								adapter.addAll(skillsList);
-								spinner.setAdapter(adapter);
-							}
-						});
-			}
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter,
-													((Skill)spinner.getSelectedItem()).getId(), null);
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addSpecializationSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Specialization> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			if(specializationsList != null) {
-				adapter.addAll(specializationsList);
-				spinner.setAdapter(adapter);
-			}
-			else {
-				specializationRxHandler.getCharacterPurchasableSpecializations()
-						.subscribe(new Subscriber<Collection<Specialization>>() {
-							@Override
-							public void onCompleted() {}
-							@Override
-							public void onError(Throwable e) {
-								Log.e(TAG, "Exception caught getting character purchasable Specializations.", e);
-							}
-							@Override
-							public void onNext(Collection<Specialization> specializationCollection) {
-								specializationsList = specializationCollection;
-								adapter.addAll(specializationsList);
-								spinner.setAdapter(adapter);
-							}
-						});
-			}
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter,
-													((Specialization)spinner.getSelectedItem()).getId(), null);
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addSpellSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Spell> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			if(spellsList != null) {
-				adapter.addAll(spellsList);
-				spinner.setAdapter(adapter);
-			}
-			else {
-				spellRxHandler.getAll()
-						.subscribe(new Subscriber<Collection<Spell>>() {
-							@Override
-							public void onCompleted() {}
-							@Override
-							public void onError(Throwable e) {
-								Log.e(TAG, "Exception caught getting spells.", e);
-							}
-							@Override
-							public void onNext(Collection<Spell> spellCollection) {
-								spellsList = spellCollection;
-								adapter.addAll(spellsList);
-								spinner.setAdapter(adapter);
-							}
-						});
-			}
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter,
-													((Spell)spinner.getSelectedItem()).getId(), null);
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addSpellListSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<SpellList> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			if(spellListsList != null) {
-				adapter.addAll(spellListsList);
-				spinner.setAdapter(adapter);
-			}
-			else {
-				spellListRxHandler.getAll()
-						.subscribe(new Subscriber<Collection<SpellList>>() {
-							@Override
-							public void onCompleted() {}
-							@Override
-							public void onError(Throwable e) {
-								Log.e(TAG, "Exception caught getting all spellLists.", e);
-							}
-							@Override
-							public void onNext(Collection<SpellList> spellListCollection) {
-								spellListsList = spellListCollection;
-								adapter.addAll(spellListsList);
-								spinner.setAdapter(adapter);
-							}
-						});
-			}
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter,
-													((SpellList)spinner.getSelectedItem()).getId(), null);
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
-		private void addStatSpinner(final Parameter parameter) {
-			final Spinner spinner = new Spinner(getContext());
-			parameterViews.put(spinner, parameter);
-			parametersLayout.addView(spinner);
-			final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
-			adapter.addAll(Statistic.getAllStats());
-			spinner.setAdapter(adapter);
-
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					short tiers = Short.valueOf(tiersView.getText().toString());
-					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
-													((Statistic)spinner.getSelectedItem()).name());
-					}
-				}
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-			});
-		}
-
 		private void addSpinner(final Parameter parameter) {
-			Log.d(TAG, "addSpinner: Adding spinner...........................");
 			final Spinner spinner = new Spinner(getContext());
+			if(parameterViews == null) {
+				parameterViews = new HashMap<>();
+			}
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
 			final ArrayAdapter<Object> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
 			if(parameterCollectionsCache.get(parameter) != null) {
-				Log.d(TAG, "addSpinner: count = " + adapter.getCount());
+				adapter.clear();
+				if(addChoiceOption) {
+					adapter.add(choice);
+				}
 				adapter.addAll(parameterCollectionsCache.get(parameter));
+				adapter.notifyDataSetChanged();
 				spinner.setAdapter(adapter);
 			}
-			else if(parameter.getEnumType() != null) {
-				Log.d(TAG, "addSpinner: count = " + parameter.getEnumType().getDeclaringClass().getEnumConstants().length);
-				adapter.addAll((parameter.getEnumType().getDeclaringClass()).getEnumConstants());
+			else if(parameter.getEnumValues() != null) {
+				adapter.clear();
+				if(addChoiceOption) {
+					adapter.add(choice);
+				}
+				adapter.addAll(parameter.getEnumValues());
+				adapter.notifyDataSetChanged();
+				spinner.setAdapter(adapter);
 			}
 			else if(parameter.getHandler() != null) {
-				new ReactiveUtils().getGetAllObservable(parameter.getHandler())
+				reactiveUtils.getGetAllObservable(parameter.getHandler())
 						.subscribe(new Subscriber<Object>() {
 							@Override
 							public void onCompleted() {}
@@ -572,7 +297,10 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 							@Override
 							public void onNext(Object results) {
 								parameterCollectionsCache.put(parameter, (Collection<Object>)results);
-								adapter.addAll(results);
+								if(addChoiceOption) {
+									adapter.add(choice);
+								}
+								adapter.addAll(parameterCollectionsCache.get(parameter));
 								spinner.setAdapter(adapter);
 							}
 						});
@@ -582,9 +310,22 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
+					Log.d(TAG, "onItemSelected: tiers = " + tiers);
 					if(tiers > 0) {
-						callbacks.setParameterValue(talentTier.getTalent(), parameter,
-													((Specialization)spinner.getSelectedItem()).getId(), null);
+						if(parameter.getEnumValues() != null) {
+							Object selection = spinner.getSelectedItem();
+							if(selection instanceof Enum) {
+								callbacks.setParameterValue(talentTier.getTalent(), parameter, 0, ((Enum)selection).name());
+							}
+							else {
+								callbacks.setParameterValue(talentTier.getTalent(), parameter, 0, null);
+							}
+						}
+						else {
+							Log.d(TAG, "onItemSelected: ");
+							callbacks.setParameterValue(talentTier.getTalent(), parameter,
+									((Specialization) spinner.getSelectedItem()).getId(), null);
+						}
 					}
 				}
 				@Override

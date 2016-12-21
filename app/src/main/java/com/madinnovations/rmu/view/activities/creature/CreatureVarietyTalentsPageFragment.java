@@ -34,6 +34,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandle
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
+import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -68,6 +69,8 @@ public class CreatureVarietyTalentsPageFragment extends Fragment implements Tale
 	protected SpellListRxHandler        spellListRxHandler;
 	@Inject
 	protected TalentRxHandler           talentRxHandler;
+	@Inject
+	protected ReactiveUtils             reactiveUtils;
 	private   TalentTierListAdapter     talentTiersAdapter;
 	private   CreatureVarietiesFragment creatureVarietiesFragment;
 	private   Collection<Talent>        talents = null;
@@ -231,8 +234,7 @@ public class CreatureVarietyTalentsPageFragment extends Fragment implements Tale
 
 	private void initTalentTiersListView(final View layout) {
 		ListView talentTiersListView = (ListView) layout.findViewById(R.id.talent_tiers_list);
-		talentTiersAdapter = new TalentTierListAdapter(getActivity(), this, attackRxHandler, skillRxHandler,
-													   specializationRxHandler, spellRxHandler, spellListRxHandler);
+		talentTiersAdapter = new TalentTierListAdapter(getActivity(), this, reactiveUtils, true);
 		talentTiersListView.setAdapter(talentTiersAdapter);
 
 		if(talents == null) {

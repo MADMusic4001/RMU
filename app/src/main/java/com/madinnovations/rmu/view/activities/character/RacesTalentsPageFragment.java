@@ -30,6 +30,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandle
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
+import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -64,6 +65,8 @@ public class RacesTalentsPageFragment extends Fragment implements TalentTierList
 	protected SpellListRxHandler      spellListRxHandler;
 	@Inject
 	protected TalentRxHandler         talentRxHandler;
+	@Inject
+	protected ReactiveUtils           reactiveUtils;
 	private   TalentTierListAdapter   talentsAdapter;
 	private   RacesFragment           racesFragment;
 	private   Collection<Talent>      talentsList = new ArrayList<>();
@@ -169,8 +172,7 @@ public class RacesTalentsPageFragment extends Fragment implements TalentTierList
 
 	private void initTalentListView(View layout) {
 		ListView talentsListView = (ListView) layout.findViewById(R.id.talents_list_view);
-		talentsAdapter = new TalentTierListAdapter(getActivity(), this, attackRxHandler, skillRxHandler,
-												   specializationRxHandler, spellRxHandler, spellListRxHandler);
+		talentsAdapter = new TalentTierListAdapter(getActivity(), this, reactiveUtils, true);
 		talentsListView.setAdapter(talentsAdapter);
 
 		if(talentsList.isEmpty()) {
