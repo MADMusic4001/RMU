@@ -36,6 +36,7 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
+import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Parameter;
@@ -72,6 +73,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 	private TalentTiersAdapterCallbacks callbacks;
 	private Collection<Attack>          attacksList;
 	private Collection<Skill>           skillsList;
+	private Map<Parameter, Collection<?>> parameterCollectionsCache = new HashMap<>();
 	private Collection<Specialization>  specializationsList;
 	private Collection<Spell>           spellsList;
 	private Collection<SpellList>       spellListsList;
@@ -136,75 +138,83 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			holder.talentNameView.setText(builder);
 			holder.tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
 			for(TalentParameterRow row : talentTier.getTalent().getTalentParameterRows()) {
-				switch(row.getParameter()) {
-					case ATTACK:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+				Log.d(TAG, "getView: parameter = " + row.getParameter());
+				if(row.getParameter().getEnumType() != null && row.getEnumName() == null) {
+					Log.d(TAG, "getView: Adding spínner" + row.getParameter().getEnumType());
+					holder.addSpinner(row.getParameter());
+				}
+				if(row.getInitialValue() == null || row.getInitialValue() == -1 && row.getEnumName() == null) {
+					Log.d(TAG, "getView: row.getParameter = " + row.getParameter());
+					switch (row.getParameter()) {
+						case ATTACK:
+							if (row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addAttackSpinner(row.getParameter());
 							}
-							holder.addAttackSpinner(row.getParameter());
-						}
-						break;
-					case ELEMENTAL_RR:
-					case FEAR_RR:
-					case FOLLOWER_FEAR_RR:
-					case MAGICAL_RR:
-					case PHYSICAL_RR:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case ELEMENTAL_RR:
+						case FEAR_RR:
+						case FOLLOWER_FEAR_RR:
+						case MAGICAL_RR:
+						case PHYSICAL_RR:
+							if (row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addResistanceSpinner(row.getParameter());
 							}
-							holder.addResistanceSpinner(row.getParameter());
-						}
-						break;
-					case SENSE:
-						if(Sense.CHOICE.name().equals(row.getEnumName())) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case SENSE:
+							if (Sense.CHOICE.name().equals(row.getEnumName())) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addSenseSpinner(row.getParameter());
 							}
-							holder.addSenseSpinner(row.getParameter());
-						}
-						break;
-					case SKILL:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case SKILL:
+							if (row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addSkillSpinner(row.getParameter());
 							}
-							holder.addSkillSpinner(row.getParameter());
-						}
-						break;
-					case SPECIALIZATION:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case SPECIALIZATION:
+							if (row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addSpecializationSpinner(row.getParameter());
 							}
-							holder.addSpecializationSpinner(row.getParameter());
-						}
-						break;
-					case SPELL:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case SPELL:
+							if (row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addSpellSpinner(row.getParameter());
 							}
-							holder.addSpellSpinner(row.getParameter());
-						}
-						break;
-					case SPELL_LIST:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case SPELL_LIST:
+							if (row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addSpellListSpinner(row.getParameter());
 							}
-							holder.addSpellListSpinner(row.getParameter());
-						}
-						break;
-					case STAT:
-						if(row.getInitialValue() == -1) {
-							if(holder.parameterViews == null) {
-								holder.parameterViews = new HashMap<>();
+							break;
+						case STAT:
+							if (row.getInitialValue() == null || row.getInitialValue() == -1) {
+								if (holder.parameterViews == null) {
+									holder.parameterViews = new HashMap<>();
+								}
+								holder.addStatSpinner(row.getParameter());
 							}
-							holder.addStatSpinner(row.getParameter());
-						}
-						break;
+							break;
+					}
 				}
 			}
 		}
@@ -527,6 +537,54 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 					if(tiers > 0) {
 						callbacks.setParameterValue(talentTier.getTalent(), parameter, 0,
 													((Statistic)spinner.getSelectedItem()).name());
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
+		}
+
+		private void addSpinner(final Parameter parameter) {
+			Log.d(TAG, "addSpinner: Adding spinner...........................");
+			final Spinner spinner = new Spinner(getContext());
+			parameterViews.put(spinner, parameter);
+			parametersLayout.addView(spinner);
+			final ArrayAdapter<Object> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
+			if(parameterCollectionsCache.get(parameter) != null) {
+				Log.d(TAG, "addSpinner: count = " + adapter.getCount());
+				adapter.addAll(parameterCollectionsCache.get(parameter));
+				spinner.setAdapter(adapter);
+			}
+			else if(parameter.getEnumType() != null) {
+				Log.d(TAG, "addSpinner: count = " + parameter.getEnumType().getDeclaringClass().getEnumConstants().length);
+				adapter.addAll((parameter.getEnumType().getDeclaringClass()).getEnumConstants());
+			}
+			else if(parameter.getHandler() != null) {
+				new ReactiveUtils().getGetAllObservable(parameter.getHandler())
+						.subscribe(new Subscriber<Object>() {
+							@Override
+							public void onCompleted() {}
+							@Override
+							public void onError(Throwable e) {
+								Log.e(TAG, "Exception caught getting talent parameter values.", e);
+							}
+							@SuppressWarnings("unchecked")
+							@Override
+							public void onNext(Object results) {
+								parameterCollectionsCache.put(parameter, (Collection<Object>)results);
+								adapter.addAll(results);
+								spinner.setAdapter(adapter);
+							}
+						});
+			}
+
+			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					short tiers = Short.valueOf(tiersView.getText().toString());
+					if(tiers > 0) {
+						callbacks.setParameterValue(talentTier.getTalent(), parameter,
+													((Specialization)spinner.getSelectedItem()).getId(), null);
 					}
 				}
 				@Override

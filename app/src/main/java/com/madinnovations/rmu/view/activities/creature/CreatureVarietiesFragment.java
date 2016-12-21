@@ -55,9 +55,10 @@ import rx.schedulers.Schedulers;
 public class CreatureVarietiesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureVariety>,
 		ViewPagerAdapter.Instantiator {
 	private static final String TAG = "CreatureVarietiesFrag";
-	private static final int NUM_PAGES = 2;
+	private static final int NUM_PAGES = 3;
 	private static final int MAIN_PAGE_INDEX = 0;
 	private static final int ATTACK_PAGE_INDEX = 1;
+	private static final int TALENTS_PAGE_INDEX = 2;
 	@Inject
 	protected CreatureVarietyRxHandler           creatureVarietyRxHandler;
 	private TwoFieldListAdapter<CreatureVariety> listAdapter;
@@ -94,6 +95,9 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 		}
 		if(pagerAdapter.getFragment(ATTACK_PAGE_INDEX) != null) {
 			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(ATTACK_PAGE_INDEX)).commit();
+		}
+		if(pagerAdapter.getFragment(TALENTS_PAGE_INDEX) != null) {
+			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(TALENTS_PAGE_INDEX)).commit();
 		}
 		super.onPause();
 	}
@@ -166,6 +170,9 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 			case ATTACK_PAGE_INDEX:
 				fragment = CreatureVarietyAttackPageFragment.newInstance(this);
 				break;
+			case TALENTS_PAGE_INDEX:
+				fragment = CreatureVarietyTalentsPageFragment.newInstance(this);
+				break;
 		}
 
 		return fragment;
@@ -191,6 +198,12 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 			changed |= attackPageFragment.copyViewsToItem();
 		}
 
+		CreatureVarietyTalentsPageFragment talentsPageFragment = (CreatureVarietyTalentsPageFragment)pagerAdapter
+				.getFragment(TALENTS_PAGE_INDEX);
+		if(talentsPageFragment != null) {
+			changed |= talentsPageFragment.copyViewsToItem();
+		}
+
 		return changed;
 	}
 
@@ -205,6 +218,12 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				.getFragment(ATTACK_PAGE_INDEX);
 		if(attackPageFragment != null) {
 			attackPageFragment.copyItemToViews();
+		}
+
+		CreatureVarietyTalentsPageFragment talentsPageFragment = (CreatureVarietyTalentsPageFragment)pagerAdapter
+				.getFragment(TALENTS_PAGE_INDEX);
+		if(talentsPageFragment != null) {
+			talentsPageFragment.copyItemToViews();
 		}
 	}
 

@@ -603,7 +603,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
+						Log.e(TAG, "Exception caught getting all specialization Skill instances", e);
 					}
 					@Override
 					public void onNext(Collection<TalentCategory> talentCategories) {

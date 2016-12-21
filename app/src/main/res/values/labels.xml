@@ -229,7 +229,7 @@
   <string name="label_talent_category_name">Talent Category Name</string>
   <string name="label_talent_category_description">Talent Category Description</string>
   <string name="label_talent_parameters">Talent Parameters</string>
-  <string name="label_talent_tier">Talent Tiers</string>
+  <string name="label_talent_tiers">Talent Tiers</string>
   <string name="label_temporary">Temporary</string>
 
   <!-- Filter default labels -->
@@ -514,6 +514,7 @@
   <string name="title_creature_archetype_levels_page">Levels</string>
   <string name="title_creature_variety_main_page">General Attributes</string>
   <string name="title_creature_variety_attacks_page">Attacks and Skills</string>
+  <string name="title_creature_variety_talents_page">Talents</string>
   <string name="title_character_main_page">General Attributes</string>
   <string name="title_character_skills_page">Skills</string>
   <string name="title_character_talents_page">Talents</string>

@@ -23,6 +23,7 @@ import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietyAttackPageFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietyMainPageFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietyTalentsPageFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -34,15 +35,16 @@ import dagger.Provides;
  */
 @Module
 public class CreatureFragmentModule {
-	private CreatureArchetypesFragment creatureArchetypesFragment;
-	private CreatureArchetypesLevelsFragment creatureArchetypesLevelsFragment;
+	private CreatureArchetypesFragment         creatureArchetypesFragment;
+	private CreatureArchetypesLevelsFragment   creatureArchetypesLevelsFragment;
 	private CreatureArchetypesMainPageFragment creatureArchetypesMainPageFragment;
-	private CreatureCategoriesFragment creatureCategoriesFragment;
-	private CreatureTypesFragment      creatureTypesFragment;
-	private CreatureVarietiesFragment  creatureVarietiesFragment;
-	private CreatureVarietyAttackPageFragment creatureVarietyAttackPageFragment;
-	private CreatureVarietyMainPageFragment creatureVarietyMainPageFragment;
-	private OutlooksFragment           outlooksFragment;
+	private CreatureCategoriesFragment         creatureCategoriesFragment;
+	private CreatureTypesFragment              creatureTypesFragment;
+	private CreatureVarietiesFragment          creatureVarietiesFragment;
+	private CreatureVarietyAttackPageFragment  creatureVarietyAttackPageFragment;
+	private CreatureVarietyMainPageFragment    creatureVarietyMainPageFragment;
+	private CreatureVarietyTalentsPageFragment creatureVarietyTalentsPageFragment;
+	private OutlooksFragment                   outlooksFragment;
 
 	public CreatureFragmentModule(CreatureArchetypesFragment creatureArchetypesFragment) {
 		this.creatureArchetypesFragment = creatureArchetypesFragment;
@@ -67,6 +69,9 @@ public class CreatureFragmentModule {
 	}
 	public CreatureFragmentModule(CreatureVarietyMainPageFragment creatureVarietyMainPageFragment) {
 		this.creatureVarietyMainPageFragment = creatureVarietyMainPageFragment;
+	}
+	public CreatureFragmentModule(CreatureVarietyTalentsPageFragment creatureVarietyTalentsPageFragment) {
+		this.creatureVarietyTalentsPageFragment = creatureVarietyTalentsPageFragment;
 	}
 	public CreatureFragmentModule(OutlooksFragment outlooksFragment) {
 		this.outlooksFragment = outlooksFragment;
@@ -103,6 +108,10 @@ public class CreatureFragmentModule {
 	@Provides @PerFragment
 	CreatureVarietyMainPageFragment provideCreatureVarietyMainPageFragment() {
 		return this.creatureVarietyMainPageFragment;
+	}
+	@Provides @PerFragment
+	CreatureVarietyTalentsPageFragment provideCreatureVarietyTalentsPageFragment() {
+		return this.creatureVarietyTalentsPageFragment;
 	}
 	@Provides @PerFragment
 	OutlooksFragment provideOutlooksFragment() {
