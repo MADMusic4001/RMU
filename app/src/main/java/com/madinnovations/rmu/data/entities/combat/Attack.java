@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -23,9 +24,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Attack attributes
  */
-public class Attack {
+public class Attack extends DatabaseObject {
 	public static final String JSON_NAME = "Attacks";
-	private int id = -1;
 	private String code = null;
 	private String name = null;
 	private DamageTable damageTable = null;
@@ -43,7 +43,7 @@ public class Attack {
 	 * @param id  the id for the new instance
 	 */
 	public Attack(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class Attack {
 
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("code", code)
 				.append("name", name)
 				.append("damageTable", damageTable)
@@ -70,28 +70,7 @@ public class Attack {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Attack attack = (Attack) o;
-
-		return id == attack.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getCode() {
 		return code;
 	}

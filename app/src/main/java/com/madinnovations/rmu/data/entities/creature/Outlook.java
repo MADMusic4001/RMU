@@ -15,12 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 /**
  * Class containing a creature outlook description.
  */
-public class Outlook {
+public class Outlook extends DatabaseObject {
 	public static final String JSON_NAME = "Outlooks";
-	private int id = -1;
 	private String name = null;
 	private String description = null;
 
@@ -36,7 +37,7 @@ public class Outlook {
 	 * @param id  the id for the new instance
 	 */
 	public Outlook(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -53,28 +54,7 @@ public class Outlook {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Outlook outlook = (Outlook) o;
-
-		return id == outlook.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

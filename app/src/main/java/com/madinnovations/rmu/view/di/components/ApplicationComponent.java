@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.HexView;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 import com.madinnovations.rmu.view.di.modules.ApplicationModule;
 import com.madinnovations.rmu.view.di.modules.CampaignDaoSqlModule;
@@ -24,6 +25,7 @@ import com.madinnovations.rmu.view.di.modules.CommonDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CreatureDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.ItemDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.SpellDaoSqlModule;
+import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
 import javax.inject.Singleton;
 
@@ -37,4 +39,5 @@ import dagger.Component;
 		CombatDaoSqlModule.class, CreatureDaoSqlModule.class, ItemDaoSqlModule.class, SpellDaoSqlModule.class})
 public interface ApplicationComponent {
 	ActivityComponent newActivityComponent(ActivityModule activityModule);
+	ViewsComponent newViewsComponent(ViewsModule viewsModule);
 }

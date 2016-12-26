@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.Action;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -23,9 +24,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Talent data
  */
-public class Talent {
+public class Talent extends DatabaseObject {
 	public static final String JSON_NAME = "Talents";
-	private int                  id                  = -1;
 	private TalentCategory       category            = null;
 	private String               name                = null;
 	private String               description         = null;
@@ -50,7 +50,7 @@ public class Talent {
 	 * @param id  the ID of the talent
 	 */
 	public Talent(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -73,10 +73,10 @@ public class Talent {
 	 *
 	 * @return a printable String of all attributes.
 	 */
+	@SuppressWarnings("unused")
 	public String print() {
-		return new ToStringBuilder(this,
-								   ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", getId())
 				.append("category", category)
 				.append("name", name)
 				.append("description", description)
@@ -91,28 +91,7 @@ public class Talent {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Talent talent = (Talent) o;
-
-		return id == talent.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public TalentCategory getCategory() {
 		return category;
 	}

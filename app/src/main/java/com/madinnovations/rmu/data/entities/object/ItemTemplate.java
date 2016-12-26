@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -26,9 +27,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Mark
  * Created 10/16/2016.
  */
-public class ItemTemplate {
+public class ItemTemplate extends DatabaseObject {
 	public static final String JSON_NAME = "ItemTemplates";
-	private int id = -1;
 	private String name = null;
 	private float weight = 0.5f;
 	private float baseCost = 0.0f;
@@ -56,9 +56,10 @@ public class ItemTemplate {
 	 *
 	 * @return a String of this instance's attributes.
 	 */
-	public String debugToString() {
+	@SuppressWarnings("unused")
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("weight", weight)
 				.append("baseCost", baseCost)
@@ -69,28 +70,7 @@ public class ItemTemplate {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		ItemTemplate itemTemplate = (ItemTemplate) o;
-
-		return id == itemTemplate.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

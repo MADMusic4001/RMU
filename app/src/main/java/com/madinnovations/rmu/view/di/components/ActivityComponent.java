@@ -27,6 +27,7 @@ import com.madinnovations.rmu.view.di.modules.FragmentModule;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
+import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
 import dagger.Subcomponent;
 
@@ -45,6 +46,7 @@ public interface ActivityComponent {
 	ItemFragmentComponent newItemFragmentComponent(ItemFragmentModule fragmentModule);
 	PlayFragmentComponent newPlayFragmentComponent(PlayFragmentModule fragmentModule);
 	SpellFragmentComponent newSpellFragmentComponent(SpellFragmentModule fragmentModule);
+	ViewsComponent newViewsComponent(ViewsModule viewsModule);
 
 	void injectInto(CampaignActivity campaignActivity);
 }

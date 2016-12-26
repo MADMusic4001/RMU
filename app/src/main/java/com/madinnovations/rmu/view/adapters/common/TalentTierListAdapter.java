@@ -32,10 +32,9 @@ import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Parameter;
-import com.madinnovations.rmu.data.entities.common.Sense;
-import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
 import com.madinnovations.rmu.data.entities.common.TalentTier;
 
@@ -48,17 +47,17 @@ import rx.Subscriber;
 /**
  * Populates a ListView with {@link TalentTier} information
  */
-public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
+public class TalentTierListAdapter extends ArrayAdapter<TalentInstance> {
 	private static final String TAG = "TalentTierListAdapter";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_talent_tiers_row;
-	private Context                       context;
-	private ListView                      listView = null;
-	private LayoutInflater                layoutInflater;
-	private TalentTiersAdapterCallbacks   callbacks;
-	private Map<Parameter, Collection<?>> parameterCollectionsCache = new HashMap<>();
-	private ReactiveUtils                 reactiveUtils;
-	private boolean                       addChoiceOption;
-	private Object                        choice;
+	private Context                                    context;
+	private ListView                                   listView = null;
+	private LayoutInflater                             layoutInflater;
+	private TalentTiersAdapterCallbacks                callbacks;
+	private Map<Parameter, Collection<DatabaseObject>> parameterCollectionsCache = new HashMap<>();
+	private ReactiveUtils                              reactiveUtils;
+	private boolean                                    addChoiceOption;
+	private Object                                     choice;
 	private int[] colors = new int[]{
 			R.color.list_even_row_background,
 			R.color.list_odd_row_background};
@@ -112,94 +111,25 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 		}
 
 		rowView.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
-		TalentTier talentTier = getItem(position);
-		holder.talentTier = talentTier;
+		TalentInstance talentInstance = getItem(position);
+		holder.talentInstance = talentInstance;
 		if(holder.parameterViews != null) {
 			for(View view : holder.parameterViews.keySet()) {
 				holder.parametersLayout.removeView(view);
 			}
 			holder.parameterViews.clear();
 		}
-		if(talentTier != null && talentTier.getTalent() != null) {
-			String builder = talentTier.getTalent().getName() + " (" + talentTier.getTalent().getDpCost() + "/"
-					+ talentTier.getTalent().getDpCostPerTier() + ")";
+		if(talentInstance != null && talentInstance.getTalent() != null) {
+			String builder = talentInstance.getTalent().getName() + " (" + talentInstance.getTalent().getDpCost() + "/"
+					+ talentInstance.getTalent().getDpCostPerTier() + ")";
 			holder.talentNameView.setText(builder);
-			holder.tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
-			for(TalentParameterRow row : talentTier.getTalent().getTalentParameterRows()) {
-				if(row.getParameter().getEnumValues() != null && row.getEnumName() == null) {
+			holder.tiersView.setText(String.valueOf(talentInstance.getTiers()));
+			for(TalentParameterRow row : talentInstance.getTalent().getTalentParameterRows()) {
+				if(row.getParameter().getEnumValues() != null) {
 					holder.addSpinner(row.getParameter());
 				}
-				if(row.getInitialValue() == null || row.getInitialValue() == -1 && row.getEnumName() == null) {
-					switch (row.getParameter()) {
-						case ATTACK:
-							if (row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case ELEMENTAL_RR:
-						case FEAR_RR:
-						case FOLLOWER_FEAR_RR:
-						case MAGICAL_RR:
-						case PHYSICAL_RR:
-							if (row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case SENSE:
-							if (Sense.CHOICE.name().equals(row.getEnumName())) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case SKILL:
-							if (row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case SPECIALIZATION:
-							if (row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case SPELL:
-							if (row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case SPELL_LIST:
-							if (row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-						case STAT:
-							if (row.getInitialValue() == null || row.getInitialValue() == -1) {
-								if (holder.parameterViews == null) {
-									holder.parameterViews = new HashMap<>();
-								}
-								holder.addSpinner(row.getParameter());
-							}
-							break;
-					}
+				else if(row.getParameter().getHandler() != null) {
+					holder.addSpinner(row.getParameter());
 				}
 			}
 		}
@@ -208,7 +138,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 	}
 
 	public class TalentTierViewHolder {
-		private TalentTier           talentTier;
+		private TalentInstance       talentInstance;
 		private TextView             talentNameView;
 		private TextView             tiersView;
 		private ImageButton          incrementButton;
@@ -232,12 +162,10 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			incrementButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(talentTier.getStartingTiers() < 2 && callbacks.purchaseTier(
-							talentTier.getTalent(),
-							talentTier.getStartingTiers(),
-							(short)(talentTier.getEndingTiers() - talentTier.getStartingTiers()))) {
-						talentTier.setEndingTiers((short)(talentTier.getEndingTiers() + 1));
-						tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
+					if(callbacks.getTiersThisLevel(talentInstance) < 2) {
+						short newTiers =  callbacks.purchaseTier(talentInstance);
+						talentInstance.setTiers(newTiers);
+						tiersView.setText(String.valueOf(newTiers));
 					}
 				}
 			});
@@ -247,12 +175,10 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			decrementButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(talentTier.getEndingTiers() > 0 && callbacks.sellTier(
-							talentTier.getTalent(),
-							talentTier.getStartingTiers(),
-							(short)(talentTier.getEndingTiers() - talentTier.getStartingTiers()))) {
-						talentTier.setEndingTiers((short)(talentTier.getEndingTiers() - 1));
-						tiersView.setText(String.valueOf(talentTier.getStartingTiers() + talentTier.getEndingTiers()));
+					if(talentInstance.getTiers() > 0) {
+						short newTiers = callbacks.sellTier(talentInstance);
+						talentInstance.setTiers(newTiers);
+						tiersView.setText(String.valueOf(newTiers));
 					}
 				}
 			});
@@ -265,7 +191,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 			}
 			parameterViews.put(spinner, parameter);
 			parametersLayout.addView(spinner);
-			final ArrayAdapter<Object> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
+			final ArrayAdapter<Object> adapter = new ArrayAdapter<>(getContext(), R.layout.single_field_row);
 			if(parameterCollectionsCache.get(parameter) != null) {
 				adapter.clear();
 				if(addChoiceOption) {
@@ -280,7 +206,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				if(addChoiceOption) {
 					adapter.add(choice);
 				}
-				adapter.addAll(parameter.getEnumValues());
+				adapter.addAll((Object[])parameter.getEnumValues());
 				adapter.notifyDataSetChanged();
 				spinner.setAdapter(adapter);
 			}
@@ -296,7 +222,7 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 							@SuppressWarnings("unchecked")
 							@Override
 							public void onNext(Object results) {
-								parameterCollectionsCache.put(parameter, (Collection<Object>)results);
+								parameterCollectionsCache.put(parameter, (Collection<DatabaseObject>)results);
 								if(addChoiceOption) {
 									adapter.add(choice);
 								}
@@ -310,21 +236,25 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					short tiers = Short.valueOf(tiersView.getText().toString());
-					Log.d(TAG, "onItemSelected: tiers = " + tiers);
 					if(tiers > 0) {
 						if(parameter.getEnumValues() != null) {
 							Object selection = spinner.getSelectedItem();
 							if(selection instanceof Enum) {
-								callbacks.setParameterValue(talentTier.getTalent(), parameter, 0, ((Enum)selection).name());
+								callbacks.setParameterValue(talentInstance, parameter, -1, ((Enum)selection).name());
 							}
 							else {
-								callbacks.setParameterValue(talentTier.getTalent(), parameter, 0, null);
+								callbacks.setParameterValue(talentInstance, parameter, -1, null);
 							}
 						}
 						else {
-							Log.d(TAG, "onItemSelected: ");
-							callbacks.setParameterValue(talentTier.getTalent(), parameter,
-									((Specialization) spinner.getSelectedItem()).getId(), null);
+							if(spinner.getSelectedItem() instanceof DatabaseObject) {
+								callbacks.setParameterValue(talentInstance, parameter,
+															((DatabaseObject) spinner.getSelectedItem()).getId(), null);
+							}
+							else {
+								callbacks.setParameterValue(talentInstance, parameter,
+															-1, null);
+							}
 						}
 					}
 				}
@@ -334,14 +264,16 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentTier> {
 		}
 
 		// Getters
-		public TalentTier getTalentTier() {
-			return talentTier;
+		public TalentInstance getTalentInstance() {
+			return talentInstance;
 		}
 	}
 
 	public interface TalentTiersAdapterCallbacks {
-		boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel);
-		boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel);
-		void setParameterValue(Talent talent, Parameter parameter, int value, String name);
+		short purchaseTier(TalentInstance talentInstance);
+		short sellTier(TalentInstance talentInstance);
+		void setParameterValue(TalentInstance talentInstance, Parameter parameter, int value, String name);
+		short getTiersThisLevel(TalentInstance talentInstance);
+		short getTiers(TalentInstance talentInstance);
 	}
 }

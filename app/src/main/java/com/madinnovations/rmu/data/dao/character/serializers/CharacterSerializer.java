@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
+import android.util.Log;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -49,6 +51,9 @@ import java.util.Map;
  * Json serializer and deserializer for the {@link Character} entities
  */
 public class CharacterSerializer extends TypeAdapter<Character> implements CharacterSchema {
+	@SuppressWarnings("unused")
+	private static final String TAG = "CharacterSerializer";
+
 	@Override
 	public void write(JsonWriter out, Character value) throws IOException {
 		out.beginObject();
@@ -83,10 +88,10 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_STAT_INCREASES).value(value.getStatIncreases());
 
 		out.name(CharacterSkillCostsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Skill, DevelopmentCostGroup> entry : value.getSkillCosts().entrySet()) {
+		for (Map.Entry<Skill, DevelopmentCostGroup> entry : value.getSkillCosts().entrySet()) {
 			out.beginObject();
 			out.name(CharacterSkillCostsSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
-			if(entry.getValue() != null && !DevelopmentCostGroup.NONE.equals(entry.getValue())) {
+			if (entry.getValue() != null && !DevelopmentCostGroup.NONE.equals(entry.getValue())) {
 				out.name(CharacterSkillCostsSchema.COLUMN_COST_GROUP_NAME).value(entry.getValue().name());
 			}
 			out.endObject();
@@ -94,7 +99,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterSkillRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Skill, Short> entry : value.getSkillRanks().entrySet()) {
+		for (Map.Entry<Skill, Short> entry : value.getSkillRanks().entrySet()) {
 			out.beginObject();
 			out.name(CharacterSkillRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
 			out.name(CharacterSkillRanksSchema.COLUMN_RANKS).value(entry.getValue());
@@ -103,7 +108,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterSpecializationRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Specialization, Short> entry : value.getSpecializationRanks().entrySet()) {
+		for (Map.Entry<Specialization, Short> entry : value.getSpecializationRanks().entrySet()) {
 			out.beginObject();
 			out.name(CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
 			out.name(CharacterSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
@@ -112,17 +117,18 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterTalentsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Talent, TalentInstance> entry : value.getTalentInstances().entrySet()) {
+		for (TalentInstance talentInstance : value.getTalentInstances()) {
 			out.beginObject();
-			out.name(CharacterTalentsSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
-			out.name(CharacterTalentsSchema.COLUMN_TIERS).value(entry.getValue().getTiers());
-			if(!entry.getValue().getParameterValues().isEmpty()) {
+			out.name(CharacterTalentsSchema.COLUMN_ID).value(talentInstance.getId());
+			out.name(CharacterTalentsSchema.COLUMN_TALENT_ID).value(talentInstance.getTalent().getId());
+			out.name(CharacterTalentsSchema.COLUMN_TIERS).value(talentInstance.getTiers());
+			if (!talentInstance.getParameterValues().isEmpty()) {
 				out.name(CharacterTalentParametersSchema.TABLE_NAME).beginArray();
-				for(Map.Entry<Parameter, Object> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+				for (Map.Entry<Parameter, Object> paramEntry : talentInstance.getParameterValues().entrySet()) {
 					out.beginObject();
 					out.name(CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
-					if(paramEntry.getValue() != null) {
-						if(paramEntry.getValue() instanceof Integer) {
+					if (paramEntry.getValue() != null) {
+						if (paramEntry.getValue() instanceof Integer) {
 							out.name(CharacterTalentParametersSchema.COLUMN_INT_VALUE).value((Integer) paramEntry.getValue());
 						}
 						else {
@@ -138,7 +144,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterStatsSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Statistic, Short> entry : value.getStatTemps().entrySet()) {
+		for (Map.Entry<Statistic, Short> entry : value.getStatTemps().entrySet()) {
 			out.beginObject();
 			out.name(CharacterStatsSchema.COLUMN_STAT_NAME).value(entry.getKey().name());
 			out.name(CharacterStatsSchema.COLUMN_CURRENT_VALUE).value(entry.getValue());
@@ -148,7 +154,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Skill, Short> entry : value.getCurrentLevelSkillRanks().entrySet()) {
+		for (Map.Entry<Skill, Short> entry : value.getCurrentLevelSkillRanks().entrySet()) {
 			out.beginObject();
 			out.name(CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
 			out.name(CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS).value(entry.getValue());
@@ -157,7 +163,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Specialization, Short> entry : value.getCurrentLevelSpecializationRanks().entrySet()) {
+		for (Map.Entry<Specialization, Short> entry : value.getCurrentLevelSpecializationRanks().entrySet()) {
 			out.beginObject();
 			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
 			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
@@ -166,16 +172,16 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.endArray();
 
 		out.name(CharacterPurchasedCultureRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Object, Short> entry : value.getPurchasedCultureRanks().entrySet()) {
+		for (Map.Entry<Object, Short> entry : value.getPurchasedCultureRanks().entrySet()) {
 			out.beginObject();
-			if(entry.getKey() instanceof Skill) {
-				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID).value(((Skill)entry.getKey()).getId());
+			if (entry.getKey() instanceof Skill) {
+				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID).value(((Skill) entry.getKey()).getId());
 			}
 			else {
 				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID)
-						.value(((Specialization)entry.getKey()).getId());
+						.value(((Specialization) entry.getKey()).getId());
 			}
-			out.name(CharacterCurrentLevelSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.name(CharacterPurchasedCultureRanksSchema.COLUMN_RANKS).value(entry.getValue());
 			out.endObject();
 		}
 		out.endArray();
@@ -188,7 +194,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 	public Character read(JsonReader in) throws IOException {
 		Character character = new Character();
 		in.beginObject();
-		while(in.hasNext()) {
+		while (in.hasNext()) {
 			switch (in.nextName()) {
 				case COLUMN_ID:
 					character.setId(in.nextInt());
@@ -197,7 +203,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					character.setCampaign(new Campaign(in.nextInt()));
 					break;
 				case COLUMN_CURRENT_LEVEL:
-					character.setCurrentLevel((short)in.nextInt());
+					character.setCurrentLevel((short) in.nextInt());
 					break;
 				case COLUMN_EXPERIENCE_POINTS:
 					character.setExperiencePoints(in.nextInt());
@@ -263,25 +269,25 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					character.setRealm3(new Realm(in.nextInt()));
 					break;
 				case COLUMN_HEIGHT:
-					character.setHeight((short)in.nextInt());
+					character.setHeight((short) in.nextInt());
 					break;
 				case COLUMN_WEIGHT:
-					character.setWeight((short)in.nextInt());
+					character.setWeight((short) in.nextInt());
 					break;
 				case COLUMN_CURRENT_HP_LOSS:
 					character.setHitPointLoss(in.nextInt());
 					break;
 				case COLUMN_CURRENT_DEVELOPMENT_POINTS:
-					character.setCurrentDevelopmentPoints((short)in.nextInt());
+					character.setCurrentDevelopmentPoints((short) in.nextInt());
 					break;
 				case COLUMN_CURRENT_FATIGUE:
-					character.setFatigue((short)in.nextInt());
+					character.setFatigue((short) in.nextInt());
 					break;
 				case COLUMN_CURRENT_PP_LOSS:
-					character.setPowerPointLoss((short)in.nextInt());
+					character.setPowerPointLoss((short) in.nextInt());
 					break;
 				case COLUMN_STAT_INCREASES:
-					character.setStatIncreases((short)in.nextInt());
+					character.setStatIncreases((short) in.nextInt());
 					break;
 				case CharacterSkillCostsSchema.TABLE_NAME:
 					readSkillCosts(in, character);
@@ -319,8 +325,8 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Skill newSkill = null;
 			DevelopmentCostGroup costGroup = null;
 			in.beginObject();
-			while(in.hasNext()) {
-				switch(in.nextName()) {
+			while (in.hasNext()) {
+				switch (in.nextName()) {
 					case CharacterSkillCostsSchema.COLUMN_SKILL_ID:
 						newSkill = new Skill(in.nextInt());
 						break;
@@ -329,7 +335,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 						break;
 				}
 			}
-			if(newSkill != null) {
+			if (newSkill != null) {
 				character.getSkillCosts().put(newSkill, costGroup);
 			}
 			in.endObject();
@@ -343,17 +349,17 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Skill newSkill = null;
 			Short ranks = null;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterSkillRanksSchema.COLUMN_SKILL_ID:
 						newSkill = new Skill(in.nextInt());
 						break;
 					case CharacterSkillRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+						ranks = (short) in.nextInt();
 						break;
 				}
 			}
-			if(newSkill != null) {
+			if (newSkill != null) {
 				character.getSkillRanks().put(newSkill, ranks);
 			}
 			in.endObject();
@@ -367,17 +373,17 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Specialization newSpecialization = null;
 			Short ranks = null;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID:
 						newSpecialization = new Specialization(in.nextInt());
 						break;
 					case CharacterSkillRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+						ranks = (short) in.nextInt();
 						break;
 				}
 			}
-			if(newSpecialization != null) {
+			if (newSpecialization != null) {
 				character.getSpecializationRanks().put(newSpecialization, ranks);
 			}
 			in.endObject();
@@ -392,23 +398,26 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			TalentInstance talentInstance = new TalentInstance();
 			short tiers = 0;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
+					case CharacterTalentsSchema.COLUMN_ID:
+						talentInstance.setId(in.nextInt());
+						break;
 					case CharacterTalentsSchema.COLUMN_TALENT_ID:
 						newTalent = new Talent(in.nextInt());
 						break;
 					case CharacterTalentsSchema.COLUMN_TIERS:
-						tiers = (short)in.nextInt();
+						tiers = (short) in.nextInt();
 						break;
 					case CharacterTalentParametersSchema.TABLE_NAME:
 						readTalentParameterValues(in, talentInstance);
 						break;
 				}
 			}
-			if(newTalent != null && tiers > 0) {
+			if (newTalent != null && tiers > 0) {
 				talentInstance.setTalent(newTalent);
 				talentInstance.setTiers(tiers);
-				character.getTalentInstances().put(newTalent, talentInstance);
+				character.getTalentInstances().add(talentInstance);
 			}
 			in.endObject();
 		}
@@ -421,7 +430,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Parameter newParameter = null;
 			Object value = null;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterTalentParametersSchema.COLUMN_PARAMETER_NAME:
 						newParameter = Parameter.valueOf(in.nextString());
@@ -434,7 +443,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 						break;
 				}
 			}
-			if(newParameter != null) {
+			if (newParameter != null) {
 				talentInstance.getParameterValues().put(newParameter, value);
 			}
 			in.endObject();
@@ -449,20 +458,20 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Short tempValue = null;
 			Short potentialValue = null;
 			in.beginObject();
-			while(in.hasNext()) {
-				switch(in.nextName()) {
+			while (in.hasNext()) {
+				switch (in.nextName()) {
 					case CharacterStatsSchema.COLUMN_STAT_NAME:
 						newStat = Statistic.valueOf(in.nextString());
 						break;
 					case CharacterStatsSchema.COLUMN_CURRENT_VALUE:
-						tempValue = (short)in.nextInt();
+						tempValue = (short) in.nextInt();
 						break;
 					case CharacterStatsSchema.COLUMN_POTENTIAL_VALUE:
-						potentialValue = (short)in.nextInt();
+						potentialValue = (short) in.nextInt();
 						break;
 				}
 			}
-			if(newStat != null) {
+			if (newStat != null) {
 				character.getStatTemps().put(newStat, tempValue);
 				character.getStatPotentials().put(newStat, potentialValue);
 			}
@@ -477,17 +486,17 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Skill newSkill = null;
 			Short ranks = null;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterCurrentLevelSkillRanksSchema.COLUMN_SKILL_ID:
 						newSkill = new Skill(in.nextInt());
 						break;
 					case CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+						ranks = (short) in.nextInt();
 						break;
 				}
 			}
-			if(newSkill != null) {
+			if (newSkill != null) {
 				character.getCurrentLevelSkillRanks().put(newSkill, ranks);
 			}
 			in.endObject();
@@ -501,17 +510,17 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Specialization newSpecialization = null;
 			Short ranks = null;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterCurrentLevelSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID:
 						newSpecialization = new Specialization(in.nextInt());
 						break;
 					case CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+						ranks = (short) in.nextInt();
 						break;
 				}
 			}
-			if(newSpecialization != null) {
+			if (newSpecialization != null) {
 				character.getCurrentLevelSpecializationRanks().put(newSpecialization, ranks);
 			}
 			in.endObject();
@@ -526,7 +535,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			Skill newSkill = null;
 			Short ranks = null;
 			in.beginObject();
-			while(in.hasNext()) {
+			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID:
 						newSkill = new Skill(in.nextInt());
@@ -535,14 +544,14 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 						newSpecialization = new Specialization(in.nextInt());
 						break;
 					case CharacterCurrentLevelSkillRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+						ranks = (short) in.nextInt();
 						break;
 				}
 			}
-			if(newSpecialization != null) {
+			if (newSpecialization != null) {
 				character.getPurchasedCultureRanks().put(newSpecialization, ranks);
 			}
-			else if(newSkill != null) {
+			else if (newSkill != null) {
 				character.getPurchasedCultureRanks().put(newSkill, ranks);
 			}
 			in.endObject();

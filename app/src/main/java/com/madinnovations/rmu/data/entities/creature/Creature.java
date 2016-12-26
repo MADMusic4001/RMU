@@ -15,15 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Creature attributes
  */
-public class Creature {
+public class Creature extends DatabaseObject {
 	public static final String JSON_NAME = "Creatures";
-	private int id = -1;
 	private CreatureVariety creatureVariety = null;
 	private short level = 0;
 	private int maxHits = 0;
@@ -41,7 +42,7 @@ public class Creature {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("creatureVariety", creatureVariety)
 				.append("level", level)
 				.append("maxHits", maxHits)
@@ -49,28 +50,7 @@ public class Creature {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Creature creature = (Creature) o;
-
-		return id == creature.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public CreatureVariety getCreatureVariety() {
 		return creatureVariety;
 	}

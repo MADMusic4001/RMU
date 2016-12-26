@@ -59,6 +59,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for skill categories.
  */
 public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Realm> {
+	private static final String TAG = "RealmsFragment";
 	@Inject
 	protected RealmRxHandler             realmRxHandler;
 	private   ArrayAdapter<Statistic>         statSpinnerAdapter;
@@ -226,7 +227,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("RealmsFragment", "Exception saving new Realm: " + currentInstance, e);
+							Log.e(TAG, "Exception saving new Realm: " + currentInstance, e);
 							Toast.makeText(getActivity(), getString(R.string.toast_realm_save_failed), Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -264,7 +265,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("RealmsFragment", "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						String toastString = getString(R.string.toast_realm_delete_failed);
 						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
@@ -351,7 +352,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStatSpinner(View layout) {
 		statSpinner = (Spinner)layout.findViewById(R.id.stat_spinner);
-		statSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		statSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		statSpinner.setAdapter(statSpinnerAdapter);
 
 		statSpinnerAdapter.clear();
@@ -407,7 +408,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("RealmsFragment", "Exception caught getting all Realm instances", e);
+						Log.e(TAG, "Exception caught getting all Realm instances", e);
 						Toast.makeText(RealmsFragment.this.getActivity(),
 								getString(R.string.toast_realms_load_failed),
 								Toast.LENGTH_SHORT).show();

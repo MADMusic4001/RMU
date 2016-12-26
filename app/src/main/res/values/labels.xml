@@ -163,6 +163,7 @@
   <string name="label_body_part_name">Body Part Name</string>
   <string name="label_campaign_create_date">Campaign Create Date</string>
   <string name="label_campaign_name">Campaign Name</string>
+  <string name="label_characters">Characters</string>
   <string name="label_character_first_name">Character First Name</string>
   <string name="label_character_known_as">Character Known As</string>
   <string name="label_character_last_name">Character Last Name</string>
@@ -187,6 +188,7 @@
   <string name="label_item_name">Item Name</string>
   <string name="label_item_template_description">Item Template Description</string>
   <string name="label_item_template_name">Item Template Name</string>
+  <string name="label_opponents">Opponents</string>
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
   <string name="label_potential">Potential</string>
@@ -197,6 +199,7 @@
   <string name="label_profession_name">Profession Name</string>
   <string name="label_race_name">Race Name</string>
   <string name="label_race_description">Race Description</string>
+  <string name="label_race_tiers_available">Race Tiers</string>
   <string name="label_realm_description">Realm Description</string>
   <string name="label_realm_name">Realm Name</string>
   <string name="label_restricted_attacks">Restricted Attacks</string>

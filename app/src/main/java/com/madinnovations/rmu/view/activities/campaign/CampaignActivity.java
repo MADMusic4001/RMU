@@ -53,6 +53,7 @@ import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
+import com.madinnovations.rmu.view.activities.play.StartCombatFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
@@ -60,7 +61,9 @@ import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
+import com.madinnovations.rmu.view.di.components.ViewsComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
+import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
 import java.io.File;
 
@@ -80,6 +83,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	@Inject
 	ImportExportRxHandler              importExportRxHandler;
 	private ActivityComponent          activityComponent;
+	private ViewsComponent             viewsComponent;
 	private AboutFragment              aboutFragment;
 	private AttacksFragment            attacksFragment;
 	private BodyPartsFragment          bodyPartsFragment;
@@ -107,6 +111,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private SpellsFragment             spellsFragment;
 	private SpellSubTypesFragment      spellSubTypesFragment;
 	private SpellTypesFragment         spellTypesFragment;
+	private StartCombatFragment        startCombatFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
 
@@ -424,6 +429,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 		replaceDetailFragment(spellTypesFragment);
 	}
 
+	public void showStartCombat() {
+		if(startCombatFragment == null) {
+			startCombatFragment = new StartCombatFragment();
+		}
+		replaceDetailFragment(startCombatFragment);
+	}
+
 	public void showTalentCategories() {
 		if(talentCategoriesFragment == null) {
 			talentCategoriesFragment = new TalentCategoriesFragment();
@@ -448,5 +460,9 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 
 	public ActivityComponent getActivityComponent() {
 		return activityComponent;
+	}
+
+	public ViewsComponent getViewsComponent() {
+		return viewsComponent;
 	}
 }

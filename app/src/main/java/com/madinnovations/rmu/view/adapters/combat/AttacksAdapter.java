@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,9 @@ import javax.inject.Inject;
  * Populates a Spinner with {@link Attack} information
  */
 public class AttacksAdapter extends ArrayAdapter<Attack> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.spinner_row;
+	@SuppressWarnings("unused")
+	private static final String TAG                = "AttacksAdapter";
+	private static final int    LAYOUT_RESOURCE_ID = R.layout.single_field_row;
 	private LayoutInflater layoutInflater;
 
 	/**
@@ -39,6 +42,7 @@ public class AttacksAdapter extends ArrayAdapter<Attack> {
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
 	 */
+	@SuppressWarnings("WeakerAccess")
 	@Inject
 	public AttacksAdapter(Context context) {
 		super(context, LAYOUT_RESOURCE_ID);
@@ -46,12 +50,13 @@ public class AttacksAdapter extends ArrayAdapter<Attack> {
 	}
 
 	@Override
-	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+	public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
 		return getView(position, convertView, parent);
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	@NonNull
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 
@@ -66,8 +71,9 @@ public class AttacksAdapter extends ArrayAdapter<Attack> {
 		}
 
 		Attack attack = getItem(position);
-		holder.nameView.setText(String.format(getContext().getString(R.string.code_name_format_string), attack.getCode(),
-				attack.getName()));
+		if(attack != null) {
+			holder.nameView.setText(String.format(getContext().getString(R.string.code_name_format_string), attack.getCode(), attack.getName()));
+		}
 		return rowView;
 	}
 

@@ -577,7 +577,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellListFilterSpinner(View layout) {
 		spellListFilterSpinner = (Spinner)layout.findViewById(R.id.spell_list_filter_spinner);
-		spellListFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		spellListFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		spellListFilterSpinner.setAdapter(spellListFilterSpinnerAdapter);
 
 		final SpellList allSpellLists = new SpellList();
@@ -671,7 +671,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellListSpinner(View layout) {
 		spellListSpinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
-		spellListSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		spellListSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		spellListSpinner.setAdapter(spellListSpinnerAdapter);
 
 		spellListRxHandler.getAll()
@@ -714,7 +714,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellTypeSpinner(View layout) {
 		spellTypeSpinner = (Spinner)layout.findViewById(R.id.spell_type_spinner);
-		spellTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		spellTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		spellTypeSpinner.setAdapter(spellTypeSpinnerAdapter);
 
 		spellTypeRxHandler.getAll()
@@ -753,7 +753,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSpellSubTypeSpinner(View layout) {
 		spellSubTypeSpinner = (Spinner)layout.findViewById(R.id.spell_sub_type_spinner);
-		spellSubTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		spellSubTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		spellSubTypeSpinner.setAdapter(spellSubTypeSpinnerAdapter);
 
 		spellSubTypeRxHandler.getAll()
@@ -798,7 +798,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initAreaOfEffectSpinner(View layout) {
 		areaOfEffectSpinner = (Spinner)layout.findViewById(R.id.area_of_effect_spinner);
-		areaOfEffectSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		areaOfEffectSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		areaOfEffectSpinner.setAdapter(areaOfEffectSpinnerAdapter);
 
 		areaOfEffectSpinnerAdapter.clear();
@@ -919,7 +919,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initDurationSpinner(View layout) {
 		durationSpinner = (Spinner)layout.findViewById(R.id.duration_spinner);
-		durationSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		durationSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		durationSpinner.setAdapter(durationSpinnerAdapter);
 
 		durationSpinnerAdapter.clear();
@@ -1023,7 +1023,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initRangeSpinner(View layout) {
 		rangeSpinner = (Spinner)layout.findViewById(R.id.range_spinner);
-		rangeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		rangeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		rangeSpinner.setAdapter(rangeSpinnerAdapter);
 
 		rangeSpinnerAdapter.clear();

@@ -56,6 +56,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature archetypes.
  */
 public class CreatureArchetypesMainPageFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureArchetype> {
+	private static final String TAG = "ArchetypesMainPageFrag";
 	@Inject
 	protected CreatureArchetypeRxHandler             creatureArchetypeRxHandler;
 	@Inject
@@ -123,6 +124,12 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 			creatureArchetypesFragment.saveItem();
 		}
 		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
 	}
 
 	public boolean copyViewsToItem() {
@@ -386,7 +393,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
-		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
 //		statRxHandler.getAll()
@@ -396,7 +403,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 //					public void onCompleted() {}
 //					@Override
 //					public void onError(Throwable e) {
-//						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
+//						Log.e(TAG "Exception caught getting all Stat instances", e);
 //					}
 //					@Override
 //					public void onNext(Collection<Stat> items) {
@@ -450,7 +457,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 
 	private void initStat2Spinner(View layout) {
 		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
-		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
 //		statRxHandler.getAll()
@@ -460,7 +467,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 //					public void onCompleted() {}
 //					@Override
 //					public void onError(Throwable e) {
-//						Log.e("CreatureArchetypesFrag", "Exception caught getting all Stat instances", e);
+//						Log.e(TAG, "Exception caught getting all Stat instances", e);
 //					}
 //					@Override
 //					public void onNext(Collection<Stat> items) {
@@ -498,7 +505,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 
 	private void initPrimarySkillCategoriesList(View layout) {
 		primarySkillCategoriesList = (ListView) layout.findViewById(R.id.primary_skills_list);
-		primarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		primarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		primarySkillCategoriesList.setAdapter(primarySkillCategoriesListAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -509,7 +516,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all SkillCategory instances", e);
+						Log.e(TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> items) {
@@ -537,7 +544,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 
 	private void initSecondarySkillCategoriesList(View layout) {
 		secondarySkillCategoriesList = (ListView) layout.findViewById(R.id.secondary_skills_list);
-		secondarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		secondarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		secondarySkillCategoriesList.setAdapter(secondarySkillCategoriesListAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -548,7 +555,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all SkillCategory instances", e);
+						Log.e(TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> items) {
@@ -576,7 +583,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 
 	private void initTertiarySkillCategoriesList(View layout) {
 		tertiarySkillCategoriesList = (ListView) layout.findViewById(R.id.tertiary_skills_list);
-		tertiarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		tertiarySkillCategoriesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		tertiarySkillCategoriesList.setAdapter(tertiarySkillCategoriesListAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -587,7 +594,7 @@ public class CreatureArchetypesMainPageFragment extends Fragment implements TwoF
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CreatureArchetypesFrag", "Exception caught getting all SkillCategory instances", e);
+						Log.e(TAG, "Exception caught getting all SkillCategory instances", e);
 					}
 					@Override
 					public void onNext(Collection<SkillCategory> items) {

@@ -95,6 +95,20 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			charactersFragment.saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
+	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
@@ -273,15 +287,18 @@ public class CharacterBackgroundPageFragment extends Fragment implements EditTex
 	 * Copies the current Character instance values to the views on this page.
 	 */
 	public void copyItemToViews() {
-		hairColorEdit.setText(charactersFragment.getCurrentInstance().getHairColor());
-		hairStyleEdit.setText(charactersFragment.getCurrentInstance().getHairStyle());
-		eyeColorEdit.setText(charactersFragment.getCurrentInstance().getEyeColor());
-		skinComplexionEdit.setText(charactersFragment.getCurrentInstance().getSkinComplexion());
-		facialFeaturesEdit.setText(charactersFragment.getCurrentInstance().getFacialFeatures());
-		identifyingMarksEdit.setText(charactersFragment.getCurrentInstance().getIdentifyingMarks());
-		personalityEdit.setText(charactersFragment.getCurrentInstance().getPersonality());
-		mannerismsEdit.setText(charactersFragment.getCurrentInstance().getMannerisms());
-		familyInformationEdit.setText(charactersFragment.getCurrentInstance().getFamilyInfo());
-		hometownEdit.setText(charactersFragment.getCurrentInstance().getHometown());
+		if(charactersFragment != null) {
+			Character character = charactersFragment.getCurrentInstance();
+			hairColorEdit.setText(character.getHairColor());
+			hairStyleEdit.setText(character.getHairStyle());
+			eyeColorEdit.setText(character.getEyeColor());
+			skinComplexionEdit.setText(character.getSkinComplexion());
+			facialFeaturesEdit.setText(character.getFacialFeatures());
+			identifyingMarksEdit.setText(character.getIdentifyingMarks());
+			personalityEdit.setText(character.getPersonality());
+			mannerismsEdit.setText(character.getMannerisms());
+			familyInformationEdit.setText(character.getFamilyInfo());
+			hometownEdit.setText(character.getHometown());
+		}
 	}
 }

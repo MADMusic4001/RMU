@@ -62,7 +62,6 @@ public class RacesCulturesPageFragment extends Fragment {
 	 * @return the new instance.
 	 */
 	public static RacesCulturesPageFragment newInstance(RacesFragment racesFragment) {
-		Log.d(TAG, "newInstance: ");
 		RacesCulturesPageFragment fragment = new RacesCulturesPageFragment();
 		fragment.racesFragment = racesFragment;
 		return fragment;
@@ -73,13 +72,26 @@ public class RacesCulturesPageFragment extends Fragment {
 		((CampaignActivity) getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		Log.d(TAG, "onCreateView: ");
 		View layout = inflater.inflate(R.layout.races_cultures_page, container, false);
 
 		initAllowAnyCheckBox(layout);
 		initCulturesListView(layout);
 		copyItemToViews();
 		return layout;
+	}
+
+	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			racesFragment.saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
 	}
 
 	// <editor-fold desc="Copy to/from views/entity methods">
@@ -92,12 +104,14 @@ public class RacesCulturesPageFragment extends Fragment {
 			changed = true;
 		}
 
-		getSelectedCultures();
+		if(changed && getSelectedCultures()) {
+			changed = false;
+		}
+
 		return changed;
 	}
 
 	public void copyItemToViews() {
-		Log.d(TAG, "copyItemToViews: ");
 		Race currentInstance = racesFragment.getCurrentInstance();
 		allowAnyCheckBox.setChecked(currentInstance.getAllowedCultures().isEmpty());
 		culturesListView.setEnabled(!currentInstance.getAllowedCultures().isEmpty());
@@ -126,7 +140,7 @@ public class RacesCulturesPageFragment extends Fragment {
 
 	private void initCulturesListView(View layout) {
 		culturesListView = (ListView)layout.findViewById(R.id.cultures_list_view);
-		culturesArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		culturesArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		culturesListView.setAdapter(culturesArrayAdapter);
 
 		cultureRxHandler.getAll()
@@ -163,7 +177,9 @@ public class RacesCulturesPageFragment extends Fragment {
 		});
 	}
 
-	private void getSelectedCultures() {
+	private boolean getSelectedCultures() {
+		boolean changed = false;
+
 		SparseBooleanArray selectedItems = culturesListView.getCheckedItemPositions();
 		List<Culture> cultures = new ArrayList<>(culturesListView.getCheckedItemCount());
 		for(int i = 0; i < selectedItems.size(); i++) {
@@ -171,9 +187,13 @@ public class RacesCulturesPageFragment extends Fragment {
 				cultures.add(culturesArrayAdapter.getItem(selectedItems.keyAt(i)));
 			}
 		}
-		racesFragment.getCurrentInstance().setAllowedCultures(cultures);
-		Log.d(TAG, "getSelectedCultures: allowedCultures = " + cultures);
-		racesFragment.saveItem();
+		if(!racesFragment.getCurrentInstance().getAllowedCultures().equals(cultures)) {
+			racesFragment.getCurrentInstance().setAllowedCultures(cultures);
+			racesFragment.saveItem();
+			changed = true;
+		}
+
+		return changed;
 	}
 
 	private void setSelectedCultures() {

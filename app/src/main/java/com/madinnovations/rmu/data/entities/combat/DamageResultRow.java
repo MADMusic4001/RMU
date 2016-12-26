@@ -17,15 +17,16 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import android.util.SparseArray;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Damage result row attributes
  */
-public class DamageResultRow {
+public class DamageResultRow extends DatabaseObject {
 	public static final String JSON_NAME = "DamageResultRows";
-	private int id = -1;
 	private DamageTable damageTable = null;
 	private short rangeLowValue = 65;
 	private short rangeHighValue = 67;
@@ -43,7 +44,7 @@ public class DamageResultRow {
 	 * @param id  the id for the new instance
 	 */
 	public DamageResultRow(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -58,35 +59,14 @@ public class DamageResultRow {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("damageTable", damageTable)
 				.append("rangeLowValue", rangeLowValue)
 				.append("rangeHighValue", rangeHighValue)
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		DamageResultRow that = (DamageResultRow) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public DamageTable getDamageTable() {
 		return damageTable;
 	}

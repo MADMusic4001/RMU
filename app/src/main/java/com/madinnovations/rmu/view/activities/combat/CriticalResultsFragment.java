@@ -225,7 +225,7 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initCriticalTypeFilterSpinner(View layout) {
 		criticalTypeFilterSpinner = (Spinner)layout.findViewById(R.id.critical_type_filter_spinner);
-		criticalTypeFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		criticalTypeFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		criticalTypeFilterSpinner.setAdapter(criticalTypeFilterSpinnerAdapter);
 
 		criticalTypeRxHandler.getAll()
@@ -260,7 +260,7 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initCriticalSeverityFilterSpinner(View layout) {
 		Spinner criticalSeverityFilterSpinner = (Spinner) layout.findViewById(R.id.critical_severity_filter_spinner);
-		criticalSeverityFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		criticalSeverityFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		criticalSeverityFilterSpinner.setAdapter(criticalSeverityFilterSpinnerAdapter);
 
 		criticalSeverityFilterSpinnerAdapter.add('A');

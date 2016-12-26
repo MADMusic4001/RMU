@@ -17,6 +17,8 @@ package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -26,9 +28,8 @@ import java.util.List;
 /**
  * Skill category attributes
  */
-public class SkillCategory implements Comparable {
+public class SkillCategory extends DatabaseObject implements Comparable {
 	public static final String JSON_NAME = "SkillCategories";
-	private int id = -1;
 	private String name = null;
 	private String description = null;
 	private boolean combat = false;
@@ -49,7 +50,7 @@ public class SkillCategory implements Comparable {
 	 * @param id  the id of the new instance
 	 */
 	public SkillCategory(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -68,9 +69,10 @@ public class SkillCategory implements Comparable {
 	 *
 	 * @return  a formatted string containing this instances attributes.
 	 */
+	@SuppressWarnings("unused")
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("description", description)
 				.append("combat", combat)
@@ -84,21 +86,6 @@ public class SkillCategory implements Comparable {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		SkillCategory that = (SkillCategory) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
 	}
 
 	@Override
@@ -130,12 +117,6 @@ public class SkillCategory implements Comparable {
 	}
 
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

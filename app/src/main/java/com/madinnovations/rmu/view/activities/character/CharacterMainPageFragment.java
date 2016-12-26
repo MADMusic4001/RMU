@@ -46,10 +46,7 @@ import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
-import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
@@ -93,10 +90,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   EditText                 lastNameEdit;
 	private   EditText                 knownAsEdit;
 	private   EditText                 descriptionEdit;
-	private   SpinnerUtils<Race>       raceSpinner;
-	private   SpinnerUtils<Culture>    cultureSpinner;
-	private   SpinnerUtils<Profession> professionSpinner;
-	private   SpinnerUtils<Realm>      realmSpinner;
+	private   SpinnerUtils<Race>       raceSpinnerUtils;
+	private   SpinnerUtils<Culture>    cultureSpinnerUtils;
+	private   SpinnerUtils<Profession> professionSpinnerUtils;
+	private   SpinnerUtils<Realm>      realmSpinnerUtils;
 	private   Button                   generateStatsButton;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
@@ -143,14 +140,14 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				R.string.validation_character_known_as_required);
 		descriptionEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit,
 				R.string.validation_character_description_required);
-		raceSpinner = new SpinnerUtils<>();
-		raceSpinner.initSpinner(layout, getActivity(), raceRxHandler.getAll(), this, R.id.race_spinner, null);
-		cultureSpinner = new SpinnerUtils<>();
-		cultureSpinner.initSpinner(layout, getActivity(), cultureRxHandler.getAll(), this, R.id.culture_spinner, null);
-		professionSpinner= new SpinnerUtils<>();
-		professionSpinner.initSpinner(layout, getActivity(), professionRxHandler.getAll(), this, R.id.profession_spinner, null);
-		realmSpinner = new SpinnerUtils<>();
-		realmSpinner.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
+		raceSpinnerUtils = new SpinnerUtils<>();
+		raceSpinnerUtils.initSpinner(layout, getActivity(), raceRxHandler.getAll(), this, R.id.race_spinner, null);
+		cultureSpinnerUtils = new SpinnerUtils<>();
+		cultureSpinnerUtils.initSpinner(layout, getActivity(), cultureRxHandler.getAll(), this, R.id.culture_spinner, null);
+		professionSpinnerUtils = new SpinnerUtils<>();
+		professionSpinnerUtils.initSpinner(layout, getActivity(), professionRxHandler.getAll(), this, R.id.profession_spinner, null);
+		realmSpinnerUtils = new SpinnerUtils<>();
+		realmSpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
 		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit,
 											R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
@@ -166,6 +163,20 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		initStatsRows(layout);
 
 		return layout;
+	}
+
+	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			charactersFragment.saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
 	}
 
 	@Override
@@ -332,24 +343,32 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				}
 				else {
 					character.setCurrentDevelopmentPoints((short)(Character.INITIAL_DP + bonusDP));
-					character.setCurrentLevelSkillRanks(new HashMap<Skill, Short>());
-					character.setCurrentLevelSpecializationRanks(new HashMap<Specialization, Short>());
-					character.setCurrentLevelTalentTiers(new HashMap<Talent, Short>());
-					character.setSkillRanks(new HashMap<Skill, Short>());
-					character.setSpecializationRanks(new HashMap<Specialization, Short>());
-					character.setTalentInstances(new HashMap<Talent, TalentInstance>());
+					character.getCurrentLevelSkillRanks().clear();
+					character.getCurrentLevelSpecializationRanks().clear();
+					character.getCurrentLevelTalentTiers().clear();
+					character.getSkillRanks().clear();
+					character.getSpecializationRanks().clear();
+				}
+				character.getTalentInstances().clear();
+				for(TalentInstance talentInstance : newRace.getTalentsAndFlawsList()) {
+					TalentInstance newTalentInstance = new TalentInstance();
+					newTalentInstance.setTalent(talentInstance.getTalent());
+					newTalentInstance.setTiers(talentInstance.getTiers());
+					newTalentInstance.getParameterValues().putAll(talentInstance.getParameterValues());
+					character.getTalentInstances().add(newTalentInstance);
 				}
 				developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
 				character.setRace(newRace);
-				cultureSpinner.getAdapter().clear();
+				cultureSpinnerUtils.getAdapter().clear();
 				if(character.getRace().getAllowedCultures() == null || character.getRace().getAllowedCultures().isEmpty()) {
-					cultureSpinner.getAdapter().addAll(cultureSpinner.getAllItems());
+					cultureSpinnerUtils.getAdapter().addAll(cultureSpinnerUtils.getAllItems());
 				}
 				else {
-					cultureSpinner.getAdapter().addAll(character.getRace().getAllowedCultures());
+					cultureSpinnerUtils.getAdapter().addAll(character.getRace().getAllowedCultures());
 				}
-				cultureSpinner.setSelection(character.getCulture());
+				cultureSpinnerUtils.setSelection(character.getCulture());
 				charactersFragment.saveItem();
+				copyItemToViews();
 				break;
 			case R.id.culture_spinner:
 				character.setCulture((Culture)newItem);
@@ -390,8 +409,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public Race getRace() {
 		Race race = null;
 
-		if(raceSpinner.getSelectedItem() != null) {
-			race = raceSpinner.getSelectedItem();
+		if(raceSpinnerUtils.getSelectedItem() != null) {
+			race = raceSpinnerUtils.getSelectedItem();
 		}
 
 		return race;
@@ -405,8 +424,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	public Culture getCulture() {
 		Culture culture = null;
 
-		if(cultureSpinner.getSelectedItem() != null) {
-			culture = cultureSpinner.getSelectedItem();
+		if(cultureSpinnerUtils.getSelectedItem() != null) {
+			culture = cultureSpinnerUtils.getSelectedItem();
 		}
 
 		return culture;
@@ -414,75 +433,79 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 
 	@SuppressWarnings("ConstantConditions")
 	public boolean copyViewsToItem() {
-		Character character = charactersFragment.getCurrentInstance();
 		boolean changed = false;
-		String newString;
-		short newShort;
 
-		Campaign newCampaign = (Campaign)campaignSpinner.getSelectedItem();
-		if(newCampaign != null && !newCampaign.equals(character.getCampaign()) ||
-				(newCampaign == null && character.getCampaign() != null)) {
-			character.setCampaign(newCampaign);
-			changed = true;
-		}
+		if(charactersFragment != null) {
+			Character character = charactersFragment.getCurrentInstance();
+			String newString;
+			short newShort;
 
-		newString = firstNameEdit.getText().toString();
-		if(!newString.equals(character.getFirstName())) {
-			character.setFirstName(newString);
-			changed = true;
-		}
-		newString = lastNameEdit.getText().toString();
-		if(!newString.equals(character.getLastName())) {
-			character.setLastName(newString);
-			changed = true;
-		}
-		newString = knownAsEdit.getText().toString();
-		if(!newString.equals(character.getKnownAs())) {
-			character.setKnownAs(newString);
-			changed = true;
-		}
-		newString = descriptionEdit.getText().toString();
-		if(!newString.equals(character.getDescription())) {
-			character.setDescription(newString);
-			changed = true;
-		}
-		Race newRace = raceSpinner.getSelectedItem();
-		Race oldRace = character.getRace();
-		if((newRace != null && !newRace.equals(oldRace)) || (oldRace != null && !oldRace.equals(newRace))) {
-			character.setRace(newRace);
-			changed = true;
-		}
-		Culture newCulture = cultureSpinner.getSelectedItem();
-		Culture oldCulture = character.getCulture();
-		if((newCulture != null && !newCulture.equals(oldCulture)) || (oldCulture != null && !oldCulture.equals(newCulture))) {
-			character.setCulture(newCulture);
-			changed = true;
-		}
-		Profession newProfession = professionSpinner.getSelectedItem();
-		Profession oldProfession = character.getProfession();
-		if((newProfession != null && !newProfession.equals(oldProfession)) ||
-				(oldProfession != null && !oldProfession.equals(newProfession))) {
-			character.setProfession(newProfession);
-			changed = true;
-		}
-		Realm newRealm = realmSpinner.getSelectedItem();
-		Realm oldRealm = character.getRealm();
-		if((newRealm != null && !newRealm.equals(oldRealm)) || (oldRealm != null && !oldRealm.equals(newRealm))) {
-			character.setRealm(newRealm);
-			changed = true;
-		}
-		if(heightEdit.getText().length() > 0) {
-			newShort = Short.valueOf(heightEdit.getText().toString());
-			if(newShort != character.getHeight()) {
-				character.setHeight(newShort);
+			Campaign newCampaign = (Campaign) campaignSpinner.getSelectedItem();
+			if (newCampaign != null && !newCampaign.equals(character.getCampaign()) ||
+					(newCampaign == null && character.getCampaign() != null)) {
+				character.setCampaign(newCampaign);
 				changed = true;
 			}
-		}
-		if(weightEdit.getText().length() > 0) {
-			newShort = Short.valueOf(weightEdit.getText().toString());
-			if(newShort != character.getWeight()) {
-				character.setWeight(newShort);
+
+			newString = firstNameEdit.getText().toString();
+			if (!newString.equals(character.getFirstName())) {
+				character.setFirstName(newString);
 				changed = true;
+			}
+			newString = lastNameEdit.getText().toString();
+			if (!newString.equals(character.getLastName())) {
+				character.setLastName(newString);
+				changed = true;
+			}
+			newString = knownAsEdit.getText().toString();
+			if (!newString.equals(character.getKnownAs())) {
+				character.setKnownAs(newString);
+				changed = true;
+			}
+			newString = descriptionEdit.getText().toString();
+			if (!newString.equals(character.getDescription())) {
+				character.setDescription(newString);
+				changed = true;
+			}
+			Race newRace = raceSpinnerUtils.getSelectedItem();
+			Race oldRace = character.getRace();
+			if ((newRace != null && !newRace.equals(oldRace)) || (oldRace != null && !oldRace.equals(newRace))) {
+				character.setRace(newRace);
+				changed = true;
+			}
+			Culture newCulture = cultureSpinnerUtils.getSelectedItem();
+			Culture oldCulture = character.getCulture();
+			if ((newCulture != null && !newCulture.equals(oldCulture)) || (oldCulture != null && !oldCulture.equals(
+					newCulture))) {
+				character.setCulture(newCulture);
+				changed = true;
+			}
+			Profession newProfession = professionSpinnerUtils.getSelectedItem();
+			Profession oldProfession = character.getProfession();
+			if ((newProfession != null && !newProfession.equals(oldProfession)) ||
+					(oldProfession != null && !oldProfession.equals(newProfession))) {
+				character.setProfession(newProfession);
+				changed = true;
+			}
+			Realm newRealm = realmSpinnerUtils.getSelectedItem();
+			Realm oldRealm = character.getRealm();
+			if ((newRealm != null && !newRealm.equals(oldRealm)) || (oldRealm != null && !oldRealm.equals(newRealm))) {
+				character.setRealm(newRealm);
+				changed = true;
+			}
+			if (heightEdit.getText().length() > 0) {
+				newShort = Short.valueOf(heightEdit.getText().toString());
+				if (newShort != character.getHeight()) {
+					character.setHeight(newShort);
+					changed = true;
+				}
+			}
+			if (weightEdit.getText().length() > 0) {
+				newShort = Short.valueOf(weightEdit.getText().toString());
+				if (newShort != character.getWeight()) {
+					character.setWeight(newShort);
+					changed = true;
+				}
 			}
 		}
 
@@ -490,78 +513,80 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	public void copyItemToViews() {
-		Character character = charactersFragment.getCurrentInstance();
+		if(charactersFragment != null) {
+			Character character = charactersFragment.getCurrentInstance();
 
-		short currentLevel = character.getCurrentLevel();
-		currentLevelView.setText(String.valueOf(currentLevel));
-		experiencePointsView.setText(String.valueOf(character.getExperiencePoints()));
-		developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
-		levelUpButton.setEnabled((currentLevel < (short)(character.getExperiencePoints()/10000)));
+			short currentLevel = character.getCurrentLevel();
+			currentLevelView.setText(String.valueOf(currentLevel));
+			experiencePointsView.setText(String.valueOf(character.getExperiencePoints()));
+			developmentPointsView.setText(String.valueOf(character.getCurrentDevelopmentPoints()));
+			levelUpButton.setEnabled((currentLevel < (short) (character.getExperiencePoints() / 10000)));
 
-		firstNameEdit.setText(character.getFirstName());
-		lastNameEdit.setText(character.getLastName());
-		knownAsEdit.setText(character.getKnownAs());
-		descriptionEdit.setText(character.getDescription());
-		raceSpinner.setSelection(character.getRace());
-		cultureSpinner.setSelection(character.getCulture());
-		professionSpinner.setSelection(character.getProfession());
-		realmSpinner.setSelection(character.getRealm());
-		heightEdit.setText(String.valueOf(character.getHeight()));
-		weightEdit.setText(String.valueOf(character.getWeight()));
+			firstNameEdit.setText(character.getFirstName());
+			lastNameEdit.setText(character.getLastName());
+			knownAsEdit.setText(character.getKnownAs());
+			descriptionEdit.setText(character.getDescription());
+			raceSpinnerUtils.setSelection(character.getRace());
+			cultureSpinnerUtils.setSelection(character.getCulture());
+			professionSpinnerUtils.setSelection(character.getProfession());
+			realmSpinnerUtils.setSelection(character.getRealm());
+			heightEdit.setText(String.valueOf(character.getHeight()));
+			weightEdit.setText(String.valueOf(character.getWeight()));
 
-		if(character.getFirstName() == null) {
-			firstNameEdit.setError(getString(R.string.validation_character_first_name_required));
-		}
-		else {
-			firstNameEdit.setError(null);
-		}
-		if(character.getLastName() == null) {
-			lastNameEdit.setError(getString(R.string.validation_character_last_name_required));
-		}
-		else {
-			lastNameEdit.setError(null);
-		}
-		if(character.getKnownAs() == null) {
-			knownAsEdit.setError(getString(R.string.validation_character_known_as_required));
-		}
-		else {
-			knownAsEdit.setError(null);
-		}
-		if(character.getDescription() == null) {
-			descriptionEdit.setError(getString(R.string.validation_character_description_required));
-		}
-		else {
-			descriptionEdit.setError(null);
-		}
+			if (character.getFirstName() == null) {
+				firstNameEdit.setError(getString(R.string.validation_character_first_name_required));
+			}
+			else {
+				firstNameEdit.setError(null);
+			}
+			if (character.getLastName() == null) {
+				lastNameEdit.setError(getString(R.string.validation_character_last_name_required));
+			}
+			else {
+				lastNameEdit.setError(null);
+			}
+			if (character.getKnownAs() == null) {
+				knownAsEdit.setError(getString(R.string.validation_character_known_as_required));
+			}
+			else {
+				knownAsEdit.setError(null);
+			}
+			if (character.getDescription() == null) {
+				descriptionEdit.setError(getString(R.string.validation_character_description_required));
+			}
+			else {
+				descriptionEdit.setError(null);
+			}
 
-		setStatPointsViews();
+			setStatPointsViews();
 
-		boolean enable = character.getExperiencePoints() == 0 && character.getCampaign() != null
-				&& character.getCampaign().isBuyStats();
-		for(Map.Entry<Statistic, ViewHolder> entry : viewHolderMap.entrySet()) {
-			entry.getValue().tempStatView.setText(String.valueOf(character.getStatTemps().get(entry.getKey())));
-			entry.getValue().potentialStatView.setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
-			entry.getValue().buyButton.setEnabled(enable);
-			entry.getValue().sellButton.setEnabled(enable);
-		}
+			boolean enable = character.getExperiencePoints() == 0 && character.getCampaign() != null
+					&& character.getCampaign().isBuyStats();
+			for (Map.Entry<Statistic, ViewHolder> entry : viewHolderMap.entrySet()) {
+				entry.getValue().tempStatView.setText(String.valueOf(character.getStatTemps().get(entry.getKey())));
+				entry.getValue().potentialStatView.setText(String.valueOf(character.getStatPotentials().get(entry.getKey())));
+				entry.getValue().buyButton.setEnabled(enable);
+				entry.getValue().sellButton.setEnabled(enable);
+			}
 
-		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
-				&&!character.getCampaign().isBuyStats());
+			generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
+												   && !character.getCampaign().isBuyStats());
 
-		if(character.getExperiencePoints() > 0) {
-			newCharacterRow.setVisibility(View.GONE);
-			firstNameEdit.setEnabled(false);
-			lastNameEdit.setEnabled(false);
-			raceSpinner.getSpinner().setEnabled(false);
-			cultureSpinner.getSpinner().setEnabled(false);
-			professionSpinner.getSpinner().setEnabled(false);
-			realmSpinner.getSpinner().setEnabled(false);
-			heightEdit.setEnabled(false);
-			weightEdit.setEnabled(false);
-			campaignSpinner.setEnabled(false);
-		}
-		else {
-			newCharacterRow.setVisibility(View.VISIBLE);
+			if (character.getExperiencePoints() > 0) {
+				newCharacterRow.setVisibility(View.GONE);
+				firstNameEdit.setEnabled(false);
+				lastNameEdit.setEnabled(false);
+				raceSpinnerUtils.getSpinner().setEnabled(false);
+				cultureSpinnerUtils.getSpinner().setEnabled(false);
+				professionSpinnerUtils.getSpinner().setEnabled(false);
+				realmSpinnerUtils.getSpinner().setEnabled(false);
+				heightEdit.setEnabled(false);
+				weightEdit.setEnabled(false);
+				campaignSpinner.setEnabled(false);
+			}
+			else {
+				newCharacterRow.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -688,6 +713,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				statPurchasePoints -= 1;
 				character.setStatPurchasePoints(statPurchasePoints);
 				statPointsView.setText(String.valueOf(statPurchasePoints));
+				charactersFragment.saveItem();
 			}
 		}
 	}
@@ -705,6 +731,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			statPurchasePoints += 1;
 			character.setStatPurchasePoints(statPurchasePoints);
 			statPointsView.setText(String.valueOf(statPurchasePoints));
+			charactersFragment.saveItem();
 		}
 	}
 

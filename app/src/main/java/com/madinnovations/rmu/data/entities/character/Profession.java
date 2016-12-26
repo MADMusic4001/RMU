@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
@@ -31,9 +32,8 @@ import java.util.Map;
 /**
  * Profession attributes
  */
-public class Profession {
+public class Profession extends DatabaseObject {
 	public static final String JSON_NAME = "Professions";
-	private int                           id                          = -1;
 	private String                                         name                        = null;
 	private String                                         description                 = null;
 	private Realm                                          realm1                      = null;
@@ -71,7 +71,7 @@ public class Profession {
 	 * @param id  the id of the Profession instance
 	 */
 	public Profession(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class Profession {
 	@SuppressWarnings({"unused", "WeakerAccess"})
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("description", description)
 				.append("realm1", realm1)
@@ -130,28 +130,7 @@ public class Profession {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Profession that = (Profession) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

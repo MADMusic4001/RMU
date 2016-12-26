@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Skill;
 
 import java.util.HashMap;
@@ -23,9 +24,8 @@ import java.util.Map;
 /**
  * Culture attributes
  */
-public class Culture {
+public class Culture extends DatabaseObject {
 	public static final String JSON_NAME            = "Cultures";
-	private int                id                   = -1;
 	private String             name                 = null;
 	private String             description          = null;
 	private short              tradesAndCraftsRanks = 0;
@@ -41,10 +41,10 @@ public class Culture {
 	/**
 	 * Create a new Culture instance wit the given ID
 	 *
-	 * @param id
+	 * @param id  the id of the new instance
 	 */
 	public Culture(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -61,28 +61,7 @@ public class Culture {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Culture culture = (Culture) o;
-
-		return id == culture.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

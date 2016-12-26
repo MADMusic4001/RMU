@@ -390,7 +390,7 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 		}
 
 		private void initBodyPartSpinner() {
-			bodyPartSpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_row);
+			bodyPartSpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.single_field_row);
 			if(bodyParts != null) {
 				bodyPartSpinnerAdapter.clear();
 				bodyPartSpinnerAdapter.addAll(bodyParts);

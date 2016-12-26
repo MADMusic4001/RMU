@@ -15,12 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 /**
  * Critical Type attributes
  */
-public class CriticalType {
+public class CriticalType extends DatabaseObject {
     public static final String JSON_NAME = "CriticalTypes";
-    private int    id   = -1;
     private char   code = 'A';
     private String name = null;
 
@@ -35,7 +36,7 @@ public class CriticalType {
 	 * @param id  the id for the new instance
 	 */
     public CriticalType(int id) {
-        this.id = id;
+        super(id);
     }
 
     /**
@@ -52,28 +53,7 @@ public class CriticalType {
         return name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CriticalType that = (CriticalType) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
     public char getCode() {
         return code;
     }

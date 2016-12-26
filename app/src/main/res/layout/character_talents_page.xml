@@ -18,10 +18,25 @@
         style="@style/ReadOnlyEditText"/>
   </LinearLayout>
 
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/input_label_talent_category_filter"/>
+  <Spinner
+      android:id="@+id/talent_category_filter_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+  <ListView
+      android:id="@+id/add_talent_list"
+      android:layout_width="wrap_content"
+      android:layout_height="120dp"
+      android:minHeight="20dp"/>
+
   <LinearLayout
       android:orientation="horizontal"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:background="@android:color/black">
     <TextView
         android:id="@+id/talent_names_label"
         android:layout_width="0dp"
@@ -42,14 +57,10 @@
         android:text="@string/label_talent_parameters"/>
   </LinearLayout>
 
-  <LinearLayout
-      android:orientation="horizontal"
+  <ListView
+      android:id="@+id/talent_tiers_list"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:baselineAligned="false">
-    <ListView
-        android:id="@+id/talent_tiers_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-  </LinearLayout>
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:layout_gravity="center_horizontal"/>
 </LinearLayout>

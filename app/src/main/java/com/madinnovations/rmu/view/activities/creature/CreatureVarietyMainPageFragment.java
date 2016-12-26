@@ -16,17 +16,11 @@
 package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,21 +42,14 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
-import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.common.Talent;
-import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.common.TalentTier;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
-import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
 import com.madinnovations.rmu.data.entities.creature.RacialStatBonus;
 import com.madinnovations.rmu.data.entities.spells.Realm;
-import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.common.TalentTierListAdapter;
 import com.madinnovations.rmu.view.adapters.creature.RacialStatBonusListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
@@ -70,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -82,11 +68,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature varieties.
  */
-public class CreatureVarietyMainPageFragment extends Fragment implements RacialStatBonusListAdapter.SetRacialStatBonus,
-		TalentTierListAdapter.TalentTiersAdapterCallbacks {
+public class CreatureVarietyMainPageFragment extends Fragment implements RacialStatBonusListAdapter.SetRacialStatBonus {
 	private static final String TAG = "CVMainPageFragment";
-	private static final String DRAG_ADD_TALENT = "add-talent";
-	private static final String DRAG_REMOVE_TALENT = "remove-talent";
 	@Inject
 	protected AttackRxHandler            attackRxHandler;
 	@Inject
@@ -109,11 +92,9 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	protected TalentRxHandler            talentRxHandler;
 	@Inject
 	protected ReactiveUtils              reactiveUtils;
-	private   TalentTierListAdapter      talentTiersListAdapter;
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
 	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
 	private   ArrayAdapter<Character>    levelSpreadSpinnerAdapter;
-	private   ArrayAdapter<Talent>       talentNamesListAdapter;
 	private   ArrayAdapter<Realm>        realm1SpinnerAdapter;
 	private   ArrayAdapter<Realm>        realm2SpinnerAdapter;
 	private   ArrayAdapter<Outlook>      outlookSpinnerAdapter;
@@ -140,8 +121,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	private   Spinner                    realm2Spinner;
 	private   Spinner                    outlookSpinner;
 	private   ListView                   racialStatBonusList;
-	private   ListView                   talentNamesList;
-	private   ListView                   talentTiersList;
 	private   CreatureVarietiesFragment  varietiesFragment;
 
 	/**
@@ -185,8 +164,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		initRealm2Spinner(layout);
 		initOutlookSpinner(layout);
 		initRacialStatBonusList(layout);
-		initTalentNamesList(layout);
-		initTalentTiersList(layout);
 
 		return layout;
 	}
@@ -202,57 +179,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	@Override
 	public void onResume() {
 		super.onResume();
-	}
-
-	@Override
-	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		CreatureVariety variety = varietiesFragment.getCurrentInstance();
-
-		TalentInstance talentInstance = variety.getTalentsMap().get(talent);
-		if(talentInstance == null) {
-			talentInstance = new TalentInstance();
-			talentInstance.setTalent(talent);
-		}
-		short oldTiers = talentInstance.getTiers();
-		talentInstance.setTiers((short) (oldTiers + 1));
-		variety.getTalentsMap().put(talent, talentInstance);
-
-		return true;
-	}
-
-	@Override
-	public boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		CreatureVariety variety = varietiesFragment.getCurrentInstance();
-
-		TalentInstance talentInstance = variety.getTalentsMap().get(talent);
-		if(talentInstance != null) {
-			short oldTiers = talentInstance.getTiers();
-			if (oldTiers > 1) {
-				talentInstance.setTiers((short) (oldTiers - 1));
-				variety.getTalentsMap().put(talent, talentInstance);
-			}
-			else {
-				variety.getTalentsMap().remove(talent);
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public void setParameterValue(Talent talent, Parameter parameter, int value, String enumName) {
-		TalentInstance talentInstance = varietiesFragment.getCurrentInstance().getTalentsMap().get(talent);
-		if(talentInstance != null) {
-			Object paramValue = talentInstance.getParameterValues().get(parameter);
-			if(enumName != null && !enumName.equals(paramValue)) {
-				talentInstance.getParameterValues().put(parameter, enumName);
-				varietiesFragment.saveItem();
-			}
-			else if(enumName == null && (paramValue == null || !Integer.valueOf(value).equals(paramValue))) {
-				talentInstance.getParameterValues().put(parameter, value);
-				varietiesFragment.saveItem();
-			}
-		}
+		copyItemToViews();
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -267,8 +194,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		SparseBooleanArray checkedItemPositions;
 		RacialStatBonus racialStatBonus;
 		Map<Statistic, Short> newStatBonusMap;
-		Map<Talent, TalentInstance> newTalentInstancesMap;
-		TalentTier newTalentTier;
 		Realm newRealm;
 		Outlook newOutlook;
 
@@ -490,44 +415,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			else {
 				varietiesFragment.getCurrentInstance().getRacialStatBonuses().clear();
 			}
-
-			newTalentInstancesMap = new HashMap<>(talentTiersListAdapter.getCount());
-			for (int i = 0; i < talentTiersListAdapter.getCount(); i++) {
-				newTalentTier = talentTiersListAdapter.getItem(i);
-				if(newTalentTier != null) {
-					if(newTalentTier.getTier() > 0) {
-						TalentInstance talentInstance;
-						if (varietiesFragment.getCurrentInstance().getTalentsMap().containsKey(
-								newTalentTier.getTalent())) {
-							talentInstance = varietiesFragment.getCurrentInstance().getTalentsMap().get(
-									newTalentTier.getTalent());
-							if (varietiesFragment.getCurrentInstance().getTalentsMap().get(
-									newTalentTier.getTalent()).getTiers() != newTalentTier.getTier()) {
-								changed = true;
-							}
-							varietiesFragment.getCurrentInstance().getTalentsMap().remove(newTalentTier.getTalent());
-						}
-						else {
-							changed = true;
-							talentInstance = new TalentInstance();
-							talentInstance.setTalent(newTalentTier.getTalent());
-						}
-						if(changed) {
-							talentInstance.setTiers(newTalentTier.getTier());
-							newTalentInstancesMap.put(newTalentTier.getTalent(), talentInstance);
-						}
-					}
-					else if (varietiesFragment.getCurrentInstance().getTalentsMap().containsKey(
-							newTalentTier.getTalent())) {
-						changed = true;
-						varietiesFragment.getCurrentInstance().getTalentsMap().remove(newTalentTier.getTalent());
-					}
-				}
-			}
-			if (!varietiesFragment.getCurrentInstance().getTalentsMap().isEmpty() && !newTalentInstancesMap.isEmpty()) {
-				changed = true;
-			}
-			varietiesFragment.getCurrentInstance().setTalentsMap(newTalentInstancesMap);
 		}
 
 		return changed;
@@ -570,14 +457,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			racialStatBonusListAdapter.add(racialStatBonus);
 		}
 		racialStatBonusListAdapter.notifyDataSetChanged();
-
-		talentTiersList.clearChoices();
-		talentTiersListAdapter.clear();
-		for(Map.Entry<Talent, TalentInstance> entry : varietiesFragment.getCurrentInstance().getTalentsMap().entrySet()) {
-			TalentTier talentTier = new TalentTier(entry.getKey(), entry.getValue().getTiers());
-			talentTiersListAdapter.add(talentTier);
-		}
-		talentTiersListAdapter.notifyDataSetChanged();
 
 		if(varietiesFragment.getCurrentInstance().getName() != null && !varietiesFragment.getCurrentInstance().getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -645,7 +524,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initCretureTypeSpinner(View layout) {
 		creatureTypeSpinner = (Spinner)layout.findViewById(R.id.creature_type_spinner);
-		creatureTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		creatureTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		creatureTypeSpinner.setAdapter(creatureTypeSpinnerAdapter);
 
 		creatureTypeRxHandler.getAll()
@@ -715,7 +594,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initLevelSpreadSpinner(View layout) {
 		levelSpreadSpinner = (Spinner)layout.findViewById(R.id.level_spread_spinner);
-		levelSpreadSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		levelSpreadSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		levelSpreadSpinner.setAdapter(levelSpreadSpinnerAdapter);
 
 		levelSpreadSpinnerAdapter.clear();
@@ -739,7 +618,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initSizeSpinner(View layout) {
 		sizeSpinner = (Spinner)layout.findViewById(R.id.size_spinner);
-		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		sizeSpinner.setAdapter(sizeSpinnerAdapter);
 
 		sizeRxHandler.getAll()
@@ -1139,7 +1018,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
-		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -1180,7 +1059,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initRealm2Spinner(View layout) {
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
-		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -1229,7 +1108,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 	private void initOutlookSpinner(View layout) {
 		outlookSpinner = (Spinner)layout.findViewById(R.id.outlook_spinner);
-		outlookSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		outlookSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		outlookSpinner.setAdapter(outlookSpinnerAdapter);
 
 		outlookRxHandler.getAll()
@@ -1288,122 +1167,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		racialStatBonusListAdapter.notifyDataSetChanged();
 	}
 
-	private void initTalentNamesList(View layout) {
-		talentNamesList = (ListView) layout.findViewById(R.id.talents_list);
-		talentNamesListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
-		talentNamesList.setAdapter(talentNamesListAdapter);
-
-		talentRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Talent>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Talent instances in initTalentNamesList", e);
-					}
-					@Override
-					public void onNext(Collection<Talent> talents) {
-						talentNamesListAdapter.clear();
-						talentNamesListAdapter.addAll(talents);
-						talentNamesListAdapter.notifyDataSetChanged();
-					}
-				});
-
-		talentNamesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-				if(!talentNamesList.isItemChecked(position)) {
-					talentNamesList.setItemChecked(position, true);
-				}
-				ClipData dragData = null;
-
-				SparseBooleanArray checkedItems = talentNamesList.getCheckedItemPositions();
-				List<View> checkedViews = new ArrayList<>(talentNamesList.getCheckedItemCount());
-				for(int i = 0; i < checkedItems.size(); i++) {
-					int currentPosition = checkedItems.keyAt(i);
-					Talent talent = talentNamesListAdapter.getItem(currentPosition);
-					if(talent != null) {
-						String talentIdString = String.valueOf(talent.getId());
-						ClipData.Item clipDataItem = new ClipData.Item(talentIdString);
-						if(dragData == null) {
-							dragData = new ClipData(DRAG_ADD_TALENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-						}
-						else {
-							dragData.addItem(clipDataItem);
-						}
-						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), talentNamesList));
-					}
-				}
-				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
-
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
-				}
-				else {
-					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
-				}
-				return false;
-			}
-		});
-
-		talentNamesList.setOnDragListener(new TalentNamesDragListener());
-	}
-
-	private void initTalentTiersList(View layout) {
-		talentTiersList = (ListView) layout.findViewById(R.id.talent_tiers_list);
-		talentTiersListAdapter = new TalentTierListAdapter(getActivity(), this, reactiveUtils, true);
-		talentTiersList.setAdapter(talentTiersListAdapter);
-
-		talentTiersListAdapter.clear();
-		for(Map.Entry<Talent, TalentInstance> entry : varietiesFragment.getCurrentInstance().getTalentsMap().entrySet()) {
-			talentTiersListAdapter.add(new TalentTier(entry.getKey(), entry.getValue().getTiers()));
-		}
-		talentTiersListAdapter.notifyDataSetChanged();
-
-		talentTiersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if(!talentTiersList.isItemChecked(position)) {
-					talentTiersList.setItemChecked(position, true);
-				}
-				ClipData dragData = null;
-
-				SparseBooleanArray checkedItems = talentTiersList.getCheckedItemPositions();
-				List<View> checkedViews = new ArrayList<>(talentTiersList.getCheckedItemCount());
-				for(int i = 0; i < checkedItems.size(); i++) {
-					int currentPosition = checkedItems.keyAt(i);
-					TalentTier talentTier = talentTiersListAdapter.getItem(currentPosition);
-					if(checkedItems.valueAt(i) && talentTier != null) {
-						String talentIdString = String.valueOf(talentTier.getTalent().getId());
-						ClipData.Item clipDataItem = new ClipData.Item(talentIdString);
-						if(dragData == null) {
-							dragData = new ClipData(DRAG_REMOVE_TALENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-						}
-						else {
-							dragData.addItem(clipDataItem);
-						}
-						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), talentTiersList));
-					}
-				}
-				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
-
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
-				}
-				else {
-					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
-				}
-				return false;
-			}
-		});
-
-		talentTiersList.setOnDragListener(new TalentTierDragListener());
-	}
-
 	@Override
 	public void setRacialStatBonus(RacialStatBonus racialStatBonus) {
 		boolean changed = false;
@@ -1420,195 +1183,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		}
 		if(changed) {
 			varietiesFragment.saveItem();
-		}
-	}
-
-//	@Override
-//	public void setTalentTier(TalentTier talentTier) {
-//		boolean changed = false;
-//
-//		if(varietiesFragment.getCurrentInstance().getTalentsMap().containsKey(talentTier.getTalent())) {
-//			if(varietiesFragment.getCurrentInstance().getTalentsMap().get(talentTier.getTalent()) != talentTier.getTier()) {
-//				varietiesFragment.getCurrentInstance().getTalentsMap().put(talentTier.getTalent(), talentTier.getTier());
-//				changed = true;
-//			}
-//		}
-//		else {
-//			varietiesFragment.getCurrentInstance().getTalentsMap().put(talentTier.getTalent(), talentTier.getTier());
-//			changed = true;
-//		}
-//		if(changed) {
-//			varietiesFragment.saveItem();
-//		}
-//	}
-
-	protected class TalentTierDragListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = talentTiersList.getBackground();
-
-		@Override
-		public boolean onDrag(View v, DragEvent event) {
-			final int action = event.getAction();
-
-			switch(action) {
-				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-						break;
-					}
-					return false;
-				case DragEvent.ACTION_DRAG_ENTERED:
-					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(hoverShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_LOCATION:
-					break;
-				case DragEvent.ACTION_DRAG_EXITED:
-					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DROP:
-					if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
-						boolean changed = false;
-						for(int i = 0; i < event.getClipData().getItemCount(); i++) {
-							ClipData.Item item = event.getClipData().getItemAt(i);
-							// We just send talent ID but since that is the only field used in the Talent.equals method we can create a
-							// temporary talent and set its id field then use the new Talent to find the position of the actual Talent
-							// instance in the adapter
-							int talentId = Integer.valueOf(item.getText().toString());
-							Talent newTalent = new Talent();
-							newTalent.setId(talentId);
-							int position = talentNamesListAdapter.getPosition(newTalent);
-							Talent talent = talentNamesListAdapter.getItem(position);
-							TalentTier talentTier = new TalentTier(talent, (short) 1);
-							if (talentTiersListAdapter.getPosition(talentTier) == -1) {
-								talentTiersListAdapter.add(talentTier);
-								TalentInstance talentInstance = new TalentInstance();
-								talentInstance.setTalent(talent);
-								talentInstance.setTiers((short)1);
-								varietiesFragment.getCurrentInstance().getTalentsMap().put(talent, talentInstance);
-								changed = true;
-							}
-						}
-						if(changed) {
-							varietiesFragment.saveItem();
-							talentTiersListAdapter.notifyDataSetChanged();
-						}
-						v.setBackground(normalShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					v.setBackground(normalShape);
-					v.invalidate();
-					break;
-			}
-
-			return true;
-		}
-	}
-
-	protected class TalentNamesDragListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = talentNamesList.getBackground();
-
-		@Override
-		public boolean onDrag(View v, DragEvent event) {
-			final int action = event.getAction();
-
-			switch (action) {
-				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_ENTERED:
-					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(hoverShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_LOCATION:
-					break;
-				case DragEvent.ACTION_DRAG_EXITED:
-					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DROP:
-					if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
-						for (int i = 0; i < event.getClipData().getItemCount(); i++) {
-							ClipData.Item item = event.getClipData().getItemAt(i);
-							// We just send talent ID but since that is the only field used in the Talent.equals method and talent is the
-							// only field used in the TalentTier.equals method we can create a temporary talent and set its id field then
-							// create a new TalentTier and set its talent field then use the new TalentTier to find the position of the
-							// complete TalentTier instance in the adapter
-							int talentId = Integer.valueOf(item.getText().toString());
-							Talent newTalent = new Talent();
-							newTalent.setId(talentId);
-							TalentTier newTalentTier = new TalentTier(newTalent, (short)0);
-							int position = talentTiersListAdapter.getPosition(newTalentTier);
-							TalentTier talentTier = talentTiersListAdapter.getItem(position);
-							if(talentTier != null) {
-								varietiesFragment.getCurrentInstance().getTalentsMap().remove(talentTier.getTalent());
-								talentTiersListAdapter.remove(talentTier);
-							}
-						}
-						varietiesFragment.saveItem();
-						talentTiersList.clearChoices();
-						talentTiersListAdapter.notifyDataSetChanged();
-						v.setBackground(normalShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					v.setBackground(normalShape);
-					v.invalidate();
-					break;
-			}
-			return true;
-		}
-	}
-
-	private View getViewByPosition(int pos, ListView listView) {
-		final int firstListItemPosition = listView.getFirstVisiblePosition();
-		final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-		if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-			return listView.getAdapter().getView(pos, null, listView);
-		} else {
-			final int childIndex = pos - firstListItemPosition;
-			return listView.getChildAt(childIndex);
 		}
 	}
 

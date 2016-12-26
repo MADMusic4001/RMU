@@ -511,7 +511,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSkillCategoryFilterSpinner(View layout) {
 		skillCategoryFilterSpinner = (Spinner)layout.findViewById(R.id.skill_category_filter_spinner);
-		skillCategoryFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		skillCategoryFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		skillCategoryFilterSpinner.setAdapter(skillCategoryFilterSpinnerAdapter);
 
 		final SkillCategory allSkillCategories = new SkillCategory();
@@ -550,7 +550,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initSkillCategorySpinner(View layout) {
 		skillCategorySpinner = (Spinner)layout.findViewById(R.id.skill_category_spinner);
-		skillCategorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		skillCategorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		skillCategorySpinner.setAdapter(skillCategorySpinnerAdapter);
 
 		skillCategoryRxHandler.getAll()
@@ -630,7 +630,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
-		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -663,7 +663,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStat2Spinner(View layout) {
 		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
-		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -694,7 +694,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	private void initStat3Spinner(View layout) {
 		stat3Spinner = (Spinner)layout.findViewById(R.id.stat3_spinner);
-		stat3SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat3SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat3Spinner.setAdapter(stat3SpinnerAdapter);
 
 		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

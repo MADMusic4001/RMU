@@ -190,8 +190,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(SpellAreaOfEffectParamSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CultureSkillRanksSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(CharacterTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterTalentsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterCurrentLevelSkillRanksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterCurrentLevelSpecializationRanksSchema.TABLE_CREATE);
@@ -243,6 +243,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CultureSkillRanksSchema.TABLE_NAME, null, null);

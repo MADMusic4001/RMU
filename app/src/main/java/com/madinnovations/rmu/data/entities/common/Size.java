@@ -16,14 +16,14 @@
 package com.madinnovations.rmu.data.entities.common;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Creature size class
  */
-public class Size {
+public class Size extends DatabaseObject {
 	public static final String JSON_NAME = "Sizes";
-	private int id = -1;
 	private String  code = null;
 	private String  name = null;
 	private String  examples=  null;
@@ -43,7 +43,7 @@ public class Size {
 	 * @param id  the id for the new instance
 	 */
 	public Size(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -63,33 +63,12 @@ public class Size {
 		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), code, name);
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Size size = (Size) o;
-
-		return id == size.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
 	public String getCode() {
 		return code;
 	}
 	public void setCode(String code) {
 		this.code = code;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public String getName() {
 		return name;

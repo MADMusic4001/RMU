@@ -17,15 +17,16 @@ package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class representing a RoleMaster Skill
  */
-public class Skill implements Comparable {
+public class Skill extends DatabaseObject implements Comparable {
 	public static final String JSON_NAME = "Skills";
-	private int             id                     = -1;
 	private String          name                   = null;
 	private String          description            = null;
 	private SkillCategory   category               = null;
@@ -48,7 +49,7 @@ public class Skill implements Comparable {
 	 * @param id  the id for this new instance
 	 */
 	public Skill(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -101,28 +102,7 @@ public class Skill implements Comparable {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Skill skill = (Skill) o;
-
-		return id == skill.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

@@ -318,7 +318,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 
 	private void initDamageTableFilterSpinner(View layout) {
 		damageTableFilterSpinner = (Spinner)layout.findViewById(R.id.damage_tables_spinner);
-		damageTableFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		damageTableFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		damageTableFilterSpinner.setAdapter(damageTableFilterSpinnerAdapter);
 		registerForContextMenu(damageTableFilterSpinner);
 

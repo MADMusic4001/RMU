@@ -19,7 +19,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 
 /**
- * Database schema data for the character_current_level_skill_ranks table
+ * Database schema data for the character_purchased_culture_ranks table
  */
 public interface CharacterPurchasedCultureRanksSchema {
     String TABLE_NAME = "character_purchased_culture_ranks";

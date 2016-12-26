@@ -15,15 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Damage result attributes
  */
-public class DamageResult {
+public class DamageResult extends DatabaseObject {
     public static final String JSON_NAME = "DamageResults";
-    private int id = -1;
     private DamageResultRow damageResultRow = null;
     private short armorType = 1;
     private short hits = 0;
@@ -42,7 +43,7 @@ public class DamageResult {
 	 * @param id  the id of the new instance
 	 */
     public DamageResult(int id) {
-        this.id = id;
+		super(id);
     }
 
     /**
@@ -59,7 +60,7 @@ public class DamageResult {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", id)
+                .append("id", getId())
 				.append("damageResultRow", damageResultRow)
 				.append("armorType", armorType)
                 .append("hits", hits)
@@ -68,28 +69,7 @@ public class DamageResult {
                 .toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DamageResult that = (DamageResult) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
 	public DamageResultRow getDamageResultRow() {
 		return damageResultRow;
 	}

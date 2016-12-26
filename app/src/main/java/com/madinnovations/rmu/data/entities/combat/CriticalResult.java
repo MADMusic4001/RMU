@@ -17,6 +17,8 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -26,29 +28,27 @@ import java.util.Collection;
 /**
  * Critical result attributes
  */
-public class CriticalResult {
+public class CriticalResult extends DatabaseObject {
     public static final String JSON_NAME = "CriticalResults";
     private static short[] rangeStarts = {1, 2, 4, 6, 11, 16, 21, 26, 36, 46, 56, 66, 67, 76, 81, 86, 91, 96, 98, 100, 101};
-
-    private int id = -1;
-    private char severityCode = 'A';
-    private String resultText = null;
-    private short minRoll = 0;
-    private short maxRoll = 1;
-    private BodyPart bodyPart = null;
-    private short hits = 0;
-    private short bleeding = 0;
-    private short fatigue = 0;
-    private Short breakage = null;
-    private short injury = 0;
-    private short dazed = 0;
-    private short stunned = 0;
-    private short noParry = 0;
-    private short staggered = 0;
-    private short knockBack = 0;
-    private short prone = 0;
-    private short grappled = 0;
-	private Short death = null;
+    private char         severityCode = 'A';
+    private String       resultText   = null;
+    private short        minRoll      = 0;
+    private short        maxRoll      = 1;
+    private BodyPart     bodyPart     = null;
+    private short        hits         = 0;
+    private short        bleeding     = 0;
+    private short        fatigue      = 0;
+    private Short        breakage     = null;
+    private short        injury       = 0;
+    private short        dazed        = 0;
+    private short        stunned      = 0;
+    private short        noParry      = 0;
+    private short        staggered    = 0;
+    private short        knockBack    = 0;
+    private short        prone        = 0;
+    private short        grappled     = 0;
+	private Short        death        = null;
     private CriticalType criticalType = null;
 
 	/**
@@ -119,7 +119,7 @@ public class CriticalResult {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", id)
+                .append("id", getId())
                 .append("severityCode", severityCode)
                 .append("resultText", resultText)
                 .append("minRoll", minRoll)
@@ -142,28 +142,7 @@ public class CriticalResult {
                 .toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CriticalResult that = (CriticalResult) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
     public char getSeverityCode() {
         return severityCode;
     }

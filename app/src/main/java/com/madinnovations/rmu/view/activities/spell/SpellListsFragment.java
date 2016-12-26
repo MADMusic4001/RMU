@@ -440,7 +440,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
-		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
 		if(realms != null) {
@@ -483,7 +483,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initRealm2Spinner(View layout) {
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
-		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
 		if(realms != null) {
@@ -528,7 +528,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initProfessionSpinner(View layout) {
 		professionSpinner = (Spinner)layout.findViewById(R.id.profession_spinner);
-		professionSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		professionSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		professionSpinner.setAdapter(professionSpinnerAdapter);
 
 		professionRxHandler.getAll()
@@ -564,7 +564,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void initSpellListTypeSpinner(View layout) {
 		spellListTypeSpinner = (Spinner)layout.findViewById(R.id.spell_list_type_spinner);
-		spellListTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		spellListTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		spellListTypeSpinner.setAdapter(spellListTypeSpinnerAdapter);
 
 		spellListTypeRxHandler.getAll()

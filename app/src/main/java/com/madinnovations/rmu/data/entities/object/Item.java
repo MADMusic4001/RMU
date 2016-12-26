@@ -15,15 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Item attributes
  */
-public class Item {
+public class Item extends DatabaseObject {
 	public static final String JSON_NAME = "Items";
-    private int id = -1;
 	private ItemTemplate itemTemplate = null;
 	private String name = null;
 	private String history = null;
@@ -49,34 +50,13 @@ public class Item {
 	 */
 	public String debugToString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("itemTemplate", itemTemplate)
 				.append("name", name)
 				.toString();
 	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Item item = (Item) o;
-
-        return id == item.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
 	public ItemTemplate getItemTemplate() {
 		return itemTemplate;
 	}

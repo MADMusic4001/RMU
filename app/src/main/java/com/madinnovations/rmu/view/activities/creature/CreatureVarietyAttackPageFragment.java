@@ -146,6 +146,12 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
+	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
 
@@ -461,7 +467,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 	private void initSkillsList(View layout) {
 		skillsList = (ListView) layout.findViewById(R.id.skills_list);
-		skillsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		skillsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		skillsList.setAdapter(skillsListAdapter);
 
 		skillRxHandler.getAll()

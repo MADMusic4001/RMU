@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.campaign;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.PowerLevel;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
@@ -28,9 +29,8 @@ import java.util.List;
 /**
  * Campaign settings
  */
-public class Campaign {
+public class Campaign extends DatabaseObject {
 	public static final String JSON_NAME = "Campaigns";
-	private int id = -1;
 	private String name = null;
 	private Calendar createDate = Calendar.getInstance();
 	private PowerLevel powerLevel = PowerLevel.SUPERIOR;
@@ -56,7 +56,7 @@ public class Campaign {
 	 * @param id  the id of the new instance
 	 */
 	public Campaign(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class Campaign {
 	 */
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("createDate", createDate)
 				.append("powerLevel", powerLevel)
@@ -96,28 +96,7 @@ public class Campaign {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Campaign campaign = (Campaign) o;
-
-		return id == campaign.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

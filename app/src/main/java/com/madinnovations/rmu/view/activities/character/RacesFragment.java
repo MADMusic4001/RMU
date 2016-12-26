@@ -40,6 +40,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.ViewPagerAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.Boast;
 
 import java.util.Collection;
 
@@ -54,6 +55,7 @@ import rx.schedulers.Schedulers;
  */
 public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Race>, ViewPagerAdapter.Instantiator {
 	private static final String TAG = "RacesFragment";
+	private static final String RACE_ID = "race_id";
 	private static final int NUM_PAGES = 3;
 	private static final int MAIN_PAGE = 0;
 	private static final int TALENTS_PAGE = 1;
@@ -80,7 +82,11 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_race_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_race_description));
 
-		initListView(layout);
+		Integer raceId = null;
+		if(savedInstanceState != null && savedInstanceState.get(RACE_ID ) != null) {
+			raceId = Integer.valueOf(savedInstanceState.getString(RACE_ID));
+		}
+		initListView(layout, raceId);
 
 		viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity(), NUM_PAGES, this,
 												R.array.race_page_names);
@@ -93,8 +99,14 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		if(currentInstance.getId() != -1) {
+			outState.putString(RACE_ID, String.valueOf(currentInstance.getId()));
+		}
+	}
+
+	@Override
 	public void onPause() {
-		Log.d(TAG, "onPause: ");
 		if(copyViewsToItem()) {
 			saveItem();
 		}
@@ -108,11 +120,6 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 			getChildFragmentManager().beginTransaction().remove(viewPagerAdapter.getFragment(CULTURES_PAGE)).commit();
 		}
 		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
 	}
 
 	@Override
@@ -256,7 +263,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 				@Override
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_race_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(),
+								   getString(R.string.toast_race_delete_failed),
+								   Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -296,8 +305,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception saving Race", e);
-						String toastString = getString(R.string.toast_race_save_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(),
+									   getString(R.string.toast_race_save_failed),
+									   Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Race savedRace) {
@@ -310,9 +320,9 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_race_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(),
+										   getString(R.string.toast_race_saved),
+										   Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -330,7 +340,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 	// </editor-fold>
 
 	// <editor-fold desc="Widget initialization methods">
-	private void initListView(View layout) {
+	private void initListView(View layout, final Integer raceId) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
@@ -361,16 +371,28 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 				public void onNext(Collection<Race> races) {
 					listAdapter.clear();
 					listAdapter.addAll(races);
-					listAdapter.notifyDataSetChanged();
-					if(races.size() > 0) {
+					if(raceId != null) {
+						for(Race race : races) {
+							if(race.getId() == raceId) {
+								currentInstance = race;
+								isNew = false;
+								int position = listAdapter.getPosition(race);
+								listView.setSelection(position);
+								listView.setItemChecked(position, true);
+								break;
+							}
+						}
+					}
+					else if(races.size() > 0) {
 						listView.setSelection(0);
 						listView.setItemChecked(0, true);
 						currentInstance = listAdapter.getItem(0);
 						isNew = false;
 					}
-					String toastString;
-					toastString = String.format(getString(R.string.toast_races_loaded), races.size());
-					Toast.makeText(RacesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+					listAdapter.notifyDataSetChanged();
+					Boast.makeText(RacesFragment.this.getActivity(),
+								   String.format(getString(R.string.toast_races_loaded), races.size()),
+								   Toast.LENGTH_SHORT).show(true);
 				}
 			});
 

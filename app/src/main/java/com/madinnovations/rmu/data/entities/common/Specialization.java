@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -24,9 +26,8 @@ import java.util.List;
 /**
  * Skill specialization attributes
  */
-public class Specialization {
+public class Specialization extends DatabaseObject {
 	public static final String JSON_NAME = "Specializations";
-	private int id = -1;
 	private String name = null;
 	private String description = null;
 	private Skill skill = null;
@@ -46,7 +47,7 @@ public class Specialization {
 	 * @param id  the id for the new instance
 	 */
 	public Specialization(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	public boolean isValid() {
@@ -59,9 +60,10 @@ public class Specialization {
 	 *
 	 * @return  a formatted String with the instances attributes.
 	 */
+	@SuppressWarnings("unused")
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("description", description)
 				.append("skill", skill)
@@ -76,28 +78,7 @@ public class Specialization {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Specialization that = (Specialization) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

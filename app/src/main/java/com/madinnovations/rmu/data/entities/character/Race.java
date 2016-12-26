@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
@@ -29,25 +30,24 @@ import java.util.Map;
 /**
  * Racial attributes
  */
-public class Race {
+public class Race extends DatabaseObject {
 	public static final String JSON_NAME = "Races";
-	private int                         id                         = -1;
-	private String                      name                       = null;
-	private String                      description                = null;
-	private short                       bonusDevelopmentPoints     = 0;
-	private Map<Statistic, Short>       statModifiers              = new HashMap<>();
-	private Map<Realm, Short>           realmResistancesModifiers  = new HashMap<>();
-	private short                       physicalResistanceModifier = 0;
-	private short                       enduranceModifier          = 0;
-	private short                       baseHits                   = 0;
-	private float                       recoveryMultiplier         = 1.0f;
-	private Map<Talent, TalentInstance> talentsAndFlawsMap         = new HashMap<>();
-	private Size                        size                       = null;
-	private short                       strideModifier             = 0;
-	private short                       averageHeight              = 0;
-	private short                       averageWeight              = 0;
-	private short                       poundsPerInch              = 0;
-	private List<Culture>               allowedCultures            = new ArrayList<>();
+	private String                name                       = null;
+	private String                description                = null;
+	private short                 bonusDevelopmentPoints     = 0;
+	private Map<Statistic, Short> statModifiers              = new HashMap<>();
+	private Map<Realm, Short>     realmResistancesModifiers  = new HashMap<>();
+	private short                 physicalResistanceModifier = 0;
+	private short                 enduranceModifier          = 0;
+	private short                 baseHits                   = 0;
+	private float                 recoveryMultiplier         = 1.0f;
+	private List<TalentInstance>  talentsAndFlawsList        = new ArrayList<>();
+	private Size                  size                       = null;
+	private short                 strideModifier             = 0;
+	private short                 averageHeight              = 0;
+	private short                 averageWeight              = 0;
+	private short                 poundsPerInch              = 0;
+	private List<Culture>         allowedCultures            = new ArrayList<>();
 
 	/**
 	 * Default constructor
@@ -57,9 +57,11 @@ public class Race {
 
 	/**
 	 * ID constructor
+	 *
+	 * @param id  the id of the new instance
 	 */
-		public Race(int id) {
-		this.id = id;
+	public Race(int id) {
+			super(id);
 	}
 
 	/**
@@ -77,28 +79,7 @@ public class Race {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Race race = (Race) o;
-
-		return id == race.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}
@@ -154,12 +135,11 @@ public class Race {
 	public void setRecoveryMultiplier(float recoveryMultiplier) {
 		this.recoveryMultiplier = recoveryMultiplier;
 	}
-	public Map<Talent, TalentInstance> getTalentsAndFlawsMap() {
-		return talentsAndFlawsMap;
+	public List<TalentInstance> getTalentsAndFlawsList() {
+		return talentsAndFlawsList;
 	}
-	public void setTalentsAndFlawsMap(
-			Map<Talent, TalentInstance> talentsAndFlawsMap) {
-		this.talentsAndFlawsMap = talentsAndFlawsMap;
+	public void setTalentsAndFlawsList(List<TalentInstance> talentsAndFlawsList) {
+		this.talentsAndFlawsList = talentsAndFlawsList;
 	}
 	public Size getSize() {
 		return size;

@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
@@ -35,9 +36,8 @@ import java.util.Map;
 /**
  * Class containing Creature Variety attributes.
  */
-public class CreatureVariety {
+public class CreatureVariety extends DatabaseObject {
 	public static final String          JSON_NAME            = "CreatureVarieties";
-	private int                         id                   = -1;
 	private CreatureType                type                 = null;
 	private String                      name                 = null;
 	private String                      description          = null;
@@ -64,7 +64,7 @@ public class CreatureVariety {
 	private short                       baseStride           = 0;
 	private short                       leftoverDP           = 200;
 	private Outlook                     outlook              = null;
-	private Map<Talent, TalentInstance> talentsMap           = new HashMap<>();
+	private List<TalentInstance>        talentInstancesList  = new ArrayList<>();
 	private Map<Attack, Short>          attackBonusesMap     = new HashMap<>();
 	private Size                        criticalSizeModifier = null;
 	private String                      attackSequence       = null;
@@ -80,6 +80,11 @@ public class CreatureVariety {
 				attackSequence != null && realm1 != null && outlook != null;
 	}
 
+	/**
+	 * Initializes the racial stat bonuses for this creature variety.
+	 *
+	 * @param stats  the stats to initialize
+	 */
 	public void initRacialStatBonusList(List<Statistic> stats) {
 		for(Statistic stat : stats) {
 			racialStatBonuses.put(stat, (short)0);
@@ -89,7 +94,7 @@ public class CreatureVariety {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("type", type)
 				.append("name", name)
 				.append("description", description)
@@ -116,7 +121,7 @@ public class CreatureVariety {
 				.append("baseStride", baseStride)
 				.append("leftoverDP", leftoverDP)
 				.append("outlook", outlook)
-				.append("talentsMap", talentsMap)
+				.append("talentInstancesList", talentInstancesList)
 				.append("attackBonusesMap", attackBonusesMap)
 				.append("criticalSizeModifier", criticalSizeModifier)
 				.append("attackSequence", attackSequence)
@@ -124,28 +129,7 @@ public class CreatureVariety {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		CreatureVariety that = (CreatureVariety) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public CreatureType getType() {
 		return type;
 	}
@@ -302,11 +286,11 @@ public class CreatureVariety {
 	public void setOutlook(Outlook outlook) {
 		this.outlook = outlook;
 	}
-	public Map<Talent, TalentInstance> getTalentsMap() {
-		return talentsMap;
+	public List<TalentInstance> getTalentInstancesList() {
+		return talentInstancesList;
 	}
-	public void setTalentsMap(Map<Talent, TalentInstance> talentsMap) {
-		this.talentsMap = talentsMap;
+	public void setTalentInstancesList(List<TalentInstance> talentsMap) {
+		this.talentInstancesList = talentInstancesList;
 	}
 	public Map<Attack, Short> getAttackBonusesMap() {
 		return attackBonusesMap;

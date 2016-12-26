@@ -15,12 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 /**
  * Talent category attributes
  */
-public class TalentCategory {
+public class TalentCategory extends DatabaseObject {
 	public static final String JSON_NAME = "TalentCategories";
-	private int    id          = -1;
 	private String name        = null;
 	private String description = null;
 
@@ -36,7 +37,7 @@ public class TalentCategory {
 	 * @param id  the id of the new instance
 	 */
 	public TalentCategory(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -53,28 +54,7 @@ public class TalentCategory {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		TalentCategory that = (TalentCategory) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

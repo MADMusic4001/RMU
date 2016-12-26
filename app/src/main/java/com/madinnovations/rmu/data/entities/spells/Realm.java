@@ -15,14 +15,14 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 
 /**
  * Realm attributes
  */
-public class Realm {
+public class Realm extends DatabaseObject {
 	public static final String JSON_NAME = "Realms";
-	private int       id = -1;
 	private String    name;
 	private String    description;
 	private Statistic stat;
@@ -39,7 +39,7 @@ public class Realm {
 	 * @param id  the id for the new instance
 	 */
 	public Realm(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -56,28 +56,7 @@ public class Realm {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Realm realm = (Realm) o;
-
-		return id == realm.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

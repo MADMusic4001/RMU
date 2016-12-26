@@ -221,7 +221,7 @@ public class MainMenuFragment extends Fragment {
 //								((CampaignActivity)getActivity()).showAttemptManeuver();
 								break;
 							case 4:
-//								((CampaignActivity)getActivity()).showResolveCombat();
+								((CampaignActivity)getActivity()).showStartCombat();
 								break;
 							case 5:
 //								((CampaignActivity)getActivity()).showAdvanceTime();

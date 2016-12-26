@@ -500,7 +500,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("CampaignFragment", "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						Toast.makeText(getActivity(), getString(R.string.toast_campaign_delete_failed), Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -540,7 +540,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("CampaignsFragment", "Exception saving Campaign", e);
+							Log.e(TAG, "Exception saving Campaign", e);
 							String toastString = getString(R.string.toast_campaign_save_failed);
 							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 						}
@@ -746,11 +746,11 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 
 	private void initSpecializationsViews(View layout) {
 		specializationsListView = (ListView)layout.findViewById(R.id.attack_specializations_list);
-		specializationAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		specializationAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		specializationsListView.setAdapter(specializationAdapter);
 
 		restrictionsListView = (ListView)layout.findViewById(R.id.restricted_specializations_list);
-		restrictionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		restrictionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		restrictionsListView.setAdapter(restrictionsAdapter);
 		restrictionsAdapter.addAll(currentInstance.getRestrictedSpecializations());
 		restrictionsAdapter.notifyDataSetChanged();

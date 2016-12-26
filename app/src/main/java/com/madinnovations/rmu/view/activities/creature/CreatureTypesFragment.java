@@ -419,7 +419,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 
 	private void initCretureCategorySpinner(View layout) {
 		creatureCategorySpinner = (Spinner)layout.findViewById(R.id.creature_category_spinner);
-		creatureCategorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		creatureCategorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		creatureCategorySpinner.setAdapter(creatureCategorySpinnerAdapter);
 
 		creatureCategoryRxHandler.getAll()
@@ -564,7 +564,7 @@ public class CreatureTypesFragment extends Fragment implements TwoFieldListAdapt
 
 	private void initSelectedTalentsList(View layout) {
 		selectedTalentsListView = (ListView)layout.findViewById(R.id.selected_talents_list);
-		selectedTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		selectedTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		selectedTalentsListView.setAdapter(selectedTalentsListAdapter);
 
 		selectedTalentsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

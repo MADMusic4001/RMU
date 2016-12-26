@@ -15,12 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 /**
  * Spell type attributes
  */
-public class 	SpellType {
+public class SpellType extends DatabaseObject {
 	public static final String JSON_NAME = "SpellTypes";
-	private int id = -1;
 	private String name = null;
 	private Character code = null;
 	private String description = null;
@@ -39,28 +40,7 @@ public class 	SpellType {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		SpellType that = (SpellType) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

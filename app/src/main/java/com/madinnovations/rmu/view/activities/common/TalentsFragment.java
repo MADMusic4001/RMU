@@ -589,7 +589,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initFilterSpinner(View layout) {
 		filterSpinner = (Spinner)layout.findViewById(R.id.talent_category_filter_spinner);
-		filterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		filterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		filterSpinner.setAdapter(filterSpinnerAdapter);
 
 		final TalentCategory allCategories = new TalentCategory();
@@ -627,7 +627,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initCategorySpinner(View layout) {
 		categorySpinner = (Spinner)layout.findViewById(R.id.category_spinner);
-		categorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		categorySpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		categorySpinner.setAdapter(categorySpinnerAdapter);
 
 		talentCategoryRxHandler.getAll()
@@ -667,7 +667,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initActionSpinner(View layout) {
 		actionSpinner = (Spinner)layout.findViewById(R.id.action_spinner);
-		actionSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		actionSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		actionSpinnerAdapter.clear();
 		actionSpinnerAdapter.addAll(Action.values());
 		actionSpinnerAdapter.notifyDataSetChanged();
@@ -799,7 +799,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initParameterSpinner(final View layout) {
 		Spinner spinner = (Spinner)layout.findViewById(R.id.parameter_spinner);
-		final ArrayAdapter<Parameter> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Parameter> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		adapter.clear();
 		adapter.addAll(Parameter.values());
 		adapter.notifyDataSetChanged();
@@ -1163,7 +1163,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initAttacksSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
-		final ArrayAdapter<Attack> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Attack> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		if(attackSparseArray != null) {
 			adapter.clear();
@@ -1302,7 +1302,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void setResistanceSpinnerAdapter(View layout, Resistance[] resistances) {
 		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
-		ArrayAdapter<Resistance> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		ArrayAdapter<Resistance> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		adapter.clear();
 		adapter.addAll(resistances);
 		adapter.notifyDataSetChanged();
@@ -1315,7 +1315,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initSenseSpinner(final View layout) {
 		final Spinner spinner = (Spinner) layout.findViewById(R.id.sense_spinner);
-		final ArrayAdapter<Sense> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Sense> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		adapter.clear();
 		adapter.addAll(Sense.values());
@@ -1359,7 +1359,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initSkillsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
-		final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		if(skillSparseArray != null) {
 			adapter.clear();
@@ -1438,7 +1438,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initSpecializationsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
-		final ArrayAdapter<Specialization> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Specialization> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		if(specializationSparseArray != null) {
 			adapter.clear();
@@ -1514,7 +1514,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initSpellsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
-		final ArrayAdapter<Spell> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Spell> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		if(spellSparseArray != null) {
 			adapter.clear();
@@ -1590,7 +1590,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initSpellListsSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
-		final ArrayAdapter<SpellList> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<SpellList> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		if(spellListSparseArray != null) {
 			adapter.clear();
@@ -1669,7 +1669,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initCriticalTypesSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.critical_type_spinner);
-		final ArrayAdapter<CriticalType> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<CriticalType> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		if(criticalTypeSparseArray != null) {
 			adapter.clear();
@@ -1748,7 +1748,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initCriticalSeveritiesSpinner(final View layout) {
 		final Spinner spinner = (Spinner)layout.findViewById(R.id.critical_severity_spinner);
-		final ArrayAdapter<Character> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Character> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		adapter.clear();
 		for(char c = 'A'; c <= 'J'; c++) {
@@ -1853,7 +1853,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	private void initStatsSpinner(final View layout) {
 		final Spinner spinner = (Spinner) layout.findViewById(R.id.stat_spinner);
-		final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 
 		adapter.clear();
 		adapter.addAll(Statistic.getAllStats());

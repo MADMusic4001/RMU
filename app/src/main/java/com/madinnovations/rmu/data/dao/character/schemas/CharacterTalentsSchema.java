@@ -23,19 +23,20 @@ import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 public interface CharacterTalentsSchema {
     String TABLE_NAME = "character_talents";
 
+    String COLUMN_ID = "id";
     String COLUMN_CHARACTER_ID = "characterId";
     String COLUMN_TALENT_ID = "talentId";
     String COLUMN_TIERS = "tiers";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
+			+ COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
                 + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
             + COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
 				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
-            + COLUMN_TIERS  + " INTEGER NOT NULL, "
-            + "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_TALENT_ID + ")"
+            + COLUMN_TIERS  + " INTEGER NOT NULL"
             + ")";
 
-    String[] COLUMNS = new String[] {COLUMN_CHARACTER_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
+    String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_CHARACTER_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
 }

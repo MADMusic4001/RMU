@@ -16,21 +16,30 @@
 package com.madinnovations.rmu.view.activities.character;
 
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
@@ -38,11 +47,14 @@ import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
+import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.common.TalentTier;
+import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
+import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.common.TalentTierListAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.utils.Boast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,31 +62,39 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Handles interactions with the UI for character creation.
  */
 public class CharacterTalentsPageFragment extends Fragment implements TalentTierListAdapter.TalentTiersAdapterCallbacks {
 	private static final String TAG = "CharacterTalentsPage";
+	private static final String DRAG_ADD_TALENT = "drag-add-talent";
+	private static final String DRAG_REMOVE_TALENT = "drag-remove-talent";
 	@Inject
-	protected AttackRxHandler         attackRxHandler;
+	protected AttackRxHandler              attackRxHandler;
 	@Inject
-	protected SkillRxHandler          skillRxHandler;
+	protected SkillRxHandler               skillRxHandler;
 	@Inject
-	protected SpecializationRxHandler specializationRxHandler;
+	protected SpecializationRxHandler      specializationRxHandler;
 	@Inject
-	protected SpellRxHandler          spellRxHandler;
+	protected SpellRxHandler               spellRxHandler;
 	@Inject
-	protected SpellListRxHandler      spellListRxHandler;
+	protected SpellListRxHandler           spellListRxHandler;
 	@Inject
-	protected TalentRxHandler         talentRxHandler;
+	protected TalentRxHandler              talentRxHandler;
 	@Inject
-	protected ReactiveUtils           reactiveUtils;
-	private   TalentTierListAdapter   talentTiersAdapter;
-	private   CharactersFragment      charactersFragment;
-	private   Collection<Talent>      talents = null;
-	private   EditText                currentDpText;
+	protected TalentCategoryRxHandler      talentCategoryRxHandler;
+	@Inject
+	protected ReactiveUtils                reactiveUtils;
+	private   ArrayAdapter<TalentCategory> talentCategoryArrayAdapter;
+	private   Spinner                      talentCategoryFilterSpinner;
+	private   ArrayAdapter<Talent>         addTalentsListAdapter;
+	private   TalentTierListAdapter        talentTiersAdapter;
+	private   CharactersFragment           charactersFragment;
+	private   EditText                     currentDpText;
 
 	/**
 	 * Creates new CharacterTalentsPageFragment instance.
@@ -101,6 +121,8 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 
 		currentDpText = (EditText) fragmentView.findViewById(R.id.current_dp_text);
 		currentDpText.setText((String.valueOf(charactersFragment.getCurrentInstance().getCurrentDevelopmentPoints())));
+		initTalentCategoryFilterSpinner(fragmentView);
+		initAddTalentsListView(fragmentView);
 		initTalentTiersListView(fragmentView);
 
 		fragmentView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -115,39 +137,45 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 	}
 
 	@Override
-	public boolean purchaseTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		boolean result = false;
+	public void onPause() {
+		if(copyViewsToItem()) {
+			charactersFragment.saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
+	@Override
+	public short purchaseTier(TalentInstance talentInstance) {
+		short result = 0;
 		short cost = 0;
 		Character character = charactersFragment.getCurrentInstance();
+		short purchasedThisLevel = 0;
+		Short tempShort = character.getCurrentLevelTalentTiers().get(talentInstance);
+		if(tempShort != null) {
+			purchasedThisLevel = tempShort;
+		}
 
-		if(character.getCurrentLevel() == 1 || character.getCampaign().isAllowTalentsBeyondFirst()) {
-			if(purchasedThisLevel == 0 && startingTiers == 0) {
-				cost = talent.getDpCost();
-				result = true;
+		if(character.getCurrentLevel() == 0 || character.getCampaign().isAllowTalentsBeyondFirst()) {
+			if(talentInstance.getTiers() == 0) {
+				cost = talentInstance.getTalent().getDpCost();
 			}
-			else if(purchasedThisLevel + startingTiers < talent.getMaxTier() && purchasedThisLevel < 2) {
-				cost = talent.getDpCostPerTier();
-				result = true;
+			else if(talentInstance.getTiers() < talentInstance.getTalent().getMaxTier()) {
+				cost = talentInstance.getTalent().getDpCostPerTier();
 			}
-			if(result) {
-				if (cost < character.getCurrentDevelopmentPoints()) {
+			if(cost > 0 && cost < character.getCurrentDevelopmentPoints()) {
 					character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
 					currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-					TalentInstance talentInstance = character.getTalentInstances().get(talent);
-					if(talentInstance == null) {
-						talentInstance = new TalentInstance();
-						talentInstance.setTalent(talent);
-					}
 					short oldTiers = talentInstance.getTiers();
-					Log.d(TAG, "purchaseTier: oldTiers = " + oldTiers);
-					talentInstance.setTiers((short) (oldTiers + 1));
-					character.getTalentInstances().put(talent, talentInstance);
-					character.getCurrentLevelTalentTiers().put(talent, purchasedThisLevel);
+					result = ++oldTiers;
+					talentInstance.setTiers(result);
+					character.getCurrentLevelTalentTiers().put(talentInstance, ++purchasedThisLevel);
 					charactersFragment.saveItem();
-				}
-				else {
-					result = false;
-				}
 			}
 		}
 
@@ -155,36 +183,42 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 	}
 
 	@Override
-	public boolean sellTier(Talent talent, short startingTiers, short purchasedThisLevel) {
-		boolean result = false;
+	public short sellTier(TalentInstance talentInstance) {
+		short result = 0;
 		short cost = 0;
 		Character character = charactersFragment.getCurrentInstance();
+		short purchasedThisLevel = 0;
+		Short tempShort = character.getCurrentLevelTalentTiers().get(talentInstance);
+		if(tempShort != null) {
+			purchasedThisLevel = tempShort;
+		}
 
-		Log.d(TAG, "sellTier: purchasedThisLevel = " + purchasedThisLevel);
-		if(startingTiers == 0 && purchasedThisLevel == 1) {
-			cost = talent.getDpCost();
-			result = true;
+		if(talentInstance.getTiers() == 1 && purchasedThisLevel == 1) {
+			cost = talentInstance.getTalent().getDpCost();
 		}
 		else if (purchasedThisLevel > 0) {
-			cost = talent.getDpCostPerTier();
-			result = true;
+			cost = talentInstance.getTalent().getDpCostPerTier();
 		}
-		if(result) {
+		if(cost > 0) {
 			character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
 			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-			TalentInstance talentInstance = character.getTalentInstances().get(talent);
-			character.getCurrentLevelTalentTiers().put(talent, purchasedThisLevel);
-			if(talentInstance != null) {
-				short oldTiers = talentInstance.getTiers();
-				if (oldTiers > 1) {
-					talentInstance.setTiers((short) (oldTiers - 1));
-					character.getTalentInstances().put(talent, talentInstance);
-					charactersFragment.saveItem();
+			short oldTiers = talentInstance.getTiers();
+			result = --oldTiers;
+			if (result > 0) {
+				talentInstance.setTiers(result);
+				purchasedThisLevel--;
+				if(purchasedThisLevel > 0) {
+					character.getCurrentLevelTalentTiers().put(talentInstance, purchasedThisLevel);
 				}
 				else {
-					character.getTalentInstances().remove(talent);
-					charactersFragment.saveItem();
+					character.getCurrentLevelTalentTiers().remove(talentInstance);
 				}
+				charactersFragment.saveItem();
+			}
+			else {
+				character.getTalentInstances().remove(talentInstance);
+				character.getCurrentLevelTalentTiers().remove(talentInstance);
+				charactersFragment.saveItem();
 			}
 		}
 
@@ -192,19 +226,34 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 	}
 
 	@Override
-	public void setParameterValue(Talent talent, Parameter parameter, int value, String enumName) {
-		TalentInstance talentInstance = charactersFragment.getCurrentInstance().getTalentInstances().get(talent);
-		if(talentInstance != null) {
-			Object paramValue = talentInstance.getParameterValues().get(parameter);
-			if(enumName != null && !enumName.equals(paramValue)) {
-				talentInstance.getParameterValues().put(parameter, enumName);
-				charactersFragment.saveItem();
-			}
-			else if(enumName == null && (paramValue == null || !Integer.valueOf(value).equals(paramValue))) {
-				talentInstance.getParameterValues().put(parameter, value);
-				charactersFragment.saveItem();
-			}
+	public void setParameterValue(@NonNull TalentInstance talentInstance, @NonNull Parameter parameter,
+								  int value, String enumName) {
+		Object paramValue = talentInstance.getParameterValues().get(parameter);
+		if(enumName != null && !enumName.equals(paramValue)) {
+			talentInstance.getParameterValues().put(parameter, enumName);
+			charactersFragment.saveItem();
 		}
+		else if(enumName == null && (paramValue == null || !Integer.valueOf(value).equals(paramValue))) {
+			talentInstance.getParameterValues().put(parameter, value);
+			charactersFragment.saveItem();
+		}
+	}
+
+	@Override
+	public short getTiers(TalentInstance talentInstance) {
+		return talentInstance.getTiers();
+	}
+
+	@Override
+	public short getTiersThisLevel(TalentInstance talentInstance) {
+		short result = 0;
+
+		Short tempShort = charactersFragment.getCurrentInstance().getCurrentLevelTalentTiers().get(talentInstance);
+		if(tempShort != null) {
+			result = tempShort;
+		}
+
+		return result;
 	}
 
 	public boolean copyViewsToItem() {
@@ -212,79 +261,340 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 	}
 
 	public void copyItemToViews() {
-		Character character = charactersFragment.getCurrentInstance();
-		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-		copyTalentTiers();
-	}
-
-	private void copyTalentTiers() {
-		if(talents != null) {
+		if(charactersFragment != null) {
 			Character character = charactersFragment.getCurrentInstance();
-			List<TalentTier> tiersList = new ArrayList<>();
-			for (Talent talent : talents) {
-				TalentTier talentTier = new TalentTier();
-				talentTier.setTalent(talent);
-				short tiers = 0;
-				if (character.getTalentInstances().get(talent) != null) {
-					tiers = character.getTalentInstances().get(talent).getTiers();
-				}
-				talentTier.setTier(tiers);
-				Short purchasedThisLevel = character.getCurrentLevelTalentTiers().get(talent);
-				if(purchasedThisLevel == null) {
-					purchasedThisLevel = (short)0;
-				}
-				talentTier.setStartingTiers(purchasedThisLevel);
-				talentTier.setEndingTiers((short)(tiers - purchasedThisLevel));
-				tiersList.add(talentTier);
-			}
-			talentTiersAdapter.addAll(tiersList);
+			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+			talentTiersAdapter.clear();
+			talentTiersAdapter.addAll(character.getTalentInstances());
 			talentTiersAdapter.notifyDataSetChanged();
 		}
 	}
 
+	private void initTalentCategoryFilterSpinner(View layout) {
+		talentCategoryFilterSpinner = (Spinner) layout.findViewById(R.id.talent_category_filter_spinner);
+		talentCategoryArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+		talentCategoryFilterSpinner.setAdapter(talentCategoryArrayAdapter);
+
+		final TalentCategory allCategories = new TalentCategory();
+		allCategories.setName(getString(R.string.label_all_talent_categories));
+		talentCategoryArrayAdapter.clear();
+		talentCategoryArrayAdapter.add(allCategories);
+		//noinspection unchecked
+		((Observable<Collection<TalentCategory>>)reactiveUtils
+				.getGetAllObservable(ReactiveUtils.Handler.TALENT_CATEGORY_RX_HANDLER))
+				.subscribe(new Subscriber<Collection<TalentCategory>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "initTalentCategoryFilterSpinner: Exception caught getting all TalentCategory instances", e);
+					}
+					@Override
+					public void onNext(Collection<TalentCategory> talentCategories) {
+						talentCategoryArrayAdapter.addAll(talentCategories);
+						talentCategoryFilterSpinner.setSelection(talentCategoryArrayAdapter.getPosition(allCategories));
+						talentCategoryArrayAdapter.notifyDataSetChanged();
+					}
+				});
+
+		talentCategoryFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+				loadFilteredTalents(talentCategoryArrayAdapter.getItem(position));
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				loadFilteredTalents(null);
+			}
+		});
+	}
+
+	private void initAddTalentsListView(View layout) {
+		final ListView addTalentsList = (ListView) layout.findViewById(R.id.add_talent_list);
+		addTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+		addTalentsList.setAdapter(addTalentsListAdapter);
+
+		loadFilteredTalents(null);
+
+		addTalentsList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+				ClipData dragData = null;
+
+				List<View> checkedViews = new ArrayList<>(1);
+				Talent talent = addTalentsListAdapter.getItem(position);
+				if(talent != null) {
+					String talentIdString = String.valueOf(talent.getId());
+					ClipData.Item clipDataItem = new ClipData.Item(talentIdString);
+					dragData = new ClipData(DRAG_ADD_TALENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					checkedViews.add(view);
+				}
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					view.startDragAndDrop(dragData, myShadow, null, 0);
+				}
+				else {
+					//noinspection deprecation
+					view.startDrag(dragData, myShadow, null, 0);
+				}
+				return false;
+			}
+		});
+
+		addTalentsList.setOnDragListener(new View.OnDragListener() {
+			private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
+			private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+			private Drawable normalShape = addTalentsList.getBackground();
+
+			@Override
+			public boolean onDrag(View v, DragEvent event) {
+				final int action = event.getAction();
+
+				switch (action) {
+					case DragEvent.ACTION_DRAG_STARTED:
+						if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+							v.setBackground(targetShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DRAG_ENTERED:
+						if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+							v.setBackground(hoverShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DRAG_LOCATION:
+						break;
+					case DragEvent.ACTION_DRAG_EXITED:
+						if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+							v.setBackground(targetShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DROP:
+						if(event.getClipDescription() != null && DRAG_REMOVE_TALENT.equals(event.getClipDescription().getLabel())) {
+							for (int i = 0; i < event.getClipData().getItemCount(); i++) {
+								ClipData.Item item = event.getClipData().getItemAt(i);
+								// We just send attack ID but since that is the only field used in the Attack.equals method and attack is the
+								// only field used in the AttackBonus.equals method we can create a temporary Attack and set its id field then
+								// create a new AttackBonus and set its attack field then use the new AttackBonus to find the position of the
+								// complete AttackBonus instance in the adapter
+								int talentInstanceId = Integer.valueOf(item.getText().toString());
+								TalentInstance talentInstance = new TalentInstance();
+								talentInstance.setId(talentInstanceId);
+								int position = talentTiersAdapter.getPosition(talentInstance);
+								if(position != -1) {
+									talentInstance = talentTiersAdapter.getItem(position);
+									charactersFragment.getCurrentInstance().getTalentInstances().remove(talentInstance);
+									charactersFragment.saveItem();
+									talentTiersAdapter.remove(talentInstance);
+									talentTiersAdapter.notifyDataSetChanged();
+								}
+							}
+							v.setBackground(normalShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DRAG_ENDED:
+						v.setBackground(normalShape);
+						v.invalidate();
+						break;
+				}
+				return true;
+			}
+		});
+	}
+
 	private void initTalentTiersListView(final View layout) {
-		ListView talentTiersListView = (ListView) layout.findViewById(R.id.talent_tiers_list);
+		final ListView talentTiersListView = (ListView) layout.findViewById(R.id.talent_tiers_list);
 		talentTiersAdapter = new TalentTierListAdapter(getActivity(), this, reactiveUtils, false);
 		talentTiersListView.setAdapter(talentTiersAdapter);
+		final Character character = charactersFragment.getCurrentInstance();
 
-		if(talents == null) {
-			talentRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Talent>>() {
-						@Override
-						public void onCompleted() {
-						}
+		talentTiersAdapter.clear();
+		talentTiersAdapter.addAll(character.getTalentInstances());
+		talentTiersAdapter.notifyDataSetChanged();
 
-						@Override
-						public void onError(Throwable e) {
-							Log.d(TAG, "Exception caught getting all Talent instances.", e);
-						}
+//		talentTiersListView.setOnLongClickListener(new View.OnLongClickListener() {
+//			@Override
+//			public boolean onLongClick(View v) {
+//				Log.d(TAG, "onLongClick: ");
+//				TextView popupContent = new TextView(getActivity());
+//				popupContent.setMinimumWidth(layout.getWidth()/2);
+//				popupContent.setMinimumHeight(layout.getHeight()/2);
+//				Talent talent = ((TalentTierListAdapter.TalentTierViewHolder)v.getTag()).getTalentInstance().getTalent();
+//				popupContent.setText(talent.getDescription());
+//				PopupWindow popupWindow = new PopupWindow(popupContent);
+//				popupWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+//				return true;
+//			}
+//		});
 
-						@Override
-						public void onNext(Collection<Talent> talentCollection) {
-							talents = talentCollection;
-							copyTalentTiers();
-						}
-					});
-		}
-		else {
-			copyTalentTiers();
-		}
-
-		talentTiersListView.setOnLongClickListener(new View.OnLongClickListener() {
+		talentTiersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public boolean onLongClick(View v) {
-				Log.d(TAG, "onLongClick: ");
-				TextView popupContent = new TextView(getActivity());
-				popupContent.setMinimumWidth(layout.getWidth()/2);
-				popupContent.setMinimumHeight(layout.getHeight()/2);
-				TalentTier talentTier = ((TalentTierListAdapter.TalentTierViewHolder)v.getTag()).getTalentTier();
-				popupContent.setText(talentTier.getTalent().getDescription());
-				PopupWindow popupWindow = new PopupWindow(popupContent);
-				popupWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				ClipData dragData = null;
+
+				List<View> checkedViews = new ArrayList<>(1);
+				TalentInstance talentInstance = talentTiersAdapter.getItem(position);
+				if(talentInstance != null) {
+					String talentInstanceIdString = String.valueOf(talentInstance.getId());
+					ClipData.Item clipDataItem = new ClipData.Item(talentInstanceIdString);
+					dragData = new ClipData(DRAG_REMOVE_TALENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					checkedViews.add(view);
+				}
+				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					view.startDragAndDrop(dragData, myShadow, null, 0);
+				}
+				else {
+					//noinspection deprecation
+					view.startDrag(dragData, myShadow, null, 0);
+				}
+				return false;
+			}
+		});
+
+		talentTiersListView.setOnDragListener(new View.OnDragListener() {
+			private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
+			private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+			private Drawable normalShape = talentTiersListView.getBackground();
+
+			@Override
+			public boolean onDrag(View v, DragEvent event) {
+				final int action = event.getAction();
+
+				switch (action) {
+					case DragEvent.ACTION_DRAG_STARTED:
+						if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+							v.setBackground(targetShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DRAG_ENTERED:
+						if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+							v.setBackground(hoverShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DRAG_LOCATION:
+						break;
+					case DragEvent.ACTION_DRAG_EXITED:
+						if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+							v.setBackground(targetShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DROP:
+						if(event.getClipDescription() != null && DRAG_ADD_TALENT.equals(event.getClipDescription().getLabel())) {
+							for (int i = 0; i < event.getClipData().getItemCount(); i++) {
+								ClipData.Item item = event.getClipData().getItemAt(i);
+								// We just send attack ID but since that is the only field used in the Attack.equals method and attack is the
+								// only field used in the AttackBonus.equals method we can create a temporary Attack and set its id field then
+								// create a new AttackBonus and set its attack field then use the new AttackBonus to find the position of the
+								// complete AttackBonus instance in the adapter
+								int talentId = Integer.valueOf(item.getText().toString());
+								Talent newTalent = new Talent();
+								newTalent.setId(talentId);
+								int position = addTalentsListAdapter.getPosition(newTalent);
+								if(position != -1) {
+									Talent talent = addTalentsListAdapter.getItem(position);
+									TalentInstance talentInstance = new TalentInstance();
+									talentInstance.setTalent(talent);
+									talentInstance.setTiers((short)0);
+									if(talent != null) {
+										for (TalentParameterRow parameterRow : talent.getTalentParameterRows()) {
+											Object parameterValue;
+											if (parameterRow.getEnumName() != null) {
+												parameterValue = parameterRow.getEnumName();
+											}
+											else {
+												parameterValue = parameterRow.getInitialValue();
+											}
+											talentInstance.getParameterValues().put(parameterRow.getParameter(), parameterValue);
+										}
+										character.getTalentInstances().add(talentInstance);
+										charactersFragment.saveItem();
+										talentTiersAdapter.add(talentInstance);
+										talentTiersAdapter.notifyDataSetChanged();
+									}
+								}
+							}
+							v.setBackground(normalShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
+						break;
+					case DragEvent.ACTION_DRAG_ENDED:
+						v.setBackground(normalShape);
+						v.invalidate();
+						break;
+				}
 				return true;
 			}
 		});
 
 		registerForContextMenu(talentTiersListView);
+	}
+
+	private void loadFilteredTalents(final TalentCategory filter) {
+		Observable<Collection<Talent>> observable;
+
+		if(filter == null || filter.getId() == -1) {
+			//noinspection unchecked
+			observable = (Observable<Collection<Talent>>)reactiveUtils
+					.getGetAllObservable(ReactiveUtils.Handler.TALENT_RX_HANDLER);
+		}
+		else {
+			observable = talentRxHandler.getTalentsForTalentCategory(filter);
+		}
+		observable.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<Collection<Talent>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "loadFilteredTalents: Exception caught getting Talent instances", e);
+						Toast.makeText(getActivity(),
+									   getString(R.string.toast_talents_load_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Collection<Talent> talents) {
+						addTalentsListAdapter.clear();
+						addTalentsListAdapter.addAll(talents);
+						addTalentsListAdapter.notifyDataSetChanged();
+						if(filter == null) {
+							Boast.makeText(getActivity(),
+										   String.format(getString(R.string.toast_talents_loaded), talents.size()),
+										   Toast.LENGTH_SHORT).show(true);
+						}
+					}
+				});
 	}
 }

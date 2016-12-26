@@ -27,7 +27,6 @@ import android.widget.Spinner;
 import com.madinnovations.rmu.R;
 
 import java.util.Collection;
-import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -80,7 +79,7 @@ public final class SpinnerUtils<T> {
 							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
 							final T dummyInstance) {
 			this.spinner = spinner;
-			adapter = new ArrayAdapter<>(context, R.layout.spinner_row);
+			adapter = new ArrayAdapter<>(context, R.layout.single_field_row);
 			spinner.setAdapter(adapter);
 
 			adapter.clear();
@@ -147,7 +146,7 @@ public final class SpinnerUtils<T> {
 							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
 							final T dummyInstance) {
 		this.spinner = spinner;
-		adapter = new ArrayAdapter<>(context, R.layout.spinner_row);
+		adapter = new ArrayAdapter<>(context, R.layout.single_field_row);
 		spinner.setAdapter(adapter);
 
 		if(allItems != null) {

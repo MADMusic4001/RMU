@@ -505,7 +505,7 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 
 	private void initSelectedTalentsList(View layout) {
 		selectedTalentsListView = (ListView)layout.findViewById(R.id.selected_talents_list);
-		selectedTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		selectedTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		selectedTalentsListView.setAdapter(selectedTalentsListAdapter);
 
 		selectedTalentsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

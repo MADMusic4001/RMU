@@ -46,6 +46,9 @@ import java.util.Map;
  * Json serializer and deserializer for the {@link CreatureVariety} entities
  */
 public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> implements CreatureVarietySchema {
+	@SuppressWarnings("unused")
+	private static final String TAG = "CreatureVarietySerializ";
+
 	@Override
 	public void write(JsonWriter out, CreatureVariety value) throws IOException {
 		out.beginObject();
@@ -102,17 +105,20 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			out.endArray();
 		}
 
-		if (value.getTalentsMap() != null && !value.getTalentsMap().isEmpty()) {
+		if (value.getTalentInstancesList() != null && !value.getTalentInstancesList().isEmpty()) {
 			out.name(VarietyTalentTiersSchema.TABLE_NAME);
 			out.beginArray();
-			for (Map.Entry<Talent, TalentInstance> entry : value.getTalentsMap().entrySet()) {
+			for (TalentInstance talentInstance : value.getTalentInstancesList()) {
 				out.beginObject();
-				out.name(VarietyTalentTiersSchema.COLUMN_TALENT_ID).value(entry.getKey().getId());
-				out.name(VarietyTalentTiersSchema.COLUMN_TIERS).value(entry.getValue().getTiers());
-				if(!entry.getValue().getParameterValues().isEmpty()) {
+				out.name(VarietyTalentTiersSchema.COLUMN_TALENT_ID).value(talentInstance.getId());
+				out.name(VarietyTalentTiersSchema.COLUMN_VARIETY_ID).value(value.getId());
+				out.name(VarietyTalentTiersSchema.COLUMN_TALENT_ID).value(talentInstance.getTalent().getId());
+				out.name(VarietyTalentTiersSchema.COLUMN_TIERS).value(talentInstance.getTiers());
+				if(!talentInstance.getParameterValues().isEmpty()) {
 					out.name(VarietyTalentParametersSchema.TABLE_NAME);
 					out.beginArray();
-					for(Map.Entry<Parameter, Object> paramEntry : entry.getValue().getParameterValues().entrySet()) {
+					for(Map.Entry<Parameter, Object> paramEntry : talentInstance.getParameterValues().entrySet()) {
+						out.beginObject();
 						out.name(VarietyTalentParametersSchema.COLUMN_PARAMETER_NAME).value(paramEntry.getKey().name());
 						if(paramEntry.getValue() != null) {
 							if(paramEntry.getValue() instanceof Integer) {
@@ -122,6 +128,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 								out.name(VarietyTalentParametersSchema.COLUMN_ENUM_NAME).value((String) paramEntry.getValue());
 							}
 						}
+						out.endObject();
 					}
 					out.endArray();
 				}
@@ -307,6 +314,9 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
+					case VarietyTalentTiersSchema.COLUMN_ID:
+						talentInstance.setId(in.nextInt());
+						break;
 					case VarietyTalentTiersSchema.COLUMN_TALENT_ID:
 						newTalent = new Talent(in.nextInt());
 						break;
@@ -318,11 +328,9 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 						break;
 				}
 			}
-			if(newTalent != null && newTiers > 0) {
-				talentInstance.setTalent(newTalent);
-				talentInstance.setTiers(newTiers);
-				creatureVariety.getTalentsMap().put(newTalent, talentInstance);
-			}
+			talentInstance.setTalent(newTalent);
+			talentInstance.setTiers(newTiers);
+			creatureVariety.getTalentInstancesList().add(talentInstance);
 			in.endObject();
 		}
 		in.endArray();

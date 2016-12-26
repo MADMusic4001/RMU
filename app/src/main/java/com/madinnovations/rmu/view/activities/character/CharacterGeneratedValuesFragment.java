@@ -141,17 +141,25 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		return layout;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
 	public void copyItemToViews() {
-		Character character = charactersFragment.getCurrentInstance();
-		currentLevelText.setText(String.valueOf(character.getExperiencePoints()/10000));
-		experiencePointsText.setText(String.valueOf(character.getExperiencePoints()));
-		baseMovementRateText.setText(String.valueOf(character.getRace().getStrideModifier()));
-		encumbranceText.setText(null);
-		armorTypeText.setText(null);
-		setBodyDevelopmentViews();
-		setStatViews();
-		setStatAndRealmViews();
-		setPowerDevelopmentViews();
+		if(charactersFragment != null) {
+			Character character = charactersFragment.getCurrentInstance();
+			currentLevelText.setText(String.valueOf(character.getExperiencePoints() / 10000));
+			experiencePointsText.setText(String.valueOf(character.getExperiencePoints()));
+			baseMovementRateText.setText(String.valueOf(character.getRace().getStrideModifier()));
+			encumbranceText.setText(null);
+			armorTypeText.setText(null);
+			setBodyDevelopmentViews();
+			setStatViews();
+			setStatAndRealmViews();
+			setPowerDevelopmentViews();
+		}
 	}
 
 	public void initBodyDevelopmentSkill() {

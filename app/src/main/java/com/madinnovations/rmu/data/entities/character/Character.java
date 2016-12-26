@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.Condition;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
@@ -38,10 +39,9 @@ import java.util.Random;
 /**
  * Character attributes
  */
-public class Character {
+public class Character extends DatabaseObject {
 	public static final String               JSON_NAME                       = "Characters";
 	public static final short                INITIAL_DP                      = 50;
-	private int                              id                              = -1;
 	private Campaign                         campaign                        = null;
 	private short                            currentLevel                    = 0;
 	private int                              experiencePoints                = 0;
@@ -75,13 +75,13 @@ public class Character {
 	private Map<Skill, DevelopmentCostGroup> skillCosts                      = new HashMap<>();
 	private Map<Skill, Short>                skillRanks                      = new HashMap<>();
 	private Map<Specialization, Short>       specializationRanks             = new HashMap<>();
-	private Map<Talent, TalentInstance>      talentInstances                 = new HashMap<>();
+	private List<TalentInstance>             talentInstances                 = new ArrayList<>();
 	private Map<Statistic, Short>            statTemps                       = new HashMap<>();
 	private Map<Statistic, Short>            statPotentials                  = new HashMap<>();
 	private List<Item>                       items                           = new ArrayList<>();
 	private Map<Skill, Short>                currentLevelSkillRanks          = new HashMap<>();
 	private Map<Specialization, Short>       currentLevelSpecializationRanks = new HashMap<>();
-	private Map<Talent, Short>               currentLevelTalentTiers         = new HashMap<>();
+	private Map<TalentInstance, Short>       currentLevelTalentTiers         = new HashMap<>();
 	private Map<Object, Short>               purchasedCultureRanks           = new HashMap<>();
 	private int                              statIncreases                   = 0;
 	private List<Condition>                  currentConditions               = new ArrayList<>();
@@ -141,8 +141,12 @@ public class Character {
 
 	@Override
 	public String toString() {
+		return knownAs;
+	}
+
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("campaign", campaign)
 				.append("currentLevel", currentLevel)
 				.append("experiencePoints", experiencePoints)
@@ -186,21 +190,6 @@ public class Character {
 				.append("purchasedCultureRanks", purchasedCultureRanks)
 				.append("statIncreases", statIncreases)
 				.toString();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Character character = (Character) o;
-
-		return id == character.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
 	}
 
 	public String getFullName() {
@@ -303,6 +292,31 @@ public class Character {
 		return bonus;
 	}
 
+	public TalentInstance findTalentInstanceForTalent(Talent talent) {
+		TalentInstance result = null;
+
+		for(TalentInstance talentInstance : getTalentInstances()) {
+			if(talentInstance.getTalent().equals(talent)) {
+				result = talentInstance;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public TalentInstance findTalentInstanceById(int id) {
+		TalentInstance result = null;
+
+		for(TalentInstance talentInstance : getTalentInstances()) {
+			if(talentInstance.getId() == id) {
+				result = talentInstance;
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	private void generateRandomStat(Statistic statistic) {
 		short roll;
 		short rolls[] = new short[2];
@@ -345,12 +359,6 @@ public class Character {
 	}
 
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public Campaign getCampaign() {
 		return campaign;
 	}
@@ -550,10 +558,10 @@ public class Character {
 			Map<Specialization, Short> specializationRanks) {
 		this.specializationRanks = specializationRanks;
 	}
-	public Map<Talent, TalentInstance> getTalentInstances() {
+	public List<TalentInstance> getTalentInstances() {
 		return talentInstances;
 	}
-	public void setTalentInstances(Map<Talent, TalentInstance> talentInstances) {
+	public void setTalentInstances(List<TalentInstance> talentInstances) {
 		this.talentInstances = talentInstances;
 	}
 	public Map<Statistic, Short> getStatTemps() {
@@ -586,11 +594,11 @@ public class Character {
 	public void setCurrentLevelSpecializationRanks(Map<Specialization, Short> currentLevelSpecializationRanks) {
 		this.currentLevelSpecializationRanks = currentLevelSpecializationRanks;
 	}
-	public Map<Talent, Short> getCurrentLevelTalentTiers() {
+	public Map<TalentInstance, Short> getCurrentLevelTalentTiers() {
 		return currentLevelTalentTiers;
 	}
 	public void setCurrentLevelTalentTiers(
-			Map<Talent, Short> currentLevelTalentTiers) {
+			Map<TalentInstance, Short> currentLevelTalentTiers) {
 		this.currentLevelTalentTiers = currentLevelTalentTiers;
 	}
 	public Map<Object, Short> getPurchasedCultureRanks() {

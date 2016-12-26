@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Talent;
 
 import java.util.ArrayList;
@@ -23,9 +24,8 @@ import java.util.List;
 /**
  * Class containing Creature Type attributes.
  */
-public class CreatureType {
+public class CreatureType extends DatabaseObject {
 	public static final String JSON_NAME = "CreatureTypes";
-	private int              id          = -1;
 	private CreatureCategory category    = null;
 	private String           name        = null;
 	private String           description = null;
@@ -43,7 +43,7 @@ public class CreatureType {
 	 * @param id  the id for the new instance
 	 */
 	public CreatureType(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -60,28 +60,7 @@ public class CreatureType {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		CreatureType that = (CreatureType) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public CreatureCategory getCategory() {
 		return category;
 	}

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import android.util.SparseArray;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 
@@ -29,9 +30,8 @@ import java.util.List;
 /**
  * Class containing Creature Archetype attributes.
  */
-public class CreatureArchetype {
+public class CreatureArchetype extends DatabaseObject {
 	public static final String              JSON_NAME       = "CreatureArchetypes";
-	private             int                 id              = -1;
 	private             String              name            = null;
 	private             String              description     = null;
 	private             boolean             realmStat1      = false;
@@ -77,7 +77,7 @@ public class CreatureArchetype {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("description", description)
 				.append("realmStat1", realmStat1)
@@ -93,21 +93,6 @@ public class CreatureArchetype {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		CreatureArchetype that = (CreatureArchetype) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	public void generateLevels() {
 		levels.clear();
 		for(int i = 1; i <= 50; i++) {
@@ -119,12 +104,6 @@ public class CreatureArchetype {
 	}
 
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

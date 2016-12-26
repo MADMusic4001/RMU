@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -27,8 +28,7 @@ import java.util.Map;
 /**
  * Creature template attributes
  */
-public class CreatureTemplate {
-	private int                   id = -1;
+public class CreatureTemplate extends DatabaseObject {
 	private String                name;
 	private String                description;
 	private CreatureArchetype     archetype;
@@ -63,7 +63,7 @@ public class CreatureTemplate {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("name", name)
 				.append("description", description)
 				.append("archetype", archetype)
@@ -87,28 +87,7 @@ public class CreatureTemplate {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		CreatureTemplate that = (CreatureTemplate) o;
-
-		return id == that.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

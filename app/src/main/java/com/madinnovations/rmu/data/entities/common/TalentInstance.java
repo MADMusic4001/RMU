@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -24,7 +26,7 @@ import java.util.Map;
 /**
  * Talent parameter instance attributes
  */
-public class TalentInstance {
+public class TalentInstance extends DatabaseObject {
 	private Talent                 talent;
 	private short                  tiers = 0;
 	private Map<Parameter, Object> parameterValues = new HashMap<>();
@@ -33,6 +35,7 @@ public class TalentInstance {
 	public String toString() {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", getId())
 				.append("talent", talent)
 				.append("tiers", tiers)
 				.append("parameterValues", parameterValues)

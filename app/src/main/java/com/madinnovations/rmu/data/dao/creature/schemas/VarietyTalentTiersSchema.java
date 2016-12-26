@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 public interface VarietyTalentTiersSchema {
 	String TABLE_NAME = "variety_talents";
 
+	String COLUMN_ID = "id";
 	String COLUMN_VARIETY_ID = "varietyId";
 	String COLUMN_TALENT_ID = "talentId";
 	String COLUMN_TIERS = "tiers";
@@ -30,13 +31,13 @@ public interface VarietyTalentTiersSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
+			+ COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
 			+ COLUMN_VARIETY_ID  + " INTEGER NOT NULL REFERENCES "
 				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
 				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
-			+ COLUMN_TIERS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_TALENT_ID + ")"
+			+ COLUMN_TIERS + " INTEGER NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_VARIETY_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
 }

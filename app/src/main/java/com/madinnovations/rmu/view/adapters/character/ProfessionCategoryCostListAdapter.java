@@ -49,8 +49,10 @@ import javax.inject.Inject;
  * Populates a ListView with {@link ProfessionSkillCategoryCost} information
  */
 public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter {
-	private static final int GROUP_LAYOUT_RESOURCE_ID = R.layout.list_profession_category_costs_group_row;
-	private static final int CHILD_LAYOUT_RESOURCE_ID = R.layout.list_profession_category_costs_child_row;
+	@SuppressWarnings("unused")
+	private static final String TAG                      = "ProCatCostListAdapter";
+	private static final int    GROUP_LAYOUT_RESOURCE_ID = R.layout.list_profession_category_costs_group_row;
+	private static final int    CHILD_LAYOUT_RESOURCE_ID = R.layout.list_profession_category_costs_child_row;
 	private Context context;
 	private ExpandableListView listView;
 	private LayoutInflater layoutInflater;
@@ -76,7 +78,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		this.callbackImpl = callbackImpl;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.listView = listView;
-		dpCostsSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_row);
+		dpCostsSpinnerAdapter = new ArrayAdapter<>(context, R.layout.single_field_row);
 		dpCostsSpinnerAdapter.addAll(DevelopmentCostGroup.values());
 	}
 
@@ -323,6 +325,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			});
 		}
 
+		@SuppressWarnings("unused")
 		private void updateSkillRow(int groupPosition, int childPosition, String name, DevelopmentCostGroup dpCostGroup) {
 			ChildViewHolder childViewHolder = ProfessionCategoryCostListAdapter.this.findChildViewHolder(
 					nameView, groupPosition, childPosition);

@@ -67,6 +67,7 @@ import rx.schedulers.Schedulers;
  */
 public class SpecializationsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Specialization>,
 		CheckBoxUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+	private static final String TAG = "SpecializationsFragment";
 	@Inject
 	protected SpecializationRxHandler             specializationRxHandler;
 	@Inject
@@ -371,7 +372,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SpecializationFragment", "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						Toast.makeText(getActivity(), getString(R.string.toast_specialization_delete_failed), Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -411,7 +412,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("SpecializationsFragment", "Exception saving Specialization", e);
+							Log.e(TAG, "Exception saving Specialization", e);
 							String toastString = getString(R.string.toast_specialization_save_failed);
 							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
 						}
@@ -463,7 +464,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initSkillFilterSpinner(View layout) {
 		skillFilterSpinner = (Spinner)layout.findViewById(R.id.skill_filter_spinner);
-		skillFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		skillFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		skillFilterSpinner.setAdapter(skillFilterSpinnerAdapter);
 
 		final Skill allSkills = new Skill();
@@ -477,7 +478,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
+						Log.e(TAG, "Exception caught getting all specialization Skill instances", e);
 					}
 					@Override
 					public void onNext(Collection<Skill> skills) {
@@ -557,7 +558,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initSkillSpinner(View layout) {
 		skillSpinner = (Spinner)layout.findViewById(R.id.skill_spinner);
-		skillSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		skillSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		skillSpinner.setAdapter(skillSpinnerAdapter);
 
 		skillRxHandler.getSpecializationSkills()
@@ -568,7 +569,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SpecializationsFragment", "Exception caught getting all specialization Skill instances", e);
+						Log.e(TAG, "Exception caught getting all specialization Skill instances", e);
 					}
 					@Override
 					public void onNext(Collection<Skill> skills) {
@@ -600,7 +601,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initStat1Spinner(View layout) {
 		stat1Spinner = (Spinner)layout.findViewById(R.id.stat1_spinner);
-		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat1Spinner.setAdapter(stat1SpinnerAdapter);
 
 		stat1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -633,7 +634,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initStat2Spinner(View layout) {
 		stat2Spinner = (Spinner)layout.findViewById(R.id.stat2_spinner);
-		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat2Spinner.setAdapter(stat2SpinnerAdapter);
 
 		stat2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -664,7 +665,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 	private void initStat3Spinner(View layout) {
 		stat3Spinner = (Spinner)layout.findViewById(R.id.stat3_spinner);
-		stat3SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		stat3SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		stat3Spinner.setAdapter(stat3SpinnerAdapter);
 
 		stat3Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -724,7 +725,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 //					public void onCompleted() {}
 //					@Override
 //					public void onError(Throwable e) {
-//						Log.e("SkillCategoriesFrag", "Exception caught getting all Stat instances", e);
+//						Log.e(TAG, "Exception caught getting all Stat instances", e);
 //					}
 //					@Override
 //					public void onNext(Collection<Stat> items) {
@@ -814,7 +815,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SpecializationsFragment", "Exception caught getting all Specialization instances", e);
+						Log.e(TAG, "Exception caught getting all Specialization instances", e);
 						Toast.makeText(SpecializationsFragment.this.getActivity(),
 								getString(R.string.toast_specializations_load_failed),
 								Toast.LENGTH_SHORT).show();

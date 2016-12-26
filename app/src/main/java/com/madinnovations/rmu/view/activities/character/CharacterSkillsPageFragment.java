@@ -127,6 +127,20 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			charactersFragment.saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
+	@Override
 	public short purchaseRank(@NonNull SkillRanks skillRanks) {
 		DevelopmentCostGroup costGroup;
 		short cost;
@@ -299,16 +313,18 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	}
 
 	public void copyItemToViews() {
-		Character character = charactersFragment.getCurrentInstance();
-		currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
-		copyAssignableCosts();
-		if(skillList == null) {
-			initSkillRanksListView(fragmentView);
+		if(charactersFragment != null) {
+			Character character = charactersFragment.getCurrentInstance();
+			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+			copyAssignableCosts();
+			if (skillList == null) {
+				initSkillRanksListView(fragmentView);
+			}
+			else {
+				copySkillRanksToView();
+			}
+			changeProfession();
 		}
-		else {
-			copySkillRanksToView();
-		}
-		changeProfession();
 	}
 
 	private void copyAssignableCosts() {
@@ -378,7 +394,6 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		skillRanksListView.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				Log.d(TAG, "onLongClick: ");
 				TextView popupContent = new TextView(getActivity());
 				popupContent.setMinimumWidth(layout.getWidth()/2);
 				popupContent.setMinimumHeight(layout.getHeight()/2);

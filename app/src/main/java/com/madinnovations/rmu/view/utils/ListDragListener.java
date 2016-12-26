@@ -29,11 +29,11 @@ import com.madinnovations.rmu.data.entities.common.SkillCost;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
 /**
- * Created by madanle on 10/3/16.
+ * Generic OnDragListener implementation
  */
 public class ListDragListener implements View.OnDragListener{
-	public static final String DRAG_ADD_COST= "add-skill-cost";
-	public static final String DRAG_REMOVE_COST= "remove-skill-cost";
+	public static final String DRAG_ADD_COST = "add-skill-cost";
+	public static final String DRAG_REMOVE_COST = "remove-skill-cost";
 	private Resources resources;
 	private ListView targetList;
 	private ArrayAdapter<Specialization> adapter;
@@ -93,16 +93,9 @@ public class ListDragListener implements View.OnDragListener{
 						if(position != -1) {
 							Specialization specialization = adapter.getItem(position);
 							SkillCost skillCost = new SkillCost();
-//							if (attackBonusesListAdapter.getPosition(attackBonus) == -1) {
-//								attackBonusesListAdapter.add(attackBonus);
-//								varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attack, (short) 0);
-//								changed = true;
-//							}
 						}
 					}
 					if(changed) {
-//						varietiesFragment.saveItem();
-//						attackBonusesListAdapter.notifyDataSetChanged();
 					}
 					v.setBackground(normalShape);
 					v.invalidate();

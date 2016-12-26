@@ -15,15 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Representation of a biome (habitat)
  */
-public class Biome {
+public class Biome extends DatabaseObject {
 	public static final String JSON_NAME = "Biomes";
-	private int id;
 	private char code;
 	private String description;
 	private String humidity;
@@ -37,7 +38,7 @@ public class Biome {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-				.append("id", id)
+				.append("id", getId())
 				.append("code", code)
 				.append("description", description)
 				.append("humidity", humidity)
@@ -46,28 +47,7 @@ public class Biome {
 				.toString();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Biome biome = (Biome) o;
-
-		return id == biome.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public char getCode() {
 		return code;
 	}

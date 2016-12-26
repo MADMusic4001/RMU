@@ -16,15 +16,15 @@
 package com.madinnovations.rmu.data.entities.spells;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Spell list attributes
  */
-public class SpellList {
+public class SpellList extends DatabaseObject {
 	public static final String JSON_NAME = "SpellLists";
-	private int           id            = -1;
 	private String        name          = null;
 	private String        notes         = null;
 	private Realm         realm         = null;
@@ -44,7 +44,7 @@ public class SpellList {
 	 * @param id  the id for the new instance
 	 */
 	public SpellList(int id) {
-		this.id = id;
+		super(id);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class SpellList {
 	@Override
 	public String toString() {
 		String formatString = RMUApp.getResourceUtils().getString(R.string.spell_list_format_string);
-		String result = null;
+		String result;
 
 		if(profession != null) {
 			if(spellListType != null) {
@@ -84,28 +84,7 @@ public class SpellList {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		SpellList spellList = (SpellList) o;
-
-		return id == spellList.id;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
 	// Getters and setters
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

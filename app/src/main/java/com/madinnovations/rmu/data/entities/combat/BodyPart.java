@@ -15,12 +15,13 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 /**
  * Body part attributes
  */
-public class BodyPart {
+public class BodyPart extends DatabaseObject {
     public static final String JSON_NAME = "BodyParts";
-    private int id = -1;
     private String name = null;
     private String description = null;
 
@@ -36,7 +37,7 @@ public class BodyPart {
 	 * @param id  the id for the new instance
 	 */
     public BodyPart(int id) {
-        this.id = id;
+        super(id);
     }
 
     /**
@@ -53,28 +54,7 @@ public class BodyPart {
         return name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BodyPart bodyPart = (BodyPart) o;
-
-        return id == bodyPart.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
     public String getName() {
         return name;
     }

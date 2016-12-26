@@ -136,6 +136,12 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
+	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		Race currentInstance = racesFragment.getCurrentInstance();
 		String result = null;
@@ -451,7 +457,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 	// <editor-fold desc="Widget initialization methods">
 	private void initSizeSpinner(View layout) {
 		sizeSpinner = (Spinner)layout.findViewById(R.id.size_spinner);
-		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		sizeSpinner.setAdapter(sizeSpinnerAdapter);
 
 		sizeRxHandler.getAll()

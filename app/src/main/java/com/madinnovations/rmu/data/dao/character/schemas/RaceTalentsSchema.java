@@ -23,19 +23,20 @@ import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 public interface RaceTalentsSchema {
 	String TABLE_NAME = "race_talents";
 
+	String COLUMN_ID = "id";
 	String COLUMN_RACE_ID = "raceId";
 	String COLUMN_TALENT_ID = "talentId";
 	String COLUMN_TIERS = "tiers";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME + "("
+			+ COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
 			+ COLUMN_RACE_ID + " INTEGER NOT NULL REFERENCES "
 				+ RaceSchema.TABLE_NAME + "(" + RaceSchema.COLUMN_ID + "), "
 			+ COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
 				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
-			+ COLUMN_TIERS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_RACE_ID + "," + COLUMN_TALENT_ID + ")"
+			+ COLUMN_TIERS + " INTEGER NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_RACE_ID, COLUMN_TALENT_ID, COLUMN_TIERS};
 }

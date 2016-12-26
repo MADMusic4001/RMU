@@ -80,6 +80,20 @@ public class CreatureArchetypesLevelsFragment extends Fragment
 	}
 
 	@Override
+	public void onPause() {
+		if(copyViewsToItem()) {
+			creatureArchetypesFragment.saveItem();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		copyItemToViews();
+	}
+
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getActivity().getMenuInflater().inflate(R.menu.creature_archetype_fill_context_menu, menu);
@@ -138,14 +152,6 @@ public class CreatureArchetypesLevelsFragment extends Fragment
 		}
 
 		return consumed || super.onContextItemSelected(item);
-	}
-
-	@Override
-	public void onPause() {
-		if(copyViewsToItem()) {
-			creatureArchetypesFragment.saveItem();
-		}
-		super.onPause();
 	}
 
 	@Override

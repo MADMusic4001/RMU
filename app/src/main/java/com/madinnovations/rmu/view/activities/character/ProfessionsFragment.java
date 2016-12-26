@@ -498,7 +498,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	// <editor-fold desc="Widget initialization methods">
 	private void initRealm1Spinner(View layout) {
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
-		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
 		realmRxHandler.getAll()
@@ -541,7 +541,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 
 	private void initRealm2Spinner(View layout) {
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
-		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row);
+		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
 		realmRxHandler.getAll()

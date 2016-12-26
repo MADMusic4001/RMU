@@ -15,32 +15,30 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
-
 /**
  * Database schema data for the variety_talent_parameters table
  */
 public interface VarietyTalentParametersSchema {
     String TABLE_NAME = "variety_talent_parameters";
 
-	String COLUMN_VARIETY_ID     = "varietyId";
-    String COLUMN_TALENT_ID      = "talentId";
-    String COLUMN_PARAMETER_NAME = "parameterName";
-    String COLUMN_INT_VALUE      = "intValue";
-	String COLUMN_ENUM_NAME      = "enumName";
+	String COLUMN_VARIETY_ID         = "varietyId";
+    String COLUMN_TALENT_INSTANCE_ID = "talentInstanceId";
+    String COLUMN_PARAMETER_NAME     = "parameterName";
+    String COLUMN_INT_VALUE          = "intValue";
+	String COLUMN_ENUM_NAME          = "enumName";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_VARIETY_ID  + " INTEGER NOT NULL REFERENCES "
                 + CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
-            + COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
-				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
+            + COLUMN_TALENT_INSTANCE_ID + " INTEGER NOT NULL REFERENCES "
+				+ VarietyTalentTiersSchema.TABLE_NAME + "(" + VarietyTalentTiersSchema.COLUMN_ID + "), "
 			+ COLUMN_PARAMETER_NAME + " TEXT NOT NULL, "
             + COLUMN_INT_VALUE + " INTEGER, "
 			+ COLUMN_ENUM_NAME + " TEXT, "
-            + "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_TALENT_ID + "," + COLUMN_PARAMETER_NAME + ")"
+            + "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_TALENT_INSTANCE_ID + "," + COLUMN_PARAMETER_NAME + ")"
             + ")";
 
-    String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_TALENT_ID, COLUMN_PARAMETER_NAME, COLUMN_INT_VALUE,
+    String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_TALENT_INSTANCE_ID, COLUMN_PARAMETER_NAME, COLUMN_INT_VALUE,
 			COLUMN_ENUM_NAME};
 }

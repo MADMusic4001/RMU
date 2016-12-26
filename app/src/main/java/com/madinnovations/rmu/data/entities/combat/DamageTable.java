@@ -17,17 +17,18 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import android.util.SparseArray;
 
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+
 /**
  * Damage table attributes
  */
-public class DamageTable {
+public class DamageTable extends DatabaseObject {
 	private static final int ROW_COUNT = 37;
 	private static final short NON_BALL_HIGH = 175;
 	private static final short NON_BALL_LOW = 65;
 	private static final short BALL_HIGH = 125;
 	private static final short BALL_LOW = 15;
     public static final String JSON_NAME = "DamageTables";
-    private int id = -1;
     private String name = null;
     private boolean ballTable = false;
 	private SparseArray<DamageResultRow> resultRows = new SparseArray<>(ROW_COUNT);
@@ -44,7 +45,7 @@ public class DamageTable {
 	 * @param id  the id for the new instance
 	 */
     public DamageTable(int id) {
-        this.id = id;
+		super(id);
     }
 
     /**
@@ -59,21 +60,6 @@ public class DamageTable {
     @Override
     public String toString() {
         return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DamageTable that = (DamageTable) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
     }
 
     public void addMissingRows() {
@@ -142,12 +128,6 @@ public class DamageTable {
 	}
 
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
     public String getName() {
         return name;
     }

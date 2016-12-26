@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2016 MadInnovations
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,20 +15,18 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
-import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
-import com.madinnovations.rmu.view.activities.play.StartCombatFragment;
-import com.madinnovations.rmu.view.di.PerFragment;
+import com.madinnovations.rmu.view.HexView;
+import com.madinnovations.rmu.view.di.PerView;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
+import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
 import dagger.Subcomponent;
 
 /**
- * The PlayFragmentComponent dependency injection interface.
+ * The ViewsComponent dependency injection interface.
  */
-@SuppressWarnings("WeakerAccess")
-@PerFragment
-@Subcomponent(modules = PlayFragmentModule.class)
-public interface PlayFragmentComponent {
-	void injectInto(CampaignsFragment campaignsFragment);
-	void injectInto(StartCombatFragment startCombatFragment);
+@PerView
+@Subcomponent(modules = ViewsModule.class)
+public interface ViewsComponent {
+	void injectInto(HexView hexView);
 }
