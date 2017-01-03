@@ -228,6 +228,12 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentInstance> {
 								}
 								adapter.addAll(parameterCollectionsCache.get(parameter));
 								spinner.setAdapter(adapter);
+								for(DatabaseObject databaseObject : parameterCollectionsCache.get(parameter)) {
+									if(databaseObject.getId() == (Integer)talentInstance.getParameterValues().get(parameter)) {
+										spinner.setSelection(adapter.getPosition(databaseObject));
+										break;
+									}
+								}
 							}
 						});
 			}

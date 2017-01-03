@@ -30,12 +30,12 @@ public interface VarietyAttacksSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
-			+ COLUMN_ATTACK_ID + " INTEGER NOT NULL, "
+			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL REFERENCES "
+				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
+			+ COLUMN_ATTACK_ID + " INTEGER NOT NULL REFERENCES "
+				+ AttackSchema.TABLE_NAME + "(" + AttackSchema.COLUMN_ID + "), "
 			+ COLUMN_ATTACK_BONUS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_ATTACK_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_VARIETY_ID + ") REFERENCES " + CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + ")"
-			+ "FOREIGN KEY (" + COLUMN_ATTACK_ID + ") REFERENCES " + AttackSchema.TABLE_NAME + "(" + AttackSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_ATTACK_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_ATTACK_ID, COLUMN_ATTACK_BONUS};

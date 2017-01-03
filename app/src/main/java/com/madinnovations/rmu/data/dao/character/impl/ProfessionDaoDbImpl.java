@@ -27,6 +27,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionAssignableSki
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCategoryCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.ProfessionalSkillCategoriesSchema;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
@@ -107,6 +108,7 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		instance.setSkillCategoryCosts(getSkillCategoryCostMap(instance));
 		instance.setSkillCosts(getSkillCostMap(instance));
 		instance.setAssignableSkillCostsMap(getAssignableSkillCostMap(instance));
+		instance.setProfessionalSkillCategories(getProfessionalSkillCategories(instance));
 
 		return instance;
 	}
@@ -164,7 +166,6 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		String selection = ProfessionSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 
 		db.delete(ProfessionSkillCostSchema.TABLE_NAME, selection, selectionArgs);
-
 		for(Map.Entry<Skill, DevelopmentCostGroup> entry : instance.getSkillCosts().entrySet()) {
 			result &= (db.insertWithOnConflict(ProfessionSkillCostSchema.TABLE_NAME, null,
 											   getProfessionSkillCostContentValues(instance.getId(), entry.getKey().getId(),
@@ -174,7 +175,6 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		selection = ProfessionSkillCategoryCostSchema.COLUMN_PROFESSION_ID + " = ?";
 		db.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, selection, selectionArgs);
-
 		for(Map.Entry<SkillCategory, DevelopmentCostGroup> entry : instance.getSkillCategoryCosts().entrySet()) {
 			result &= (db.insertWithOnConflict(ProfessionSkillCategoryCostSchema.TABLE_NAME, null,
 											   getProfessionSkillCategoryCostContentValues(instance.getId(),
@@ -185,7 +185,6 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 
 		selection = ProfessionAssignableSkillCostSchema.COLUMN_PROFESSION_ID + " = ?";
 		db.delete(ProfessionAssignableSkillCostSchema.TABLE_NAME, selection, selectionArgs);
-
 		for(Map.Entry<SkillCategory, List<DevelopmentCostGroup>> entry : instance.getAssignableSkillCostsMap().entrySet()) {
 			for(DevelopmentCostGroup costGroup : entry.getValue()) {
 				result &= (db.insertWithOnConflict(ProfessionAssignableSkillCostSchema.TABLE_NAME, null,
@@ -194,6 +193,16 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
 			}
 		}
+
+		selection = ProfessionalSkillCategoriesSchema.COLUMN_PROFESSION_ID + " = ?";
+		db.delete(ProfessionalSkillCategoriesSchema.TABLE_NAME, selection, selectionArgs);
+		for(SkillCategory skillCategory : instance.getProfessionalSkillCategories()) {
+			result &= (db.insertWithOnConflict(ProfessionalSkillCategoriesSchema.TABLE_NAME, null,
+											   getProfessionalSkillCategoryContentValues(instance.getId(),
+																						skillCategory.getId()),
+											   SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
+
 		return result;
 	}
 
@@ -240,6 +249,15 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		else {
 			values.put(ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME, costGroup.name());
 		}
+
+		return values;
+	}
+
+	private ContentValues getProfessionalSkillCategoryContentValues(int professionId, int skillCategoryId) {
+		ContentValues values = new ContentValues(2);
+
+		values.put(ProfessionalSkillCategoriesSchema.COLUMN_PROFESSION_ID, professionId);
+		values.put(ProfessionalSkillCategoriesSchema.COLUMN_SKILL_CATEGORY_ID, skillCategoryId);
 
 		return values;
 	}
@@ -324,5 +342,26 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		}
 
 		return map;
+	}
+
+	private List<SkillCategory> getProfessionalSkillCategories(Profession profession) {
+		final String selectionArgs[] = { String.valueOf(profession.getId()) };
+		final String selection = ProfessionalSkillCategoriesSchema.COLUMN_PROFESSION_ID + " = ?";
+
+		Cursor cursor = super.query(ProfessionalSkillCategoriesSchema.TABLE_NAME, ProfessionalSkillCategoriesSchema.COLUMNS,
+									selection, selectionArgs, ProfessionalSkillCategoriesSchema.COLUMN_SKILL_CATEGORY_ID);
+		List<SkillCategory> list = new ArrayList<>(cursor.getCount());
+		SkillCategory skillCategory;
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int skillCategoryId = cursor.getInt(cursor.getColumnIndexOrThrow(
+					ProfessionalSkillCategoriesSchema.COLUMN_SKILL_CATEGORY_ID));
+			skillCategory = skillCategoryDao.getById(skillCategoryId);
+			list.add(skillCategory);
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return list;
 	}
 }

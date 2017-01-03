@@ -40,6 +40,7 @@ import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.combat.DiseaseDao;
 import com.madinnovations.rmu.data.dao.combat.serializers.AttackSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.CriticalResultSerializer;
 import com.madinnovations.rmu.data.dao.combat.serializers.DamageResultRowSerializer;
@@ -64,14 +65,13 @@ import com.madinnovations.rmu.data.dao.creature.serializers.CreatureArchetypeSer
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureCategorySerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureVarietySerializer;
-import com.madinnovations.rmu.data.dao.item.ItemDao;
-import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
-import com.madinnovations.rmu.data.dao.item.serializers.WeaponTemplateSerializer;
+import com.madinnovations.rmu.data.dao.object.ItemDao;
+import com.madinnovations.rmu.data.dao.object.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.object.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.object.serializers.WeaponTemplateSerializer;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
-import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
 import com.madinnovations.rmu.data.dao.spells.SpellSubTypeDao;
 import com.madinnovations.rmu.data.dao.spells.SpellTypeDao;
 import com.madinnovations.rmu.data.dao.spells.serializers.RealmSerializer;
@@ -89,6 +89,7 @@ import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
+import com.madinnovations.rmu.data.entities.combat.Disease;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
@@ -106,7 +107,6 @@ import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.Spell;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
-import com.madinnovations.rmu.data.entities.spells.SpellListType;
 import com.madinnovations.rmu.data.entities.spells.SpellSubType;
 import com.madinnovations.rmu.data.entities.spells.SpellType;
 import com.madinnovations.rmu.view.RMUAppException;
@@ -158,6 +158,7 @@ public class ImportExportRxHandler {
 	private DamageResultRowSerializer   damageResultRowSerializer =  new DamageResultRowSerializer();
 	private DamageTableDao              damageTableDao;
 	private DamageTableSerializer       damageTableSerializer = new DamageTableSerializer();
+	private DiseaseDao                  diseaseDao;
 	private ItemDao                     itemDao;
 	private ItemTemplateDao             itemTemplateDao;
 	private OutlookDao                  outlookDao;
@@ -178,7 +179,6 @@ public class ImportExportRxHandler {
 	private SpellSerializer             spellSerializer = new SpellSerializer();
 	private SpellListDao                spellListDao;
 	private SpellListSerializer         spellListSerializer = new SpellListSerializer();
-	private SpellListTypeDao            spellListTypeDao;
 	private SpellSubTypeDao             spellSubTypeDao;
 	private SpellTypeDao                spellTypeDao;
 	private TalentDao                   talentDao;
@@ -197,13 +197,12 @@ public class ImportExportRxHandler {
 						  CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
 						  CriticalResultDao criticalResultDao, CriticalTypeDao criticalTypeDao, CultureDao cultureDao,
 						  DamageResultDao damageResultDao, DamageResultRowDao damageResultRowDao,
-						  DamageTableDao damageTableDao, ItemDao itemDao, ItemTemplateDao itemTemplateDao,
+						  DamageTableDao damageTableDao, DiseaseDao diseaseDao, ItemDao itemDao, ItemTemplateDao itemTemplateDao,
 						  OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao, RealmDao realmDao,
 						  SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
 						  SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
-						  SpellListTypeDao spellListTypeDao, SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao,
-						  TalentDao talentDao, TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao,
-						  RMUDatabaseHelper helper) {
+						  SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao, TalentDao talentDao,
+						  TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao, RMUDatabaseHelper helper) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
 		this.campaignDao = campaignDao;
@@ -218,6 +217,7 @@ public class ImportExportRxHandler {
 		this.damageResultDao = damageResultDao;
 		this.damageResultRowDao = damageResultRowDao;
 		this.damageTableDao = damageTableDao;
+		this.diseaseDao = diseaseDao;
 		this.itemDao = itemDao;
 		this.itemTemplateDao = itemTemplateDao;
 		this.outlookDao = outlookDao;
@@ -230,7 +230,6 @@ public class ImportExportRxHandler {
 		this.specializationDao = specializationDao;
 		this.spellDao = spellDao;
 		this.spellListDao = spellListDao;
-		this.spellListTypeDao = spellListTypeDao;
 		this.spellSubTypeDao = spellSubTypeDao;
 		this.spellTypeDao = spellTypeDao;
 		this.talentDao = talentDao;
@@ -301,6 +300,17 @@ public class ImportExportRxHandler {
 								int numTypesRead = 0;
 								while (jsonReader.hasNext()) {
 									switch (jsonReader.nextName()) {
+										case Disease.JSON_NAME:
+											List<Disease> diseases = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Disease disease = gson.fromJson(jsonReader, Disease.class);
+												diseases.add(disease);
+											}
+											jsonReader.endArray();
+											diseaseDao.save(diseases, true);
+											diseases = null;
+											break;
 										case Size.JSON_NAME:
 											List<Size> sizes = new ArrayList<>();
 											jsonReader.beginArray();
@@ -600,18 +610,6 @@ public class ImportExportRxHandler {
 											Log.i(TAG, "Loaded " + creatureArchetypes.size() + " creatureArchetypes.");
 											creatureArchetypes = null;
 											break;
-										case SpellListType.JSON_NAME:
-											List<SpellListType> spellListTypes = new ArrayList<>();
-											jsonReader.beginArray();
-											while (jsonReader.hasNext()) {
-												SpellListType spellListType = gson.fromJson(jsonReader, SpellListType.class);
-												spellListTypes.add(spellListType);
-											}
-											jsonReader.endArray();
-											spellListTypeDao.save(spellListTypes, true);
-											Log.i(TAG, "Loaded " + spellListTypes.size() + " spellListTypes.");
-											spellListTypes = null;
-											break;
 										case SpellSubType.JSON_NAME:
 											List<SpellSubType> spellSubTypes = new ArrayList<>();
 											jsonReader.beginArray();
@@ -757,6 +755,8 @@ public class ImportExportRxHandler {
 							jsonWriter.beginObject()
 									.name(VERSION)
 									.value(RMUDatabaseHelper.DATABASE_VERSION)
+									.name(Disease.JSON_NAME)
+									.jsonValue(gson.toJson(diseaseDao.getAll()))
 									.name(Size.JSON_NAME)
 									.jsonValue(gson.toJson(sizeDao.getAll()))
 									.name(SkillCategory.JSON_NAME)
@@ -828,8 +828,6 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(campaignDao.getAll()))
 									.name(CreatureArchetype.JSON_NAME)
 									.jsonValue(gson.toJson(creatureArchetypeDao.getAll()))
-									.name(SpellListType.JSON_NAME)
-									.jsonValue(gson.toJson(spellListTypeDao.getAll()))
 							;
 							subscriber.onNext(80);
 							jsonWriter

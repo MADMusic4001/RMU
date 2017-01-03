@@ -15,9 +15,12 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.spell;
 
+import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -32,15 +35,18 @@ import rx.schedulers.Schedulers;
  */
 public class SpellListRxHandler {
 	private SpellListDao dao;
+	private SkillDao skillDao;
 
 	/**
 	 * Creates a new SpellListRxHandler
 	 *
-	 * @param dao  a SpellListDao instance
+	 * @param dao  a {@link SpellListDao} instance
+	 * @param skillDao  a {@link SkillDao} instance
 	 */
 	@Inject
-	public SpellListRxHandler(SpellListDao dao) {
+	public SpellListRxHandler(SpellListDao dao, SkillDao skillDao) {
 		this.dao = dao;
+		this.skillDao = skillDao;
 	}
 
 	/**
@@ -161,6 +167,31 @@ public class SpellListRxHandler {
 					}
 				}
 		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates a collection containing all of the Skills for spell lists.
+	 *
+	 * @return a collection of Skill instances.
+	 */
+	public Observable<Collection<Skill>> getSpellListSkills() {
+		return Observable.create(new Observable.OnSubscribe<Collection<Skill>>() {
+			@Override
+			public void call(Subscriber<? super Collection<Skill>> subscriber) {
+				try {
+					Collection<Skill> skills = new ArrayList<>(4);
+					skills.add(skillDao.getByName("Arcane Lists"));
+					skills.add(skillDao.getByName("Base/Open Lists"));
+					skills.add(skillDao.getByName("Closed Lists"));
+					skills.add(skillDao.getByName("Restricted Lists"));
+					subscriber.onNext(skills);
+				}
+				catch (Exception e) {
+					subscriber.onError(e);
+				}
+			}
+		}).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
 	}
 }

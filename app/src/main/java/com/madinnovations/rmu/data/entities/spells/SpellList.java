@@ -18,7 +18,11 @@ package com.madinnovations.rmu.data.entities.spells;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.view.RMUApp;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Spell list attributes
@@ -31,6 +35,7 @@ public class SpellList extends DatabaseObject {
 	private Realm         realm2        = null;
 	private Profession    profession    = null;
 	private SpellListType spellListType = null;
+	private Skill         skill         = null;
 
 	/**
 	 * Creates a new SpellList instance
@@ -56,6 +61,24 @@ public class SpellList extends DatabaseObject {
 		return name != null && !name.isEmpty() && realm != null && spellListType != null;
 	}
 
+	/**
+	 * Creates a String containing the contents of this instance for debugging.
+	 *
+	 * @return  a debug String containing the contents of this instance.
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("name", name)
+				.append("notes", notes)
+				.append("realm", realm)
+				.append("realm2", realm2)
+				.append("professionId", profession != null ? profession.getId() : null)
+				.append("spellListType", spellListType)
+				.append("skill", skill)
+				.toString();
+	}
+
 	@Override
 	public String toString() {
 		String formatString = RMUApp.getResourceUtils().getString(R.string.spell_list_format_string);
@@ -63,7 +86,7 @@ public class SpellList extends DatabaseObject {
 
 		if(profession != null) {
 			if(spellListType != null) {
-				result = String.format(formatString, name, spellListType.getName(), profession.getName());
+				result = String.format(formatString, name, spellListType, profession.getName());
 			}
 			else {
 				result = String.format(formatString, name, profession.getName(), "");
@@ -71,7 +94,7 @@ public class SpellList extends DatabaseObject {
 		}
 		else if (realm != null) {
 			if(spellListType != null) {
-				result = String.format(formatString, name, getSpellListType().getName(), realm.getName());
+				result = String.format(formatString, name, getSpellListType(), realm.getName());
 			}
 			else {
 				result = String.format(formatString, name, realm.getName(), "");
@@ -120,5 +143,11 @@ public class SpellList extends DatabaseObject {
 	}
 	public void setSpellListType(SpellListType spellListType) {
 		this.spellListType = spellListType;
+	}
+	public Skill getSkill() {
+		return skill;
+	}
+	public void setSkill(Skill skill) {
+		this.skill = skill;
 	}
 }

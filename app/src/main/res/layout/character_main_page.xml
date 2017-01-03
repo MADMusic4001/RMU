@@ -148,6 +148,15 @@
           android:id="@+id/realm_spinner"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:nextFocusDown="@+id/realm2_spinner"/>
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/input_label_realm2"/>
+      <Spinner
+          android:id="@+id/realm2_spinner"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:nextFocusDown="@+id/height_edit"/>
     </LinearLayout>
 

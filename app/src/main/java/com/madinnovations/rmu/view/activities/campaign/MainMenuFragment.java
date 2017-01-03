@@ -120,7 +120,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showCreatureCategories();
 								break;
 							case 2:
-//								((CampaignActivity)getActivity()).showCreatures();
+								((CampaignActivity)getActivity()).showCreatures();
 								break;
 							case 3:
 								((CampaignActivity)getActivity()).showCreatureTypes();
@@ -149,6 +149,9 @@ public class MainMenuFragment extends Fragment {
 								break;
 							case 4:
 								((CampaignActivity)getActivity()).showDamageResults();
+								break;
+							case 5:
+								((CampaignActivity)getActivity()).showDiseases();
 								break;
 						}
 						break;
@@ -196,12 +199,9 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showSpellLists();
 								break;
 							case 3:
-								((CampaignActivity)getActivity()).showSpellListTypes();
-								break;
-							case 4:
 								((CampaignActivity)getActivity()).showSpellSubTypes();
 								break;
-							case 5:
+							case 4:
 								((CampaignActivity)getActivity()).showSpellTypes();
 								break;
 						}
@@ -264,12 +264,13 @@ public class MainMenuFragment extends Fragment {
 		creatureItems.add(getString(R.string.manage_varieties));
 		creatureItems.add(getString(R.string.manage_outlooks));
 
-		List<String> combatItems = new ArrayList<>(5);
+		List<String> combatItems = new ArrayList<>(6);
 		combatItems.add(getString(R.string.manage_attacks));
 		combatItems.add(getString(R.string.manage_body_parts));
 		combatItems.add(getString(R.string.manage_critical_results));
 		combatItems.add(getString(R.string.manage_critical_types));
 		combatItems.add(getString(R.string.manage_damage_tables));
+		combatItems.add(getString(R.string.manage_diseases));
 
 		List<String> commonDataItems = new ArrayList<>(6);
 		commonDataItems.add(getString(R.string.manage_sizes));
@@ -283,11 +284,10 @@ public class MainMenuFragment extends Fragment {
 		itemItems.add(getString(R.string.manage_items));
 		itemItems.add(getString(R.string.manage_weapons));
 
-		List<String> spellItems = new ArrayList<>(6);
+		List<String> spellItems = new ArrayList<>(5);
 		spellItems.add(getString(R.string.manage_realms));
 		spellItems.add(getString(R.string.manage_spells));
 		spellItems.add(getString(R.string.manage_spell_lists));
-		spellItems.add(getString(R.string.manage_spell_list_types));
 		spellItems.add(getString(R.string.manage_spell_sub_types));
 		spellItems.add(getString(R.string.manage_spell_types));
 

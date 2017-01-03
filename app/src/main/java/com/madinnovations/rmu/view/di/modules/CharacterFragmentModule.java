@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.di.modules;
 import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterProfessionalKnacksPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterTalentsPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharactersFragment;
@@ -42,6 +43,7 @@ public class CharacterFragmentModule {
 	private CharacterMainPageFragment        characterMainPageFragment;
 	private CharactersFragment               charactersFragment;
 	private CharacterSkillsPageFragment      characterSkillsPageFragment;
+	private CharacterProfessionalKnacksPageFragment characterProfessionalKnacksPageFragment;
 	private CharacterTalentsPageFragment     characterTalentsPageFragment;
 	private CulturesFragment                 culturesFragment;
 	private ProfessionsFragment              professionsFragment;
@@ -64,6 +66,9 @@ public class CharacterFragmentModule {
 	}
 	public CharacterFragmentModule(CharacterSkillsPageFragment characterSkillsPageFragment) {
 		this.characterSkillsPageFragment = characterSkillsPageFragment;
+	}
+	public CharacterFragmentModule(CharacterProfessionalKnacksPageFragment characterProfessionalKnacksPageFragment) {
+		this.characterProfessionalKnacksPageFragment = characterProfessionalKnacksPageFragment;
 	}
 	public CharacterFragmentModule(CharacterTalentsPageFragment characterTalentsPageFragment) {
 		this.characterTalentsPageFragment = characterTalentsPageFragment;
@@ -112,6 +117,12 @@ public class CharacterFragmentModule {
 	CharacterSkillsPageFragment provideCharacterSkillsPageFragment() {
 		return this.characterSkillsPageFragment;
 	}
+	@Provides
+	@PerFragment
+	CharacterProfessionalKnacksPageFragment provideCharacterProfessionalKnacksPageFragment() {
+		return this.characterProfessionalKnacksPageFragment;
+	}
+	@Provides
 	@PerFragment
 	CharacterTalentsPageFragment provideCharacterTalentsPageFragment() {
 		return this.characterTalentsPageFragment;

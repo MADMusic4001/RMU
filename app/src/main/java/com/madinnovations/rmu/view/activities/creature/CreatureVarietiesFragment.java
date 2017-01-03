@@ -35,12 +35,14 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureVarietyRxHandler;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.ViewPagerAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -55,10 +57,11 @@ import rx.schedulers.Schedulers;
 public class CreatureVarietiesFragment extends Fragment implements TwoFieldListAdapter.GetValues<CreatureVariety>,
 		ViewPagerAdapter.Instantiator {
 	private static final String TAG = "CreatureVarietiesFrag";
-	private static final int NUM_PAGES = 3;
+	private static final int NUM_PAGES = 4;
 	private static final int MAIN_PAGE_INDEX = 0;
 	private static final int ATTACK_PAGE_INDEX = 1;
-	private static final int TALENTS_PAGE_INDEX = 2;
+	private static final int STATS_AND_SKILLS_PAGE_INDEX = 2;
+	private static final int TALENTS_PAGE_INDEX = 3;
 	@Inject
 	protected CreatureVarietyRxHandler           creatureVarietyRxHandler;
 	private TwoFieldListAdapter<CreatureVariety> listAdapter;
@@ -96,6 +99,9 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 		if(pagerAdapter.getFragment(ATTACK_PAGE_INDEX) != null) {
 			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(ATTACK_PAGE_INDEX)).commit();
 		}
+		if(pagerAdapter.getFragment(STATS_AND_SKILLS_PAGE_INDEX) != null) {
+			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(STATS_AND_SKILLS_PAGE_INDEX)).commit();
+		}
 		if(pagerAdapter.getFragment(TALENTS_PAGE_INDEX) != null) {
 			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(TALENTS_PAGE_INDEX)).commit();
 		}
@@ -116,6 +122,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				saveItem();
 			}
 			currentInstance = new CreatureVariety();
+			currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -144,6 +151,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					saveItem();
 				}
 				currentInstance = new CreatureVariety();
+				currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
@@ -169,6 +177,9 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				break;
 			case ATTACK_PAGE_INDEX:
 				fragment = CreatureVarietyAttackPageFragment.newInstance(this);
+				break;
+			case STATS_AND_SKILLS_PAGE_INDEX:
+				fragment = CreatureVarietyStatsAndSkillsPageFragment.newInstance(this);
 				break;
 			case TALENTS_PAGE_INDEX:
 				fragment = CreatureVarietyTalentsPageFragment.newInstance(this);
@@ -198,6 +209,12 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 			changed |= attackPageFragment.copyViewsToItem();
 		}
 
+		CreatureVarietyStatsAndSkillsPageFragment statsAndSkillsPageFragment =
+				(CreatureVarietyStatsAndSkillsPageFragment) pagerAdapter.getFragment(STATS_AND_SKILLS_PAGE_INDEX);
+		if(statsAndSkillsPageFragment != null) {
+			changed |= statsAndSkillsPageFragment.copyViewsToItem();
+		}
+
 		CreatureVarietyTalentsPageFragment talentsPageFragment = (CreatureVarietyTalentsPageFragment)pagerAdapter
 				.getFragment(TALENTS_PAGE_INDEX);
 		if(talentsPageFragment != null) {
@@ -218,6 +235,12 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				.getFragment(ATTACK_PAGE_INDEX);
 		if(attackPageFragment != null) {
 			attackPageFragment.copyItemToViews();
+		}
+
+		CreatureVarietyStatsAndSkillsPageFragment statsAndSkillsPageFragment =
+				(CreatureVarietyStatsAndSkillsPageFragment) pagerAdapter.getFragment(STATS_AND_SKILLS_PAGE_INDEX);
+		if(statsAndSkillsPageFragment != null) {
+			statsAndSkillsPageFragment.copyItemToViews();
 		}
 
 		CreatureVarietyTalentsPageFragment talentsPageFragment = (CreatureVarietyTalentsPageFragment)pagerAdapter
@@ -363,7 +386,11 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				isNew = false;
 				if (currentInstance == null) {
 					currentInstance = new CreatureVariety();
+					currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 					isNew = true;
+				}
+				else if(currentInstance.getRacialStatBonuses() == null || currentInstance.getRacialStatBonuses().isEmpty()) {
+					currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 				}
 				copyItemToViews();
 			}

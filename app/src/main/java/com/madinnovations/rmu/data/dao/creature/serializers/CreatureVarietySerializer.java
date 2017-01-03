@@ -31,6 +31,8 @@ import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -38,6 +40,7 @@ import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.io.IOException;
 import java.util.Map;
@@ -149,13 +152,21 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			out.endArray();
 		}
 
-		if (value.getSkillBonusesMap() != null && !value.getSkillBonusesMap().isEmpty()) {
+		if (value.getSkillBonusesList() != null && !value.getSkillBonusesList().isEmpty()) {
 			out.name(VarietySkillsSchema.TABLE_NAME);
 			out.beginArray();
-			for (Map.Entry<Skill, Short> entry : value.getSkillBonusesMap().entrySet()) {
+			for (SkillBonus skillBonus : value.getSkillBonusesList()) {
 				out.beginObject();
-				out.name(VarietySkillsSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
-				out.name(VarietySkillsSchema.COLUMN_SKILL_BONUS).value(entry.getValue());
+				if(skillBonus.getSkill() != null) {
+					out.name(VarietySkillsSchema.COLUMN_SKILL_ID).value(skillBonus.getSkill().getId());
+				}
+				else if(skillBonus.getSpecialization() != null) {
+					out.name(VarietySkillsSchema.COLUMN_SPECIALIZATION_ID).value(skillBonus.getSpecialization().getId());
+				}
+				else if(skillBonus.getSpellList() != null) {
+					out.name(VarietySkillsSchema.COLUMN_SPELL_LIST_ID).value(skillBonus.getSpellList().getId());
+				}
+				out.name(VarietySkillsSchema.COLUMN_SKILL_BONUS).value(skillBonus.getBonus());
 				out.endObject();
 			}
 			out.endArray();
@@ -233,6 +244,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 					break;
 				case COLUMN_CRITICAL_SIZE_MODIFIER_ID:
 					creatureVariety.setCriticalSizeModifier(new Size(in.nextInt()));
+					break;
 				case COLUMN_ATTACK_SEQUENCE:
 					creatureVariety.setAttackSequence(in.nextString());
 					break;
@@ -363,22 +375,25 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	private void readSkillBonuses(JsonReader in, CreatureVariety creatureVariety) throws IOException {
 		in.beginArray();
 		while(in.hasNext()) {
-			Skill newSkill = null;
-			short newBonus = 0;
+			SkillBonus skillBonus = new SkillBonus();
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case VarietySkillsSchema.COLUMN_SKILL_ID:
-						newSkill = new Skill(in.nextInt());
+						skillBonus.setSkill(new Skill(in.nextInt()));
+						break;
+					case VarietySkillsSchema.COLUMN_SPECIALIZATION_ID:
+						skillBonus.setSpecialization(new Specialization(in.nextInt()));
+						break;
+					case VarietySkillsSchema.COLUMN_SPELL_LIST_ID:
+						skillBonus.setSpellList(new SpellList(in.nextInt()));
 						break;
 					case VarietySkillsSchema.COLUMN_SKILL_BONUS:
-						newBonus = (short) in.nextInt();
+						skillBonus.setBonus((short)in.nextInt());
 						break;
 				}
 			}
-			if (newSkill != null) {
-				creatureVariety.getSkillBonusesMap().put(newSkill, newBonus);
-			}
+			creatureVariety.getSkillBonusesList().add(skillBonus);
 			in.endObject();
 		}
 		in.endArray();

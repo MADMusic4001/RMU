@@ -54,7 +54,8 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	@NonNull
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		View rowView;
 		ViewHolder holder;
 
@@ -70,17 +71,23 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 		}
 
 		SkillBonus skillBonus = getItem(position);
-		holder.currentInstance = skillBonus;
-		holder.skillNameView.setText(skillBonus.getSkill().getName());
-		holder.bonusEdit.setText(String.valueOf(skillBonus.getBonus()));
-
+		holder.skillBonus = skillBonus;
+		if(skillBonus != null) {
+			if (skillBonus.getSkill() != null) {
+				holder.skillNameView.setText(skillBonus.getSkill().getName());
+			}
+			else if (skillBonus.getSpecialization() != null) {
+				holder.skillNameView.setText(skillBonus.getSpecialization().getName());
+			}
+			holder.bonusEdit.setText(String.valueOf(skillBonus.getBonus()));
+		}
 		return rowView;
 	}
 
 	private class ViewHolder {
-		private SkillBonus currentInstance;
-		private TextView skillNameView;
-		private EditText bonusEdit;
+		private SkillBonus skillBonus;
+		private TextView   skillNameView;
+		private EditText   bonusEdit;
 
 		ViewHolder(TextView skillNameView, EditText bonusEdit) {
 			this.skillNameView = skillNameView;
@@ -94,7 +101,7 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 				@Override
 				public void onClick(View v) {
 					if(listView != null) {
-						int position = getPosition(currentInstance);
+						int position = getPosition(skillBonus);
 						listView.setItemChecked(position, !listView.isItemChecked(position));
 					}
 				}
@@ -113,7 +120,7 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 				@Override
 				public void onClick(View v) {
 					if(listView != null) {
-						int position = getPosition(currentInstance);
+						int position = getPosition(skillBonus);
 						listView.setItemChecked(position, !listView.isItemChecked(position));
 					}
 				}
@@ -158,9 +165,9 @@ public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
 						if(bonusEdit.length() > 0) {
 							try {
 								short newBonus = Short.valueOf(bonusEdit.getText().toString());
-								if (newBonus != currentInstance.getBonus()) {
-									currentInstance.setBonus(newBonus);
-									setSkillBonusHandler.setSkillBonus(currentInstance);
+								if (newBonus != skillBonus.getBonus()) {
+									skillBonus.setBonus(newBonus);
+									setSkillBonusHandler.setSkillBonus(skillBonus);
 								}
 								bonusEdit.setError(null);
 							}

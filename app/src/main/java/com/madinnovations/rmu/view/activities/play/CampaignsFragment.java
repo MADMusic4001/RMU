@@ -109,12 +109,12 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	private   CheckBox                     allowTalentsBeyondFirstCheckBox;
 	private   CheckBox                     openRoundsCheckBox;
 	private   CheckBox                     grittyPoisonsCheckBox;
-	private ListView                       specializationsListView;
-	private ListView                       restrictionsListView;
-	private boolean                        isNew = true;
-	private Campaign                       currentInstance = new Campaign();
-	private Map<Character, Boolean>        characterSelectedMap = new HashMap<>();
-	private Toast                          toast = null;
+	private   ListView                     specializationsListView;
+	private   ListView                     restrictionsListView;
+	private   boolean                      isNew = true;
+	private   Campaign                     currentInstance = new Campaign();
+	private   Map<Character, Boolean>      characterSelectedMap = new HashMap<>();
+	private   Toast                        toast = null;
 
 	// <editor-fold desc="method overrides/implementations">
 	@Nullable

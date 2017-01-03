@@ -20,8 +20,8 @@ import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 /**
  * Armor Attributes
  */
-public class ArmorTemplate extends Item {
-	public static final String JSON_NAME = "Armor";
+public class ArmorTemplate extends ItemTemplate {
+	public static final String JSON_NAME = "ArmorTemplate";
 	private float              smallCost          = 0.0f;
 	private float              mediumCost         = 0.0f;
 	private float              bigCost            = 0.0f;

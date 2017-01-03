@@ -40,6 +40,7 @@ import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.activities.combat.DamageResultsFragment;
+import com.madinnovations.rmu.view.activities.combat.DiseasesFragment;
 import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillsFragment;
@@ -50,12 +51,12 @@ import com.madinnovations.rmu.view.activities.creature.CreatureArchetypesFragmen
 import com.madinnovations.rmu.view.activities.creature.CreatureCategoriesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
+import com.madinnovations.rmu.view.activities.creature.CreaturesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
 import com.madinnovations.rmu.view.activities.play.StartCombatFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
-import com.madinnovations.rmu.view.activities.spell.SpellListTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
@@ -63,7 +64,6 @@ import com.madinnovations.rmu.view.activities.spell.SpellsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
 import com.madinnovations.rmu.view.di.components.ViewsComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
-import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
 import java.io.File;
 
@@ -91,12 +91,14 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private CharactersFragment         charactersFragment;
 	private CreatureArchetypesFragment creatureArchetypesFragment;
 	private CreatureCategoriesFragment creatureCategoriesFragment;
+	private CreaturesFragment          creaturesFragment;
 	private CreatureTypesFragment      creatureTypesFragment;
 	private CreatureVarietiesFragment  creatureVarietiesFragment;
 	private CriticalResultsFragment    criticalResultsFragment;
 	private CriticalTypesFragment      criticalTypesFragment;
 	private CulturesFragment           culturesFragment;
 	private DamageResultsFragment      damageResultsFragment;
+	private DiseasesFragment           diseasesFragment;
 	private ItemTemplatesFragment      itemTemplatesFragment;
 	private OutlooksFragment           outlooksFragment;
 	private ProfessionsFragment        professionsFragment;
@@ -107,7 +109,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private SkillsFragment             skillsFragment;
 	private SpecializationsFragment    specializationsFragment;
 	private SpellListsFragment         spellListsFragment;
-	private SpellListTypesFragment     spellListTypesFragment;
 	private SpellsFragment             spellsFragment;
 	private SpellSubTypesFragment      spellSubTypesFragment;
 	private SpellTypesFragment         spellTypesFragment;
@@ -289,6 +290,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 		replaceDetailFragment(creatureCategoriesFragment);
 	}
 
+	public void showCreatures() {
+		if(creaturesFragment == null) {
+			creaturesFragment = new CreaturesFragment();
+		}
+		replaceDetailFragment(creaturesFragment);
+	}
+
 	public void showCreatureTypes() {
 		if(creatureTypesFragment == null) {
 			creatureTypesFragment = new CreatureTypesFragment();
@@ -329,6 +337,13 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			damageResultsFragment = new DamageResultsFragment();
 		}
 		replaceDetailFragment(damageResultsFragment);
+	}
+
+	public void showDiseases() {
+		if(diseasesFragment == null) {
+			diseasesFragment = new DiseasesFragment();
+		}
+		replaceDetailFragment(diseasesFragment);
 	}
 
 	public void showItems() {
@@ -399,13 +414,6 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			spellListsFragment = new SpellListsFragment();
 		}
 		replaceDetailFragment(spellListsFragment);
-	}
-
-	public void showSpellListTypes() {
-		if(spellListTypesFragment == null) {
-			spellListTypesFragment = new SpellListTypesFragment();
-		}
-		replaceDetailFragment(spellListTypesFragment);
 	}
 
 	public void showSpells() {

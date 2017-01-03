@@ -63,6 +63,30 @@ public class Size extends DatabaseObject {
 		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), code, name);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+
+		Size size = (Size) o;
+
+		return getCode() != null ? getCode().equals(size.getCode()) : size.getCode() == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getCode() != null ? getCode().hashCode() : 0);
+		return result;
+	}
+
 	// Getters and setters
 	public String getCode() {
 		return code;

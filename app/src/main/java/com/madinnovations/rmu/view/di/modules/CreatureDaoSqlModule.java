@@ -16,10 +16,12 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureCategoryDao;
@@ -34,6 +36,7 @@ import com.madinnovations.rmu.data.dao.creature.impl.CreatureTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.CreatureVarietyDaoDbImpl;
 import com.madinnovations.rmu.data.dao.creature.impl.OutlookDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
+import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 
 import javax.inject.Singleton;
 
@@ -54,8 +57,8 @@ public class CreatureDaoSqlModule {
 		return new CreatureCategoryDaoDbImpl(helper, talentDao);
 	}
 	@Provides @Singleton
-	CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CreatureVarietyDao creatureVarietyDao) {
-		return new CreatureDaoDbImpl(helper, creatureVarietyDao);
+	CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CampaignDao campaignDao, CreatureVarietyDao creatureVarietyDao) {
+		return new CreatureDaoDbImpl(helper, campaignDao, creatureVarietyDao);
 	}
 	@Provides @Singleton
 	CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao,
@@ -65,9 +68,10 @@ public class CreatureDaoSqlModule {
 	@Provides @Singleton
 	CreatureVarietyDao provideCreatureVarietyDao(RMUDatabaseHelper helper, CreatureTypeDao creatureTypeDao, SizeDao sizeDao,
 												 RealmDao realmDao, OutlookDao outlookDao, SkillDao skillDao,
+												 SpecializationDao specializationDao, SpellListDao spellListDao,
 												 TalentDao talentDao, AttackDao attackDao) {
 		return new CreatureVarietyDaoDbImpl(helper, creatureTypeDao, sizeDao, realmDao, outlookDao, skillDao,
-				talentDao, attackDao);
+				specializationDao, spellListDao, talentDao, attackDao);
 	}
 	@Provides @Singleton
 	OutlookDao provideOutlookDao(RMUDatabaseHelper helper) {

@@ -29,6 +29,7 @@ import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.DiseaseRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
@@ -46,12 +47,9 @@ import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.WeaponTemplateRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.SpellListTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellSubTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellTypeRxHandler;
-
-import java.util.Collection;
 
 import javax.inject.Inject;
 
@@ -77,6 +75,7 @@ public class ReactiveUtils {
 		DAMAGE_RESULT_RX_HANDLER,
 		DAMAGE_RESULT_ROW_RX_HANDLER,
 		DAMAGE_TABLE_RX_HANDLER,
+		DISEASE_RX_HANDLER,
 		FILE_RX_HANDLER,
 		IMPORT_EXPORT_RX_HANDLER,
 		ITEM_RX_HANDLER,
@@ -91,12 +90,11 @@ public class ReactiveUtils {
 		SPECIALIZATION_RX_HANDLER,
 		SPELL_RX_HANDLER,
 		SPELL_LIST_RX_HANDLER,
-		SPELL_LIST_TYPE_RX_HANDLER,
 		SPELL_SUBTYPE_RX_HANDLER,
 		SPELL_TYPE_RX_HANDLER,
 		TALENT_RX_HANDLER,
 		TALENT_CATEGORY_RX_HANDLER,
-		WEAPON_TEMPLATE_RX_HANDLER;
+		WEAPON_TEMPLATE_RX_HANDLER
 	}
 	@Inject
 	protected AttackRxHandler            attackRxHandler;
@@ -129,6 +127,8 @@ public class ReactiveUtils {
 	@Inject
 	protected DamageTableRxHandler       damageTableRxHandler;
 	@Inject
+	protected DiseaseRxHandler           diseaseRxHandler;
+	@Inject
 	protected FileRxHandler              fileRxHandler;
 	@Inject
 	protected ImportExportRxHandler      importExportRxHandler;
@@ -157,8 +157,6 @@ public class ReactiveUtils {
 	@Inject
 	protected SpellListRxHandler         spellListRxHandler;
 	@Inject
-	protected SpellListTypeRxHandler     spellListTypeRxHandler;
-	@Inject
 	protected SpellSubTypeRxHandler      spellSubtypeRxHandler;
 	@Inject
 	protected SpellTypeRxHandler         spellTypeRxHandler;
@@ -167,7 +165,7 @@ public class ReactiveUtils {
 	@Inject
 	protected TalentCategoryRxHandler    talentCategoryRxHandler;
 	@Inject
-	protected WeaponTemplateRxHandler    weaponTemplateRxHandler;;
+	protected WeaponTemplateRxHandler    weaponTemplateRxHandler;
 
 	@Inject
 	public ReactiveUtils() {}
@@ -221,6 +219,9 @@ public class ReactiveUtils {
 			case DAMAGE_TABLE_RX_HANDLER:
 				result = damageTableRxHandler.getAll();
 				break;
+			case DISEASE_RX_HANDLER:
+				result = diseaseRxHandler.getAll();
+				break;
 			case FILE_RX_HANDLER:
 				result = null;
 				break;
@@ -262,9 +263,6 @@ public class ReactiveUtils {
 				break;
 			case SPELL_LIST_RX_HANDLER:
 				result = spellListRxHandler.getAll();
-				break;
-			case SPELL_LIST_TYPE_RX_HANDLER:
-				result = spellListTypeRxHandler.getAll();
 				break;
 			case SPELL_SUBTYPE_RX_HANDLER:
 				result = spellSubtypeRxHandler.getAll();

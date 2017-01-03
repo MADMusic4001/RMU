@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.activities.character;
 
 import android.annotation.SuppressLint;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -25,7 +26,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,12 +35,12 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
@@ -48,11 +48,13 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
 import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.character.AssignableCostsAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillRanksAdapter;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
+import com.madinnovations.rmu.view.widgets.TooltipDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +70,8 @@ import rx.Subscriber;
 /**
  * Handles interactions with the UI for character creation.
  */
-public class CharacterSkillsPageFragment extends Fragment implements SkillRanksAdapter.SkillRanksAdapterCallbacks {
+public class CharacterSkillsPageFragment extends Fragment implements SkillRanksAdapter.SkillRanksAdapterCallbacks,
+		TooltipDialogFragment.TooltipDialogListener {
 	private static final String TAG = "CharacterSkillsPageFrag";
 	private static final String DRAG_COST = "drag-cost";
 	private static final String HEADER_TAG = "Header%d";
@@ -77,14 +80,14 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	protected SkillRxHandler          skillRxHandler;
 	@Inject
 	protected SpecializationRxHandler specializationRxHandler;
-	private   View                    fragmentView;
 	private   SkillRanksAdapter       skillRanksAdapter;
 	private   CharactersFragment      charactersFragment;
 	private   LinearLayout            assignableCostLayoutRows;
 	private   ListView[]              skillCostsListViews = new ListView[0];
 	private   SkillCategory[]         skillCategories = new SkillCategory[0];
 	private   EditText                currentDpText;
-	private   List<Skill>             skillList = null;
+	private   List<DatabaseObject>    skillList = null;
+	private   TooltipDialogFragment   tooltipDialogFragment = null;
 
 	// TODO: Check to see if Lore Skill selection on Skills UI is used to determine "Other Lores" when showing Culture Ranks in Character Selection Screen and update label if necessary.
 
@@ -109,7 +112,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
-		fragmentView = inflater.inflate(R.layout.character_skills_page, container, false);
+		View fragmentView = inflater.inflate(R.layout.character_skills_page, container, false);
 
 		currentDpText = (EditText) fragmentView.findViewById(R.id.current_dp_text);
 		initSkillCostsListView(fragmentView);
@@ -163,7 +166,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				else {
 					cost = costGroup.getAdditionalCost();
 				}
-				if (cost < character.getCurrentDevelopmentPoints() && (getRanksPurchasedThisLevel(skillRanks) < 2 ||
+				if (cost <= character.getCurrentDevelopmentPoints() && (getRanksPurchasedThisLevel(skillRanks) < 2 ||
 						character.getCampaign().isIntenseTrainingAllowed())) {
 					if (skillRanks.getSkill() != null) {
 						purchasedThisLevel += (short)1;
@@ -181,6 +184,16 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 
 						result += (short)1;
 						character.getSpecializationRanks().put(skillRanks.getSpecialization(), result);
+						character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
+						currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+						charactersFragment.saveItem();
+					}
+					else if(skillRanks.getSpellList() != null) {
+						purchasedThisLevel += (short)1;
+						character.getCurrentLevelSpellListRanks().put(skillRanks.getSpellList(), purchasedThisLevel);
+
+						result += (short)1;
+						character.getSpellListRanks().put(skillRanks.getSpellList(), result);
 						character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() - cost));
 						currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 						charactersFragment.saveItem();
@@ -252,6 +265,28 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 				changed = true;
 			}
+			else if (skillRanks.getSpellList() != null) {
+				purchasedThisLevel -= (short) 1;
+				if (purchasedThisLevel > 0) {
+					character.getCurrentLevelSpellListRanks()
+							.put(skillRanks.getSpellList(), purchasedThisLevel);
+				}
+				else {
+					character.getCurrentLevelSpellListRanks().remove(skillRanks.getSpellList());
+				}
+
+				result -= (short) 1;
+				if (result > 0) {
+					character.getSpellListRanks().put(skillRanks.getSpellList(), result);
+				}
+				else {
+					result = 0;
+					character.getSpellListRanks().remove(skillRanks.getSpellList());
+				}
+				character.setCurrentDevelopmentPoints((short) (character.getCurrentDevelopmentPoints() + cost));
+				currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
+				changed = true;
+			}
 		}
 		else if(character.getCurrentLevel() == 0 && purchasedCultureRanks > 0) {
 			result = sellCultureRank(skillRanks);
@@ -272,6 +307,9 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		if(skillRanks.getSpecialization() != null) {
 			baseSkill = skillRanks.getSpecialization().getSkill();
 		}
+		else if(skillRanks.getSpellList() != null) {
+			baseSkill = skillRanks.getSpellList().getSkill();
+		}
 		costGroup = character.getSkillCosts().get(baseSkill);
 		if(costGroup == null && character.getProfession() != null) {
 			costGroup = character.getProfession().getSkillCosts().get(baseSkill);
@@ -291,6 +329,11 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	@Override
 	public short getRanks(SkillRanks skillRanks) {
 		return getCurrentRanks(skillRanks);
+	}
+
+	@Override
+	public void onOk(DialogFragment dialog) {
+		tooltipDialogFragment = null;
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -317,12 +360,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			Character character = charactersFragment.getCurrentInstance();
 			currentDpText.setText((String.valueOf(character.getCurrentDevelopmentPoints())));
 			copyAssignableCosts();
-			if (skillList == null) {
-				initSkillRanksListView(fragmentView);
-			}
-			else {
-				copySkillRanksToView();
-			}
+			loadSkills();
 			changeProfession();
 		}
 	}
@@ -365,65 +403,66 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		skillRanksAdapter = new SkillRanksAdapter(getActivity(), this);
 		skillRanksListView.setAdapter(skillRanksAdapter);
 
-		if(skillList != null) {
-			copySkillRanksToView();
-		}
-		else {
-			skillRxHandler.getCharacterPurchasableSkills()
-					.subscribe(new Subscriber<Collection<Skill>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception caught getting all purchasable Skill instances.", e);
-						}
-						@SuppressWarnings("unchecked")
-						@Override
-						public void onNext(Collection<Skill> skillCollection) {
-							if(skillCollection instanceof List) {
-								skillList = (List)skillCollection;
-							}
-							else {
-								skillList = new ArrayList<>(skillCollection);
-							}
-							copySkillRanksToView();
-						}
-					});
-		}
+		loadSkills();
 
-		skillRanksListView.setOnLongClickListener(new View.OnLongClickListener() {
+		skillRanksListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public boolean onLongClick(View v) {
-				TextView popupContent = new TextView(getActivity());
-				popupContent.setMinimumWidth(layout.getWidth()/2);
-				popupContent.setMinimumHeight(layout.getHeight()/2);
-				SkillRanks skillRanks = ((SkillRanksAdapter.ViewHolder)v.getTag()).getSkillRanks();
-				popupContent.setText(skillRanks.getSkill().getDescription());
-				PopupWindow popupWindow = new PopupWindow(popupContent);
-				popupWindow.showAtLocation(fragmentView, Gravity.CENTER, 0, 0);
-				return true;
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if(position != AdapterView.INVALID_POSITION) {
+					SkillRanks skillRanks = skillRanksAdapter.getItem(position);
+					if (skillRanks != null) {
+						String content = null;
+						if(skillRanks.getSkill() != null) {
+							content = skillRanks.getSkill().getDescription();
+						}
+						else if(skillRanks.getSpecialization() != null) {
+							content = skillRanks.getSpecialization().getDescription();
+						}
+						else if(skillRanks.getSpellList() != null) {
+							content = skillRanks.getSpellList().getName() + System.getProperty("line.separator")
+									+ skillRanks.getSpellList().getNotes();
+						}
+						if(content != null && tooltipDialogFragment == null) {
+							tooltipDialogFragment = new TooltipDialogFragment();
+							tooltipDialogFragment.setListener(CharacterSkillsPageFragment.this);
+							tooltipDialogFragment.setMessage(content);
+							tooltipDialogFragment.show(getChildFragmentManager(), "tooltip");
+						}
+					}
+				}
+				return false;
 			}
 		});
+
 		registerForContextMenu(skillRanksListView);
 	}
 
 	private void copySkillRanksToView() {
 		List<SkillRanks> ranksList = new ArrayList<>();
-		for (Skill skill : skillList) {
+		for (DatabaseObject databaseObject: skillList) {
 			SkillRanks skillRanks;
-			if(!skill.isRequiresSpecialization()) {
-				skillRanks = new SkillRanks();
-				skillRanks.setSkill(skill);
-				ranksList.add(skillRanks);
-			}
-			else {
-				for (Specialization specialization : skill.getSpecializations()) {
-					if(!specialization.isCreatureOnly()) {
-						skillRanks = new SkillRanks();
-						skillRanks.setSpecialization(specialization);
-						ranksList.add(skillRanks);
+			if(databaseObject instanceof Skill) {
+				Skill skill = (Skill)databaseObject;
+				if (!skill.isRequiresSpecialization() && !skill.isCreatureOnly()) {
+					skillRanks = new SkillRanks();
+					skillRanks.setSkill(skill);
+					ranksList.add(skillRanks);
+				}
+				else if(skill.isRequiresSpecialization() && !skill.isCreatureOnly()) {
+					for (Specialization specialization : skill.getSpecializations()) {
+						if (!specialization.isCreatureOnly()) {
+							skillRanks = new SkillRanks();
+							skillRanks.setSpecialization(specialization);
+							ranksList.add(skillRanks);
+						}
 					}
 				}
+			}
+			else if (databaseObject instanceof SpellList) {
+				SpellList spellList = (SpellList)databaseObject;
+				skillRanks = new SkillRanks();
+				skillRanks.setSpellList(spellList);
+				ranksList.add(skillRanks);
 			}
 		}
 		//noinspection unchecked
@@ -444,12 +483,15 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		else if(skillRanks.getSpecialization() != null) {
 			baseSkill = skillRanks.getSpecialization().getSkill();
 		}
+		else if(skillRanks.getSpellList() != null) {
+			baseSkill = skillRanks.getSpellList().getSkill();
+		}
 
 		if(character.getCulture() != null && baseSkill != null) {
 			Short cultureRanks = character.getCulture().getSkillRanks().get(baseSkill);
 			if (cultureRanks != null) {
 				short purchasedRanks = 0;
-				for(Map.Entry<Object, Short> entry : character.getPurchasedCultureRanks().entrySet()) {
+				for(Map.Entry<DatabaseObject, Short> entry : character.getPurchasedCultureRanks().entrySet()) {
 					if(isSkillOrSpecialization(baseSkill, entry.getKey())) {
 						if(entry.getValue() != null) {
 							purchasedRanks += entry.getValue();
@@ -462,7 +504,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				if(baseSkill.isLore()) {
 					cultureRanks = character.getCulture().getOtherLoreRanks();
 					short purchasedRanks = 0;
-					for(Map.Entry<Object, Short> entry : character.getPurchasedCultureRanks().entrySet()) {
+					for(Map.Entry<DatabaseObject, Short> entry : character.getPurchasedCultureRanks().entrySet()) {
 						if(isSkillOrSpecialization(baseSkill, entry.getKey())) {
 							if(entry.getValue() != null) {
 								purchasedRanks += entry.getValue();
@@ -485,6 +527,10 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		}
 		else if(skillOrSpecialization instanceof Specialization &&
 				skill.equals(((Specialization)skillOrSpecialization).getSkill())) {
+			result = true;
+		}
+		else if(skillOrSpecialization instanceof SpellList
+				&& skill.equals(((SpellList)skillOrSpecialization).getSkill())) {
 			result = true;
 		}
 
@@ -805,6 +851,14 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 			character.getSkillRanks().put(skillRanks.getSkill(), result);
 			charactersFragment.saveItem();
 		}
+		else if(skillRanks.getSpellList() != null) {
+			purchasedCultureRanks += (short)1;
+			character.getPurchasedCultureRanks().put(skillRanks.getSpellList(), purchasedCultureRanks);
+
+			result += 1;
+			character.getSpellListRanks().put(skillRanks.getSpellList(), result);
+			charactersFragment.saveItem();
+		}
 
 		skillRanksAdapter.notifyDataSetChanged();
 
@@ -857,6 +911,26 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				}
 			}
 		}
+		else if(skillRanks.getSpellList() != null) {
+			purchasedRanks -= (short)1;
+			if(purchasedRanks > 0) {
+				character.getPurchasedCultureRanks().put(skillRanks.getSpellList(), purchasedRanks);
+			}
+			else {
+				character.getPurchasedCultureRanks().remove(skillRanks.getSpellList());
+			}
+			changed = true;
+
+			if(result > 0) {
+				result -= (short)1;
+				if(result > 0) {
+					character.getSpellListRanks().put(skillRanks.getSpellList(), result);
+				}
+				else {
+					character.getSpellListRanks().remove(skillRanks.getSpellList());
+				}
+			}
+		}
 
 		if(changed) {
 			charactersFragment.saveItem();
@@ -876,8 +950,14 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				purchasedThisLevel = tempShort;
 			}
 		}
-		else {
+		else if(skillRanks.getSpecialization() != null) {
 			Short tempShort = character.getCurrentLevelSpecializationRanks().get(skillRanks.getSpecialization());
+			if(tempShort != null) {
+				purchasedThisLevel = tempShort;
+			}
+		}
+		else if(skillRanks.getSpellList() != null) {
+			Short tempShort = character.getCurrentLevelSpellListRanks().get(skillRanks.getSpellList());
 			if(tempShort != null) {
 				purchasedThisLevel = tempShort;
 			}
@@ -902,6 +982,12 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 				purchasedRanks = ranks;
 			}
 		}
+		else if(skillRanks.getSpellList() != null) {
+			Short ranks = character.getSpellListRanks().get(skillRanks.getSpellList());
+			if (ranks != null) {
+				purchasedRanks = ranks;
+			}
+		}
 
 		return purchasedRanks;
 	}
@@ -917,11 +1003,39 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 		else if(skillRanks.getSpecialization() != null) {
 			tempShort = character.getPurchasedCultureRanks().get(skillRanks.getSpecialization());
 		}
+		else if(skillRanks.getSpellList() != null) {
+			tempShort = character.getPurchasedCultureRanks().get(skillRanks.getSpellList());
+		}
 
 		if(tempShort != null) {
 			purchasedRanks = tempShort;
 		}
 
 		return purchasedRanks;
+	}
+
+	private void loadSkills() {
+		if(charactersFragment != null && charactersFragment.getCurrentInstance() != null) {
+			skillRxHandler.getCharacterUsableSkills(charactersFragment.getCurrentInstance())
+					.subscribe(new Subscriber<Collection<DatabaseObject>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "Exception caught getting all purchasable Skill instances.", e);
+						}
+						@SuppressWarnings("unchecked")
+						@Override
+						public void onNext(Collection<DatabaseObject> skillCollection) {
+							if (skillCollection instanceof List) {
+								skillList = (List) skillCollection;
+							}
+							else {
+								skillList = new ArrayList<>(skillCollection);
+							}
+							copySkillRanksToView();
+						}
+					});
+		}
 	}
 }

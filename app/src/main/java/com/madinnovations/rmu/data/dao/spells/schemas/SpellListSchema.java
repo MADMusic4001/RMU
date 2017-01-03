@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.spells.schemas;
 
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
  * Database schema data for the spell_lists table
@@ -23,13 +24,14 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 public interface SpellListSchema {
 	String TABLE_NAME = "spell_lists";
 
-	String COLUMN_ID                 = "id";
-	String COLUMN_NAME               = "name";
-	String COLUMN_NOTES              = "notes";
-	String COLUMN_REALM_ID           = "realmId";
-	String COLUMN_REALM2_ID          = "realm2Id";
-	String COLUMN_PROFESSION_ID      = "professionId";
-	String COLUMN_SPELL_LIST_TYPE_ID = "spellListTypeId";
+	String COLUMN_ID                   = "id";
+	String COLUMN_NAME                 = "name";
+	String COLUMN_NOTES                = "notes";
+	String COLUMN_REALM_ID             = "realmId";
+	String COLUMN_REALM2_ID            = "realm2Id";
+	String COLUMN_PROFESSION_ID        = "professionId";
+	String COLUMN_SPELL_LIST_TYPE_NAME = "spellListTypeName";
+	String COLUMN_SKILL_ID             = "skillId";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -37,16 +39,17 @@ public interface SpellListSchema {
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
 			+ COLUMN_NOTES + " TEXT, "
-			+ COLUMN_REALM_ID + " INTEGER NOT NULL, "
-			+ COLUMN_REALM2_ID + " INTEGER, "
-			+ COLUMN_PROFESSION_ID + " INTEGER, "
-			+ COLUMN_SPELL_LIST_TYPE_ID + " INTEGER NOT NULL, "
-			+ "FOREIGN KEY (" + COLUMN_REALM_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_REALM2_ID + ") REFERENCES " + RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_PROFESSION_ID + ") REFERENCES " + ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_SPELL_LIST_TYPE_ID + ") REFERENCES " + SpellListTypeSchema.TABLE_NAME + "(" + SpellListTypeSchema.COLUMN_ID + ")"
+			+ COLUMN_REALM_ID + " INTEGER NOT NULL REFERENCES "
+				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ COLUMN_REALM2_ID + " INTEGER REFERENCES "
+				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ COLUMN_PROFESSION_ID + " INTEGER REFERENCES "
+				+ ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
+			+ COLUMN_SPELL_LIST_TYPE_NAME + " TEXT NOT NULL, "
+			+ COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NAME, COLUMN_NOTES, COLUMN_REALM_ID, COLUMN_REALM2_ID,
-			COLUMN_PROFESSION_ID, COLUMN_SPELL_LIST_TYPE_ID};
+			COLUMN_PROFESSION_ID, COLUMN_SPELL_LIST_TYPE_NAME, COLUMN_SKILL_ID};
 }

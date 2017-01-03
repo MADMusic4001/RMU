@@ -57,6 +57,13 @@
   <string name="toast_creature_category_deleted">Creature Category deleted.</string>
   <string name="toast_creature_category_delete_failed">Creature Category deletion failed.</string>
 
+  <string name="toast_creature_load_failed">Failed to load Creatures</string>
+  <string name="toast_creature_loaded">%1$d Creatures loaded.</string>
+  <string name="toast_creature_saved">Creature saved.</string>
+  <string name="toast_creature_save_failed">Creature save failed.</string>
+  <string name="toast_creature_deleted">Creature deleted.</string>
+  <string name="toast_creature_delete_failed">Creature deletion failed.</string>
+
   <string name="toast_creature_types_load_failed">Failed to load Creature Types</string>
   <string name="toast_creature_types_loaded">%1$d Creature Types loaded.</string>
   <string name="toast_creature_type_saved">Creature Type saved.</string>
@@ -119,6 +126,13 @@
   <string name="toast_damage_table_save_failed">Damage Table save failed.</string>
   <string name="toast_damage_table_deleted">Damage Table deleted.</string>
   <string name="toast_damage_table_delete_failed">Damage Table deletion failed.</string>
+
+  <string name="toast_diseases_load_failed">Failed to load Diseases</string>
+  <string name="toast_diseases_loaded">%1$d Diseases loaded.</string>
+  <string name="toast_disease_saved">Disease saved.</string>
+  <string name="toast_disease_save_failed">Disease save failed.</string>
+  <string name="toast_disease_deleted">Disease deleted.</string>
+  <string name="toast_disease_delete_failed">Disease deletion failed.</string>
 
   <string name="toast_items_load_failed">Failed to load Items</string>
   <string name="toast_items_loaded">%1$d Items loaded.</string>

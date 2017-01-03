@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.utils;
 
 import android.graphics.PointF;
+import android.util.Log;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,6 +26,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class PolygonUtils {
+	private static final String TAG = "PolygonUtils";
 
 	/**
 	 * Creates a new PolygonUtils instance
@@ -61,6 +63,42 @@ public class PolygonUtils {
 		}
 
 		return windingNumber == 0;
+	}
+
+	public PointF hexRound(PointF pointF) {
+		Log.d(TAG, "hexRound: pointf = " + pointF);
+		return cubeToHex(cubeRound(hexToCube(pointF)));
+	}
+
+	public Cube cubeRound(Cube cube) {
+		float rx = Math.round(cube.x);
+		float ry = Math.round(cube.y);
+		float rz = Math.round(cube.z);
+
+		float xDiff = Math.abs(rx - cube.x);
+		float yDiff = Math.abs(ry - cube.y);
+		float zDiff = Math.abs(rz - cube.z);
+
+		if(xDiff > yDiff && xDiff > zDiff) {
+			rx = -ry-rz;
+		}
+		else if(yDiff > zDiff) {
+			ry = -rx-rz;
+		}
+		else {
+			rz = -rx-ry;
+		}
+
+		return new Cube(rx, ry, rz);
+	}
+
+	public PointF cubeToHex(Cube cube) {
+		Log.d(TAG, "cubeToHex: cube = " + cube);
+		return new PointF(cube.x, cube.z);
+	}
+
+	public Cube hexToCube(PointF pointF) {
+		return new Cube(pointF.x, -pointF.x - pointF.y, pointF.y);
 	}
 
 	private float isLeft(PointF point, PointF point1, PointF point2) {

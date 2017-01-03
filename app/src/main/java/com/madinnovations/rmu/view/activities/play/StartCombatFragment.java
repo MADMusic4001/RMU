@@ -19,9 +19,11 @@ import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -34,6 +36,8 @@ import android.widget.ListView;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.entities.play.CombatSetup;
 import com.madinnovations.rmu.view.HexView;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
@@ -48,15 +52,18 @@ import rx.Subscriber;
 /**
  * Handles interactions with the UI for combat.
  */
-public class StartCombatFragment extends Fragment {
+public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 	private static final String TAG = "StartCombatFragment";
 	private static final String DRAG_CHARACTER = "drag-character";
 	private static final String DRAG_OPPONENT = "drag-opponent";
 	@Inject
-	protected CharacterRxHandler characterRxHandler;
-	private   HexView            hexView;
-	private   ListView           charactersListView;
-	private   ListView           opponentsListView;
+	protected CharacterRxHandler    characterRxHandler;
+	private   HexView               hexView;
+	private   ListView              charactersListView;
+	private   ListView              opponentsListView;
+	private   Collection<Character> characters = null;
+	private   Collection<Creature>  opponents = null;
+	private   CombatSetup           currentInstance = new CombatSetup();
 	// TODO: Reroll critical option if player successfully used Sense Weakness talent at the beginning of combat.
 	// TODO: Add riposte option if player with Riposte talent uses all his OB to parry and parry is effective (no hits delivered). Riposte is weapon skill specific.
 	// TODO: Add Opportunistic Strike option when player has the talent and his opponent fumbles.
@@ -80,33 +87,132 @@ public class StartCombatFragment extends Fragment {
 		return layout;
 	}
 
+	@Override
+	public CombatSetup getCombatSetup() {
+		return currentInstance;
+	}
+
 	private void initHexView(View layout) {
 		hexView = (HexView)layout.findViewById(R.id.hex_view);
+		hexView.setCallbacks(this);
 
 		hexView.setOnDragListener(new View.OnDragListener() {
-			@Override
-			public boolean onDrag(View view, DragEvent dragEvent) {
-				final int action = dragEvent.getAction();
+			private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
+			private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+			private Drawable normalShape = hexView.getBackground();
+			private PointF lastCenterPoint = null;
+			private Character character = null;
 
+			@Override
+			public boolean onDrag(View v, DragEvent event) {
+				final int action = event.getAction();
+				PointF pointf = new PointF(event.getX(), event.getY());
+
+				if(character == null && event.getClipData() != null) {
+					character = getCharacter(event);
+				}
+				if(event.getClipDescription() != null && DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
+					Log.d(TAG, "onDrag: event = " + event);
+					((HexView)v).setHighlightHex(pointf);
+					v.invalidate();
+				}
 				switch (action) {
 					case DragEvent.ACTION_DRAG_STARTED:
+						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
+								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
+							v.setBackground(targetShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
 						break;
 					case DragEvent.ACTION_DRAG_ENTERED:
+						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
+								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
+							v.setBackground(hoverShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
 						break;
 					case DragEvent.ACTION_DRAG_LOCATION:
-						if(hexView.setHighlightHex(new PointF(dragEvent.getX(), dragEvent.getY()))) {
-							hexView.invalidate();
+						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
+								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
 						}
 						break;
 					case DragEvent.ACTION_DRAG_EXITED:
+						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
+								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
+							v.setBackground(targetShape);
+							v.invalidate();
+						}
+						else {
+							return false;
+						}
 						break;
 					case DragEvent.ACTION_DROP:
+						if(event.getClipDescription() != null) {
+							pointf = ((HexView)v).getCenterPoint(pointf);
+							if (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
+								ClipData.Item item = event.getClipData().getItemAt(0);
+								int characterId = Integer.valueOf(item.getText().toString());
+								for (Character aCharacter : characters) {
+									if (aCharacter.getId() == characterId) {
+										character = aCharacter;
+										break;
+									}
+								}
+								if(character != null) {
+									currentInstance.getCharacterLocations().put(character, pointf);
+								}
+							} else if(DRAG_OPPONENT.equals(event.getClipDescription().getLabel())) {
+								ClipData.Item item = event.getClipData().getItemAt(0);
+								int opponentId = Integer.valueOf(item.getText().toString());
+								Creature opponent = null;
+								for (Creature anOpponent : opponents) {
+									if (anOpponent.getId() == opponentId) {
+										opponent = anOpponent;
+										break;
+									}
+								}
+								currentInstance.getOpponentLocation().put(opponent, pointf);
+							}
+							v.setBackground(normalShape);
+							v.invalidate();
+						}
+
+						else {
+							return false;
+						}
 						break;
 					case DragEvent.ACTION_DRAG_ENDED:
+						v.setBackground(normalShape);
+						v.invalidate();
 						break;
 				}
+				return true;
+			}
 
-				return false;
+			private Character getCharacter(DragEvent event) {
+				Character character = null;
+				if(event.getClipData() != null) {
+					ClipData.Item item = event.getClipData().getItemAt(0);
+					int characterId = Integer.valueOf(item.getText().toString());
+					for (Character aCharacter : characters) {
+						if (aCharacter.getId() == characterId) {
+							character = aCharacter;
+							break;
+						}
+					}
+				}
+				return character;
+			}
+
+			private void setCharacterLoc(Character character, PointF pointf) {
+				PointF centerPoint = hexView.getCenterPoint(pointf);
+				currentInstance.getCharacterLocations().put(character, centerPoint);
 			}
 		});
 	}
@@ -116,21 +222,30 @@ public class StartCombatFragment extends Fragment {
 		final ArrayAdapter<Character> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		charactersListView.setAdapter(adapter);
 
-		characterRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Character>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "onError: Exception caught getting all Character instances", e);
-					}
-					@Override
-					public void onNext(Collection<Character> characters) {
-						adapter.clear();
-						adapter.addAll(characters);
-						adapter.notifyDataSetChanged();
-					}
-				});
+		if(characters != null) {
+			adapter.clear();
+			adapter.addAll(characters);
+			adapter.notifyDataSetChanged();
+		}
+		else {
+			characterRxHandler.getAll()
+					.subscribe(new Subscriber<Collection<Character>>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "onError: Exception caught getting all Character instances", e);
+						}
+						@Override
+						public void onNext(Collection<Character> charactersCollection) {
+							characters = charactersCollection;
+							adapter.clear();
+							adapter.addAll(charactersCollection);
+							adapter.notifyDataSetChanged();
+						}
+					});
+		}
+
 		charactersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {

@@ -43,15 +43,12 @@ import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.AttackBonus;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.AttackBonusListAdapter;
 import com.madinnovations.rmu.view.adapters.combat.AttacksAdapter;
 import com.madinnovations.rmu.view.adapters.combat.CriticalCodesListAdapter;
-import com.madinnovations.rmu.view.adapters.common.SkillBonusListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
@@ -72,12 +69,10 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietyAttackPageFragment extends Fragment implements AttackBonusListAdapter.SetAttackBonus,
-		SkillBonusListAdapter.SetSkillBonus, EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+		EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	private static final String TAG = "CVAttackPageFragment";
 	private static final String DRAG_ADD_ATTACK = "add-attack";
 	private static final String DRAG_REMOVE_ATTACK = "remove-attack";
-	private static final String DRAG_ADD_SKILL = "add-skill";
-	private static final String DRAG_REMOVE_SKILL = "remove-skill";
 	@Inject
 	protected AttackRxHandler           attackRxHandler;
 	@Inject
@@ -86,17 +81,13 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	protected SkillRxHandler            skillRxHandler;
 	@Inject
 	protected AttacksAdapter            attacksListAdapter;
-	protected ArrayAdapter<Skill>       skillsListAdapter;
 	@Inject
 	protected CriticalCodesListAdapter  criticalCodesListAdapter;
 	protected AttackBonusListAdapter    attackBonusesListAdapter;
-	protected SkillBonusListAdapter     skillBonusesListAdapter;
 	private   ListView                  attacksList;
 	private   ListView                  attackBonusesList;
 	private   Spinner                   criticalSizeSpinner;
 	private   EditText                  attackSequenceEdit;
-	private   ListView                  skillsList;
-	private   ListView                  skillBonusesList;
 	private   ListView                  criticalCodesList;
 	private   CreatureVarietiesFragment varietiesFragment;
 	private   Size                      noSizeModifier = new Size();
@@ -128,8 +119,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 																   R.id.critical_size_spinner, noSizeModifier);
 		attackSequenceEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.attack_sequence_edit,
 													R.string.validation_creature_variety_attack_sequence_required);
-		initSkillsList(layout);
-		initSkillBonusesList(layout);
+		initCriticalCodesList(layout);
 		initCriticalCodesList(layout);
 
 		setHasOptionsMenu(true);
@@ -217,8 +207,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		CriticalCode newCriticalCode;
 		Map<Attack, Short> newAttackMap;
 		AttackBonus newAttackBonus;
-		Map<Skill, Short> newSkillMap;
-		SkillBonus newSkillBonus;
 		String newString;
 		Size newSize;
 
@@ -245,30 +233,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 				changed = true;
 			}
 			creatureVariety.setAttackBonusesMap(newAttackMap);
-
-			newSkillMap = new HashMap<>(skillBonusesListAdapter.getCount());
-			for (int i = 0; i < skillBonusesListAdapter.getCount(); i++) {
-				newSkillBonus = skillBonusesListAdapter.getItem(i);
-				if(newSkillBonus != null) {
-					if (creatureVariety.getSkillBonusesMap().containsKey(
-							newSkillBonus.getSkill())) {
-						if (!creatureVariety
-								.getSkillBonusesMap()
-								.get(newSkillBonus.getSkill())
-								.equals(newSkillBonus.getBonus())) {
-							changed = true;
-						}
-						creatureVariety.getSkillBonusesMap().remove(newSkillBonus.getSkill());
-					} else {
-						changed = true;
-					}
-					newSkillMap.put(newSkillBonus.getSkill(), newSkillBonus.getBonus());
-				}
-			}
-			if (!creatureVariety.getSkillBonusesMap().isEmpty() && !newSkillMap.isEmpty()) {
-				changed = true;
-			}
-			creatureVariety.setSkillBonusesMap(newSkillMap);
 
 			checkedItemPositions = criticalCodesList.getCheckedItemPositions();
 			if (checkedItemPositions != null) {
@@ -300,14 +264,18 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 
 		newSize = (Size)criticalSizeSpinner.getSelectedItem();
-		if((newSize == null || newSize.equals(noSizeModifier)) && creatureVariety.getCriticalSizeModifier() != null) {
+		Log.d(TAG, "copyViewsToItem: newSize = " + newSize);
+		Log.d(TAG, "copyViewsToItem: newSize.equals(noSizeModifier) " + noSizeModifier.equals(newSize));
+		if((newSize == null || noSizeModifier.equals(newSize)) && creatureVariety.getCriticalSizeModifier() != null) {
 			creatureVariety.setCriticalSizeModifier(null);
 			changed = true;
 		}
-		else if(newSize != null && !newSize.equals(creatureVariety.getCriticalSizeModifier())) {
+		else if(newSize != null && !noSizeModifier.equals(newSize)
+				&& !newSize.equals(creatureVariety.getCriticalSizeModifier())) {
 			creatureVariety.setCriticalSizeModifier(newSize);
 			changed = true;
 		}
+		Log.d(TAG, "copyViewsToItem: criticalSizeModifier = " + creatureVariety.getCriticalSizeModifier());
 
 		return changed;
 	}
@@ -323,14 +291,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			attackBonusesListAdapter.add(attackBonus);
 		}
 		attackBonusesListAdapter.notifyDataSetChanged();
-
-		skillBonusesList.clearChoices();
-		skillBonusesListAdapter.clear();
-		for(Map.Entry<Skill, Short> entry : creatureVariety.getSkillBonusesMap().entrySet()) {
-			SkillBonus skillBonus = new SkillBonus(entry.getKey(), entry.getValue());
-			skillBonusesListAdapter.add(skillBonus);
-		}
-		skillBonusesListAdapter.notifyDataSetChanged();
 
 		criticalCodesList.clearChoices();
 		for(CriticalCode criticalCode : creatureVariety.getCriticalCodes()) {
@@ -441,7 +401,8 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						String attackIdString = String.valueOf(attackBonus.getAttack().getId());
 						ClipData.Item clipDataItem = new ClipData.Item(attackIdString);
 						if(dragData == null) {
-							dragData = new ClipData(DRAG_REMOVE_ATTACK, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+							dragData = new ClipData(DRAG_REMOVE_ATTACK, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+													clipDataItem);
 						}
 						else {
 							dragData.addItem(clipDataItem);
@@ -464,125 +425,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 		attackBonusesList.setOnDragListener(new AttackBonusDragListener());
 	}
-
-	private void initSkillsList(View layout) {
-		skillsList = (ListView) layout.findViewById(R.id.skills_list);
-		skillsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-		skillsList.setAdapter(skillsListAdapter);
-
-		skillRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Skill>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG,
-							  "Exception caught loading all Skill instances in initSecondaryAttacksList", e);
-					}
-					@Override
-					public void onNext(Collection<Skill> skills) {
-						skillsListAdapter.clear();
-						skillsListAdapter.addAll(skills);
-						skillsList.clearChoices();
-						skillsListAdapter.notifyDataSetChanged();
-					}
-				});
-
-		skillsList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-				if(!skillsList.isItemChecked(position)) {
-					skillsList.setItemChecked(position, true);
-				}
-				ClipData dragData = null;
-
-				SparseBooleanArray checkedItems = skillsList.getCheckedItemPositions();
-				List<View> checkedViews = new ArrayList<>(skillsList.getCheckedItemCount());
-				for(int i = 0; i < checkedItems.size(); i++) {
-					int currentPosition = checkedItems.keyAt(i);
-					Skill skill = skillsListAdapter.getItem(currentPosition);
-					if(skill != null) {
-						String skillIdString = String.valueOf(skill.getId());
-						ClipData.Item clipDataItem = new ClipData.Item(skillIdString);
-						if(dragData == null) {
-							dragData = new ClipData(DRAG_ADD_SKILL, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-						}
-						else {
-							dragData.addItem(clipDataItem);
-						}
-						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), skillsList));
-					}
-				}
-				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
-
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
-				}
-				else {
-					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
-				}
-				return false;
-			}
-		});
-
-		skillsList.setOnDragListener(new SkillDragListener());
-	}
-
-	private void initSkillBonusesList(View layout) {
-		skillBonusesList = (ListView) layout.findViewById(R.id.skill_bonuses_list);
-		skillBonusesListAdapter = new SkillBonusListAdapter(this.getActivity(), this, skillBonusesList);
-		skillBonusesList.setAdapter(skillBonusesListAdapter);
-
-		skillBonusesListAdapter.clear();
-		for(Map.Entry<Skill, Short> entry : varietiesFragment.getCurrentInstance().getSkillBonusesMap().entrySet()) {
-			skillBonusesListAdapter.add(new SkillBonus(entry.getKey(), entry.getValue()));
-		}
-		skillBonusesListAdapter.notifyDataSetChanged();
-
-		skillBonusesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if(!skillBonusesList.isItemChecked(position)) {
-					skillBonusesList.setItemChecked(position, true);
-				}
-				ClipData dragData = null;
-
-				SparseBooleanArray checkedItems = skillBonusesList.getCheckedItemPositions();
-				List<View> checkedViews = new ArrayList<>(skillBonusesList.getCheckedItemCount());
-				for(int i = 0; i < checkedItems.size(); i++) {
-					int currentPosition = checkedItems.keyAt(i);
-					SkillBonus skillBonus = skillBonusesListAdapter.getItem(currentPosition);
-					if(checkedItems.valueAt(i) && skillBonus != null) {
-						String skillIdString = String.valueOf(skillBonus.getSkill().getId());
-						ClipData.Item clipDataItem = new ClipData.Item(skillIdString);
-						if(dragData == null) {
-							dragData = new ClipData(DRAG_REMOVE_SKILL, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-						}
-						else {
-							dragData.addItem(clipDataItem);
-						}
-						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), skillBonusesList));
-					}
-				}
-				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
-
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
-				}
-				else {
-					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
-				}
-				return false;
-			}
-		});
-
-		skillBonusesList.setOnDragListener(new SkillBonusDragListener());
-	}
-
 	private void initCriticalCodesList(View layout) {
 		criticalCodesList = (ListView) layout.findViewById(R.id.critical_codes_list);
 		criticalCodesList.setAdapter(criticalCodesListAdapter);
@@ -626,25 +468,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 		else {
 			varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attackBonus.getAttack(), attackBonus.getBonus());
-			changed = true;
-		}
-		if(changed) {
-			varietiesFragment.saveItem();
-		}
-	}
-
-	@Override
-	public void setSkillBonus(SkillBonus skillBonus) {
-		boolean changed = false;
-
-		if(varietiesFragment.getCurrentInstance().getSkillBonusesMap().containsKey(skillBonus.getSkill())) {
-			if(varietiesFragment.getCurrentInstance().getSkillBonusesMap().get(skillBonus.getSkill()) != skillBonus.getBonus()) {
-				varietiesFragment.getCurrentInstance().getSkillBonusesMap().put(skillBonus.getSkill(), skillBonus.getBonus());
-				changed = true;
-			}
-		}
-		else {
-			varietiesFragment.getCurrentInstance().getSkillBonusesMap().put(skillBonus.getSkill(), skillBonus.getBonus());
 			changed = true;
 		}
 		if(changed) {
@@ -776,10 +599,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 					if(event.getClipDescription() != null && DRAG_REMOVE_ATTACK.equals(event.getClipDescription().getLabel())) {
 						for (int i = 0; i < event.getClipData().getItemCount(); i++) {
 							ClipData.Item item = event.getClipData().getItemAt(i);
-							// We just send attack ID but since that is the only field used in the Attack.equals method and attack is the
-							// only field used in the AttackBonus.equals method we can create a temporary Attack and set its id field then
-							// create a new AttackBonus and set its attack field then use the new AttackBonus to find the position of the
-							// complete AttackBonus instance in the adapter
 							int attackId = Integer.valueOf(item.getText().toString());
 							Attack newAttack = new Attack();
 							newAttack.setId(attackId);
@@ -796,165 +615,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 						varietiesFragment.saveItem();
 						attackBonusesList.clearChoices();
 						attackBonusesListAdapter.notifyDataSetChanged();
-						v.setBackground(normalShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					v.setBackground(normalShape);
-					v.invalidate();
-					break;
-			}
-			return true;
-		}
-	}
-
-	protected class SkillBonusDragListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = skillBonusesList.getBackground();
-
-		@Override
-		public boolean onDrag(View v, DragEvent event) {
-			final int action = event.getAction();
-
-			switch(action) {
-				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-						break;
-					}
-					return false;
-				case DragEvent.ACTION_DRAG_ENTERED:
-					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(hoverShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_LOCATION:
-					break;
-				case DragEvent.ACTION_DRAG_EXITED:
-					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DROP:
-					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
-						boolean changed = false;
-						for(int i = 0; i < event.getClipData().getItemCount(); i++) {
-							ClipData.Item item = event.getClipData().getItemAt(i);
-							// We just send skill ID but since that is the only field used in the Skill.equals method we can create a
-							// temporary skill and set its id field then use the new Skill to find the position of the actual Skill
-							// instance in the adapter
-							int skillId = Integer.valueOf(item.getText().toString());
-							Skill newSkill = new Skill();
-							newSkill.setId(skillId);
-							int position = skillsListAdapter.getPosition(newSkill);
-							if(position != -1) {
-								Skill skill = skillsListAdapter.getItem(position);
-								SkillBonus skillBonus = new SkillBonus(skill, (short) 0);
-								if (skillBonusesListAdapter.getPosition(skillBonus) == -1) {
-									skillBonusesListAdapter.add(skillBonus);
-									varietiesFragment.getCurrentInstance().getSkillBonusesMap().put(skill, (short) 0);
-									changed = true;
-								}
-							}
-						}
-						if(changed) {
-							varietiesFragment.saveItem();
-							skillBonusesListAdapter.notifyDataSetChanged();
-						}
-						v.setBackground(normalShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					v.setBackground(normalShape);
-					v.invalidate();
-					break;
-			}
-
-			return true;
-		}
-	}
-
-	protected class SkillDragListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
-		private Drawable normalShape = skillsList.getBackground();
-
-		@Override
-		public boolean onDrag(View v, DragEvent event) {
-			final int action = event.getAction();
-
-			switch (action) {
-				case DragEvent.ACTION_DRAG_STARTED:
-					if(event.getClipDescription() != null && DRAG_REMOVE_SKILL.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_ENTERED:
-					if(event.getClipDescription() != null && DRAG_REMOVE_SKILL.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(hoverShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DRAG_LOCATION:
-					break;
-				case DragEvent.ACTION_DRAG_EXITED:
-					if(event.getClipDescription() != null && DRAG_REMOVE_SKILL.equals(event.getClipDescription().getLabel())) {
-						v.setBackground(targetShape);
-						v.invalidate();
-					}
-					else {
-						return false;
-					}
-					break;
-				case DragEvent.ACTION_DROP:
-					if(event.getClipDescription() != null && DRAG_REMOVE_SKILL.equals(event.getClipDescription().getLabel())) {
-						for (int i = 0; i < event.getClipData().getItemCount(); i++) {
-							ClipData.Item item = event.getClipData().getItemAt(i);
-							// We just send skill ID but since that is the only field used in the Skill.equals method and skill is the
-							// only field used in the SkillBonus.equals method we can create a temporary Skill and set its id field then
-							// create a new SkillBonus and set its skill field then use the new SkillBonus to find the position of the
-							// complete SkillBonus instance in the adapter
-							int skillId = Integer.valueOf(item.getText().toString());
-							Skill newSkill = new Skill();
-							newSkill.setId(skillId);
-							SkillBonus newSkillBonus = new SkillBonus(newSkill, (short)0);
-							int position = skillBonusesListAdapter.getPosition(newSkillBonus);
-							if(position != -1) {
-								SkillBonus skillBonus = skillBonusesListAdapter.getItem(position);
-								if(skillBonus != null) {
-									varietiesFragment.getCurrentInstance().getSkillBonusesMap().remove(skillBonus.getSkill());
-									skillBonusesListAdapter.remove(skillBonus);
-								}
-							}
-						}
-						varietiesFragment.saveItem();
-						skillBonusesList.clearChoices();
-						skillBonusesListAdapter.notifyDataSetChanged();
 						v.setBackground(normalShape);
 						v.invalidate();
 					}

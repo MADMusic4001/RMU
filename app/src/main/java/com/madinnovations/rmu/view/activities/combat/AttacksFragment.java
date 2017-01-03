@@ -223,7 +223,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 			case R.id.damage_table_spinner:
 				result = currentInstance.getDamageTable();
 				break;
-			case R.id.specialization_spinner:
+			case R.id.attack_specialization_spinner:
 				result = currentInstance.getSpecialization();
 				break;
 		}
@@ -238,7 +238,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				currentInstance.setDamageTable((DamageTable)newItem);
 				saveItem();
 				break;
-			case R.id.specialization_spinner:
+			case R.id.attack_specialization_spinner:
 				currentInstance.setSpecialization((Specialization)newItem);
 				break;
 		}

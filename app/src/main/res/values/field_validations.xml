@@ -47,6 +47,7 @@
   <string name="validation_creature_archetype_description_required">Please enter a creature archetype resultText.</string>
   <string name="validation_creature_archetype_name_required">Please enter a creature archetype name.</string>
   <string name="validation_creature_category_description_required">Please enter a creature category resultText.</string>
+  <string name="validation_creature_level_required">Please enter the creature\'s level.</string>
   <string name="validation_creature_category_name_required">Please enter a creature category name.</string>
   <string name="validation_creature_type_description_required">Please enter a creature type resultText.</string>
   <string name="validation_creature_type_name_required">Please enter a creature type name.</string>
@@ -84,6 +85,8 @@
   <string name="validation_damage_table_name_required">Please enter a damage table name.</string>
   <string name="validation_dazed_required">Please enter the number of rounds the defender is dazed.</string>
   <string name="validation_default_rate_required">Please enter a default movement rate.</string>
+  <string name="validation_disease_effects_required">Please enter the disease effects.</string>
+  <string name="validation_disease_name_required">Please enter a disease name.</string>
   <string name="validation_fatigue_required">Please enter the amount of fatigue penalty.</string>
   <string name="validation_grappled_required">Please enter the percent the defender is grappled.</string>
   <string name="validation_hits_required">Please enter the number of additional hit point damage done.</string>

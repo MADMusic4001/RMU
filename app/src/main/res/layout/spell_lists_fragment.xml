@@ -93,7 +93,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:text="@string/input_label_realm1"/>
+            android:text="@string/input_label_profession"/>
         <Spinner
             android:id="@+id/profession_spinner"
             android:layout_toRightOf="@id/profession_label"

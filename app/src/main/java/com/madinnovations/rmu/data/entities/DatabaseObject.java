@@ -18,7 +18,7 @@ package com.madinnovations.rmu.data.entities;
 /**
  * Base class for any objects that will be saved in the database.
  */
-public abstract class DatabaseObject {
+public class DatabaseObject {
 	private int id = -1;
 
 	/**

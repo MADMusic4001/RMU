@@ -23,7 +23,9 @@ import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietyAttackPageFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietyMainPageFragment;
+import com.madinnovations.rmu.view.activities.creature.CreatureVarietyStatsAndSkillsPageFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietyTalentsPageFragment;
+import com.madinnovations.rmu.view.activities.creature.CreaturesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -35,16 +37,18 @@ import dagger.Provides;
  */
 @Module
 public class CreatureFragmentModule {
-	private CreatureArchetypesFragment         creatureArchetypesFragment;
-	private CreatureArchetypesLevelsFragment   creatureArchetypesLevelsFragment;
-	private CreatureArchetypesMainPageFragment creatureArchetypesMainPageFragment;
-	private CreatureCategoriesFragment         creatureCategoriesFragment;
-	private CreatureTypesFragment              creatureTypesFragment;
-	private CreatureVarietiesFragment          creatureVarietiesFragment;
-	private CreatureVarietyAttackPageFragment  creatureVarietyAttackPageFragment;
-	private CreatureVarietyMainPageFragment    creatureVarietyMainPageFragment;
-	private CreatureVarietyTalentsPageFragment creatureVarietyTalentsPageFragment;
-	private OutlooksFragment                   outlooksFragment;
+	private CreatureArchetypesFragment                creatureArchetypesFragment;
+	private CreatureArchetypesLevelsFragment          creatureArchetypesLevelsFragment;
+	private CreatureArchetypesMainPageFragment        creatureArchetypesMainPageFragment;
+	private CreatureCategoriesFragment                creatureCategoriesFragment;
+	private CreaturesFragment                         creaturesFragment;
+	private CreatureTypesFragment                     creatureTypesFragment;
+	private CreatureVarietiesFragment                 creatureVarietiesFragment;
+	private CreatureVarietyAttackPageFragment         creatureVarietyAttackPageFragment;
+	private CreatureVarietyMainPageFragment           creatureVarietyMainPageFragment;
+	private CreatureVarietyStatsAndSkillsPageFragment creatureVarietyStatsAndSkillsPageFragment;
+	private CreatureVarietyTalentsPageFragment        creatureVarietyTalentsPageFragment;
+	private OutlooksFragment                          outlooksFragment;
 
 	public CreatureFragmentModule(CreatureArchetypesFragment creatureArchetypesFragment) {
 		this.creatureArchetypesFragment = creatureArchetypesFragment;
@@ -58,6 +62,9 @@ public class CreatureFragmentModule {
 	public CreatureFragmentModule(CreatureCategoriesFragment creatureCategoriesFragment) {
 		this.creatureCategoriesFragment = creatureCategoriesFragment;
 	}
+	public CreatureFragmentModule(CreaturesFragment creaturesFragment) {
+		this.creaturesFragment = creaturesFragment;
+	}
 	public CreatureFragmentModule(CreatureTypesFragment creatureTypesFragment) {
 		this.creatureTypesFragment = creatureTypesFragment;
 	}
@@ -69,6 +76,9 @@ public class CreatureFragmentModule {
 	}
 	public CreatureFragmentModule(CreatureVarietyMainPageFragment creatureVarietyMainPageFragment) {
 		this.creatureVarietyMainPageFragment = creatureVarietyMainPageFragment;
+	}
+	public CreatureFragmentModule(CreatureVarietyStatsAndSkillsPageFragment creatureVarietyStatsAndSkillsPageFragment) {
+		this.creatureVarietyStatsAndSkillsPageFragment = creatureVarietyStatsAndSkillsPageFragment;
 	}
 	public CreatureFragmentModule(CreatureVarietyTalentsPageFragment creatureVarietyTalentsPageFragment) {
 		this.creatureVarietyTalentsPageFragment = creatureVarietyTalentsPageFragment;
@@ -90,6 +100,10 @@ public class CreatureFragmentModule {
 		return this.creatureArchetypesLevelsFragment;
 	}
 	@Provides @PerFragment
+	CreaturesFragment provideCreaturesFragment() {
+		return this.creaturesFragment;
+	}
+	@Provides @PerFragment
 	CreatureCategoriesFragment provideCreatureCategoriesFragment() {
 		return this.creatureCategoriesFragment;
 	}
@@ -104,6 +118,10 @@ public class CreatureFragmentModule {
 	@Provides @PerFragment
 	CreatureVarietyAttackPageFragment provideCreatureVarietyAttackPageFragment() {
 		return this.creatureVarietyAttackPageFragment;
+	}
+	@Provides @PerFragment
+	CreatureVarietyStatsAndSkillsPageFragment provideCreatureVarietyStatsAndSkillsPageFragment() {
+		return this.creatureVarietyStatsAndSkillsPageFragment;
 	}
 	@Provides @PerFragment
 	CreatureVarietyMainPageFragment provideCreatureVarietyMainPageFragment() {

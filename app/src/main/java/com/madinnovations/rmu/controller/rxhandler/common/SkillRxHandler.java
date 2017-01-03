@@ -17,9 +17,14 @@ package com.madinnovations.rmu.controller.rxhandler.common;
 
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
+import com.madinnovations.rmu.data.dao.spells.SpellListDao;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -35,6 +40,7 @@ import rx.schedulers.Schedulers;
 public class SkillRxHandler {
 	private SkillDao dao;
 	private SpecializationDao specializationDao;
+	private SpellListDao spellListDao;
 
 	/**
 	 * Creates a new SkillRxHandler
@@ -42,9 +48,10 @@ public class SkillRxHandler {
 	 * @param dao  a SkillDao instance
 	 */
 	@Inject
-	public SkillRxHandler(SkillDao dao, SpecializationDao specializationDao) {
+	public SkillRxHandler(SkillDao dao, SpecializationDao specializationDao, SpellListDao spellListDao) {
 		this.dao = dao;
 		this.specializationDao = specializationDao;
+		this.spellListDao = spellListDao;
 	}
 
 	/**
@@ -306,6 +313,76 @@ public class SkillRxHandler {
 								skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
 							}
 							subscriber.onNext(skills);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that
+	 * can be purchased by player characters.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill instances.
+	 */
+	public Observable<Collection<DatabaseObject>> getCharacterUsableSkills(final Character filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<DatabaseObject>>() {
+					@Override
+					public void call(Subscriber<? super Collection<DatabaseObject>> subscriber) {
+						try {
+							Collection<DatabaseObject> databaseObjects = new ArrayList<>();
+							Collection<Skill> skills = dao.getCharacterPurchasableSkills();
+							for(Skill skill : skills) {
+								skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
+							}
+							databaseObjects.addAll(skills);
+							databaseObjects.addAll(spellListDao.getAllListsForCharacter(filter));
+							subscriber.onNext(databaseObjects);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that
+	 * can be professional skills for the given character.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill instances.
+	 */
+	public Observable<Collection<DatabaseObject>> getCharacterProfessionalSkills(final Character filter) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<DatabaseObject>>() {
+					@Override
+					public void call(Subscriber<? super Collection<DatabaseObject>> subscriber) {
+						try {
+							Collection<DatabaseObject> databaseObjects = new ArrayList<>();
+							Collection<Skill> skills = dao.getCharacterPurchasableSkills();
+							for(Skill skill : skills) {
+								if(filter.getProfession().getProfessionalSkillCategories().contains(skill.getCategory())) {
+									skill.setSpecializations(specializationDao.getSpecializationsForSkill(skill));
+									databaseObjects.add(skill);
+								}
+							}
+							Collection<SpellList> spellLists = spellListDao.getAllListsForCharacter(filter);
+							for(SpellList spellList : spellLists) {
+								if(filter.getProfession().getProfessionalSkillCategories().contains(
+										spellList.getSkill().getCategory())) {
+									databaseObjects.add(spellList);
+								}
+							}
+							subscriber.onNext(databaseObjects);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

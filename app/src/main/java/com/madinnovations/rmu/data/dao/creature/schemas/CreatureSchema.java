@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
+import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
+
 /**
  * Database schema data for the creatures table
  */
@@ -22,6 +24,7 @@ public interface CreatureSchema {
 	String TABLE_NAME = "creatures";
 
 	String COLUMN_ID = "id";
+	String COLUMN_CAMPAIGN_ID = "campaignId";
 	String COLUMN_CREATURE_VARIETY_ID = "creatureVarietyId";
 	String COLUMN_LEVEL = "level";
 	String COLUMN_MAX_HITS = "maxHits";
@@ -30,13 +33,16 @@ public interface CreatureSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
-			+ COLUMN_CREATURE_VARIETY_ID + " INTEGER NOT NULL, "
+			+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+			+ COLUMN_CAMPAIGN_ID + " INTEGER NOT NULL REFERENCES "
+				+ CampaignSchema.TABLE_NAME + "(" + CampaignSchema.COLUMN_ID + "), "
+			+ COLUMN_CREATURE_VARIETY_ID + " INTEGER NOT NULL REFERENCES "
+				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
 			+ COLUMN_LEVEL + " INTEGER NOT NULL, "
 			+ COLUMN_MAX_HITS + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_HITS + " INTEGER NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CREATURE_VARIETY_ID, COLUMN_LEVEL, COLUMN_MAX_HITS,
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CAMPAIGN_ID, COLUMN_CREATURE_VARIETY_ID, COLUMN_LEVEL, COLUMN_MAX_HITS,
 			COLUMN_CURRENT_HITS};
 }

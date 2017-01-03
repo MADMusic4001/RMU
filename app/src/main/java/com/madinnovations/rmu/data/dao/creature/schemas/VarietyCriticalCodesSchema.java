@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
-import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
-
 /**
  * Database schema data for the variety_critical_codes table
  */
@@ -24,17 +22,16 @@ public interface VarietyCriticalCodesSchema {
 	String TABLE_NAME = "variety_critical_codes";
 
 	String COLUMN_VARIETY_ID = "varietyId";
-	String COLUMN_CRITICAL_CODE_ID = "skillId";
+	String COLUMN_CRITICAL_CODE_NAME = "criticalCodeName";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
-			+ COLUMN_CRITICAL_CODE_ID + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_CRITICAL_CODE_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_VARIETY_ID + ") REFERENCES " + CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + ")"
-			+ "FOREIGN KEY (" + COLUMN_CRITICAL_CODE_ID + ") REFERENCES " + CriticalCodeSchema.TABLE_NAME + "(" + CriticalCodeSchema.COLUMN_ID + ")"
+			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL REFERENCES "
+				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
+			+ COLUMN_CRITICAL_CODE_NAME + " TEXT NOT NULL, "
+			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_CRITICAL_CODE_NAME + ")"
 			+ ");";
 
-	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_CRITICAL_CODE_ID};
+	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_CRITICAL_CODE_NAME};
 }

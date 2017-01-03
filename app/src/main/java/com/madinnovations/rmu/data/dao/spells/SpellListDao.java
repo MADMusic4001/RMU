@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.spells;
 
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.Collection;
@@ -78,4 +79,12 @@ public interface SpellListDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Returns a collection of SpellList instances purchasable by the given character.
+	 *
+	 * @param character  a Character instance
+	 * @return  a Collection of SpellList instances.
+	 */
+	public Collection<SpellList> getAllListsForCharacter(Character character);
 }

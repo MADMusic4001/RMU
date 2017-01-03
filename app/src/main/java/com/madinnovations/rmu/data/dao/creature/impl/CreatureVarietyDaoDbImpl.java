@@ -25,6 +25,7 @@ import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
@@ -37,10 +38,11 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
+import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Parameter;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -68,6 +70,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	private RealmDao realmDao;
 	private OutlookDao outlookDao;
 	private SkillDao skillDao;
+	private SpecializationDao specializationDao;
+	private SpellListDao spellListDao;
 	private TalentDao talentDao;
 	private AttackDao attackDao;
 
@@ -80,19 +84,25 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	 * @param realmDao  a {@link RealmDao} instance
 	 * @param outlookDao  an {@link OutlookDao} instance
 	 * @param skillDao  a {@link SkillDao} instance
+	 * @param specializationDao  a {@link SpecializationDao} instance
+	 * @param spellListDao  a {@link SpellListDao} instance
 	 * @param talentDao  a {@link TalentDao} instance
 	 * @param attackDao  an {@link AttackDao} instance
 	 */
 	@Inject
 	public CreatureVarietyDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull CreatureTypeDao creatureTypeDao,
 									@NonNull SizeDao sizeDao, @NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao,
-									@NonNull SkillDao skillDao, @NonNull TalentDao talentDao, @NonNull AttackDao attackDao) {
+									@NonNull SkillDao skillDao, @NonNull SpecializationDao specializationDao,
+									@NonNull SpellListDao spellListDao, @NonNull TalentDao talentDao,
+									@NonNull AttackDao attackDao) {
 		super(helper);
 		this.creatureTypeDao = creatureTypeDao;
 		this.sizeDao = sizeDao;
 		this.realmDao = realmDao;
 		this.outlookDao = outlookDao;
 		this.skillDao = skillDao;
+		this.specializationDao = specializationDao;
+		this.spellListDao = spellListDao;
 		this.talentDao = talentDao;
 		this.attackDao = attackDao;
 	}
@@ -165,7 +175,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 					COLUMN_CRITICAL_SIZE_MODIFIER_ID))));
 		}
 		instance.setAttackBonusesMap(getAttackBonuses(instance.getId()));
-		instance.setSkillBonusesMap(getSkillBonuses(instance.getId()));
+		instance.setSkillBonusesList(getSkillBonuses(instance.getId()));
 
 		return instance;
 	}
@@ -221,7 +231,33 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		result &= saveCriticalCodes(db, instance.getId(), instance.getCriticalCodes());
 		result &= saveTalentInstancesList(db, instance.getId(), instance.getTalentInstancesList());
 		result &= saveAttackBonusesMap(db, instance.getId(), instance.getAttackBonusesMap());
-		result &= saveSkillBonusesMap(db, instance.getId(), instance.getSkillBonusesMap());
+		result &= saveSkillBonusesList(db, instance.getId(), instance.getSkillBonusesList());
+		return result;
+	}
+
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
+
+		final String selectionArgs[] = { String.valueOf(id) };
+		String selection = VarietyStatsSchema.COLUMN_VARIETY_ID + " = ?";
+		result = (db.delete(VarietyStatsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = VarietyCriticalCodesSchema.COLUMN_VARIETY_ID + " = ?";
+		result |= (db.delete(VarietyCriticalCodesSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = VarietyTalentParametersSchema.COLUMN_VARIETY_ID + " = ?";
+		result |= (db.delete(VarietyTalentParametersSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
+		result |= (db.delete(VarietyTalentTiersSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = VarietyAttacksSchema.COLUMN_VARIETY_ID + " = ?";
+		result |= (db.delete(VarietyAttacksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = VarietySkillsSchema.COLUMN_VARIETY_ID + " = ?";
+		result |= (db.delete(VarietySkillsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
 		return result;
 	}
 
@@ -252,7 +288,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		ContentValues values = new ContentValues(2);
 		for(CriticalCode criticalCode : criticalCodeList) {
 			values.put(VarietyCriticalCodesSchema.COLUMN_VARIETY_ID, creatureVarietyId);
-			values.put(VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID, criticalCode.name());
+			values.put(VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_NAME, criticalCode.name());
 			result &= (db.insertWithOnConflict(VarietyCriticalCodesSchema.TABLE_NAME, null, values,
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
@@ -307,18 +343,35 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return result;
 	}
 
-	private boolean saveSkillBonusesMap(SQLiteDatabase db, int creatureVarietyId, Map<Skill, Short> skillBonusesMap) {
+	private boolean saveSkillBonusesList(SQLiteDatabase db, int creatureVarietyId, List<SkillBonus> skillBonusesList) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
 		final String selection = VarietySkillsSchema.COLUMN_VARIETY_ID + " = ?";
 
 		db.delete(VarietySkillsSchema.TABLE_NAME, selection, selectionArgs);
 
-		ContentValues values = new ContentValues(3);
-		for(Map.Entry<Skill, Short> entry : skillBonusesMap.entrySet()) {
+		ContentValues values = new ContentValues(5);
+		for(SkillBonus skillBonus : skillBonusesList) {
 			values.put(VarietySkillsSchema.COLUMN_VARIETY_ID, creatureVarietyId);
-			values.put(VarietySkillsSchema.COLUMN_SKILL_ID, entry.getKey().getId());
-			values.put(VarietySkillsSchema.COLUMN_SKILL_BONUS, entry.getValue());
+			if(skillBonus.getSkill() != null) {
+				values.put(VarietySkillsSchema.COLUMN_SKILL_ID, skillBonus.getSkill().getId());
+			}
+			else {
+				values.putNull(VarietySkillsSchema.COLUMN_SKILL_ID);
+			}
+			if(skillBonus.getSpecialization() != null) {
+				values.put(VarietySkillsSchema.COLUMN_SPECIALIZATION_ID, skillBonus.getSpecialization().getId());
+			}
+			else {
+				values.putNull(VarietySkillsSchema.COLUMN_SPECIALIZATION_ID);
+			}
+			if(skillBonus.getSpellList() != null) {
+				values.put(VarietySkillsSchema.COLUMN_SPELL_LIST_ID, skillBonus.getSpellList().getId());
+			}
+			else {
+				values.putNull(VarietySkillsSchema.COLUMN_SPELL_LIST_ID);
+			}
+			values.put(VarietySkillsSchema.COLUMN_SKILL_BONUS, skillBonus.getBonus());
 			result &= (db.insertWithOnConflict(VarietySkillsSchema.TABLE_NAME, null, values,
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
@@ -349,12 +402,12 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		final String selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
 
 		Cursor cursor = super.query(VarietyCriticalCodesSchema.TABLE_NAME, VarietyCriticalCodesSchema.COLUMNS, selection,
-				selectionArgs, VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID);
+				selectionArgs, VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_NAME);
 		List<CriticalCode> criticalCodesList = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			String criticalCodeName = cursor.getString(cursor.getColumnIndexOrThrow(
-					VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_ID));
+					VarietyCriticalCodesSchema.COLUMN_CRITICAL_CODE_NAME));
 			try {
 				CriticalCode criticalCode = CriticalCode.valueOf(criticalCodeName);
 				criticalCodesList.add(criticalCode);
@@ -416,26 +469,35 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return attackBonusesMap;
 	}
 
-	private Map<Skill, Short> getSkillBonuses(int creatureVarietyId) {
+	private List<SkillBonus> getSkillBonuses(int creatureVarietyId) {
 		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
 		final String selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
 
 		Cursor cursor = super.query(VarietySkillsSchema.TABLE_NAME, VarietySkillsSchema.COLUMNS, selection,
 				selectionArgs, VarietySkillsSchema.COLUMN_SKILL_ID);
-		Map<Skill, Short> skillBonusesMap = new HashMap<>(cursor.getCount());
+		List<SkillBonus> skillBonusesList = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SKILL_ID));
-			short bonuses = cursor.getShort(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SKILL_BONUS));
-			Skill skill = skillDao.getById(mappedId);
-			if(skill != null) {
-				skillBonusesMap.put(skill, bonuses);
+			SkillBonus skillBonus = new SkillBonus();
+			if(!cursor.isNull(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SKILL_ID))) {
+				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SKILL_ID));
+				skillBonus.setSkill(skillDao.getById(mappedId));
 			}
+			else if(!cursor.isNull(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SPECIALIZATION_ID))) {
+				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SPECIALIZATION_ID));
+				skillBonus.setSpecialization(specializationDao.getById(mappedId));
+			}
+			else if(!cursor.isNull(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SPELL_LIST_ID))) {
+				int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SPELL_LIST_ID));
+				skillBonus.setSpellList(spellListDao.getById(mappedId));
+			}
+			skillBonus.setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(VarietySkillsSchema.COLUMN_SKILL_BONUS)));
+			skillBonusesList.add(skillBonus);
 			cursor.moveToNext();
 		}
 		cursor.close();
 
-		return skillBonusesMap;
+		return skillBonusesList;
 	}
 
 	private Map<Parameter, Object> getTalentParameters(int varietyId, int talentInstanceId) {

@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.di.components;
 import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterProfessionalKnacksPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterSkillsPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterTalentsPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharactersFragment;
@@ -44,6 +45,7 @@ public interface CharacterFragmentComponent {
 	void injectInto(CharacterMainPageFragment characterMainPageFragment);
 	void injectInto(CharactersFragment charactersFragment);
 	void injectInto(CharacterSkillsPageFragment characterSkillsPageFragment);
+	void injectInto(CharacterProfessionalKnacksPageFragment characterProfessionalKnacksPageFragment);
 	void injectInto(CharacterTalentsPageFragment characterTalentsPageFragment);
 	void injectInto(CulturesFragment culturesFragment);
 	void injectInto(ProfessionsFragment professionsFragment);

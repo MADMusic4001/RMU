@@ -35,6 +35,7 @@ public class ProfessionSkillCategoryCost implements Comparable {
 	private DevelopmentCostGroup       costGroup            = null;
 	private boolean                    assignable           = false;
 	private List<DevelopmentCostGroup> assignableCostGroups = new ArrayList<>();
+	private boolean                    professionCat        = false;
 
 	/**
 	 * Creates a new ProfessionSkillCategoryCost instance
@@ -44,17 +45,20 @@ public class ProfessionSkillCategoryCost implements Comparable {
 	 * @param costGroup  the development point costs for this SkillCategory
 	 * @param assignable  true if characters can assign each skill in the category a different cost
 	 * @param assignableCostGroups  the list of SkillCosts to be assigned to individual skills when assignable is true
+	 * @param professionCat  true if this category has skills that can be chosen to receive a profession bonus
 	 */
 	public ProfessionSkillCategoryCost(@NonNull SkillCategory skillCategory,
 									   @NonNull List<SkillCostGroup> skillCostGroups,
 									   @NonNull DevelopmentCostGroup costGroup,
 									   boolean assignable,
-									   @NonNull List<DevelopmentCostGroup> assignableCostGroups) {
+									   @NonNull List<DevelopmentCostGroup> assignableCostGroups,
+									   boolean professionCat) {
 		this.skillCategory = skillCategory;
 		this.skillCostGroups = skillCostGroups;
 		this.costGroup = costGroup;
 		this.assignable = assignable;
 		this.assignableCostGroups = assignableCostGroups;
+		this.professionCat = professionCat;
 	}
 
 	@Override
@@ -94,6 +98,7 @@ public class ProfessionSkillCategoryCost implements Comparable {
 				.append("costGroup", costGroup)
 				.append("assignable", assignable)
 				.append("assignableCostGroups", assignableCostGroups)
+				.append("professionCat", professionCat)
 				.toString();
 	}
 
@@ -125,5 +130,11 @@ public class ProfessionSkillCategoryCost implements Comparable {
 	public void setAssignableCostGroups(
 			List<DevelopmentCostGroup> assignableCostGroups) {
 		this.assignableCostGroups = assignableCostGroups;
+	}
+	public boolean isProfessionCat() {
+		return professionCat;
+	}
+	public void setProfessionCat(boolean professionCat) {
+		this.professionCat = professionCat;
 	}
 }

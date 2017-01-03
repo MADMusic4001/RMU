@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.item;
 
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.object.WeaponTemplateDao;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import java.util.Collection;

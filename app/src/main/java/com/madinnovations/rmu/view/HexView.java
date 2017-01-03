@@ -25,12 +25,17 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.play.CombatSetup;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 import com.madinnovations.rmu.view.utils.PolygonUtils;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -42,7 +47,8 @@ public class HexView extends View {
 	@SuppressWarnings("unused")
 	private static final String TAG  = "HexView";
 	@Inject
-	protected PolygonUtils       polygonUtils;
+	protected PolygonUtils       polygonUtils = new PolygonUtils();
+	private Callbacks            callbacks;
 	private Bitmap               hexGrid;
 	private PointF               hexCorners[];
 	private PointF               highlightCenterPoint = null;
@@ -93,7 +99,7 @@ public class HexView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		drawSomething(canvas);
+		drawGrid(canvas);
 	}
 
 	@Override
@@ -110,27 +116,23 @@ public class HexView extends View {
 	 */
 	public PointF getCenterPoint(PointF point) {
 		PointF result = new PointF();
+		PointF coords;
 
-		if(hexCorners != null) {
-			PointF pointf = new PointF();
-			pointf.x = point.x / scaleFactor;
-			pointf.y = point.y / scaleFactor;
-			float height = (float) Math.sqrt(3) / 2 * SIZE;
-			int xIndex = 0;
-			while(pointf.x > SIZE) {
-				pointf.x -= SIZE;
-				xIndex++;
-			}
-			int yIndex = 0;
-			while(pointf.y > height) {
-				pointf.y -= height;
-				yIndex++;
-			}
-			if (polygonUtils.isPointInPolygon(pointf, hexCorners)) {
-				result.x = xIndex * SIZE * 3 * scaleFactor;
-				result.y = yIndex * height *3 * scaleFactor;
-			}
+		float height = (float) Math.sqrt(3) / 2 * SIZE;
+		PointF pointf = new PointF();
+		pointf.x = point.x / scaleFactor - SIZE;
+		pointf.y = point.y / scaleFactor - height;
+		float q = pointf.x * 2/3 / SIZE;
+		float r = (float)(-pointf.x/3 + Math.sqrt(3)/3 * pointf.y) / SIZE;
+
+		coords = polygonUtils.hexRound(new PointF(q, r));
+		Log.d(TAG, "getCenterPoint: coords = " + coords);
+		result.x = coords.x * SIZE * 3 / 2 + SIZE;
+		result.y = coords.y * height * 2 + height;
+		if(coords.x % 2 == 1) {
+			result.y += height;
 		}
+		Log.d(TAG, "getCenterPoint: result = " + result);
 
 		return result;
 	}
@@ -159,6 +161,7 @@ public class HexView extends View {
 
 	private void init() {
 		((RMUApp)getContext().getApplicationContext()).getApplicationComponent().newViewsComponent(new ViewsModule(this));
+		Log.d(TAG, "init: polygonUtils = " + polygonUtils);
 		linePaint = new Paint();
 		linePaint.setAntiAlias(true);
 		linePaint.setStrokeWidth(6f);
@@ -174,7 +177,7 @@ public class HexView extends View {
 		scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
 	}
 
-	private void drawSomething(Canvas canvas) {
+	private void drawGrid(Canvas canvas) {
 		Rect drawRect = new Rect();
 		getDrawingRect(drawRect);
 		canvas.drawColor(Color.WHITE);
@@ -188,6 +191,18 @@ public class HexView extends View {
 			canvas.scale(scaleFactor, scaleFactor);
 			drawHexagon(canvas, SIZE, highlightPaint);
 			canvas.restore();
+		}
+		if(callbacks != null) {
+			for(Map.Entry<Character, PointF> entry : callbacks.getCombatSetup().getCharacterLocations().entrySet()) {
+				canvas.save();
+				canvas.translate(entry.getValue().x, entry.getValue().y);
+				canvas.scale(scaleFactor, scaleFactor);
+				drawHexagon(canvas, SIZE, highlightPaint);
+				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
+					entry.getKey().getKnownAs().length() : 3);
+				canvas.drawText(initials, entry.getValue().x, entry.getValue().y, linePaint);
+				canvas.restore();
+			}
 		}
 	}
 
@@ -250,5 +265,17 @@ public class HexView extends View {
 			invalidate();
 			return true;
 		}
+	}
+
+	// Getters and setters
+	public Callbacks getCallbacks() {
+		return callbacks;
+	}
+	public void setCallbacks(Callbacks callbacks) {
+		this.callbacks = callbacks;
+	}
+
+	public interface Callbacks {
+		CombatSetup getCombatSetup();
 	}
 }

@@ -17,16 +17,15 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
-import com.madinnovations.rmu.data.dao.spells.SpellListTypeDao;
 import com.madinnovations.rmu.data.dao.spells.SpellSubTypeDao;
 import com.madinnovations.rmu.data.dao.spells.SpellTypeDao;
 import com.madinnovations.rmu.data.dao.spells.impl.RealmDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellListDaoDbImpl;
-import com.madinnovations.rmu.data.dao.spells.impl.SpellListTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellSubTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.spells.impl.SpellTypeDaoDbImpl;
 
@@ -50,13 +49,9 @@ public class SpellDaoSqlModule {
 		return new SpellDaoDbImpl(helper, spellListDao, spellTypeDao, spellSubTypeDao);
 	}
 	@Provides @Singleton
-	SpellListDao provideSpellListDao(RMUDatabaseHelper helper, RealmDao realmDao, SpellListTypeDao spellListTypeDao,
-											ProfessionDao professionDao) {
-		return new SpellListDaoDbImpl(helper, realmDao, spellListTypeDao, professionDao);
-	}
-	@Provides @Singleton
-	SpellListTypeDao provideSpellListTypeDao(RMUDatabaseHelper helper) {
-		return new SpellListTypeDaoDbImpl(helper);
+	SpellListDao provideSpellListDao(RMUDatabaseHelper helper, RealmDao realmDao, ProfessionDao professionDao,
+									 SkillDao skillDao) {
+		return new SpellListDaoDbImpl(helper, realmDao, professionDao, skillDao);
 	}
 	@Provides @Singleton
 	SpellSubTypeDao provideSpellSubTypeDao(RMUDatabaseHelper helper) {

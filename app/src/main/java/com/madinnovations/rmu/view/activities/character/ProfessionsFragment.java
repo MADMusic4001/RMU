@@ -750,7 +750,8 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 					skillCostGroupList,
 					entry.getValue(),
 					!assignableCostList.isEmpty(),
-					assignableCostList);
+					assignableCostList,
+					currentInstance.getProfessionalSkillCategories().contains(entry.getKey()));
 			costList.add(professionSkillCategoryCost);
 		}
 		return costList;

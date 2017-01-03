@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
-import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
+import com.madinnovations.rmu.data.dao.object.schemas.ItemSchema;
 
 /**
  * Database schema data for the character_items table

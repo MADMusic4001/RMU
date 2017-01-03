@@ -1,13 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- Common -->
+  <!-- Common enum strings -->
   <string name="enum_all">All</string>
   <string name="enum_choice">Choice</string>
 
-  <!-- Senses -->
+  <!-- Form enum string -->
+  <string name="enum_form_algae">Algae</string>
+  <string name="enum_form_bark">Bark</string>
+  <string name="enum_form_bats">Bats</string>
+  <string name="enum_form_bee">Bee</string>
+  <string name="enum_form_berry">Berry</string>
+  <string name="enum_form_bud">Bud</string>
+  <string name="enum_form_bulb">Bulb</string>
+  <string name="enum_form_cactus">Cactus</string>
+  <string name="enum_form_clams">Clams</string>
+  <string name="enum_form_cone">Cone</string>
+  <string name="enum_form_drakes">Drakes</string>
+  <string name="enum_form_dragon">Dragon</string>
+  <string name="enum_form_fish">Fish</string>
+  <string name="enum_form_flower">Flower</string>
+  <string name="enum_form_frog">Frog</string>
+  <string name="enum_form_fruit">Fruit</string>
+  <string name="enum_form_fungus">Fungus</string>
+  <string name="enum_form_grass">Grass</string>
+  <string name="enum_form_juice">Juice</string>
+  <string name="enum_form_kelp">Kelp</string>
+  <string name="enum_form_leaf">Leaf</string>
+  <string name="enum_form_lichen">Lichen</string>
+  <string name="enum_form_moss">Moss</string>
+  <string name="enum_form_mushroom">Mushroom</string>
+  <string name="enum_form_nectar">Nectar</string>
+  <string name="enum_form_nodule">Nodule</string>
+  <string name="enum_form_nut">Nut</string>
+  <string name="enum_form_pollen">Pollen</string>
+  <string name="enum_form_powder">Powder</string>
+  <string name="enum_form_reed">Reed</string>
+  <string name="enum_form_resin">Resin</string>
+  <string name="enum_form_root">Root</string>
+  <string name="enum_form_sap">Sap</string>
+  <string name="enum_form_scorpion">Scorpion</string>
+  <string name="enum_form_seeds">Seeds</string>
+  <string name="enum_form_snake">Snake</string>
+  <string name="enum_form_spider">Spider</string>
+  <string name="enum_form_spine">Spine</string>
+  <string name="enum_form_stalk">Stalk</string>
+  <string name="enum_form_stem">Stem</string>
+
+  <!-- Senses enum strings -->
   <string name="enum_hearing">Hearing</string>
   <string name="enum_smell">Smell</string>
   <string name="enum_taste">Taste</string>
   <string name="enum_touch">Touch</string>
   <string name="enum_vision">Vision</string>
+
+  <!-- Pace enum strings -->
+  <string name="enum_pace_creep">Creep</string>
+  <string name="enum_pace_walk">Walk</string>
+  <string name="enum_pace_brisk">Brisk</string>
+  <string name="enum_pace_jog">Jog</string>
+  <string name="enum_pace_run">Run</string>
+  <string name="enum_pace_sprint">Sprint</string>
+  <string name="enum_pace_dash">Dash</string>
+
+  <!-- Prep enum strings -->
+  <string name="enum_prep_apply">Apply</string>
+  <string name="enum_prep_brew">Brew</string>
+  <string name="enum_prep_ingest">Ingest</string>
+  <string name="enum_prep_inhale">Inhale</string>
+  <string name="enum_prep_liquid">Liquid</string>
+  <string name="enum_prep_paste">Paste</string>
+  <string name="enum_prep_powder">Powder</string>
+
+  <!-- Severity enum strings -->
+  <string name="enum_severity_mild">Mild</string>
+  <string name="enum_severity_moderate">Moderate</string>
+  <string name="enum_severity_severe">Severe</string>
+  <string name="enum_severity_extreme">Extreme</string>
+
+  <!-- Spell List Type enum strings -->
+  <string name="enum_open">Open</string>
+  <string name="enum_closed">Closed</string>
+  <string name="enum_base">Base</string>
+  <string name="enum_evil">Evil</string>
+  <string name="enum_arcane">Arcane</string>
+  <string name="enum_restricted">Restricted</string>
+
+  <!-- Terrain enum strings -->
+  <string name="enum_terrain_easy">Easy</string>
+  <string name="enum_terrain_light">Light</string>
+  <string name="enum_terrain_medium">Medium</string>
+  <string name="enum_terrain_hard">Hard</string>
+  <string name="enum_terrain_very_hard">Very Hard</string>
+  <string name="enum_terrain_extremely_hard">Extremely Hard</string>
+  <string name="enum_terrain_sheer_folly">Sheer Folly</string>
+  <string name="enum_terrain_absurd">Absurd</string>
+  <string name="enum_terrain_nigh_impossible">Nigh Impossible</string>
+  <string name="enum_terrain_easy_description">Perfectly flat and uniform terrain</string>
+  <string name="enum_terrain_light_description">Nearly flat surface with no obstacles</string>
+  <string name="enum_terrain_medium_description">Mostly flat and open area</string>
+  <string name="enum_terrain_hard_description">Rough and rocky road, furnished room</string>
+  <string name="enum_terrain_very_hard_description">Sloping and rocky, people in the way</string>
+  <string name="enum_terrain_extremely_hard_description">Modest slopes/rocks, light crowd</string>
+  <string name="enum_terrain_sheer_folly_description">Numerous obstacles, steep, crowds</string>
+  <string name="enum_terrain_absurd_description">Dense obstacles, packed crowd</string>
+  <string name="enum_terrain_nigh_impossible_description">Sheer cliff, tightly packed crowd</string>
 </resources>

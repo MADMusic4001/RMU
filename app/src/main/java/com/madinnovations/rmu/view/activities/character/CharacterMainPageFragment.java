@@ -94,6 +94,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   SpinnerUtils<Culture>    cultureSpinnerUtils;
 	private   SpinnerUtils<Profession> professionSpinnerUtils;
 	private   SpinnerUtils<Realm>      realmSpinnerUtils;
+	private   SpinnerUtils<Realm>      realm2SpinnerUtils;
 	private   Button                   generateStatsButton;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
@@ -101,6 +102,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   EditText                 statPointsView;
 	private   LinearLayout             newCharacterRow;
 	private Map<Statistic, ViewHolder> viewHolderMap = new HashMap<>(Statistic.NUM_STATS);
+	private   Realm                    noRealm = null;
 
 	/**
 	 * Creates new CharacterMainPageFragment instance.
@@ -148,6 +150,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		professionSpinnerUtils.initSpinner(layout, getActivity(), professionRxHandler.getAll(), this, R.id.profession_spinner, null);
 		realmSpinnerUtils = new SpinnerUtils<>();
 		realmSpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
+		noRealm = new Realm();
+		noRealm.setName(getString(R.string.label_no_realm));
+		realm2SpinnerUtils = new SpinnerUtils<>();
+		realm2SpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm2_spinner, noRealm);
 		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit,
 											R.string.validation_character_height_required);
 		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
@@ -286,6 +292,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			case R.id.realm_spinner:
 				result = charactersFragment.getCurrentInstance().getRealm();
 				break;
+			case R.id.realm2_spinner:
+				result = charactersFragment.getCurrentInstance().getRealm2();
+				break;
 		}
 
 		return result;
@@ -381,6 +390,15 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				break;
 			case R.id.realm_spinner:
 				character.setRealm((Realm)newItem);
+				charactersFragment.saveItem();
+				break;
+			case R.id.realm2_spinner:
+				if(noRealm.equals(newItem)) {
+					character.setRealm2(null);
+				}
+				else {
+					character.setRealm2((Realm) newItem);
+				}
 				charactersFragment.saveItem();
 				break;
 		}
@@ -493,6 +511,19 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				character.setRealm(newRealm);
 				changed = true;
 			}
+			newRealm = realm2SpinnerUtils.getSelectedItem();
+			oldRealm = character.getRealm2();
+			if(noRealm.equals(newRealm)) {
+				newRealm = null;
+			}
+			if ((newRealm != null && !newRealm.equals(oldRealm)) || (oldRealm != null && !oldRealm.equals(newRealm))) {
+				character.setRealm2(newRealm);
+				changed = true;
+			}
+			else if(newRealm == null && oldRealm != null) {
+				character.setRealm2(null);
+				changed = true;
+			}
 			if (heightEdit.getText().length() > 0) {
 				newShort = Short.valueOf(heightEdit.getText().toString());
 				if (newShort != character.getHeight()) {
@@ -530,6 +561,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			cultureSpinnerUtils.setSelection(character.getCulture());
 			professionSpinnerUtils.setSelection(character.getProfession());
 			realmSpinnerUtils.setSelection(character.getRealm());
+			realm2SpinnerUtils.setSelection(character.getRealm2());
 			heightEdit.setText(String.valueOf(character.getHeight()));
 			weightEdit.setText(String.valueOf(character.getWeight()));
 

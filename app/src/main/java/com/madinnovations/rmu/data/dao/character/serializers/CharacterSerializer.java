@@ -15,21 +15,24 @@
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpellListRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterKnacksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterProfessionSkillsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterPurchasedCultureRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpellListRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
@@ -43,6 +46,7 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.io.IOException;
 import java.util.Map;
@@ -116,6 +120,15 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		}
 		out.endArray();
 
+		out.name(CharacterSpellListRanksSchema.TABLE_NAME).beginArray();
+		for (Map.Entry<SpellList, Short> entry : value.getSpellListRanks().entrySet()) {
+			out.beginObject();
+			out.name(CharacterSpellListRanksSchema.COLUMN_SPELL_LIST_ID).value(entry.getKey().getId());
+			out.name(CharacterSpellListRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
 		out.name(CharacterTalentsSchema.TABLE_NAME).beginArray();
 		for (TalentInstance talentInstance : value.getTalentInstances()) {
 			out.beginObject();
@@ -171,17 +184,57 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		}
 		out.endArray();
 
+		out.name(CharacterCurrentLevelSpellListRanksSchema.TABLE_NAME).beginArray();
+		for (Map.Entry<SpellList, Short> entry : value.getCurrentLevelSpellListRanks().entrySet()) {
+			out.beginObject();
+			out.name(CharacterCurrentLevelSpellListRanksSchema.COLUMN_SPELL_LIST_ID).value(entry.getKey().getId());
+			out.name(CharacterCurrentLevelSpellListRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
 		out.name(CharacterPurchasedCultureRanksSchema.TABLE_NAME).beginArray();
-		for (Map.Entry<Object, Short> entry : value.getPurchasedCultureRanks().entrySet()) {
+		for (Map.Entry<DatabaseObject, Short> entry : value.getPurchasedCultureRanks().entrySet()) {
 			out.beginObject();
 			if (entry.getKey() instanceof Skill) {
-				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID).value(((Skill) entry.getKey()).getId());
+				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
 			}
 			else {
-				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID)
-						.value(((Specialization) entry.getKey()).getId());
+				out.name(CharacterPurchasedCultureRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
 			}
 			out.name(CharacterPurchasedCultureRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterProfessionSkillsSchema.TABLE_NAME).beginArray();
+		for (DatabaseObject databaseObject : value.getProfessionSkills()) {
+			out.beginObject();
+			if (databaseObject instanceof Skill) {
+				out.name(CharacterProfessionSkillsSchema.COLUMN_SKILL_ID).value(databaseObject.getId());
+			}
+			else if(databaseObject instanceof Specialization){
+				out.name(CharacterProfessionSkillsSchema.COLUMN_SPECIALIZATION_ID).value(databaseObject.getId());
+			}
+			else if(databaseObject instanceof SpellList){
+				out.name(CharacterProfessionSkillsSchema.COLUMN_SPELL_LIST_ID).value(databaseObject.getId());
+			}
+			out.endObject();
+		}
+		out.endArray();
+
+		out.name(CharacterKnacksSchema.TABLE_NAME).beginArray();
+		for (DatabaseObject databaseObject : value.getKnacks()) {
+			out.beginObject();
+			if (databaseObject instanceof Skill) {
+				out.name(CharacterKnacksSchema.COLUMN_SKILL_ID).value(databaseObject.getId());
+			}
+			else if(databaseObject instanceof Specialization) {
+				out.name(CharacterKnacksSchema.COLUMN_SPECIALIZATION_ID).value(databaseObject.getId());
+			}
+			else if(databaseObject instanceof SpellList) {
+				out.name(CharacterKnacksSchema.COLUMN_SPELL_LIST_ID).value(databaseObject.getId());
+			}
 			out.endObject();
 		}
 		out.endArray();
@@ -298,6 +351,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case CharacterSpecializationRanksSchema.TABLE_NAME:
 					readSpecializationRanks(in, character);
 					break;
+				case CharacterSpellListRanksSchema.TABLE_NAME:
+					readSpellListRanks(in, character);
+					break;
 				case CharacterTalentsSchema.TABLE_NAME:
 					readTalentTiers(in, character);
 					break;
@@ -310,8 +366,17 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME:
 					readCurrentLevelSpecializationRanks(in, character);
 					break;
+				case CharacterCurrentLevelSpellListRanksSchema.TABLE_NAME:
+					readCurrentLevelSpellListRanks(in, character);
+					break;
 				case CharacterPurchasedCultureRanksSchema.TABLE_NAME:
 					readPurchasedCultureRanks(in, character);
+					break;
+				case CharacterProfessionSkillsSchema.TABLE_NAME:
+					readProfessionSkills(in, character);
+					break;
+				case CharacterKnacksSchema.TABLE_NAME:
+					readKnacks(in, character);
 					break;
 			}
 		}
@@ -378,13 +443,37 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					case CharacterSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID:
 						newSpecialization = new Specialization(in.nextInt());
 						break;
-					case CharacterSkillRanksSchema.COLUMN_RANKS:
+					case CharacterSpecializationRanksSchema.COLUMN_RANKS:
 						ranks = (short) in.nextInt();
 						break;
 				}
 			}
 			if (newSpecialization != null) {
 				character.getSpecializationRanks().put(newSpecialization, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readSpellListRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			SpellList newSpellList = null;
+			Short ranks = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterSpellListRanksSchema.COLUMN_SPELL_LIST_ID:
+						newSpellList = new SpellList(in.nextInt());
+						break;
+					case CharacterSpellListRanksSchema.COLUMN_RANKS:
+						ranks = (short) in.nextInt();
+						break;
+				}
+			}
+			if (newSpellList != null) {
+				character.getSpellListRanks().put(newSpellList, ranks);
 			}
 			in.endObject();
 		}
@@ -528,6 +617,30 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		in.endArray();
 	}
 
+	private void readCurrentLevelSpellListRanks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			SpellList newSpellList = null;
+			Short ranks = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterCurrentLevelSpellListRanksSchema.COLUMN_SPELL_LIST_ID:
+						newSpellList = new SpellList(in.nextInt());
+						break;
+					case CharacterCurrentLevelSpellListRanksSchema.COLUMN_RANKS:
+						ranks = (short) in.nextInt();
+						break;
+				}
+			}
+			if (newSpellList != null) {
+				character.getCurrentLevelSpellListRanks().put(newSpellList, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
 	private void readPurchasedCultureRanks(JsonReader in, Character character) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
@@ -553,6 +666,74 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 			}
 			else if (newSkill != null) {
 				character.getPurchasedCultureRanks().put(newSkill, ranks);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readProfessionSkills(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Specialization newSpecialization = null;
+			Skill newSkill = null;
+			SpellList newSpellList = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterProfessionSkillsSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CharacterProfessionSkillsSchema.COLUMN_SPECIALIZATION_ID:
+						newSpecialization = new Specialization(in.nextInt());
+						break;
+					case CharacterProfessionSkillsSchema.COLUMN_SPELL_LIST_ID:
+						newSpellList = new SpellList(in.nextInt());
+						break;
+				}
+			}
+			if (newSpecialization != null) {
+				character.getProfessionSkills().add(newSpecialization);
+			}
+			else if (newSkill != null) {
+				character.getProfessionSkills().add(newSkill);
+			}
+			else if (newSpellList != null) {
+				character.getProfessionSkills().add(newSpellList);
+			}
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readKnacks(JsonReader in, Character character) throws IOException {
+		in.beginArray();
+		while (in.hasNext()) {
+			Specialization newSpecialization = null;
+			Skill newSkill = null;
+			SpellList newSpellList = null;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case CharacterKnacksSchema.COLUMN_SKILL_ID:
+						newSkill = new Skill(in.nextInt());
+						break;
+					case CharacterKnacksSchema.COLUMN_SPECIALIZATION_ID:
+						newSpecialization = new Specialization(in.nextInt());
+						break;
+					case CharacterKnacksSchema.COLUMN_SPELL_LIST_ID:
+						newSpellList = new SpellList(in.nextInt());
+						break;
+				}
+			}
+			if (newSpecialization != null) {
+				character.getKnacks().add(newSpecialization);
+			}
+			else if (newSkill != null) {
+				character.getKnacks().add(newSkill);
+			}
+			else if (newSpellList != null) {
+				character.getKnacks().add(newSpellList);
 			}
 			in.endObject();
 		}

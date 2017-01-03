@@ -52,6 +52,7 @@
   <string name="manage_critical_types">Manage Critical Types</string>
   <string name="manage_damage_results">Manage Damage Results</string>
   <string name="manage_damage_tables">Manage Damage Tables</string>
+  <string name="manage_diseases">Manage Diseases</string>
 
   <!-- Common Data menu labels -->
   <string name="manage_locomotion_types">Manage Locomotion Types</string>
@@ -99,6 +100,8 @@
   <string name="label_new_campaign">New Campaign</string>
   <string name="label_delete_character">Delete Character</string>
   <string name="label_new_character">New Character</string>
+  <string name="label_delete_creature">Delete Creature</string>
+  <string name="label_new_creature">New Creature</string>
   <string name="label_delete_creature_archetype">Delete Creature Archetype</string>
   <string name="label_new_creature_archetype">New Creature Archetype</string>
   <string name="label_delete_creature_category">Delete Creature Category</string>
@@ -117,6 +120,8 @@
   <string name="label_new_culture">New Culture</string>
   <string name="label_delete_damage_table">Delete Damage Table</string>
   <string name="label_new_damage_table">New Damage Table</string>
+  <string name="label_delete_disease">Delete Disease</string>
+  <string name="label_new_disease">New Disease</string>
   <string name="label_delete_item">Delete Item</string>
   <string name="label_new_item">New Item</string>
   <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
@@ -142,8 +147,6 @@
   <string name="label_new_spell">New Spell</string>
   <string name="label_delete_spell_list">Delete Spell List</string>
   <string name="label_new_spell_list">New Spell List</string>
-  <string name="label_delete_spell_list_type">Delete Spell List Type</string>
-  <string name="label_new_spell_list_type">New Spell List Type</string>
   <string name="label_delete_spell_sub_type">Delete Sub List Type</string>
   <string name="label_new_spell_sub_type">New Spell Sub Type</string>
   <string name="label_delete_spell_type">Delete List Type</string>
@@ -171,6 +174,7 @@
   <string name="label_creature_archetype_name">Creature Archetype Name</string>
   <string name="label_creature_category_description">Creature Category Description</string>
   <string name="label_creature_category_name">Creature Category Name</string>
+  <string name="label_creature_name">Creature Name</string>
   <string name="label_creature_type_description">Creature Type Description</string>
   <string name="label_creature_type_name">Creature Type Name</string>
   <string name="label_creature_variety_description">Creature Variety Description</string>
@@ -184,19 +188,24 @@
   <string name="label_culture_name">Culture Name</string>
   <string name="label_culture_description">Culture Description</string>
   <string name="label_culture_ranks_available">Culture Ranks Available</string>
+  <string name="label_disease_effects">Disease Effects</string>
+  <string name="label_disease_name">Disease Name</string>
   <string name="label_item_description">Item Description</string>
   <string name="label_item_name">Item Name</string>
   <string name="label_item_template_description">Item Template Description</string>
   <string name="label_item_template_name">Item Template Name</string>
+  <string name="label_knacks">Knacks</string>
   <string name="label_opponents">Opponents</string>
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
   <string name="label_potential">Potential</string>
   <string name="label_profession_cat_list_assignable">Is Assignable?</string>
   <string name="label_profession_cat_list_dp_costs">Development Point Costs</string>
+  <string name="label_profession_cat_list_profession_cat">Profession Category?</string>
   <string name="label_profession_cat_list_skill_category">Skill Category</string>
   <string name="label_profession_description">Profession Description</string>
   <string name="label_profession_name">Profession Name</string>
+  <string name="label_profession_skills">Professional Skills</string>
   <string name="label_race_name">Race Name</string>
   <string name="label_race_description">Race Description</string>
   <string name="label_race_tiers_available">Race Tiers</string>
@@ -218,8 +227,6 @@
   <string name="label_spell_name">Spell Name</string>
   <string name="label_spell_list_description">Spell List Description</string>
   <string name="label_spell_list_name">Spell List Name</string>
-  <string name="label_spell_list_type_description">Spell List Type Description</string>
-  <string name="label_spell_list_type_name">Spell List Type Name</string>
   <string name="label_spell_sub_type_code">Spell Sub Type Code</string>
   <string name="label_spell_sub_type_description">Spell Sub Type Description</string>
   <string name="label_spell_sub_type_name">Spell Sub Type Name</string>
@@ -391,6 +398,7 @@
   <string name="input_label_channeling_rr">Channeling RR:</string>
   <string name="input_label_constitution_bonus">Constitution Bonus:</string>
   <string name="input_label_cost_per_tier">Cost per tier:</string>
+  <string name="input_label_creature_variety">Creature Variety:</string>
   <string name="input_label_critical_codes">Critical Codes:</string>
   <string name="input_label_critical_size_modifier">Critical Size Modifier:</string>
   <string name="input_label_critical_type">Critical Type:</string>
@@ -406,7 +414,9 @@
   <string name="input_label_defensive_bonus">Defensive Bonus:</string>
   <string name="input_label_description">Description:</string>
   <string name="input_label_dev_points">Development Points:</string>
+  <string name="input_label_disease_name">Disease Name:</string>
   <string name="input_label_duration">Duration:</string>
+  <string name="input_label_effects">Effects:</string>
   <string name="input_label_empathy_bonus">Empathy Bonus:</string>
   <string name="input_label_encumbrance">Encumbrance:</string>
   <string name="input_label_endurance">Endurance:</string>
@@ -434,6 +444,8 @@
   <string name="input_label_injury">Injury:</string>
   <string name="input_label_is_attack">Is Attack?</string>
   <string name="input_label_is_movement">Is Movement?</string>
+  <string name="input_label_knack_bonus">Knack Bonus:</string>
+  <string name="input_label_knack_max">Knack Max:</string>
   <string name="input_label_known_as">Known As:</string>
   <string name="input_label_last_name">Last Name:</string>
   <string name="input_label_leftover_dp">Leftover DP:</string>
@@ -444,9 +456,11 @@
   <string name="input_label_max_endurance">Max Endurance:</string>
   <string name="input_label_max_hits">Max Hits:</string>
   <string name="input_label_max_power_points">Max Power Points:</string>
+  <string name="input_label_max_duration">Max. Duration (days)</string>
   <string name="input_label_max_tiers">Max Tiers:</string>
   <string name="input_label_memory_bonus">Memory Bonus:</string>
   <string name="input_label_mentalism_rr">Mentalism RR:</string>
+  <string name="input_label_min_duration">Min. Duration (days)</string>
   <string name="input_label_min_tiers">Min Tiers:</string>
   <string name="input_label_movement_rate">Movement Rate:</string>
   <string name="input_label_no_parry">No Parry(rnds):</string>
@@ -472,6 +486,7 @@
   <string name="input_label_roles">Roles:</string>
   <string name="input_label_self_discipline_bonus">Self Discipline Bonus:</string>
   <string name="input_label_sense">Sense:</string>
+  <string name="input_label_severity">Severity:</string>
   <string name="input_label_size">Size:</string>
   <string name="input_label_skill_filter">Skill Filter:</string>
   <string name="input_label_skill">Skill:</string>
@@ -502,6 +517,7 @@
   <string name="hyphen">-</string>
   <string name="min_max_roll_value">%1$2d-%2$3d</string>
   <string name="code_name_format_string">%1$s - %2$s</string>
+  <string name="creature_name_format_string">%1$d - %2$s</string>
   <string name="spell_list_format_string">%1$s (%2$s %3$s)</string>
   <string name="export_status">Export %1$d%% complete.</string>
   <string name="import_status">Import %1$d%% complete.</string>
@@ -516,10 +532,12 @@
   <string name="title_creature_archetype_main_page">General Attributes</string>
   <string name="title_creature_archetype_levels_page">Levels</string>
   <string name="title_creature_variety_main_page">General Attributes</string>
-  <string name="title_creature_variety_attacks_page">Attacks and Skills</string>
+  <string name="title_creature_variety_attacks_page">Attacks</string>
+  <string name="title_creature_variety_stats_and_skills_page">Stats and Skills</string>
   <string name="title_creature_variety_talents_page">Talents</string>
   <string name="title_character_main_page">General Attributes</string>
   <string name="title_character_skills_page">Skills</string>
+  <string name="title_character_profession_knacks_page">Profession Skills and Knacks</string>
   <string name="title_character_talents_page">Talents</string>
   <string name="title_character_background_page">Background Information</string>
   <string name="title_character_generated_values_page">Generated Values</string>

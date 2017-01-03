@@ -15,7 +15,10 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.view.RMUApp;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -25,10 +28,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class Creature extends DatabaseObject {
 	public static final String JSON_NAME = "Creatures";
-	private CreatureVariety creatureVariety = null;
-	private short level = 0;
-	private int maxHits = 0;
-	private int currentHits = 0;
+	private Campaign          campaign        = null;
+	private CreatureVariety   creatureVariety = null;
+	private short             level           = 0;
+	private int               maxHits         = 0;
+	private int               currentHits     = 0;
+	private CreatureArchetype archetype       = null;
 
 	/**
 	 * Checks the validity of the Creature instance.
@@ -41,16 +46,34 @@ public class Creature extends DatabaseObject {
 
 	@Override
 	public String toString() {
+		return String.format(RMUApp.getResourceUtils().getString(R.string.creature_name_format_string), level,
+							 creatureVariety.getName());
+	}
+
+	/**
+	 * Generates a debug String containing all of the member variables for this instance.
+	 *
+	 * @return a debug String containing all of the member variables for this instance.
+	 */
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", getId())
+				.append("campaign", campaign)
 				.append("creatureVariety", creatureVariety)
 				.append("level", level)
 				.append("maxHits", maxHits)
 				.append("currentHits", currentHits)
+				.append("archetype", archetype)
 				.toString();
 	}
 
 	// Getters and setters
+	public Campaign getCampaign() {
+		return campaign;
+	}
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
+	}
 	public CreatureVariety getCreatureVariety() {
 		return creatureVariety;
 	}

@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.item;
 
-import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.object.ItemDao;
 import com.madinnovations.rmu.data.entities.object.Item;
 
 import java.util.Collection;

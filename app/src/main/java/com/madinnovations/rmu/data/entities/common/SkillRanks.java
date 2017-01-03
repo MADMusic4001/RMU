@@ -17,6 +17,8 @@ package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.data.entities.spells.SpellList;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -26,6 +28,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class SkillRanks implements Comparable {
 	private Skill          skill = null;
 	private Specialization specialization = null;
+	private SpellList      spellList = null;
 
 	@Override
 	public String toString() {
@@ -37,7 +40,39 @@ public class SkillRanks implements Comparable {
 		else if (specialization != null){
 			result = specialization.getName();
 		}
+		else if (spellList != null) {
+			result = spellList.toString();
+		}
 
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		SkillRanks that = (SkillRanks) o;
+
+		if (getSkill() != null ? !getSkill().equals(that.getSkill()) : that.getSkill() != null) {
+			return false;
+		}
+		if (getSpecialization() != null ? !getSpecialization().equals(that.getSpecialization())
+										: that.getSpecialization() != null) {
+			return false;
+		}
+		return spellList != null ? spellList.equals(that.spellList) : that.spellList == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = getSkill() != null ? getSkill().hashCode() : 0;
+		result = 31 * result + (getSpecialization() != null ? getSpecialization().hashCode() : 0);
+		result = 31 * result + (spellList != null ? spellList.hashCode() : 0);
 		return result;
 	}
 
@@ -54,6 +89,9 @@ public class SkillRanks implements Comparable {
 		else if(specialization != null) {
 			thisName = specialization.getName();
 		}
+		else if(spellList != null) {
+			thisName = spellList.getName();
+		}
 
 		if(o instanceof SkillRanks) {
 			otherSkillRanks = (SkillRanks) o;
@@ -63,6 +101,9 @@ public class SkillRanks implements Comparable {
 			}
 			else if(otherSkillRanks.getSpecialization() != null) {
 				otherName = otherSkillRanks.getSpecialization().getName();
+			}
+			else if(otherSkillRanks.getSpellList() != null) {
+				otherName = otherSkillRanks.getSpellList().getName();
 			}
 
 			if (thisName == null) {
@@ -104,5 +145,11 @@ public class SkillRanks implements Comparable {
 	}
 	public void setSpecialization(Specialization specialization) {
 		this.specialization = specialization;
+	}
+	public SpellList getSpellList() {
+		return spellList;
+	}
+	public void setSpellList(SpellList spellList) {
+		this.spellList = spellList;
 	}
 }

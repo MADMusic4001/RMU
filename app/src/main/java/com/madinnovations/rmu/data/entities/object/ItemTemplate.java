@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Created 10/16/2016.
  */
 public class ItemTemplate extends DatabaseObject {
-	public static final String JSON_NAME = "ItemTemplates";
+	public static final String JSON_NAME = "ItemTemplate";
 	private String name = null;
 	private float weight = 0.5f;
 	private float baseCost = 0.0f;

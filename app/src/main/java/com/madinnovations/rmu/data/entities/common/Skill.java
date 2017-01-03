@@ -19,6 +19,9 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +37,7 @@ public class Skill extends DatabaseObject implements Comparable {
 	private boolean         useCategoryStats       = true;
 	private boolean         requiresConcentration  = false;
 	private boolean         lore                   = false;
+	private boolean         creatureOnly           = false;
 	private List<Statistic> stats                  = new ArrayList<>();
 	private List<Specialization> specializations   = new ArrayList<>();
 
@@ -102,6 +106,27 @@ public class Skill extends DatabaseObject implements Comparable {
 		return name;
 	}
 
+	/**
+	 * Generates a String with all of this instances member variable values.
+	 *
+	 * @return a String with all of this instances member variable values.
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("name", name)
+				.append("description", description)
+				.append("category", category)
+				.append("requiresSpecialization", requiresSpecialization)
+				.append("useCategoryStats", useCategoryStats)
+				.append("requiresConcentration", requiresConcentration)
+				.append("lore", lore)
+				.append("creatureOnly", creatureOnly)
+				.append("stats", stats)
+				.append("specializations", specializations)
+				.toString();
+	}
+
 	// Getters and setters
 	public String getName() {
 		return name;
@@ -144,6 +169,12 @@ public class Skill extends DatabaseObject implements Comparable {
 	}
 	public void setLore(boolean lore) {
 		this.lore = lore;
+	}
+	public boolean isCreatureOnly() {
+		return creatureOnly;
+	}
+	public void setCreatureOnly(boolean creatureOnly) {
+		this.creatureOnly = creatureOnly;
 	}
 	public List<Statistic> getStats() {
 		return stats;

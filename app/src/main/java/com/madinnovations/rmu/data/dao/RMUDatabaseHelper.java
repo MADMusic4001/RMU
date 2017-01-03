@@ -24,12 +24,16 @@ import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignAttackRestrictio
 import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpecializationRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterCurrentLevelSpellListRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterItemsSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterKnacksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterProfessionSkillsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterPurchasedCultureRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillCostsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSkillRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpecializationRanksSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.CharacterSpellListRanksSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterStatsSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
@@ -39,6 +43,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionAssignableSki
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCategoryCostSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSchema;
+import com.madinnovations.rmu.data.dao.character.schemas.ProfessionalSkillCategoriesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceCulturesSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
@@ -53,6 +58,7 @@ import com.madinnovations.rmu.data.dao.combat.schemas.CriticalTypeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.DiseaseSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
@@ -64,9 +70,9 @@ import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeLevelsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSpellsSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeLevelsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategorySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategoryTalentsSchema;
@@ -81,15 +87,14 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.ArmorSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.dao.object.schemas.ArmorSchema;
+import com.madinnovations.rmu.data.dao.object.schemas.ItemSchema;
+import com.madinnovations.rmu.data.dao.object.schemas.ItemTemplateSchema;
+import com.madinnovations.rmu.data.dao.object.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellAreaOfEffectParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellDurationParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
-import com.madinnovations.rmu.data.dao.spells.schemas.SpellListTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
@@ -126,10 +131,10 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         Log.i("RMUDatabaseHelper", "Creating database...");
         try {
             sqLiteDatabase.beginTransaction();
+			sqLiteDatabase.execSQL(DiseaseSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(TalentCategorySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellSubTypeSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(SpellListTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillCategorySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SizeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceSchema.TABLE_CREATE);
@@ -184,6 +189,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(ProfessionSkillCostSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionSkillCategoryCostSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ProfessionAssignableSkillCostSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(ProfessionalSkillCategoriesSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellListSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellDurationParamSchema.TABLE_CREATE);
@@ -195,11 +201,15 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterCurrentLevelSkillRanksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterCurrentLevelSpecializationRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterCurrentLevelSpellListRanksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterSkillRanksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterSpecializationRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterSpellListRanksSchema.TABLE_CREATE);
             sqLiteDatabase.execSQL(CharacterSkillCostsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterItemsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterPurchasedCultureRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterProfessionSkillsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterKnacksSchema.TABLE_CREATE);
             sqLiteDatabase.setTransactionSuccessful();
         }
         finally {
@@ -235,13 +245,17 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	 */
     public void clearDatabase() {
 		SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+		sqLiteDatabase.delete(CharacterKnacksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterProfessionSkillsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterPurchasedCultureRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterItemsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSkillCostsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSkillRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSpecializationRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterSpellListRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterCurrentLevelSkillRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterCurrentLevelSpecializationRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CharacterCurrentLevelSpellListRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterTalentsSchema.TABLE_NAME, null, null);
@@ -251,6 +265,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(SpellDurationParamSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellListSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ProfessionalSkillCategoriesSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionAssignableSkillCostSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionSkillCategoryCostSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ProfessionSkillCostSchema.TABLE_NAME, null, null);
@@ -304,8 +319,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(RaceSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SizeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillCategorySchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(SpellListTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellSubTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentCategorySchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(DiseaseSchema.TABLE_NAME, null, null);
 	}
 }

@@ -137,8 +137,9 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(GROUP_LAYOUT_RESOURCE_ID, parent, false);
 			holder = new GroupViewHolder((TextView) rowView.findViewById(R.id.name_view),
-									(Spinner) rowView.findViewById(R.id.dp_costs_spinner),
-									(CheckBox)rowView.findViewById(R.id.assignable_check_box));
+										 (Spinner) rowView.findViewById(R.id.dp_costs_spinner),
+										 (CheckBox)rowView.findViewById(R.id.assignable_check_box),
+										 (CheckBox)rowView.findViewById(R.id.professional_skill_check_box));
 			rowView.setTag(holder);
 		}
 		else {
@@ -159,6 +160,7 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 			holder.skillCostsSpinner.setSelection(dpCostsSpinnerAdapter.getPosition(costGroup));
 		}
 		holder.assignableCheckBox.setChecked(skillCategoryCost.isAssignable());
+		holder.professionCategoryCheckBox.setChecked(skillCategoryCost.isProfessionCat());
 		return rowView;
 	}
 
@@ -254,14 +256,18 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 		private TextView nameView;
 		private Spinner  skillCostsSpinner;
 		private CheckBox assignableCheckBox;
+		private CheckBox professionCategoryCheckBox;
 
-		GroupViewHolder(TextView nameView, Spinner skillCostsSpinner, CheckBox assignableCheckBox) {
+		GroupViewHolder(TextView nameView, Spinner skillCostsSpinner, CheckBox assignableCheckBox,
+						CheckBox professionCategoryCheckBox) {
 			this.nameView = nameView;
 			initNameView();
 			this.skillCostsSpinner = skillCostsSpinner;
 			initSkillCostsSpinner();
 			this.assignableCheckBox = assignableCheckBox;
 			initAssignableCheckBox();
+			this.professionCategoryCheckBox = professionCategoryCheckBox;
+			initProfessionCategoryCheckBox();
 		}
 
 		private void initNameView() {
@@ -320,6 +326,22 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 					skillCategoryCost.setAssignable(isChecked);
 					if(copyIsAssignableToItem(isChecked)) {
 						callbackImpl.saveItem();
+					}
+				}
+			});
+		}
+
+		private void initProfessionCategoryCheckBox() {
+			professionCategoryCheckBox.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					boolean isChecked = professionCategoryCheckBox.isChecked();
+					skillCategoryCost.setProfessionCat(isChecked);
+					if(copyIsProfessionCatToItem(isChecked)) {
+						callbackImpl.saveItem();
+					}
+					else if(isChecked) {
+						professionCategoryCheckBox.setChecked(false);
 					}
 				}
 			});
@@ -393,6 +415,27 @@ public class ProfessionCategoryCostListAdapter extends BaseExpandableListAdapter
 							.remove(skillCategoryCost.getSkillCategory());
 				}
 				dpCostsSpinnerAdapter.notifyDataSetChanged();
+			}
+
+			return changed;
+		}
+
+		private boolean copyIsProfessionCatToItem(boolean newIsProfessionCat) {
+			boolean changed = false;
+			Profession profession = callbackImpl.getProfessionInstance();
+			List<SkillCategory> professionCats = profession.getProfessionalSkillCategories();
+			boolean oldIsProfessionCat = professionCats.contains(skillCategoryCost.getSkillCategory());
+			if(newIsProfessionCat != oldIsProfessionCat) {
+				if(newIsProfessionCat) {
+					if(professionCats.size() < 7) {
+						professionCats.add(skillCategoryCost.getSkillCategory());
+						changed = true;
+					}
+				}
+				else {
+					professionCats.remove(skillCategoryCost.getSkillCategory());
+					changed = true;
+				}
 			}
 
 			return changed;

@@ -90,16 +90,16 @@ public class CriticalTypeRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<CriticalType>> subscriber) {
 						try {
-							Collection<CriticalType> list = null;
+							Collection<CriticalType> list;
 							if(criticalTypes == null) {
 								list = dao.getAll();
-								criticalTypes = new SparseArray<CriticalType>(list.size());
+								criticalTypes = new SparseArray<>(list.size());
 								for(CriticalType criticalType : list) {
 									criticalTypes.append(criticalType.getId(), criticalType);
 								}
 							}
 							else {
-								list = new ArrayList<CriticalType>(criticalTypes.size());
+								list = new ArrayList<>(criticalTypes.size());
 								for(int i = 0; i < criticalTypes.size(); i++) {
 									list.add(criticalTypes.valueAt(i));
 								}
@@ -209,7 +209,7 @@ public class CriticalTypeRxHandler {
 
 		if(criticalTypes == null) {
 			Collection<CriticalType> list = dao.getAll();
-			criticalTypes = new SparseArray<CriticalType>(list.size());
+			criticalTypes = new SparseArray<>(list.size());
 			for(CriticalType criticalType : list) {
 				criticalTypes.append(criticalType.getId(), criticalType);
 				if(criticalType.getCode() == code) {

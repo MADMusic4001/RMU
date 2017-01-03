@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.activities.spell;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -41,8 +42,8 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.SpellListTypeRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
@@ -51,6 +52,8 @@ import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -68,7 +71,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	@Inject
 	protected RealmRxHandler                 realmRxHandler;
 	@Inject
-	protected SpellListTypeRxHandler         spellListTypeRxHandler;
+	protected SpellListRxHandler             spellListRxHandler;
 	@Inject
 	protected SpellListRxHandler             spellTypeRxHandler;
 	private   ArrayAdapter<Profession>       professionSpinnerAdapter;
@@ -83,11 +86,12 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	private   Spinner                        realm2Spinner;
 	private   Spinner                        professionSpinner;
 	private   Spinner                        spellListTypeSpinner;
-	private   SpellList currentInstance = new SpellList();
-	private   boolean isNew = true;
-	private   Collection<Realm>  realms = null;
-	private   Realm noRealm = new Realm();
-	private   Profession noProfession = new Profession();
+	private   SpellList                      currentInstance = new SpellList();
+	private   boolean                        isNew = true;
+	private   Collection<Realm>              realms = null;
+	private   Realm                          noRealm = new Realm();
+	private   Profession                     noProfession = new Profession();
+	private   Map<SpellListType, Skill>      spellListSkillsMap = new HashMap<>(SpellListType.values().length);
 
 	@Nullable
 	@Override
@@ -275,26 +279,35 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	}
 
 	private void copyItemToViews() {
+		Log.d(TAG, "copyItemToViews: currentInstance = " + currentInstance.print());
 		nameEdit.setText(currentInstance.getName());
 		notesEdit.setText(currentInstance.getNotes());
 		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(currentInstance.getRealm()));
+
 		if(currentInstance.getRealm2() == null) {
 			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealm));
 		}
 		else {
 			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(currentInstance.getRealm2()));
 		}
+
+		int position;
 		if(currentInstance.getProfession() == null) {
-			professionSpinner.setSelection(professionSpinnerAdapter.getPosition(noProfession));
+			position = professionSpinnerAdapter.getPosition(noProfession);
 		}
 		else {
-			professionSpinner.setSelection(professionSpinnerAdapter.getPosition(currentInstance.getProfession()));
+			position = professionSpinnerAdapter.getPosition(currentInstance.getProfession());
 		}
+		if(position != AdapterView.INVALID_POSITION) {
+			professionSpinner.setSelection(position);
+		}
+
 		spellListTypeSpinner.setSelection(spellListTypeSpinnerAdapter.getPosition(currentInstance.getSpellListType()));
 
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
 		}
+
 		if(currentInstance.getNotes() != null && !currentInstance.getNotes().isEmpty()) {
 			notesEdit.setError(null);
 		}
@@ -339,6 +352,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
+			Log.d(TAG, "saveItem: currentInstance = " + currentInstance.print());
 			final boolean wasNew = isNew;
 			isNew = false;
 			spellTypeRxHandler.save(currentInstance)
@@ -516,8 +530,15 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Realm newRealm = realm2SpinnerAdapter.getItem(position);
+				if(noRealm.equals(newRealm)) {
+					newRealm = null;
+				}
 				if(newRealm != null && !newRealm.equals(currentInstance.getRealm2())) {
 					currentInstance.setRealm2(newRealm);
+					saveItem();
+				}
+				else if(newRealm == null && currentInstance.getRealm2() != null) {
+					currentInstance.setRealm2(null);
 					saveItem();
 				}
 			}
@@ -544,6 +565,16 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 						professionSpinnerAdapter.clear();
 						professionSpinnerAdapter.add(noProfession);
 						professionSpinnerAdapter.addAll(professions);
+						int position;
+						if(currentInstance.getProfession() != null) {
+							position = professionSpinnerAdapter.getPosition(currentInstance.getProfession());
+						}
+						else {
+							position = professionSpinnerAdapter.getPosition(noProfession);
+						}
+						if(position != AdapterView.INVALID_POSITION) {
+							professionSpinner.setSelection(position);
+						}
 						professionSpinnerAdapter.notifyDataSetChanged();
 					}
 				});
@@ -552,8 +583,15 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Profession newProfession = professionSpinnerAdapter.getItem(position);
+				if(noProfession.equals(newProfession)) {
+					newProfession = null;
+				}
 				if(newProfession != null && !newProfession.equals(currentInstance.getProfession())) {
 					currentInstance.setProfession(newProfession);
+					saveItem();
+				}
+				else if(newProfession == null && currentInstance.getProfession() != null) {
+					currentInstance.setProfession(null);
 					saveItem();
 				}
 			}
@@ -565,30 +603,56 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	private void initSpellListTypeSpinner(View layout) {
 		spellListTypeSpinner = (Spinner)layout.findViewById(R.id.spell_list_type_spinner);
 		spellListTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+		spellListTypeSpinnerAdapter.addAll(SpellListType.values());
 		spellListTypeSpinner.setAdapter(spellListTypeSpinnerAdapter);
 
-		spellListTypeRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<SpellListType>>() {
+		spellListRxHandler.getSpellListSkills()
+				.subscribe(new Subscriber<Collection<Skill>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Profession instances", e);
+						Log.e(TAG, "onError: Exception caught getting all spell list skills", e);
 					}
 					@Override
-					public void onNext(Collection<SpellListType> spellListTypes) {
-						spellListTypeSpinnerAdapter.clear();
-						spellListTypeSpinnerAdapter.addAll(spellListTypes);
-						spellListTypeSpinnerAdapter.notifyDataSetChanged();
+					public void onNext(Collection<Skill> skillCollection) {
+						for(SpellListType spellListType : SpellListType.values()) {
+							switch (spellListType) {
+								case ARCANE:
+									spellListSkillsMap.put(SpellListType.ARCANE,
+														   getSpellListTypeSkill("Arcane Lists", skillCollection));
+									break;
+								case BASE:
+									spellListSkillsMap.put(SpellListType.BASE,
+														   getSpellListTypeSkill("Base/Open Lists", skillCollection));
+									break;
+								case CLOSED:
+									spellListSkillsMap.put(SpellListType.CLOSED,
+														   getSpellListTypeSkill("Closed Lists", skillCollection));
+									break;
+								case EVIL:
+									spellListSkillsMap.put(SpellListType.EVIL,
+														   getSpellListTypeSkill("Restricted Lists", skillCollection));
+									break;
+								case OPEN:
+									spellListSkillsMap.put(SpellListType.OPEN,
+														   getSpellListTypeSkill("Base/Open Lists", skillCollection));
+									break;
+								case RESTRICTED:
+									spellListSkillsMap.put(SpellListType.RESTRICTED,
+														   getSpellListTypeSkill("Restricted Lists", skillCollection));
+									break;
+							}
+						}
 					}
 				});
-
 		spellListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				SpellListType newSpellListType = spellListTypeSpinnerAdapter.getItem(position);
 				if(newSpellListType != null && !newSpellListType.equals(currentInstance.getSpellListType())) {
 					currentInstance.setSpellListType(newSpellListType);
+					currentInstance.setSkill(spellListSkillsMap.get(newSpellListType));
 					saveItem();
 				}
 			}
@@ -658,5 +722,24 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 			}
 		});
 		registerForContextMenu(listView);
+	}
+
+	private Skill getSpellListTypeSkill(@NonNull String name, @NonNull Collection<Skill> skills) {
+		Skill result = null;
+
+		for(Skill skill : skills) {
+			if(result == null) {
+				result = skill;
+			}
+			if(name.equals(skill.getName())) {
+				result = skill;
+				break;
+			}
+			else if("Restricted Lists".equals(skill.getName())) {
+				result = skill;
+			}
+		}
+
+		return result;
 	}
 }

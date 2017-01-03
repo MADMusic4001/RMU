@@ -19,9 +19,8 @@ import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 
@@ -37,38 +36,38 @@ import java.util.Map;
  * Class containing Creature Variety attributes.
  */
 public class CreatureVariety extends DatabaseObject {
-	public static final String          JSON_NAME            = "CreatureVarieties";
-	private CreatureType                type                 = null;
-	private String                      name                 = null;
-	private String                      description          = null;
-	private short                       typicalLevel         = 1;
-	private char                        levelSpread          = 'A';
-	private Map<Statistic, Short>       racialStatBonuses    = new HashMap<>();
-	private short                       height               = 60;
-	private short                       length               = 60;
-	private short                       weight               = 200;
-	private short                       healingRate          = 1;
-	private short                       baseHits             = 25;
-	private short                       baseEndurance        = 0;
-	private Size                        size                 = null;
-	private short                       armorType            = 1;
-	private List<CriticalCode>          criticalCodes        = new ArrayList<>();
-	private short                       baseMovementRate     = 15;
-	private short                       baseChannellingRR    = 0;
-	private short                       baseEssenceRR        = 0;
-	private short                       baseMentalismRR      = 0;
-	private short                       basePhysicalRR       = 0;
-	private short                       baseFearRR           = 0;
-	private Realm                       realm1               = null;
-	private Realm                       realm2               = null;
-	private short                       baseStride           = 0;
-	private short                       leftoverDP           = 200;
-	private Outlook                     outlook              = null;
-	private List<TalentInstance>        talentInstancesList  = new ArrayList<>();
-	private Map<Attack, Short>          attackBonusesMap     = new HashMap<>();
-	private Size                        criticalSizeModifier = null;
-	private String                      attackSequence       = null;
-	private Map<Skill, Short>           skillBonusesMap      = new HashMap<>();
+	public static final String    JSON_NAME            = "CreatureVarieties";
+	private CreatureType          type                 = null;
+	private String                name                 = null;
+	private String                description          = null;
+	private short                 typicalLevel         = 1;
+	private char                  levelSpread          = 'A';
+	private Map<Statistic, Short> racialStatBonuses    = new HashMap<>();
+	private short                 height               = 60;
+	private short                 length               = 60;
+	private short                 weight               = 200;
+	private short                 healingRate          = 1;
+	private short                 baseHits             = 25;
+	private short                 baseEndurance        = 0;
+	private Size                  size                 = null;
+	private short                 armorType            = 1;
+	private List<CriticalCode>    criticalCodes        = new ArrayList<>();
+	private short                 baseMovementRate     = 15;
+	private short                 baseChannellingRR    = 0;
+	private short                 baseEssenceRR        = 0;
+	private short                 baseMentalismRR      = 0;
+	private short                 basePhysicalRR       = 0;
+	private short                 baseFearRR           = 0;
+	private Realm                 realm1               = null;
+	private Realm                realm2                = null;
+	private short                baseStride            = 0;
+	private short                leftoverDP            = 200;
+	private Outlook              outlook               = null;
+	private List<TalentInstance> talentInstancesList   = new ArrayList<>();
+	private Map<Attack, Short>   attackBonusesMap      = new HashMap<>();
+	private Size                 criticalSizeModifier  = null;
+	private String               attackSequence        = null;
+	private List<SkillBonus>     skillBonusesList      = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the CreatureVariety instance.
@@ -93,6 +92,15 @@ public class CreatureVariety extends DatabaseObject {
 
 	@Override
 	public String toString() {
+		return getName();
+	}
+
+	/**
+	 * Generates a debug string containing the member variables for this instance.
+	 *
+	 * @return a debug string containing the member variables for this instance.
+	 */
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", getId())
 				.append("type", type)
@@ -125,7 +133,7 @@ public class CreatureVariety extends DatabaseObject {
 				.append("attackBonusesMap", attackBonusesMap)
 				.append("criticalSizeModifier", criticalSizeModifier)
 				.append("attackSequence", attackSequence)
-				.append("skillBonusesMap", skillBonusesMap)
+				.append("skillBonusesList", skillBonusesList)
 				.toString();
 	}
 
@@ -310,10 +318,10 @@ public class CreatureVariety extends DatabaseObject {
 	public void setAttackSequence(String attackSequence) {
 		this.attackSequence = attackSequence;
 	}
-	public Map<Skill, Short> getSkillBonusesMap() {
-		return skillBonusesMap;
+	public List<SkillBonus> getSkillBonusesList() {
+		return skillBonusesList;
 	}
-	public void setSkillBonusesMap(Map<Skill, Short> skillBonusesMap) {
-		this.skillBonusesMap = skillBonusesMap;
+	public void setSkillBonusesList(List<SkillBonus> skillBonusesList) {
+		this.skillBonusesList = skillBonusesList;
 	}
 }

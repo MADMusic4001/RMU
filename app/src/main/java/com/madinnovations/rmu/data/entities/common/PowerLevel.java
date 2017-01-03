@@ -19,11 +19,11 @@ package com.madinnovations.rmu.data.entities.common;
  * How powerful characters are in the game relative to average NPCs
  */
 public enum 	PowerLevel {
-	AVERAGE("Average", (short)0, (short)0, (short)0, (short)5, (short)0),
-	SUPERIOR("Superior", (short)11, (short)10, (short)5, (short)4, (short)10),
-	HEROIC("Heroic", (short)21, (short)20, (short)10, (short)3, (short)20),
-	LEGENDARY("Legendary", (short)31, (short)30, (short)15, (short)2, (short)30),
-	EPIC("Epic", (short)41, (short)40, (short)20, (short)1, (short)40);
+	AVERAGE("Average", (short)0, (short)0, (short)0, (short)5, (short)0, (short)0, (short)0, (short)0),
+	SUPERIOR("Superior", (short)11, (short)10, (short)5, (short)4, (short)10, (short)2, (short)1, (short)5),
+	HEROIC("Heroic", (short)21, (short)20, (short)10, (short)3, (short)20, (short)4, (short)2, (short)10),
+	LEGENDARY("Legendary", (short)31, (short)30, (short)15, (short)2, (short)30, (short)6, (short)3, (short)15),
+	EPIC("Epic", (short)41, (short)40, (short)20, (short)1, (short)40, (short)7, (short)3, (short)20);
 
 	private String name;
 	private short rerollUnder;
@@ -31,15 +31,22 @@ public enum 	PowerLevel {
 	private short maxKnackBonus;
 	private short ppRecoveryHours;
 	private short statPoints;
+	private short creaturePrimeStatsBonus;
+	private short creatureSecondaryStatsBonus;
+	private short creaturePrimeSkillsBonus;
 
 	PowerLevel(String name, short rerollUnder, short professionalKnacks, short maxKnackBonus, short ppRecoveryHours,
-			   short statPoints) {
+			   short statPoints, short creaturePrimeStatsBonus, short creatureSecondaryStatsBonus,
+			   short creaturePrimeSkillsBonus) {
 		this.name = name;
 		this.rerollUnder = rerollUnder;
 		this.professionalKnacks = professionalKnacks;
 		this.maxKnackBonus = maxKnackBonus;
 		this.ppRecoveryHours = ppRecoveryHours;
 		this.statPoints = statPoints;
+		this.creaturePrimeStatsBonus = creaturePrimeStatsBonus;
+		this.creatureSecondaryStatsBonus = creatureSecondaryStatsBonus;
+		this.creaturePrimeSkillsBonus = creaturePrimeSkillsBonus;
 	}
 
 	@Override
@@ -65,5 +72,14 @@ public enum 	PowerLevel {
 	}
 	public short getStatPoints() {
 		return statPoints;
+	}
+	public short getCreaturePrimeStatsBonus() {
+		return creaturePrimeStatsBonus;
+	}
+	public short getCreatureSecondaryStatsBonus() {
+		return creatureSecondaryStatsBonus;
+	}
+	public short getCreaturePrimeSkillsBonus() {
+		return creaturePrimeSkillsBonus;
 	}
 }

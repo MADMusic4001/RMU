@@ -16,6 +16,8 @@
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 
 /**
  * Database schema data for the variety_skills table
@@ -25,18 +27,26 @@ public interface VarietySkillsSchema {
 
 	String COLUMN_VARIETY_ID = "varietyId";
 	String COLUMN_SKILL_ID = "skillId";
+	String COLUMN_SPECIALIZATION_ID = "specializationId";
+	String COLUMN_SPELL_LIST_ID = "spellListId";
 	String COLUMN_SKILL_BONUS = "skillBonus";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL, "
-			+ COLUMN_SKILL_ID + " INTEGER NOT NULL, "
+			+ COLUMN_VARIETY_ID + " INTEGER NOT NULL REFERENCES "
+				+ CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + "), "
+			+ COLUMN_SKILL_ID + " INTEGER REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
+			+ COLUMN_SPECIALIZATION_ID + " INTEGER REFERENCES "
+				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + "), "
+			+ COLUMN_SPELL_LIST_ID + " INTEGER REFERENCES "
+				+ SpellListSchema.TABLE_NAME + "(" + SpellListSchema.COLUMN_ID + "), "
 			+ COLUMN_SKILL_BONUS + " INTEGER NOT NULL, "
-			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_SKILL_ID + "), "
-			+ "FOREIGN KEY (" + COLUMN_VARIETY_ID + ") REFERENCES " + CreatureVarietySchema.TABLE_NAME + "(" + CreatureVarietySchema.COLUMN_ID + ")"
-			+ "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+			+ "PRIMARY KEY(" + COLUMN_VARIETY_ID + "," + COLUMN_SKILL_ID + "," + COLUMN_SPECIALIZATION_ID + ","
+				+ COLUMN_SPELL_LIST_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_SKILL_ID, COLUMN_SKILL_BONUS};
+	String[] COLUMNS = new String[] {COLUMN_VARIETY_ID, COLUMN_SKILL_ID, COLUMN_SPECIALIZATION_ID, COLUMN_SPELL_LIST_ID,
+			COLUMN_SKILL_BONUS};
 }

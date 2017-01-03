@@ -21,7 +21,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,20 +49,13 @@ import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandle
 import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
+import com.madinnovations.rmu.controller.utils.ReactiveUtils;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.Action;
-import com.madinnovations.rmu.data.entities.combat.Attack;
-import com.madinnovations.rmu.data.entities.combat.CriticalType;
-import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.common.Parameter;
-import com.madinnovations.rmu.data.entities.common.Sense;
-import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
-import com.madinnovations.rmu.data.entities.spells.Spell;
-import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
@@ -82,7 +74,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 /**
  * Handles interactions with the UI for talents.
@@ -91,59 +82,48 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		EditTextUtils.ValuesCallback {
 	private static final String TAG = "TalentsFragment";
 	@Inject
-	AttackRxHandler                      attackRxHandler;
+	protected AttackRxHandler                          attackRxHandler;
 	@Inject
-	CriticalTypeRxHandler                criticalTypeRxHandler;
+	protected CriticalTypeRxHandler                    criticalTypeRxHandler;
 	@Inject
-	SkillRxHandler                       skillRxHandler;
+	protected SkillRxHandler                           skillRxHandler;
 	@Inject
-	SpecializationRxHandler              specializationRxHandler;
+	protected SpecializationRxHandler                  specializationRxHandler;
 	@Inject
-	SpellRxHandler                       spellRxHandler;
+	protected SpellRxHandler                           spellRxHandler;
 	@Inject
-	SpellListRxHandler                   spellListRxHandler;
+	protected SpellListRxHandler                       spellListRxHandler;
 	@Inject
-	TalentRxHandler                      talentRxHandler;
+	protected TalentRxHandler                          talentRxHandler;
 	@Inject
-	TalentCategoryRxHandler              talentCategoryRxHandler;
-	private ArrayAdapter<TalentCategory> filterSpinnerAdapter;
-	private Spinner                      filterSpinner;
-	private LayoutInflater               layoutInflater;
-	private ArrayAdapter<TalentCategory> categorySpinnerAdapter;
-	private ArrayAdapter<Action>         actionSpinnerAdapter;
-	private TwoFieldListAdapter<Talent>  listAdapter;
-	private ListView                     listView;
-	private Spinner                      categorySpinner;
-	private EditText                     nameEdit;
-	private EditText                     descriptionEdit;
-	private EditText                     initialCostEdit;
-	private EditText                     costPerTierEdit ;
-	private EditText                     minTiersEdit;
-	private EditText                     maxTiersEdit;
-	private CheckBox                     flawCheckbox;
-	private CheckBox                     situationalCheckbox;
-	private Spinner                      actionSpinner;
-	private LinearLayout                 parametersList;
-	private Talent                       currentInstance           = new Talent();
-	private boolean                      isNew                     = true;
-	private SparseArray<Attack>         attackSparseArray         = null;
-	private SparseArray<Skill>          skillSparseArray          = null;
-	private SparseArray<Specialization> specializationSparseArray = null;
-	private SparseArray<Spell>          spellSparseArray          = null;
-	private SparseArray<SpellList>      spellListSparseArray      = null;
-	private SparseArray<CriticalType>   criticalTypeSparseArray   = null;
-	private Map<View, Integer> indexMap             = new HashMap<>();
-	private Attack             choiceAttack         = null;
-	@SuppressWarnings("unused")
-	private Resistance         choiceResistance     = null;
-	private Skill              choiceSkill          = null;
-	private Specialization     choiceSpecialization = null;
-	private Spell              choiceSpell          = null;
-	private SpellList          choiceSpellList      = null;
-	private CriticalType       choiceCriticalType   = null;
-	@SuppressWarnings("unused")
-	private Statistic          choiceStat           = null;
+	protected TalentCategoryRxHandler                  talentCategoryRxHandler;
+	@Inject
+	protected ReactiveUtils                            reactiveUtils;
+	private ArrayAdapter<TalentCategory>               filterSpinnerAdapter;
+	private Spinner                                    filterSpinner;
+	private LayoutInflater                             layoutInflater;
+	private ArrayAdapter<TalentCategory>               categorySpinnerAdapter;
+	private ArrayAdapter<Action>                       actionSpinnerAdapter;
+	private TwoFieldListAdapter<Talent>                listAdapter;
+	private ListView                                   listView;
+	private Spinner                                    categorySpinner;
+	private EditText                                   nameEdit;
+	private EditText                                   descriptionEdit;
+	private EditText                                   initialCostEdit;
+	private EditText                                   costPerTierEdit ;
+	private EditText                                   minTiersEdit;
+	private EditText                                   maxTiersEdit;
+	private CheckBox                                   flawCheckbox;
+	private CheckBox                                   situationalCheckbox;
+	private Spinner                                    actionSpinner;
+	private LinearLayout                               parametersList;
+	private Talent                                     currentInstance           = new Talent();
+	private boolean                                    isNew                     = true;
+	private Map<Parameter, Collection<DatabaseObject>> parameterCollectionsCache = new HashMap<>();
+	private Map<View, Integer>                         indexMap                  = new HashMap<>();
+	private Object                                     choice;
 
+	// <editor-fold desc="method overrides/implementations">
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -152,6 +132,13 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 		this.layoutInflater = inflater;
 		View layout = inflater.inflate(R.layout.talents_fragment, container, false);
+
+		choice = new Object() {
+			@Override
+			public String toString() {
+				return getActivity().getString(R.string.choice_label);
+			}
+		};
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_talent_name));
 		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_talent_description));
@@ -347,7 +334,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	public boolean performLongClick(@IdRes int editTextId) {
 		return false;
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="copy/save/deletemethods">
 	@SuppressWarnings("unchecked")
 	private boolean copyViewsToItem() {
 		View currentFocusView = getActivity().getCurrentFocus();
@@ -431,50 +420,95 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		}
 
 		for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
-			Spinner spinner = (Spinner)entry.getKey().findViewById(R.id.parameter_spinner);
-			Parameter parameter = (Parameter)spinner.getSelectedItem();
-			if(parameter != null) {
-				switch (parameter) {
-					case ATTACK:
-						changed |= copyAttackViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case ELEMENTAL_RR:
-					case FEAR_RR:
-					case FOLLOWER_FEAR_RR:
-					case MAGICAL_RR:
-					case PHYSICAL_RR:
-						changed |= copyResistanceViewsToItem(entry.getKey(), entry.getValue(), parameter);
-						break;
-					case SENSE:
-						changed |= copySenseViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case SKILL:
-						changed |= copySkillViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case SPECIALIZATION:
-						changed |= copySpecializationsViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case SPELL:
-						changed |= copySpellsViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case SPELL_LIST:
-						changed |= copySpellListsViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case STAT:
-						changed |= copyStatsViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case CONDITION:
-						changed |= copyNoValuesViewsToItem(entry.getValue(), parameter);
-						break;
-					case CRITICAL_TYPE:
-						changed |= copyCriticalTypeViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					case CRITICAL_SEVERITY:
-						changed |= copyCriticalSeverityViewsToItem(entry.getKey(), entry.getValue());
-						break;
-					default:
-						changed |= copyValuesViewsToItem(entry.getKey(), entry.getValue(), parameter);
-						break;
+			Spinner spinner = (Spinner) entry.getKey().findViewById(R.id.parameter_spinner);
+			Spinner valuesSpinner = (Spinner) entry.getKey().findViewById(R.id.value_spinner);
+			EditText initialValueEdit = (EditText)entry.getKey().findViewById(R.id.initial_value_edit);
+			EditText valuePerEdit = (EditText)entry.getKey().findViewById(R.id.value_per_edit);
+			CheckBox perTierCheckbox = (CheckBox)entry.getKey().findViewById(R.id.per_tier_check_box);
+			CheckBox perLevelCheckbox = (CheckBox)entry.getKey().findViewById(R.id.per_level_check_box);
+			CheckBox perRoundCheckbox = (CheckBox)entry.getKey().findViewById(R.id.per_round_check_box);
+			Parameter parameter = (Parameter) spinner.getSelectedItem();
+			TalentParameterRow parameterRow = currentInstance.getTalentParameterRows()[entry.getValue()];
+			if (parameter.getHandler() != null || parameter.getEnumValues() != null) {
+				Object object = valuesSpinner.getSelectedItem();
+				if (object != null) {
+					if (parameterRow.getParameter().getHandler() != null && object instanceof DatabaseObject) {
+						int objectId = ((DatabaseObject) object).getId();
+						if (objectId == -1) {
+							if (parameterRow.getInitialValue() != null) {
+								parameterRow.setInitialValue(null);
+								changed = true;
+							}
+						}
+						else if (parameterRow.getInitialValue() == null || objectId != parameterRow.getInitialValue()) {
+							parameterRow.setInitialValue(objectId);
+							changed = true;
+						}
+					}
+					else if (parameterRow.getParameter().getEnumValues() != null && (object instanceof Enum<?>
+							|| object.equals(choice))) {
+						if (object.equals(choice)) {
+							if (parameterRow.getEnumName() != null) {
+								parameterRow.setEnumName(null);
+								changed = true;
+							}
+						}
+						else {
+							@SuppressWarnings("ConstantConditions")
+							String enumName = ((Enum<?>) object).name();
+							if (!enumName.equals(parameterRow.getEnumName())) {
+								parameterRow.setEnumName(enumName);
+								changed = true;
+							}
+						}
+					}
+					if (changed) {
+						saveItem();
+					}
+				}
+			}
+			else {
+				Integer nullableInteger = null;
+				if(initialValueEdit.getText().length() > 0) {
+					nullableInteger = Integer.valueOf(initialValueEdit.getText().toString());
+				}
+				if(nullableInteger == null && parameterRow.getInitialValue() != null) {
+					parameterRow.setInitialValue(null);
+					changed = true;
+				}
+				if(nullableInteger != null && !nullableInteger.equals(parameterRow.getInitialValue())) {
+					parameterRow.setInitialValue(nullableInteger);
+					changed = true;
+				}
+
+				if(valuePerEdit.getText().length() > 0) {
+					nullableInteger = Integer.valueOf(valuePerEdit.getText().toString());
+				}
+				if(nullableInteger == null && parameterRow.getValuePer() != null) {
+					parameterRow.setValuePer(null);
+					changed = true;
+				}
+				if(nullableInteger != null && !nullableInteger.equals(parameterRow.getValuePer())) {
+					parameterRow.setValuePer(nullableInteger);
+					changed = true;
+				}
+
+				boolean isChecked = perTierCheckbox.isChecked();
+				if(parameterRow.isPerTier() != isChecked) {
+					parameterRow.setPerTier(isChecked);
+					changed = true;
+				}
+
+				isChecked = perLevelCheckbox.isChecked();
+				if(parameterRow.isPerLevel() != isChecked) {
+					parameterRow.setPerLevel(isChecked);
+					changed = true;
+				}
+
+				isChecked = perRoundCheckbox.isChecked();
+				if(parameterRow.isPerRound() != isChecked) {
+					parameterRow.setPerRound(isChecked);
+					changed = true;
 				}
 			}
 		}
@@ -586,7 +620,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					}
 				});
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="init talents_fragment layout views">
 	private void initFilterSpinner(View layout) {
 		filterSpinner = (Spinner)layout.findViewById(R.id.talent_category_filter_spinner);
 		filterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
@@ -668,7 +704,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void initActionSpinner(View layout) {
 		actionSpinner = (Spinner)layout.findViewById(R.id.action_spinner);
 		actionSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-		actionSpinnerAdapter.clear();
 		actionSpinnerAdapter.addAll(Action.values());
 		actionSpinnerAdapter.notifyDataSetChanged();
 		actionSpinner.setAdapter(actionSpinnerAdapter);
@@ -740,67 +775,17 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		initInitialValueEdit(parameterRowView);
 		initValuePerEdit(parameterRowView);
 		initValueCheckBoxes(parameterRowView);
-		initAttacksSpinner(parameterRowView);
-		initResistancesSpinner(parameterRowView);
-		initResistanceModEdit(parameterRowView);
-		initSenseSpinner(parameterRowView);
-		initSkillsSpinner(parameterRowView);
-		initSpecializationsSpinner(parameterRowView);
-		initSpellsSpinner(parameterRowView);
-		initSpellListsSpinner(parameterRowView);
-		initCriticalTypesSpinner(parameterRowView);
-		initCriticalSeveritiesSpinner(parameterRowView);
-		initInitialAdjustmentEdit(parameterRowView);
-		initAdjustmentPerEdit(parameterRowView);
-		initStatsSpinner(parameterRowView);
-
-		Parameter parameter = currentInstance.getTalentParameterRows()[index].getParameter();
-		switch (parameter) {
-			case ATTACK:
-				setAttacksVisibility(parameterRowView, VISIBLE);
-				break;
-			case ELEMENTAL_RR:
-			case FEAR_RR:
-			case FOLLOWER_FEAR_RR:
-			case MAGICAL_RR:
-			case PHYSICAL_RR:
-				setResistancesVisibility(parameterRowView, VISIBLE);
-				break;
-			case SKILL:
-				setSkillsVisibility(parameterRowView, VISIBLE);
-				break;
-			case SPECIALIZATION:
-				setSpecializationsVisibility(parameterRowView, VISIBLE);
-				break;
-			case SPELL:
-				setSpellsVisibility(parameterRowView, VISIBLE);
-				break;
-			case SPELL_LIST:
-				setSpellListsVisibility(parameterRowView, VISIBLE);
-				break;
-			case STAT:
-				setStatsVisibility(parameterRowView, VISIBLE);
-				break;
-			case CRITICAL_TYPE:
-				setCriticalTypeVisibility(parameterRowView, VISIBLE);
-				break;
-			case CRITICAL_SEVERITY:
-				setCriticalSeverityVisibility(parameterRowView, VISIBLE);
-				break;
-			case CONDITION:
-				break;
-			default:
-				setValuesVisibility(parameterRowView, VISIBLE);
-				break;
-		}
+		initValueSpinner(parameterRowView, currentInstance.getTalentParameterRows()[index]);
+		setParameterRow(parameterRowView, currentInstance.getTalentParameterRows()[index]);
 
 		parametersList.addView(parameterRowView);
 	}
+	// </editor-fold>
 
+	// <editor-fold desc="talent_parameter_row layout views initialization and handling">
 	private void initParameterSpinner(final View layout) {
 		Spinner spinner = (Spinner)layout.findViewById(R.id.parameter_spinner);
 		final ArrayAdapter<Parameter> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-		adapter.clear();
 		adapter.addAll(Parameter.values());
 		adapter.notifyDataSetChanged();
 		spinner.setAdapter(adapter);
@@ -814,208 +799,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					TalentParameterRow row = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
 					if(!parameter.equals(row.getParameter())) {
 						row.setParameter(parameter);
-						switch (parameter) {
-							case ATTACK:
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setAttacksVisibility(layout, VISIBLE);
-								break;
-							case CRITICAL_TYPE:
-								setAttacksVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, VISIBLE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								break;
-							case CRITICAL_SEVERITY:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, VISIBLE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								break;
-							case ELEMENTAL_RR:
-								setResistanceSpinnerAdapter(layout, Resistance.getElementalResistances());
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setResistancesVisibility(layout, VISIBLE);
-								break;
-							case FEAR_RR:
-							case FOLLOWER_FEAR_RR:
-								setResistanceSpinnerAdapter(layout, Resistance.getFearResistances());
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setResistancesVisibility(layout, VISIBLE);
-								break;
-							case MAGICAL_RR:
-								setResistanceSpinnerAdapter(layout, Resistance.getMagicalResistances());
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setResistancesVisibility(layout, VISIBLE);
-								break;
-							case PHYSICAL_RR:
-								setResistanceSpinnerAdapter(layout, Resistance.getPhysicalResistances());
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setResistancesVisibility(layout, VISIBLE);
-								break;
-							case SENSE:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSenseVisibility(layout, VISIBLE);
-								break;
-							case SKILL:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSkillsVisibility(layout, VISIBLE);
-								break;
-							case SPECIALIZATION:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, VISIBLE);
-								break;
-							case SPELL:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSpellsVisibility(layout, VISIBLE);
-								break;
-							case SPELL_LIST:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setSpellListsVisibility(layout, VISIBLE);
-								break;
-							case STAT:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								setStatsVisibility(layout, VISIBLE);
-								break;
-							case CONDITION:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, GONE);
-								break;
-							default:
-								setAttacksVisibility(layout, GONE);
-								setCriticalSeverityVisibility(layout, GONE);
-								setCriticalTypeVisibility(layout, GONE);
-								setResistancesVisibility(layout, GONE);
-								setSenseVisibility(layout, GONE);
-								setSkillsVisibility(layout, GONE);
-								setSpecializationsVisibility(layout, GONE);
-								setSpellsVisibility(layout, GONE);
-								setSpellListsVisibility(layout, GONE);
-								setStatsVisibility(layout, GONE);
-								setValuesVisibility(layout, VISIBLE);
-								break;
-						}
-						saveItem();
+						setParameterRow(layout, row);
+ 						saveItem();
 					}
 				}
 			}
@@ -1057,20 +842,20 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	}
 
 	private void initValuePerEdit(final View layout) {
-		final EditText editText = (EditText)layout.findViewById(R.id.value_per_edit);
+		final EditText valuePerEdit = (EditText)layout.findViewById(R.id.value_per_edit);
 		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer();
 		if(value != null) {
-			editText.setText(String.valueOf(value));
+			valuePerEdit.setText(String.valueOf(value));
 		}
 		else {
-			editText.setText(null);
+			valuePerEdit.setText(null);
 		}
 
-		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		valuePerEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				if(editText.getText().length() > 0) {
-					Integer newInteger = Integer.valueOf(editText.getText().toString());
+				if(valuePerEdit.getText().length() > 0) {
+					Integer newInteger = Integer.valueOf(valuePerEdit.getText().toString());
 					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
 						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer())) {
 							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(newInteger);
@@ -1161,78 +946,50 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initAttacksSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
-		final ArrayAdapter<Attack> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+	private void initValueSpinner(final View layout, final TalentParameterRow parameterRow) {
+		final Spinner valuesSpinner = (Spinner)layout.findViewById(R.id.value_spinner);
+		final ArrayAdapter<Object> valuesAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+		valuesSpinner.setAdapter(valuesAdapter);
 
-		if(attackSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < attackSparseArray.size(); i++) {
-				adapter.add(attackSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Integer index = null;
-			if(indexMap.get(layout) != null) {
-				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-			}
-			if(index != null) {
-				Attack currentAttack = new Attack(index);
-				spinner.setSelection(adapter.getPosition(currentAttack));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-		else {
-			choiceAttack = new Attack();
-			choiceAttack.setName(getString(R.string.choice_label));
-			attackRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Attack>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception caught getting all Attack instances", e);
-						}
-						@Override
-						public void onNext(Collection<Attack> attacks) {
-							attackSparseArray = new SparseArray<>(attacks.size() + 1);
-							attackSparseArray.put(choiceAttack.getId(), choiceAttack);
-							for(Attack attack : attacks) {
-								attackSparseArray.put(attack.getId(), attack);
-							}
-							adapter.clear();
-							adapter.addAll(attacks);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Integer index = null;
-							if(indexMap.get(layout) != null) {
-								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-							}
-							if(index != null) {
-								Attack currentAttack = new Attack(index);
-								spinner.setSelection(adapter.getPosition(currentAttack));
-							}
-							else {
-								spinner.setSelection(0);
-							}
-						}
-					});
-		}
+		setParameterRow(layout, parameterRow);
 
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		valuesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Attack attack = adapter.getItem(position);
-				if(attack != null) {
-					Attack currentAttack = null;
-					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-					if(index != null) {
-						currentAttack = attackSparseArray.get(index);
+				boolean changed = false;
+				Object object = valuesAdapter.getItem(position);
+				if(object != null) {
+					if(parameterRow.getParameter().getHandler() != null && object instanceof DatabaseObject) {
+						int objectId = ((DatabaseObject)object).getId();
+						if(objectId == -1) {
+							if(parameterRow.getInitialValue() != null) {
+								parameterRow.setInitialValue(null);
+								changed = true;
+							}
+						}
+						else if(parameterRow.getInitialValue() == null || objectId != parameterRow.getInitialValue()) {
+							parameterRow.setInitialValue(objectId);
+							changed = true;
+						}
 					}
-					if(!attack.equals(currentAttack)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(attack.getId());
+					else if(parameterRow.getParameter().getEnumValues() != null && (object instanceof Enum<?>
+							|| object.equals(choice))) {
+						if(object.equals(choice)) {
+							if(parameterRow.getEnumName() != null) {
+								parameterRow.setEnumName(null);
+								changed = true;
+							}
+						}
+						else {
+							@SuppressWarnings("ConstantConditions")
+							String enumName = ((Enum<?>) object).name();
+							if(!enumName.equals(parameterRow.getEnumName())) {
+								parameterRow.setEnumName(enumName);
+								changed = true;
+							}
+						}
+					}
+					if(changed) {
 						saveItem();
 					}
 				}
@@ -1240,1291 +997,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {}
 		});
-	}
-
-	private void initResistancesSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Resistance resistance = ((ArrayAdapter<Resistance>)spinner.getAdapter()).getItem(position);
-				if(resistance != null) {
-					int index = indexMap.get(layout);
-					String enumName = currentInstance.getTalentParameterRows()[index].getEnumName();
-					Resistance currentResistance = null;
-					if(enumName != null) {
-						currentResistance = Resistance.valueOf(enumName);
-					}
-					if(!resistance.equals(currentResistance)) {
-						currentInstance.getTalentParameterRows()[index].setEnumName(resistance.name());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initResistanceModEdit(final View layout) {
-		final EditText editText = (EditText)layout.findViewById(R.id.resistance_mod_edit);
-		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-		if(value != null) {
-			editText.setText(String.valueOf(value));
-		}
-		else {
-			editText.setText(null);
-		}
-
-		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if(editText.getText().length() > 0) {
-					Integer newInteger = Integer.valueOf(editText.getText().toString());
-					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
-						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue())) {
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(newInteger);
-							saveItem();
-						}
-					}
-				}
-				else {
-					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void setResistanceSpinnerAdapter(View layout, Resistance[] resistances) {
-		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
-		ArrayAdapter<Resistance> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-		adapter.clear();
-		adapter.addAll(resistances);
-		adapter.notifyDataSetChanged();
-		spinner.setAdapter(adapter);
-		String enumName = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName();
-		if(enumName != null) {
-			spinner.setSelection(adapter.getPosition(Resistance.valueOf(enumName)));
-		}
-	}
-
-	private void initSenseSpinner(final View layout) {
-		final Spinner spinner = (Spinner) layout.findViewById(R.id.sense_spinner);
-		final ArrayAdapter<Sense> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		adapter.clear();
-		adapter.addAll(Sense.values());
-		adapter.notifyDataSetChanged();
-		spinner.setAdapter(adapter);
-		TalentParameterRow talentParameterRow = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
-		if (Parameter.SENSE.equals(talentParameterRow.getParameter())) {
-			Sense currentSense = null;
-			if(talentParameterRow.getInitialValue() != null) {
-				currentSense = adapter.getItem(talentParameterRow.getInitialValue());
-			}
-			if(currentSense != null) {
-				spinner.setSelection(adapter.getPosition(currentSense));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Sense sense = adapter.getItem(position);
-				if(sense != null) {
-					Sense currentSense = null;
-					if(indexMap.get(layout) != null&& currentInstance.getTalentParameterRows()[indexMap.get(layout)] != null
-							&& currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
-						currentSense = adapter.getItem(currentInstance.getTalentParameterRows()
-																	 [indexMap.get(layout)].getInitialValue());
-					}
-					if(!sense.equals(currentSense)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(sense.name());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initSkillsSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
-		final ArrayAdapter<Skill> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		if(skillSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < skillSparseArray.size(); i++) {
-				adapter.add(skillSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Integer index = null;
-			if(indexMap.get(layout) != null) {
-				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-			}
-			if(index != null) {
-				spinner.setSelection(adapter.getPosition(skillSparseArray.get(index)));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-		else {
-			choiceSkill = new Skill();
-			choiceSkill.setName(getString(R.string.choice_label));
-			skillRxHandler.getNonSpecializationSkills()
-					.subscribe(new Subscriber<Collection<Skill>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception caught loading all non-specialization Skill instances", e);
-						}
-						@Override
-						public void onNext(Collection<Skill> skills) {
-							skillSparseArray = new SparseArray<>(skills.size() + 1);
-							skillSparseArray.put(choiceSkill.getId(), choiceSkill);
-							for(Skill skill : skills) {
-								skillSparseArray.put(skill.getId(), skill);
-							}
-							adapter.clear();
-							adapter.addAll(skills);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Integer index = null;
-							if(indexMap.get(layout) != null) {
-								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-							}
-							if(index != null) {
-								spinner.setSelection(adapter.getPosition(skillSparseArray.get(index)));
-							}
-							else {
-								spinner.setSelection(0);
-							}
-						}
-					});
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Skill skill= adapter.getItem(position);
-				if(skill != null) {
-					Integer skillId = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-					Skill currentSkill = null;
-					if(skillId != null) {
-						currentSkill = skillSparseArray.get(skillId);
-					}
-					if(!skill.equals(currentSkill)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(skill.getId());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initSpecializationsSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
-		final ArrayAdapter<Specialization> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		if(specializationSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < specializationSparseArray.size(); i++) {
-				adapter.add(specializationSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Integer index = null;
-			if(indexMap.get(layout) != null) {
-				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-			}
-			if(index != null) {
-				spinner.setSelection(adapter.getPosition(specializationSparseArray.get(index)));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-		else {
-			choiceSpecialization = new Specialization();
-			choiceSpecialization.setName(getString(R.string.choice_label));
-			specializationRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Specialization>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception caught getting all Specialization intances", e);
-						}
-						@Override
-						public void onNext(Collection<Specialization> specializations) {
-							specializationSparseArray = new SparseArray<>(specializations.size() + 1);
-							specializationSparseArray.put(choiceSpecialization.getId(), choiceSpecialization);
-							for(Specialization specialization : specializations) {
-								specializationSparseArray.put(specialization.getId(), specialization);
-							}
-							adapter.clear();
-							adapter.addAll(specializations);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Integer index = null;
-							if(indexMap.get(layout) != null) {
-								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-							}
-							if(index != null) {
-								spinner.setSelection(adapter.getPosition(specializationSparseArray.get(index)));
-							}
-							else {
-								spinner.setSelection(0);
-							}
-						}
-					});
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Specialization specialization= adapter.getItem(position);
-				if(specialization != null) {
-					Specialization currentSpecialization = specializationSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
-					if(!specialization.equals(currentSpecialization)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(specialization.getId());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initSpellsSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
-		final ArrayAdapter<Spell> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		if(spellSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < spellSparseArray.size(); i++) {
-				adapter.add(spellSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Integer index = null;
-			if(indexMap.get(layout) != null) {
-				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-			}
-			if(index != null) {
-				spinner.setSelection(adapter.getPosition(spellSparseArray.get(index)));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-		else {
-			choiceSpell = new Spell();
-			choiceSpell.setName(getString(R.string.choice_label));
-			spellRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Spell>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception getting all Spell instances", e);
-						}
-						@Override
-						public void onNext(Collection<Spell> spells) {
-							spellSparseArray = new SparseArray<>(spells.size() + 1);
-							spellSparseArray.put(choiceSpell.getId(), choiceSpell);
-							for(Spell spell : spells) {
-								spellSparseArray.put(spell.getId(), spell);
-							}
-							adapter.clear();
-							adapter.addAll(spells);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Integer index = null;
-							if(indexMap.get(layout) != null) {
-								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-							}
-							if(index != null) {
-								spinner.setSelection(adapter.getPosition(spellSparseArray.get(index)));
-							}
-							else {
-								spinner.setSelection(0);
-							}
-						}
-					});
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Spell spell = adapter.getItem(position);
-				if(spell != null) {
-					Spell currentSpell = spellSparseArray.get(
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue());
-					if(!spell.equals(currentSpell)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(spell.getId());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initSpellListsSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
-		final ArrayAdapter<SpellList> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		if(spellListSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < spellListSparseArray.size(); i++) {
-				adapter.add(spellListSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Integer index = null;
-			if(indexMap.get(layout) != null) {
-				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-			}
-			if(index != null) {
-				spinner.setSelection(adapter.getPosition(spellListSparseArray.get(index)));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-		else {
-			choiceSpellList = new SpellList();
-			choiceSpellList.setName(getString(R.string.choice_label));
-			spellListRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<SpellList>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception getting all Spell List instances", e);
-						}
-						@Override
-						public void onNext(Collection<SpellList> spellLists) {
-							spellListSparseArray = new SparseArray<>(spellLists.size() + 1);
-							spellListSparseArray.put(choiceSpell.getId(), choiceSpellList);
-							for(SpellList spellList : spellLists) {
-								spellListSparseArray.put(spellList.getId(), spellList);
-							}
-							adapter.clear();
-							adapter.addAll(spellLists);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Integer index = null;
-							if(indexMap.get(layout) != null) {
-								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-							}
-							if(index != null) {
-								spinner.setSelection(adapter.getPosition(spellListSparseArray.get(index)));
-							}
-							else {
-								spinner.setSelection(0);
-							}
-						}
-					});
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				SpellList spellList = adapter.getItem(position);
-				if(spellList != null) {
-					SpellList currentSpellList = null;
-					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-					if(index != null) {
-						currentSpellList = spellListSparseArray.get(index);
-					}
-					if(!spellList.equals(currentSpellList)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(spellList.getId());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initCriticalTypesSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.critical_type_spinner);
-		final ArrayAdapter<CriticalType> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		if(criticalTypeSparseArray != null) {
-			adapter.clear();
-			for(int i = 0; i < criticalTypeSparseArray.size(); i++) {
-				adapter.add(criticalTypeSparseArray.valueAt(i));
-			}
-			adapter.notifyDataSetChanged();
-			spinner.setAdapter(adapter);
-			Integer index = null;
-			if(indexMap.get(layout) != null) {
-				index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-			}
-			if(index != null) {
-				spinner.setSelection(adapter.getPosition(criticalTypeSparseArray.get(index)));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-		else {
-			choiceCriticalType = new CriticalType();
-			choiceCriticalType.setName(getString(R.string.choice_label));
-			criticalTypeRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<CriticalType>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception getting all Spell List instances", e);
-						}
-						@Override
-						public void onNext(Collection<CriticalType> criticalTypes) {
-							criticalTypeSparseArray = new SparseArray<>(criticalTypes.size() + 1);
-							criticalTypeSparseArray.put(choiceSpell.getId(), choiceCriticalType);
-							for(CriticalType criticalType : criticalTypes) {
-								criticalTypeSparseArray.put(criticalType.getId(), criticalType);
-							}
-							adapter.clear();
-							adapter.addAll(criticalTypes);
-							adapter.notifyDataSetChanged();
-							spinner.setAdapter(adapter);
-							Integer index = null;
-							if(indexMap.get(layout) != null) {
-								index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-							}
-							if(index != null) {
-								spinner.setSelection(adapter.getPosition(criticalTypeSparseArray.get(index)));
-							}
-							else {
-								spinner.setSelection(0);
-							}
-						}
-					});
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				CriticalType criticalType = adapter.getItem(position);
-				if(criticalType != null) {
-					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-					CriticalType currentCriticalType = null;
-					if(index != null) {
-						currentCriticalType = criticalTypeSparseArray.get(index);
-					}
-					if(!criticalType.equals(currentCriticalType)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(criticalType.getId());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initCriticalSeveritiesSpinner(final View layout) {
-		final Spinner spinner = (Spinner)layout.findViewById(R.id.critical_severity_spinner);
-		final ArrayAdapter<Character> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		adapter.clear();
-		for(char c = 'A'; c <= 'J'; c++) {
-			adapter.add(c);
-		}
-		adapter.notifyDataSetChanged();
-		spinner.setAdapter(adapter);
-		Character severity = null;
-		if(indexMap.get(layout) != null && currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName() != null) {
-			severity = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName().charAt(0);
-		}
-		if(severity != null) {
-			spinner.setSelection(adapter.getPosition(severity));
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Character severity = adapter.getItem(position);
-				if(severity != null) {
-					String severityString = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName();
-					Character currentSeverity = null;
-					if(severityString != null) {
-						currentSeverity = severityString.charAt(0);
-					}
-					if(!severity.equals(currentSeverity)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-								.setEnumName(severity.toString());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private void initInitialAdjustmentEdit(final View layout) {
-		final EditText editText = (EditText)layout.findViewById(R.id.initial_adjustment_edit);
-		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-		if(value != null) {
-			editText.setText(String.valueOf(value));
-		}
-		else {
-			editText.setText(null);
-		}
-
-		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if(editText.getText().length() > 0) {
-					Integer newInteger = Integer.valueOf(editText.getText().toString());
-					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
-						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)]
-													   .getInitialValue())) {
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(newInteger);
-							saveItem();
-						}
-					}
-				}
-				else {
-					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initAdjustmentPerEdit(final View layout) {
-		final EditText editText = (EditText)layout.findViewById(R.id.adjustment_per_tier_edit);
-		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer();
-		if(value != null) {
-			editText.setText(String.valueOf(value));
-		}
-		else {
-			editText.setText(null);
-		}
-
-		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if(editText.getText().length() > 0) {
-					Integer newInteger = Integer.valueOf(editText.getText().toString());
-					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
-						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer())) {
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(newInteger);
-							saveItem();
-						}
-					}
-				}
-				else {
-					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer() != null) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(null);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initStatsSpinner(final View layout) {
-		final Spinner spinner = (Spinner) layout.findViewById(R.id.stat_spinner);
-		final ArrayAdapter<Statistic> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-
-		adapter.clear();
-		adapter.addAll(Statistic.getAllStats());
-		adapter.notifyDataSetChanged();
-		spinner.setAdapter(adapter);
-		TalentParameterRow talentParameterRow = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
-		if (Parameter.STAT.equals(talentParameterRow.getParameter())) {
-			Statistic currentStat = null;
-			Integer index = talentParameterRow.getInitialValue();
-			if(index != null) {
-				currentStat = adapter.getItem(index);
-			}
-			if(currentStat != null) {
-				spinner.setSelection(adapter.getPosition(currentStat));
-			}
-			else {
-				spinner.setSelection(0);
-			}
-		}
-
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Statistic statistic = adapter.getItem(position);
-				if(statistic != null) {
-					Statistic currentStat = null;
-					Integer index = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
-					if(index != null) {
-						currentStat = adapter.getItem(index);
-					}
-					if(!statistic.equals(currentStat)) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setEnumName(statistic.name());
-						saveItem();
-					}
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {}
-		});
-	}
-
-	private boolean copyNoValuesViewsToItem(int index, Parameter parameter) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != parameter) {
-			row.setParameter(parameter);
-			changed = true;
-		}
-
-		if(row.getInitialValue() != null) {
-			row.setInitialValue(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-
-	private boolean copyValuesViewsToItem(final View layout, int index, Parameter parameter) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != parameter) {
-			row.setParameter(parameter);
-			changed = true;
-		}
-		String value = ((EditText)layout.findViewById(R.id.initial_value_edit)).getText().toString();
-		if(value.length() > 0) {
-			int intValue = Integer.valueOf(value);
-			if(row.getInitialValue() == null || row.getInitialValue() != intValue) {
-				row.setInitialValue(intValue);
-				changed = true;
-			}
-		}
-		else if(row.getInitialValue() != null) {
-			row.setInitialValue(null);
-			changed = true;
-		}
-
-		value = ((EditText)layout.findViewById(R.id.value_per_edit)).getText().toString();
-		if(value.length() > 0) {
-			int intValue = Integer.valueOf(value);
-			if(row.getValuePer() == null || row.getValuePer() != intValue) {
-				row.setValuePer(intValue);
-				changed = true;
-			}
-		}
-		else if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		boolean booleanValue = ((CheckBox)layout.findViewById(R.id.per_level_check_box)).isChecked();
-		if(row.isPerLevel() != booleanValue) {
-			row.setPerLevel(booleanValue);
-			changed = true;
-		}
-
-		booleanValue = ((CheckBox)layout.findViewById(R.id.per_tier_check_box)).isChecked();
-		if(row.isPerTier() != booleanValue) {
-			row.setPerTier(booleanValue);
-			changed = true;
-		}
-
-		booleanValue = ((CheckBox)layout.findViewById(R.id.per_round_check_box)).isChecked();
-		if(row.isPerRound() != booleanValue) {
-			row.setPerRound(booleanValue);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setValuesVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.initial_value_label).setVisibility(visibility);
-		layout.findViewById(R.id.initial_value_edit).setVisibility(visibility);
-		layout.findViewById(R.id.value_per_label).setVisibility(visibility);
-		layout.findViewById(R.id.value_per_edit).setVisibility(visibility);
-		layout.findViewById(R.id.per_level_check_box).setVisibility(visibility);
-		layout.findViewById(R.id.per_tier_check_box).setVisibility(visibility);
-		layout.findViewById(R.id.per_round_check_box).setVisibility(visibility);
-	}
-
-	private boolean copyAttackViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.ATTACK) {
-			row.setParameter(Parameter.ATTACK);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.attack_spinner);
-		int id = -1;
-		if(spinner.getSelectedItem() != null) {
-			id = ((Attack) spinner.getSelectedItem()).getId();
-		}
-		if(row.getInitialValue() == null || id != row.getInitialValue()) {
-			row.setInitialValue(id);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setAttacksVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.attack_label).setVisibility(visibility);
-		layout.findViewById(R.id.attack_spinner).setVisibility(visibility);
-	}
-
-	private boolean copyResistanceViewsToItem(final View layout, int index, Parameter parameter) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != parameter) {
-			row.setParameter(parameter);
-			changed = true;
-		}
-		Spinner spinner = (Spinner)layout.findViewById(R.id.resistance_spinner);
-		String newEnumName = null;
-		if(spinner.getSelectedItem() != null) {
-			newEnumName = ((Resistance) spinner.getSelectedItem()).name();
-		}
-		if(row.getEnumName() == null || !row.getEnumName().equals(newEnumName)) {
-			row.setEnumName(newEnumName);
-			changed = true;
-		}
-
-		String value = ((EditText)layout.findViewById(R.id.resistance_mod_edit)).getText().toString();
-		if(value.length() > 0) {
-			int intValue = Integer.valueOf(value);
-			if(row.getInitialValue() == null || row.getInitialValue() != intValue) {
-				row.setInitialValue(intValue);
-				changed = true;
-			}
-		}
-		else if(row.getInitialValue() != null) {
-			row.setInitialValue(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setResistancesVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.resistance_label).setVisibility(visibility);
-		layout.findViewById(R.id.resistance_spinner).setVisibility(visibility);
-		layout.findViewById(R.id.resistance_mod_label).setVisibility(visibility);
-		layout.findViewById(R.id.resistance_mod_edit).setVisibility(visibility);
-	}
-
-	private boolean copySenseViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.SENSE) {
-			row.setParameter(Parameter.SENSE);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.sense_spinner);
-		String newInitialValue = null;
-		if(spinner.getSelectedItem() != null) {
-			newInitialValue = ((Sense)spinner.getSelectedItem()).name();
-		}
-		if(row.getEnumName() == null || row.getEnumName().equals(newInitialValue)) {
-			row.setEnumName(newInitialValue);
-			changed = true;
-		}
-
-		if(row.getEnumName() != null) {
-			row.setEnumName(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setSenseVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.sense_label).setVisibility(visibility);
-		layout.findViewById(R.id.sense_spinner).setVisibility(visibility);
-	}
-
-	private boolean copySkillViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.SKILL) {
-			row.setParameter(Parameter.SKILL);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.skill_spinner);
-		int newInitialValue = -1;
-		if(spinner.getSelectedItem() != null) {
-			newInitialValue = ((Skill)spinner.getSelectedItem()).getId();
-		}
-		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
-			row.setInitialValue(newInitialValue);
-			changed = true;
-		}
-
-		if(row.getEnumName() != null) {
-			row.setEnumName(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setSkillsVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.skill_label).setVisibility(visibility);
-		layout.findViewById(R.id.skill_spinner).setVisibility(visibility);
-	}
-
-	private boolean copySpecializationsViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.SPECIALIZATION) {
-			row.setParameter(Parameter.SPECIALIZATION);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.specialization_spinner);
-		int newInitialValue = -1;
-		if (spinner.getSelectedItem() != null) {
-			newInitialValue = ((Specialization) spinner.getSelectedItem()).getId();
-		}
-		if(row.getInitialValue() == null ||  newInitialValue != row.getInitialValue()) {
-			row.setInitialValue(newInitialValue);
-			changed = true;
-		}
-
-		if(row.getEnumName() != null) {
-			row.setEnumName(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setSpecializationsVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.specialization_label).setVisibility(visibility);
-		layout.findViewById(R.id.specialization_spinner).setVisibility(visibility);
-	}
-
-	private boolean copySpellsViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.SPELL) {
-			row.setParameter(Parameter.SPELL);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.spell_spinner);
-		int newInitialValue = -1;
-		if(spinner.getSelectedItem() != null) {
-			newInitialValue = ((Spell) spinner.getSelectedItem()).getId();
-		}
-		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
-			row.setInitialValue(newInitialValue);
-			changed = true;
-		}
-
-		if(row.getEnumName() != null) {
-			row.setEnumName(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setSpellsVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.spell_label).setVisibility(visibility);
-		layout.findViewById(R.id.spell_spinner).setVisibility(visibility);
-	}
-
-	private boolean copySpellListsViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.SPELL_LIST) {
-			row.setParameter(Parameter.SPELL_LIST);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.spell_list_spinner);
-		int newInitialValue = -1;
-		if(spinner.getSelectedItem() != null) {
-			newInitialValue = ((SpellList) spinner.getSelectedItem()).getId();
-		}
-		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
-			row.setInitialValue(newInitialValue);
-			changed = true;
-		}
-
-		if(row.getEnumName() != null) {
-			row.setEnumName(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setSpellListsVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.spell_list_label).setVisibility(visibility);
-		layout.findViewById(R.id.spell_list_spinner).setVisibility(visibility);
-	}
-
-	private boolean copyStatsViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.STAT) {
-			row.setParameter(Parameter.STAT);
-			changed = true;
-		}
-
-		if(row.getInitialValue() != null) {
-			row.setInitialValue(null);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.stat_spinner);
-		String newEnumName = null;
-		if(spinner.getSelectedItem() != null) {
-			newEnumName = ((Statistic) spinner.getSelectedItem()).name();
-		}
-		if((newEnumName == null && row.getEnumName() != null)
-				|| (newEnumName != null && !newEnumName.equals(row.getEnumName()))) {
-			row.setEnumName(newEnumName);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setStatsVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.stat_label).setVisibility(visibility);
-		layout.findViewById(R.id.stat_spinner).setVisibility(visibility);
-	}
-
-	private boolean copyCriticalTypeViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.CRITICAL_TYPE) {
-			row.setParameter(Parameter.CRITICAL_TYPE);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.critical_type_spinner);
-		int newInitialValue = -1;
-		if(spinner.getSelectedItem() != null) {
-			newInitialValue = ((CriticalType) spinner.getSelectedItem()).getId();
-		}
-		if(row.getInitialValue() == null || newInitialValue != row.getInitialValue()) {
-			row.setInitialValue(newInitialValue);
-			changed = true;
-		}
-
-		if(row.getEnumName() != null) {
-			row.setEnumName(null);
-			changed = true;
-		}
-
-		if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setCriticalTypeVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.critical_type_label).setVisibility(visibility);
-		layout.findViewById(R.id.critical_type_spinner).setVisibility(visibility);
-	}
-
-	private boolean copyCriticalSeverityViewsToItem(final View layout, int index) {
-		boolean changed = false;
-		TalentParameterRow row = currentInstance.getTalentParameterRows()[index];
-		if(row.getParameter() != Parameter.CRITICAL_SEVERITY) {
-			row.setParameter(Parameter.CRITICAL_SEVERITY);
-			changed = true;
-		}
-
-		Spinner spinner = (Spinner)layout.findViewById(R.id.critical_severity_spinner);
-		Character severity = null;
-		if(spinner.getSelectedItem() != null) {
-			severity = (Character)spinner.getSelectedItem();
-		}
-		Character oldSeverity = null;
-		if(row.getEnumName() != null && !row.getEnumName().isEmpty()) {
-			oldSeverity = row.getEnumName().charAt(0);
-		}
-		if((severity != null && !severity.equals(oldSeverity) || (severity == null && oldSeverity != null))) {
-			if(severity != null) {
-				row.setEnumName(severity.toString());
-			}
-			else {
-				row.setEnumName(null);
-			}
-		}
-
-		String value = ((EditText)layout.findViewById(R.id.initial_adjustment_edit)).getText().toString();
-		if(value.length() > 0) {
-			int intValue = Integer.valueOf(value);
-			if(row.getInitialValue() == null || row.getInitialValue() != intValue) {
-				row.setInitialValue(intValue);
-				changed = true;
-			}
-		}
-		else if(row.getInitialValue() != null) {
-			row.setInitialValue(null);
-			changed = true;
-		}
-
-		value = ((EditText)layout.findViewById(R.id.adjustment_per_tier_edit)).getText().toString();
-		if(value.length() > 0) {
-			int intValue = Integer.valueOf(value);
-			if(row.getValuePer() == null || row.getValuePer() != intValue) {
-				row.setValuePer(intValue);
-				changed = true;
-			}
-		}
-		else if(row.getValuePer() != null) {
-			row.setValuePer(null);
-			changed = true;
-		}
-
-		if(row.isPerLevel()) {
-			row.setPerLevel(false);
-			changed = true;
-		}
-
-		if(row.isPerRound()) {
-			row.setPerRound(false);
-			changed = true;
-		}
-
-		if(row.isPerTier()) {
-			row.setPerTier(false);
-			changed = true;
-		}
-
-		return changed;
-	}
-	private void setCriticalSeverityVisibility(final View layout, int visibility) {
-		layout.findViewById(R.id.critical_severity_spinner).setVisibility(visibility);
-		layout.findViewById(R.id.critical_severity_label).setVisibility(visibility);
-		layout.findViewById(R.id.initial_adjustment_label).setVisibility(visibility);
-		layout.findViewById(R.id.initial_adjustment_edit).setVisibility(visibility);
-		layout.findViewById(R.id.adjustment_per_label).setVisibility(visibility);
-		layout.findViewById(R.id.adjustment_per_tier_edit).setVisibility(visibility);
 	}
 
 	private void loadFilteredTalents(final TalentCategory filter) {
@@ -2573,4 +1045,125 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					}
 				});
 	}
+
+	@SuppressWarnings("unchecked")
+	private void setParameterRow(View layout, final TalentParameterRow talentParameterRow) {
+		final TextView valuesSpinnerLabel = (TextView) layout.findViewById(R.id.value_spinner_label);
+		final Spinner valuesSpinner = (Spinner)layout.findViewById(R.id.value_spinner);
+		final ArrayAdapter<Object> valuesAdapter = (ArrayAdapter<Object>)valuesSpinner.getAdapter();
+		final EditText initialValueEdit = (EditText)layout.findViewById(R.id.initial_value_edit);
+		final EditText valuePerEdit = (EditText)layout.findViewById(R.id.value_per_edit);
+		final CheckBox perTierCheckbox = (CheckBox)layout.findViewById(R.id.per_tier_check_box);
+		final CheckBox perLevelCheckbox = (CheckBox)layout.findViewById(R.id.per_level_check_box);
+		final CheckBox perRoundCheckbox = (CheckBox)layout.findViewById(R.id.per_round_check_box);
+
+		if(talentParameterRow.getParameter().getHandler() != null) {
+			final Collection<DatabaseObject> spinnerValues = parameterCollectionsCache.get(talentParameterRow.getParameter());
+			if(spinnerValues == null) {
+				reactiveUtils.getGetAllObservable(talentParameterRow.getParameter().getHandler())
+						.subscribe(new Subscriber<Object>() {
+							@Override
+							public void onCompleted() {}
+							@Override
+							public void onError(Throwable e) {
+								Log.e(TAG, "Exception caught getting parameter values.", e);
+							}
+							@Override
+							public void onNext(Object results) {
+								parameterCollectionsCache.put(talentParameterRow.getParameter(),
+															  (Collection<DatabaseObject>) results);
+								valuesAdapter.clear();
+								valuesAdapter.add(choice);
+								valuesAdapter.addAll(parameterCollectionsCache.get(talentParameterRow.getParameter()));
+								String className = null;
+								for (DatabaseObject databaseObject : parameterCollectionsCache.get(
+										talentParameterRow.getParameter())) {
+									if(className == null) {
+										className = databaseObject.getClass().getSimpleName() + ":";
+									}
+									if (databaseObject.getId() == talentParameterRow.getInitialValue()) {
+										valuesSpinner.setSelection(valuesAdapter.getPosition(databaseObject));
+										break;
+									}
+								}
+								valuesSpinnerLabel.setText(className);
+							}
+						});
+			}
+			else {
+				valuesAdapter.clear();
+				valuesAdapter.add(choice);
+				String className = null;
+				for(DatabaseObject databaseObject : spinnerValues) {
+					className = databaseObject.getClass().getSimpleName() + ":";
+					break;
+				}
+				valuesSpinnerLabel.setText(className);
+				valuesAdapter.addAll(spinnerValues);
+			}
+			valuesSpinnerLabel.setVisibility(View.VISIBLE);
+			valuesSpinner.setVisibility(View.VISIBLE);
+			initialValueEdit.setVisibility(GONE);
+			valuePerEdit.setVisibility(GONE);
+			perTierCheckbox.setVisibility(GONE);
+			perLevelCheckbox.setVisibility(GONE);
+			perRoundCheckbox.setVisibility(GONE);
+		}
+		else if(talentParameterRow.getParameter().getEnumValues() != null) {
+			valuesAdapter.clear();
+			valuesAdapter.add(choice);
+			valuesAdapter.addAll((Object[])talentParameterRow.getParameter().getEnumValues());
+			valuesAdapter.notifyDataSetChanged();
+			String enumName = null;
+			if(indexMap.get(layout) != null) {
+				enumName = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getEnumName();
+			}
+			if(enumName != null) {
+				for (Enum enumObject : talentParameterRow.getParameter().getEnumValues()) {
+					if (enumObject.name().equals(enumName)) {
+						valuesSpinner.setSelection(valuesAdapter.getPosition(enumObject));
+						break;
+					}
+				}
+			}
+			else {
+				valuesSpinner.setSelection(0);
+			}
+			String className = talentParameterRow.getParameter().getEnumValues()[0].getDeclaringClass().getSimpleName() + ":";
+			valuesSpinnerLabel.setText(className);
+			valuesSpinnerLabel.setVisibility(View.VISIBLE);
+			valuesSpinner.setVisibility(View.VISIBLE);
+			initialValueEdit.setVisibility(GONE);
+			valuePerEdit.setVisibility(GONE);
+			perTierCheckbox.setVisibility(GONE);
+			perLevelCheckbox.setVisibility(GONE);
+			perRoundCheckbox.setVisibility(GONE);
+		}
+		else {
+			if(talentParameterRow.getInitialValue() != null) {
+				initialValueEdit.setText(String.valueOf(talentParameterRow.getInitialValue()));
+			}
+			else {
+				initialValueEdit.setText(null);
+			}
+			if(talentParameterRow.getValuePer() != null) {
+				valuePerEdit.setText(String.valueOf(talentParameterRow.getValuePer()));
+			}
+			else {
+				valuePerEdit.setText(null);
+			}
+			perTierCheckbox.setChecked(talentParameterRow.isPerTier());
+			perLevelCheckbox.setChecked(talentParameterRow.isPerLevel());
+			perRoundCheckbox.setChecked(talentParameterRow.isPerRound());
+			valuesSpinnerLabel.setVisibility(GONE);
+			valuesSpinner.setVisibility(GONE);
+			initialValueEdit.setVisibility(View.VISIBLE);
+			valuePerEdit.setVisibility(View.VISIBLE);
+			perTierCheckbox.setVisibility(View.VISIBLE);
+			perLevelCheckbox.setVisibility(View.VISIBLE);
+			perRoundCheckbox.setVisibility(View.VISIBLE);
+		}
+	}
+	// </editor-fold>
+
 }

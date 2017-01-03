@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.combat.DiseaseDao;
 import com.madinnovations.rmu.data.dao.combat.impl.AttackDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.BodyPartDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalResultDaoDbImpl;
@@ -30,6 +31,7 @@ import com.madinnovations.rmu.data.dao.combat.impl.CriticalTypeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultRowDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageTableDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.impl.DiseaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 
 import javax.inject.Singleton;
@@ -70,5 +72,9 @@ public class CombatDaoSqlModule {
 	@Provides @Singleton
 	DamageTableDao provideDamageTableDao(RMUDatabaseHelper helper) {
 		return new DamageTableDaoDbImpl(helper);
+	}
+	@Provides @Singleton
+	DiseaseDao provideDiseaseDao(RMUDatabaseHelper helper) {
+		return new DiseaseDaoDbImpl(helper);
 	}
 }

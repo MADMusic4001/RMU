@@ -16,12 +16,12 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
-import com.madinnovations.rmu.data.dao.item.ItemDao;
-import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
-import com.madinnovations.rmu.data.dao.item.impl.ItemDaoDbImpl;
-import com.madinnovations.rmu.data.dao.item.impl.ItemTemplateDaoDbImpl;
-import com.madinnovations.rmu.data.dao.item.impl.WeaponTemplateDaoDbImpl;
+import com.madinnovations.rmu.data.dao.object.ItemDao;
+import com.madinnovations.rmu.data.dao.object.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.object.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.object.impl.ItemDaoDbImpl;
+import com.madinnovations.rmu.data.dao.object.impl.ItemTemplateDaoDbImpl;
+import com.madinnovations.rmu.data.dao.object.impl.WeaponTemplateDaoDbImpl;
 
 import javax.inject.Singleton;
 

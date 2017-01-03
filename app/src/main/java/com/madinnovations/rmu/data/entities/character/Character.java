@@ -26,6 +26,7 @@ import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -40,9 +41,9 @@ import java.util.Random;
  * Character attributes
  */
 public class Character extends DatabaseObject {
-	public static final String               JSON_NAME                       = "Characters";
-	public static final short                INITIAL_DP                      = 50;
-	private Campaign                         campaign                        = null;
+	public static final String         JSON_NAME                       = "Characters";
+	public static final short          INITIAL_DP                      = 50;
+	private Campaign                   campaign                        = null;
 	private short                            currentLevel                    = 0;
 	private int                              experiencePoints                = 0;
 	private short                            statPurchasePoints              = 0;
@@ -75,16 +76,35 @@ public class Character extends DatabaseObject {
 	private Map<Skill, DevelopmentCostGroup> skillCosts                      = new HashMap<>();
 	private Map<Skill, Short>                skillRanks                      = new HashMap<>();
 	private Map<Specialization, Short>       specializationRanks             = new HashMap<>();
+	private Map<SpellList, Short>            spellListRanks                  = new HashMap<>();
 	private List<TalentInstance>             talentInstances                 = new ArrayList<>();
 	private Map<Statistic, Short>            statTemps                       = new HashMap<>();
 	private Map<Statistic, Short>            statPotentials                  = new HashMap<>();
 	private List<Item>                       items                           = new ArrayList<>();
 	private Map<Skill, Short>                currentLevelSkillRanks          = new HashMap<>();
 	private Map<Specialization, Short>       currentLevelSpecializationRanks = new HashMap<>();
+	private Map<SpellList, Short>            currentLevelSpellListRanks      = new HashMap<>();
 	private Map<TalentInstance, Short>       currentLevelTalentTiers         = new HashMap<>();
-	private Map<Object, Short>               purchasedCultureRanks           = new HashMap<>();
+	private Map<DatabaseObject, Short>       purchasedCultureRanks           = new HashMap<>();
 	private int                              statIncreases                   = 0;
 	private List<Condition>                  currentConditions               = new ArrayList<>();
+	private List<DatabaseObject>             professionSkills                = new ArrayList<>();
+	private List<DatabaseObject>             knacks                          = new ArrayList<>();
+
+	/**
+	 * Creates a new Character instance with default values
+	 */
+	public Character() {
+	}
+
+	/**
+	 * Creates a new Character instance with the give id.
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public Character(int id) {
+		super(id);
+	}
 
 	/**
 	 * Checks the validity of the Character instance.
@@ -180,15 +200,19 @@ public class Character extends DatabaseObject {
 				.append("skillCosts", skillCosts)
 				.append("skillRanks", skillRanks)
 				.append("specializationRanks", specializationRanks)
+				.append("spellListRanks", spellListRanks)
 				.append("talentInstances", talentInstances)
 				.append("statTemps", statTemps)
 				.append("statPotentials", statPotentials)
 				.append("items", items)
 				.append("currentLevelSkillRanks", currentLevelSkillRanks)
 				.append("currentLevelSpecializationRanks", currentLevelSpecializationRanks)
+				.append("currentLevelSpellListRanks", currentLevelSpellListRanks)
 				.append("currentLevelTalentTiers", currentLevelTalentTiers)
 				.append("purchasedCultureRanks", purchasedCultureRanks)
 				.append("statIncreases", statIncreases)
+				.append("professionSkills", professionSkills)
+				.append("knacks", knacks)
 				.toString();
 	}
 
@@ -558,6 +582,12 @@ public class Character extends DatabaseObject {
 			Map<Specialization, Short> specializationRanks) {
 		this.specializationRanks = specializationRanks;
 	}
+	public Map<SpellList, Short> getSpellListRanks() {
+		return spellListRanks;
+	}
+	public void setSpellListRanks(Map<SpellList, Short> spellListRanks) {
+		this.spellListRanks = spellListRanks;
+	}
 	public List<TalentInstance> getTalentInstances() {
 		return talentInstances;
 	}
@@ -594,6 +624,13 @@ public class Character extends DatabaseObject {
 	public void setCurrentLevelSpecializationRanks(Map<Specialization, Short> currentLevelSpecializationRanks) {
 		this.currentLevelSpecializationRanks = currentLevelSpecializationRanks;
 	}
+	public Map<SpellList, Short> getCurrentLevelSpellListRanks() {
+		return currentLevelSpellListRanks;
+	}
+	public void setCurrentLevelSpellListRanks(
+			Map<SpellList, Short> currentLevelSpellListRanks) {
+		this.currentLevelSpellListRanks = currentLevelSpellListRanks;
+	}
 	public Map<TalentInstance, Short> getCurrentLevelTalentTiers() {
 		return currentLevelTalentTiers;
 	}
@@ -601,13 +638,25 @@ public class Character extends DatabaseObject {
 			Map<TalentInstance, Short> currentLevelTalentTiers) {
 		this.currentLevelTalentTiers = currentLevelTalentTiers;
 	}
-	public Map<Object, Short> getPurchasedCultureRanks() {
+	public Map<DatabaseObject, Short> getPurchasedCultureRanks() {
 		return purchasedCultureRanks;
 	}
-	public void setPurchasedCultureRanks(Map<Object, Short> purchasedCultureRanks) {
+	public void setPurchasedCultureRanks(Map<DatabaseObject, Short> purchasedCultureRanks) {
 		this.purchasedCultureRanks = purchasedCultureRanks;
 	}
 	public int getStatIncreases() {
 		return statIncreases;
+	}
+	public List<DatabaseObject> getProfessionSkills() {
+		return professionSkills;
+	}
+	public void setProfessionSkills(List<DatabaseObject> professionSkills) {
+		this.professionSkills = professionSkills;
+	}
+	public List<DatabaseObject> getKnacks() {
+		return knacks;
+	}
+	public void setKnacks(List<DatabaseObject> knacks) {
+		this.knacks = knacks;
 	}
 }

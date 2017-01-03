@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import android.support.annotation.NonNull;
+
 import com.madinnovations.rmu.data.entities.common.Statistic;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -23,7 +25,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Stat bonus attributes
  */
-public class RacialStatBonus {
+public class RacialStatBonus implements Comparable {
 	private Statistic stat  = null;
 	private short     bonus = 0;
 
@@ -59,6 +61,28 @@ public class RacialStatBonus {
 	@Override
 	public int hashCode() {
 		return stat != null ? stat.hashCode() : 0;
+	}
+
+	@Override
+	public int compareTo(@NonNull Object o) {
+		if(!(o instanceof RacialStatBonus)) {
+			return 1;
+		}
+		RacialStatBonus other = (RacialStatBonus)o;
+		if(other.getStat() == null) {
+			if(this.getStat() == null) {
+				return 0;
+			}
+			else {
+				return 1;
+			}
+		}
+		else if (this.getStat() == null){
+			return  -1;
+		}
+		else {
+			return this.getStat().getAbbreviation().compareTo(other.getStat().getAbbreviation());
+		}
 	}
 
 	// Getters and setters

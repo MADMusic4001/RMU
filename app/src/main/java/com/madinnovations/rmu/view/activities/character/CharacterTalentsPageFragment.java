@@ -25,14 +25,18 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
@@ -309,7 +313,7 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 		});
 	}
 
-	private void initAddTalentsListView(View layout) {
+	private void initAddTalentsListView(final View layout) {
 		final ListView addTalentsList = (ListView) layout.findViewById(R.id.add_talent_list);
 		addTalentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		addTalentsList.setAdapter(addTalentsListAdapter);
@@ -341,6 +345,25 @@ public class CharacterTalentsPageFragment extends Fragment implements TalentTier
 				return false;
 			}
 		});
+
+//		addTalentsList.setOnHoverListener(new View.OnHoverListener() {
+//			@Override
+//			public boolean onHover(View v, MotionEvent event) {
+//				Log.d(TAG, "onHover: event = " + event);
+//				TextView popupContent = new TextView(getActivity());
+//				popupContent.setMinimumWidth(layout.getWidth()/2);
+//				popupContent.setMinimumHeight(layout.getHeight()/2);
+//				int position = addTalentsList.pointToPosition((int)event.getX(), (int)event.getY());
+//				Log.d(TAG, "onHover: position = " + position);
+//				if(position != AdapterView.INVALID_POSITION) {
+//					Talent talent = (Talent) addTalentsList.getItemAtPosition(position);
+//					popupContent.setText(talent.getDescription());
+//					PopupWindow popupWindow = new PopupWindow(popupContent);
+//					popupWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+//				}
+//				return true;
+//			}
+//		});
 
 		addTalentsList.setOnDragListener(new View.OnDragListener() {
 			private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);

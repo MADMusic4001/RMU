@@ -176,4 +176,8 @@ public class Profession extends DatabaseObject {
 	public List<SkillCategory> getProfessionalSkillCategories() {
 		return professionalSkillCategories;
 	}
+	public void setProfessionalSkillCategories(
+			List<SkillCategory> professionalSkillCategories) {
+		this.professionalSkillCategories = professionalSkillCategories;
+	}
 }

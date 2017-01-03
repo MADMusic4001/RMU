@@ -17,17 +17,16 @@ package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.madinnovations.rmu.R;
@@ -35,7 +34,6 @@ import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.TalentRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
@@ -43,21 +41,16 @@ import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
-import com.madinnovations.rmu.data.entities.creature.RacialStatBonus;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.creature.RacialStatBonusListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Comparator;
 
 import javax.inject.Inject;
 
@@ -68,7 +61,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature varieties.
  */
-public class CreatureVarietyMainPageFragment extends Fragment implements RacialStatBonusListAdapter.SetRacialStatBonus {
+public class CreatureVarietyMainPageFragment extends Fragment{
 	private static final String TAG = "CVMainPageFragment";
 	@Inject
 	protected AttackRxHandler            attackRxHandler;
@@ -89,8 +82,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	@Inject
 	protected SpellListRxHandler         spellListRxHandler;
 	@Inject
-	protected TalentRxHandler            talentRxHandler;
-	@Inject
 	protected ReactiveUtils              reactiveUtils;
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
 	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
@@ -98,7 +89,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	private   ArrayAdapter<Realm>        realm1SpinnerAdapter;
 	private   ArrayAdapter<Realm>        realm2SpinnerAdapter;
 	private   ArrayAdapter<Outlook>      outlookSpinnerAdapter;
-	protected RacialStatBonusListAdapter racialStatBonusListAdapter;
 	private   EditText                   nameEdit;
 	private   EditText                   descriptionEdit;
 	private   Spinner                    creatureTypeSpinner;
@@ -120,8 +110,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 	private   Spinner                    realm1Spinner;
 	private   Spinner                    realm2Spinner;
 	private   Spinner                    outlookSpinner;
-	private   ListView                   racialStatBonusList;
 	private   CreatureVarietiesFragment  varietiesFragment;
+	private   CreatureTypeComparator     creatureTypeComparator = new CreatureTypeComparator();
 
 	/**
 	 * Creates a new CreatureVarietyMainPageFragment instance.
@@ -144,7 +134,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
-		initCretureTypeSpinner(layout);
+		initCreatureTypeSpinner(layout);
 		initTypicalLevelEdit(layout);
 		initLevelSpreadSpinner(layout);
 		initSizeSpinner(layout);
@@ -163,7 +153,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		initRealm1Spinner(layout);
 		initRealm2Spinner(layout);
 		initOutlookSpinner(layout);
-		initRacialStatBonusList(layout);
 
 		return layout;
 	}
@@ -191,9 +180,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		Size newSize;
 		short newShort;
 		char newLevelSpread;
-		SparseBooleanArray checkedItemPositions;
-		RacialStatBonus racialStatBonus;
-		Map<Statistic, Short> newStatBonusMap;
 		Realm newRealm;
 		Outlook newOutlook;
 
@@ -386,35 +372,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					changed = true;
 				}
 			}
-
-			checkedItemPositions = racialStatBonusList.getCheckedItemPositions();
-			if (checkedItemPositions != null) {
-				newStatBonusMap = new HashMap<>(checkedItemPositions.size());
-				for (int i = 0; i < checkedItemPositions.size(); i++) {
-					racialStatBonus = racialStatBonusListAdapter.getItem(checkedItemPositions.keyAt(i));
-					if(racialStatBonus != null) {
-						if (varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
-							if (!varietiesFragment.getCurrentInstance()
-									.getRacialStatBonuses()
-									.get(racialStatBonus.getStat())
-									.equals(racialStatBonus.getBonus())) {
-								changed = true;
-							}
-							varietiesFragment.getCurrentInstance().getRacialStatBonuses().remove(racialStatBonus.getStat());
-						} else {
-							changed = true;
-						}
-						newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
-					}
-				}
-				if (!varietiesFragment.getCurrentInstance().getRacialStatBonuses().isEmpty() && !newStatBonusMap.isEmpty()) {
-					changed = true;
-				}
-				varietiesFragment.getCurrentInstance().setRacialStatBonuses(newStatBonusMap);
-			}
-			else {
-				varietiesFragment.getCurrentInstance().getRacialStatBonuses().clear();
-			}
 		}
 
 		return changed;
@@ -450,13 +407,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealm2()));
 		}
 		outlookSpinner.setSelection(outlookSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getOutlook()));
-
-		racialStatBonusListAdapter.clear();
-		for(Map.Entry<Statistic, Short> entry : varietiesFragment.getCurrentInstance().getRacialStatBonuses().entrySet()) {
-			RacialStatBonus racialStatBonus = new RacialStatBonus(entry.getKey(), entry.getValue());
-			racialStatBonusListAdapter.add(racialStatBonus);
-		}
-		racialStatBonusListAdapter.notifyDataSetChanged();
 
 		if(varietiesFragment.getCurrentInstance().getName() != null && !varietiesFragment.getCurrentInstance().getName().isEmpty()) {
 			nameEdit.setError(null);
@@ -522,7 +472,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		});
 	}
 
-	private void initCretureTypeSpinner(View layout) {
+	private void initCreatureTypeSpinner(View layout) {
 		creatureTypeSpinner = (Spinner)layout.findViewById(R.id.creature_type_spinner);
 		creatureTypeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		creatureTypeSpinner.setAdapter(creatureTypeSpinnerAdapter);
@@ -540,6 +490,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 					public void onNext(Collection<CreatureType> items) {
 						creatureTypeSpinnerAdapter.clear();
 						creatureTypeSpinnerAdapter.addAll(items);
+						creatureTypeSpinnerAdapter.sort(creatureTypeComparator);
 						creatureTypeSpinnerAdapter.notifyDataSetChanged();
 					}
 				});
@@ -641,7 +592,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		sizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(varietiesFragment.getCurrentInstance().getSize() == null || sizeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getSize()) != position) {
+				if(varietiesFragment.getCurrentInstance().getSize() == null
+						|| sizeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getSize()) != position) {
 					varietiesFragment.getCurrentInstance().setSize(sizeSpinnerAdapter.getItem(position));
 					varietiesFragment.saveItem();
 				}
@@ -1147,47 +1099,15 @@ public class CreatureVarietyMainPageFragment extends Fragment implements RacialS
 		});
 	}
 
-	private void initRacialStatBonusList(View layout) {
-		racialStatBonusList = (ListView) layout.findViewById(R.id.racial_stat_bonuses_list);
-		racialStatBonusListAdapter = new RacialStatBonusListAdapter(this.getActivity(), this);
-		racialStatBonusList.setAdapter(racialStatBonusListAdapter);
-
-		for(Statistic statistic : Statistic.values()) {
-			if(!varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(statistic)) {
-				varietiesFragment.getCurrentInstance().getRacialStatBonuses().put(statistic, (short)0);
-			}
-		}
-		Collection<RacialStatBonus> listItems = new ArrayList<>(varietiesFragment.getCurrentInstance().getRacialStatBonuses()
-																		.size());
-		for(Map.Entry<Statistic, Short> entry : varietiesFragment.getCurrentInstance().getRacialStatBonuses().entrySet()) {
-			listItems.add(new RacialStatBonus(entry.getKey(), entry.getValue()));
-		}
-		racialStatBonusListAdapter.clear();
-		racialStatBonusListAdapter.addAll(listItems);
-		racialStatBonusListAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void setRacialStatBonus(RacialStatBonus racialStatBonus) {
-		boolean changed = false;
-
-		if(varietiesFragment.getCurrentInstance().getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
-			if(varietiesFragment.getCurrentInstance().getRacialStatBonuses().get(racialStatBonus.getStat()) != racialStatBonus.getBonus()) {
-				varietiesFragment.getCurrentInstance().getRacialStatBonuses().put(racialStatBonus.getStat(), racialStatBonus.getBonus());
-				changed = true;
-			}
-		}
-		else {
-			varietiesFragment.getCurrentInstance().getRacialStatBonuses().put(racialStatBonus.getStat(), racialStatBonus.getBonus());
-			changed = true;
-		}
-		if(changed) {
-			varietiesFragment.saveItem();
-		}
-	}
-
 	@SuppressWarnings("unused")
 	public void setVarietiesFragment(CreatureVarietiesFragment varietiesFragment) {
 		this.varietiesFragment = varietiesFragment;
+	}
+
+	private class CreatureTypeComparator implements Comparator<CreatureType> {
+		@Override
+		public int compare(@NonNull CreatureType o1, @NonNull CreatureType o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
 	}
 }

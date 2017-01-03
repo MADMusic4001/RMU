@@ -20,6 +20,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
@@ -43,7 +44,8 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 		if(value.getProfession() != null) {
 			out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
 		}
-		out.name(COLUMN_SPELL_LIST_TYPE_ID).value(value.getSpellListType().getId());
+		out.name(COLUMN_SPELL_LIST_TYPE_NAME).value(value.getSpellListType().name());
+		out.name(COLUMN_SKILL_ID).value(value.getSkill().getId());
 
 		out.endObject().flush();
 	}
@@ -72,8 +74,11 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 				case COLUMN_PROFESSION_ID:
 					spellList.setProfession(new Profession(in.nextInt()));
 					break;
-				case COLUMN_SPELL_LIST_TYPE_ID:
-					spellList.setSpellListType(new SpellListType(in.nextInt()));
+				case COLUMN_SPELL_LIST_TYPE_NAME:
+					spellList.setSpellListType(SpellListType.valueOf(in.nextString()));
+					break;
+				case COLUMN_SKILL_ID:
+					spellList.setSkill(new Skill(in.nextInt()));
 					break;
 			}
 		}

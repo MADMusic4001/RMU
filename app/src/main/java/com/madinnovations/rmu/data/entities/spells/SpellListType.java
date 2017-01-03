@@ -15,56 +15,43 @@
  */
 package com.madinnovations.rmu.data.entities.spells;
 
-import com.madinnovations.rmu.data.entities.DatabaseObject;
+import android.support.annotation.StringRes;
+
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Spell list type attributes
  */
-public class SpellListType extends DatabaseObject {
-	public static final String JSON_NAME = "SpellListTypes";
-	private String name = null;
-	private String description = null;
+public enum SpellListType {
+	OPEN(R.string.enum_open),
+	CLOSED(R.string.enum_closed),
+	BASE(R.string.enum_base),
+	EVIL(R.string.enum_evil),
+	ARCANE(R.string.enum_arcane),
+	RESTRICTED(R.string.enum_restricted);
+
+	private @StringRes int labelId;
 
 	/**
-	 * Creates a new SpellListType instance
-	 */
-	public SpellListType() {
-	}
-
-	/**
-	 * Creates a new SpellListType instance with the given id
+	 * Creates a new SpellListType instance with the given string resource id
 	 *
-	 * @param id  the id for the new instance
+	 * @param labelId  the string resource id for the instance
 	 */
-	public SpellListType(int id) {
-		super(id);
-	}
-
-	/**
-	 * Checks the validity of the SpellListType instance.
-	 *
-	 * @return true if the SpellListType instance is valid, otherwise false.
-	 */
-	public boolean isValid() {
-		return name != null && !name.isEmpty() && description != null && !description.isEmpty();
+	SpellListType(int labelId) {
+		this.labelId = labelId;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return RMUApp.getResourceUtils().getString(getLabelId());
 	}
 
 	// Getters and setters
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
+	public int getLabelId() {
+		return labelId;
 	}
 }
