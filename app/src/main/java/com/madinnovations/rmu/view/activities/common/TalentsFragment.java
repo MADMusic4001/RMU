@@ -1081,7 +1081,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 									if(className == null) {
 										className = databaseObject.getClass().getSimpleName() + ":";
 									}
-									if (databaseObject.getId() == talentParameterRow.getInitialValue()) {
+									if(talentParameterRow.getInitialValue() == null) {
+										valuesSpinner.setSelection(valuesAdapter.getPosition(choice));
+									}
+									else if (databaseObject.getId() == talentParameterRow.getInitialValue()) {
 										valuesSpinner.setSelection(valuesAdapter.getPosition(databaseObject));
 										break;
 									}
@@ -1094,9 +1097,12 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				valuesAdapter.clear();
 				valuesAdapter.add(choice);
 				String className = null;
-				for(DatabaseObject databaseObject : spinnerValues) {
+				DatabaseObject databaseObject = null;
+				for(DatabaseObject databaseObject1 : spinnerValues) {
+					databaseObject = databaseObject1;
+				}
+				if(databaseObject != null) {
 					className = databaseObject.getClass().getSimpleName() + ":";
-					break;
 				}
 				valuesSpinnerLabel.setText(className);
 				valuesAdapter.addAll(spinnerValues);

@@ -39,7 +39,7 @@ import com.madinnovations.rmu.controller.rxhandler.combat.DiseaseRxHandler;
 import com.madinnovations.rmu.data.entities.combat.Disease;
 import com.madinnovations.rmu.data.entities.combat.Severity;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
-import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
+import com.madinnovations.rmu.view.adapters.ThreeFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
@@ -56,20 +56,20 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for disease.
  */
-public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Disease>,
+public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Disease>,
 		EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	private static final String TAG = "DiseasesFragment";
 	@Inject
-	protected DiseaseRxHandler             diseaseRxHandler;
-	private   TwoFieldListAdapter<Disease> listAdapter;
-	private   ListView                     listView;
-	private   EditText                     nameEdit;
-	private   SpinnerUtils<Severity>       severitySpinner;
-	private   EditText                     minDurationEdit;
-	private   EditText                     maxDurationEdit;
-	private   EditText                     effectsEdit;
-	private   Disease                      currentInstance = new Disease();
-	private   boolean                      isNew = true;
+	protected DiseaseRxHandler               diseaseRxHandler;
+	private   ThreeFieldListAdapter<Disease> listAdapter;
+	private   ListView                       listView;
+	private   EditText                       nameEdit;
+	private   SpinnerUtils<Severity>         severitySpinner;
+	private   EditText                       minDurationEdit;
+	private   EditText                       maxDurationEdit;
+	private   EditText                       effectsEdit;
+	private   Disease                        currentInstance = new Disease();
+	private   boolean                        isNew = true;
 
 	// <editor-fold desc="method overrides/implementations">
 	@Nullable
@@ -81,7 +81,8 @@ public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.Ge
 		View layout = inflater.inflate(R.layout.diseases_fragment, container, false);
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_disease_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_disease_effects));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_disease_severity));
+		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_disease_effects));
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_disease_name_required);
@@ -171,6 +172,11 @@ public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.Ge
 
 	@Override
 	public CharSequence getField2Value(Disease disease) {
+		return disease.getSeverity().toString();
+	}
+
+	@Override
+	public CharSequence getField3Value(Disease disease) {
 		return disease.getEffects();
 	}
 
@@ -208,7 +214,7 @@ public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				saveItem();
 				break;
 			case R.id.min_duration_edit:
-				if(newString == null) {
+				if(newString == null || newString.isEmpty()) {
 					currentInstance.setMinDurationDays(null);
 				}
 				else {
@@ -217,7 +223,7 @@ public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				saveItem();
 				break;
 			case R.id.max_duration_edit:
-				if(newString == null) {
+				if(newString == null || newString.isEmpty()) {
 					currentInstance.setMaxDurationDays(null);
 				}
 				else {
@@ -436,6 +442,8 @@ public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.Ge
 								TextView textView = (TextView) v.findViewById(R.id.row_field1);
 								textView.setText(currentInstance.getName());
 								textView = (TextView) v.findViewById(R.id.row_field2);
+								textView.setText(currentInstance.getSeverity().toString());
+								textView = (TextView) v.findViewById(R.id.row_field3);
 								textView.setText(currentInstance.getEffects());
 							}
 						}
@@ -448,7 +456,7 @@ public class DiseasesFragment extends Fragment implements TwoFieldListAdapter.Ge
 	// <editor-fold desc="Widget initialization methods">
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
+		listAdapter = new ThreeFieldListAdapter<>(this.getActivity(), 1, 1, 5, this);
 		listView.setAdapter(listAdapter);
 
 		diseaseRxHandler.getAll()

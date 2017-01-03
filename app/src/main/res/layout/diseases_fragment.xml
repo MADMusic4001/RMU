@@ -4,7 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-  <include layout="@layout/list_2_field_header"/>
+  <include layout="@layout/list_3_field_header"/>
 
   <ListView
       android:id="@+id/list_view"
@@ -27,7 +27,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:maxLength="40"/>
+        android:maxLength="40"
+        android:hint="@string/hint_disease_name"/>
   </LinearLayout>
 
   <LinearLayout
@@ -51,7 +52,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:maxLength="3"/>
+        android:maxLength="3"
+        android:hint="@string/hint_min_duration"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,7 +63,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:maxLength="3"/>
+        android:maxLength="3"
+        android:hint="@string/hint_max_duration"/>
   </LinearLayout>
 
   <LinearLayout
@@ -74,7 +77,7 @@
         android:text="@string/input_label_effects"/>
     <EditText
         android:id="@+id/effects_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:maxLength="300"/>

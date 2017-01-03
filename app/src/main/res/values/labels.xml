@@ -190,6 +190,7 @@
   <string name="label_culture_ranks_available">Culture Ranks Available</string>
   <string name="label_disease_effects">Disease Effects</string>
   <string name="label_disease_name">Disease Name</string>
+  <string name="label_disease_severity">Disease Severity</string>
   <string name="label_item_description">Item Description</string>
   <string name="label_item_name">Item Name</string>
   <string name="label_item_template_description">Item Template Description</string>
@@ -524,6 +525,7 @@
   <string name="assignable_skill_name">Skill %1$d</string>
   <string name="stat_format_string">%1$s (%2$s)</string>
   <string name="stat_literal_string">%1$s stat</string>
+  <string name="disease_severity_format_string">%1$s %2$s</string>
 
   <!-- Static Spinner selection strings -->
   <string name="choice_label">Choice</string>

@@ -15,7 +15,12 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.view.RMUApp;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Disease attributes
@@ -50,6 +55,28 @@ public class Disease extends DatabaseObject {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && severity != null && effects != null && !effects.isEmpty();
+	}
+
+	@Override
+	public String toString() {
+		return String.format(RMUApp.getResourceUtils().getString(R.string.disease_severity_format_string), severity.toString(),
+							 name);
+	}
+
+	/**
+	 * Creates a debug print string with all member variables for this instance.
+	 *
+	 * @return  a debug string
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("name", name)
+				.append("severity", severity)
+				.append("minDurationDays", minDurationDays)
+				.append("maxDurationDays", maxDurationDays)
+				.append("effects", effects)
+				.toString();
 	}
 
 	// Getters and setters
