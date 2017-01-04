@@ -38,6 +38,21 @@ public class ItemTemplate extends DatabaseObject {
 	private String notes = null;
 
 	/**
+	 * Creates a new ItemTemplate instance.
+	 */
+	public ItemTemplate() {
+	}
+
+	/**
+	 * Creates a new ItemTemplate instance with the given id.
+	 *
+	 * @param id  the id of the new ItemTemplate instance
+	 */
+	public ItemTemplate(int id) {
+		super(id);
+	}
+
+	/**
 	 * Checks the validity of the Item instance.
 	 *
 	 * @return true if the ItemTemplate instance is valid, otherwise false.

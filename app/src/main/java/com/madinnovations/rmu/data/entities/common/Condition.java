@@ -19,8 +19,55 @@ package com.madinnovations.rmu.data.entities.common;
  * Representation of a condition on a character or creature.
  */
 public class Condition {
-	private ConditionType conditionType;
-	private String        enumName;
-	private Integer       value;
-	private Integer       duration;
+	private ConditionType conditionType = null;
+	private String        enumName = null;
+	private float         constant = 0f;
+	private float         dividend = 0f;
+	private float[]       divisors = null;
+	private UnitType      qtyUnitType = null;
+	private UnitType[]    divisorUnitTypes = null;
+
+	// Getters amd Setters
+	public ConditionType getConditionType() {
+		return conditionType;
+	}
+	public void setConditionType(ConditionType conditionType) {
+		this.conditionType = conditionType;
+	}
+	public String getEnumName() {
+		return enumName;
+	}
+	public void setEnumName(String enumName) {
+		this.enumName = enumName;
+	}
+	public float getConstant() {
+		return constant;
+	}
+	public void setConstant(float constant) {
+		this.constant = constant;
+	}
+	public float getDividend() {
+		return dividend;
+	}
+	public void setDividend(float dividend) {
+		this.dividend = dividend;
+	}
+	public float[] getDivisors() {
+		return divisors;
+	}
+	public void setDivisors(float[] divisors) {
+		this.divisors = divisors;
+	}
+	public UnitType getQtyUnitType() {
+		return qtyUnitType;
+	}
+	public void setQtyUnitType(UnitType qtyUnitType) {
+		this.qtyUnitType = qtyUnitType;
+	}
+	public UnitType[] getDivisorUnitTypes() {
+		return divisorUnitTypes;
+	}
+	public void setDivisorUnitTypes(UnitType[] divisorUnitTypes) {
+		this.divisorUnitTypes = divisorUnitTypes;
+	}
 }

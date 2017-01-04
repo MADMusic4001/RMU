@@ -283,7 +283,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CampaignAttackRestrictionsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyTalentTiersSchema.TABLE_NAME, null, null);
@@ -296,6 +295,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CreatureArchetypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietySkillsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(WeaponTemplateSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillCategoryStatsSchema.TABLE_NAME, null, null);

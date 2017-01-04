@@ -15,49 +15,56 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.StringRes;
+
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
+
 /**
  * Representation of a condition type
  */
 enum ConditionType {
-	ACTION_POINT_LOSS("Action point loss"),
-	BLEEDING("Bleeding"),
-	CONCENTRATING("Concentrating"),
-	DAZED("Dazed"),
-	DIEING("Dieing"),
-	ENCUMBERED("Encumbered"),
-	FATIGUED("Fatigued"),
-	FLATFOOTED("Flatfooted"),
-	GRAPPLED("Grappled"),
-	HASTED("Hasted"),
-	HP_LOSS("HP Loss"),
-	INJURED("Injured"),
-	MORALE_BONUS("Morale bonus"),
-	NO_PARRY("Unable to parry"),
-	PARALYZED("Paralyzed"),
-	PP_LOSS("PP Loss"),
-	PREPARING_SPELL("Preparing spell"),
-	PRONE("Prone"),
-	STAT_DRAINED("Stat Drained"),
-	STUNNED("Stunned"),
-	STAGGERED("Staggered"),
-	SURPRISED("Surprised"),
-	UNCONSCIOUS("Unconscious"),
-	USED_INSTANTANEOUS("Used instantaneous"),
-	WOUNDED("Wounded");
+	ACTION_POINT_LOSS(R.string.enum_condition_type_action_point_loss),
+	BLEEDING(R.string.enum_condition_type_bleeding),
+	CONCENTRATING(R.string.enum_condition_type_concentrating),
+	DAZED(R.string.enum_condition_type_dazed),
+	DEATH_AT(R.string.enum_condition_type_death_at),
+	DYING(R.string.enum_condition_type_dying),
+	ENCUMBERED(R.string.enum_condition_type_encumbered),
+	FATIGUED(R.string.enum_condition_type_fatigued),
+	FLATFOOTED(R.string.enum_condition_type_flatfooted),
+	GRAPPLED(R.string.enum_condition_type_grappled),
+	HASTED(R.string.enum_condition_type_hasted),
+	HP_LOSS(R.string.enum_condition_type_hp_loss),
+	INJURED(R.string.enum_condition_type_injured),
+	KNOCKED_BACK(R.string.enum_condition_type_knocked_back),
+	MORALE_BONUS(R.string.enum_condition_type_morale_bonus),
+	NO_PARRY(R.string.enum_condition_type_unable_to_parry),
+	PARALYZED(R.string.enum_condition_type_paralyzed),
+	PP_LOSS(R.string.enum_condition_type_pp_loss),
+	PREPARING_SPELL(R.string.enum_condition_type_preparing_spell),
+	PRONE(R.string.enum_condition_type_prone),
+	STAT_DRAINED(R.string.enum_condition_type_stat_drained),
+	STUNNED(R.string.enum_condition_type_stunned),
+	STAGGERED(R.string.enum_condition_type_staggered),
+	SURPRISED(R.string.enum_condition_type_surprised),
+	UNCONSCIOUS(R.string.enum_condition_type_unconscious),
+	USED_INSTANTANEOUS(R.string.enum_condition_type_used_instantaneous),
+	WOUNDED(R.string.enum_condition_type_wounded);
 
-	private String text;
+	private @StringRes int nameResourceId;
 
-	ConditionType(String text) {
-		this.text = text;
+	ConditionType(int nameResourceId) {
+		this.nameResourceId = nameResourceId;
 	}
 
 	@Override
 	public String toString() {
-		return getText();
+		return RMUApp.getResourceUtils().getString(nameResourceId);
 	}
 
 	// Getters
-	public String getText() {
-		return text;
+	public int getNameResourceId() {
+		return nameResourceId;
 	}
 }

@@ -515,17 +515,18 @@
   <string name="input_label_weight">Weight:</string>
 
   <!-- Format strings -->
-  <string name="hyphen">-</string>
-  <string name="min_max_roll_value">%1$2d-%2$3d</string>
+  <string name="assignable_skill_name">Skill %1$d</string>
   <string name="code_name_format_string">%1$s - %2$s</string>
   <string name="creature_name_format_string">%1$d - %2$s</string>
-  <string name="spell_list_format_string">%1$s (%2$s %3$s)</string>
+  <string name="disease_severity_format_string">%1$s %2$s</string>
   <string name="export_status">Export %1$d%% complete.</string>
+  <string name="hyphen">-</string>
   <string name="import_status">Import %1$d%% complete.</string>
-  <string name="assignable_skill_name">Skill %1$d</string>
+  <string name="min_max_roll_value">%1$2d-%2$3d</string>
+  <string name="spell_list_format_string">%1$s (%2$s %3$s)</string>
   <string name="stat_format_string">%1$s (%2$s)</string>
   <string name="stat_literal_string">%1$s stat</string>
-  <string name="disease_severity_format_string">%1$s %2$s</string>
+  <string name="substance_display_format_string">%1$s (%2$f)</string>
 
   <!-- Static Spinner selection strings -->
   <string name="choice_label">Choice</string>

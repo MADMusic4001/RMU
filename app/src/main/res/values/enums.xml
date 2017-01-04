@@ -4,6 +4,35 @@
   <string name="enum_all">All</string>
   <string name="enum_choice">Choice</string>
 
+  <!-- ConditionType enum strings -->
+  <string name="enum_condition_type_action_point_loss">Action point loss</string>
+  <string name="enum_condition_type_bleeding">Bleeding</string>
+  <string name="enum_condition_type_concentrating">Concentrating</string>
+  <string name="enum_condition_type_dazed">Dazed</string>
+  <string name="enum_condition_type_death_at">Death At</string>
+  <string name="enum_condition_type_dying">Dying</string>
+  <string name="enum_condition_type_encumbered">Encumbered</string>
+  <string name="enum_condition_type_fatigued">Fatigued</string>
+  <string name="enum_condition_type_flatfooted">Flatfooted</string>
+  <string name="enum_condition_type_grappled">Grappled</string>
+  <string name="enum_condition_type_hasted">Hasted</string>
+  <string name="enum_condition_type_hp_loss">HP Loss</string>
+  <string name="enum_condition_type_injured">Injured</string>
+  <string name="enum_condition_type_knocked_back">Knocked Back</string>
+  <string name="enum_condition_type_morale_bonus">Morale bonus</string>
+  <string name="enum_condition_type_unable_to_parry">Unable to parry</string>
+  <string name="enum_condition_type_paralyzed">Paralyzed</string>
+  <string name="enum_condition_type_pp_loss">PP Loss</string>
+  <string name="enum_condition_type_preparing_spell">Preparing spell</string>
+  <string name="enum_condition_type_prone">Prone</string>
+  <string name="enum_condition_type_stat_drained">Stat Drained</string>
+  <string name="enum_condition_type_stunned">Stunned</string>
+  <string name="enum_condition_type_staggered">Staggered</string>
+  <string name="enum_condition_type_surprised">Surprised</string>
+  <string name="enum_condition_type_unconscious">Unconscious</string>
+  <string name="enum_condition_type_used_instantaneous">Used instantaneous</string>
+  <string name="enum_condition_type_wounded">Wounded</string>
+
   <!-- Form enum string -->
   <string name="enum_form_algae">Algae</string>
   <string name="enum_form_bark">Bark</string>
@@ -85,6 +114,13 @@
   <string name="enum_arcane">Arcane</string>
   <string name="enum_restricted">Restricted</string>
 
+  <!-- Substance Type enum strings -->
+  <string name="enum_substance_type_metals">Metals</string>
+  <string name="enum_substance_type_others">Others</string>
+  <string name="enum_substance_type_precious_stones">Precious Stones</string>
+  <string name="enum_substance_type_semi_precious_stones">Semi-Precious Stones</string>
+  <string name="enum_substance_type_stones">Stones</string>
+
   <!-- Terrain enum strings -->
   <string name="enum_terrain_easy">Easy</string>
   <string name="enum_terrain_light">Light</string>
@@ -104,4 +140,16 @@
   <string name="enum_terrain_sheer_folly_description">Numerous obstacles, steep, crowds</string>
   <string name="enum_terrain_absurd_description">Dense obstacles, packed crowd</string>
   <string name="enum_terrain_nigh_impossible_description">Sheer cliff, tightly packed crowd</string>
+
+  <!-- Unit enum strings -->
+  <string name="enum_unit_bonus">Bonus</string>
+  <string name="enum_unit_days">Days</string>
+  <string name="enum_unit_failure">Failure</string>
+  <string name="enum_unit_hours">Hours</string>
+  <string name="enum_unit_levels">Levels</string>
+  <string name="enum_unit_minutes">Minutes</string>
+  <string name="enum_unit_months">Months</string>
+  <string name="enum_unit_rounds">Rounds</string>
+  <string name="enum_unit_weeks">Weeks</string>
+  <string name="enum_unit_years">Years</string>
 </resources>
