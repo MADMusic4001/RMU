@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.common;
 
+import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
@@ -26,6 +27,7 @@ import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -39,6 +41,7 @@ import rx.schedulers.Schedulers;
  */
 public class SkillRxHandler {
 	private SkillDao dao;
+	private SkillCategoryDao skillCategoryDao;
 	private SpecializationDao specializationDao;
 	private SpellListDao spellListDao;
 
@@ -46,10 +49,15 @@ public class SkillRxHandler {
 	 * Creates a new SkillRxHandler
 	 *
 	 * @param dao  a SkillDao instance
+	 * @param skillCategoryDao  a {@link SkillCategoryDao} instance
+	 * @param specializationDao  a {@link SpecializationDao} instance
+	 * @param spellListDao  a {@link SpellListDao} instance
 	 */
 	@Inject
-	public SkillRxHandler(SkillDao dao, SpecializationDao specializationDao, SpellListDao spellListDao) {
+	public SkillRxHandler(SkillDao dao, SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
+						  SpellListDao spellListDao) {
 		this.dao = dao;
+		this.skillCategoryDao = skillCategoryDao;
 		this.specializationDao = specializationDao;
 		this.spellListDao = spellListDao;
 	}
@@ -383,6 +391,35 @@ public class SkillRxHandler {
 								}
 							}
 							subscriber.onNext(databaseObjects);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Skill instances that
+	 * are combat training skills.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Skill instances.
+	 */
+	public Observable<Collection<Skill>> getCombatTrainingSkills() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Skill>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Skill>> subscriber) {
+						try {
+							List<Skill> skills = new ArrayList<>();
+							List<SkillCategory> combatTrainingCategories = skillCategoryDao.getCombatCategories();
+							for (SkillCategory skillCategory : combatTrainingCategories) {
+								skills.addAll(dao.getSkillsForCategory(skillCategory));
+							}
+							subscriber.onNext(skills);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

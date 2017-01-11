@@ -64,6 +64,7 @@ public class ReactiveUtils {
 		BODY_PART_RX_HANDLER,
 		CAMPAIGN_RX_HANDLER,
 		CHARACTER_RX_HANDLER,
+		COMBAT_TRAINING_SKILL_RX_HANDLER,
 		CREATURE_RX_HANDLER,
 		CREATURE_ARCHETYPE_RX_HANDLER,
 		CREATURE_CATEGORY_RX_HANDLER,
@@ -80,9 +81,11 @@ public class ReactiveUtils {
 		IMPORT_EXPORT_RX_HANDLER,
 		ITEM_RX_HANDLER,
 		ITEM_TEMPLATE_RX_HANDLER,
+		MELEE_ATTACK_RX_HANDLER,
 		OUTLOOK_RX_HANDLER,
 		PROFESSION_RX_HANDLER,
 		RACE_RX_HANDLER,
+		RANGE_ATTACK_RX_HANDLER,
 		REALM_RX_HANDLER,
 		SIZE_RX_HANDLER,
 		SKILL_RX_HANDLER,
@@ -186,6 +189,9 @@ public class ReactiveUtils {
 			case CHARACTER_RX_HANDLER:
 				result = characterRxHandler.getAll();
 				break;
+			case COMBAT_TRAINING_SKILL_RX_HANDLER:
+				result = skillRxHandler.getCombatTrainingSkills();
+				break;
 			case CREATURE_RX_HANDLER:
 				result = creatureRxHandler.getAll();
 				break;
@@ -234,6 +240,9 @@ public class ReactiveUtils {
 			case ITEM_TEMPLATE_RX_HANDLER:
 				result = itemTemplateRxHandler.getAll();
 				break;
+			case MELEE_ATTACK_RX_HANDLER:
+				result = attackRxHandler.getMeleeAttacks();
+				break;
 			case OUTLOOK_RX_HANDLER:
 				result = outlookRxHandler.getAll();
 				break;
@@ -242,6 +251,9 @@ public class ReactiveUtils {
 				break;
 			case RACE_RX_HANDLER:
 				result = raceRxHandler.getAll();
+				break;
+			case RANGE_ATTACK_RX_HANDLER:
+				result = attackRxHandler.getRangedAttacks();
 				break;
 			case REALM_RX_HANDLER:
 				result = realmRxHandler.getAll();

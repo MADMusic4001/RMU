@@ -113,6 +113,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private EditText                                   costPerTierEdit ;
 	private EditText                                   minTiersEdit;
 	private EditText                                   maxTiersEdit;
+	private CheckBox                                   creatureOnlyCheckbox;
 	private CheckBox                                   flawCheckbox;
 	private CheckBox                                   situationalCheckbox;
 	private Spinner                                    actionSpinner;
@@ -156,6 +157,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 											  R.string.validation_talent_min_tiers_required);
 		maxTiersEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.max_tiers_edit,
 											  R.string.validation_talent_max_tiers_required);
+		creatureOnlyCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.creature_only_check_box);
 		flawCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.flaw_check_box);
 		situationalCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.situational_check_box);
 		initActionSpinner(layout);
@@ -247,6 +249,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		boolean result = false;
 
 		switch (checkBoxId) {
+			case R.id.creature_only_check_box:
+				result = currentInstance.isCreatureOnly();
+				break;
 			case R.id.flaw_check_box:
 				result = currentInstance.isFlaw();
 				break;
@@ -261,6 +266,10 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	@Override
 	public void setValueFromCheckBox(@IdRes int checkBoxId, boolean newBoolean) {
 		switch (checkBoxId) {
+			case R.id.creature_only_check_box:
+				currentInstance.setCreatureOnly(newBoolean);
+				saveItem();
+				break;
 			case R.id.flaw_check_box:
 				currentInstance.setFlaw(newBoolean);
 				saveItem();
@@ -336,7 +345,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	}
 	// </editor-fold>
 
-	// <editor-fold desc="copy/save/deletemethods">
+	// <editor-fold desc="copy/save/delete methods">
 	@SuppressWarnings("unchecked")
 	private boolean copyViewsToItem() {
 		View currentFocusView = getActivity().getCurrentFocus();
@@ -406,6 +415,16 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				currentInstance.setMaxTier(newShort);
 				changed = true;
 			}
+		}
+
+		if(creatureOnlyCheckbox.isChecked() != currentInstance.isCreatureOnly()) {
+			currentInstance.setCreatureOnly(creatureOnlyCheckbox.isChecked());
+			changed = true;
+		}
+
+		if(flawCheckbox.isChecked() != currentInstance.isFlaw()) {
+			currentInstance.setFlaw(flawCheckbox.isChecked());
+			changed = true;
 		}
 
 		if(situationalCheckbox.isChecked() != currentInstance.isSituational()) {
@@ -524,6 +543,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		costPerTierEdit.setText(String.valueOf(currentInstance.getDpCostPerTier()));
 		minTiersEdit.setText(String.valueOf(currentInstance.getMinTier()));
 		maxTiersEdit.setText(String.valueOf(currentInstance.getMaxTier()));
+		creatureOnlyCheckbox.setChecked(currentInstance.isCreatureOnly());
 		flawCheckbox.setChecked(currentInstance.isFlaw());
 		situationalCheckbox.setChecked(currentInstance.isSituational());
 		actionSpinner.setSelection(actionSpinnerAdapter.getPosition(currentInstance.getAction()));

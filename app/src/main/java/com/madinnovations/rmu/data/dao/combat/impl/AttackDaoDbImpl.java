@@ -87,7 +87,8 @@ public class AttackDaoDbImpl extends BaseDaoDbImpl<Attack> implements AttackDao,
             instance.setSpecialization(null);
         }
         else {
-            instance.setSpecialization(specializationDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SPECIALIZATION_ID))));
+            instance.setSpecialization(specializationDao.getById(cursor.getInt(
+                    cursor.getColumnIndexOrThrow(COLUMN_SPECIALIZATION_ID))));
         }
 
         return instance;

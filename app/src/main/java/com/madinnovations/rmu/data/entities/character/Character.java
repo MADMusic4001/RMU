@@ -17,7 +17,7 @@ package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.common.Condition;
+import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
@@ -81,15 +81,15 @@ public class Character extends DatabaseObject {
 	private Map<Statistic, Short>            statTemps                       = new HashMap<>();
 	private Map<Statistic, Short>            statPotentials                  = new HashMap<>();
 	private List<Item>                       items                           = new ArrayList<>();
-	private Map<Skill, Short>                currentLevelSkillRanks          = new HashMap<>();
-	private Map<Specialization, Short>       currentLevelSpecializationRanks = new HashMap<>();
-	private Map<SpellList, Short>            currentLevelSpellListRanks      = new HashMap<>();
-	private Map<TalentInstance, Short>       currentLevelTalentTiers         = new HashMap<>();
-	private Map<DatabaseObject, Short>       purchasedCultureRanks           = new HashMap<>();
-	private int                              statIncreases                   = 0;
-	private List<Condition>                  currentConditions               = new ArrayList<>();
-	private List<DatabaseObject>             professionSkills                = new ArrayList<>();
-	private List<DatabaseObject>             knacks                          = new ArrayList<>();
+	private Map<Skill, Short>          currentLevelSkillRanks          = new HashMap<>();
+	private Map<Specialization, Short> currentLevelSpecializationRanks = new HashMap<>();
+	private Map<SpellList, Short>      currentLevelSpellListRanks      = new HashMap<>();
+	private Map<TalentInstance, Short> currentLevelTalentTiers         = new HashMap<>();
+	private Map<DatabaseObject, Short> purchasedCultureRanks           = new HashMap<>();
+	private int                        statIncreases                   = 0;
+	private List<State>                currentStates                   = new ArrayList<>();
+	private List<DatabaseObject>       professionSkills                = new ArrayList<>();
+	private List<DatabaseObject>       knacks                          = new ArrayList<>();
 
 	/**
 	 * Creates a new Character instance with default values

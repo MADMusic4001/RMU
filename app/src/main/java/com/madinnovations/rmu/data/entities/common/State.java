@@ -18,21 +18,21 @@ package com.madinnovations.rmu.data.entities.common;
 /**
  * Representation of a condition on a character or creature.
  */
-public class Condition {
-	private ConditionType conditionType = null;
-	private String        enumName = null;
-	private float         constant = 0f;
-	private float         dividend = 0f;
-	private float[]       divisors = null;
-	private UnitType      qtyUnitType = null;
-	private UnitType[]    divisorUnitTypes = null;
+public class State {
+	private StateType  stateType        = null;
+	private String     enumName         = null;
+	private float      constant         = 0f;
+	private float      dividend         = 0f;
+	private float[]    divisors         = null;
+	private UnitType   qtyUnitType      = null;
+	private UnitType[] divisorUnitTypes = null;
 
 	// Getters amd Setters
-	public ConditionType getConditionType() {
-		return conditionType;
+	public StateType getStateType() {
+		return stateType;
 	}
-	public void setConditionType(ConditionType conditionType) {
-		this.conditionType = conditionType;
+	public void setStateType(StateType stateType) {
+		this.stateType = stateType;
 	}
 	public String getEnumName() {
 		return enumName;

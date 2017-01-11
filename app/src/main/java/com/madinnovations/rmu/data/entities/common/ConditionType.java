@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 MadInnovations
+ * Copyright (C) 2017 MadInnovations
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,44 +18,38 @@ package com.madinnovations.rmu.data.entities.common;
 import android.support.annotation.StringRes;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.utils.ReactiveUtils;
+import com.madinnovations.rmu.data.entities.combat.CriticalSeverity;
 import com.madinnovations.rmu.view.RMUApp;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
 
 /**
- * Representation of a condition type
+ * Conditional options
  */
-enum ConditionType {
-	ACTION_POINT_LOSS(R.string.enum_condition_type_action_point_loss),
-	BLEEDING(R.string.enum_condition_type_bleeding),
-	CONCENTRATING(R.string.enum_condition_type_concentrating),
-	DAZED(R.string.enum_condition_type_dazed),
-	DEATH_AT(R.string.enum_condition_type_death_at),
-	DYING(R.string.enum_condition_type_dying),
-	ENCUMBERED(R.string.enum_condition_type_encumbered),
-	FATIGUED(R.string.enum_condition_type_fatigued),
-	FLATFOOTED(R.string.enum_condition_type_flatfooted),
-	GRAPPLED(R.string.enum_condition_type_grappled),
-	HASTED(R.string.enum_condition_type_hasted),
-	HP_LOSS(R.string.enum_condition_type_hp_loss),
-	INJURED(R.string.enum_condition_type_injured),
-	KNOCKED_BACK(R.string.enum_condition_type_knocked_back),
-	MORALE_BONUS(R.string.enum_condition_type_morale_bonus),
-	NO_PARRY(R.string.enum_condition_type_unable_to_parry),
-	PARALYZED(R.string.enum_condition_type_paralyzed),
-	PP_LOSS(R.string.enum_condition_type_pp_loss),
-	PREPARING_SPELL(R.string.enum_condition_type_preparing_spell),
-	PRONE(R.string.enum_condition_type_prone),
-	STAT_DRAINED(R.string.enum_condition_type_stat_drained),
-	STUNNED(R.string.enum_condition_type_stunned),
-	STAGGERED(R.string.enum_condition_type_staggered),
-	SURPRISED(R.string.enum_condition_type_surprised),
-	UNCONSCIOUS(R.string.enum_condition_type_unconscious),
-	USED_INSTANTANEOUS(R.string.enum_condition_type_used_instantaneous),
-	WOUNDED(R.string.enum_condition_type_wounded);
+public enum ConditionType {
+	CRITICAL_ACHIEVED(R.string.enum_condition_type_critical_achieved, null, null),
+	CRITICAL_SEVERITY_ACHIEVED(R.string.enum_condition_type_critical_severity_achieved, null, CriticalSeverity.values()),
+	PARRY_EFFECTIVE(R.string.enum_condition_type_parry_effective, null, null),
+	HIT_RACE(R.string.enum_condition_type_hit_race, RACE_RX_HANDLER, null),
+	HIT_CREATURE_CATEGORY(R.string.enum_condition_type_hit_creature_category, CREATURE_CATEGORY_RX_HANDLER, null),
+	HIT_CREATURE_TYPE(R.string.enum_condition_type_hit_creature_type, CREATURE_TYPE_RX_HANDLER, null),
+	HIT_CREATURE_VARIETY(R.string.enum_condition_type_hit_creature_variety, CREATURE_VARIETY_RX_HANDLER, null),
+	HIT_SIZE(R.string.enum_condition_type_hit_size, SIZE_RX_HANDLER, null),
+	IN_DARKNESS(R.string.enum_condition_type_in_darkness, null, null),
+	IN_SUNLIGHT(R.string.enum_condition_type_in_sunlight, null, null),
+	UNDERWATER(R.string.enum_condition_type_underwater, null, null),
+	IN_FIRE(R.string.enum_condition_type_in_fire, null, null),
+	OPPONENT_FUMBLE(R.string.enum_condition_type_fumbled, null, null);
+	;
 
-	private @StringRes int nameResourceId;
+	private @StringRes int        nameResourceId;
+	private ReactiveUtils.Handler handler;
+	private Enum<?>[]             enumValues;
 
-	ConditionType(int nameResourceId) {
+	ConditionType(int nameResourceId, ReactiveUtils.Handler handler, Enum<?>[] enumValues) {
 		this.nameResourceId = nameResourceId;
+		this.handler = handler;
+		this.enumValues = enumValues;
 	}
 
 	@Override
@@ -66,5 +60,11 @@ enum ConditionType {
 	// Getters
 	public int getNameResourceId() {
 		return nameResourceId;
+	}
+	public ReactiveUtils.Handler getHandler() {
+		return handler;
+	}
+	public Enum<?>[] getEnumValues() {
+		return enumValues;
 	}
 }

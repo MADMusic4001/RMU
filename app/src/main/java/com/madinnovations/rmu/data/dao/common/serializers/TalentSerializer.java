@@ -46,6 +46,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		out.name(COLUMN_DP_COST_PER_TIER).value(value.getDpCostPerTier());
 		out.name(COLUMN_ACTION).value(value.getAction().name());
 		out.name(COLUMN_IS_SITUATIONAL).value(value.isSituational());
+		out.name(COLUMN_IS_CREATURE_ONLY).value(value.isCreatureOnly());
 		out.name("talentEffectRowLength").value(value.getTalentParameterRows().length);
 		if(value.getTalentParameterRows().length > 0) {
 			out.name(TalentParametersSchema.TABLE_NAME);
@@ -110,6 +111,9 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 					break;
 				case COLUMN_IS_SITUATIONAL:
 					talent.setSituational(in.nextBoolean());
+					break;
+				case COLUMN_IS_CREATURE_ONLY:
+					talent.setCreatureOnly(in.nextBoolean());
 					break;
 				case COLUMN_ACTION:
 					talent.setAction(Action.valueOf(in.nextString()));

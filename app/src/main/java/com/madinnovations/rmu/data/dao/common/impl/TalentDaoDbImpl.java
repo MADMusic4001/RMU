@@ -96,11 +96,11 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(11);
+			values = new ContentValues(12);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(10);
+			values = new ContentValues(11);
 		}
         values.put(COLUMN_CATEGORY_ID, instance.getCategory().getId());
         values.put(COLUMN_NAME, instance.getName());
@@ -112,6 +112,7 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
         values.put(COLUMN_DP_COST_PER_TIER, instance.getDpCostPerTier());
         values.put(COLUMN_IS_SITUATIONAL, instance.isSituational());
         values.put(COLUMN_ACTION, instance.getAction().name());
+		values.put(COLUMN_IS_CREATURE_ONLY, instance.isCreatureOnly());
 
         return values;
     }
@@ -165,6 +166,7 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 		instance.setSituational(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_SITUATIONAL)) != 0);
 		instance.setAction(Action.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTION))));
 		instance.setTalentParameterRows(getTalentEffectRows(instance.getId()));
+		instance.setCreatureOnly(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_CREATURE_ONLY)) != 0);
 
 		return instance;
 	}

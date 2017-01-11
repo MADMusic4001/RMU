@@ -37,6 +37,7 @@ public class Talent extends DatabaseObject {
 	private boolean              situational         = false;
 	private Action               action              = Action.MELEE_ATTACK;
 	private TalentParameterRow[] talentParameterRows = new TalentParameterRow[0];
+	private boolean              creatureOnly        = true;
 
 	/**
 	 * Default no-arg constructor
@@ -88,6 +89,7 @@ public class Talent extends DatabaseObject {
 				.append("situational", situational)
 				.append("action", action)
 				.append("talentParameterRows", talentParameterRows)
+				.append("creatureOnly", creatureOnly)
 				.toString();
 	}
 
@@ -157,5 +159,11 @@ public class Talent extends DatabaseObject {
 	}
 	public void setTalentParameterRows(TalentParameterRow[] talentParameterRows) {
 		this.talentParameterRows = talentParameterRows;
+	}
+	public boolean isCreatureOnly() {
+		return creatureOnly;
+	}
+	public void setCreatureOnly(boolean creatureOnly) {
+		this.creatureOnly = creatureOnly;
 	}
 }

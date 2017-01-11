@@ -18,6 +18,7 @@ package com.madinnovations.rmu.controller.rxhandler.combat;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ import rx.schedulers.Schedulers;
  * Creates reactive observable for requesting operations on {@link Attack} instances with persistent storage.
  */
 public class AttackRxHandler {
-	private AttackDao dao;
+	private AttackDao         dao;
 
 	/**
 	 * Creates a new AttackRxHandler
@@ -156,6 +157,72 @@ public class AttackRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Ranged Attack
+	 * instances.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Ranged Attack
+	 * instances.
+	 */
+	public Observable<Collection<Attack>> getRangedAttacks() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Attack>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Attack>> subscriber) {
+						try {
+							Collection<Attack> rangedWeaponAttacks = new ArrayList<>();
+							Collection<Attack> attacks = dao.getAll();
+							for(Attack attack : attacks) {
+								if(attack.getSpecialization() != null &&
+										attack.getSpecialization().getSkill().getName().equals("Ranged Weapons")) {
+									rangedWeaponAttacks.add(attack);
+								}
+							}
+							subscriber.onNext(rangedWeaponAttacks);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Melee Attack
+	 * instances.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Melee Attack
+	 * instances.
+	 */
+	public Observable<Collection<Attack>> getMeleeAttacks() {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<Attack>>() {
+					@Override
+					public void call(Subscriber<? super Collection<Attack>> subscriber) {
+						try {
+							Collection<Attack> rangedWeaponAttacks = new ArrayList<>();
+							Collection<Attack> attacks = dao.getAll();
+							for(Attack attack : attacks) {
+								if(attack.getSpecialization() != null &&
+										attack.getSpecialization().getSkill().getName().equals("Melee Weapons")) {
+									rangedWeaponAttacks.add(attack);
+								}
+							}
+							subscriber.onNext(rangedWeaponAttacks);
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}
