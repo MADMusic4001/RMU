@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.dao.common.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersPerUnitSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 import com.madinnovations.rmu.data.entities.combat.Action;
@@ -25,8 +26,11 @@ import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
+import com.madinnovations.rmu.data.entities.common.UnitType;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Json serializer and deserializer for the {@link Talent} entities
@@ -53,18 +57,17 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 			out.beginArray();
 			for (TalentParameterRow talentParameterRow : value.getTalentParameterRows()) {
 				out.beginObject();
-				out.name(TalentParametersSchema.COLUMN_EFFECT).value(talentParameterRow.getParameter().name());
-				out.name(TalentParametersSchema.COLUMN_PER_LEVEL).value(talentParameterRow.isPerLevel());
-				out.name(TalentParametersSchema.COLUMN_PER_ROUND).value(talentParameterRow.isPerRound());
-				out.name(TalentParametersSchema.COLUMN_PER_TIER).value(talentParameterRow.isPerTier());
+				out.name(TalentParametersSchema.COLUMN_PARAMETER_NAME).value(talentParameterRow.getParameter().name());
 				if(talentParameterRow.getInitialValue() != null) {
 					out.name(TalentParametersSchema.COLUMN_INITIAL_VALUE).value(talentParameterRow.getInitialValue());
 				}
-				if(talentParameterRow.getValuePer() != null) {
-					out.name(TalentParametersSchema.COLUMN_VALUE_PER).value(talentParameterRow.getValuePer());
-				}
 				if (talentParameterRow.getEnumName() != null) {
 					out.name(TalentParametersSchema.COLUMN_ENUM_NAME).value(talentParameterRow.getEnumName());
+				}
+				if(talentParameterRow.getPerValues() != null && talentParameterRow.getPerValues().length > 0) {
+					out.name(TalentParametersPerUnitSchema.TABLE_NAME).beginArray();
+					writeParameterPerUnitValues(out, talentParameterRow);
+					out.endArray();
 				}
 				out.endObject();
 			}
@@ -122,7 +125,7 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 					talentEffectRowLength = in.nextInt();
 					break;
 				case TalentParametersSchema.TABLE_NAME:
-					readTalentEffectValues(in, talent, talentEffectRowLength);
+					readTalentParameterValues(in, talent, talentEffectRowLength);
 					break;
 			}
 		}
@@ -131,42 +134,102 @@ public class TalentSerializer extends TypeAdapter<Talent> implements TalentSchem
 		return talent;
 	}
 
-	private void readTalentEffectValues(JsonReader in, Talent talent, int talentEffectRowLength) throws IOException {
+	private void readTalentParameterValues(JsonReader in, Talent talent, int talentEffectRowLength) throws IOException {
 		TalentParameterRow[] talentParameterRows = new TalentParameterRow[talentEffectRowLength];
 		int index = 0;
 		in.beginArray();
 		while(in.hasNext()) {
 			TalentParameterRow talentParameterRow = new TalentParameterRow();
+			Integer perValue = null;
+			UnitType unitType = null;
 			in.beginObject();
 			while(in.hasNext()) {
 				switch (in.nextName()) {
-					case TalentParametersSchema.COLUMN_EFFECT:
+					case TalentParametersSchema.COLUMN_PARAMETER_NAME:
+					case "effect":
 						talentParameterRow.setParameter(Parameter.valueOf(in.nextString()));
 						break;
 					case TalentParametersSchema.COLUMN_INITIAL_VALUE:
 						talentParameterRow.setInitialValue(in.nextInt());
 						break;
-					case TalentParametersSchema.COLUMN_VALUE_PER:
-						talentParameterRow.setValuePer(in.nextInt());
+					case "valuePerTier":
+						perValue = in.nextInt();
 						break;
 					case TalentParametersSchema.COLUMN_ENUM_NAME:
 						talentParameterRow.setEnumName(in.nextString());
 						break;
-					case TalentParametersSchema.COLUMN_PER_LEVEL:
-						talentParameterRow.setPerLevel(in.nextBoolean());
+					case "perLevel":
+						if(in.nextBoolean()) {
+							unitType = UnitType.LEVEL;
+						}
 						break;
-					case TalentParametersSchema.COLUMN_PER_ROUND:
-						talentParameterRow.setPerRound(in.nextBoolean());
+					case "perRound":
+						if(in.nextBoolean()) {
+							unitType = UnitType.ROUND;
+						}
 						break;
-					case TalentParametersSchema.COLUMN_PER_TIER:
-						talentParameterRow.setPerTier(in.nextBoolean());
+					case "perTier":
+						if(in.nextBoolean()) {
+							unitType = UnitType.TIER;
+						}
+						break;
+					case TalentParametersPerUnitSchema.TABLE_NAME:
+						readParameterPerUnitValues(in, talentParameterRow);
 						break;
 				}
 			}
 			talentParameterRows[index++] = talentParameterRow;
+			if(perValue != null && unitType != null) {
+				talentParameterRow.setPerValues(new Integer[1]);
+				talentParameterRow.getPerValues()[0] = perValue;
+				talentParameterRow.setUnitTypes(new UnitType[1]);
+				talentParameterRow.getUnitTypes()[0] = unitType;
+			}
 			in.endObject();
 		}
 		in.endArray();
 		talent.setTalentParameterRows(talentParameterRows);
+	}
+
+	private void writeParameterPerUnitValues(JsonWriter out, TalentParameterRow row) throws IOException {
+		for(int i = 0; i < row.getPerValues().length; i++) {
+			out.beginObject();
+			out.name(TalentParametersPerUnitSchema.COLUMN_PER_VALUE).value(row.getPerValues()[i]);
+			out.name(TalentParametersPerUnitSchema.COLUMN_UNIT_TYPE_NAME).value(row.getUnitTypes()[i].name());
+			out.endObject();
+		}
+	}
+
+	private void readParameterPerUnitValues(JsonReader in, TalentParameterRow row) throws IOException {
+		List<Integer> perValues = new ArrayList<>();
+		List<UnitType> unitTypes = new ArrayList<>();
+		in.beginArray();
+		while(in.hasNext()) {
+			Integer perValue = null;
+			UnitType unitType = null;
+			in.beginObject();
+			while(in.hasNext()) {
+				switch (in.nextName()) {
+					case TalentParametersPerUnitSchema.COLUMN_PER_VALUE:
+						perValue = in.nextInt();
+						break;
+					case TalentParametersPerUnitSchema.COLUMN_UNIT_TYPE_NAME:
+						unitType = UnitType.valueOf(in.nextString());
+						break;
+				}
+			}
+			in.endObject();
+			if(perValue != null && unitType != null) {
+				perValues.add(perValue);
+				unitTypes.add(unitType);
+			}
+			Integer[] perValuesArray = new Integer[perValues.size()];
+			perValues.toArray(perValuesArray);
+			row.setPerValues(perValuesArray);
+			UnitType[] unitTypesArray = new UnitType[unitTypes.size()];
+			unitTypes.toArray(unitTypesArray);
+			row.setUnitTypes(unitTypesArray);
+		}
+		in.endArray();
 	}
 }

@@ -22,13 +22,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Talent Effect information
  */
 public class TalentParameterRow {
-	private Parameter parameter    = Parameter.BONUS;
-	private boolean   perTier      = false;
-	private boolean   perLevel     = false;
-	private boolean   perRound     = false;
-	private String    enumName     = null;
-	private Integer   initialValue = null;
-	private Integer   valuePer     = null;
+	private Parameter  parameter    = Parameter.BONUS;
+	private Integer    initialValue = null;
+	private String     enumName     = null;
+	private Integer[]  perValues    = new Integer[0];
+	private UnitType[] unitTypes    = new UnitType[0];
 
 	@Override
 	public boolean equals(Object o) {
@@ -53,12 +51,10 @@ public class TalentParameterRow {
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("parameter", parameter)
-				.append("perTier", perTier)
-				.append("perLevel", perLevel)
-				.append("perRound", perRound)
 				.append("enumName", enumName)
 				.append("initialValue", initialValue)
-				.append("valuePer", valuePer)
+				.append("perValues", perValues)
+				.append("unitTypes", unitTypes)
 				.toString();
 	}
 
@@ -70,23 +66,11 @@ public class TalentParameterRow {
 		this.parameter = parameter;
 		this.initialValue = null;
 	}
-	public boolean isPerTier() {
-		return perTier;
+	public Integer getInitialValue() {
+		return initialValue;
 	}
-	public void setPerTier(boolean perTier) {
-		this.perTier = perTier;
-	}
-	public boolean isPerLevel() {
-		return perLevel;
-	}
-	public void setPerLevel(boolean perLevel) {
-		this.perLevel = perLevel;
-	}
-	public boolean isPerRound() {
-		return perRound;
-	}
-	public void setPerRound(boolean perRound) {
-		this.perRound = perRound;
+	public void setInitialValue(Integer initialValue) {
+		this.initialValue = initialValue;
 	}
 	public String getEnumName() {
 		return enumName;
@@ -94,17 +78,16 @@ public class TalentParameterRow {
 	public void setEnumName(String enumName) {
 		this.enumName = enumName;
 	}
-	public Integer getInitialValue() {
-		return initialValue;
+	public Integer[] getPerValues() {
+		return perValues;
 	}
-	public void setInitialValue(Integer initialValue) {
-		this.initialValue = initialValue;
+	public void setPerValues(Integer[] perValues) {
+		this.perValues = perValues;
 	}
-	public Integer getValuePer() {
-		return valuePer;
+	public UnitType[] getUnitTypes() {
+		return unitTypes;
 	}
-	public void setValuePer(Integer valuePer)
-	{
-		this.valuePer = valuePer;
+	public void setUnitTypes(UnitType[] unitTypes) {
+		this.unitTypes = unitTypes;
 	}
 }

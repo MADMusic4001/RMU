@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.entities.common;
+package com.madinnovations.rmu.data.entities.spells;
 
 import android.support.annotation.StringRes;
 
@@ -24,35 +24,33 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Unit types
+ * The element types in Rolemaster
  */
-public enum UnitType {
-	ALWAYS(R.string.enum_unit_always),
-	BONUS(R.string.enum_unit_bonus),
-	DAY(R.string.enum_unit_day),
-	FAILURE(R.string.enum_unit_failure),
-	HOUR(R.string.enum_unit_hour),
-	LEVEL(R.string.enum_unit_level),
-	MINUTE(R.string.enum_unit_minute),
-	MONTH(R.string.enum_unit_month),
-	ROUND(R.string.enum_unit_round),
-	TIER(R.string.enum_unit_tier),
-	WEEK(R.string.enum_unit_week),
-	YEAR(R.string.enum_unit_year);
+public enum Element {
+	EARTH(R.string.enum_element_earth),
+	FIRE(R.string.enum_element_fire),
+	ICE(R.string.enum_element_ice),
+	LIGHT(R.string.enum_element_light),
+	WATER(R.string.enum_element_water),
+	WIND(R.string.enum_element_wind);
 
-	private @StringRes int labelResourceId;
+	private @StringRes int nameResourceId;
 
-	UnitType(int labelResourceId) {
-		this.labelResourceId = labelResourceId;
+	Element(int nameResourceId) {
+		this.nameResourceId = nameResourceId;
 	}
 
 	@Override
 	public String toString() {
-		return RMUApp.getResourceUtils().getString(labelResourceId);
+		return RMUApp.getResourceUtils().getString(nameResourceId);
 	}
 
-	// Getter
-	public int getLabelResourceId() {
-		return labelResourceId;
+	/**
+	 * Gets the name string resource id
+	 *
+	 * @return  this instances name resource id
+	 */
+	public int getNameResourceId() {
+		return nameResourceId;
 	}
 }

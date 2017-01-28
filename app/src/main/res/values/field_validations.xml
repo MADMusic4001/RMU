@@ -107,6 +107,7 @@
   <string name="validation_outlook_name_required">Please enter an outlook name.</string>
   <string name="validation_parameter_description_required">Please enter a parameter resultText.</string>
   <string name="validation_parameter_name_required">Please enter a parameter name.</string>
+  <string name="validation_per_value_required">Please enter a value or remove the following value(s).</string>
   <string name="validation_profession_description_required">Please enter a profession resultText.</string>
   <string name="validation_profession_name_required">Please enter a profession name.</string>
   <string name="validation_race_avg_height_required">Please enter an average height.</string>

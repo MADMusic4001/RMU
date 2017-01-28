@@ -20,8 +20,11 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,12 +59,14 @@ import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
+import com.madinnovations.rmu.data.entities.common.UnitType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +79,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Handles interactions with the UI for talents.
@@ -438,14 +444,25 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			changed = true;
 		}
 
+		changed |= copyParameterRows();
+
+		return changed;
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	private boolean copyParameterRows() {
+		boolean changed = false;
+
 		for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
 			Spinner spinner = (Spinner) entry.getKey().findViewById(R.id.parameter_spinner);
 			Spinner valuesSpinner = (Spinner) entry.getKey().findViewById(R.id.value_spinner);
 			EditText initialValueEdit = (EditText)entry.getKey().findViewById(R.id.initial_value_edit);
-			EditText valuePerEdit = (EditText)entry.getKey().findViewById(R.id.value_per_edit);
-			CheckBox perTierCheckbox = (CheckBox)entry.getKey().findViewById(R.id.per_tier_check_box);
-			CheckBox perLevelCheckbox = (CheckBox)entry.getKey().findViewById(R.id.per_level_check_box);
-			CheckBox perRoundCheckbox = (CheckBox)entry.getKey().findViewById(R.id.per_round_check_box);
+			EditText valuePer1Edit = (EditText)entry.getKey().findViewById(R.id.value_per1_edit);
+			Spinner valuePer1Spinner = (Spinner) entry.getKey().findViewById(R.id.value_per1_spinner);
+			EditText valuePer2Edit = (EditText)entry.getKey().findViewById(R.id.value_per2_edit);
+			Spinner valuePer2Spinner = (Spinner) entry.getKey().findViewById(R.id.value_per2_spinner);
+			EditText valuePer3Edit = (EditText)entry.getKey().findViewById(R.id.value_per3_edit);
+			Spinner valuePer3Spinner = (Spinner) entry.getKey().findViewById(R.id.value_per3_spinner);
 			Parameter parameter = (Parameter) spinner.getSelectedItem();
 			TalentParameterRow parameterRow = currentInstance.getTalentParameterRows()[entry.getValue()];
 			if (parameter.getHandler() != null || parameter.getEnumValues() != null) {
@@ -500,34 +517,47 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					changed = true;
 				}
 
-				if(valuePerEdit.getText().length() > 0) {
-					nullableInteger = Integer.valueOf(valuePerEdit.getText().toString());
-				}
-				if(nullableInteger == null && parameterRow.getValuePer() != null) {
-					parameterRow.setValuePer(null);
-					changed = true;
-				}
-				if(nullableInteger != null && !nullableInteger.equals(parameterRow.getValuePer())) {
-					parameterRow.setValuePer(nullableInteger);
-					changed = true;
-				}
-
-				boolean isChecked = perTierCheckbox.isChecked();
-				if(parameterRow.isPerTier() != isChecked) {
-					parameterRow.setPerTier(isChecked);
-					changed = true;
-				}
-
-				isChecked = perLevelCheckbox.isChecked();
-				if(parameterRow.isPerLevel() != isChecked) {
-					parameterRow.setPerLevel(isChecked);
-					changed = true;
-				}
-
-				isChecked = perRoundCheckbox.isChecked();
-				if(parameterRow.isPerRound() != isChecked) {
-					parameterRow.setPerRound(isChecked);
-					changed = true;
+				for(int i = parameterRow.getPerValues().length - 1; i >= 0; i--) {
+					EditText valueEdit = null;
+					Spinner valueSpinner = null;
+					switch (i) {
+						case 0:
+							valueEdit = valuePer1Edit;
+							valueSpinner = valuePer1Spinner;
+							break;
+						case 1:
+							valueEdit = valuePer2Edit;
+							valueSpinner = valuePer2Spinner;
+							break;
+						case 2:
+							valueEdit = valuePer3Edit;
+							valueSpinner = valuePer3Spinner;
+							break;
+					}
+					if(valueEdit.getText().length() > 0) {
+						nullableInteger = Integer.valueOf(valueEdit.getText().toString());
+					}
+					if(nullableInteger == null && parameterRow.getPerValues()[i] != null) {
+						if(i == 0) {
+							parameterRow.setPerValues(new Integer[0]);
+							parameterRow.setUnitTypes(new UnitType[0]);
+						}
+						else {
+							parameterRow.setPerValues(Arrays.copyOfRange(parameterRow.getPerValues(), 0, i - 1));
+							parameterRow.setUnitTypes(Arrays.copyOfRange(parameterRow.getUnitTypes(), 0, i - 1));
+						}
+						changed = true;
+					}
+					UnitType selectedUnitType = (UnitType)valueSpinner.getSelectedItem();
+					if(nullableInteger != null && selectedUnitType != null) {
+						if (parameterRow.getPerValues().length > i && parameterRow.getUnitTypes().length > i
+								&& (!nullableInteger.equals(parameterRow.getPerValues()[i])
+								|| !selectedUnitType.equals(parameterRow.getUnitTypes()[i]))) {
+							parameterRow.getPerValues()[i] = nullableInteger;
+							parameterRow.getUnitTypes()[i] = (UnitType)valueSpinner.getSelectedItem();
+							changed = true;
+						}
+					}
 				}
 			}
 		}
@@ -792,9 +822,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		indexMap.put(parameterRowView, index);
 		initRemoveParameterButton(parameterRowView);
 		initParameterSpinner(parameterRowView);
-		initInitialValueEdit(parameterRowView);
-		initValuePerEdit(parameterRowView);
-		initValueCheckBoxes(parameterRowView);
+		initInitialValueEdit(parameterRowView, currentInstance.getTalentParameterRows()[index]);
+		initValuePerEdits(parameterRowView);
 		initValueSpinner(parameterRowView, currentInstance.getTalentParameterRows()[index]);
 		setParameterRow(parameterRowView, currentInstance.getTalentParameterRows()[index]);
 
@@ -829,7 +858,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initInitialValueEdit(final View layout) {
+	private void initInitialValueEdit(final View layout, TalentParameterRow row) {
 		final EditText editText = (EditText)layout.findViewById(R.id.initial_value_edit);
 		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
 		if(value != null) {
@@ -861,79 +890,169 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initValuePerEdit(final View layout) {
-		final EditText valuePerEdit = (EditText)layout.findViewById(R.id.value_per_edit);
-		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer();
-		if(value != null) {
-			valuePerEdit.setText(String.valueOf(value));
+	private void initValuePerEdits(final View layout) {
+		EditText valuePerEdit = null;
+		EditText nextValuePerEdit = null;
+		Spinner  valuePerSpinner = null;
+		Spinner  nextValuePerSpinner = null;
+		ArrayAdapter<UnitType> spinnerAdapter;
+		TalentParameterRow row = currentInstance.getTalentParameterRows()[indexMap.get(layout)];
+
+		for(int i = 0; i < 3; i++) {
+			spinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+			spinnerAdapter.addAll(UnitType.values());
+
+			switch (i) {
+				case 0:
+					valuePerEdit = (EditText) layout.findViewById(R.id.value_per1_edit);
+					valuePerSpinner = (Spinner) layout.findViewById(R.id.value_per1_spinner);
+					nextValuePerEdit = (EditText) layout.findViewById(R.id.value_per2_edit);
+					nextValuePerSpinner = (Spinner) layout.findViewById(R.id.value_per2_spinner);
+					break;
+				case 1:
+					valuePerEdit = nextValuePerEdit;
+					valuePerSpinner = nextValuePerSpinner;
+					nextValuePerEdit = (EditText) layout.findViewById(R.id.value_per3_edit);
+					nextValuePerSpinner = (Spinner) layout.findViewById(R.id.value_per3_spinner);
+					break;
+				case 2:
+					valuePerEdit = nextValuePerEdit;
+					valuePerSpinner = nextValuePerSpinner;
+					nextValuePerEdit = null;
+					nextValuePerSpinner = null;
+					break;
+			}
+			if (valuePerSpinner != null) {
+				valuePerSpinner.setAdapter(spinnerAdapter);
+			}
+			Integer value = null;
+			UnitType unitType = null;
+			if(row.getPerValues().length > i && row.getUnitTypes().length > i) {
+				value = row.getPerValues()[i];
+				unitType = row.getUnitTypes()[i];
+			}
+			if (valuePerEdit != null && valuePerSpinner != null && value != null && unitType != null) {
+				valuePerEdit.setText(String.valueOf(value));
+				valuePerSpinner.setSelection(spinnerAdapter.getPosition(unitType));
+			}
+			else if (valuePerEdit != null && valuePerSpinner != null) {
+				valuePerEdit.setText(null);
+				valuePerSpinner.setVisibility(GONE);
+			}
+
+			initValuePerEdit(row, layout, i, valuePerEdit, valuePerSpinner, spinnerAdapter, nextValuePerEdit);
+
+			initValuePerSpinner(row, i, valuePerSpinner);
 		}
-		else {
-			valuePerEdit.setText(null);
+	}
+
+	private void initValuePerEdit(final TalentParameterRow row, final View layout, final int index, final EditText valuePerEdit,
+								  final Spinner valuePerSpinner, ArrayAdapter<UnitType> spinnerAdapter,
+								  final EditText nextValuePerEdit) {
+		Integer value;
+		UnitType unitType;
+		if(row.getPerValues().length > index && row.getUnitTypes().length > index) {
+			value = row.getPerValues()[index];
+			unitType = row.getUnitTypes()[index];
+			if (value != null && unitType != null) {
+				valuePerEdit.setText(String.valueOf(value));
+				valuePerSpinner.setSelection(spinnerAdapter.getPosition(unitType));
+			}
+			else {
+				valuePerEdit.setText(null);
+				valuePerSpinner.setVisibility(GONE);
+			}
 		}
+
+		valuePerEdit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(valuePerEdit.getText().length() > 0) {
+					valuePerSpinner.setVisibility(VISIBLE);
+					if(nextValuePerEdit != null) {
+						nextValuePerEdit.setVisibility(VISIBLE);
+					}
+				}
+				else {
+					if(nextValuePerEdit != null) {
+						nextValuePerEdit.setVisibility(GONE);
+					}
+					valuePerSpinner.setVisibility(GONE);
+				}
+			}
+		});
 
 		valuePerEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				if(valuePerEdit.getText().length() > 0) {
+				if (valuePerEdit.getText().length() > 0) {
+					valuePerSpinner.setVisibility(View.VISIBLE);
+					if(nextValuePerEdit != null) {
+						nextValuePerEdit.setVisibility(View.VISIBLE);
+					}
 					Integer newInteger = Integer.valueOf(valuePerEdit.getText().toString());
-					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
-						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer())) {
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(newInteger);
-							saveItem();
-						}
+					if(row.getPerValues().length > index && !newInteger.equals(row.getPerValues()[index])) {
+						row.getPerValues()[index] = newInteger;
+						saveItem();
+					}
+					else if(row.getPerValues().length <= index) {
+						Integer[] valuesPer = new Integer[index + 1];
+						System.arraycopy(row.getPerValues(), 0, valuesPer, 0, row.getPerValues().length);
+						valuesPer[index] = newInteger;
+						row.setPerValues(valuesPer);
+
+						UnitType[] unitTypes = new UnitType[index + 1];
+						System.arraycopy(row.getUnitTypes(), 0, unitTypes, 0, row.getUnitTypes().length);
+						unitTypes[index] = (UnitType)valuePerSpinner.getSelectedItem();
+						row.setUnitTypes(unitTypes);
+
+						saveItem();
 					}
 				}
 				else {
-					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getValuePer() != null) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setValuePer(null);
+					valuePerSpinner.setVisibility(View.GONE);
+					if(nextValuePerEdit != null) {
+						nextValuePerEdit.setVisibility(GONE);
+					}
+					if(index == row.getPerValues().length - 1) {
+						Integer[] valuesPer = new Integer[index];
+						if(index > 0) {
+							System.arraycopy(row.getPerValues(), 0, valuesPer, 0, row.getPerValues().length - 1);
+						}
+						row.setPerValues(valuesPer);
 						saveItem();
+					}
+					else if (nextValuePerEdit != null && nextValuePerEdit.getVisibility() == VISIBLE){
+						valuePerEdit.setError(getString(R.string.validation_per_value_required));
 					}
 				}
 			}
 		});
 	}
 
-	private void initValueCheckBoxes(final View layout) {
-		final CheckBox perTierCheckBox = (CheckBox)layout.findViewById(R.id.per_tier_check_box);
-		perTierCheckBox.setChecked(currentInstance.getTalentParameterRows()[indexMap.get(layout)].isPerTier());
-		perTierCheckBox.setOnClickListener(new View.OnClickListener() {
+	private void initValuePerSpinner(final TalentParameterRow row, final int index, final Spinner valuePerSpinner) {
+		valuePerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
-			public void onClick(View v) {
-				int index = indexMap.get(layout);
-				boolean newBoolean = perTierCheckBox.isChecked();
-				if(newBoolean != currentInstance.getTalentParameterRows()[index].isPerTier()) {
-					currentInstance.getTalentParameterRows()[index].setPerTier(newBoolean);
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(row.getUnitTypes().length > index && !row.getUnitTypes()[index].equals(valuePerSpinner.getSelectedItem())) {
+					row.getUnitTypes()[index] = (UnitType)valuePerSpinner.getSelectedItem();
+					saveItem();
+				}
+				else if(row.getUnitTypes().length == index) {
+					UnitType[] unitTypes = new UnitType[index + 1];
+					System.arraycopy(row.getUnitTypes(), 0, unitTypes, 0, row.getUnitTypes().length);
+					unitTypes[index] = (UnitType)valuePerSpinner.getSelectedItem();
+					row.setUnitTypes(unitTypes);
+					Log.d(TAG, "onItemSelected: saving " + currentInstance.print());
 					saveItem();
 				}
 			}
-		});
-
-		final CheckBox perLevelCheckBox = (CheckBox)layout.findViewById(R.id.per_level_check_box);
-		perLevelCheckBox.setChecked(currentInstance.getTalentParameterRows()[indexMap.get(layout)].isPerLevel());
-		perLevelCheckBox.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				int index = indexMap.get(layout);
-				boolean newBoolean = perLevelCheckBox.isChecked();
-				if(newBoolean != currentInstance.getTalentParameterRows()[index].isPerLevel()) {
-					currentInstance.getTalentParameterRows()[index].setPerLevel(newBoolean);
-					saveItem();
-				}
-			}
-		});
-
-		final CheckBox perRoundCheckBox = (CheckBox)layout.findViewById(R.id.per_round_check_box);
-		perRoundCheckBox.setChecked(currentInstance.getTalentParameterRows()[indexMap.get(layout)].isPerRound());
-		perRoundCheckBox.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				int index = indexMap.get(layout);
-				boolean newBoolean = perRoundCheckBox.isChecked();
-				if(newBoolean != currentInstance.getTalentParameterRows()[index].isPerRound()) {
-					currentInstance.getTalentParameterRows()[index].setPerRound(newBoolean);
-					saveItem();
-				}
-			}
+			public void onNothingSelected(AdapterView<?> parent) {}
 		});
 	}
 
@@ -1072,10 +1191,12 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		final Spinner valuesSpinner = (Spinner)layout.findViewById(R.id.value_spinner);
 		final ArrayAdapter<Object> valuesAdapter = (ArrayAdapter<Object>)valuesSpinner.getAdapter();
 		final EditText initialValueEdit = (EditText)layout.findViewById(R.id.initial_value_edit);
-		final EditText valuePerEdit = (EditText)layout.findViewById(R.id.value_per_edit);
-		final CheckBox perTierCheckbox = (CheckBox)layout.findViewById(R.id.per_tier_check_box);
-		final CheckBox perLevelCheckbox = (CheckBox)layout.findViewById(R.id.per_level_check_box);
-		final CheckBox perRoundCheckbox = (CheckBox)layout.findViewById(R.id.per_round_check_box);
+		final EditText valuePer1Edit = (EditText)layout.findViewById(R.id.value_per1_edit);
+		final Spinner valuePer1Spinner = (Spinner)layout.findViewById(R.id.value_per1_spinner);
+		final EditText valuePer2Edit = (EditText)layout.findViewById(R.id.value_per2_edit);
+		final Spinner valuePer2Spinner = (Spinner)layout.findViewById(R.id.value_per2_spinner);
+		final EditText valuePer3Edit = (EditText)layout.findViewById(R.id.value_per3_edit);
+		final Spinner valuePer3Spinner = (Spinner)layout.findViewById(R.id.value_per3_spinner);
 
 		if(talentParameterRow.getParameter().getHandler() != null) {
 			final Collection<DatabaseObject> spinnerValues = parameterCollectionsCache.get(talentParameterRow.getParameter());
@@ -1130,10 +1251,12 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			valuesSpinnerLabel.setVisibility(View.VISIBLE);
 			valuesSpinner.setVisibility(View.VISIBLE);
 			initialValueEdit.setVisibility(GONE);
-			valuePerEdit.setVisibility(GONE);
-			perTierCheckbox.setVisibility(GONE);
-			perLevelCheckbox.setVisibility(GONE);
-			perRoundCheckbox.setVisibility(GONE);
+			valuePer1Edit.setVisibility(GONE);
+			valuePer1Spinner.setVisibility(GONE);
+			valuePer2Edit.setVisibility(GONE);
+			valuePer2Spinner.setVisibility(GONE);
+			valuePer3Edit.setVisibility(GONE);
+			valuePer3Spinner.setVisibility(GONE);
 		}
 		else if(talentParameterRow.getParameter().getEnumValues() != null) {
 			valuesAdapter.clear();
@@ -1160,10 +1283,12 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			valuesSpinnerLabel.setVisibility(View.VISIBLE);
 			valuesSpinner.setVisibility(View.VISIBLE);
 			initialValueEdit.setVisibility(GONE);
-			valuePerEdit.setVisibility(GONE);
-			perTierCheckbox.setVisibility(GONE);
-			perLevelCheckbox.setVisibility(GONE);
-			perRoundCheckbox.setVisibility(GONE);
+			valuePer1Edit.setVisibility(GONE);
+			valuePer1Spinner.setVisibility(GONE);
+			valuePer2Edit.setVisibility(GONE);
+			valuePer2Spinner.setVisibility(GONE);
+			valuePer3Edit.setVisibility(GONE);
+			valuePer3Spinner.setVisibility(GONE);
 		}
 		else {
 			if(talentParameterRow.getInitialValue() != null) {
@@ -1172,22 +1297,51 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			else {
 				initialValueEdit.setText(null);
 			}
-			if(talentParameterRow.getValuePer() != null) {
-				valuePerEdit.setText(String.valueOf(talentParameterRow.getValuePer()));
+
+			valuePer1Edit.setVisibility(View.VISIBLE);
+			if(talentParameterRow.getPerValues().length > 0 && talentParameterRow.getUnitTypes().length > 0
+					&& talentParameterRow.getPerValues()[0] != null) {
+				valuePer1Edit.setText(String.valueOf(talentParameterRow.getPerValues()[0]));
+				valuePer1Spinner.setVisibility(View.VISIBLE);
+				if(talentParameterRow.getUnitTypes()[0] != null) {
+					valuePer1Spinner.setSelection(((ArrayAdapter<UnitType>) valuePer1Spinner.getAdapter()).getPosition(
+							talentParameterRow.getUnitTypes()[0]));
+				}
 			}
 			else {
-				valuePerEdit.setText(null);
+				valuePer1Edit.setText(null);
+				valuePer1Spinner.setVisibility(GONE);
 			}
-			perTierCheckbox.setChecked(talentParameterRow.isPerTier());
-			perLevelCheckbox.setChecked(talentParameterRow.isPerLevel());
-			perRoundCheckbox.setChecked(talentParameterRow.isPerRound());
+
+			if(talentParameterRow.getPerValues().length > 1 && talentParameterRow.getUnitTypes().length > 1
+					&& talentParameterRow.getPerValues()[1] != null) {
+				valuePer2Edit.setVisibility(View.VISIBLE);
+				valuePer2Edit.setText(String.valueOf(talentParameterRow.getPerValues()[1]));
+				valuePer2Spinner.setVisibility(View.VISIBLE);
+				valuePer2Spinner.setSelection(((ArrayAdapter<UnitType>)valuePer1Spinner.getAdapter()).getPosition(
+						talentParameterRow.getUnitTypes()[1]));
+			}
+			else {
+				valuePer2Edit.setText(null);
+				valuePer2Spinner.setVisibility(GONE);
+			}
+
+			if(talentParameterRow.getPerValues().length > 2 && talentParameterRow.getUnitTypes().length > 2
+					&& talentParameterRow.getPerValues()[2] != null) {
+				valuePer3Edit.setVisibility(View.VISIBLE);
+				valuePer3Edit.setText(String.valueOf(talentParameterRow.getPerValues()[2]));
+				valuePer3Spinner.setVisibility(View.VISIBLE);
+				valuePer3Spinner.setSelection(((ArrayAdapter<UnitType>)valuePer1Spinner.getAdapter()).getPosition(
+						talentParameterRow.getUnitTypes()[2]));
+			}
+			else {
+				valuePer3Edit.setText(null);
+				valuePer3Spinner.setVisibility(GONE);
+			}
+
 			valuesSpinnerLabel.setVisibility(GONE);
 			valuesSpinner.setVisibility(GONE);
 			initialValueEdit.setVisibility(View.VISIBLE);
-			valuePerEdit.setVisibility(View.VISIBLE);
-			perTierCheckbox.setVisibility(View.VISIBLE);
-			perLevelCheckbox.setVisibility(View.VISIBLE);
-			perRoundCheckbox.setVisibility(View.VISIBLE);
 		}
 	}
 	// </editor-fold>

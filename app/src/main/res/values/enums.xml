@@ -50,7 +50,15 @@
   <string name="enum_state_type_used_instantaneous">Used instantaneous</string>
   <string name="enum_state_type_wounded">Wounded</string>
 
-  <!-- Form enum string -->
+  <!-- Element enum strings -->
+  <string name="enum_element_earth">Earth</string>
+  <string name="enum_element_fire">Fire</string>
+  <string name="enum_element_ice">Ice</string>
+  <string name="enum_element_light">Light/Electricity</string>
+  <string name="enum_element_water">Water</string>
+  <string name="enum_element_wind">Wind</string>
+
+  <!-- Form enum strings -->
   <string name="enum_form_algae">Algae</string>
   <string name="enum_form_bark">Bark</string>
   <string name="enum_form_bats">Bats</string>
@@ -135,6 +143,7 @@
   <string name="enum_parameter_disease">Disease</string>
   <string name="enum_parameter_duration">Duration</string>
   <string name="enum_parameter_effect">Effect</string>
+  <string name="enum_parameter_element">Element</string>
   <string name="enum_parameter_elemental_rr">Elemental Resistance Roll</string>
   <string name="enum_parameter_elemental_db">Elemental Defensive Bonus</string>
   <string name="enum_parameter_elemental_endurance">Elemental Endurance</string>
@@ -244,14 +253,16 @@
   <string name="enum_terrain_nigh_impossible_description">Sheer cliff, tightly packed crowd</string>
 
   <!-- Unit enum strings -->
-  <string name="enum_unit_bonus">Bonus</string>
-  <string name="enum_unit_days">Days</string>
-  <string name="enum_unit_failure">Failure</string>
-  <string name="enum_unit_hours">Hours</string>
-  <string name="enum_unit_levels">Levels</string>
-  <string name="enum_unit_minutes">Minutes</string>
-  <string name="enum_unit_months">Months</string>
-  <string name="enum_unit_rounds">Rounds</string>
-  <string name="enum_unit_weeks">Weeks</string>
-  <string name="enum_unit_years">Years</string>
+  <string name="enum_unit_always">Always</string>
+  <string name="enum_unit_bonus">Per Bonus</string>
+  <string name="enum_unit_day">Per Day</string>
+  <string name="enum_unit_failure">Per Failure</string>
+  <string name="enum_unit_hour">Per Hour</string>
+  <string name="enum_unit_level">Per Level</string>
+  <string name="enum_unit_minute">Per Minute</string>
+  <string name="enum_unit_month">Per Month</string>
+  <string name="enum_unit_round">Per Round</string>
+  <string name="enum_unit_tier">Per Tier</string>
+  <string name="enum_unit_week">Per Week</string>
+  <string name="enum_unit_year">Per Year</string>
 </resources>

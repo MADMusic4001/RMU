@@ -20,6 +20,7 @@ import android.support.annotation.StringRes;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
+import com.madinnovations.rmu.data.entities.spells.Element;
 import com.madinnovations.rmu.view.RMUApp;
 
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
@@ -55,6 +56,7 @@ public enum Parameter {
 	DISEASE(R.string.enum_parameter_disease, DISEASE_RX_HANDLER, null),
 	DURATION(R.string.enum_parameter_duration, null, null),
 	EFFECT(R.string.enum_parameter_effect, null, null),
+	ELEMENT(R.string.enum_parameter_element, null, Element.values()),
 	ELEMENTAL_RR(R.string.enum_parameter_elemental_rr, null, Resistance.getElementalResistances()),
 	ELEMENTAL_DB(R.string.enum_parameter_elemental_db, null, null),
 	ELEMENTAL_ENDURANCE(R.string.enum_parameter_elemental_endurance, null, null),

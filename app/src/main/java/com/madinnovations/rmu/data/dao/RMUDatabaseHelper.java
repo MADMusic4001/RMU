@@ -68,6 +68,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillStatsSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SpecializationStatsSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentCategorySchema;
+import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersPerUnitSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentParametersSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.TalentSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeLevelsSchema;
@@ -171,6 +172,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(VarietyTalentTiersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(TalentParametersSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(TalentParametersPerUnitSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpecializationSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpecializationStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CampaignSchema.TABLE_CREATE);
@@ -283,6 +285,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CampaignAttackRestrictionsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(TalentParametersPerUnitSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyTalentTiersSchema.TABLE_NAME, null, null);
