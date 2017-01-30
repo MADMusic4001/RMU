@@ -268,7 +268,7 @@ public class ReactiveUtils {
 				result = skillCategoryRxHandler.getAll();
 				break;
 			case SPECIALIZATION_RX_HANDLER:
-				result = specializationRxHandler.getAll();
+				result = skillRxHandler.getSpecializationSkills();
 				break;
 			case SPELL_RX_HANDLER:
 				result = spellRxHandler.getAll();

@@ -21,6 +21,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.spells.Element;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUApp;
 
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
@@ -29,7 +30,10 @@ import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
  * Adjustable Attributes
  */
 public enum Parameter {
+	ACTION_POINT_COST(R.string.enum_parameter_action_point_cost, null, null),
+	ACTION_POINT_DIFFERENCE(R.string.enum_parameter_action_point_difference, null, null),
 	ADDITIONAL_ATTACK(R.string.enum_parameter_additional_attack, null, null),
+	ADDITIONAL_REALM(R.string.enum_parameter_additional_realm, REALM_RX_HANDLER, null),
 	ARMOR_PENALTY(R.string.enum_parameter_armor_penalty, null, null),
 	ARMOR_TYPE(R.string.enum_parameter_armor_type, null, null),
 	ATTACK(R.string.enum_parameter_attack, ATTACK_RX_HANDLER, null),
@@ -53,6 +57,7 @@ public enum Parameter {
 	CRITICAL_TYPE(R.string.enum_parameter_critical_type, CRITICAL_TYPE_RX_HANDLER, null),
 	DEFENSIVE_BONUS(R.string.enum_parameter_defensive_bonus, null, null),
 	DEFENSIVE_SIZE(R.string.enum_parameter_defensive_size, SIZE_RX_HANDLER, null),
+	DESTINY_SENSE(R.string.enum_parameter_destiny_sense, null, DestinySense.values()),
 	DISEASE(R.string.enum_parameter_disease, DISEASE_RX_HANDLER, null),
 	DURATION(R.string.enum_parameter_duration, null, null),
 	EFFECT(R.string.enum_parameter_effect, null, null),
@@ -63,11 +68,14 @@ public enum Parameter {
 	EMPATHIC_RANGE(R.string.enum_parameter_empathic_range, null, null),
 	ENCUMBRANCE_PENALTY(R.string.enum_parameter_encumbrance_penalty, null, null),
 	ENDURANCE(R.string.enum_parameter_endurance, null, null),
+	ENTER_STATE(R.string.enum_parameter_enter_state, null, StateType.values()),
 	FATIGUE_PENALTY(R.string.enum_parameter_fatigue_penalty, null, null),
 	FEAR_RR(R.string.enum_parameter_fear_rr, null, Resistance.getFearResistances()),
 	FOLLOWER_FEAR_RR(R.string.enum_parameter_follower_fear_rr, null, Resistance.getFearResistances()),
 	FUMBLE_RANGE(R.string.enum_parameter_fumble_range, null, null),
 	HOURS_REST(R.string.enum_parameter_hours_rest, null, null),
+	HP_RECOVERY_RATE(R.string.enum_parameter_recovery_rate, null, null),
+	HP_RECOVERY_RATE_MULT(R.string.enum_parameter_recovery_rate_mult, null, null),
 	INITIATIVE(R.string.enum_parameter_initiative, null, null),
 	INJURY_PENALTY(R.string.enum_parameter_injury_penalty, null, null),
 	INTERVAL(R.string.enum_parameter_interval, null, null),
@@ -91,8 +99,7 @@ public enum Parameter {
 	RANGE_ATTACK(R.string.enum_parameter_range_attack, RANGE_ATTACK_RX_HANDLER, null),
 	RANGE_PENALTY(R.string.enum_parameter_range_penalty, null, null),
 	RANK_BONUS(R.string.enum_parameter_rank_bonus, null, null),
-	RECOVERY_RATE(R.string.enum_parameter_recovery_rate, null, null),
-	RECOVERY_RATE_MULT(R.string.enum_parameter_recovery_rate_mult, null, null),
+	RE_ROLL_CRITICAL(R.string.enum_parameter_re_roll_critical, null, null),
 	RR_MOD(R.string.enum_parameter_rr_mod, null, null),
 	SENSE(R.string.enum_parameter_sense, null, Sense.getNoChoiceSenses()),
 	SIZE_DIFFERENCE(R.string.enum_parameter_size_difference, null, null),
@@ -105,9 +112,11 @@ public enum Parameter {
 	SPELL_CONCENTRATION_DURATION(R.string.enum_parameter_spell_concentration_duration, null, null),
 	SPELL_DURATION(R.string.enum_parameter_spell_duration, null, null),
 	SPELL_FAILURE(R.string.enum_parameter_spell_failure, null, null),
+	SPELL_FAILURE_PP_RECOVERY(R.string.enum_parameter_spell_failure_pp_recovery, null, null),
 	SPELL_PREP_ROUNDS(R.string.enum_parameter_spell_prep_rounds, null, null),
 	SPELL_RADIUS(R.string.enum_parameter_spell_radius, null, null),
 	SPELL_RANGE(R.string.enum_parameter_spell_range, null, null),
+	SPELL_TARGETS(R.string.enum_parameter_spell_targets, null, null),
 	STAT(R.string.enum_parameter_stat, null, Statistic.getAllStats()),
 	TERRAIN(R.string.enum_parameter_terrain, null, Terrain.values()),
 	TOUCH_RANGE(R.string.enum_parameter_touch_range, null, null),

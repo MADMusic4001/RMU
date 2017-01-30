@@ -56,6 +56,8 @@ import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.common.Parameter;
+import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
@@ -66,6 +68,7 @@ import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -858,7 +861,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		});
 	}
 
-	private void initInitialValueEdit(final View layout, TalentParameterRow row) {
+	private void initInitialValueEdit(final View layout, final TalentParameterRow row) {
 		final EditText editText = (EditText)layout.findViewById(R.id.initial_value_edit);
 		Integer value = currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue();
 		if(value != null) {
@@ -873,18 +876,14 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			public void onFocusChange(View v, boolean hasFocus) {
 				if(editText.getText().length() > 0) {
 					Integer newInteger = Integer.valueOf(editText.getText().toString());
-					if(indexMap.get(layout) < currentInstance.getTalentParameterRows().length) {
-						if (!newInteger.equals(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue())) {
-							currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(newInteger);
-							saveItem();
-						}
-					}
-				}
-				else {
-					if(currentInstance.getTalentParameterRows()[indexMap.get(layout)].getInitialValue() != null) {
-						currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
+					if (!newInteger.equals(row.getInitialValue())) {
+						row.setInitialValue(newInteger);
 						saveItem();
 					}
+				}
+				else if(row.getInitialValue() != null) {
+					currentInstance.getTalentParameterRows()[indexMap.get(layout)].setInitialValue(null);
+					saveItem();
 				}
 			}
 		});
@@ -1072,7 +1071,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				}
 				else {
 					if (index > 0) {
-						System.arraycopy(currentInstance.getTalentParameterRows(), 0, newRows, 0, index);
+						System.arraycopy(currentInstance.getTalentParameterRows(), 0, newRows, 0, newLength);
 					}
 					if (index < newLength) {
 						System.arraycopy(currentInstance.getTalentParameterRows(), position, newRows, index, newLength - index);
@@ -1211,8 +1210,20 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							}
 							@Override
 							public void onNext(Object results) {
-								parameterCollectionsCache.put(talentParameterRow.getParameter(),
-															  (Collection<DatabaseObject>) results);
+								if(talentParameterRow.getParameter().getHandler()
+										== ReactiveUtils.Handler.SPECIALIZATION_RX_HANDLER) {
+									Collection<DatabaseObject> specializationResults = new ArrayList<>();
+									for(Skill skill : (Collection<Skill>)results) {
+										for(Specialization specialization : skill.getSpecializations()) {
+											specializationResults.add(specialization);
+										}
+									}
+									parameterCollectionsCache.put(talentParameterRow.getParameter(), specializationResults);
+								}
+								else {
+									parameterCollectionsCache.put(talentParameterRow.getParameter(),
+																  (Collection<DatabaseObject>) results);
+								}
 								valuesAdapter.clear();
 								valuesAdapter.add(choice);
 								valuesAdapter.addAll(parameterCollectionsCache.get(talentParameterRow.getParameter()));

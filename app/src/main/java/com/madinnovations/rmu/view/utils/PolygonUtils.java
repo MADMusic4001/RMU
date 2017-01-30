@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.view.utils;
 
 import android.graphics.PointF;
-import android.util.Log;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,6 +25,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class PolygonUtils {
+	@SuppressWarnings("unused")
 	private static final String TAG = "PolygonUtils";
 
 	/**
@@ -42,6 +42,7 @@ public class PolygonUtils {
 	 * @param vertices  the vertices of the polygon with vertices[n] == vertices[0]
 	 * @return  true if the point is inside the polygon, otherwise false.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isPointInPolygon(PointF point, PointF[] vertices) {
 		int windingNumber = 0;
 
@@ -65,8 +66,8 @@ public class PolygonUtils {
 		return windingNumber == 0;
 	}
 
+	@SuppressWarnings("unused")
 	public PointF hexRound(PointF pointF) {
-		Log.d(TAG, "hexRound: pointf = " + pointF);
 		return cubeToHex(cubeRound(hexToCube(pointF)));
 	}
 
@@ -93,7 +94,6 @@ public class PolygonUtils {
 	}
 
 	public PointF cubeToHex(Cube cube) {
-		Log.d(TAG, "cubeToHex: cube = " + cube);
 		return new PointF(cube.x, cube.z);
 	}
 

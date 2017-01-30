@@ -74,7 +74,7 @@
   <string name="validation_creature_variety_weight_required">Please enter a weight for this creature variety.</string>
   <string name="validation_critical_code_required">Please enter a critical code.</string>
   <string name="validation_critical_code_description_required">Please enter a critical code resultText.</string>
-  <string name="validation_critical_result_text_required">Please enter the critical result text.</string>
+  <string name="validation_critical_result_text_required">Please enter the critical result textResourceId.</string>
   <string name="validation_critical_type_code_required">Please enter a critical type code.</string>
   <string name="validation_critical_type_name_required">Please enter a critical type name.</string>
   <string name="validation_culture_description_required">Please enter a culture notes.</string>

@@ -15,28 +15,34 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import android.support.annotation.StringRes;
+
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
+
 /**
  * Magic/Physical element attribute
  */
 public enum Resistance {
-	CHANNELING("Channeling", false, false, true, false),
-	COLD("Cold/Ice", true, false, false, false),
-	DISEASE("Disease", false, false, false, true),
-	ELECTRICITY("Electricity/Light", true, false, false, false),
-	ESSENCE("Essence", false, false, true, false),
-	FEAR("Fear", false, true, false, false),
-	HEAT("Heat/Fire", true, false, false, false),
-	MENTALISM("Mentalism", false, false, true, false),
-	POISON("Poison", false, false, false, true);
+	ALL(R.string.enum_resistance_all, true, true, true, true),
+	CHANNELING(R.string.enum_resistance_channeling, false, false, true, false),
+	COLD(R.string.enum_resistance_cold_ice, true, false, false, false),
+	DISEASE(R.string.enum_resistance_disease, false, false, false, true),
+	ELECTRICITY(R.string.enum_resistance_electricity_light, true, false, false, false),
+	ESSENCE(R.string.enum_resistance_essence, false, false, true, false),
+	FEAR(R.string.enum_resistance_fear, false, true, false, false),
+	HEAT(R.string.enum_resistance_heat_fire, true, false, false, false),
+	MENTALISM(R.string.enum_resistance_mentalism, false, false, true, false),
+	POISON(R.string.enum_resistance_poison, false, false, false, true);
 
-	private String text;
-	private boolean elemental;
-	private boolean fear;
-	private boolean magical;
-	private boolean physical;
+	private @StringRes int textResourceId;
+	private boolean        elemental;
+	private boolean        fear;
+	private boolean        magical;
+	private boolean        physical;
 
-	Resistance(String text, boolean elemental, boolean fear, boolean magical, boolean physical) {
-		this.text = text;
+	Resistance(int textResourceId, boolean elemental, boolean fear, boolean magical, boolean physical) {
+		this.textResourceId = textResourceId;
 		this.elemental = elemental;
 		this.fear = fear;
 		this.magical = magical;
@@ -45,7 +51,7 @@ public enum Resistance {
 
 	@Override
 	public String toString() {
-		return text;
+		return RMUApp.getResourceUtils().getString(textResourceId);
 	}
 
 	/**
@@ -133,8 +139,8 @@ public enum Resistance {
 	}
 
 	// Getters
-	public String getText() {
-		return text;
+	public int getTextResourceId() {
+		return textResourceId;
 	}
 	public boolean isElemental() {
 		return elemental;

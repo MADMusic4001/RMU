@@ -23,6 +23,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -33,6 +34,7 @@ import android.view.View;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.play.CombatSetup;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
+import com.madinnovations.rmu.view.utils.Cube;
 import com.madinnovations.rmu.view.utils.PolygonUtils;
 
 import java.util.Map;
@@ -53,6 +55,7 @@ public class HexView extends View {
 	private PointF               hexCorners[];
 	private PointF               highlightCenterPoint = null;
 	private Paint                linePaint;
+	private Paint                fontPaint;
 	private Paint                highlightPaint;
 	private ScaleGestureDetector scaleGestureDetector;
 	private float scaleFactor = 1.f;
@@ -123,16 +126,15 @@ public class HexView extends View {
 		pointf.x = point.x / scaleFactor - SIZE;
 		pointf.y = point.y / scaleFactor - height;
 		float q = pointf.x * 2/3 / SIZE;
-		float r = (float)(-pointf.x/3 + Math.sqrt(3)/3 * pointf.y) / SIZE;
+		float xAdjust = pointf.x % SIZE*2;
+		float r = (float)(-xAdjust/3.0 + Math.sqrt(3.0f)/3.0f * pointf.y) / SIZE;
 
-		coords = polygonUtils.hexRound(new PointF(q, r));
-		Log.d(TAG, "getCenterPoint: coords = " + coords);
+		coords = polygonUtils.cubeToHex(polygonUtils.cubeRound(new Cube(q, -q-r, r)));
 		result.x = coords.x * SIZE * 3 / 2 + SIZE;
-		result.y = coords.y * height * 2 + height;
+		result.y = coords.y * height * 2 + height + 1;
 		if(coords.x % 2 == 1) {
 			result.y += height;
 		}
-		Log.d(TAG, "getCenterPoint: result = " + result);
 
 		return result;
 	}
@@ -168,6 +170,13 @@ public class HexView extends View {
 		linePaint.setColor(Color.BLACK);
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeJoin(Paint.Join.ROUND);
+		fontPaint = new Paint();
+		Typeface raleway = Typeface.createFromAsset(getContext().getAssets(), "fonts/Raleway-Bold.ttf");
+		fontPaint.setTypeface(raleway);
+		fontPaint.setAntiAlias(true);
+		fontPaint.setTextSize(20);
+		fontPaint.setColor(Color.BLACK);
+		fontPaint.setTextAlign(Paint.Align.CENTER);
 		highlightPaint = new Paint();
 		highlightPaint.setAntiAlias(true);
 		highlightPaint.setStrokeWidth(6f);
@@ -195,12 +204,11 @@ public class HexView extends View {
 		if(callbacks != null) {
 			for(Map.Entry<Character, PointF> entry : callbacks.getCombatSetup().getCharacterLocations().entrySet()) {
 				canvas.save();
-				canvas.translate(entry.getValue().x, entry.getValue().y);
 				canvas.scale(scaleFactor, scaleFactor);
 				drawHexagon(canvas, SIZE, highlightPaint);
 				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
 					entry.getKey().getKnownAs().length() : 3);
-				canvas.drawText(initials, entry.getValue().x, entry.getValue().y, linePaint);
+				canvas.drawText(initials, entry.getValue().x, entry.getValue().y, fontPaint);
 				canvas.restore();
 			}
 		}
@@ -268,6 +276,12 @@ public class HexView extends View {
 	}
 
 	// Getters and setters
+	public PointF getHighlightCenterPoint() {
+		return highlightCenterPoint;
+	}
+	public void clearHighlightCenterPoint() {
+		this.highlightCenterPoint = null;
+	}
 	public Callbacks getCallbacks() {
 		return callbacks;
 	}

@@ -5,6 +5,7 @@
   <string name="enum_choice">Choice</string>
 
   <!-- Conditional enum strings -->
+  <string name="enum_condition_type_all_ob_to_parry">All OB used to parry</string>
   <string name="enum_condition_type_critical_achieved">Critical Achieved</string>
   <string name="enum_condition_type_critical_severity_achieved">Critical Severity Achieved</string>
   <string name="enum_condition_type_hit_race">Hit Race</string>
@@ -18,6 +19,7 @@
   <string name="enum_condition_type_in_sunlight">In Sunlight</string>
   <string name="enum_condition_type_underwater">Underwater</string>
   <string name="enum_condition_type_parry_effective">Parry Effective (no hits delivered)</string>
+  <string name="enum_condition_type_successful_perception">Successful Perception roll</string>
 
   <!-- ConditionType enum strings -->
   <string name="enum_state_type_action_point_loss">Action point loss</string>
@@ -30,6 +32,7 @@
   <string name="enum_state_type_encumbered">Encumbered</string>
   <string name="enum_state_type_fatigued">Fatigued</string>
   <string name="enum_state_type_flatfooted">Flatfooted</string>
+  <string name="enum_state_type_frenzied">Frenzied</string>
   <string name="enum_state_type_grappled">Grappled</string>
   <string name="enum_state_type_hasted">Hasted</string>
   <string name="enum_state_type_hp_loss">HP Loss</string>
@@ -49,6 +52,10 @@
   <string name="enum_state_type_unconscious">Unconscious</string>
   <string name="enum_state_type_used_instantaneous">Used instantaneous</string>
   <string name="enum_state_type_wounded">Wounded</string>
+
+  <!-- DestinySense enum strings -->
+  <string name="enum_destiny_sense_direction">Direction Sense</string>
+  <string name="enum_destiny_sense_direction_and_distance">Direction and Distance Sense</string>
 
   <!-- Element enum strings -->
   <string name="enum_element_earth">Earth</string>
@@ -117,7 +124,10 @@
   <string name="enum_pace_dash">Dash</string>
 
   <!-- Parameter enum strings -->
+  <string name="enum_parameter_action_point_cost">Action Point Cost</string>
+  <string name="enum_parameter_action_point_difference">Action Point Difference</string>
   <string name="enum_parameter_additional_attack">Additional Attack</string>
+  <string name="enum_parameter_additional_realm">Additional Realm</string>
   <string name="enum_parameter_armor_penalty">Armor Penalty</string>
   <string name="enum_parameter_armor_type">Armor Type</string>
   <string name="enum_parameter_attack">Attack</string>
@@ -140,6 +150,7 @@
   <string name="enum_parameter_critical_type">Critical Type</string>
   <string name="enum_parameter_defensive_bonus">Defensive Bonus</string>
   <string name="enum_parameter_defensive_size">Defensive Size</string>
+  <string name="enum_parameter_destiny_sense">Destiny Sense</string>
   <string name="enum_parameter_disease">Disease</string>
   <string name="enum_parameter_duration">Duration</string>
   <string name="enum_parameter_effect">Effect</string>
@@ -150,6 +161,7 @@
   <string name="enum_parameter_empathic_range">Empathic Communication Range</string>
   <string name="enum_parameter_encumbrance_penalty">Encumbrance Penalty</string>
   <string name="enum_parameter_endurance">Endurance</string>
+  <string name="enum_parameter_enter_state">Enter State</string>
   <string name="enum_parameter_fatigue_penalty">Fatigue Penalty</string>
   <string name="enum_parameter_fear_rr">Fear Resistance Roll</string>
   <string name="enum_parameter_follower_fear_rr">Followers Fear Resistance Roll</string>
@@ -180,6 +192,7 @@
   <string name="enum_parameter_rank_bonus">Rank Bonus</string>
   <string name="enum_parameter_recovery_rate">HP Recovery Rate</string>
   <string name="enum_parameter_recovery_rate_mult">HP Recovery Rate Multiplier</string>
+  <string name="enum_parameter_re_roll_critical">Re-roll Critical roll</string>
   <string name="enum_parameter_rr_mod">RR Mod</string>
   <string name="enum_parameter_sense">Sense</string>
   <string name="enum_parameter_size_difference">Size Difference</string>
@@ -192,9 +205,11 @@
   <string name="enum_parameter_spell_concentration_duration">Spell Concentration Duration</string>
   <string name="enum_parameter_spell_duration">Spell Duration</string>
   <string name="enum_parameter_spell_failure">Spell Failure</string>
+  <string name="enum_parameter_spell_failure_pp_recovery">Spell Failure PP Recovery</string>
   <string name="enum_parameter_spell_prep_rounds">Spell Preparation Rounds</string>
   <string name="enum_parameter_spell_radius">Spell Radius</string>
   <string name="enum_parameter_spell_range">Spell Range</string>
+  <string name="enum_parameter_spell_targets">Spell Target Count</string>
   <string name="enum_parameter_stat">Stat</string>
   <string name="enum_parameter_state">State</string>
   <string name="enum_parameter_terrain">Terrain</string>
@@ -210,6 +225,18 @@
   <string name="enum_prep_liquid">Liquid</string>
   <string name="enum_prep_paste">Paste</string>
   <string name="enum_prep_powder">Powder</string>
+
+  <!-- Resistance enum strings -->
+  <string name="enum_resistance_all">All</string>
+  <string name="enum_resistance_channeling">Channeling</string>
+  <string name="enum_resistance_cold_ice">Cold/Ice</string>
+  <string name="enum_resistance_disease">Disease</string>
+  <string name="enum_resistance_electricity_light">Electricity/Light</string>
+  <string name="enum_resistance_essence">Essence</string>
+  <string name="enum_resistance_fear">Fear</string>
+  <string name="enum_resistance_heat_fire">Heat/Fire</string>
+  <string name="enum_resistance_mentalism">Mentalism</string>
+  <string name="enum_resistance_poison">Poison</string>
 
   <!-- Severity enum strings -->
   <string name="enum_severity_mild">Mild</string>
@@ -254,15 +281,41 @@
 
   <!-- Unit enum strings -->
   <string name="enum_unit_always">Always</string>
-  <string name="enum_unit_bonus">Per Bonus</string>
-  <string name="enum_unit_day">Per Day</string>
-  <string name="enum_unit_failure">Per Failure</string>
-  <string name="enum_unit_hour">Per Hour</string>
-  <string name="enum_unit_level">Per Level</string>
-  <string name="enum_unit_minute">Per Minute</string>
-  <string name="enum_unit_month">Per Month</string>
-  <string name="enum_unit_round">Per Round</string>
-  <string name="enum_unit_tier">Per Tier</string>
-  <string name="enum_unit_week">Per Week</string>
-  <string name="enum_unit_year">Per Year</string>
+  <string name="enum_unit_bonus"># Per Bonus</string>
+  <string name="enum_unit_day"># Per Day</string>
+  <string name="enum_unit_failure"># Per Failure</string>
+  <string name="enum_unit_hour"># Per Hour</string>
+  <string name="enum_unit_level"># Per Level</string>
+  <string name="enum_unit_minute"># Per Minute</string>
+  <string name="enum_unit_month"># Per Month</string>
+  <string name="enum_unit_round"># Per Round</string>
+  <string name="enum_unit_tier"># Per Tier</string>
+  <string name="enum_unit_unit"># Per Unit</string>
+  <string name="enum_unit_visible_bleeding"># Per Visible Bleeding</string>
+  <string name="enum_unit_week"># Per Week</string>
+  <string name="enum_unit_year"># Per Year</string>
+  <string name="enum_unit_pct_bonus">% Per Bonus</string>
+  <string name="enum_unit_pct_day">% Per Day</string>
+  <string name="enum_unit_pct_failure">% Per Failure</string>
+  <string name="enum_unit_pct_hour">% Per Hour</string>
+  <string name="enum_unit_pct_level">% Per Level</string>
+  <string name="enum_unit_pct_minute">% Per Minute</string>
+  <string name="enum_unit_pct_month">% Per Month</string>
+  <string name="enum_unit_pct_round">% Per Round</string>
+  <string name="enum_unit_pct_tier">% Per Tier</string>
+  <string name="enum_unit_pct_unit">% Per Unit</string>
+  <string name="enum_unit_pct_week">% Per Week</string>
+  <string name="enum_unit_pct_year">% Per Year</string>
+  <string name="enum_unit_bonus_interval">Per # Bonus</string>
+  <string name="enum_unit_day_interval">Per # Days</string>
+  <string name="enum_unit_failure_interval">Per # Failure</string>
+  <string name="enum_unit_hour_interval">Per # Hours</string>
+  <string name="enum_unit_level_interval">Per # Levels</string>
+  <string name="enum_unit_minute_interval">Per # Minutes</string>
+  <string name="enum_unit_month_interval">Per # Months</string>
+  <string name="enum_unit_round_interval">Per # Rounds</string>
+  <string name="enum_unit_tier_interval">Per # Tiers</string>
+  <string name="enum_unit_unit_interval">Per # Units</string>
+  <string name="enum_unit_week_interval">Per # Weeks</string>
+  <string name="enum_unit_year_interval">Per # Years</string>
 </resources>

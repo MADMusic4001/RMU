@@ -34,6 +34,7 @@ enum StateType {
 	ENCUMBERED(R.string.enum_state_type_encumbered),
 	FATIGUED(R.string.enum_state_type_fatigued),
 	FLATFOOTED(R.string.enum_state_type_flatfooted),
+	FRENZIED(R.string.enum_state_type_frenzied),
 	GRAPPLED(R.string.enum_state_type_grappled),
 	HASTED(R.string.enum_state_type_hasted),
 	HP_LOSS(R.string.enum_state_type_hp_loss),

@@ -27,6 +27,7 @@ import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
  * Conditional options
  */
 public enum ConditionType {
+	ALL_OB_TO_PARRY(R.string.enum_condition_type_all_ob_to_parry, null, null),
 	CRITICAL_ACHIEVED(R.string.enum_condition_type_critical_achieved, null, null),
 	CRITICAL_SEVERITY_ACHIEVED(R.string.enum_condition_type_critical_severity_achieved, null, CriticalSeverity.values()),
 	PARRY_EFFECTIVE(R.string.enum_condition_type_parry_effective, null, null),
@@ -39,8 +40,8 @@ public enum ConditionType {
 	IN_SUNLIGHT(R.string.enum_condition_type_in_sunlight, null, null),
 	UNDERWATER(R.string.enum_condition_type_underwater, null, null),
 	IN_FIRE(R.string.enum_condition_type_in_fire, null, null),
-	OPPONENT_FUMBLE(R.string.enum_condition_type_fumbled, null, null);
-	;
+	OPPONENT_FUMBLE(R.string.enum_condition_type_fumbled, null, null),
+	SUCCESSFUL_PERCEPTION(R.string.enum_condition_type_successful_perception, null, null);
 
 	private @StringRes int        nameResourceId;
 	private ReactiveUtils.Handler handler;

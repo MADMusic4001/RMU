@@ -64,7 +64,7 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 	private   Collection<Character> characters = null;
 	private   Collection<Creature>  opponents = null;
 	private   CombatSetup           currentInstance = new CombatSetup();
-	// TODO: Reroll critical option if player successfully used Sense Weakness talent at the beginning of combat.
+	// TODO: Re-roll critical option if player successfully used Sense Weakness talent at the beginning of combat.
 	// TODO: Add riposte option if player with Riposte talent uses all his OB to parry and parry is effective (no hits delivered). Riposte is weapon skill specific.
 	// TODO: Add Opportunistic Strike option when player has the talent and his opponent fumbles.
 	// TODO: Add Quickdraw/Quickload option to allow player with the skill for the weapon he is loading/drawing to do so using
@@ -113,8 +113,6 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 				}
 				if(event.getClipDescription() != null && DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
 					Log.d(TAG, "onDrag: event = " + event);
-					((HexView)v).setHighlightHex(pointf);
-					v.invalidate();
 				}
 				switch (action) {
 					case DragEvent.ACTION_DRAG_STARTED:
@@ -131,6 +129,7 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
 								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
 							v.setBackground(hoverShape);
+							((HexView)v).setHighlightHex(pointf);
 							v.invalidate();
 						}
 						else {
@@ -140,11 +139,14 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 					case DragEvent.ACTION_DRAG_LOCATION:
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
 								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
+							((HexView)v).setHighlightHex(pointf);
+							v.invalidate();
 						}
 						break;
 					case DragEvent.ACTION_DRAG_EXITED:
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
 								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
+							((HexView)v).clearHighlightCenterPoint();
 							v.setBackground(targetShape);
 							v.invalidate();
 						}
@@ -154,7 +156,8 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 						break;
 					case DragEvent.ACTION_DROP:
 						if(event.getClipDescription() != null) {
-							pointf = ((HexView)v).getCenterPoint(pointf);
+							((HexView)v).setHighlightHex(pointf);
+							pointf = ((HexView)v).getHighlightCenterPoint();
 							if (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
 								ClipData.Item item = event.getClipData().getItemAt(0);
 								int characterId = Integer.valueOf(item.getText().toString());
@@ -165,6 +168,7 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 									}
 								}
 								if(character != null) {
+									Log.d(TAG, "onDrag: pointF = " + pointf);
 									currentInstance.getCharacterLocations().put(character, pointf);
 								}
 							} else if(DRAG_OPPONENT.equals(event.getClipDescription().getLabel())) {
