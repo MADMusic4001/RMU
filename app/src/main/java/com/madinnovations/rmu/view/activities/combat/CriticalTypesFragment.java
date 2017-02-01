@@ -72,8 +72,8 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 
 		View layout = inflater.inflate(R.layout.critical_types_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_critical_type_code));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_critical_type_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_critical_type_code);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_critical_type_description);
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_critical_type_name_required);
@@ -243,7 +243,7 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 				@Override
 				public void onError(Throwable e) {
 					Log.e("CriticalTypeFragment", "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_critical_type_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.toast_critical_type_delete_failed, Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -264,7 +264,7 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_critical_type_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_critical_type_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -283,8 +283,7 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 					@Override
 					public void onError(Throwable e) {
 						Log.e("CriticalTypesFragment", "Exception saving CriticalType", e);
-						String toastString = getString(R.string.toast_critical_type_save_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_critical_type_save_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(CriticalType savedCriticalType) {
@@ -297,9 +296,7 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_critical_type_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_critical_type_saved, Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -339,7 +336,7 @@ public class CriticalTypesFragment extends Fragment implements TwoFieldListAdapt
 				public void onError(Throwable e) {
 					Log.e("CriticalTypesFragment", "Exception caught getting all CriticalType instances", e);
 					Toast.makeText(CriticalTypesFragment.this.getActivity(),
-							getString(R.string.toast_critical_types_load_failed),
+							R.string.toast_critical_types_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

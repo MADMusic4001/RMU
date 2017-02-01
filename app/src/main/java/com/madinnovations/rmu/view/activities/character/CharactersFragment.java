@@ -321,7 +321,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new Character: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_character_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_character_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Character savedItem) {
@@ -334,8 +334,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Boast.makeText(getActivity(), getString(R.string.toast_character_saved),
-											   Toast.LENGTH_SHORT).show(true);
+								Boast.makeText(getActivity(), R.string.toast_character_saved, Toast.LENGTH_SHORT).show(true);
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -362,8 +361,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_character_delete_failed),
-									   Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_character_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -384,7 +382,7 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_character_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_character_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});

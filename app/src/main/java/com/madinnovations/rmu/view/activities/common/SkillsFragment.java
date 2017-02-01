@@ -99,8 +99,8 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 		View layout = inflater.inflate(R.layout.skills_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_skill_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_skill_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_skill_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_skill_description);
 
 		initSkillCategoryFilterSpinner(layout);
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, R.string.validation_skill_name_required);
@@ -419,7 +419,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_skill_delete_failed), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_skill_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -440,7 +440,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_skill_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_skill_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -459,8 +459,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving Skill", e);
-							String toastString = getString(R.string.toast_skill_save_failed);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_skill_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Skill savedSkill) {
@@ -473,9 +472,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
-								String toastString;
-								toastString = getString(R.string.toast_skill_saved);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_skill_saved, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(currentInstance);
 								SkillCategory skillCategory = skillCategoryFilterSpinnerAdapter.getItem
@@ -847,7 +844,7 @@ public class SkillsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all Skill instances", e);
 						Toast.makeText(SkillsFragment.this.getActivity(),
-								getString(R.string.toast_skills_load_failed),
+								R.string.toast_skills_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

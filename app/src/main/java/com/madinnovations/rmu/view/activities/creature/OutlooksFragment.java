@@ -72,8 +72,8 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 
 		View layout = inflater.inflate(R.layout.outlooks_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_outlook_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_outlook_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_outlook_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_outlook_description);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
@@ -205,7 +205,7 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 						@Override
 						public void onError(Throwable e) {
 							Log.e("OutlooksFrag", "Exception saving new Outlook: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_outlook_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_outlook_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Outlook savedItem) {
@@ -218,7 +218,7 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_outlook_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_outlook_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -243,8 +243,7 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 					@Override
 					public void onError(Throwable e) {
 						Log.e("OutlooksFrag", "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_outlook_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_outlook_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -265,7 +264,7 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_outlook_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_outlook_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -351,7 +350,7 @@ public class OutlooksFragment extends Fragment implements TwoFieldListAdapter.Ge
 						Log.e("OutlooksFrag",
 								"Exception caught getting all Outlook instances in onCreateView", e);
 						Toast.makeText(OutlooksFragment.this.getActivity(),
-								getString(R.string.toast_outlooks_load_failed),
+								R.string.toast_outlooks_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

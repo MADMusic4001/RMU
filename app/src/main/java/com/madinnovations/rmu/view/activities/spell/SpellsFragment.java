@@ -116,8 +116,8 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 		View layout = inflater.inflate(R.layout.spells_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_spell_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_spell_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_spell_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_spell_description);
 
 		initSpellListFilterSpinner(layout);
 		initNameEdit(layout);
@@ -487,7 +487,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_spell_delete_failed), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_spell_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -508,7 +508,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_spell_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_spell_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -527,8 +527,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving Skill", e);
-							String toastString = getString(R.string.toast_spell_save_failed);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_spell_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Spell savedSpell) {
@@ -541,9 +540,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
-								String toastString;
-								toastString = getString(R.string.toast_spell_saved);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_spell_saved, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(currentInstance);
 								SpellList spellList = spellListFilterSpinnerAdapter.getItem
@@ -1147,7 +1144,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all Spell instances", e);
 						Toast.makeText(SpellsFragment.this.getActivity(),
-								getString(R.string.toast_spells_load_failed),
+								R.string.toast_spells_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

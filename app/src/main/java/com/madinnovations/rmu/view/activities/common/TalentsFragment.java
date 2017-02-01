@@ -24,7 +24,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -150,8 +149,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 		};
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_talent_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_talent_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_talent_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_talent_description);
 
 		initFilterSpinner(layout);
 		initCategorySpinner(layout);
@@ -608,7 +607,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new Talent: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_talent_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_talent_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Talent savedItem) {
@@ -621,7 +620,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_talent_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_talent_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -646,8 +645,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_talent_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_talent_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -668,7 +666,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -939,13 +937,13 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				valuePerSpinner.setVisibility(GONE);
 			}
 
-			initValuePerEdit(row, layout, i, valuePerEdit, valuePerSpinner, spinnerAdapter, nextValuePerEdit);
+			initValuePerEdit(row, i, valuePerEdit, valuePerSpinner, spinnerAdapter, nextValuePerEdit);
 
 			initValuePerSpinner(row, i, valuePerSpinner);
 		}
 	}
 
-	private void initValuePerEdit(final TalentParameterRow row, final View layout, final int index, final EditText valuePerEdit,
+	private void initValuePerEdit(final TalentParameterRow row, final int index, final EditText valuePerEdit,
 								  final Spinner valuePerSpinner, ArrayAdapter<UnitType> spinnerAdapter,
 								  final EditText nextValuePerEdit) {
 		Integer value;
@@ -1167,7 +1165,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting Talent instances", e);
 						Toast.makeText(TalentsFragment.this.getActivity(),
-									   getString(R.string.toast_talents_load_failed),
+									   R.string.toast_talents_load_failed,
 									   Toast.LENGTH_SHORT).show();
 					}
 					@Override

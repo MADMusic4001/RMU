@@ -73,8 +73,8 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 
 		View layout = inflater.inflate(R.layout.item_templates_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_item_template_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_item_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_item_template_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_item_description);
 
 		initNameEdit(layout);
 		initNotesEdit(layout);
@@ -164,7 +164,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 						@Override
 						public void onError(Throwable e) {
 							Log.e("ItemTemplatesFragment", "Exception saving new ItemTemplate: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_item_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_item_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(ItemTemplate savedItemTemplate) {
@@ -177,7 +177,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_item_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_item_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItemTemplate);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -202,8 +202,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 					@Override
 					public void onError(Throwable e) {
 						Log.e("ItemTemplatesFragment", "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_item_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -224,7 +223,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_talent_category_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -340,7 +339,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 						Log.e("ItemTemplatesFragment",
 								"Exception caught getting all ItemTemplate instances in onCreateView", e);
 						Toast.makeText(ItemTemplatesFragment.this.getActivity(),
-								getString(R.string.toast_items_load_failed),
+								R.string.toast_items_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

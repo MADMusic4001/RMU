@@ -276,5 +276,6 @@
   <string name="toast_talent_category_deleted">Talent Category deleted.</string>
   <string name="toast_talent_category_delete_failed">Talent Category deletion failed.</string>
 
+  <string name="toast_character_location_saved">Character location saved.</string>
   <string name="toast_stat_gain">%1$s temporary stat increased by %2$d</string>
 </resources>

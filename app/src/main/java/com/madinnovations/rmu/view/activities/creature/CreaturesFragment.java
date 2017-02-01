@@ -84,8 +84,8 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 
 		View layout = inflater.inflate(R.layout.creature_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_creature_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_campaign_name));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_creature_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_campaign_name);
 
 
 		levelEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.creature_level_edit,
@@ -292,7 +292,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new Creature: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Creature savedItem) {
@@ -305,7 +305,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 								creatureListAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_creature_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_creature_saved, Toast.LENGTH_SHORT).show();
 								int position = creatureListAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) creatureListView.getChildAt(
 										position - creatureListView.getFirstVisiblePosition());
@@ -331,8 +331,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_creature_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_creature_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -353,7 +352,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -382,7 +381,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all Creature instances in onCreateView", e);
 						Toast.makeText(CreaturesFragment.this.getActivity(),
-								getString(R.string.toast_creature_load_failed),
+								R.string.toast_creature_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

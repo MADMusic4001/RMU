@@ -72,10 +72,10 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 
 		View layout = inflater.inflate(R.layout.spell_types_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_spell_type_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_spell_type_code));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_spell_type_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_spell_type_code);
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field3).getLayoutParams()).weight = 4;
-		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_spell_type_description));
+		((TextView)layout.findViewById(R.id.header_field3)).setText(R.string.label_spell_type_description);
 
 		initNameEdit(layout);
 		initCodeEdit(layout);
@@ -246,7 +246,7 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SpellTypeFragment", "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_spell_type_delete_failed), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_spell_type_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -267,7 +267,7 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_spell_type_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_spell_type_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -286,8 +286,7 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 						@Override
 						public void onError(Throwable e) {
 							Log.e("SpellTypesFragment", "Exception saving SpellType", e);
-							String toastString = getString(R.string.toast_spell_type_save_failed);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_spell_type_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(SpellType savedSpellType) {
@@ -300,9 +299,7 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
-								String toastString;
-								toastString = getString(R.string.toast_spell_type_saved);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_spell_type_saved, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(currentInstance);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -430,7 +427,7 @@ public class SpellTypesFragment extends Fragment implements ThreeFieldListAdapte
 					public void onError(Throwable e) {
 						Log.e("SpellTypesFragment", "Exception caught getting all SpellType instances", e);
 						Toast.makeText(SpellTypesFragment.this.getActivity(),
-									   getString(R.string.toast_spell_types_load_failed),
+									   R.string.toast_spell_types_load_failed,
 									   Toast.LENGTH_SHORT).show();
 					}
 					@Override

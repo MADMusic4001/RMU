@@ -163,9 +163,7 @@ public class CriticalResultsFragment extends Fragment {
 							}
 						}
 						if(getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_critical_result_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_critical_result_saved, Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(savedCriticalResult);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -195,8 +193,7 @@ public class CriticalResultsFragment extends Fragment {
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_critical_result_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_critical_result_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -217,7 +214,7 @@ public class CriticalResultsFragment extends Fragment {
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_critical_result_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_critical_result_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -335,7 +332,7 @@ public class CriticalResultsFragment extends Fragment {
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception caught getting all CriticalResult instances", e);
 							Toast.makeText(CriticalResultsFragment.this.getActivity(),
-									getString(R.string.toast_critical_results_load_failed),
+									R.string.toast_critical_results_load_failed,
 									Toast.LENGTH_SHORT).show();
 						}
 						@Override

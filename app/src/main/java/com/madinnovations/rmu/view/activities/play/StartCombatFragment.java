@@ -18,6 +18,7 @@ package com.madinnovations.rmu.view.activities.play;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -32,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
@@ -92,6 +94,24 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 		return currentInstance;
 	}
 
+	private void saveCharacter(Character character) {
+		if(character.isValid()) {
+			characterRxHandler.save(character)
+					.subscribe(new Subscriber<Character>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "onError: Exception caught saving character location", e);
+						}
+						@Override
+						public void onNext(Character character) {
+							Toast.makeText(getActivity(), R.string.toast_character_location_saved, Toast.LENGTH_SHORT).show();
+						}
+					});
+		}
+	}
+
 	private void initHexView(View layout) {
 		hexView = (HexView)layout.findViewById(R.id.hex_view);
 		hexView.setCallbacks(this);
@@ -101,19 +121,12 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 			private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
 			private Drawable normalShape = hexView.getBackground();
 			private PointF lastCenterPoint = null;
-			private Character character = null;
 
 			@Override
 			public boolean onDrag(View v, DragEvent event) {
 				final int action = event.getAction();
 				PointF pointf = new PointF(event.getX(), event.getY());
 
-				if(character == null && event.getClipData() != null) {
-					character = getCharacter(event);
-				}
-				if(event.getClipDescription() != null && DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
-					Log.d(TAG, "onDrag: event = " + event);
-				}
 				switch (action) {
 					case DragEvent.ACTION_DRAG_STARTED:
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
@@ -156,7 +169,9 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 						break;
 					case DragEvent.ACTION_DROP:
 						if(event.getClipDescription() != null) {
-							((HexView)v).setHighlightHex(pointf);
+							Character character = getCharacter(event);
+							Point hexCoordinates = ((HexView)v).getHexCoordinates(pointf);
+							((HexView)v).setHighlightHex(hexCoordinates);
 							pointf = ((HexView)v).getHighlightCenterPoint();
 							if (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
 								ClipData.Item item = event.getClipData().getItemAt(0);
@@ -168,8 +183,11 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks {
 									}
 								}
 								if(character != null) {
-									Log.d(TAG, "onDrag: pointF = " + pointf);
 									currentInstance.getCharacterLocations().put(character, pointf);
+									if(character.getLocation() != hexCoordinates) {
+										character.setLocation(hexCoordinates);
+										saveCharacter(character);
+									}
 								}
 							} else if(DRAG_OPPONENT.equals(event.getClipDescription().getLabel())) {
 								ClipData.Item item = event.getClipData().getItemAt(0);

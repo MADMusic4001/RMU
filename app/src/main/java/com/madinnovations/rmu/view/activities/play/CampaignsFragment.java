@@ -125,8 +125,8 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 
 		View layout = inflater.inflate(R.layout.campaigns_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_campaign_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_campaign_create_date));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_campaign_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_campaign_create_date);
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 				R.string.validation_campaign_name_required);
@@ -501,7 +501,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_campaign_delete_failed), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_campaign_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -522,7 +522,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_campaign_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_campaign_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -541,8 +541,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving Campaign", e);
-							String toastString = getString(R.string.toast_campaign_save_failed);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_campaign_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Campaign savedCampaign) {
@@ -555,9 +554,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
-								String toastString;
-								toastString = getString(R.string.toast_campaign_saved);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_campaign_saved, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(currentInstance);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -649,7 +646,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 														toast.cancel();
 													}
 													toast = Toast.makeText(getActivity(),
-																		   getString(R.string.toast_character_saved),
+																		   R.string.toast_character_saved,
 																		   Toast.LENGTH_SHORT);
 													toast.show();
 												}
@@ -703,7 +700,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all Campaign instances", e);
 						Toast.makeText(CampaignsFragment.this.getActivity(),
-								getString(R.string.toast_campaigns_load_failed),
+								R.string.toast_campaigns_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

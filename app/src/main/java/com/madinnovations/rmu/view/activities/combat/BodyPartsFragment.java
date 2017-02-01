@@ -73,8 +73,8 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 
 		View layout = inflater.inflate(R.layout.body_parts_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_body_part_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_body_part_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_body_part_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_body_part_description);
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_body_part_name_required);
@@ -252,7 +252,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 				@Override
 				public void onError(Throwable e) {
 					Log.e("BodyPartFragment", "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_body_part_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.toast_body_part_delete_failed, Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -273,7 +273,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_body_part_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_body_part_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -292,8 +292,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 					@Override
 					public void onError(Throwable e) {
 						Log.e("BodyPartsFragment", "Exception saving BodyPart", e);
-						String toastString = getString(R.string.toast_body_part_save_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_body_part_save_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(BodyPart savedBodyPart) {
@@ -306,9 +305,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_body_part_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_body_part_saved, Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -350,7 +347,7 @@ public class BodyPartsFragment extends Fragment implements TwoFieldListAdapter.G
 				public void onError(Throwable e) {
 					Log.e("BodyPartsFragment", "Exception caught getting all BodyPart instances", e);
 					Toast.makeText(BodyPartsFragment.this.getActivity(),
-							getString(R.string.toast_body_parts_load_failed),
+							R.string.toast_body_parts_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

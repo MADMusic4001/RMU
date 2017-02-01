@@ -82,9 +82,9 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 
 		View layout = inflater.inflate(R.layout.creature_archetypes_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_creature_archetype_name));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_creature_archetype_name);
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field2).getLayoutParams()).weight = 4;
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_creature_archetype_description));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_creature_archetype_description);
 
 		initViewPager(layout);
 		initListView(layout);
@@ -233,7 +233,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new CreatureArchetype.", e);
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_archetype_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_archetype_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(CreatureArchetype savedItem) {
@@ -246,7 +246,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_creature_archetype_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_creature_archetype_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -271,8 +271,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_creature_archetype_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_creature_archetype_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -293,7 +292,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_archetype_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_archetype_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -330,7 +329,7 @@ public class CreatureArchetypesFragment extends Fragment implements TwoFieldList
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all CreatureArchetype instances in onCreateView", e);
 						Toast.makeText(CreatureArchetypesFragment.this.getActivity(),
-								getString(R.string.toast_creature_archetypes_load_failed),
+								R.string.toast_creature_archetypes_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

@@ -286,7 +286,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_race_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_race_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -306,7 +306,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception saving Race", e);
 						Toast.makeText(getActivity(),
-									   getString(R.string.toast_race_save_failed),
+									   R.string.toast_race_save_failed,
 									   Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -321,7 +321,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 						}
 						if (getActivity() != null) {
 							Toast.makeText(getActivity(),
-										   getString(R.string.toast_race_saved),
+										   R.string.toast_race_saved,
 										   Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
@@ -364,7 +364,7 @@ public class RacesFragment extends Fragment implements TwoFieldListAdapter.GetVa
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception caught getting all Race instances", e);
 					Toast.makeText(RacesFragment.this.getActivity(),
-							getString(R.string.toast_races_load_failed),
+							R.string.toast_races_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

@@ -87,8 +87,8 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 		noSpecialization.setName(getString(R.string.no_specialization));
 		View layout = inflater.inflate(R.layout.attacks_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_attack_code));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_attack_name));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_attack_code);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_attack_name);
 
 		codeEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.attack_code_edit,
 										  R.string.validation_attack_code_required);
@@ -332,7 +332,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				@Override
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_attack_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.toast_attack_delete_failed, Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -353,7 +353,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_attack_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_attack_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -372,8 +372,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception saving Attack", e);
-						String toastString = getString(R.string.toast_attack_save_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_attack_save_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Attack savedAttack) {
@@ -387,8 +386,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 						}
 						if (getActivity() != null) {
 							String toastString;
-							toastString = getString(R.string.toast_attack_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_attack_saved, Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -421,7 +419,7 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception caught getting all Attack instances", e);
 					Toast.makeText(AttacksFragment.this.getActivity(),
-							getString(R.string.toast_attacks_load_failed),
+							R.string.toast_attacks_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

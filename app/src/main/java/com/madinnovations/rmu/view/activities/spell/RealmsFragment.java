@@ -79,8 +79,8 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 		View layout = inflater.inflate(R.layout.realms_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_realm_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_realm_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_realm_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_realm_description);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
@@ -228,7 +228,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new Realm: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_realm_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_realm_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Realm savedItem) {
@@ -241,7 +241,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_realm_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_realm_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -266,8 +266,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_realm_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_realm_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -288,7 +287,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_realm_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_realm_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -410,7 +409,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all Realm instances", e);
 						Toast.makeText(RealmsFragment.this.getActivity(),
-								getString(R.string.toast_realms_load_failed),
+								R.string.toast_realms_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

@@ -77,10 +77,10 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 
 		View layout = inflater.inflate(R.layout.sizes_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_size_code));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_size_name));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_size_code);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_size_name);
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field3).getLayoutParams()).weight = 5;
-		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_size_examples));
+		((TextView)layout.findViewById(R.id.header_field3)).setText(R.string.label_size_examples);
 
 		initCodeEdit(layout);
 		initNameEdit(layout);
@@ -300,7 +300,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 						@Override
 						public void onError(Throwable e) {
 							Log.e("SizesFragment", "Exception saving new Size: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_size_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_size_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Size savedItem) {
@@ -313,7 +313,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_size_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_size_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -340,8 +340,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SizesFragment", "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_size_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_size_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -362,7 +361,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_size_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_size_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -631,7 +630,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SizesFragment", "Exception caught getting all Size instances", e);
-						Toast.makeText(SizesFragment.this.getActivity(), getString(R.string.toast_sizes_load_failed),
+						Toast.makeText(SizesFragment.this.getActivity(), R.string.toast_sizes_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

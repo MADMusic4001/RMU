@@ -219,7 +219,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						if(toast != null) {
 							toast.cancel();
 						}
-						toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_table_save_failed), Toast.LENGTH_SHORT);
+						toast = Toast.makeText(getActivity(), R.string.toast_damage_table_save_failed, Toast.LENGTH_SHORT);
 						toast.show();
 					}
 					@Override
@@ -241,7 +241,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							if(toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_table_saved), Toast.LENGTH_SHORT);
+							toast = Toast.makeText(getActivity(), R.string.toast_damage_table_saved, Toast.LENGTH_SHORT);
 							toast.show();
 						}
 					}
@@ -264,7 +264,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							if (toast != null) {
 								toast.cancel();
 							}
-							toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_result_row_save_failed), Toast.LENGTH_SHORT);
+							toast = Toast.makeText(getActivity(), R.string.toast_damage_result_row_save_failed, Toast.LENGTH_SHORT);
 							toast.show();
 						}
 
@@ -300,7 +300,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_damage_table_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_damage_table_deleted, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onError(Throwable e) {
@@ -308,7 +308,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						if(toast != null) {
 							toast.cancel();
 						}
-						toast = Toast.makeText(getActivity(), getString(R.string.toast_damage_table_delete_failed), Toast.LENGTH_SHORT);
+						toast = Toast.makeText(getActivity(), R.string.toast_damage_table_delete_failed, Toast.LENGTH_SHORT);
 						toast.show();
 					}
 					@Override
@@ -354,7 +354,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							toast.cancel();
 						}
 						toast = Toast.makeText(DamageResultsFragment.this.getActivity(),
-								getString(R.string.toast_damage_tables_load_failed), Toast.LENGTH_SHORT);
+								R.string.toast_damage_tables_load_failed, Toast.LENGTH_SHORT);
 						toast.show();
 					}
 					@Override
@@ -413,7 +413,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 							toast.cancel();
 						}
 						toast = Toast.makeText(DamageResultsFragment.this.getActivity(),
-								getString(R.string.toast_damage_result_rows_load_failed), Toast.LENGTH_SHORT);
+								R.string.toast_damage_result_rows_load_failed, Toast.LENGTH_SHORT);
 						toast.show();
 					}
 					@Override
@@ -439,10 +439,10 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 	private AlertDialog ConfirmDelete() {
 		return new AlertDialog.Builder(getActivity())
 				//set message, title, and icon
-				.setTitle(getString(R.string.confirm_delete_title))
-				.setMessage(getString(R.string.confirm_delete_message))
+				.setTitle(R.string.confirm_delete_title)
+				.setMessage(R.string.confirm_delete_message)
 				.setIcon(R.drawable.file_icon)
-				.setPositiveButton(getString(R.string.label_delete), new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.label_delete, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						int position = damageTableFilterSpinner.getSelectedItemPosition();
 						DamageTable damageTable = damageTableFilterSpinnerAdapter.getItem(position);
@@ -452,7 +452,7 @@ public class DamageResultsFragment extends Fragment implements EditTextUtils.Val
 						dialog.dismiss();
 					}
 				})
-				.setNegativeButton(getString(R.string.label_cancel), new DialogInterface.OnClickListener() {
+				.setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
 					}

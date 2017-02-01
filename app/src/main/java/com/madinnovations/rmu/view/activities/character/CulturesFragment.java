@@ -326,7 +326,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				@Override
 				public void onError(Throwable e) {
 					Log.e("CultureFragment", "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_culture_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.toast_culture_delete_failed, Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -347,7 +347,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_culture_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_culture_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -448,7 +448,7 @@ public class CulturesFragment extends Fragment implements TwoFieldListAdapter.Ge
 				public void onError(Throwable e) {
 					Log.e("CulturesFragment", "Exception caught getting all Culture instances", e);
 					Toast.makeText(CulturesFragment.this.getActivity(),
-							getString(R.string.toast_cultures_load_failed),
+							R.string.toast_cultures_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

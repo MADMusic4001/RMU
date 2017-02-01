@@ -103,9 +103,9 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 		View layout = inflater.inflate(R.layout.creature_categories_fragment, container, false);
 
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field1).getLayoutParams()).weight = 3;
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_creature_category_name));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_creature_category_name);
 		((LinearLayout.LayoutParams)layout.findViewById(R.id.header_field2).getLayoutParams()).weight = 10;
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_creature_category_description));
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_creature_category_description);
 
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
@@ -276,7 +276,7 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new CreatureCategory: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_category_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_category_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(CreatureCategory savedItem) {
@@ -289,7 +289,7 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_creature_category_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_creature_category_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -314,8 +314,7 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_creature_category_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_creature_category_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -336,7 +335,7 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_category_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_category_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -572,7 +571,7 @@ public class CreatureCategoriesFragment extends Fragment implements TwoFieldList
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all CreatureCategory instances in onCreateView", e);
 						Toast.makeText(CreatureCategoriesFragment.this.getActivity(),
-								getString(R.string.toast_creature_categories_load_failed),
+								R.string.toast_creature_categories_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

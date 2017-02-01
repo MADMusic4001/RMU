@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import android.graphics.Point;
+
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.State;
@@ -81,15 +83,16 @@ public class Character extends DatabaseObject {
 	private Map<Statistic, Short>            statTemps                       = new HashMap<>();
 	private Map<Statistic, Short>            statPotentials                  = new HashMap<>();
 	private List<Item>                       items                           = new ArrayList<>();
-	private Map<Skill, Short>          currentLevelSkillRanks          = new HashMap<>();
-	private Map<Specialization, Short> currentLevelSpecializationRanks = new HashMap<>();
-	private Map<SpellList, Short>      currentLevelSpellListRanks      = new HashMap<>();
-	private Map<TalentInstance, Short> currentLevelTalentTiers         = new HashMap<>();
-	private Map<DatabaseObject, Short> purchasedCultureRanks           = new HashMap<>();
-	private int                        statIncreases                   = 0;
-	private List<State>                currentStates                   = new ArrayList<>();
-	private List<DatabaseObject>       professionSkills                = new ArrayList<>();
-	private List<DatabaseObject>       knacks                          = new ArrayList<>();
+	private Map<Skill, Short>                currentLevelSkillRanks          = new HashMap<>();
+	private Map<Specialization, Short>       currentLevelSpecializationRanks = new HashMap<>();
+	private Map<SpellList, Short>            currentLevelSpellListRanks      = new HashMap<>();
+	private Map<TalentInstance, Short>       currentLevelTalentTiers         = new HashMap<>();
+	private Map<DatabaseObject, Short>       purchasedCultureRanks           = new HashMap<>();
+	private int                              statIncreases                   = 0;
+	private List<State>                      currentStates                   = new ArrayList<>();
+	private List<DatabaseObject>             professionSkills                = new ArrayList<>();
+	private List<DatabaseObject>             knacks                          = new ArrayList<>();
+	private Point                            location                        = null;
 
 	/**
 	 * Creates a new Character instance with default values
@@ -213,6 +216,7 @@ public class Character extends DatabaseObject {
 				.append("statIncreases", statIncreases)
 				.append("professionSkills", professionSkills)
 				.append("knacks", knacks)
+				.append("location", location)
 				.toString();
 	}
 
@@ -658,5 +662,11 @@ public class Character extends DatabaseObject {
 	}
 	public void setKnacks(List<DatabaseObject> knacks) {
 		this.knacks = knacks;
+	}
+	public Point getLocation() {
+		return location;
+	}
+	public void setLocation(Point location) {
+		this.location = location;
 	}
 }

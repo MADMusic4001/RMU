@@ -99,8 +99,8 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 
 		View layout = inflater.inflate(R.layout.specializations_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_specialization_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_specialization_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_specialization_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_specialization_description);
 
 		initSkillFilterSpinner(layout);
 		initNameEdit(layout);
@@ -373,7 +373,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), getString(R.string.toast_specialization_delete_failed), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_specialization_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -394,7 +394,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_specialization_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_specialization_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -413,8 +413,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving Specialization", e);
-							String toastString = getString(R.string.toast_specialization_save_failed);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_specialization_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Specialization savedSpecialization) {
@@ -427,9 +426,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
-								String toastString;
-								toastString = getString(R.string.toast_specialization_saved);
-								Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_specialization_saved, Toast.LENGTH_SHORT).show();
 
 								int position = listAdapter.getPosition(savedSpecialization);
 								Skill skill = skillFilterSpinnerAdapter.getItem(skillFilterSpinner.getSelectedItemPosition());
@@ -817,7 +814,7 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught getting all Specialization instances", e);
 						Toast.makeText(SpecializationsFragment.this.getActivity(),
-								getString(R.string.toast_specializations_load_failed),
+								R.string.toast_specializations_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

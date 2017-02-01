@@ -80,9 +80,9 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 
 		View layout = inflater.inflate(R.layout.diseases_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_disease_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_disease_severity));
-		((TextView)layout.findViewById(R.id.header_field3)).setText(getString(R.string.label_disease_effects));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_disease_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_disease_severity);
+		((TextView)layout.findViewById(R.id.header_field3)).setText(R.string.label_disease_effects);
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_disease_name_required);
@@ -378,7 +378,7 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 				@Override
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception when deleting: " + item, e);
-					Toast.makeText(getActivity(), getString(R.string.toast_disease_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.toast_disease_delete_failed, Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -399,7 +399,7 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_disease_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_disease_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -418,8 +418,7 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception saving Disease", e);
-						String toastString = getString(R.string.toast_disease_save_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_disease_save_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Disease savedDisease) {
@@ -432,9 +431,7 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 							listAdapter.notifyDataSetChanged();
 						}
 						if (getActivity() != null) {
-							String toastString;
-							toastString = getString(R.string.toast_disease_saved);
-							Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_disease_saved, Toast.LENGTH_SHORT).show();
 
 							int position = listAdapter.getPosition(currentInstance);
 							LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
@@ -478,7 +475,7 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception caught getting all Disease instances", e);
 					Toast.makeText(DiseasesFragment.this.getActivity(),
-							getString(R.string.toast_diseases_load_failed),
+							R.string.toast_diseases_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

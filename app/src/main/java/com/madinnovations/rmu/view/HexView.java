@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -31,12 +32,16 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.play.CombatSetup;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 import com.madinnovations.rmu.view.utils.Cube;
 import com.madinnovations.rmu.view.utils.PolygonUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -59,6 +64,7 @@ public class HexView extends View {
 	private Paint                highlightPaint;
 	private ScaleGestureDetector scaleGestureDetector;
 	private float scaleFactor = 1.f;
+	private int textSize;
 
 	/**
 	 * Creates a new HexView instance
@@ -112,27 +118,50 @@ public class HexView extends View {
 	}
 
 	/**
-	 * Gets the center point of the hex that contains the given point.
+	 * Gets the hex coordinate that contains the given pixel coordinates.
 	 *
-	 * @param point  the point to search
-	 * @return a Point representing the center point of the hex containing the given point, otherwise Point(0,0) will be returned.
+	 * @param pixelCoordinates  the point to locate
+	 * @return a Point instance containing the coordinates
 	 */
-	public PointF getCenterPoint(PointF point) {
-		PointF result = new PointF();
-		PointF coords;
+	public Point getHexCoordinates(PointF pixelCoordinates) {
+		PointF floatCoords;
 
 		float height = (float) Math.sqrt(3) / 2 * SIZE;
 		PointF pointf = new PointF();
-		pointf.x = point.x / scaleFactor - SIZE;
-		pointf.y = point.y / scaleFactor - height;
+		pointf.x = pixelCoordinates.x / scaleFactor - SIZE;
+		pointf.y = pixelCoordinates.y / scaleFactor - height;
 		float q = pointf.x * 2/3 / SIZE;
 		float xAdjust = pointf.x % SIZE*2;
 		float r = (float)(-xAdjust/3.0 + Math.sqrt(3.0f)/3.0f * pointf.y) / SIZE;
 
-		coords = polygonUtils.cubeToHex(polygonUtils.cubeRound(new Cube(q, -q-r, r)));
-		result.x = coords.x * SIZE * 3 / 2 + SIZE;
-		result.y = coords.y * height * 2 + height + 1;
-		if(coords.x % 2 == 1) {
+		floatCoords = polygonUtils.cubeToHex(polygonUtils.cubeRound(new Cube(q, -q-r, r)));
+
+		return new Point((int)floatCoords.x, (int)floatCoords.y);
+	}
+
+	/**
+	 * Gets the center point of the hex that contains the given point.
+	 *
+	 * @param pixelCoordinates  the point to search
+	 * @return a PointF instance representing the center point of the hex containing the given point.
+	 */
+	public PointF getCenterPoint(PointF pixelCoordinates) {
+		Point hexCoords = getHexCoordinates(pixelCoordinates);
+		return getCenterPoint(hexCoords);
+	}
+
+	/**
+	 * Gets the center point of the hex that contains the given point.
+	 *
+	 * @param hexCoordinates  the hex coordinate
+	 * @return a PointF instance representing the center point of the hex containing the given point.
+	 */
+	public PointF getCenterPoint(Point hexCoordinates) {
+		PointF result = new PointF();
+		float height = (float) Math.sqrt(3) / 2 * SIZE;
+		result.x = hexCoordinates.x * SIZE * 3 / 2 + SIZE;
+		result.y = hexCoordinates.y * height * 2 + height + 1;
+		if(hexCoordinates.x % 2 == 1) {
 			result.y += height;
 		}
 
@@ -142,12 +171,22 @@ public class HexView extends View {
 	/**
 	 * Sets the hex containing the given point to be highlighted.
 	 *
-	 * @param point  a {@link PointF} instance
+	 * @param pixelCoordinates  a {@link PointF} instance with pixel coordinates.
 	 * @return true if the current highlight hex was changed, otherwise false.
 	 */
-	public boolean setHighlightHex(PointF point) {
+	public boolean setHighlightHex(PointF pixelCoordinates) {
+		return setHighlightHex(getHexCoordinates(pixelCoordinates));
+	}
+
+	/**
+	 * Sets the hex containing the given point to be highlighted.
+	 *
+	 * @param hexCoordinates  a {@link Point} instance with hex coordinates
+	 * @return true if the current highlight hex was changed, otherwise false.
+	 */
+	public boolean setHighlightHex(Point hexCoordinates) {
 		boolean changed = false;
-		PointF centerPoint = getCenterPoint(point);
+		PointF centerPoint = getCenterPoint(hexCoordinates);
 		if(highlightCenterPoint == null || centerPoint.x != highlightCenterPoint.x || centerPoint.y != highlightCenterPoint.y) {
 			highlightCenterPoint = centerPoint;
 			changed = true;
@@ -170,11 +209,13 @@ public class HexView extends View {
 		linePaint.setColor(Color.BLACK);
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeJoin(Paint.Join.ROUND);
+		textSize = getContext().getResources().getDimensionPixelSize(R.dimen.textSizeInSp);
+		Log.d(TAG, "init: textSize = " + textSize);
 		fontPaint = new Paint();
 		Typeface raleway = Typeface.createFromAsset(getContext().getAssets(), "fonts/Raleway-Bold.ttf");
 		fontPaint.setTypeface(raleway);
 		fontPaint.setAntiAlias(true);
-		fontPaint.setTextSize(20);
+		fontPaint.setTextSize(textSize);
 		fontPaint.setColor(Color.BLACK);
 		fontPaint.setTextAlign(Paint.Align.CENTER);
 		highlightPaint = new Paint();
@@ -190,28 +231,39 @@ public class HexView extends View {
 		Rect drawRect = new Rect();
 		getDrawingRect(drawRect);
 		canvas.drawColor(Color.WHITE);
+		canvas.save();
+		canvas.scale(scaleFactor, scaleFactor);
 		if (hexGrid != null) {
-			canvas.scale(scaleFactor, scaleFactor);
 			canvas.drawBitmap(hexGrid, 0, 0, null);
 		}
 		if(highlightCenterPoint != null) {
 			canvas.save();
 			canvas.translate(highlightCenterPoint.x, highlightCenterPoint.y);
-			canvas.scale(scaleFactor, scaleFactor);
 			drawHexagon(canvas, SIZE, highlightPaint);
 			canvas.restore();
 		}
 		if(callbacks != null) {
+			Map<PointF, List<String>> hexStringsMap = new HashMap<>();
 			for(Map.Entry<Character, PointF> entry : callbacks.getCombatSetup().getCharacterLocations().entrySet()) {
-				canvas.save();
-				canvas.scale(scaleFactor, scaleFactor);
 				drawHexagon(canvas, SIZE, highlightPaint);
 				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
-					entry.getKey().getKnownAs().length() : 3);
-				canvas.drawText(initials, entry.getValue().x, entry.getValue().y, fontPaint);
-				canvas.restore();
+																	entry.getKey().getKnownAs().length() : 3);
+				List<String> hexStrings = hexStringsMap.get(entry.getValue());
+				if(hexStrings == null) {
+					hexStrings = new ArrayList<>();
+					hexStringsMap.put(entry.getValue(), hexStrings);
+				}
+				hexStrings.add(initials);
+			}
+			for(Map.Entry<PointF, List<String>> entry : hexStringsMap.entrySet()) {
+				int offset = (entry.getValue().size() * textSize / 2) - textSize/2;
+				for(String initials : entry.getValue()) {
+					canvas.drawText(initials, entry.getKey().x, entry.getKey().y + offset, fontPaint);
+					offset -= textSize;
+				}
 			}
 		}
+		canvas.restore();
 	}
 
 	private void createGridBitmap() {

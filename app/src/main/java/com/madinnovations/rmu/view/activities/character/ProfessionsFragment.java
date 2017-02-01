@@ -289,7 +289,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 								listAdapter.notifyDataSetChanged();
 							}
 							if (getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_profession_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_profession_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(currentInstance);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -467,7 +467,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				@Override
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception when deleting: ", e);
-					Toast.makeText(getActivity(), getString(R.string.toast_profession_delete_failed), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.toast_profession_delete_failed, Toast.LENGTH_SHORT).show();
 				}
 				@Override
 				public void onNext(Boolean success) {
@@ -488,7 +488,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 							isNew = true;
 						}
 						copyItemToViews();
-						Toast.makeText(getActivity(), getString(R.string.toast_profession_deleted), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_profession_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -641,7 +641,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 				public void onError(Throwable e) {
 					Log.e(TAG, "Exception caught getting all Profession instances", e);
 					Toast.makeText(ProfessionsFragment.this.getActivity(),
-							getString(R.string.toast_professions_load_failed),
+							R.string.toast_professions_load_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 				@Override

@@ -89,8 +89,8 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 
 		View layout = inflater.inflate(R.layout.skill_categories_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_skill_category_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_skill_category_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_skill_category_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_skill_category_description);
 
 		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit,
 										  R.string.validation_skill_category_name_required);
@@ -531,7 +531,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 						@Override
 						public void onError(Throwable e) {
 							Log.e("SkillCategoriesFrag", "Exception saving new SkillCategory: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_skill_category_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_skill_category_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(SkillCategory savedItem) {
@@ -544,7 +544,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_skill_category_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_skill_category_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -569,8 +569,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 					@Override
 					public void onError(Throwable e) {
 						Log.e("SkillCategoriesFrag", "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_skill_category_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_skill_category_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -591,7 +590,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_skill_category_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_skill_category_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -620,7 +619,7 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 					public void onError(Throwable e) {
 						Log.e("SkillCategoriesFrag", "Exception caught getting all SkillCategory instances", e);
 						Toast.makeText(SkillCategoriesFragment.this.getActivity(),
-								getString(R.string.toast_skill_categories_load_failed),
+								R.string.toast_skill_categories_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override

@@ -77,8 +77,8 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 
 		View layout = inflater.inflate(R.layout.creature_varieties_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_creature_variety_name));
-		((TextView)layout.findViewById(R.id.header_field2)).setText(getString(R.string.label_creature_variety_description));
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_creature_variety_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_creature_variety_description);
 
 		initViewPager(layout);
 		initListView(layout);
@@ -263,7 +263,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new CreatureVariety: " + currentInstance, e);
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_variety_save_failed), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_variety_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(CreatureVariety savedItem) {
@@ -276,7 +276,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), getString(R.string.toast_creature_variety_saved), Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_creature_variety_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedItem);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -301,8 +301,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						String toastString = getString(R.string.toast_creature_variety_delete_failed);
-						Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_creature_variety_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -323,7 +322,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), getString(R.string.toast_creature_variety_deleted), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_creature_variety_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -361,7 +360,7 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 						Log.e(TAG,
 								"Exception caught getting all CreatureVariety instances in initListView", e);
 						Toast.makeText(CreatureVarietiesFragment.this.getActivity(),
-								getString(R.string.toast_creature_varieties_load_failed),
+								R.string.toast_creature_varieties_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override
