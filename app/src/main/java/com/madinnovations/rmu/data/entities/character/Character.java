@@ -15,14 +15,12 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import android.graphics.Point;
-
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -92,7 +90,6 @@ public class Character extends DatabaseObject {
 	private List<State>                      currentStates                   = new ArrayList<>();
 	private List<DatabaseObject>             professionSkills                = new ArrayList<>();
 	private List<DatabaseObject>             knacks                          = new ArrayList<>();
-	private Point                            location                        = null;
 
 	/**
 	 * Creates a new Character instance with default values
@@ -118,6 +115,21 @@ public class Character extends DatabaseObject {
 		return campaign != null && firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()
 				&& description != null && !description.isEmpty() && race != null && profession != null && culture != null
 				&& (profession.getRealm1() != null || realm != null);
+	}
+
+	/**
+	 * Gets the full name of the character formatted to make sense.
+	 *
+	 * @return  the full name of the character
+	 */
+	public String getFullName() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getFirstName()).append(" ");
+		if(!getFirstName().equals(getKnownAs()) && !getKnownAs().isEmpty()) {
+			builder.append("\"").append(getKnownAs()).append("\" ");
+		}
+		builder.append(getLastName());
+		return builder.toString();
 	}
 
 	/**
@@ -216,32 +228,7 @@ public class Character extends DatabaseObject {
 				.append("statIncreases", statIncreases)
 				.append("professionSkills", professionSkills)
 				.append("knacks", knacks)
-				.append("location", location)
 				.toString();
-	}
-
-	public String getFullName() {
-		StringBuilder builder = new StringBuilder();
-		if(getFirstName() != null) {
-			builder.append(getFirstName());
-			if(getLastName() != null) {
-				builder.append(" ").append(getLastName());
-				if(getKnownAs() != null) {
-					builder.append(" - ").append(getKnownAs());
-				}
-			}
-		}
-		else if(getLastName() != null) {
-			builder.append(getLastName());
-			if(getKnownAs() != null) {
-				builder.append(" - ").append(getKnownAs());
-			}
-		}
-		else if(getKnownAs() != null) {
-			builder.append(getKnownAs());
-		}
-
-		return builder.toString();
 	}
 
 	/**
@@ -318,6 +305,56 @@ public class Character extends DatabaseObject {
 		}
 
 		return bonus;
+	}
+
+	/**
+	 * Calculates the initiative penalty
+	 *
+	 * @return the initiative penalty
+	 */
+	public short getInitiativePenalty() {
+		int totalPenalty = 0;
+		for(State state : currentStates) {
+			switch (state.getStateType()) {
+				case ENCUMBERED:
+					totalPenalty += state.getConstant();
+					break;
+				case FATIGUED:
+					totalPenalty += state.getConstant();
+					break;
+				case HASTED:
+					totalPenalty += state.getConstant();
+					break;
+				case HP_LOSS:
+					int maxHits = race.getBaseHits()
+							+ (Statistic.getBonus(getStatTemps().get(Statistic.CONSTITUTION))*2)
+							+ Statistic.getBonus(getStatTemps().get(Statistic.SELF_DISCIPLINE))
+							+ getSkillRanks().get(new Skill("Body Development"));
+					for(TalentInstance talentInstance : getTalentInstances()) {
+						if(talentInstance.getTalent().getName().equals("Tough")) {
+							maxHits += talentInstance.getTiers() * 5;
+						}
+						if(talentInstance.getTalent().getName().equals("Fragile")) {
+							maxHits -= talentInstance.getTiers() * 5;
+						}
+					}
+					float hpLossPercent = state.getConstant()/maxHits;
+					if(hpLossPercent >= 0.76) {
+						totalPenalty += -30;
+					}
+					else if(hpLossPercent >= 0.51) {
+						totalPenalty += -20;
+					}
+					else if(hpLossPercent >= 0.26) {
+						totalPenalty += -10;
+					}
+					break;
+				case INJURED:
+					totalPenalty += state.getConstant();
+					break;
+			}
+		}
+		return (short)(totalPenalty/10);
 	}
 
 	public TalentInstance findTalentInstanceForTalent(Talent talent) {
@@ -663,10 +700,10 @@ public class Character extends DatabaseObject {
 	public void setKnacks(List<DatabaseObject> knacks) {
 		this.knacks = knacks;
 	}
-	public Point getLocation() {
-		return location;
+	public List<State> getCurrentStates() {
+		return currentStates;
 	}
-	public void setLocation(Point location) {
-		this.location = location;
+	public void setCurrentStates(List<State> currentStates) {
+		this.currentStates = currentStates;
 	}
 }

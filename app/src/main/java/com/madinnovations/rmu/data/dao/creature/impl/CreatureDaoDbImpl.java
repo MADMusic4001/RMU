@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.creature.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
@@ -25,7 +26,11 @@ import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.creature.Creature;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -95,6 +100,39 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	@Override
 	protected void setId(Creature instance, int id) {
 		instance.setId(id);
+	}
+
+	@Override
+	public List<Creature> getAllForCampaign(Campaign campaign) {
+		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
+		final String selection = COLUMN_CAMPAIGN_ID + " = ?";
+		List<Creature> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_LEVEL);
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Creature instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
 	}
 
 	@Override

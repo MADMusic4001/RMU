@@ -15,12 +15,12 @@
  */
 package com.madinnovations.rmu.data.entities.play;
 
-import android.graphics.PointF;
-
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,30 +28,53 @@ import java.util.Map;
 /**
  * Maintains combat data (character, npc positions, etc)
  */
-public class CombatSetup extends DatabaseObject{
-	private Calendar               combatStartTime    = Calendar.getInstance();
-	private Map<Character, PointF> characterLocations = new HashMap<>();
-	private Map<Creature, PointF>  creatureLocations  = new HashMap<>();
+public class CombatSetup extends DatabaseObject implements Serializable {
+	private static final long serialVersionUID = 5794443312681755710L;
+	public static final String         JSON_NAME           = "CombatSetups";
+	private Campaign                   campaign            = null;
+	private short                      currentInitiative   = 0;
+	private Calendar                   combatStartTime     = Calendar.getInstance();
+	private Map<Character, CombatInfo> characterCombatInfo = new HashMap<>();
+	private Map<Creature, CombatInfo>  creatureCombatInfo  = new HashMap<>();
+
+	/**
+	 * Checks the validity of the CombatSetup instance.
+	 *
+	 * @return true if the CombatSetup instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return campaign != null && !characterCombatInfo.isEmpty() && !creatureCombatInfo.isEmpty();
+	}
 
 	// Getters and Setters
+	public Campaign getCampaign() {
+		return campaign;
+	}
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
+	}
+	public short getCurrentInitiative() {
+		return currentInitiative;
+	}
+	public void setCurrentInitiative(short currentInitiative) {
+		this.currentInitiative = currentInitiative;
+	}
 	public Calendar getCombatStartTime() {
 		return combatStartTime;
 	}
 	public void setCombatStartTime(Calendar combatStartTime) {
 		this.combatStartTime = combatStartTime;
 	}
-	public Map<Character, PointF> getCharacterLocations() {
-		return characterLocations;
+	public Map<Character, CombatInfo> getCharacterCombatInfo() {
+		return characterCombatInfo;
 	}
-	public void setCharacterLocations(
-			Map<Character, PointF> characterLocations) {
-		this.characterLocations = characterLocations;
+	public void setCharacterCombatInfo(Map<Character, CombatInfo> characterCombatInfo) {
+		this.characterCombatInfo = characterCombatInfo;
 	}
-	public Map<Creature, PointF> getOpponentLocation() {
-		return creatureLocations;
+	public Map<Creature, CombatInfo> getCreatureCombatInfo() {
+		return creatureCombatInfo;
 	}
-	public void setCreatureLocations(
-			Map<Creature, PointF> creatureLocations) {
-		this.creatureLocations = creatureLocations;
+	public void setCreatureCombatInfo(Map<Creature, CombatInfo> creatureCombatInfo) {
+		this.creatureCombatInfo = creatureCombatInfo;
 	}
 }

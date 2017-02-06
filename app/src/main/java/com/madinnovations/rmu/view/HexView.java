@@ -28,12 +28,16 @@ import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.entities.play.CombatInfo;
 import com.madinnovations.rmu.data.entities.play.CombatSetup;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 import com.madinnovations.rmu.view.utils.Cube;
@@ -54,17 +58,19 @@ public class HexView extends View {
 	@SuppressWarnings("unused")
 	private static final String TAG  = "HexView";
 	@Inject
-	protected PolygonUtils       polygonUtils = new PolygonUtils();
-	private Callbacks            callbacks;
-	private Bitmap               hexGrid;
-	private PointF               hexCorners[];
-	private PointF               highlightCenterPoint = null;
-	private Paint                linePaint;
-	private Paint                fontPaint;
-	private Paint                highlightPaint;
-	private ScaleGestureDetector scaleGestureDetector;
-	private float scaleFactor = 1.f;
-	private int textSize;
+	protected PolygonUtils         polygonUtils = new PolygonUtils();
+	private Callbacks              callbacks;
+	private Bitmap                 hexGrid;
+	private PointF                 hexCorners[];
+	private PointF                 highlightCenterPoint = null;
+	private Paint                  linePaint;
+	private Paint                  fontPaint;
+	private Paint                  highlightPaint;
+	private ScaleGestureDetector   scaleGestureDetector;
+	private GestureDetector        gestureDetector;
+	private HexViewContextMenuInfo hexViewContextMenuInfo;
+	private float                  scaleFactor = 1.f;
+	private int                    textSize;
 
 	/**
 	 * Creates a new HexView instance
@@ -113,8 +119,16 @@ public class HexView extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		scaleGestureDetector.onTouchEvent(event);
-		return true;
+		boolean result = gestureDetector.onTouchEvent(event);
+		result |= scaleGestureDetector.onTouchEvent(event);
+
+		return  result;
+	}
+
+	@Override
+	protected ContextMenu.ContextMenuInfo getContextMenuInfo() {
+		Log.d(TAG, "getContextMenuInfo: ");
+		return hexViewContextMenuInfo;
 	}
 
 	/**
@@ -202,7 +216,6 @@ public class HexView extends View {
 
 	private void init() {
 		((RMUApp)getContext().getApplicationContext()).getApplicationComponent().newViewsComponent(new ViewsModule(this));
-		Log.d(TAG, "init: polygonUtils = " + polygonUtils);
 		linePaint = new Paint();
 		linePaint.setAntiAlias(true);
 		linePaint.setStrokeWidth(6f);
@@ -210,7 +223,6 @@ public class HexView extends View {
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeJoin(Paint.Join.ROUND);
 		textSize = getContext().getResources().getDimensionPixelSize(R.dimen.textSizeInSp);
-		Log.d(TAG, "init: textSize = " + textSize);
 		fontPaint = new Paint();
 		Typeface raleway = Typeface.createFromAsset(getContext().getAssets(), "fonts/Raleway-Bold.ttf");
 		fontPaint.setTypeface(raleway);
@@ -225,6 +237,7 @@ public class HexView extends View {
 		highlightPaint.setStyle(Paint.Style.STROKE);
 		highlightPaint.setStrokeJoin(Paint.Join.ROUND);
 		scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
+		gestureDetector = new GestureDetector(getContext(), new HexViewGestureListener());
 	}
 
 	private void drawGrid(Canvas canvas) {
@@ -243,22 +256,32 @@ public class HexView extends View {
 			canvas.restore();
 		}
 		if(callbacks != null) {
-			Map<PointF, List<String>> hexStringsMap = new HashMap<>();
-			for(Map.Entry<Character, PointF> entry : callbacks.getCombatSetup().getCharacterLocations().entrySet()) {
-				drawHexagon(canvas, SIZE, highlightPaint);
+			Map<Point, List<String>> hexStringsMap = new HashMap<>();
+			for(Map.Entry<Character, CombatInfo> entry : callbacks.getCombatSetup().getCharacterCombatInfo().entrySet()) {
 				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
 																	entry.getKey().getKnownAs().length() : 3);
-				List<String> hexStrings = hexStringsMap.get(entry.getValue());
+				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
 				if(hexStrings == null) {
 					hexStrings = new ArrayList<>();
-					hexStringsMap.put(entry.getValue(), hexStrings);
+					hexStringsMap.put(entry.getValue().getHexCoordinate(), hexStrings);
 				}
 				hexStrings.add(initials);
 			}
-			for(Map.Entry<PointF, List<String>> entry : hexStringsMap.entrySet()) {
+			for(Map.Entry<Creature, CombatInfo> entry : callbacks.getCombatSetup().getCreatureCombatInfo().entrySet()) {
+				String abbreviation = entry.getKey().getCreatureVariety().getName().substring(0, 3);
+				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
+				if(hexStrings == null) {
+					hexStrings = new ArrayList<>();
+					hexStringsMap.put(entry.getValue().getHexCoordinate(), hexStrings);
+				}
+				hexStrings.add(abbreviation);
+			}
+
+			for(Map.Entry<Point, List<String>> entry : hexStringsMap.entrySet()) {
 				int offset = (entry.getValue().size() * textSize / 2) - textSize/2;
+				PointF pixelCoords = getCenterPoint(entry.getKey());
 				for(String initials : entry.getValue()) {
-					canvas.drawText(initials, entry.getKey().x, entry.getKey().y + offset, fontPaint);
+					canvas.drawText(initials, pixelCoords.x, pixelCoords.y + offset, fontPaint);
 					offset -= textSize;
 				}
 			}
@@ -313,20 +336,6 @@ public class HexView extends View {
 		canvas.drawLine(hexCorners[5].x, hexCorners[5].y, hexCorners[0].x, hexCorners[0].y, linePaint);
 	}
 
-	private class ScaleListener
-			extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		@Override
-		public boolean onScale(ScaleGestureDetector detector) {
-			scaleFactor *= detector.getScaleFactor();
-
-			// Don't let the object get too small or too large.
-			scaleFactor = Math.max(1.0f, Math.min(scaleFactor, 5.0f));
-
-			invalidate();
-			return true;
-		}
-	}
-
 	// Getters and setters
 	public PointF getHighlightCenterPoint() {
 		return highlightCenterPoint;
@@ -343,5 +352,34 @@ public class HexView extends View {
 
 	public interface Callbacks {
 		CombatSetup getCombatSetup();
+	}
+
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			scaleFactor *= detector.getScaleFactor();
+
+			// Don't let the object get too small or too large.
+			scaleFactor = Math.max(1.0f, Math.min(scaleFactor, 5.0f));
+
+			invalidate();
+			return true;
+		}
+	}
+
+	private class HexViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+		@Override
+		public void onLongPress(MotionEvent e) {
+			Log.d(TAG, "onLongPress: ");
+			hexViewContextMenuInfo = new HexViewContextMenuInfo();
+			hexViewContextMenuInfo.hexView = HexView.this;
+			hexViewContextMenuInfo.hexCoordinates = HexView.this.getHexCoordinates(new PointF(e.getX(), e.getY()));
+			HexView.this.showContextMenu();
+		}
+	}
+
+	public class HexViewContextMenuInfo implements ContextMenu.ContextMenuInfo {
+		public HexView hexView;
+		public Point  hexCoordinates;
 	}
 }

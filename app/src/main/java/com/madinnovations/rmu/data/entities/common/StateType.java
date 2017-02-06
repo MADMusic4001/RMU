@@ -23,7 +23,7 @@ import com.madinnovations.rmu.view.RMUApp;
 /**
  * Representation of a state type
  */
-enum StateType {
+public enum StateType {
 	ACTION_POINT_LOSS(R.string.enum_state_type_action_point_loss),
 	BLEEDING(R.string.enum_state_type_bleeding),
 	CONCENTRATING(R.string.enum_state_type_concentrating),

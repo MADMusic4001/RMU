@@ -24,6 +24,7 @@ import com.madinnovations.rmu.view.di.modules.CombatDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CommonDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.CreatureDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.ItemDaoSqlModule;
+import com.madinnovations.rmu.view.di.modules.PlayDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.SpellDaoSqlModule;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
@@ -36,7 +37,8 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {ApplicationModule.class, CampaignDaoSqlModule.class, CharacterDaoSqlModule.class, CommonDaoSqlModule.class,
-		CombatDaoSqlModule.class, CreatureDaoSqlModule.class, ItemDaoSqlModule.class, SpellDaoSqlModule.class})
+		CombatDaoSqlModule.class, CreatureDaoSqlModule.class, ItemDaoSqlModule.class, SpellDaoSqlModule.class,
+		PlayDaoSqlModule.class})
 public interface ApplicationComponent {
 	ActivityComponent newActivityComponent(ActivityModule activityModule);
 	ViewsComponent newViewsComponent(ViewsModule viewsModule);

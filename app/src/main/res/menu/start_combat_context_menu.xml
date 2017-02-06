@@ -15,20 +15,10 @@
  * limitations under the License.
  * -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item
-      android:id="@+id/action_export"
-      android:title="@string/label_export"
-      android:showAsAction="ifRoom"/>
-  <item
-      android:id="@+id/action_import"
-      android:title="@string/label_import"
-      android:showAsAction="ifRoom"/>
-  <item
-      android:id="@+id/action_import_campaign"
-      android:title="@string/label_import_campaign"
-      android:showAsAction="ifRoom"/>
-  <item
-      android:id="@+id/action_export_campaign"
-      android:title="@string/label_export_campaign"
-      android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/context_remove_character"
+        android:title="@string/label_remove_character"/>
+    <item
+        android:id="@+id/context_remove_opponent"
+        android:title="@string/label_remove_opponent"/>
 </menu>

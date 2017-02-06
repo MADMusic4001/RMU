@@ -18,22 +18,29 @@ package com.madinnovations.rmu.data.entities.creature;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.view.RMUApp;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Creature attributes
  */
 public class Creature extends DatabaseObject {
-	public static final String JSON_NAME = "Creatures";
-	private Campaign          campaign        = null;
-	private CreatureVariety   creatureVariety = null;
-	private short             level           = 0;
-	private int               maxHits         = 0;
-	private int               currentHits     = 0;
-	private CreatureArchetype archetype       = null;
+	public static final String            JSON_NAME       = "Creatures";
+	private             Campaign          campaign        = null;
+	private             CreatureVariety   creatureVariety = null;
+	private             short             level           = 0;
+	private             int               maxHits         = 0;
+	private             int               currentHits     = 0;
+	private             CreatureArchetype archetype       = null;
+	private             short             fatigue         = 0;
+	private             short             powerPointLoss  = 0;
+	private             List<State>       currentStates   = new ArrayList<>();
 
 	/**
 	 * Checks the validity of the Creature instance.
@@ -64,7 +71,48 @@ public class Creature extends DatabaseObject {
 				.append("maxHits", maxHits)
 				.append("currentHits", currentHits)
 				.append("archetype", archetype)
+				.append("fatigue", fatigue)
+				.append("powerPointLoss", powerPointLoss)
+				.append("currentStates", currentStates)
 				.toString();
+	}
+
+	/**
+	 * Calculates the initiative penalty for this creature
+	 *
+	 * @return the initiative penalty
+	 */
+	public short getInitiativePenalty() {
+		int totalPenalty = 0;
+		for(State state : currentStates) {
+			switch (state.getStateType()) {
+				case ENCUMBERED:
+					totalPenalty += state.getConstant();
+					break;
+				case FATIGUED:
+					totalPenalty += state.getConstant();
+					break;
+				case HASTED:
+					totalPenalty += state.getConstant();
+					break;
+				case HP_LOSS:
+					float hpLossPercent = state.getConstant()/maxHits;
+					if(hpLossPercent >= 0.76) {
+						totalPenalty += -30;
+					}
+					else if(hpLossPercent >= 0.51) {
+						totalPenalty += -20;
+					}
+					else if(hpLossPercent >= 0.26) {
+						totalPenalty += -10;
+					}
+					break;
+				case INJURED:
+					totalPenalty += state.getConstant();
+					break;
+			}
+		}
+		return (short)(totalPenalty/10);
 	}
 
 	// Getters and setters
@@ -97,5 +145,29 @@ public class Creature extends DatabaseObject {
 	}
 	public void setCurrentHits(int currentHits) {
 		this.currentHits = currentHits;
+	}
+	public CreatureArchetype getArchetype() {
+		return archetype;
+	}
+	public void setArchetype(CreatureArchetype archetype) {
+		this.archetype = archetype;
+	}
+	public short getFatigue() {
+		return fatigue;
+	}
+	public void setFatigue(short fatigue) {
+		this.fatigue = fatigue;
+	}
+	public short getPowerPointLoss() {
+		return powerPointLoss;
+	}
+	public void setPowerPointLoss(short powerPointLoss) {
+		this.powerPointLoss = powerPointLoss;
+	}
+	public List<State> getCurrentStates() {
+		return currentStates;
+	}
+	public void setCurrentStates(List<State> currentStates) {
+		this.currentStates = currentStates;
 	}
 }

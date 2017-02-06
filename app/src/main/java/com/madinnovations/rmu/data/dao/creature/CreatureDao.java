@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.creature;
 
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 
 import java.util.List;
@@ -60,4 +62,12 @@ public interface CreatureDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all Creature objects from persistent storage for the given Campaign.
+	 *
+	 * @param campaign  a Campaign instance
+	 * @return  a List containing all Creature objects currently in persistent storage.
+	 */
+	public List<Creature> getAllForCampaign(Campaign campaign);
 }

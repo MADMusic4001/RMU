@@ -91,7 +91,9 @@
 
   <!-- Menu labels -->
   <string name="label_export">Export</string>
+  <string name="label_export_campaign">Export Campaign</string>
   <string name="label_import">Import</string>
+  <string name="label_import_campaign">Import Campaign</string>
   <string name="label_delete_attack">Delete Attack</string>
   <string name="label_new_attack">New Attack</string>
   <string name="label_delete_body_part">Delete Body Part</string>
@@ -100,6 +102,7 @@
   <string name="label_new_campaign">New Campaign</string>
   <string name="label_delete_character">Delete Character</string>
   <string name="label_new_character">New Character</string>
+  <string name="label_remove_character">Remove Character</string>
   <string name="label_delete_creature">Delete Creature</string>
   <string name="label_new_creature">New Creature</string>
   <string name="label_delete_creature_archetype">Delete Creature Archetype</string>
@@ -126,6 +129,7 @@
   <string name="label_new_item">New Item</string>
   <string name="label_delete_locomotion_type">Delete Locomotion Type</string>
   <string name="label_new_locomotion_type">New Locomotion Type</string>
+  <string name="label_remove_opponent">Remove Opponent</string>
   <string name="label_delete_outlook">Delete Outlook</string>
   <string name="label_new_outlook">New Outlook</string>
   <string name="label_copy_profession">Copy Profession</string>
@@ -170,6 +174,7 @@
   <string name="label_character_first_name">Character First Name</string>
   <string name="label_character_known_as">Character Known As</string>
   <string name="label_character_last_name">Character Last Name</string>
+  <string name="label_combatant_name">Combatant Name</string>
   <string name="label_creature_archetype_description">Creature Archetype Description</string>
   <string name="label_creature_archetype_name">Creature Archetype Name</string>
   <string name="label_creature_category_description">Creature Category Description</string>
@@ -191,12 +196,14 @@
   <string name="label_disease_effects">Disease Effects</string>
   <string name="label_disease_name">Disease Name</string>
   <string name="label_disease_severity">Disease Severity</string>
+  <string name="label_initiative_roll">Initiative Roll</string>
   <string name="label_item_description">Item Description</string>
   <string name="label_item_name">Item Name</string>
   <string name="label_item_template_description">Item Template Description</string>
   <string name="label_item_template_name">Item Template Name</string>
   <string name="label_knacks">Knacks</string>
   <string name="label_opponents">Opponents</string>
+  <string name="label_other_penalties">Other Penalties</string>
   <string name="label_outlook_description">Outlook Description</string>
   <string name="label_outlook_name">Outlook Name</string>
   <string name="label_potential">Potential</string>
@@ -207,6 +214,7 @@
   <string name="label_profession_description">Profession Description</string>
   <string name="label_profession_name">Profession Name</string>
   <string name="label_profession_skills">Professional Skills</string>
+  <string name="label_quickness_bonus">Qu Bonus</string>
   <string name="label_race_name">Race Name</string>
   <string name="label_race_description">Race Description</string>
   <string name="label_race_tiers_available">Race Tiers</string>
@@ -242,6 +250,7 @@
   <string name="label_talent_parameters">Talent Parameters</string>
   <string name="label_talent_tiers">Talent Tiers</string>
   <string name="label_temporary">Temporary</string>
+  <string name="label_total_initiative">Total Initiative</string>
 
   <!-- Filter default labels -->
   <string name="label_all_skill_categories">All Skill Categories</string>
@@ -288,6 +297,8 @@
   <string name="label_remove_damage_table">Remove Damage Table</string>
   <string name="label_generate_stats">Generate Stats</string>
   <string name="label_level_up">Level Up</string>
+  <string name="label_reset">Reset</string>
+  <string name="label_start_combat">Start Combat</string>
 
   <!-- RadioButton labels -->
   <string name="label_purchase">Purchase</string>
@@ -531,7 +542,7 @@
   <!-- Static Spinner selection strings -->
   <string name="choice_label">Choice</string>
 
-  <!-- ViewPager title strings -->
+  <!-- ViewPager and Dialog title strings -->
   <string name="title_creature_archetype_main_page">General Attributes</string>
   <string name="title_creature_archetype_levels_page">Levels</string>
   <string name="title_creature_variety_main_page">General Attributes</string>
@@ -544,6 +555,7 @@
   <string name="title_character_talents_page">Talents</string>
   <string name="title_character_background_page">Background Information</string>
   <string name="title_character_generated_values_page">Generated Values</string>
+  <string name="title_initiative">Initiative</string>
   <string name="title_race_main_page">General Attributes</string>
   <string name="title_race_talents_page">Talents and Flaws</string>
   <string name="title_race_cultures_page">Allowed Cultures</string>

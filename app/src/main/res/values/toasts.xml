@@ -43,6 +43,13 @@
   <string name="toast_character_deleted">Character deleted.</string>
   <string name="toast_character_delete_failed">Character deletion failed.</string>
 
+  <string name="toast_combat_setup_load_failed">Failed to load CombatSetup</string>
+  <string name="toast_combat_setup_loaded">%1$d Combat Setups loaded.</string>
+  <string name="toast_combat_setup_saved">Combat Setup saved.</string>
+  <string name="toast_combat_setup_save_failed">Combat Setup save failed.</string>
+  <string name="toast_combat_setup_deleted">Combat Setup deleted.</string>
+  <string name="toast_combat_setup_delete_failed">Combat Setup deletion failed.</string>
+
   <string name="toast_creature_archetypes_load_failed">Failed to load Creature Archetypes</string>
   <string name="toast_creature_archetypes_loaded">%1$d Creature Archetypes loaded.</string>
   <string name="toast_creature_archetype_saved">Creature Archetype saved.</string>

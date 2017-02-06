@@ -92,6 +92,9 @@ import com.madinnovations.rmu.data.dao.object.schemas.ArmorSchema;
 import com.madinnovations.rmu.data.dao.object.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.object.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.dao.object.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCharacterCombatInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCreatureCombatInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellAreaOfEffectParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellDurationParamSchema;
@@ -152,6 +155,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(BodyPartSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(BiomeSchema.TABLE_CREATE);
 
+			sqLiteDatabase.execSQL(CombatSetupSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CombatSetupCharacterCombatInfoSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CombatSetupCreatureCombatInfoSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RealmSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyStatsSchema.TABLE_CREATE);
@@ -227,13 +233,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
                 case 1:
-                    sqLiteDatabase.execSQL("PRAGMA writable_schema = 1;");
-                    sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_ALTER_V1_TO_V2);
-                    sqLiteDatabase.execSQL("PRAGMA writable_schema = 0;");
-                case 2:
-                    sqLiteDatabase.execSQL(CreatureVarietySchema.DROP_TABLE_V1);
-                    sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
-                    sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
+					break;
+				case 2:
+					break;
             }
             sqLiteDatabase.setTransactionSuccessful();
         }
@@ -307,6 +309,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CreatureVarietySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RealmSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellTypeSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CombatSetupCreatureCombatInfoSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CombatSetupCharacterCombatInfoSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CombatSetupSchema.TABLE_NAME, null, null);
 
 		sqLiteDatabase.delete(BiomeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(BodyPartSchema.TABLE_NAME, null, null);

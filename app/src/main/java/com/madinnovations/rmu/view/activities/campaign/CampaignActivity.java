@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportCampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportRxHandler;
 import com.madinnovations.rmu.view.RMUApp;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
@@ -62,7 +63,6 @@ import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellsFragment;
 import com.madinnovations.rmu.view.di.components.ActivityComponent;
-import com.madinnovations.rmu.view.di.components.ViewsComponent;
 import com.madinnovations.rmu.view.di.modules.ActivityModule;
 
 import java.io.File;
@@ -76,14 +76,17 @@ import rx.Subscriber;
  */
 public class CampaignActivity extends Activity implements FileSelectorDialogFragment.FileSelectorDialogListener {
 	private static final String EXPORT_FILE_NAME = "export.rmu";
+	private static final String EXPORT_CAMPAIGN_FILE_NAME = "export.cmp";
 	private static final String FILE_SELECTOR_FILTER = "fs_extension_filter";
 	private static final String RMU_FILE_EXTENSION = ".rmu";
+	private static final String RMU_CAMPAIGN_FILE_EXTENSION = ".cmp";
 	@Inject
 	FileRxHandler                      fileRxHandler;
 	@Inject
 	ImportExportRxHandler              importExportRxHandler;
+	@Inject
+	ImportExportCampaignRxHandler      importExportCampaignRxHandler;
 	private ActivityComponent          activityComponent;
-	private ViewsComponent             viewsComponent;
 	private AboutFragment              aboutFragment;
 	private AttacksFragment            attacksFragment;
 	private BodyPartsFragment          bodyPartsFragment;
@@ -128,8 +131,8 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 
 		FragmentManager fragmentManager = getFragmentManager();
 
+		//noinspection StatementWithEmptyBody
 		if(savedInstanceState != null) {
-
 		}
 		else {
 			MainMenuFragment mainMenuFragment = new MainMenuFragment();
@@ -150,55 +153,109 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id == R.id.action_export) {
-			File dir = fileRxHandler.getImportExportDir();
-			final File file = new File(dir, EXPORT_FILE_NAME);
-			importExportRxHandler.exportDatabase(file)
-					.subscribe(new Subscriber<Integer>() {
-						Toast toast = null;
-						@Override
-						public void onStart() {
-							request(1);
-						}
-						@Override
-						public void onCompleted() {
-							if(toast != null) {
-								toast.cancel();
+		switch(id) {
+			case R.id.action_export:
+				File dir = fileRxHandler.getImportExportDir();
+				final File file = new File(dir, EXPORT_FILE_NAME);
+				importExportRxHandler.exportDatabase(file)
+						.subscribe(new Subscriber<Integer>() {
+							Toast toast = null;
+
+							@Override
+							public void onStart() {
+								request(1);
 							}
-							Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported),
-																		   file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
-						}
-						@Override
-						public void onError(Throwable e) {
-							Log.e("CampaignActivity", "Error occurred exporting database.", e);
-							if(toast != null) {
-								toast.cancel();
+
+							@Override
+							public void onCompleted() {
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), String.format(getString(R.string.toast_db_exported),
+																			   file.getAbsolutePath()), Toast.LENGTH_SHORT)
+										.show();
 							}
-							Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
-										   Toast.LENGTH_SHORT).show();
-						}
-						@Override
-						public void onNext(Integer percentComplete) {
-							if(toast != null) {
-								toast.cancel();
+
+							@Override
+							public void onError(Throwable e) {
+								Log.e("CampaignActivity", "Error occurred exporting database.", e);
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
+											   Toast.LENGTH_SHORT).show();
 							}
-							toast = Toast.makeText(getApplication(),
-												   String.format(getString(R.string.export_status), percentComplete),
-												   Toast.LENGTH_SHORT);
-							toast.show();
-							request(1);
-						}
-					});
-			return true;
-		}
-		else if(id == R.id.action_import) {
-			DialogFragment dialogFragment;
-			dialogFragment = new FileSelectorDialogFragment();
-			Bundle bundle = new Bundle();
-			bundle.putString(FILE_SELECTOR_FILTER, RMU_FILE_EXTENSION);
-			dialogFragment.setArguments(bundle);
-			dialogFragment.show(getFragmentManager(), "");
-			return true;
+
+							@Override
+							public void onNext(Integer percentComplete) {
+								if (toast != null) {
+									toast.cancel();
+								}
+								toast = Toast.makeText(getApplication(),
+													   String.format(getString(R.string.export_status), percentComplete),
+													   Toast.LENGTH_SHORT);
+								toast.show();
+								request(1);
+							}
+						});
+				return true;
+			case R.id.action_import:
+				DialogFragment dialogFragment;
+				dialogFragment = new FileSelectorDialogFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString(FILE_SELECTOR_FILTER, RMU_FILE_EXTENSION);
+				dialogFragment.setArguments(bundle);
+				dialogFragment.show(getFragmentManager(), "");
+				return true;
+			case R.id.action_export_campaign:
+				dir = fileRxHandler.getImportExportDir();
+				final File exportFile = new File(dir, EXPORT_CAMPAIGN_FILE_NAME);
+				importExportCampaignRxHandler.exportDatabase(exportFile)
+						.subscribe(new Subscriber<Integer>() {
+							Toast toast = null;
+							@Override
+							public void onStart() {
+								request(1);
+							}
+							@Override
+							public void onCompleted() {
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(),
+											   String.format(getString(R.string.toast_db_exported),
+															 exportFile.getAbsolutePath()),
+											   Toast.LENGTH_SHORT).show();
+							}
+							@Override
+							public void onError(Throwable e) {
+								Log.e("CampaignActivity", "Error occurred exporting database.", e);
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
+											   Toast.LENGTH_SHORT).show();
+							}
+							@Override
+							public void onNext(Integer percentComplete) {
+								if (toast != null) {
+									toast.cancel();
+								}
+								toast = Toast.makeText(getApplication(),
+													   String.format(getString(R.string.export_status), percentComplete),
+													   Toast.LENGTH_SHORT);
+								toast.show();
+								request(1);
+							}
+						});
+				return true;
+			case R.id.action_import_campaign:
+				dialogFragment = new FileSelectorDialogFragment();
+				bundle = new Bundle();
+				bundle.putString(FILE_SELECTOR_FILTER, RMU_CAMPAIGN_FILE_EXTENSION);
+				dialogFragment.setArguments(bundle);
+				dialogFragment.show(getFragmentManager(), "");
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -207,37 +264,74 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	@Override
 	public void onFileSelected(String fileName) {
 		if(fileName != null) {
-			importExportRxHandler.importDatabase(fileName)
-					.subscribe(new Subscriber<Integer>() {
-						Toast toast = null;
-						@Override
-						public void onCompleted() {
-							if(toast != null) {
-								toast.cancel();
+			if(fileName.endsWith(RMU_FILE_EXTENSION)) {
+				importExportRxHandler.importDatabase(fileName)
+						.subscribe(new Subscriber<Integer>() {
+							Toast toast = null;
+							@Override
+							public void onCompleted() {
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT)
+										.show();
 							}
-							Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT).show();
-						}
-						@Override
-						public void onError(Throwable e) {
-							Log.e("CampaignActivity", "Error occurred importing database.", e);
-							if(toast != null) {
-								toast.cancel();
+							@Override
+							public void onError(Throwable e) {
+								Log.e("CampaignActivity", "Error occurred importing database.", e);
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), getString(R.string.toast_db_import_failed), Toast.LENGTH_SHORT)
+										.show();
 							}
-							Toast.makeText(getApplication(), getString(R.string.toast_db_import_failed), Toast.LENGTH_SHORT)
-									.show();
-						}
-						@Override
-						public void onNext(Integer percentComplete) {
-							if(toast != null) {
-								toast.cancel();
+							@Override
+							public void onNext(Integer percentComplete) {
+								if (toast != null) {
+									toast.cancel();
+								}
+								toast = Toast.makeText(getApplication(),
+													   String.format(getString(R.string.export_status), percentComplete),
+													   Toast.LENGTH_SHORT);
+								toast.show();
+								request(1);
 							}
-							toast = Toast.makeText(getApplication(),
-												   String.format(getString(R.string.export_status), percentComplete),
-												   Toast.LENGTH_SHORT);
-							toast.show();
-							request(1);
-						}
-					});
+						});
+			}
+			else {
+				importExportCampaignRxHandler.importDatabase(fileName)
+						.subscribe(new Subscriber<Integer>() {
+							Toast toast = null;
+							@Override
+							public void onCompleted() {
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), getString(R.string.toast_db_imported), Toast.LENGTH_SHORT)
+										.show();
+							}
+							@Override
+							public void onError(Throwable e) {
+								Log.e("CampaignActivity", "Error occurred importing database.", e);
+								if (toast != null) {
+									toast.cancel();
+								}
+								Toast.makeText(getApplication(), getString(R.string.toast_db_import_failed), Toast.LENGTH_SHORT)
+										.show();
+							}
+							@Override
+							public void onNext(Integer percentComplete) {
+								if (toast != null) {
+									toast.cancel();
+								}
+								toast = Toast.makeText(getApplication(),
+													   String.format(getString(R.string.export_status), percentComplete),
+													   Toast.LENGTH_SHORT);
+								toast.show();
+								request(1);
+							}
+						});
+			}
 		}
 	}
 
@@ -468,9 +562,5 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 
 	public ActivityComponent getActivityComponent() {
 		return activityComponent;
-	}
-
-	public ViewsComponent getViewsComponent() {
-		return viewsComponent;
 	}
 }
