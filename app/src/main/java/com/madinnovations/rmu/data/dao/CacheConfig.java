@@ -20,6 +20,7 @@ package com.madinnovations.rmu.data.dao;
  */
 public final class CacheConfig {
 	public static final int BODY_PART_CACHE_SIZE = 5;
+	public static final int CAMPAIGN_CACHE_SIZE = 5;
 	public static final int SKILL_CATEGORY_CACHE_SIZE = 30;
 	public static final int REALM_CACHE_SIZE = 3;
 	public static final int SPELL_SUB_TYPE_CACHE_SIZE = 4;

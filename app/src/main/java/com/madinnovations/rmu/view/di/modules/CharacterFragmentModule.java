@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterEquipmentFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterProfessionalKnacksPageFragment;
@@ -39,6 +40,7 @@ import dagger.Provides;
 @Module
 public class CharacterFragmentModule {
 	private CharacterBackgroundPageFragment  characterBackgroundPageFragment;
+	private CharacterEquipmentFragment       characterEquipmentFragment;
 	private CharacterGeneratedValuesFragment characterGeneratedValuesFragment;
 	private CharacterMainPageFragment        characterMainPageFragment;
 	private CharactersFragment               charactersFragment;
@@ -54,6 +56,9 @@ public class CharacterFragmentModule {
 
 	public CharacterFragmentModule(CharacterBackgroundPageFragment characterBackgroundPageFragment) {
 		this.characterBackgroundPageFragment = characterBackgroundPageFragment;
+	}
+	public CharacterFragmentModule(CharacterEquipmentFragment characterEquipmentFragment) {
+		this.characterEquipmentFragment = characterEquipmentFragment;
 	}
 	public CharacterFragmentModule(CharacterGeneratedValuesFragment characterGeneratedValuesFragment) {
 		this.characterGeneratedValuesFragment = characterGeneratedValuesFragment;
@@ -96,6 +101,11 @@ public class CharacterFragmentModule {
 	@PerFragment
 	CharacterBackgroundPageFragment provideCharacterBackgroundPageFragment() {
 		return this.characterBackgroundPageFragment;
+	}
+	@Provides
+	@PerFragment
+	CharacterEquipmentFragment provideCharacterEquipmentFragment() {
+		return this.characterEquipmentFragment;
 	}
 	@Provides
 	@PerFragment

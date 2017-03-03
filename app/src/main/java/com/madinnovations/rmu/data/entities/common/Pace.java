@@ -20,9 +20,6 @@ import android.support.annotation.StringRes;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Pace values
  */
@@ -39,14 +36,14 @@ public enum Pace {
 	float baseMovementRateMultiplier;
 	short penalty;
 	Short moveBackwardsPenalty;
-	short encumberanceLimit;
+	short encumbranceLimit;
 
-	Pace(int nameId, float baseMovementRateMultiplier, short penalty, Short moveBackwardsPenalty, short encumberanceLimit) {
+	Pace(int nameId, float baseMovementRateMultiplier, short penalty, Short moveBackwardsPenalty, short encumbranceLimit) {
 		this.nameId = nameId;
 		this.baseMovementRateMultiplier = baseMovementRateMultiplier;
 		this.penalty = penalty;
 		this.moveBackwardsPenalty = moveBackwardsPenalty;
-		this.encumberanceLimit = encumberanceLimit;
+		this.encumbranceLimit = encumbranceLimit;
 	}
 
 	@Override
@@ -67,7 +64,7 @@ public enum Pace {
 	public Short getMoveBackwardsPenalty() {
 		return moveBackwardsPenalty;
 	}
-	public short getEncumberanceLimit() {
-		return encumberanceLimit;
+	public short getEncumbranceLimit() {
+		return encumbranceLimit;
 	}
 }

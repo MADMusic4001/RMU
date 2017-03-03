@@ -16,12 +16,18 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
-import com.madinnovations.rmu.data.dao.object.ItemDao;
-import com.madinnovations.rmu.data.dao.object.ItemTemplateDao;
-import com.madinnovations.rmu.data.dao.object.WeaponTemplateDao;
-import com.madinnovations.rmu.data.dao.object.impl.ItemDaoDbImpl;
-import com.madinnovations.rmu.data.dao.object.impl.ItemTemplateDaoDbImpl;
-import com.madinnovations.rmu.data.dao.object.impl.WeaponTemplateDaoDbImpl;
+import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
+import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.common.SizeDao;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.item.WeaponDao;
+import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.item.impl.ItemDaoDbImpl;
+import com.madinnovations.rmu.data.dao.item.impl.ItemTemplateDaoDbImpl;
+import com.madinnovations.rmu.data.dao.item.impl.WeaponDaoDbImpl;
+import com.madinnovations.rmu.data.dao.item.impl.WeaponTemplateDaoDbImpl;
 
 import javax.inject.Singleton;
 
@@ -34,8 +40,8 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class ItemDaoSqlModule {
 	@Provides @Singleton
-	ItemDao provideItemDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao) {
-		return new ItemDaoDbImpl(helper, itemTemplateDao);
+	ItemDao provideItemDao(RMUDatabaseHelper helper, CampaignDao campaignDao, ItemTemplateDao itemTemplateDao, SizeDao sizeDao) {
+		return new ItemDaoDbImpl(helper, campaignDao, itemTemplateDao, sizeDao);
 	}
 
 	@Provides @Singleton
@@ -44,7 +50,13 @@ public class ItemDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper) {
-		return new WeaponTemplateDaoDbImpl(helper);
+	WeaponDao provideWeaponDao(RMUDatabaseHelper helper, ItemDao itemDao, WeaponTemplateDao weaponTemplateDao) {
+		return new WeaponDaoDbImpl(helper, itemDao, weaponTemplateDao);
+	}
+
+	@Provides @Singleton
+	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao, SkillDao skillDao,
+											   DamageTableDao damageTableDao) {
+		return new WeaponTemplateDaoDbImpl(helper, itemTemplateDao, skillDao, damageTableDao);
 	}
 }

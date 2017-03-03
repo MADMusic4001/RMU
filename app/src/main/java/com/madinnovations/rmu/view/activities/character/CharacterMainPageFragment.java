@@ -182,6 +182,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	@Override
 	public void onResume() {
 		super.onResume();
+		raceSpinnerUtils.onResume(getActivity());
+		cultureSpinnerUtils.onResume(getActivity());
+		professionSpinnerUtils.onResume(getActivity());
+		realmSpinnerUtils.onResume(getActivity());
+		realm2SpinnerUtils.onResume(getActivity());
 		copyItemToViews();
 	}
 
@@ -403,6 +408,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				break;
 		}
 	}
+
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
 
 	/**
 	 * Get currently selected Campaign or null if none is selected.

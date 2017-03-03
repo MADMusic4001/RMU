@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.schemas;
+package com.madinnovations.rmu.data.dao.item.schemas;
 
 import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
-import com.madinnovations.rmu.data.entities.common.Biome;
-import com.madinnovations.rmu.data.entities.object.Form;
-import com.madinnovations.rmu.data.entities.object.Prep;
 
 /**
  * Database schema data for the naturals_templates table

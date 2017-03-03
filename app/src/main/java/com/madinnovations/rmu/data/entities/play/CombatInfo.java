@@ -17,13 +17,24 @@ package com.madinnovations.rmu.data.entities.play;
 
 import android.graphics.Point;
 
+import com.madinnovations.rmu.data.entities.combat.Action;
+
+import java.io.Serializable;
+
 /**
  * Per round combat information
  */
-public class CombatInfo {
-	private Point hexCoordinate;
-	private short baseInitiative;
-	private short actionPointsRemaining;
+public class CombatInfo implements Serializable {
+	private static final long serialVersionUID = 7312314437576720214L;
+	private Point  hexCoordinate;
+	private short  initiativeRoll;
+	private short  baseInitiative;
+	private short  offensiveBonus = 0;
+	private short  parry = 0;
+	private short  defensiveBonus = 0;
+	private short  actionPointsRemaining;
+	private short  currentActionPointsSpent;
+	private Action actionInProgress;
 
 	// Getters and setters
 	public Point getHexCoordinate() {
@@ -31,6 +42,12 @@ public class CombatInfo {
 	}
 	public void setHexCoordinate(Point hexCoordinate) {
 		this.hexCoordinate = hexCoordinate;
+	}
+	public short getInitiativeRoll() {
+		return initiativeRoll;
+	}
+	public void setInitiativeRoll(short initiativeRoll) {
+		this.initiativeRoll = initiativeRoll;
 	}
 	public short getBaseInitiative() {
 		return baseInitiative;
@@ -43,5 +60,17 @@ public class CombatInfo {
 	}
 	public void setActionPointsRemaining(short actionPointsRemaining) {
 		this.actionPointsRemaining = actionPointsRemaining;
+	}
+	public short getCurrentActionPointsSpent() {
+		return currentActionPointsSpent;
+	}
+	public void setCurrentActionPointsSpent(short currentActionPointsSpent) {
+		this.currentActionPointsSpent = currentActionPointsSpent;
+	}
+	public Action getActionInProgress() {
+		return actionInProgress;
+	}
+	public void setActionInProgress(Action actionInProgress) {
+		this.actionInProgress = actionInProgress;
 	}
 }

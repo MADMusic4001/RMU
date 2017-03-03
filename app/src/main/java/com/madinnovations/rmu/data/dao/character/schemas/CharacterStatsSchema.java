@@ -29,7 +29,7 @@ public interface CharacterStatsSchema {
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
-                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_STAT_NAME + " TEXT NOT NULL, "
             + COLUMN_CURRENT_VALUE  + " INTEGER NOT NULL, "
             + COLUMN_POTENTIAL_VALUE + " INTEGER NOT NULL, "

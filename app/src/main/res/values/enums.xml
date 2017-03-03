@@ -114,6 +114,22 @@
   <string name="enum_touch">Touch</string>
   <string name="enum_vision">Vision</string>
 
+  <!-- Slot enum strings -->
+  <string name="enum_slot_any">Any Slot</string>
+  <string name="enum_slot_main_hand">Main Hand</string>
+  <string name="enum_slot_off_hand">Off Hand</string>
+  <string name="enum_slot_head">Head</string>
+  <string name="enum_slot_chest">Chest</string>
+  <string name="enum_slot_arms">Arms</string>
+  <string name="enum_slot_hands">Hands</string>
+  <string name="enum_slot_legs">Legs</string>
+  <string name="enum_slot_feet">Feet</string>
+  <string name="enum_slot_back">Back</string>
+  <string name="enum_slot_backpack">Backpack</string>
+  <string name="enum_slot_shirt">Shirt</string>
+  <string name="enum_slot_pants">Pants</string>
+  <string name="enum_slot_none">None</string>
+
   <!-- Pace enum strings -->
   <string name="enum_pace_creep">Creep</string>
   <string name="enum_pace_walk">Walk</string>

@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object;
+package com.madinnovations.rmu.data.dao.item;
+
+import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.Slot;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,4 +81,12 @@ public interface ItemTemplateDao {
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+	/**
+	 * Retrieves all ItemTemplate objects from persistent storage that can be equipped in the given slot.
+	 *
+	 * @param slot  an equipment slot
+	 * @return  a List containing all ItemTemplate objects currently in persistent storage that can be equipped in the given slot.
+	 */
+    public Collection<ItemTemplate> getAllForSlot(@NonNull Slot slot);
 }

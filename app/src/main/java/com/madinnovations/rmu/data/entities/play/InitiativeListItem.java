@@ -31,14 +31,17 @@ public class InitiativeListItem implements Comparable<InitiativeListItem> {
 	private short     initiativeRoll;
 	private short     quicknessBonus;
 	private short     otherPenalties;
-	private short     totalInitiative;
+	private short     baseInitiative;
+	private short     offensiveBonus;
+	private short     parry;
+	private short     defensiveBonus;
 
 	@Override
 	public int compareTo(InitiativeListItem o) {
 		if(o == null) {
 			return 11;
 		}
-		return o.totalInitiative - totalInitiative;
+		return o.baseInitiative - baseInitiative;
 	}
 
 	// Getters and setters
@@ -78,10 +81,28 @@ public class InitiativeListItem implements Comparable<InitiativeListItem> {
 	public void setOtherPenalties(short otherPenalties) {
 		this.otherPenalties = otherPenalties;
 	}
-	public short getTotalInitiative() {
-		return totalInitiative;
+	public short getBaseInitiative() {
+		return baseInitiative;
 	}
-	public void setTotalInitiative(short totalInitiative) {
-		this.totalInitiative = totalInitiative;
+	public void setBaseInitiative(short baseInitiative) {
+		this.baseInitiative = baseInitiative;
+	}
+	public short getOffensiveBonus() {
+		return offensiveBonus;
+	}
+	public void setOffensiveBonus(short offensiveBonus) {
+		this.offensiveBonus = offensiveBonus;
+	}
+	public short getParry() {
+		return parry;
+	}
+	public void setParry(short parry) {
+		this.parry = parry;
+	}
+	public short getDefensiveBonus() {
+		return defensiveBonus;
+	}
+	public void setDefensiveBonus(short defensiveBonus) {
+		this.defensiveBonus = defensiveBonus;
 	}
 }

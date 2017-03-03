@@ -15,7 +15,11 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.item.ItemPaneFragment;
+import com.madinnovations.rmu.view.activities.item.ItemTemplatePaneFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
+import com.madinnovations.rmu.view.activities.item.WeaponTemplatesFragment;
+import com.madinnovations.rmu.view.activities.item.WeaponsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
 import dagger.Module;
@@ -26,15 +30,44 @@ import dagger.Provides;
  */
 @Module
 public class ItemFragmentModule {
-	private ItemTemplatesFragment itemTemplatesFragment;
+	private ItemPaneFragment         itemPaneFragment;
+	private ItemTemplatesFragment    itemTemplatesFragment;
+	private ItemTemplatePaneFragment itemTemplatePaneFragment;
+	private WeaponsFragment          weaponsFragment;
+	private WeaponTemplatesFragment  weaponTemplatesFragment;
 
+	public ItemFragmentModule(ItemPaneFragment itemPaneFragment) {
+		this.itemPaneFragment = itemPaneFragment;
+	}
 	public ItemFragmentModule(ItemTemplatesFragment itemTemplatesFragment) {
 		this.itemTemplatesFragment = itemTemplatesFragment;
 	}
+	public ItemFragmentModule(ItemTemplatePaneFragment itemTemplatePaneFragment) {
+		this.itemTemplatePaneFragment = itemTemplatePaneFragment;
+	}
+	public ItemFragmentModule(WeaponsFragment weaponsFragment) {
+		this.weaponsFragment = weaponsFragment;
+	}
+	public ItemFragmentModule(WeaponTemplatesFragment weaponTemplatesFragment) {
+		this.weaponTemplatesFragment = weaponTemplatesFragment;
+	}
 
-	@Provides
-	@PerFragment
+	@Provides @PerFragment
+	ItemPaneFragment provideItemPaneFragment() {
+		return this.itemPaneFragment;
+	}
+	@Provides @PerFragment
 	ItemTemplatesFragment provideItemTemplatesFragment() {
 		return this.itemTemplatesFragment;
+	}
+	@Provides @PerFragment
+	ItemTemplatePaneFragment provideItemTemplateLayoutManager() {
+		return this.itemTemplatePaneFragment;
+	}
+	@Provides @PerFragment
+	WeaponsFragment provideWeaponsFragment() {return this.weaponsFragment;}
+	@Provides @PerFragment
+	WeaponTemplatesFragment provideWeaponTemplatesFragment() {
+		return this.weaponTemplatesFragment;
 	}
 }

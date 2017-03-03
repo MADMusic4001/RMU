@@ -24,6 +24,7 @@
   <string name="validation_body_part_required">Please select a body part.</string>
   <string name="validation_body_part_description_required">Please enter a body part resultText.</string>
   <string name="validation_body_part_name_required">Please enter a body part name.</string>
+  <string name="validation_bonus_required">Please enter a bonus value.</string>
   <string name="validation_campaign_name_required">PLease enter a name for the campaign.</string>
   <string name="validation_character_current_hits_required">Please enter the character\'s current hits.</string>
   <string name="validation_character_current_level_required">Please enter the character\'s current level.</string>
@@ -94,6 +95,7 @@
   <string name="validation_initial_cost_gt_additional_cost">Initial cost must be &lt;= additional cost</string>
   <string name="validation_injury_required">Please enter the amount of injury penalty.</string>
   <string name="validation_item_description_required">Please enter an item resultText.</string>
+  <string name="validation_item_level_required">Please enter an item level.</string>
   <string name="validation_item_name_required">Please enter an item name.</string>
   <string name="validation_knock_back_required">Please enter the distance in feet that the defender is knocked back.</string>
   <string name="validation_locomotion_type_description_required">Please enter a locomotion type resultText.</string>

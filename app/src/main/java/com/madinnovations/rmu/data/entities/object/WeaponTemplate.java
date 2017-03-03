@@ -30,7 +30,40 @@ public class WeaponTemplate extends ItemTemplate {
     private DamageTable damageTable = null;
     private boolean braceable = false;
 
-    /**
+	/**
+	 * Creates a new WeaponTemplate instance
+	 */
+	public WeaponTemplate() {
+	}
+
+	/**
+	 * Creates a new WeaponTemplate instance with the given id
+	 *
+	 * @param id  the id to use for the new instance
+	 */
+	public WeaponTemplate(int id) {
+		super(id);
+	}
+
+	/**
+	 * Creates a new WeaponTemplate instance from the given ItemTemplate
+	 *
+	 * @param other  an ItemTemplate instance
+	 */
+	public WeaponTemplate(ItemTemplate other) {
+		this.setId(other.getId());
+		this.setName(other.getName());
+		this.setWeight(other.getWeight());
+		this.setBaseCost(other.getBaseCost());
+		this.setStrength(other.getStrength());
+		this.setConstructionTime(other.getConstructionTime());
+		this.setManeuverDifficulty(other.getManeuverDifficulty());
+		this.setNotes(other.getNotes());
+		this.setPrimarySlot(other.getPrimarySlot());
+		this.setSecondarySlot(other.getSecondarySlot());
+	}
+
+	/**
      * Checks the validity of the Weapon instance.
      *
      * @return true if the Weapon instance is valid, otherwise false.
@@ -48,6 +81,7 @@ public class WeaponTemplate extends ItemTemplate {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("combatSkill", combatSkill)
 				.append("damageTable", damageTable)
+				.append("braceable", braceable)
 				.toString();
 	}
 
@@ -64,4 +98,10 @@ public class WeaponTemplate extends ItemTemplate {
     public void setDamageTable(DamageTable damageTable) {
         this.damageTable = damageTable;
     }
+	public boolean isBraceable() {
+		return braceable;
+	}
+	public void setBraceable(boolean braceable) {
+		this.braceable = braceable;
+	}
 }

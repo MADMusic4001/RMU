@@ -199,6 +199,9 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 	}
 
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
+
 	public boolean copyViewsToItem() {
 		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
 		boolean changed = false;

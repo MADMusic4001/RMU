@@ -62,13 +62,13 @@ public class InitiativeDialog extends DialogFragment {
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						listener.onOk(InitiativeDialog.this);
+						listener.onInitiativeOk(InitiativeDialog.this);
 					}
 				})
 				.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						listener.onCancel(InitiativeDialog.this);
+						listener.onInitiativeCancel(InitiativeDialog.this);
 					}
 				})
 				.setView(contentView);
@@ -81,13 +81,13 @@ public class InitiativeDialog extends DialogFragment {
 			short total;
 			listItem.setCharacter(entry.getKey());
 			listItem.setName(entry.getKey().getFullName());
-			listItem.setInitiativeRoll(entry.getValue().getBaseInitiative());
+			listItem.setInitiativeRoll(entry.getValue().getInitiativeRoll());
 			total = listItem.getInitiativeRoll();
 			listItem.setQuicknessBonus(Statistic.getBonus(entry.getKey().getStatTemps().get(Statistic.QUICKNESS)));
 			total += listItem.getQuicknessBonus();
 			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
 			total += listItem.getOtherPenalties();
-			listItem.setTotalInitiative(total);
+			listItem.setBaseInitiative(total);
 			listItems.add(listItem);
 		}
 		for(Map.Entry<Creature, CombatInfo> entry : combatSetup.getCreatureCombatInfo().entrySet()) {
@@ -95,13 +95,13 @@ public class InitiativeDialog extends DialogFragment {
 			short total;
 			listItem.setCreature(entry.getKey());
 			listItem.setName(entry.getKey().getCreatureVariety().getName());
-			listItem.setInitiativeRoll(entry.getValue().getBaseInitiative());
+			listItem.setInitiativeRoll(entry.getValue().getInitiativeRoll());
 			total = listItem.getInitiativeRoll();
 			listItem.setQuicknessBonus(entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS));
 			total += listItem.getQuicknessBonus();
 			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
 			total += listItem.getOtherPenalties();
-			listItem.setTotalInitiative(total);
+			listItem.setBaseInitiative(total);
 			listItems.add(listItem);
 		}
 		Collections.sort(listItems);
@@ -125,13 +125,13 @@ public class InitiativeDialog extends DialogFragment {
 		 *
 		 * @param dialog  the dialog instance executing the callback
 		 */
-		void onOk(DialogFragment dialog);
+		void onInitiativeOk(DialogFragment dialog);
 
 		/**
 		 * Callback method called when the user clicks the Cancel button
 		 *
 		 * @param dialog  the dialog instance executing the callback
 		 */
-		void onCancel(DialogFragment dialog);
+		void onInitiativeCancel(DialogFragment dialog);
 	}
 }

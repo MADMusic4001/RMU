@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.serializers;
+package com.madinnovations.rmu.data.dao.item.serializers;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.object.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
@@ -35,6 +35,7 @@ public class WeaponTemplateSerializer extends TypeAdapter<WeaponTemplate> implem
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_SKILL_ID).value(value.getCombatSkill().getId());
 		out.name(COLUMN_DAMAGE_TABLE_ID).value(value.getDamageTable().getId());
+		out.name(COLUMN_BRACEABLE).value(value.isBraceable());
 		out.endObject().flush();
 	}
 
@@ -52,6 +53,9 @@ public class WeaponTemplateSerializer extends TypeAdapter<WeaponTemplate> implem
 					break;
 				case COLUMN_DAMAGE_TABLE_ID:
 					weaponTemplate.setDamageTable(new DamageTable(in.nextInt()));
+					break;
+				case COLUMN_BRACEABLE:
+					weaponTemplate.setBraceable(in.nextBoolean());
 					break;
 			}
 		}

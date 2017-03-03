@@ -13,48 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object;
+package com.madinnovations.rmu.data.dao.item;
 
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import android.support.annotation.NonNull;
+
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.object.Slot;
+import com.madinnovations.rmu.data.entities.object.Weapon;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Methods to manage {@link WeaponTemplate} objects in persistent storage.
+ * Methods to manage {@link Weapon} objects in persistent storage.
  */
-public interface WeaponTemplateDao {
+public interface WeaponDao {
     /**
      * Retrieves a Weapon object from persistent storage.
      *
      * @param id  the id of the Weapon object to retrieve
      * @return the Weapon instance with the given id or null if not found.
      */
-    public WeaponTemplate getById(int id);
+    public Weapon getById(int id);
 
     /**
      * Retrieves all Weapon objects from persistent storage.
      *
      * @return  a List containing all Weapon objects currently in persistent storage.
      */
-    public List<WeaponTemplate> getAll();
+    public List<Weapon> getAll();
 
     /**
-     * Saves a collection of WeaponTemplate instances to persistent storage.
+     * Saves a collection of Weapon instances to persistent storage.
      *
-     * @param instance  the collection of WeaponTemplate instances to be saved
+     * @param instance  the collection of Weapon instances to be saved
      * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
      * @return true if successful, otherwise false.
      */
-    public boolean save(Collection<WeaponTemplate> instance, boolean isNew);
+    public boolean save(Collection<Weapon> instance, boolean isNew);
 
     /**
-     * Saves a collection of WeaponTemplate instances to persistent storage.
+     * Saves a collection of Weapon instances to persistent storage.
      *
-     * @param instance  the collection of WeaponTemplate instances to be saved
+     * @param instance  the collection of Weapon instances to be saved
      * @return true if successful, otherwise false.
      */
-    public boolean save(Collection<WeaponTemplate> instance);
+    public boolean save(Collection<Weapon> instance);
 
     /**
      * Saves a Weapon object to persistent storage.
@@ -62,7 +66,7 @@ public interface WeaponTemplateDao {
      * @param instance  the Weapon object to be saved
      * @return true if successful, otherwise false.
      */
-    public boolean save(WeaponTemplate instance);
+    public boolean save(Weapon instance);
 
     /**
      * Delete the Weapon object with the given id from persistent storage.
@@ -78,4 +82,20 @@ public interface WeaponTemplateDao {
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+    /**
+     * Retrieves all Weapon objects from persistent storage for the given campaign.
+     *
+     * @param campaign  a {@link Campaign} instance
+     * @return the collection of Weapon instances for the given campaign
+     */
+    public Collection<Weapon> getAllForCampaign(Campaign campaign);
+
+    /**
+     * Retrieves all Weapon objects from persistent storage that can be equipped in the given slot.
+     *
+     * @param slot  an equipment slot
+     * @return  a List containing all Weapon objects currently in persistent storage that can be equipped in the given slot.
+     */
+    public Collection<Weapon> getAllForSlot(@NonNull Slot slot);
 }

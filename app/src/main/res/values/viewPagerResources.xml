@@ -7,6 +7,7 @@
     <item>@string/title_character_talents_page</item>
     <item>@string/title_character_background_page</item>
     <item>@string/title_character_generated_values_page</item>
+    <item>@string/title_character_equipment_page</item>
   </string-array>
   <string-array name="creature_archetype_page_names">
     <item>@string/title_creature_archetype_main_page</item>

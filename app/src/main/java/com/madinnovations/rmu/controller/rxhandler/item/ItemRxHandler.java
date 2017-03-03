@@ -15,8 +15,11 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.item;
 
-import com.madinnovations.rmu.data.dao.object.ItemDao;
+import android.support.annotation.NonNull;
+
+import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.Slot;
 
 import java.util.Collection;
 
@@ -161,6 +164,31 @@ public class ItemRxHandler {
 					}
 				}
 		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Item instances
+	 * that can be equipped in the given slot.
+	 *
+	 * @param slot  a {@link Slot} instance
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Item
+	 * instances.
+	 */
+	public Observable<Collection<Item>> getAllForSlot(@NonNull final Slot slot) {
+		return Observable.create(new Observable.OnSubscribe<Collection<Item>>() {
+			@Override
+			public void call(Subscriber<? super Collection<Item>> subscriber) {
+				try {
+					Collection<Item> items = dao.getAllForSlot(slot);
+					subscriber.onNext(items);
+					subscriber.onCompleted();
+				}
+				catch(Exception e) {
+					subscriber.onError(e);
+				}
+			}
+		}).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
 	}
 }

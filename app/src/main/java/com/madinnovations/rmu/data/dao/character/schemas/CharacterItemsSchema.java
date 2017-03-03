@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
-import com.madinnovations.rmu.data.dao.object.schemas.ItemSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 
 /**
  * Database schema data for the character_items table
@@ -29,7 +29,7 @@ public interface CharacterItemsSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME + "("
 			+ COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
-			+ CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+			+ CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + ") ON DELETE CASCADE, "
 			+ COLUMN_ITEM_ID + " INTEGER NOT NULL REFERENCES "
 			+ ItemSchema.TABLE_NAME + "(" + ItemSchema.COLUMN_ID + "), "
 			+ "PRIMARY KEY(" + COLUMN_CHARACTER_ID + "," + COLUMN_ITEM_ID + ")"

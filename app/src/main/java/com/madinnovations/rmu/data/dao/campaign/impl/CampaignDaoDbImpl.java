@@ -20,8 +20,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.v4.util.LruCache;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignAttackRestrictionsSchema;
 import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
@@ -42,9 +44,19 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements CampaignDao, CampaignSchema {
+    private LruCache<Integer, Campaign> campaignLruCache = new LruCache<>(CacheConfig.CAMPAIGN_CACHE_SIZE);
     private SpecializationDao specializationDao;
 
-    /**
+	/**
+	 * Creates a new instance of CampaignDaoDbImpl
+
+	 * @param helper  an SQLiteOpenHelper instance
+	 */
+	public CampaignDaoDbImpl(SQLiteOpenHelper helper) {
+		super(helper);
+	}
+
+	/**
      * Creates a new CampaignDaoDbImpl instance
      *
      * @param helper  an SQLiteOpenHelper instance

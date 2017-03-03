@@ -180,10 +180,40 @@ public class MainMenuFragment extends Fragment {
 					case 4:
 						switch (childPosition) {
 							case 0:
-								((CampaignActivity)getActivity()).showItems();
+								((CampaignActivity)getActivity()).showItemTemplates();
 								break;
 							case 1:
-//								((CampaignActivity)getActivity()).showWeapons();
+//								((CampaignActivity)getActivity()).showArmorTemplates();
+								break;
+							case 2:
+//								((CampaignActivity)getActivity()).showHerbTemplates();
+								break;
+							case 3:
+//								((CampaignActivity)getActivity()).showNaturalsTemplates();
+								break;
+							case 4:
+//								((CampaignActivity)getActivity()).showPoisonTemplates();
+								break;
+							case 5:
+								((CampaignActivity)getActivity()).showWeaponTemplates();
+								break;
+							case 6:
+//								((CampaignActivity)getActivity()).showCreateItems();
+								break;
+							case 7:
+//								((CampaignActivity)getActivity()).showCreateArmor();
+								break;
+							case 8:
+//								((CampaignActivity)getActivity()).showCreateHerbs();
+								break;
+							case 9:
+//								((CampaignActivity)getActivity()).showCreateNaturals();
+								break;
+							case 10:
+//								((CampaignActivity)getActivity()).showCreatePoisons();
+								break;
+							case 11:
+								((CampaignActivity)getActivity()).showCreateWeapons();
 								break;
 						}
 						break;
@@ -280,9 +310,19 @@ public class MainMenuFragment extends Fragment {
 		commonDataItems.add(getString(R.string.manage_talent_categories));
 		commonDataItems.add(getString(R.string.manage_talents));
 
-		List<String> itemItems = new ArrayList<>(2);
-		itemItems.add(getString(R.string.manage_items));
-		itemItems.add(getString(R.string.manage_weapons));
+		List<String> itemItems = new ArrayList<>(12);
+		itemItems.add(getString(R.string.manage_item_templates));
+		itemItems.add(getString(R.string.manage_armor_templates));
+		itemItems.add(getString(R.string.manage_herb_templates));
+		itemItems.add(getString(R.string.manage_naturals_templates));
+		itemItems.add(getString(R.string.manage_poison_templates));
+		itemItems.add(getString(R.string.manage_weapon_templates));
+		itemItems.add(getString(R.string.create_items));
+		itemItems.add(getString(R.string.create_armor));
+		itemItems.add(getString(R.string.create_herbs));
+		itemItems.add(getString(R.string.create_naturals));
+		itemItems.add(getString(R.string.create_poisons));
+		itemItems.add(getString(R.string.create_weapons));
 
 		List<String> spellItems = new ArrayList<>(5);
 		spellItems.add(getString(R.string.manage_realms));

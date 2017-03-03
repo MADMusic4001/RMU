@@ -45,6 +45,7 @@ import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
+import com.madinnovations.rmu.view.utils.Boast;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
 
@@ -239,6 +240,9 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 		}
 	}
 
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		short newShort;
@@ -352,7 +356,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), R.string.toast_creature_deleted, Toast.LENGTH_SHORT).show();
+							Boast.showText(getActivity(), R.string.toast_creature_deleted, Toast.LENGTH_SHORT);
 						}
 					}
 				});
@@ -389,9 +393,9 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 						creatureListAdapter.clear();
 						creatureListAdapter.addAll(creatures);
 						creatureListAdapter.notifyDataSetChanged();
-						String toastString;
-						toastString = String.format(getString(R.string.toast_creature_loaded), creatures.size());
-						Toast.makeText(CreaturesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
+						Boast.showText(CreaturesFragment.this.getActivity(),
+									   String.format(getString(R.string.toast_creature_loaded), creatures.size()),
+									   Toast.LENGTH_SHORT);
 					}
 				});
 

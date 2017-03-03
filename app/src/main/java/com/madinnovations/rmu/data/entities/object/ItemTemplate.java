@@ -36,6 +36,8 @@ public class ItemTemplate extends DatabaseObject {
 	private float constructionTime = 0.0f;
 	private ManeuverDifficulty maneuverDifficulty = null;
 	private String notes = null;
+	private Slot primarySlot = null;
+	private Slot secondarySlot = null;
 
 	/**
 	 * Creates a new ItemTemplate instance.
@@ -82,6 +84,8 @@ public class ItemTemplate extends DatabaseObject {
 				.append("constructionTime", constructionTime)
 				.append("maneuverDifficulty", maneuverDifficulty)
 				.append("notes", notes)
+				.append("primarySlot", primarySlot)
+				.append("secondarySlot", secondarySlot)
 				.toString();
 	}
 
@@ -127,5 +131,17 @@ public class ItemTemplate extends DatabaseObject {
 	}
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+	public Slot getPrimarySlot() {
+		return primarySlot;
+	}
+	public void setPrimarySlot(Slot primarySlot) {
+		this.primarySlot = primarySlot;
+	}
+	public Slot getSecondarySlot() {
+		return secondarySlot;
+	}
+	public void setSecondarySlot(Slot secondarySlot) {
+		this.secondarySlot = secondarySlot;
 	}
 }

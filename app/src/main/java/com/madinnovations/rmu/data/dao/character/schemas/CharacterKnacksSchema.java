@@ -33,7 +33,7 @@ public interface CharacterKnacksSchema {
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
-                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_SKILL_ID + " INTEGER REFERENCES "
 				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
             + COLUMN_SPECIALIZATION_ID + " INTEGER REFERENCES "

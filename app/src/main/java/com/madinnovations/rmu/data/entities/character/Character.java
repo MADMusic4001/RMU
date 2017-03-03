@@ -31,6 +31,7 @@ import com.madinnovations.rmu.data.entities.spells.SpellList;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,8 @@ import java.util.Random;
 /**
  * Character attributes
  */
-public class Character extends DatabaseObject {
+public class Character extends DatabaseObject implements Serializable {
+	private static final long serialVersionUID = 5800697497948561223L;
 	public static final String         JSON_NAME                       = "Characters";
 	public static final short          INITIAL_DP                      = 50;
 	private Campaign                   campaign                        = null;
@@ -90,6 +92,18 @@ public class Character extends DatabaseObject {
 	private List<State>                      currentStates                   = new ArrayList<>();
 	private List<DatabaseObject>             professionSkills                = new ArrayList<>();
 	private List<DatabaseObject>             knacks                          = new ArrayList<>();
+	private Item                             mainHandItem                    = null;
+	private Item                             offhandItem                     = null;
+	private Item                             shirtItem                       = null;
+	private Item                             pantsItem                       = null;
+	private Item                             headItem                        = null;
+	private Item                             chestItem                       = null;
+	private Item                             armsItem                        = null;
+	private Item                             handsItem                       = null;
+	private Item                             legsItem                        = null;
+	private Item                             feetItem                        = null;
+	private Item                             backItem                        = null;
+	private Item                             backpackItem                    = null;
 
 	/**
 	 * Creates a new Character instance with default values
@@ -228,6 +242,16 @@ public class Character extends DatabaseObject {
 				.append("statIncreases", statIncreases)
 				.append("professionSkills", professionSkills)
 				.append("knacks", knacks)
+				.append("mainHandItem", mainHandItem)
+				.append("offhandItem", offhandItem)
+				.append("shirtItem", shirtItem)
+				.append("pantsItem", pantsItem)
+				.append("headItem", headItem)
+				.append("chestItem", chestItem)
+				.append("armsItem", armsItem)
+				.append("legsItem", legsItem)
+				.append("feetItem", feetItem)
+				.append("backItem", backItem)
 				.toString();
 	}
 
@@ -705,5 +729,77 @@ public class Character extends DatabaseObject {
 	}
 	public void setCurrentStates(List<State> currentStates) {
 		this.currentStates = currentStates;
+	}
+	public Item getMainHandItem() {
+		return mainHandItem;
+	}
+	public void setMainHandItem(Item mainHandItem) {
+		this.mainHandItem = mainHandItem;
+	}
+	public Item getOffhandItem() {
+		return offhandItem;
+	}
+	public void setOffhandItem(Item offhandItem) {
+		this.offhandItem = offhandItem;
+	}
+	public Item getShirtItem() {
+		return shirtItem;
+	}
+	public void setShirtItem(Item shirtItem) {
+		this.shirtItem = shirtItem;
+	}
+	public Item getPantsItem() {
+		return pantsItem;
+	}
+	public void setPantsItem(Item pantsItem) {
+		this.pantsItem = pantsItem;
+	}
+	public Item getHeadItem() {
+		return headItem;
+	}
+	public void setHeadItem(Item headItem) {
+		this.headItem = headItem;
+	}
+	public Item getChestItem() {
+		return chestItem;
+	}
+	public void setChestItem(Item chestItem) {
+		this.chestItem = chestItem;
+	}
+	public Item getArmsItem() {
+		return armsItem;
+	}
+	public void setArmsItem(Item armsItem) {
+		this.armsItem = armsItem;
+	}
+	public Item getHandsItem() {
+		return handsItem;
+	}
+	public void setHandsItem(Item handsItem) {
+		this.handsItem = handsItem;
+	}
+	public Item getLegsItem() {
+		return legsItem;
+	}
+	public void setLegsItem(Item legsItem) {
+		this.legsItem = legsItem;
+	}
+	public Item getFeetItem() {
+		return feetItem;
+	}
+	public void setFeetItem(Item feetItem) {
+		this.feetItem = feetItem;
+	}
+	public Item getBackItem() {
+		return backItem;
+	}
+	public void setBackItem(Item backItem) {
+		this.backItem = backItem;
+	}
+	public Item getBackpackItem() {
+		return backpackItem;
+	}
+	public void setBackpackItem(Item backpackItem) {
+		this.backpackItem = backpackItem;
 	}
 }

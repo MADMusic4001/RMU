@@ -24,13 +24,15 @@ import com.madinnovations.rmu.view.RMUApp;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Creature attributes
  */
-public class Creature extends DatabaseObject {
+public class Creature extends DatabaseObject implements Serializable {
+	private static final long serialVersionUID = 2106087301956452748L;
 	public static final String            JSON_NAME       = "Creatures";
 	private             Campaign          campaign        = null;
 	private             CreatureVariety   creatureVariety = null;

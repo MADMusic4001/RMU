@@ -87,4 +87,12 @@ public interface CombatSetupDao {
 	 * @return the CombatSetup instance with the most recent timestamp.
 	 */
 	public CombatSetup getMostRecentForCampaign(Campaign campaign);
+
+	/**
+	 * Retrieves all CombatSetup objects from persistent storage for the given campaign.
+	 *
+	 * @param campaign  a {@link Campaign} instance
+	 * @return the collection of CombatSetup instances for the given campaign
+	 */
+	public Collection<CombatSetup> getAllForCampaign(Campaign campaign);
 }

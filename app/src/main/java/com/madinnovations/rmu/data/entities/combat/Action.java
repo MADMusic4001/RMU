@@ -43,7 +43,7 @@ public enum Action {
 	LOAD_HEAVY_XBOW("Load Heavy Crossbow", (short)16, (short)16, false),
 	PICK_LOCK_DISARM_TRAP("Pick Lock / Disarm Trap", (short)20, (short)20, false),
 	PARTIAL_DODGE("Partial Dodge", (short)-1, (short)-1, true),
-	HOLD_POSITION("Hold Posistion (Swim/Climb)", (short)-1, (short)-1, true),
+	HOLD_POSITION("Hold Position (Swim/Climb)", (short)-1, (short)-1, true),
 	CONCENTRATION("Concentration", (short)-1, (short)-1, true),
 	SPELL_PREPARATION("Spell Preparation", (short)-1, (short)-1, true),
 	MOVEMENT("Movement", (short)-1, (short)-1, false);

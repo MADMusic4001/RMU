@@ -30,7 +30,9 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.FileRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportCampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.campaign.ImportExportRxHandler;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.view.RMUApp;
+import com.madinnovations.rmu.view.activities.CampaignSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.character.CharactersFragment;
 import com.madinnovations.rmu.view.activities.character.CulturesFragment;
@@ -55,6 +57,8 @@ import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment
 import com.madinnovations.rmu.view.activities.creature.CreaturesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
+import com.madinnovations.rmu.view.activities.item.WeaponTemplatesFragment;
+import com.madinnovations.rmu.view.activities.item.WeaponsFragment;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
 import com.madinnovations.rmu.view.activities.play.StartCombatFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
@@ -74,7 +78,8 @@ import rx.Subscriber;
 /**
  * Activity class for managing the campaign UI.
  */
-public class CampaignActivity extends Activity implements FileSelectorDialogFragment.FileSelectorDialogListener {
+public class CampaignActivity extends Activity implements FileSelectorDialogFragment.FileSelectorDialogListener,
+		CampaignSelectorDialogFragment.CampaignSelectorDialogListener {
 	private static final String EXPORT_FILE_NAME = "export.rmu";
 	private static final String EXPORT_CAMPAIGN_FILE_NAME = "export.cmp";
 	private static final String FILE_SELECTOR_FILTER = "fs_extension_filter";
@@ -118,6 +123,8 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private StartCombatFragment        startCombatFragment;
 	private TalentCategoriesFragment   talentCategoriesFragment;
 	private TalentsFragment            talentsFragment;
+	private WeaponsFragment            weaponsFragment;
+	private WeaponTemplatesFragment    weaponTemplatesFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -205,50 +212,12 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 				Bundle bundle = new Bundle();
 				bundle.putString(FILE_SELECTOR_FILTER, RMU_FILE_EXTENSION);
 				dialogFragment.setArguments(bundle);
-				dialogFragment.show(getFragmentManager(), "");
+				dialogFragment.show(getFragmentManager(), "FileSelectorDialog");
 				return true;
 			case R.id.action_export_campaign:
-				dir = fileRxHandler.getImportExportDir();
-				final File exportFile = new File(dir, EXPORT_CAMPAIGN_FILE_NAME);
-				importExportCampaignRxHandler.exportDatabase(exportFile)
-						.subscribe(new Subscriber<Integer>() {
-							Toast toast = null;
-							@Override
-							public void onStart() {
-								request(1);
-							}
-							@Override
-							public void onCompleted() {
-								if (toast != null) {
-									toast.cancel();
-								}
-								Toast.makeText(getApplication(),
-											   String.format(getString(R.string.toast_db_exported),
-															 exportFile.getAbsolutePath()),
-											   Toast.LENGTH_SHORT).show();
-							}
-							@Override
-							public void onError(Throwable e) {
-								Log.e("CampaignActivity", "Error occurred exporting database.", e);
-								if (toast != null) {
-									toast.cancel();
-								}
-								Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
-											   Toast.LENGTH_SHORT).show();
-							}
-							@Override
-							public void onNext(Integer percentComplete) {
-								if (toast != null) {
-									toast.cancel();
-								}
-								toast = Toast.makeText(getApplication(),
-													   String.format(getString(R.string.export_status), percentComplete),
-													   Toast.LENGTH_SHORT);
-								toast.show();
-								request(1);
-							}
-						});
-				return true;
+				dialogFragment = new CampaignSelectorDialogFragment();
+				dialogFragment.show(getFragmentManager(), "CampaignDialog");
+				break;
 			case R.id.action_import_campaign:
 				dialogFragment = new FileSelectorDialogFragment();
 				bundle = new Bundle();
@@ -333,6 +302,50 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 						});
 			}
 		}
+	}
+
+	@Override
+	public void onCampaignSelected(Campaign campaign) {
+		File dir = fileRxHandler.getImportExportDir();
+		final File exportFile = new File(dir, campaign.getName().replace(" ", "_") + RMU_CAMPAIGN_FILE_EXTENSION);
+		importExportCampaignRxHandler.exportDatabase(exportFile, campaign)
+				.subscribe(new Subscriber<Integer>() {
+					Toast toast = null;
+					@Override
+					public void onStart() {
+						request(1);
+					}
+					@Override
+					public void onCompleted() {
+						if (toast != null) {
+							toast.cancel();
+						}
+						Toast.makeText(getApplication(),
+									   String.format(getString(R.string.toast_db_exported),
+													 exportFile.getAbsolutePath()),
+									   Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e("CampaignActivity", "Error occurred exporting database.", e);
+						if (toast != null) {
+							toast.cancel();
+						}
+						Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
+									   Toast.LENGTH_SHORT).show();
+					}
+					@Override
+					public void onNext(Integer percentComplete) {
+						if (toast != null) {
+							toast.cancel();
+						}
+						toast = Toast.makeText(getApplication(),
+											   String.format(getString(R.string.export_status), percentComplete),
+											   Toast.LENGTH_SHORT);
+						toast.show();
+						request(1);
+					}
+				});
 	}
 
 	public void showAbout() {
@@ -440,7 +453,7 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 		replaceDetailFragment(diseasesFragment);
 	}
 
-	public void showItems() {
+	public void showItemTemplates() {
 		if(itemTemplatesFragment == null) {
 			itemTemplatesFragment = new ItemTemplatesFragment();
 		}
@@ -550,6 +563,20 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 			talentsFragment = new TalentsFragment();
 		}
 		replaceDetailFragment(talentsFragment);
+	}
+
+	public void showCreateWeapons() {
+		if(weaponsFragment == null) {
+			weaponsFragment = new WeaponsFragment();
+		}
+		replaceDetailFragment(weaponsFragment);
+	}
+
+	public void showWeaponTemplates() {
+		if(weaponTemplatesFragment == null) {
+			weaponTemplatesFragment = new WeaponTemplatesFragment();
+		}
+		replaceDetailFragment(weaponTemplatesFragment);
 	}
 
 	private void replaceDetailFragment(Fragment fragment) {

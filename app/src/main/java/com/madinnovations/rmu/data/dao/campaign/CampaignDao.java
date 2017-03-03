@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.campaign;
 
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.object.Item;
 
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +64,15 @@ public interface CampaignDao {
 	 * @return true if successful, otherwise false.
 	 */
 	public boolean save(Campaign instance);
+
+	/**
+	 * Saves a Campaign object to persistent storage.
+	 *
+	 * @param instance  the Campaign object to be saved
+	 * @param isNew  set to true if the instance has a valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Campaign instance, boolean isNew);
 
 	/**
 	 * Delete the Campaign object with the given id from persistent storage.

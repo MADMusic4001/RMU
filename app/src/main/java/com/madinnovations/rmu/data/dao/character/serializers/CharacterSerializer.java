@@ -45,6 +45,7 @@ import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
+import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
@@ -90,6 +91,39 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_CURRENT_FATIGUE).value(value.getFatigue());
 		out.name(COLUMN_CURRENT_PP_LOSS).value(value.getPowerPointLoss());
 		out.name(COLUMN_STAT_INCREASES).value(value.getStatIncreases());
+		if(value.getMainHandItem() != null) {
+			out.name(COLUMN_MAIN_HAND_ITEM_ID).value(value.getMainHandItem().getId());
+		}
+		if(value.getOffhandItem() != null) {
+			out.name(COLUMN_OFFHAND_ITEM_ID).value(value.getOffhandItem().getId());
+		}
+		if(value.getShirtItem() != null) {
+			out.name(COLUMN_SHIRT_ITEM_ID).value(value.getShirtItem().getId());
+		}
+		if(value.getPantsItem() != null) {
+			out.name(COLUMN_PANTS_ITEM_ID).value(value.getPantsItem().getId());
+		}
+		if(value.getHeadItem() != null) {
+			out.name(COLUMN_HEAD_ITEM_ID).value(value.getHeadItem().getId());
+		}
+		if(value.getChestItem() != null) {
+			out.name(COLUMN_CHEST_ITEM_ID).value(value.getChestItem().getId());
+		}
+		if(value.getArmsItem() != null) {
+			out.name(COLUMN_ARMS_ITEM_ID).value(value.getArmsItem().getId());
+		}
+		if(value.getLegsItem() != null) {
+			out.name(COLUMN_LEGS_ITEM_ID).value(value.getLegsItem().getId());
+		}
+		if(value.getFeetItem() != null) {
+			out.name(COLUMN_FEET_ITEM_ID).value(value.getFeetItem().getId());
+		}
+		if(value.getBackItem() != null) {
+			out.name(COLUMN_BACK_ITEM_ID).value(value.getBackItem().getId());
+		}
+		if(value.getBackpackItem() != null) {
+			out.name(COLUMN_BACKPACK_ITEM_ID).value(value.getBackpackItem().getId());
+		}
 
 		out.name(CharacterSkillCostsSchema.TABLE_NAME).beginArray();
 		for (Map.Entry<Skill, DevelopmentCostGroup> entry : value.getSkillCosts().entrySet()) {
@@ -341,6 +375,39 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case COLUMN_STAT_INCREASES:
 					character.setStatIncreases((short) in.nextInt());
+					break;
+				case COLUMN_MAIN_HAND_ITEM_ID:
+					character.setMainHandItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_OFFHAND_ITEM_ID:
+					character.setOffhandItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_SHIRT_ITEM_ID:
+					character.setShirtItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_PANTS_ITEM_ID:
+					character.setPantsItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_HEAD_ITEM_ID:
+					character.setHeadItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_CHEST_ITEM_ID:
+					character.setChestItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_ARMS_ITEM_ID:
+					character.setArmsItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_LEGS_ITEM_ID:
+					character.setLegsItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_FEET_ITEM_ID:
+					character.setFeetItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_BACK_ITEM_ID:
+					character.setBackItem(new Item(in.nextInt()));
+					break;
+				case COLUMN_BACKPACK_ITEM_ID:
+					character.setBackpackItem(new Item(in.nextInt()));
 					break;
 				case CharacterSkillCostsSchema.TABLE_NAME:
 					readSkillCosts(in, character);

@@ -67,7 +67,8 @@ import rx.Subscriber;
 /**
  * Handles interactions with the UI for combat.
  */
-public class StartCombatFragment extends Fragment implements HexView.Callbacks, InitiativeDialog.InitiativeDialogListener {
+public class StartCombatFragment extends Fragment implements HexView.Callbacks, InitiativeDialog.InitiativeDialogListener,
+		ActionDialog.ActionDialogListener {
 	private static final String TAG = "StartCombatFragment";
 	private static final String DRAG_CHARACTER = "drag-character";
 	private static final String DRAG_OPPONENT = "drag-opponent";
@@ -163,9 +164,9 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks, 
 	}
 
 	@Override
-	public void onOk(DialogFragment dialog) {
+	public void onInitiativeOk(DialogFragment dialog) {
 		boolean changed = false;
-		short currentInitiative = 0;
+		short currentInitiative = 20;
 		for(InitiativeListItem listItem : ((InitiativeDialog)dialog).getListItems()) {
 			CombatInfo combatInfo = null;
 			if(listItem.getCharacter() != null) {
@@ -175,11 +176,11 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks, 
 				combatInfo = currentInstance.getCreatureCombatInfo().get(listItem.getCreature());
 			}
 			if(combatInfo != null) {
-				if(listItem.getTotalInitiative() > currentInitiative) {
-					currentInitiative = listItem.getTotalInitiative();
+				if(listItem.getBaseInitiative() + combatInfo.getActionPointsRemaining() * 5 > currentInitiative) {
+					currentInitiative = (short)(listItem.getBaseInitiative() + combatInfo.getActionPointsRemaining() * 5);
 				}
-				if(combatInfo.getBaseInitiative() != listItem.getInitiativeRoll()) {
-					combatInfo.setBaseInitiative(listItem.getInitiativeRoll());
+				if(combatInfo.getInitiativeRoll() != listItem.getInitiativeRoll()) {
+					combatInfo.setInitiativeRoll(listItem.getInitiativeRoll());
 					changed = true;
 				}
 			}
@@ -190,13 +191,63 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks, 
 		}
 		startCombatButton.setEnabled(false);
 		if(changed) {
-			Log.d(TAG, "onOk: Saving item");
+			Log.d(TAG, "onInitiativeOk: Saving item");
 			saveItem();
 		}
+		nextAction();
 	}
 
 	@Override
-	public void onCancel(DialogFragment dialog) {}
+	public void onInitiativeCancel(DialogFragment dialog) {}
+
+	@Override
+	public void onActionOk(DialogFragment dialog) {
+		ActionDialog actionDialog = (ActionDialog)dialog;
+		if(actionDialog.getCharacter() != null) {
+
+		}
+		nextAction();
+	}
+
+	@Override
+	public void onActionCancel(DialogFragment dialog) {
+
+	}
+
+	private void nextAction() {
+		short currentInitiative = currentInstance.getCurrentInitiative();
+		boolean found = false;
+		while(!found) {
+			for (Map.Entry<Character, CombatInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
+				if (entry.getValue().getBaseInitiative() + entry.getValue().getActionPointsRemaining() * 5 == currentInitiative) {
+					ActionDialog dialog = new ActionDialog();
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(ActionDialog.COMBAT_INFO_ARG_KEY, entry.getValue());
+					bundle.putSerializable(ActionDialog.CHARACTER_ARG_KEY, entry.getKey());
+					dialog.setArguments(bundle);
+					dialog.setListener(StartCombatFragment.this);
+					dialog.show(getFragmentManager(), "ActionDialogFragment");
+					found = true;
+				}
+			}
+			for (Map.Entry<Creature, CombatInfo> entry : currentInstance.getCreatureCombatInfo().entrySet()) {
+				if (entry.getValue().getBaseInitiative() + entry.getValue().getActionPointsRemaining() * 5 == currentInitiative) {
+					ActionDialog dialog = new ActionDialog();
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(ActionDialog.COMBAT_INFO_ARG_KEY, entry.getValue());
+					bundle.putSerializable(ActionDialog.CREATURE_ARG_KEY, entry.getKey());
+					dialog.setArguments(bundle);
+					dialog.setListener(StartCombatFragment.this);
+					dialog.show(getFragmentManager(), "ActionDialogFragment");
+					found = true;
+				}
+			}
+			if(!found) {
+				currentInitiative -= 1;
+				currentInstance.setCurrentInitiative(currentInitiative);
+			}
+		}
+	}
 
 	private void copyItemToViews() {
 		loadCharacters();
@@ -291,15 +342,14 @@ public class StartCombatFragment extends Fragment implements HexView.Callbacks, 
 		startCombatButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d(TAG, "onClick: ");
 				Random random = new Random();
 				for(Map.Entry<Character, CombatInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
 					short initiativeRoll = (short)(random.nextInt(10) + random.nextInt(10) + 2);
-					entry.getValue().setBaseInitiative(initiativeRoll);
+					entry.getValue().setInitiativeRoll(initiativeRoll);
 				}
 				for(Map.Entry<Creature, CombatInfo> entry : currentInstance.getCreatureCombatInfo().entrySet()) {
 					short initiativeRoll = (short)(random.nextInt(10) + random.nextInt(10) + 2);
-					entry.getValue().setBaseInitiative(initiativeRoll);
+					entry.getValue().setInitiativeRoll(initiativeRoll);
 				}
 				InitiativeDialog dialog = new InitiativeDialog();
 				Bundle bundle = new Bundle();

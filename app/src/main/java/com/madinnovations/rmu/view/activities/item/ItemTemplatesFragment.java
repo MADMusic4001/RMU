@@ -19,8 +19,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -30,7 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,6 +40,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -54,15 +52,15 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for item templates.
  */
-public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapter.GetValues<ItemTemplate> {
+public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapter.GetValues<ItemTemplate>,
+		ItemTemplatePaneFragment.DataAccessInterface, Serializable {
+	private static final long serialVersionUID = 1672923104734079235L;
 	@Inject
 	protected ItemTemplateRxHandler             itemRxHandler;
 	private   TwoFieldListAdapter<ItemTemplate> listAdapter;
 	private   ListView                          listView;
-	private   EditText                          nameEdit;
-	private   EditText                          notesEdit;
-	private   EditText                          weightEdit;
 	private   ItemTemplate                      currentInstance = new ItemTemplate();
+	private ItemTemplatePaneFragment itemTemplatePaneFragment;
 	private   boolean                           isNew = true;
 
 	@Nullable
@@ -76,9 +74,9 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_item_template_name);
 		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_item_description);
 
-		initNameEdit(layout);
-		initNotesEdit(layout);
-		initWeightEdit(layout);
+		itemTemplatePaneFragment = new ItemTemplatePaneFragment();
+		itemTemplatePaneFragment.setDataAccessInterface(this);
+		getFragmentManager().beginTransaction().add(R.id.item_template_pane_container, itemTemplatePaneFragment).commit();
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -137,21 +135,13 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 		return super.onContextItemSelected(menuItem);
 	}
 
-	private void copyItemToViews() {
-		nameEdit.setText(currentInstance.getName());
-		notesEdit.setText(currentInstance.getNotes());
-		weightEdit.setText(String.valueOf(currentInstance.getWeight()));
-
-		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
-			nameEdit.setError(null);
-		}
-		if(currentInstance.getNotes() != null && !currentInstance.getNotes().isEmpty()) {
-			notesEdit.setError(null);
-		}
-		weightEdit.setError(null);
+	@Override
+	public ItemTemplate getItemTemplate() {
+		return currentInstance;
 	}
 
-	private void saveItem() {
+	@Override
+	public void saveItem() {
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;
@@ -229,90 +219,8 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 				});
 	}
 
-	private void initNameEdit(View layout) {
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_item_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (currentInstance != null && !newName.equals(currentInstance.getName())) {
-						currentInstance.setName(newName);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initNotesEdit(View layout) {
-		notesEdit = (EditText)layout.findViewById(R.id.notes_edit);
-		notesEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && notesEdit != null) {
-					notesEdit.setError(getString(R.string.validation_item_description_required));
-				}
-			}
-		});
-		notesEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = notesEdit.getText().toString();
-					if (currentInstance != null && !newDescription.equals(currentInstance.getNotes())) {
-						currentInstance.setNotes(newDescription);
-						saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initWeightEdit(View layout) {
-		weightEdit = (EditText)layout.findViewById(R.id.weight_edit);
-		weightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && weightEdit != null) {
-					weightEdit.setError(getString(R.string.validation_weight_required));
-				}
-			}
-		});
-		weightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(weightEdit.getText().length() > 0) {
-						float newWeight = Float.valueOf(weightEdit.getText().toString());
-						if (currentInstance.getWeight() != newWeight) {
-							currentInstance.setWeight(newWeight);
-							saveItem();
-						}
-					}
-				}
-			}
-		});
+	private void copyItemToViews() {
+		itemTemplatePaneFragment.copyItemToViews();
 	}
 
 	private void initListView(View layout) {

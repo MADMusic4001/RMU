@@ -37,8 +37,12 @@ import rx.Subscriber;
 public final class SpinnerUtils<T> {
 	private static final String TAG = "SpinnerUtils";
 	private Spinner spinner;
+	private @IdRes int spinnerId;
 	private ArrayAdapter<T> adapter;
 	private Collection<T> allItems = null;
+	private T dummyInstance;
+	private ValuesCallback<T> valuesCallback;
+	private Observable<Collection<T>> loader = null;
 
 	/**
 	 * Initializes a Spinner with onItemSelected method implementation.
@@ -74,23 +78,19 @@ public final class SpinnerUtils<T> {
 	 * @param spinnerId  the resource ID of the Spinner to be initialized
 	 * @param dummyInstance  an instance ot T that can be used to represent no selection or null if not needed
 	 */
-	@SuppressWarnings("WeakerAccess")
+	@SuppressWarnings({"WeakerAccess", "unchecked"})
 	public void initSpinner(@NonNull final Spinner spinner, @NonNull final Context context, @NonNull Collection<T> values,
 							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
 							final T dummyInstance) {
-			this.spinner = spinner;
-			adapter = new ArrayAdapter<>(context, R.layout.single_field_row);
-			spinner.setAdapter(adapter);
+		this.spinner = spinner;
+		this.spinnerId = spinnerId;
+		this.dummyInstance = dummyInstance;
+		this.valuesCallback = valuesCallback;
 
-			adapter.clear();
-			if(dummyInstance != null) {
-				adapter.add(dummyInstance);
-			}
-			adapter.addAll(values);
-			adapter.notifyDataSetChanged();
+		allItems = values;
+		initAdapter(context);
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				T newItem = adapter.getItem(position);
@@ -98,7 +98,6 @@ public final class SpinnerUtils<T> {
 					valuesCallback.setValueFromSpinner(spinnerId, newItem);
 				}
 			}
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				if(valuesCallback.getValueForSpinner(spinnerId) != null) {
@@ -140,46 +139,19 @@ public final class SpinnerUtils<T> {
 	 * @param spinnerId  the resource ID of the Spinner to be initialized
 	 * @param dummyInstance  an instance ot T that can be used to represent no selection or null if not needed
 	 */
-	@SuppressWarnings("WeakerAccess")
+	@SuppressWarnings({"WeakerAccess", "unchecked"})
 	public void initSpinner(@NonNull final Spinner spinner, @NonNull final Context context,
 							@NonNull Observable<Collection<T>> loader,
 							@NonNull final SpinnerUtils.ValuesCallback valuesCallback, @IdRes final int spinnerId,
 							final T dummyInstance) {
 		this.spinner = spinner;
-		adapter = new ArrayAdapter<>(context, R.layout.single_field_row);
-		spinner.setAdapter(adapter);
-
-		if(allItems != null) {
-
-		}
-		else {
-			loader.subscribe(new Subscriber<Collection<T>>() {
-				@Override
-				public void onCompleted() {
-				}
-
-				@Override
-				public void onError(Throwable e) {
-					Log.e(TAG, "Exception caught loading spinner data.", e);
-				}
-
-				@SuppressWarnings("unchecked")
-				@Override
-				public void onNext(Collection<T> ts) {
-					allItems = ts;
-					adapter.clear();
-					if (dummyInstance != null) {
-						adapter.add(dummyInstance);
-					}
-					adapter.addAll(ts);
-					adapter.notifyDataSetChanged();
-					spinner.setSelection(adapter.getPosition((T) valuesCallback.getValueForSpinner(spinnerId)));
-				}
-			});
-		}
+		this.spinnerId = spinnerId;
+		this.dummyInstance = dummyInstance;
+		this.valuesCallback = valuesCallback;
+		this.loader = loader;
+		initAdapter(context);
 
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				T newItem = adapter.getItem(position);
@@ -187,7 +159,6 @@ public final class SpinnerUtils<T> {
 					valuesCallback.setValueFromSpinner(spinnerId, newItem);
 				}
 			}
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				if(valuesCallback.getValueForSpinner(spinnerId) != null) {
@@ -220,6 +191,48 @@ public final class SpinnerUtils<T> {
 		spinner.setSelection(adapter.getPosition(t));
 	}
 
+	public void onResume(Context context) {
+		initAdapter(context);
+	}
+
+	private void initAdapter(Context context) {
+		adapter = new ArrayAdapter<>(context, R.layout.single_field_row);
+		spinner.setAdapter(adapter);
+
+		if(allItems != null) {
+			adapter.clear();
+			if(dummyInstance != null) {
+				adapter.add(dummyInstance);
+			}
+			adapter.addAll(allItems);
+			adapter.notifyDataSetChanged();
+			spinner.setSelection(adapter.getPosition(valuesCallback.getValueForSpinner(spinnerId)));
+		}
+		else if(loader != null) {
+			loader.subscribe(new Subscriber<Collection<T>>() {
+				@Override
+				public void onCompleted() {
+					valuesCallback.observerCompleted(spinnerId);
+				}
+				@Override
+				public void onError(Throwable e) {
+					Log.e(TAG, "Exception caught loading spinner data.", e);
+				}
+				@Override
+				public void onNext(Collection<T> ts) {
+					allItems = ts;
+					adapter.clear();
+					if (dummyInstance != null) {
+						adapter.add(dummyInstance);
+					}
+					adapter.addAll(ts);
+					adapter.notifyDataSetChanged();
+					spinner.setSelection(adapter.getPosition(valuesCallback.getValueForSpinner(spinnerId)));
+				}
+			});
+		}
+	}
+
 	// Getters
 	public Spinner getSpinner() {
 		return spinner;
@@ -250,5 +263,12 @@ public final class SpinnerUtils<T> {
 		 * @param newItem  the selected item of the field
 		 */
 		void setValueFromSpinner(@IdRes int spinnerId, T newItem);
+
+		/**
+		 * Notifies the watcher that the observer used to load the spinner has completed execution.
+		 *
+		 * @param spinnerId  the id of the spinner that finished loading
+		 */
+		void observerCompleted(@IdRes int spinnerId);
 	}
 }

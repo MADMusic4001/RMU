@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.schemas;
+package com.madinnovations.rmu.data.dao.item.schemas;
+
+import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
 
 /**
  * Database schema data for the items table
@@ -22,19 +25,28 @@ public interface ItemSchema {
     String TABLE_NAME = "items";
 
     String COLUMN_ID = "id";
+	String COLUMN_CAMPAIGN_ID = "campaignId";
     String COLUMN_ITEM_TEMPLATE_ID = "itemTemplateId";
     String COLUMN_NAME = "name";
 	String COLUMN_HISTORY = "history";
+	String COLUMN_SIZE_ID = "sizeId";
+	String COLUMN_LEVEL = "level";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY, "
+			+ COLUMN_CAMPAIGN_ID + " INTEGER NOT NULL REFERENCES "
+				+ CampaignSchema.TABLE_NAME + "(" + CampaignSchema.COLUMN_ID + "), "
             + COLUMN_ITEM_TEMPLATE_ID  + " INTEGER NOT NULL REFERENCES "
-            + ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
+            	+ ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
 			+ COLUMN_NAME + " TEXT, "
-			+ COLUMN_HISTORY + " TEXT"
+			+ COLUMN_HISTORY + " TEXT, "
+			+ COLUMN_SIZE_ID + " INTEGER NOT NULL REFERENCES "
+				+ SizeSchema.TABLE_NAME + "(" + SizeSchema.COLUMN_ID + "), "
+			+ COLUMN_LEVEL + " INTEGER NOT NULL"
             + ")";
 
-    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_NAME, COLUMN_HISTORY};
+    String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CAMPAIGN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_NAME, COLUMN_HISTORY,
+			COLUMN_SIZE_ID, COLUMN_LEVEL};
 }

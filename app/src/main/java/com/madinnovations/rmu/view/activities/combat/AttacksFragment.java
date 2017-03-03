@@ -243,6 +243,9 @@ public class AttacksFragment extends Fragment implements TwoFieldListAdapter.Get
 				break;
 		}
 	}
+
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">

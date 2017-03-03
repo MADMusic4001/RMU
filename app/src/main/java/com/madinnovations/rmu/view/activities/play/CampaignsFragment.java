@@ -351,6 +351,9 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	}
 
 	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
+
+	@Override
 	public boolean isSelected(Character character) {
 		boolean result = false;
 

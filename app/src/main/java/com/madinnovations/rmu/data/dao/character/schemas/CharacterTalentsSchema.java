@@ -32,7 +32,7 @@ public interface CharacterTalentsSchema {
             + TABLE_NAME + "("
 			+ COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
-                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_TALENT_ID + " INTEGER NOT NULL REFERENCES "
 				+ TalentSchema.TABLE_NAME + "(" + TalentSchema.COLUMN_ID + "), "
             + COLUMN_TIERS  + " INTEGER NOT NULL"

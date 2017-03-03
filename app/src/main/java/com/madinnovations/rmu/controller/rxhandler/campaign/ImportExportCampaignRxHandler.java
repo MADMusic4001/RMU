@@ -24,11 +24,20 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.serializers.CharacterSerializer;
+import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.item.WeaponDao;
+import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.item.serializers.ItemSerializer;
+import com.madinnovations.rmu.data.dao.item.serializers.WeaponSerializer;
 import com.madinnovations.rmu.data.dao.play.CombatSetupDao;
 import com.madinnovations.rmu.data.dao.play.serializers.CombatSetupSerializer;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.play.CombatSetup;
 import com.madinnovations.rmu.view.RMUAppException;
 
@@ -51,22 +60,34 @@ import rx.schedulers.Schedulers;
  * Creates reactive observables for importing and exporting a campaign from the database
  */
 public class ImportExportCampaignRxHandler {
-	private static final int NUM_TYPES = 31;
+	private static final int NUM_TYPES = 5;
 	private static final String TAG = "ImportExportCampaignRxH";
 	private static final String VERSION = "version";
+	private CampaignDao                 campaignDao;
 	private CharacterDao                characterDao;
 	private CharacterSerializer         characterSerializer = new CharacterSerializer();
 	private CombatSetupDao              combatSetupDao;
 	private CombatSetupSerializer       combatSetupSerializer = new CombatSetupSerializer();
-	private RMUDatabaseHelper helper;
+	private ItemDao                     itemDao;
+	private ItemSerializer              itemSerializer = new ItemSerializer();
+	private WeaponDao                   weaponDao;
+	private WeaponSerializer            weaponSerializer = new WeaponSerializer();
+	private WeaponTemplateDao           weaponTemplateDao;
+	private RMUDatabaseHelper           helper;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	ImportExportCampaignRxHandler(CharacterDao characterDao, CombatSetupDao combatSetupDao, RMUDatabaseHelper helper) {
+	ImportExportCampaignRxHandler(CampaignDao campaignDao, CharacterDao characterDao, CombatSetupDao combatSetupDao,
+								  ItemDao itemDao, WeaponDao weaponDao, WeaponTemplateDao weaponTemplateDao,
+								  RMUDatabaseHelper helper) {
+		this.campaignDao = campaignDao;
 		this.characterDao = characterDao;
 		this.combatSetupDao = combatSetupDao;
+		this.itemDao = itemDao;
+		this.weaponDao = weaponDao;
+		this.weaponTemplateDao = weaponTemplateDao;
 		this.helper = helper;
 	}
 
@@ -91,6 +112,8 @@ public class ImportExportCampaignRxHandler {
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
 							gsonBuilder.registerTypeAdapter(CombatSetup.class, combatSetupSerializer);
+							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
+							gsonBuilder.registerTypeAdapter(Weapon.class, weaponSerializer);
 							gsonBuilder.setLenient();
 							final Gson gson = gsonBuilder.create();
 
@@ -109,10 +132,15 @@ public class ImportExportCampaignRxHandler {
 							try {
 								db = helper.getWritableDatabase();
 								db.beginTransaction();
-								helper.clearDatabase();
 								int numTypesRead = 0;
 								while (jsonReader.hasNext()) {
 									switch (jsonReader.nextName()) {
+										case Campaign.JSON_NAME:
+											Campaign campaign = gson.fromJson(jsonReader, Campaign.class);
+											helper.clearCampaignTables(campaign);
+											campaignDao.save(campaign, true);
+											Log.i(TAG, "Loaded " + campaign.getName() + " campaign.");
+											break;
 										case Character.JSON_NAME:
 											List<Character> characters = new ArrayList<>();
 											jsonReader.beginArray();
@@ -136,6 +164,32 @@ public class ImportExportCampaignRxHandler {
 											combatSetupDao.save(combatSetups, true);
 											Log.i(TAG, "Loaded " + combatSetups.size() + " combatSetups.");
 											combatSetups = null;
+											break;
+										case Item.JSON_NAME:
+											List<Item> items = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Item item = gson.fromJson(jsonReader, Item.class);
+												items.add(item);
+											}
+											jsonReader.endArray();
+											itemDao.save(items, true);
+											Log.i(TAG, "Loaded " + items.size() + " items.");
+											items = null;
+											break;
+										case Weapon.JSON_NAME:
+											List<Weapon> weapons = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Weapon weapon = gson.fromJson(jsonReader, Weapon.class);
+												weapon.setItemTemplate(weaponTemplateDao.getById(
+															weapon.getItemTemplate().getId()));
+												weapons.add(weapon);
+											}
+											jsonReader.endArray();
+											weaponDao.save(weapons, true);
+											Log.i(TAG, "Loaded " + weapons.size() + " weapons.");
+											weapons = null;
 											break;
 									}
 									if((numTypesRead*10/NUM_TYPES) % 10 < (++numTypesRead*10/NUM_TYPES) % 10) {
@@ -175,7 +229,7 @@ public class ImportExportCampaignRxHandler {
 	 * @param targetFile the file to write to
 	 * @return an {@link Observable} instance that can be subscribed to in order to write the file.
 	 */
-	public Observable<Integer> exportDatabase(@NonNull final File targetFile) {
+	public Observable<Integer> exportDatabase(@NonNull final File targetFile, @NonNull final Campaign campaign) {
 		return Observable.create(
 				new Observable.OnSubscribe<Integer>() {
 					@Override
@@ -185,16 +239,24 @@ public class ImportExportCampaignRxHandler {
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
 							gsonBuilder.registerTypeAdapter(CombatSetup.class, combatSetupSerializer);
+							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
+							gsonBuilder.registerTypeAdapter(Weapon.class, weaponSerializer);
 							final Gson gson = gsonBuilder.create();
 
 							JsonWriter jsonWriter = gson.newJsonWriter(writer);
 							jsonWriter.beginObject()
 									.name(VERSION)
 									.value(RMUDatabaseHelper.DATABASE_VERSION)
-									.name(Character.JSON_NAME)
-									.jsonValue(gson.toJson(characterDao.getAll()))
+									.name(Campaign.JSON_NAME)
+									.jsonValue(gson.toJson(campaignDao.getById(campaign.getId())))
 									.name(CombatSetup.JSON_NAME)
-									.jsonValue(gson.toJson(combatSetupDao.getAll()))
+									.jsonValue(gson.toJson(combatSetupDao.getAllForCampaign(campaign)))
+									.name(Item.JSON_NAME)
+									.jsonValue(gson.toJson(itemDao.getAllForCampaign(campaign)))
+									.name(Weapon.JSON_NAME)
+									.jsonValue(gson.toJson(weaponDao.getAllForCampaign(campaign)))
+									.name(Character.JSON_NAME)
+									.jsonValue(gson.toJson(characterDao.getAllForCampaign(campaign)))
 									.endObject()
 									.flush();
 							subscriber.onNext(100);

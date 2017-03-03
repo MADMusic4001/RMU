@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.impl;
+package com.madinnovations.rmu.data.dao.item.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.object.ItemTemplateDao;
-import com.madinnovations.rmu.data.dao.object.schemas.ItemTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.Slot;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -89,7 +94,42 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		instance.setId(id);
 	}
 
-    @Override
+	@Override
+	public Collection<ItemTemplate> getAllForSlot(@NonNull Slot slot) {
+		final String selectionArgs[] = { slot.name(), slot.name(), Slot.ANY.name() };
+		final String selection = COLUMN_PRIMARY_SLOT + " = ? OR " + COLUMN_SECONDARY_SLOT + " = ? OR "
+				+ COLUMN_PRIMARY_SLOT + " = ?";
+		Collection<ItemTemplate> itemTemplates = null;
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection,
+								  selectionArgs, getSortString());
+			if (cursor != null) {
+				itemTemplates = new ArrayList<>(cursor.getCount());
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					ItemTemplate instance = cursorToEntity(cursor);
+					itemTemplates.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return itemTemplates;
+	}
+
+	@Override
     protected ItemTemplate cursorToEntity(@NonNull Cursor cursor) {
 		ItemTemplate instance = new ItemTemplate();
 
@@ -106,6 +146,12 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_NOTES))) {
 			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTES)));
 		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PRIMARY_SLOT))) {
+			instance.setPrimarySlot(Slot.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRIMARY_SLOT))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_SECONDARY_SLOT))) {
+			instance.setSecondarySlot(Slot.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SECONDARY_SLOT))));
+		}
 
 		return instance;
     }
@@ -115,11 +161,11 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(7);
+			values = new ContentValues(10);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(5);
+			values = new ContentValues(9);
 		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_WEIGHT, instance.getWeight());
@@ -137,6 +183,18 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		}
 		else {
 			values.put(COLUMN_NOTES, instance.getNotes());
+		}
+		if(instance.getPrimarySlot() == null) {
+			values.putNull(COLUMN_PRIMARY_SLOT);
+		}
+		else {
+			values.put(COLUMN_PRIMARY_SLOT, instance.getPrimarySlot().name());
+		}
+		if(instance.getSecondarySlot() == null) {
+			values.putNull(COLUMN_SECONDARY_SLOT);
+		}
+		else {
+			values.put(COLUMN_SECONDARY_SLOT, instance.getSecondarySlot().name());
 		}
 
 		return values;

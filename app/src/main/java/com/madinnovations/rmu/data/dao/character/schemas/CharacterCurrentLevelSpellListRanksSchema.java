@@ -30,7 +30,7 @@ public interface CharacterCurrentLevelSpellListRanksSchema {
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_CHARACTER_ID + " INTEGER NOT NULL REFERENCES "
-                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_SPELL_LIST_ID + " INTEGER NOT NULL REFERENCES "
 				+ SpellListSchema.TABLE_NAME + "(" + SpellListSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_RANKS  + " INTEGER NOT NULL, "

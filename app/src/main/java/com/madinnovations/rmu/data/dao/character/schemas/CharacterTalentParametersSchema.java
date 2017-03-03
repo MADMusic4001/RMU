@@ -30,7 +30,7 @@ public interface CharacterTalentParametersSchema {
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_CHARACTER_ID  + " INTEGER NOT NULL REFERENCES "
-                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + "), "
+                + CharacterSchema.TABLE_NAME + "(" + CharacterSchema.COLUMN_ID + ") ON DELETE CASCADE, "
             + COLUMN_TALENT_INSTANCE_ID + " INTEGER NOT NULL REFERENCES "
 				+ CharacterTalentsSchema.TABLE_NAME + "(" + CharacterTalentsSchema.COLUMN_ID + "), "
 			+ COLUMN_PARAMETER_NAME + " TEXT NOT NULL, "

@@ -16,6 +16,8 @@
 package com.madinnovations.rmu.data.entities.object;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.common.Size;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -25,17 +27,37 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class Item extends DatabaseObject {
 	public static final String JSON_NAME = "Items";
+	private Campaign campaign = null;
 	private ItemTemplate itemTemplate = null;
 	private String name = null;
 	private String history = null;
+	private Size size;
+	private short level = 1;
+	private boolean twoHanded = false;
 
-    /**
+	/**
+	 * Creates a new default Item instance
+ 	 */
+	public Item() {
+	}
+
+	/**
+	 * Creates an Item instance with the given id
+	 *
+	 * @param id  the starting id for the new instance
+	 */
+	public Item(int id) {
+		super(id);
+	}
+
+	/**
      * Checks the validity of the Item instance.
      *
      * @return true if the Item instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return itemTemplate != null;
+		return (campaign != null && itemTemplate != null && size != null)
+				&& (itemTemplate.getName() != null || name != null);
     }
 
 	@Override
@@ -51,12 +73,22 @@ public class Item extends DatabaseObject {
 	public String debugToString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", getId())
+				.append("campaign", campaign)
 				.append("itemTemplate", itemTemplate)
 				.append("name", name)
+				.append("history", history)
+				.append("size", size)
+				.append("level", level)
 				.toString();
 	}
 
     // Getters and setters
+	public Campaign getCampaign() {
+		return campaign;
+	}
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
+	}
 	public ItemTemplate getItemTemplate() {
 		return itemTemplate;
 	}
@@ -74,5 +106,17 @@ public class Item extends DatabaseObject {
 	}
 	public void setHistory(String history) {
 		this.history = history;
+	}
+	public Size getSize() {
+		return size;
+	}
+	public void setSize(Size size) {
+		this.size = size;
+	}
+	public short getLevel() {
+		return level;
+	}
+	public void setLevel(short level) {
+		this.level = level;
 	}
 }

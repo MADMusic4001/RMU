@@ -21,10 +21,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- * Created 1/1/2017.
+ * Prep types for poisons and herbs
  */
 public enum Prep {
 	APPLY(R.string.enum_prep_apply),

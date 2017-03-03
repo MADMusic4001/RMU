@@ -265,6 +265,9 @@ public class DiseasesFragment extends Fragment implements ThreeFieldListAdapter.
 				break;
 		}
 	}
+
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">

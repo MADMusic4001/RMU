@@ -231,9 +231,10 @@ public class SpecializationsFragment extends Fragment implements TwoFieldListAda
 	}
 
 	@Override
-	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
+	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {}
 
-	}
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;

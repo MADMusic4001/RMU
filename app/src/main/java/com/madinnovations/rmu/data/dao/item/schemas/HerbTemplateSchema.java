@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.schemas;
+package com.madinnovations.rmu.data.dao.item.schemas;
 
 /**
  * Database schema data for the herb_templates table
@@ -26,8 +26,8 @@ public interface HerbTemplateSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-				+ COLUMN_NATURALS_TEMPLATE_ID + " INTEGER NOT NULL PRIMARY KEY REFERENCES "
-			+ NaturalsTemplateSchema.TABLE_NAME + "(" + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + ")"
+			+ COLUMN_NATURALS_TEMPLATE_ID + " INTEGER NOT NULL PRIMARY KEY REFERENCES "
+				+ NaturalsTemplateSchema.TABLE_NAME + "(" + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + ")"
 			+ ")";
 
 	String[] COLUMNS = new String[] { COLUMN_NATURALS_TEMPLATE_ID};

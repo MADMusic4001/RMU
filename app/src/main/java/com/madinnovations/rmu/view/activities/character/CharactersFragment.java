@@ -58,13 +58,14 @@ import rx.schedulers.Schedulers;
 public class CharactersFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Character>,
 		ViewPagerAdapter.Instantiator{
 	private static final String TAG = "CharactersFragment";
-	private static final int NUM_PAGES = 6;
+	private static final int NUM_PAGES = 7;
 	private static final int MAIN_PAGE_INDEX = 0;
 	private static final int SKILLS_PAGE_INDEX = 1;
 	private static final int PROFESSION_KNACKS_PAGE_INDEX = 2;
 	private static final int TALENTS_PAGE_INDEX = 3;
 	private static final int BACKGROUND_PAGE_INDEX = 4;
 	private static final int GENERATED_PAGE_INDEX = 5;
+	private static final int EQUIPMENT_PAGE_INDEX = 6;
 	@Inject
 	protected CharacterRxHandler               characterRxHandler;
 	private   ThreeFieldListAdapter<Character> listAdapter;
@@ -130,6 +131,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 		}
 		if(pagerAdapter.getFragment(GENERATED_PAGE_INDEX) != null) {
 			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(GENERATED_PAGE_INDEX)).commit();
+		}
+		if(pagerAdapter.getFragment(EQUIPMENT_PAGE_INDEX) != null) {
+			getChildFragmentManager().beginTransaction().remove(pagerAdapter.getFragment(EQUIPMENT_PAGE_INDEX)).commit();
 		}
 		super.onPause();
 	}
@@ -229,6 +233,9 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 			case GENERATED_PAGE_INDEX:
 				fragment = CharacterGeneratedValuesFragment.newInstance(this);
 				break;
+			case EQUIPMENT_PAGE_INDEX:
+				fragment = CharacterEquipmentFragment.newInstance(this);
+				break;
 		}
 
 		return fragment;
@@ -305,6 +312,11 @@ public class CharactersFragment extends Fragment implements ThreeFieldListAdapte
 				.getFragment(GENERATED_PAGE_INDEX);
 		if(generatedValuesFragment != null) {
 			generatedValuesFragment.copyItemToViews();
+		}
+
+		CharacterEquipmentFragment equipmentFragment = (CharacterEquipmentFragment)pagerAdapter.getFragment(EQUIPMENT_PAGE_INDEX);
+		if(equipmentFragment != null) {
+			equipmentFragment.copyItemToViews();
 		}
 	}
 

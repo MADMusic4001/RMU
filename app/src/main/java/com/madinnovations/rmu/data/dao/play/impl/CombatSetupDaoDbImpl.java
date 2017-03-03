@@ -36,8 +36,11 @@ import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.CombatInfo;
 import com.madinnovations.rmu.data.entities.play.CombatSetup;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -123,6 +126,39 @@ public class CombatSetupDaoDbImpl extends BaseDaoDbImpl<CombatSetup> implements 
 		return instance;
 	}
 
+	@Override
+	public Collection<CombatSetup> getAllForCampaign(Campaign campaign) {
+		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
+		final String selection = COLUMN_CAMPAIGN_ID + " = ?";
+		Collection<CombatSetup> collection = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_COMBAT_START_TIME + " DESC");
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while(!cursor.isAfterLast()) {
+					CombatSetup instance = cursorToEntity(cursor);
+					collection.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return collection;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected CombatSetup cursorToEntity(@NonNull Cursor cursor) {
@@ -190,7 +226,7 @@ public class CombatSetupDaoDbImpl extends BaseDaoDbImpl<CombatSetup> implements 
 		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID, character.getId());
 		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X, combatInfo.getHexCoordinate().x);
 		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_Y, combatInfo.getHexCoordinate().y);
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE, combatInfo.getBaseInitiative());
+		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE, combatInfo.getInitiativeRoll());
 		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING, combatInfo.getActionPointsRemaining());
 
 		return values;
@@ -218,7 +254,7 @@ public class CombatSetupDaoDbImpl extends BaseDaoDbImpl<CombatSetup> implements 
 		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID, creature.getId());
 		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X, combatInfo.getHexCoordinate().x);
 		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_Y, combatInfo.getHexCoordinate().y);
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE, combatInfo.getBaseInitiative());
+		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE, combatInfo.getInitiativeRoll());
 		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING, combatInfo.getActionPointsRemaining());
 
 		return values;
@@ -241,7 +277,7 @@ public class CombatSetupDaoDbImpl extends BaseDaoDbImpl<CombatSetup> implements 
 					CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X));
 			combatInfo.getHexCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
 					CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_Y));
-			combatInfo.setBaseInitiative(cursor.getShort(cursor.getColumnIndexOrThrow(
+			combatInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
 					CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE)));
 			combatInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
 					CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING)));
@@ -272,7 +308,7 @@ public class CombatSetupDaoDbImpl extends BaseDaoDbImpl<CombatSetup> implements 
 					CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X));
 			combatInfo.getHexCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
 					CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_Y));
-			combatInfo.setBaseInitiative(cursor.getShort(cursor.getColumnIndexOrThrow(
+			combatInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
 					CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE)));
 			combatInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
 					CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING)));

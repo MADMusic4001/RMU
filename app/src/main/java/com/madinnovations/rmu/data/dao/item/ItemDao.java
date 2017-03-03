@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object;
+package com.madinnovations.rmu.data.dao.item;
 
+import android.support.annotation.NonNull;
+
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.Slot;
 
 import java.util.Collection;
 import java.util.List;
@@ -64,6 +68,15 @@ public interface ItemDao {
      */
     public boolean save(Item instance);
 
+	/**
+	 * Saves a Item object to persistent storage.
+	 *
+	 * @param instance  the Item object to be saved
+	 * @param isNew  set to true if the instance has a valid IDs but should be inserted instead of updated.
+	 * @return true if successful, otherwise false.
+	 */
+	public boolean save(Item instance, boolean isNew);
+
     /**
      * Delete the Item object with the given id from persistent storage.
      *
@@ -78,4 +91,20 @@ public interface ItemDao {
      * @return the number of instances that were deleted.
      */
     public int deleteAll();
+
+    /**
+     * Retrieves all Item objects from persistent storage for the given campaign.
+     *
+     * @param campaign  a {@link Campaign} instance
+     * @return the collection of Item instances for the given campaign
+     */
+    public Collection<Item> getAllForCampaign(Campaign campaign);
+
+	/**
+	 * Retrieves all Item objects from persistent storage that can be equipped in the given slot.
+	 *
+	 * @param slot  an equipment slot
+	 * @return  a List containing all Item objects currently in persistent storage that can be equipped in the given slot.
+	 */
+	public Collection<Item> getAllForSlot(@NonNull Slot slot);
 }

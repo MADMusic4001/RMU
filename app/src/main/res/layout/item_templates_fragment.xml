@@ -29,28 +29,8 @@
       android:layout_gravity="center_horizontal"
       android:choiceMode="singleChoice"/>
 
-  <LinearLayout
-      android:orientation="vertical"
+  <FrameLayout
+      android:id="@+id/item_template_pane_container"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    <EditText
-        android:id="@+id/name_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLength="20"
-        android:hint="@string/hint_item_name"/>
-    <EditText
-        android:id="@+id/notes_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:hint="@string/hint_item_description"/>
-    <EditText
-        android:id="@+id/weight_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:maxLength="6"
-        android:hint="@string/hint_item_weight"/>
-  </LinearLayout>
+      android:layout_height="wrap_content"/>
 </LinearLayout>

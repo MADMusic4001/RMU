@@ -45,7 +45,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.CharacterTalentsSchema;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
-import com.madinnovations.rmu.data.dao.object.ItemDao;
+import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
@@ -256,6 +256,39 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
 		instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_FATIGUE)));
 		instance.setPowerPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_PP_LOSS)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAIN_HAND_ITEM_ID))) {
+			instance.setMainHandItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAIN_HAND_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_OFFHAND_ITEM_ID))) {
+			instance.setOffhandItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_OFFHAND_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_SHIRT_ITEM_ID))) {
+			instance.setShirtItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SHIRT_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PANTS_ITEM_ID))) {
+			instance.setPantsItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PANTS_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_HEAD_ITEM_ID))) {
+			instance.setHeadItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_HEAD_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CHEST_ITEM_ID))) {
+			instance.setChestItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHEST_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_ARMS_ITEM_ID))) {
+			instance.setArmsItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ARMS_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_LEGS_ITEM_ID))) {
+			instance.setLegsItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_LEGS_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_FEET_ITEM_ID))) {
+			instance.setFeetItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FEET_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BACK_ITEM_ID))) {
+			instance.setBackItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BACK_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_BACKPACK_ITEM_ID))) {
+			instance.setBackpackItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BACKPACK_ITEM_ID))));
+		}
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
 		instance.setSpecializationRanks(getSpecializationRanks(instance.getId()));
 		instance.setSpellListRanks(getSpellListRanks(instance.getId()));
@@ -279,11 +312,11 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(31);
+			values = new ContentValues(42);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(30);
+			values = new ContentValues(41);
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CURRENT_LEVEL, instance.getCurrentLevel());
@@ -375,6 +408,72 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_CURRENT_FATIGUE, instance.getFatigue());
 		values.put(COLUMN_CURRENT_PP_LOSS, instance.getPowerPointLoss());
 		values.put(COLUMN_STAT_INCREASES, instance.getStatIncreases());
+		if(instance.getMainHandItem() == null) {
+			values.putNull(COLUMN_MAIN_HAND_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_MAIN_HAND_ITEM_ID, instance.getMainHandItem().getId());
+		}
+		if(instance.getOffhandItem() == null) {
+			values.putNull(COLUMN_OFFHAND_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_OFFHAND_ITEM_ID, instance.getOffhandItem().getId());
+		}
+		if(instance.getShirtItem() == null) {
+			values.putNull(COLUMN_SHIRT_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_SHIRT_ITEM_ID, instance.getShirtItem().getId());
+		}
+		if(instance.getPantsItem() == null) {
+			values.putNull(COLUMN_PANTS_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_PANTS_ITEM_ID, instance.getPantsItem().getId());
+		}
+		if(instance.getHeadItem() == null) {
+			values.putNull(COLUMN_HEAD_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_HEAD_ITEM_ID, instance.getHeadItem().getId());
+		}
+		if(instance.getChestItem() == null) {
+			values.putNull(COLUMN_CHEST_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_CHEST_ITEM_ID, instance.getChestItem().getId());
+		}
+		if(instance.getArmsItem() == null) {
+			values.putNull(COLUMN_ARMS_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_ARMS_ITEM_ID, instance.getArmsItem().getId());
+		}
+		if(instance.getLegsItem() == null) {
+			values.putNull(COLUMN_LEGS_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_LEGS_ITEM_ID, instance.getLegsItem().getId());
+		}
+		if(instance.getFeetItem() == null) {
+			values.putNull(COLUMN_FEET_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_FEET_ITEM_ID, instance.getFeetItem().getId());
+		}
+		if(instance.getBackItem() == null) {
+			values.putNull(COLUMN_BACK_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_BACK_ITEM_ID, instance.getBackItem().getId());
+		}
+		if(instance.getBackpackItem() == null) {
+			values.putNull(COLUMN_BACKPACK_ITEM_ID);
+		}
+		else {
+			values.put(COLUMN_BACKPACK_ITEM_ID, instance.getBackpackItem().getId());
+		}
 
 		return values;
 	}

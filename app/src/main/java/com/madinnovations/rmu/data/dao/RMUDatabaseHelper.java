@@ -88,10 +88,11 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
-import com.madinnovations.rmu.data.dao.object.schemas.ArmorSchema;
-import com.madinnovations.rmu.data.dao.object.schemas.ItemSchema;
-import com.madinnovations.rmu.data.dao.object.schemas.ItemTemplateSchema;
-import com.madinnovations.rmu.data.dao.object.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ArmorTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCharacterCombatInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCreatureCombatInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupSchema;
@@ -102,6 +103,7 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -121,7 +123,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
      */
     @Inject
     public RMUDatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -164,8 +166,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillCategoryStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(WeaponSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(WeaponTemplateSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(ArmorSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(ArmorTemplateSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietySkillsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SkillStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureArchetypeSchema.TABLE_CREATE);
@@ -285,6 +288,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(DamageResultSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CampaignAttackRestrictionsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersPerUnitSchema.TABLE_NAME, null, null);
@@ -302,6 +306,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(VarietySkillsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(WeaponTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(WeaponSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SkillCategoryStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyCriticalCodesSchema.TABLE_NAME, null, null);
@@ -322,7 +327,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CriticalTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CultureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageTableSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(OutlookSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RaceSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SizeSchema.TABLE_NAME, null, null);
@@ -330,5 +334,26 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(SpellSubTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentCategorySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DiseaseSchema.TABLE_NAME, null, null);
+	}
+
+	public void clearCampaignTables(Campaign campaign) {
+		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
+		String selection = "EXISTS( SELECT NULL FROM " + ItemSchema.TABLE_NAME + " a WHERE a." + ItemSchema.COLUMN_ID + " = " +
+				WeaponSchema.COLUMN_ID + " AND a." + ItemSchema.COLUMN_CAMPAIGN_ID + " = ?)";
+
+		SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+		sqLiteDatabase.delete(WeaponSchema.TABLE_NAME, selection, selectionArgs);
+
+		selection = ItemSchema.COLUMN_CAMPAIGN_ID + " = ?";
+		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, selection, selectionArgs);
+
+		selection = CombatSetupSchema.COLUMN_CAMPAIGN_ID + " = ?";
+		sqLiteDatabase.delete(CombatSetupSchema.TABLE_NAME, selection, selectionArgs);
+
+		selection = CharacterSchema.COLUMN_CAMPAIGN_ID + " = ?";
+		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, selection, selectionArgs);
+
+		selection = CampaignSchema.COLUMN_ID + " = ?";
+		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, selection, selectionArgs);
 	}
 }

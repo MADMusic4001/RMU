@@ -56,7 +56,10 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 														  (EditText) rowView.findViewById(R.id.base_initiative_edit),
 														  (TextView) rowView.findViewById(R.id.quickness_bonus_view),
 														  (TextView) rowView.findViewById(R.id.other_penalties_view),
-														  (TextView) rowView.findViewById(R.id.total_initiative_view));
+														  (TextView) rowView.findViewById(R.id.total_initiative_view),
+														  (TextView) rowView.findViewById(R.id.offensive_bonus_view),
+														  (EditText) rowView.findViewById(R.id.parry_edit),
+														  (TextView) rowView.findViewById(R.id.defensive_bonus_view));
 			rowView.setTag(holder);
 		}
 		else {
@@ -79,26 +82,36 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 			}
 			holder.quicknessBonusView.setText(String.valueOf(initiativeListItem.getQuicknessBonus()));
 			holder.otherPenaltiesView.setText(String.valueOf(initiativeListItem.getOtherPenalties()));
-			holder.totalInitiativeView.setText(String.valueOf(initiativeListItem.getTotalInitiative()));
+			holder.baseInitiativeView.setText(String.valueOf(initiativeListItem.getBaseInitiative()));
+			holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getOffensiveBonus()));
+			holder.parryEdit.setText(String.valueOf(initiativeListItem.getParry()));
+			holder.defensiveBonusView.setText(String.valueOf(initiativeListItem.getDefensiveBonus()));
 		}
 		return rowView;
 	}
 
 	private class ViewHolder {
 		public InitiativeListItem initiativeListItem;
-		public TextView nameView;
-		public EditText initiativeRollEdit;
-		public TextView quicknessBonusView;
-		public TextView otherPenaltiesView;
-		public TextView totalInitiativeView;
+		public TextView           nameView;
+		public EditText           initiativeRollEdit;
+		public TextView           quicknessBonusView;
+		public TextView           otherPenaltiesView;
+		public TextView           baseInitiativeView;
+		public TextView           offensiveBonusView;
+		public EditText           parryEdit;
+		public TextView           defensiveBonusView;
 
 		public ViewHolder(TextView nameView, EditText initiativeRollEdit, TextView quicknessBonusView,
-						  TextView otherPenaltiesView, TextView totalInitiativeView) {
+						  TextView otherPenaltiesView, TextView baseInitiativeView, TextView offensiveBonusView,
+						  EditText parryEdit, TextView defensiveBonusView) {
 			this.nameView = nameView;
 			this.initiativeRollEdit = initiativeRollEdit;
 			this.quicknessBonusView = quicknessBonusView;
 			this.otherPenaltiesView = otherPenaltiesView;
-			this.totalInitiativeView = totalInitiativeView;
+			this.baseInitiativeView = baseInitiativeView;
+			this.offensiveBonusView = offensiveBonusView;
+			this.parryEdit = parryEdit;
+			this.defensiveBonusView = defensiveBonusView;
 			initInitiativeRollEdit();
 		}
 
@@ -112,10 +125,10 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 							short oldValue = initiativeListItem.getInitiativeRoll();
 
 							if (newValue != oldValue) {
-								short newTotal = (short)(initiativeListItem.getTotalInitiative() - oldValue + newValue);
+								short newTotal = (short)(initiativeListItem.getBaseInitiative() - oldValue + newValue);
 								initiativeListItem.setInitiativeRoll(newValue);
-								initiativeListItem.setTotalInitiative(newTotal);
-								totalInitiativeView.setText(String.valueOf(newTotal));
+								initiativeListItem.setBaseInitiative(newTotal);
+								baseInitiativeView.setText(String.valueOf(newTotal));
 							}
 						}
 					}

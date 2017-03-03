@@ -314,6 +314,9 @@ public class SkillCategoriesFragment extends Fragment implements TwoFieldListAda
 		}
 	}
 
+	@Override
+	public void observerCompleted(@IdRes int spinnerId) {}
+
 	@SuppressWarnings("unchecked")
 	private boolean copyViewsToItem() {
 		boolean changed = false;

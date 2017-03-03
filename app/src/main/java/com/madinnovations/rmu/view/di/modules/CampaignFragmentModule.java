@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
+import com.madinnovations.rmu.view.activities.CampaignSelectorDialogFragment;
 import com.madinnovations.rmu.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 
@@ -26,12 +27,21 @@ import dagger.Provides;
  */
 @Module
 public class CampaignFragmentModule {
+	private CampaignSelectorDialogFragment campaignSelectorDialogFragment;
 	private FileSelectorDialogFragment fsDialogFragment;
 
+	public CampaignFragmentModule(CampaignSelectorDialogFragment campaignSelectorDialogFragment) {
+		this.campaignSelectorDialogFragment = campaignSelectorDialogFragment;
+	}
 	public CampaignFragmentModule(FileSelectorDialogFragment fsDialogFragment) {
 		this.fsDialogFragment = fsDialogFragment;
 	}
 
+	@Provides
+	@PerFragment
+	CampaignSelectorDialogFragment provideCampaignSelectorDialogFragment() {
+		return this.campaignSelectorDialogFragment;
+	}
 	@Provides
 	@PerFragment
 	FileSelectorDialogFragment provideFileSelectorDialogFragment() {

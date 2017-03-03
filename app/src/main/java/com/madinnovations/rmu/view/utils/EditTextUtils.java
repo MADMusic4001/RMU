@@ -34,10 +34,11 @@ public final class EditTextUtils {
 	 *
 	 * @param layout  the layout that contains the EditText to be initialized
 	 * @param context  an android Context that can be used to obtain resources, etc.
-	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object backing the UI
+	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object
+	 *                        backing the UI
 	 * @param editTextId  the resource ID of the EditText to be initialized
-	 * @param errorStringId  the resource ID of a string that can be used to display an error when the EditText is empty. And id of 0
-	 *                     indicates that an empty EditText is not an error
+	 * @param errorStringId  the resource ID of a string that can be used to display an error when the EditText is empty. And id
+	 *                       of 0 indicates that an empty EditText is not an error
 	 * @return  the {@link EditText} instance that was initialized or null if not found.
 	 */
 	public static EditText initEdit(@NonNull View layout, @NonNull final Context context,
@@ -55,10 +56,11 @@ public final class EditTextUtils {
 	 * Initializes an EditText with afterTextChanged and onFocusChange method implementations.
 	 *
 	 * @param context  an android Context that can be used to obtain resources, etc.
-	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object backing the UI
+	 * @param valuesCallback  an implementation of the {@link ValuesCallback} interface that can be used to update the object
+	 *                        backing the UI
 	 * @param editTextId  the resource ID of the EditText to be initialized
-	 * @param errorStringId  the resource ID of a string that can be used to display an error when the EditText is empty. And id of 0
-	 *                     indicates that an empty EditText is not an error
+	 * @param errorStringId  the resource ID of a string that can be used to display an error when the EditText is empty. And id
+	 *                       of 0 indicates that an empty EditText is not an error
 	 */
 	public static void initEdit(@NonNull final EditText editText, @NonNull final Context context,
 									@NonNull final ValuesCallback valuesCallback, @IdRes final int editTextId,

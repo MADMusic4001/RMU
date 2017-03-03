@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.schemas;
-
-import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
+package com.madinnovations.rmu.data.dao.item.schemas;
 
 /**
- * Database schema data for the poison_templates table
+ * Database schema data for the weapons table
  */
-public interface PoisonTemplateSchema {
-	String TABLE_NAME = "poison_templates";
+public interface WeaponSchema {
+	String TABLE_NAME = "weapons";
 
-	String COLUMN_NATURALS_TEMPLATE_ID = "naturalsTemplateId";
+	String COLUMN_ID         = "id";
+	String COLUMN_BONUS      = "bonus";
+	String COLUMN_TWO_HANDED = "twoHanded";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_NATURALS_TEMPLATE_ID + " INTEGER NOT NULL PRIMARY KEY REFERENCES "
-				+ NaturalsTemplateSchema.TABLE_NAME + "(" + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + ")"
+			+ COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
+				+ ItemSchema.TABLE_NAME + "(" + ItemSchema.COLUMN_ID + "), "
+			+ COLUMN_BONUS + " INTEGER NOT NULL, "
+			+ COLUMN_TWO_HANDED + " INTEGER NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_NATURALS_TEMPLATE_ID};
+	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_BONUS, COLUMN_TWO_HANDED};
 }

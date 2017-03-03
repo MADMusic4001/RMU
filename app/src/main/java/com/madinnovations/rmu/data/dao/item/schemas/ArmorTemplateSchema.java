@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.schemas;
+package com.madinnovations.rmu.data.dao.item.schemas;
 
 /**
- * Database schema data for the armor table
+ * Database schema data for the armor_templates table
  */
-public interface ArmorSchema {
-	String TABLE_NAME = "armor";
+public interface ArmorTemplateSchema {
+	String TABLE_NAME = "armor_templates";
 
 	String COLUMN_ID = "id";
 	String COLUMN_SMALL_COST = "smallCost";
@@ -32,13 +32,14 @@ public interface ArmorSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
+			+ COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
+				+ ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
 			+ COLUMN_SMALL_COST + " REAL NOT NULL, "
 			+ COLUMN_MEDIUM_COST + " REAL NOT NULL, "
-			+ COLUMN_BIG_COST+ " REAL NOT NULL, "
+			+ COLUMN_BIG_COST + " REAL NOT NULL, "
 			+ COLUMN_LARGE_COST + " REAL NOT NULL, "
 			+ COLUMN_WEIGHT_PERCENT + " REAL NOT NULL, "
-			+ COLUMN_ARMOR_TYPE+ " INTEGER NOT NULL"
+			+ COLUMN_ARMOR_TYPE + " INTEGER NOT NULL"
 			+ ")";
 
 	String[] COLUMNS = new String[]{COLUMN_ID, COLUMN_SMALL_COST, COLUMN_MEDIUM_COST, COLUMN_BIG_COST, COLUMN_LARGE_COST,

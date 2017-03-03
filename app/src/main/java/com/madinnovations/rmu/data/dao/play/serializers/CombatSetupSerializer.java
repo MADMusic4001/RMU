@@ -47,7 +47,7 @@ public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements C
 			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID).value(entry.getKey().getId());
 			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
 			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getHexCoordinate().y);
-			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getBaseInitiative());
+			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
 			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
 					entry.getValue().getActionPointsRemaining());
 			out.endObject();
@@ -59,7 +59,7 @@ public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements C
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID).value(entry.getKey().getId());
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getHexCoordinate().y);
-			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getBaseInitiative());
+			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
 					entry.getValue().getActionPointsRemaining());
 			out.endObject();
@@ -113,7 +113,7 @@ public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements C
 						combatInfo.getHexCoordinate().y = in.nextInt();
 						break;
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE:
-						combatInfo.setBaseInitiative((short)in.nextInt());
+						combatInfo.setInitiativeRoll((short)in.nextInt());
 						break;
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
 						combatInfo.setActionPointsRemaining((short)in.nextInt());
@@ -145,7 +145,7 @@ public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements C
 						combatInfo.getHexCoordinate().y = in.nextInt();
 						break;
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE:
-						combatInfo.setBaseInitiative((short)in.nextInt());
+						combatInfo.setInitiativeRoll((short)in.nextInt());
 						break;
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
 						combatInfo.setActionPointsRemaining((short)in.nextInt());

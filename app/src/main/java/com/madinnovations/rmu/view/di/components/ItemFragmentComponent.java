@@ -15,7 +15,11 @@
  */
 package com.madinnovations.rmu.view.di.components;
 
+import com.madinnovations.rmu.view.activities.item.ItemPaneFragment;
+import com.madinnovations.rmu.view.activities.item.ItemTemplatePaneFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
+import com.madinnovations.rmu.view.activities.item.WeaponTemplatesFragment;
+import com.madinnovations.rmu.view.activities.item.WeaponsFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 
@@ -28,5 +32,9 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = ItemFragmentModule.class)
 public interface ItemFragmentComponent {
+	void injectInto(ItemPaneFragment itemPaneFragment);
 	void injectInto(ItemTemplatesFragment itemTemplatesFragment);
+	void injectInto(ItemTemplatePaneFragment itemTemplatePaneFragment);
+	void injectInto(WeaponsFragment weaponsFragment);
+	void injectInto(WeaponTemplatesFragment weaponTemplatesFragment);
 }

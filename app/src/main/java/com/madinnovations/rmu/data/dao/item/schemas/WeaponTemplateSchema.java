@@ -13,29 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.dao.object.schemas;
+package com.madinnovations.rmu.data.dao.item.schemas;
 
+import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
 
 /**
  * Database schema data for the weapons table
  */
 public interface WeaponTemplateSchema {
-    String TABLE_NAME = "weapons";
+    String TABLE_NAME = "weapon_templates";
 
     String COLUMN_ID = "id";
     String COLUMN_SKILL_ID = "skillId";
     String COLUMN_DAMAGE_TABLE_ID = "damageTableId";
+	String COLUMN_BRACEABLE = "braceable";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
-            + COLUMN_ID + " INTEGER PRIMARY KEY, "
-            + COLUMN_SKILL_ID + " INTEGER NOT NULL, "
-            + COLUMN_DAMAGE_TABLE_ID + " INTEGER NOT NULL, "
-            + "FOREIGN KEY (" + COLUMN_SKILL_ID + ") REFERENCES " + SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ")"
+            + COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
+                + ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
+            + COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
+				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
+            + COLUMN_DAMAGE_TABLE_ID + " INTEGER NOT NULL REFERENCES "
+				+ DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + "), "
+			+ COLUMN_BRACEABLE + " INTEGER NOT NULL"
             + ")";
 
-    String[] COLUMNS = new String[]{COLUMN_ID,
-            COLUMN_SKILL_ID, COLUMN_DAMAGE_TABLE_ID};
+    String[] COLUMNS = new String[]{COLUMN_ID, COLUMN_SKILL_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_BRACEABLE};
 }
