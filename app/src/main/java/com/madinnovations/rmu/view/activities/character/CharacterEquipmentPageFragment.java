@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.character;
 
@@ -38,9 +38,9 @@ import javax.inject.Inject;
 /**
  * Handles interactions with the UI for character creation.
  */
-public class CharacterEquipmentFragment extends Fragment implements SpinnerUtils.ValuesCallback {
+public class CharacterEquipmentPageFragment extends Fragment implements SpinnerUtils.ValuesCallback {
 	@SuppressWarnings("unused")
-	private static final String TAG = "CharacterEquipmentFrag";
+	private static final String TAG = "CharacterEquipmentPageF";
 	@Inject
 	protected SkillRxHandler     skillRxHandler;
 	@Inject
@@ -79,8 +79,8 @@ public class CharacterEquipmentFragment extends Fragment implements SpinnerUtils
 	 * @param charactersFragment  the CharactersFragment instance this fragment is attached to.
 	 * @return the new instance.
 	 */
-	public static CharacterEquipmentFragment newInstance(CharactersFragment charactersFragment) {
-		CharacterEquipmentFragment fragment = new CharacterEquipmentFragment();
+	public static CharacterEquipmentPageFragment newInstance(CharactersFragment charactersFragment) {
+		CharacterEquipmentPageFragment fragment = new CharacterEquipmentPageFragment();
 		fragment.charactersFragment = charactersFragment;
 		return fragment;
 	}
@@ -276,18 +276,159 @@ public class CharacterEquipmentFragment extends Fragment implements SpinnerUtils
 		if(charactersFragment != null) {
 			Character character = charactersFragment.getCurrentInstance();
 
-			headSlotSpinnerUtils.setSelection(character.getHeadItem());
-			mainHandSlotSpinnerUtils.setSelection(character.getMainHandItem());
-			offHandSlotSpinnerUtils.setSelection(character.getOffhandItem());
-			handsSlotSpinnerUtils.setSelection(character.getHandsItem());
-			chestSlotSpinnerUtils.setSelection(character.getChestItem());
-			armsSlotSpinnerUtils.setSelection(character.getArmsItem());
-			legsSlotSpinnerUtils.setSelection(character.getLegsItem());
-			feetSlotSpinnerUtils.setSelection(character.getFeetItem());
-			backSlotSpinnerUtils.setSelection(character.getBackItem());
-			shirtSlotSpinnerUtils.setSelection(character.getShirtItem());
-			pantsSlotSpinnerUtils.setSelection(character.getPantsItem());
-			backpackSlotSpinnerUtils.setSelection(character.getBackpackItem());
+			setSpinnerItem(headSlotSpinnerUtils, character.getHeadItem(), headSlotItem);
+			setSpinnerItem(mainHandSlotSpinnerUtils, character.getMainHandItem(), mainHandSlotItem);
+			setSpinnerItem(offHandSlotSpinnerUtils, character.getOffhandItem(), offhandSlotItem);
+			setSpinnerItem(handsSlotSpinnerUtils, character.getHandsItem(), handsSlotItem);
+			setSpinnerItem(chestSlotSpinnerUtils, character.getChestItem(), chestSlotItem);
+			setSpinnerItem(armsSlotSpinnerUtils, character.getArmsItem(), armsSlotItem);
+			setSpinnerItem(legsSlotSpinnerUtils, character.getLegsItem(), legsSlotItem);
+			setSpinnerItem(feetSlotSpinnerUtils, character.getFeetItem(), feetSlotItem);
+			setSpinnerItem(backSlotSpinnerUtils, character.getBackItem(), backSlotItem);
+			setSpinnerItem(shirtSlotSpinnerUtils, character.getShirtItem(), shirtSlotItem);
+			setSpinnerItem(pantsSlotSpinnerUtils, character.getPantsItem(), pantsSlotItem);
+			setSpinnerItem(backpackSlotSpinnerUtils, character.getBackpackItem(), backpackSlotItem);
 		}
+	}
+
+	private void setSpinnerItem(SpinnerUtils<Item> spinnerUtil, Item item, Item nullItem) {
+		if(item == null) {
+			spinnerUtil.setSelection(nullItem);
+		}
+		else {
+			spinnerUtil.setSelection(item);
+		}
+	}
+
+	public boolean copyViewsToItem() {
+		boolean result = false;
+		Item item;
+
+		if(charactersFragment != null) {
+			Character character = charactersFragment.getCurrentInstance();
+
+			item = headSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getHeadItem())) {
+				if(item.equals(headSlotItem)) {
+					character.setHeadItem(null);
+				}
+				else {
+					character.setHeadItem(item);
+				}
+				result = true;
+			}
+			item = mainHandSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getMainHandItem())) {
+				if(item.equals(mainHandSlotItem)) {
+					character.setMainHandItem(null);
+				}
+				else {
+					character.setMainHandItem(item);
+				}
+				result = true;
+			}
+			item = offHandSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getOffhandItem())) {
+				if(item.equals(offhandSlotItem)) {
+					character.setOffhandItem(null);
+				}
+				else {
+					character.setOffhandItem(item);
+				}
+				result = true;
+			}
+			item = handsSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getHandsItem())) {
+				if(item.equals(handsSlotItem)) {
+					character.setHandsItem(null);
+				}
+				else {
+					character.setHandsItem(item);
+				}
+				result = true;
+			}
+			item = chestSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getChestItem())) {
+				if(item.equals(chestSlotItem)) {
+					character.setChestItem(null);
+				}
+				else {
+					character.setChestItem(item);
+				}
+				result = true;
+			}
+			item = armsSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getArmsItem())) {
+				if(item.equals(armsSlotItem)) {
+					character.setArmsItem(null);
+				}
+				else {
+					character.setArmsItem(item);
+				}
+				result = true;
+			}
+			item = legsSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getLegsItem())) {
+				if(item.equals(legsSlotItem)) {
+					character.setLegsItem(null);
+				}
+				else {
+					character.setLegsItem(item);
+				}
+				result = true;
+			}
+			item = feetSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getFeetItem())) {
+				if(item.equals(feetSlotItem)) {
+					character.setFeetItem(null);
+				}
+				else {
+					character.setFeetItem(item);
+				}
+				result = true;
+			}
+			item = backSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getBackItem())) {
+				if(item.equals(backSlotItem)) {
+					character.setBackItem(null);
+				}
+				else {
+					character.setBackItem(item);
+				}
+				result = true;
+			}
+			item = shirtSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getShirtItem())) {
+				if(item.equals(shirtSlotItem)) {
+					character.setShirtItem(null);
+				}
+				else {
+					character.setShirtItem(item);
+				}
+				result = true;
+			}
+			item = pantsSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getPantsItem())) {
+				if(item.equals(pantsSlotItem)) {
+					character.setPantsItem(null);
+				}
+				else {
+					character.setPantsItem(item);
+				}
+				result = true;
+			}
+			item = backSlotSpinnerUtils.getSelectedItem();
+			if (!item.equals(character.getBackpackItem())) {
+				if(item.equals(backpackSlotItem)) {
+					character.setBackpackItem(null);
+				}
+				else {
+					character.setBackpackItem(item);
+				}
+				result = true;
+			}
+		}
+
+		return result;
 	}
 }

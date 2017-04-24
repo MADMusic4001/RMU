@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.common;
 
@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * Class representing a RoleMaster Skill
  */
+@SuppressWarnings("unused")
 public class Skill extends DatabaseObject implements Comparable {
 	public static final String JSON_NAME = "Skills";
 	private String          name                   = null;
@@ -125,6 +126,38 @@ public class Skill extends DatabaseObject implements Comparable {
 				.append("stats", stats)
 				.append("specializations", specializations)
 				.toString();
+	}
+
+	/**
+	 * Calculates the skill rank bonus
+	 *
+	 * @param ranks  the number of ranks in the skill
+	 * @return  the skill rank bonus.
+	 */
+	public short getRankBonus(short ranks) {
+		short result = 0;
+
+		if(ranks > 30) {
+			result = (short)(ranks - 30);
+			ranks = 30;
+		}
+		if(ranks > 20) {
+			result += (short)((ranks - 20) * 2);
+			ranks = 20;
+		}
+		if(ranks > 10) {
+			result += (short)((ranks - 10) * 3);
+			ranks = 10;
+		}
+		if(ranks > 0) {
+			result += (short)(ranks * 5);
+		}
+
+		if(result == 0) {
+			result = -25;
+		}
+
+		return result;
 	}
 
 	// Getters and setters

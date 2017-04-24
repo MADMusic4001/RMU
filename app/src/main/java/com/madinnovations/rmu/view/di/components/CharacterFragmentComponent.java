@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
-import com.madinnovations.rmu.view.activities.character.CharacterEquipmentFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterEquipmentPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterProfessionalKnacksPageFragment;
@@ -42,7 +42,7 @@ import dagger.Subcomponent;
 @Subcomponent(modules = CharacterFragmentModule.class)
 public interface CharacterFragmentComponent {
 	void injectInto(CharacterBackgroundPageFragment characterBackgroundPageFragment);
-	void injectInto(CharacterEquipmentFragment characterEquipmentFragment);
+	void injectInto(CharacterEquipmentPageFragment characterEquipmentPageFragment);
 	void injectInto(CharacterGeneratedValuesFragment characterGeneratedValuesFragment);
 	void injectInto(CharacterMainPageFragment characterMainPageFragment);
 	void injectInto(CharactersFragment charactersFragment);

@@ -263,6 +263,10 @@
   <string name="label_talent_parameters">Talent Parameters</string>
   <string name="label_talent_tiers">Talent Tiers</string>
   <string name="label_temporary">Temporary</string>
+  <string name="label_weapon_name">Weapon Name</string>
+  <string name="label_weapon_description">Weapon Description</string>
+  <string name="label_weapon_template_name">Weapon Template Name</string>
+  <string name="label_weapon_template_description">Weapon Template Description</string>
 
   <!-- Filter default labels -->
   <string name="label_all_skill_categories">All Skill Categories</string>

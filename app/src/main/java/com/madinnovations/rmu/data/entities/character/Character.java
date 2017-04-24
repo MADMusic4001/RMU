@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.character;
 
@@ -25,6 +25,8 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
@@ -41,6 +43,7 @@ import java.util.Random;
 /**
  * Character attributes
  */
+@SuppressWarnings("unused")
 public class Character extends DatabaseObject implements Serializable {
 	private static final long serialVersionUID = 5800697497948561223L;
 	public static final String         JSON_NAME                       = "Characters";
@@ -445,6 +448,23 @@ public class Character extends DatabaseObject implements Serializable {
 		}
 		getStatTemps().put(statistic, rolls[0]);
 		getStatPotentials().put(statistic, rolls[1]);
+	}
+
+	/**
+	 * Gets the offensive bonus for the currently equipped weapon
+	 *
+	 * @return the character's offensive bonus.
+	 */
+	public short getOffensiveBonus() {
+		short result = -25;
+
+		if(mainHandItem != null && mainHandItem instanceof Weapon) {
+			WeaponTemplate weaponTemplate = (WeaponTemplate)mainHandItem.getItemTemplate();
+			Skill skill = weaponTemplate.getCombatSkill();
+			result = skill.getRankBonus(getSkillRanks().get(skill));
+		}
+
+		return result;
 	}
 
 	// Getters and setters

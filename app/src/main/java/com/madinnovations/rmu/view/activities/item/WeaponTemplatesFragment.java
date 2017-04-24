@@ -89,8 +89,8 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 
 		View layout = inflater.inflate(R.layout.weapon_templates_fragment, container, false);
 
-		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_item_template_name);
-		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_item_description);
+		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_weapon_template_name);
+		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_weapon_template_description);
 
 		itemTemplatePaneFragment = new ItemTemplatePaneFragment();
 		itemTemplatePaneFragment.setDataAccessInterface(this);

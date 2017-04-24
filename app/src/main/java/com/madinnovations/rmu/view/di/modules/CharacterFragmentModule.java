@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.activities.character.CharacterBackgroundPageFragment;
-import com.madinnovations.rmu.view.activities.character.CharacterEquipmentFragment;
+import com.madinnovations.rmu.view.activities.character.CharacterEquipmentPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterGeneratedValuesFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterMainPageFragment;
 import com.madinnovations.rmu.view.activities.character.CharacterProfessionalKnacksPageFragment;
@@ -39,26 +39,26 @@ import dagger.Provides;
  */
 @Module
 public class CharacterFragmentModule {
-	private CharacterBackgroundPageFragment  characterBackgroundPageFragment;
-	private CharacterEquipmentFragment       characterEquipmentFragment;
-	private CharacterGeneratedValuesFragment characterGeneratedValuesFragment;
-	private CharacterMainPageFragment        characterMainPageFragment;
-	private CharactersFragment               charactersFragment;
-	private CharacterSkillsPageFragment      characterSkillsPageFragment;
+	private CharacterBackgroundPageFragment         characterBackgroundPageFragment;
+	private CharacterEquipmentPageFragment          characterEquipmentPageFragment;
+	private CharacterGeneratedValuesFragment        characterGeneratedValuesFragment;
+	private CharacterMainPageFragment               characterMainPageFragment;
+	private CharactersFragment                      charactersFragment;
+	private CharacterSkillsPageFragment             characterSkillsPageFragment;
 	private CharacterProfessionalKnacksPageFragment characterProfessionalKnacksPageFragment;
-	private CharacterTalentsPageFragment     characterTalentsPageFragment;
-	private CulturesFragment                 culturesFragment;
-	private ProfessionsFragment              professionsFragment;
-	private RacesFragment                    racesFragment;
-	private RacesMainPageFragment            racesMainPageFragment;
-	private RacesTalentsPageFragment         racesTalentsPageFragment;
-	private RacesCulturesPageFragment        racesCulturesPageFragment;
+	private CharacterTalentsPageFragment            characterTalentsPageFragment;
+	private CulturesFragment                        culturesFragment;
+	private ProfessionsFragment                     professionsFragment;
+	private RacesFragment                           racesFragment;
+	private RacesMainPageFragment                   racesMainPageFragment;
+	private RacesTalentsPageFragment                racesTalentsPageFragment;
+	private RacesCulturesPageFragment               racesCulturesPageFragment;
 
 	public CharacterFragmentModule(CharacterBackgroundPageFragment characterBackgroundPageFragment) {
 		this.characterBackgroundPageFragment = characterBackgroundPageFragment;
 	}
-	public CharacterFragmentModule(CharacterEquipmentFragment characterEquipmentFragment) {
-		this.characterEquipmentFragment = characterEquipmentFragment;
+	public CharacterFragmentModule(CharacterEquipmentPageFragment characterEquipmentPageFragment) {
+		this.characterEquipmentPageFragment = characterEquipmentPageFragment;
 	}
 	public CharacterFragmentModule(CharacterGeneratedValuesFragment characterGeneratedValuesFragment) {
 		this.characterGeneratedValuesFragment = characterGeneratedValuesFragment;
@@ -104,8 +104,8 @@ public class CharacterFragmentModule {
 	}
 	@Provides
 	@PerFragment
-	CharacterEquipmentFragment provideCharacterEquipmentFragment() {
-		return this.characterEquipmentFragment;
+	CharacterEquipmentPageFragment provideCharacterEquipmentFragment() {
+		return this.characterEquipmentPageFragment;
 	}
 	@Provides
 	@PerFragment
