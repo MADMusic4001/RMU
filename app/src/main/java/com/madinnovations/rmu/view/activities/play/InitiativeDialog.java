@@ -26,10 +26,9 @@ import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
-import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatInfo;
-import com.madinnovations.rmu.data.entities.play.CombatSetup;
+import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.data.entities.play.InitiativeListItem;
 import com.madinnovations.rmu.view.adapters.play.InitiativeListAdapter;
 
@@ -43,21 +42,22 @@ import java.util.Map;
  */
 public class InitiativeDialog extends DialogFragment {
 	public static final String COMBAT_SETUP_ARG_KEY = "combatSetup";
-	private CombatSetup combatSetup;
+	private EncounterSetup encounterSetup;
 	private InitiativeDialogListener listener = null;
-	private List<InitiativeListItem> listItems = new ArrayList<>();
 	private InitiativeListAdapter initiativeListAdapter;
+	private List<InitiativeListItem> listItems = new ArrayList<>();
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		combatSetup = (CombatSetup) getArguments().getSerializable(COMBAT_SETUP_ARG_KEY);
+		encounterSetup = (EncounterSetup) getArguments().getSerializable(COMBAT_SETUP_ARG_KEY);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		initiativeListAdapter = new InitiativeListAdapter(getActivity());
-		initList();
 		View contentView = inflater.inflate(R.layout.initiative_dialog, null);
 		ListView combatantsListView = (ListView)contentView.findViewById(R.id.combatants_list_view);
+		initiativeListAdapter = new InitiativeListAdapter(getActivity());
+		initInitiativeList();
 		combatantsListView.setAdapter(initiativeListAdapter);
+
 		builder.setTitle(R.string.title_initiative)
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
@@ -75,34 +75,32 @@ public class InitiativeDialog extends DialogFragment {
 		return builder.create();
 	}
 
-	private void initList() {
-		for(Map.Entry<Character, CombatInfo> entry : combatSetup.getCharacterCombatInfo().entrySet()) {
+	private void initInitiativeList() {
+		for(Map.Entry<Character, CombatRoundInfo> entry : encounterSetup.getCharacterCombatInfo().entrySet()) {
 			InitiativeListItem listItem = new InitiativeListItem();
 			short total;
 			listItem.setCharacter(entry.getKey());
-			listItem.setName(entry.getKey().getFullName());
-			listItem.setInitiativeRoll(entry.getValue().getInitiativeRoll());
-			total = listItem.getInitiativeRoll();
-			listItem.setQuicknessBonus(Statistic.getBonus(entry.getKey().getStatTemps().get(Statistic.QUICKNESS)));
-			total += listItem.getQuicknessBonus();
-			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
-			total += listItem.getOtherPenalties();
-			listItem.setBaseInitiative(total);
-			listItem.setOffensiveBonus(entry.getKey().getOffensiveBonus());
+			listItem.setCombatRoundInfo(entry.getValue());
+			total = listItem.getCombatRoundInfo().getInitiativeRoll();
+//			listItem.setQuicknessBonus(Statistic.getBonus(entry.getKey().getStatTemps().get(Statistic.QUICKNESS)));
+//			total += listItem.getQuicknessBonus();
+//			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
+//			total += listItem.getOtherPenalties();
+//			listItem.getCombatRoundInfo().setBaseInitiative(total);
+//			listItem.getCombatRoundInfo().setOffensiveBonus(entry.getKey().getOffensiveBonus());
 			listItems.add(listItem);
 		}
-		for(Map.Entry<Creature, CombatInfo> entry : combatSetup.getCreatureCombatInfo().entrySet()) {
+		for(Map.Entry<Creature, CombatRoundInfo> entry : encounterSetup.getCreatureCombatInfo().entrySet()) {
 			InitiativeListItem listItem = new InitiativeListItem();
 			short total;
 			listItem.setCreature(entry.getKey());
-			listItem.setName(entry.getKey().getCreatureVariety().getName());
-			listItem.setInitiativeRoll(entry.getValue().getInitiativeRoll());
-			total = listItem.getInitiativeRoll();
-			listItem.setQuicknessBonus(entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS));
-			total += listItem.getQuicknessBonus();
-			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
-			total += listItem.getOtherPenalties();
-			listItem.setBaseInitiative(total);
+			listItem.setCombatRoundInfo(entry.getValue());
+			total = listItem.getCombatRoundInfo().getInitiativeRoll();
+//			listItem.setQuicknessBonus(entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS));
+//			total += listItem.getQuicknessBonus();
+//			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
+//			total += listItem.getOtherPenalties();
+//			listItem.setBaseInitiative(total);
 			listItems.add(listItem);
 		}
 		Collections.sort(listItems);
@@ -115,9 +113,6 @@ public class InitiativeDialog extends DialogFragment {
 	}
 	public void setListener(InitiativeDialogListener listener) {
 		this.listener = listener;
-	}
-	public List<InitiativeListItem> getListItems() {
-		return listItems;
 	}
 
 	public interface InitiativeDialogListener {

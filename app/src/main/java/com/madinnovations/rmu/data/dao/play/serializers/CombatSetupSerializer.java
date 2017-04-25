@@ -25,24 +25,24 @@ import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCreatureCombatInf
 import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupSchema;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatInfo;
-import com.madinnovations.rmu.data.entities.play.CombatSetup;
+import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Map;
 
 /**
- * Json serializer and deserializer for the {@link CombatSetup} entities
+ * Json serializer and deserializer for the {@link EncounterSetup} entities
  */
-public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements CombatSetupSchema {
+public class CombatSetupSerializer extends TypeAdapter<EncounterSetup> implements CombatSetupSchema {
 	@Override
-	public void write(JsonWriter out, CombatSetup value) throws IOException {
+	public void write(JsonWriter out, EncounterSetup value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_COMBAT_START_TIME).value(value.getCombatStartTime().getTimeInMillis());
 		out.name(CombatSetupCharacterCombatInfoSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Character, CombatInfo> entry : value.getCharacterCombatInfo().entrySet()) {
+		for(Map.Entry<Character, CombatRoundInfo> entry : value.getCharacterCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID).value(entry.getKey().getId());
 			out.name(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
@@ -54,7 +54,7 @@ public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements C
 		}
 		out.endArray();
 		out.name(CombatSetupCreatureCombatInfoSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Creature, CombatInfo> entry : value.getCreatureCombatInfo().entrySet()) {
+		for(Map.Entry<Creature, CombatRoundInfo> entry : value.getCreatureCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID).value(entry.getKey().getId());
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
@@ -69,90 +69,90 @@ public class CombatSetupSerializer extends TypeAdapter<CombatSetup> implements C
 	}
 
 	@Override
-	public CombatSetup read(JsonReader in) throws IOException {
-		CombatSetup combatSetup = new CombatSetup();
+	public EncounterSetup read(JsonReader in) throws IOException {
+		EncounterSetup encounterSetup = new EncounterSetup();
 		in.beginObject();
 		while (in.hasNext()) {
 			switch (in.nextName()) {
 				case COLUMN_ID:
-					combatSetup.setId(in.nextInt());
+					encounterSetup.setId(in.nextInt());
 					break;
 				case COLUMN_COMBAT_START_TIME:
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(in.nextLong());
-					combatSetup.setCombatStartTime(calendar);
+					encounterSetup.setCombatStartTime(calendar);
 					break;
 				case CombatSetupCharacterCombatInfoSchema.TABLE_NAME:
-					readCharacterLocations(in, combatSetup);
+					readCharacterLocations(in, encounterSetup);
 					break;
 				case CombatSetupCreatureCombatInfoSchema.TABLE_NAME:
-					readCreatureLocations(in, combatSetup);
+					readCreatureLocations(in, encounterSetup);
 					break;
 			}
 		}
 		in.endObject();
-		return combatSetup;
+		return encounterSetup;
 	}
 
-	private void readCharacterLocations(JsonReader in, CombatSetup combatSetup) throws IOException {
+	private void readCharacterLocations(JsonReader in, EncounterSetup encounterSetup) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
 			in.beginObject();
 			Character character = new Character();
-			CombatInfo combatInfo = new CombatInfo();
-			combatInfo.setHexCoordinate(new Point());
+			CombatRoundInfo combatRoundInfo = new CombatRoundInfo();
+			combatRoundInfo.setHexCoordinate(new Point());
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID:
 						character.setId(in.nextInt());
 						break;
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X:
-						combatInfo.getHexCoordinate().x = in.nextInt();
+						combatRoundInfo.getHexCoordinate().x = in.nextInt();
 						break;
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_Y:
-						combatInfo.getHexCoordinate().y = in.nextInt();
+						combatRoundInfo.getHexCoordinate().y = in.nextInt();
 						break;
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE:
-						combatInfo.setInitiativeRoll((short)in.nextInt());
+						combatRoundInfo.setInitiativeRoll((short)in.nextInt());
 						break;
 					case CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
-						combatInfo.setActionPointsRemaining((short)in.nextInt());
+						combatRoundInfo.setActionPointsRemaining((short)in.nextInt());
 						break;
 				}
 			}
-			combatSetup.getCharacterCombatInfo().put(character, combatInfo);
+			encounterSetup.getCharacterCombatInfo().put(character, combatRoundInfo);
 			in.endObject();
 		}
 		in.endArray();
 	}
 
-	private void readCreatureLocations(JsonReader in, CombatSetup combatSetup) throws IOException {
+	private void readCreatureLocations(JsonReader in, EncounterSetup encounterSetup) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
 			in.beginObject();
 			Creature creature = new Creature();
-			CombatInfo combatInfo = new CombatInfo();
-			combatInfo.setHexCoordinate(new Point());
+			CombatRoundInfo combatRoundInfo = new CombatRoundInfo();
+			combatRoundInfo.setHexCoordinate(new Point());
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID:
 						creature.setId(in.nextInt());
 						break;
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X:
-						combatInfo.getHexCoordinate().x = in.nextInt();
+						combatRoundInfo.getHexCoordinate().x = in.nextInt();
 						break;
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_Y:
-						combatInfo.getHexCoordinate().y = in.nextInt();
+						combatRoundInfo.getHexCoordinate().y = in.nextInt();
 						break;
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE:
-						combatInfo.setInitiativeRoll((short)in.nextInt());
+						combatRoundInfo.setInitiativeRoll((short)in.nextInt());
 						break;
 					case CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
-						combatInfo.setActionPointsRemaining((short)in.nextInt());
+						combatRoundInfo.setActionPointsRemaining((short)in.nextInt());
 						break;
 				}
 			}
-			combatSetup.getCreatureCombatInfo().put(creature, combatInfo);
+			encounterSetup.getCreatureCombatInfo().put(creature, combatRoundInfo);
 			in.endObject();
 		}
 		in.endArray();

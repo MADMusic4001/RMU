@@ -28,14 +28,14 @@ import java.util.Map;
 /**
  * Maintains combat data (character, npc positions, etc)
  */
-public class CombatSetup extends DatabaseObject implements Serializable {
-	private static final long serialVersionUID = 5794443312681755710L;
-	public static final String         JSON_NAME           = "CombatSetups";
-	private Campaign                   campaign            = null;
-	private short                      currentInitiative   = 0;
-	private Calendar                   combatStartTime     = Calendar.getInstance();
-	private Map<Character, CombatInfo> characterCombatInfo = new HashMap<>();
-	private Map<Creature, CombatInfo>  creatureCombatInfo  = new HashMap<>();
+public class EncounterSetup extends DatabaseObject implements Serializable {
+	private static final long               serialVersionUID    = 5794443312681755710L;
+	public static final String              JSON_NAME           = "CombatSetups";
+	private Campaign                        campaign            = null;
+	private short                           currentInitiative   = 0;
+	private Calendar                        combatStartTime     = Calendar.getInstance();
+	private Map<Character, CombatRoundInfo> characterCombatInfo = new HashMap<>();
+	private Map<Creature, CombatRoundInfo>  creatureCombatInfo  = new HashMap<>();
 
 	/**
 	 * Checks the validity of the CombatSetup instance.
@@ -65,16 +65,16 @@ public class CombatSetup extends DatabaseObject implements Serializable {
 	public void setCombatStartTime(Calendar combatStartTime) {
 		this.combatStartTime = combatStartTime;
 	}
-	public Map<Character, CombatInfo> getCharacterCombatInfo() {
+	public Map<Character, CombatRoundInfo> getCharacterCombatInfo() {
 		return characterCombatInfo;
 	}
-	public void setCharacterCombatInfo(Map<Character, CombatInfo> characterCombatInfo) {
+	public void setCharacterCombatInfo(Map<Character, CombatRoundInfo> characterCombatInfo) {
 		this.characterCombatInfo = characterCombatInfo;
 	}
-	public Map<Creature, CombatInfo> getCreatureCombatInfo() {
+	public Map<Creature, CombatRoundInfo> getCreatureCombatInfo() {
 		return creatureCombatInfo;
 	}
-	public void setCreatureCombatInfo(Map<Creature, CombatInfo> creatureCombatInfo) {
+	public void setCreatureCombatInfo(Map<Creature, CombatRoundInfo> creatureCombatInfo) {
 		this.creatureCombatInfo = creatureCombatInfo;
 	}
 }

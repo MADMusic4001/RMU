@@ -17,7 +17,7 @@ package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.activities.play.ActionDialog;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
-import com.madinnovations.rmu.view.activities.play.StartCombatFragment;
+import com.madinnovations.rmu.view.activities.play.StartEncounterFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
@@ -32,5 +32,5 @@ import dagger.Subcomponent;
 public interface PlayFragmentComponent {
 	void injectInto(ActionDialog actionDialog);
 	void injectInto(CampaignsFragment campaignsFragment);
-	void injectInto(StartCombatFragment startCombatFragment);
+	void injectInto(StartEncounterFragment startEncounterFragment);
 }

@@ -18,12 +18,9 @@ package com.madinnovations.rmu.view.di.modules;
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
-import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
-import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
-import com.madinnovations.rmu.data.dao.creature.impl.CreatureArchetypeDaoDbImpl;
-import com.madinnovations.rmu.data.dao.play.CombatSetupDao;
-import com.madinnovations.rmu.data.dao.play.impl.CombatSetupDaoDbImpl;
+import com.madinnovations.rmu.data.dao.play.EncounterSetupDao;
+import com.madinnovations.rmu.data.dao.play.impl.EncounterSetupDaoDbImpl;
 
 import javax.inject.Singleton;
 
@@ -37,8 +34,8 @@ import dagger.Provides;
 public class PlayDaoSqlModule {
 	@Provides
 	@Singleton
-	CombatSetupDao provideCombatSetupDao(RMUDatabaseHelper helper, CharacterDao characterDao, CreatureDao creatureDao,
-										 CampaignDao campaignDao) {
-		return new CombatSetupDaoDbImpl(helper, characterDao, creatureDao, campaignDao);
+	EncounterSetupDao provideCombatSetupDao(RMUDatabaseHelper helper, CharacterDao characterDao, CreatureDao creatureDao,
+											CampaignDao campaignDao) {
+		return new EncounterSetupDaoDbImpl(helper, characterDao, creatureDao, campaignDao);
 	}
 }

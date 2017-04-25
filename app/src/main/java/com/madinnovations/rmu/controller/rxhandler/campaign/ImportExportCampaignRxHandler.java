@@ -32,13 +32,13 @@ import com.madinnovations.rmu.data.dao.item.WeaponDao;
 import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.serializers.ItemSerializer;
 import com.madinnovations.rmu.data.dao.item.serializers.WeaponSerializer;
-import com.madinnovations.rmu.data.dao.play.CombatSetupDao;
+import com.madinnovations.rmu.data.dao.play.EncounterSetupDao;
 import com.madinnovations.rmu.data.dao.play.serializers.CombatSetupSerializer;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.play.CombatSetup;
+import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.RMUAppException;
 
 import java.io.BufferedReader;
@@ -66,7 +66,7 @@ public class ImportExportCampaignRxHandler {
 	private CampaignDao                 campaignDao;
 	private CharacterDao                characterDao;
 	private CharacterSerializer         characterSerializer = new CharacterSerializer();
-	private CombatSetupDao              combatSetupDao;
+	private EncounterSetupDao encounterSetupDao;
 	private CombatSetupSerializer       combatSetupSerializer = new CombatSetupSerializer();
 	private ItemDao                     itemDao;
 	private ItemSerializer              itemSerializer = new ItemSerializer();
@@ -79,12 +79,12 @@ public class ImportExportCampaignRxHandler {
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	ImportExportCampaignRxHandler(CampaignDao campaignDao, CharacterDao characterDao, CombatSetupDao combatSetupDao,
+	ImportExportCampaignRxHandler(CampaignDao campaignDao, CharacterDao characterDao, EncounterSetupDao encounterSetupDao,
 								  ItemDao itemDao, WeaponDao weaponDao, WeaponTemplateDao weaponTemplateDao,
 								  RMUDatabaseHelper helper) {
 		this.campaignDao = campaignDao;
 		this.characterDao = characterDao;
-		this.combatSetupDao = combatSetupDao;
+		this.encounterSetupDao = encounterSetupDao;
 		this.itemDao = itemDao;
 		this.weaponDao = weaponDao;
 		this.weaponTemplateDao = weaponTemplateDao;
@@ -111,7 +111,7 @@ public class ImportExportCampaignRxHandler {
 							BufferedReader reader = new BufferedReader(new FileReader(fileName));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
-							gsonBuilder.registerTypeAdapter(CombatSetup.class, combatSetupSerializer);
+							gsonBuilder.registerTypeAdapter(EncounterSetup.class, combatSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
 							gsonBuilder.registerTypeAdapter(Weapon.class, weaponSerializer);
 							gsonBuilder.setLenient();
@@ -153,17 +153,17 @@ public class ImportExportCampaignRxHandler {
 											Log.i(TAG, "Loaded " + characters.size() + " characters.");
 											characters = null;
 											break;
-										case CombatSetup.JSON_NAME:
-											List<CombatSetup> combatSetups = new ArrayList<>();
+										case EncounterSetup.JSON_NAME:
+											List<EncounterSetup> encounterSetups = new ArrayList<>();
 											jsonReader.beginArray();
 											while (jsonReader.hasNext()) {
-												CombatSetup combatSetup = gson.fromJson(jsonReader, CombatSetup.class);
-												combatSetups.add(combatSetup);
+												EncounterSetup encounterSetup = gson.fromJson(jsonReader, EncounterSetup.class);
+												encounterSetups.add(encounterSetup);
 											}
 											jsonReader.endArray();
-											combatSetupDao.save(combatSetups, true);
-											Log.i(TAG, "Loaded " + combatSetups.size() + " combatSetups.");
-											combatSetups = null;
+											encounterSetupDao.save(encounterSetups, true);
+											Log.i(TAG, "Loaded " + encounterSetups.size() + " combatSetups.");
+											encounterSetups = null;
 											break;
 										case Item.JSON_NAME:
 											List<Item> items = new ArrayList<>();
@@ -238,7 +238,7 @@ public class ImportExportCampaignRxHandler {
 							BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
-							gsonBuilder.registerTypeAdapter(CombatSetup.class, combatSetupSerializer);
+							gsonBuilder.registerTypeAdapter(EncounterSetup.class, combatSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
 							gsonBuilder.registerTypeAdapter(Weapon.class, weaponSerializer);
 							final Gson gson = gsonBuilder.create();
@@ -249,8 +249,8 @@ public class ImportExportCampaignRxHandler {
 									.value(RMUDatabaseHelper.DATABASE_VERSION)
 									.name(Campaign.JSON_NAME)
 									.jsonValue(gson.toJson(campaignDao.getById(campaign.getId())))
-									.name(CombatSetup.JSON_NAME)
-									.jsonValue(gson.toJson(combatSetupDao.getAllForCampaign(campaign)))
+									.name(EncounterSetup.JSON_NAME)
+									.jsonValue(gson.toJson(encounterSetupDao.getAllForCampaign(campaign)))
 									.name(Item.JSON_NAME)
 									.jsonValue(gson.toJson(itemDao.getAllForCampaign(campaign)))
 									.name(Weapon.JSON_NAME)

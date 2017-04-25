@@ -16,29 +16,29 @@
 package com.madinnovations.rmu.data.dao.play;
 
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.play.CombatSetup;
+import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Methods to manage {@link CombatSetup} objects in persistent storage.
+ * Methods to manage {@link EncounterSetup} objects in persistent storage.
  */
-public interface CombatSetupDao {
+public interface EncounterSetupDao {
 	/**
 	 * Retrieves a CombatSetup object from persistent storage.
 	 *
 	 * @param id  the id of the CombatSetup object to retrieve
 	 * @return the CombatSetup instance with the given id or null if not found.
 	 */
-	public CombatSetup getById(int id);
+	public EncounterSetup getById(int id);
 
 	/**
 	 * Retrieves all CombatSetup objects from persistent storage.
 	 *
 	 * @return  a List containing all CombatSetup objects currently in persistent storage.
 	 */
-	public List<CombatSetup> getAll();
+	public List<EncounterSetup> getAll();
 
 	/**
 	 * Saves a collection of CombatSetup instances to persistent storage.
@@ -47,7 +47,7 @@ public interface CombatSetupDao {
 	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(Collection<CombatSetup> instance, boolean isNew);
+	public boolean save(Collection<EncounterSetup> instance, boolean isNew);
 
 	/**
 	 * Saves a collection of CombatSetup instances to persistent storage.
@@ -55,7 +55,7 @@ public interface CombatSetupDao {
 	 * @param instance  the collection of CombatSetup instances to be saved
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(Collection<CombatSetup> instance);
+	public boolean save(Collection<EncounterSetup> instance);
 
 	/**
 	 * Saves a CombatSetup object to persistent storage.
@@ -63,7 +63,7 @@ public interface CombatSetupDao {
 	 * @param instance  the CombatSetup object to be saved
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(CombatSetup instance);
+	public boolean save(EncounterSetup instance);
 
 	/**
 	 * Delete the CombatSetup object with the given id from persistent storage.
@@ -86,7 +86,7 @@ public interface CombatSetupDao {
 	 * @param campaign  a {@link Campaign} instance
 	 * @return the CombatSetup instance with the most recent timestamp.
 	 */
-	public CombatSetup getMostRecentForCampaign(Campaign campaign);
+	public EncounterSetup getMostRecentForCampaign(Campaign campaign);
 
 	/**
 	 * Retrieves all CombatSetup objects from persistent storage for the given campaign.
@@ -94,5 +94,5 @@ public interface CombatSetupDao {
 	 * @param campaign  a {@link Campaign} instance
 	 * @return the collection of CombatSetup instances for the given campaign
 	 */
-	public Collection<CombatSetup> getAllForCampaign(Campaign campaign);
+	public Collection<EncounterSetup> getAllForCampaign(Campaign campaign);
 }

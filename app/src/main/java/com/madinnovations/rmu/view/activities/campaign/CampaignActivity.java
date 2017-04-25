@@ -60,7 +60,7 @@ import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.activities.item.WeaponTemplatesFragment;
 import com.madinnovations.rmu.view.activities.item.WeaponsFragment;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
-import com.madinnovations.rmu.view.activities.play.StartCombatFragment;
+import com.madinnovations.rmu.view.activities.play.StartEncounterFragment;
 import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
@@ -111,20 +111,20 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	private OutlooksFragment           outlooksFragment;
 	private ProfessionsFragment        professionsFragment;
 	private RacesFragment              racesFragment;
-	private RealmsFragment             realmsFragment;
-	private SizesFragment              sizesFragment;
-	private SkillCategoriesFragment    skillCategoriesFragment;
-	private SkillsFragment             skillsFragment;
-	private SpecializationsFragment    specializationsFragment;
-	private SpellListsFragment         spellListsFragment;
-	private SpellsFragment             spellsFragment;
-	private SpellSubTypesFragment      spellSubTypesFragment;
-	private SpellTypesFragment         spellTypesFragment;
-	private StartCombatFragment        startCombatFragment;
-	private TalentCategoriesFragment   talentCategoriesFragment;
-	private TalentsFragment            talentsFragment;
-	private WeaponsFragment            weaponsFragment;
-	private WeaponTemplatesFragment    weaponTemplatesFragment;
+	private RealmsFragment           realmsFragment;
+	private SizesFragment            sizesFragment;
+	private SkillCategoriesFragment  skillCategoriesFragment;
+	private SkillsFragment           skillsFragment;
+	private SpecializationsFragment  specializationsFragment;
+	private SpellListsFragment       spellListsFragment;
+	private SpellsFragment           spellsFragment;
+	private SpellSubTypesFragment    spellSubTypesFragment;
+	private SpellTypesFragment       spellTypesFragment;
+	private StartEncounterFragment   startEncounterFragment;
+	private TalentCategoriesFragment talentCategoriesFragment;
+	private TalentsFragment          talentsFragment;
+	private WeaponsFragment          weaponsFragment;
+	private WeaponTemplatesFragment  weaponTemplatesFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -545,10 +545,10 @@ public class CampaignActivity extends Activity implements FileSelectorDialogFrag
 	}
 
 	public void showStartCombat() {
-		if(startCombatFragment == null) {
-			startCombatFragment = new StartCombatFragment();
+		if(startEncounterFragment == null) {
+			startEncounterFragment = new StartEncounterFragment();
 		}
-		replaceDetailFragment(startCombatFragment);
+		replaceDetailFragment(startEncounterFragment);
 	}
 
 	public void showTalentCategories() {

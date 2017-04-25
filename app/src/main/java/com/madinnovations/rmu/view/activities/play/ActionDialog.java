@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2017 MadInnovations
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2017 MadInnovations
+  <p>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.play;
 
@@ -35,7 +35,7 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatInfo;
+import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
@@ -59,8 +59,8 @@ public class ActionDialog extends DialogFragment {
 	@Inject
 	protected CharacterRxHandler characterRxHandler;
 	@Inject
-	protected CreatureRxHandler creatureRxHandler;
-	private CombatInfo combatInfo;
+	protected CreatureRxHandler  creatureRxHandler;
+	private   CombatRoundInfo    combatRoundInfo;
 	private Character character = null;
 	private Creature creature = null;
 	private ActionDialogListener listener = null;
@@ -75,7 +75,7 @@ public class ActionDialog extends DialogFragment {
 
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
-		combatInfo = (CombatInfo) getArguments().getSerializable(COMBAT_INFO_ARG_KEY);
+		combatRoundInfo = (CombatRoundInfo) getArguments().getSerializable(COMBAT_INFO_ARG_KEY);
 		character = (Character)getArguments().getSerializable(CHARACTER_ARG_KEY);
 		creature = (Creature)getArguments().getSerializable(CREATURE_ARG_KEY);
 
@@ -179,15 +179,15 @@ public class ActionDialog extends DialogFragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Action action = actionArrayAdapter.getItem(position);
-				combatInfo.setActionInProgress(action);
+				combatRoundInfo.setActionInProgress(action);
 				if (action != null) {
 					short actionPoints = action.getMaxActionPoints();
-					while(combatInfo.getActionPointsRemaining() < actionPoints && actionPoints > action.getMinActionPoints()) {
+					while(combatRoundInfo.getActionPointsRemaining() < actionPoints && actionPoints > action.getMinActionPoints()) {
 						actionPoints--;
 					}
 
-					combatInfo.setActionPointsRemaining(
-							(short)(combatInfo.getActionPointsRemaining() - action.getMaxActionPoints()));
+					combatRoundInfo.setActionPointsRemaining(
+							(short)(combatRoundInfo.getActionPointsRemaining() - action.getMaxActionPoints()));
 					initActionPointsSpinner(action, actionPointsArrayAdapter);
 				}
 			}
@@ -229,8 +229,8 @@ public class ActionDialog extends DialogFragment {
 	public Creature getCreature() {
 		return creature;
 	}
-	public CombatInfo getCombatInfo() {
-		return combatInfo;
+	public CombatRoundInfo getCombatRoundInfo() {
+		return combatRoundInfo;
 	}
 
 	public interface ActionDialogListener {
