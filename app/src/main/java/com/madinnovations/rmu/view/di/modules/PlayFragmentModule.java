@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.view.di.modules;
 
-import com.madinnovations.rmu.view.activities.play.ActionDialog;
+import com.madinnovations.rmu.view.activities.play.SelectActionDialog;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
 import com.madinnovations.rmu.view.activities.play.StartEncounterFragment;
 import com.madinnovations.rmu.view.di.PerFragment;
@@ -28,12 +28,12 @@ import dagger.Provides;
  */
 @Module
 public class PlayFragmentModule {
-	private ActionDialog           actionDialog;
+	private SelectActionDialog     selectActionDialog;
 	private CampaignsFragment      campaignsFragment;
 	private StartEncounterFragment startEncounterFragment;
 
-	public PlayFragmentModule(ActionDialog actionDialog) {
-		this.actionDialog = actionDialog;
+	public PlayFragmentModule(SelectActionDialog selectActionDialog) {
+		this.selectActionDialog = selectActionDialog;
 	}
 	public PlayFragmentModule(CampaignsFragment campaignsFragment) {
 		this.campaignsFragment = campaignsFragment;
@@ -44,8 +44,8 @@ public class PlayFragmentModule {
 
 	@Provides
 	@PerFragment
-	ActionDialog provideActionDialog() {
-		return this.actionDialog;
+	SelectActionDialog provideActionDialog() {
+		return this.selectActionDialog;
 	}
 	@Provides
 	@PerFragment

@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.creature.impl;
 
@@ -21,6 +21,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
@@ -74,6 +76,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	private SpellListDao spellListDao;
 	private TalentDao talentDao;
 	private AttackDao attackDao;
+	private AttackRxHandler attackRxHandler;
+	private SizeRxHandler sizeRxHandler;
 
 	/**
 	 * Creates a new instance of CreatureVarietyDaoDbImpl
@@ -88,13 +92,16 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	 * @param spellListDao  a {@link SpellListDao} instance
 	 * @param talentDao  a {@link TalentDao} instance
 	 * @param attackDao  an {@link AttackDao} instance
+	 * @param attackRxHandler  an {@link AttackRxHandler} instance
+	 * @param sizeRxHandler  a {@link SizeRxHandler} instance
 	 */
 	@Inject
 	public CreatureVarietyDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull CreatureTypeDao creatureTypeDao,
 									@NonNull SizeDao sizeDao, @NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao,
 									@NonNull SkillDao skillDao, @NonNull SpecializationDao specializationDao,
 									@NonNull SpellListDao spellListDao, @NonNull TalentDao talentDao,
-									@NonNull AttackDao attackDao) {
+									@NonNull AttackDao attackDao, @NonNull AttackRxHandler attackRxHandler,
+									@NonNull SizeRxHandler sizeRxHandler) {
 		super(helper);
 		this.creatureTypeDao = creatureTypeDao;
 		this.sizeDao = sizeDao;
@@ -105,6 +112,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		this.spellListDao = spellListDao;
 		this.talentDao = talentDao;
 		this.attackDao = attackDao;
+		this.attackRxHandler = attackRxHandler;
+		this.sizeRxHandler = sizeRxHandler;
 	}
 
 	@Override
@@ -135,6 +144,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	@Override
 	protected CreatureVariety cursorToEntity(@NonNull Cursor cursor) {
 		CreatureVariety instance = new CreatureVariety();
+		instance.setAttackRxHandler(attackRxHandler);
+		instance.setSizeRxHandler(sizeRxHandler);
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
@@ -176,6 +187,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		}
 		instance.setAttackBonusesMap(getAttackBonuses(instance.getId()));
 		instance.setSkillBonusesList(getSkillBonuses(instance.getId()));
+		instance.parseAttackSequence();
 
 		return instance;
 	}

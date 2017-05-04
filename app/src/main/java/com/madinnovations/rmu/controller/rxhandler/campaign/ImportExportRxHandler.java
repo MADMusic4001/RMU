@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.campaign;
 
@@ -23,6 +23,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.character.CultureDao;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
@@ -195,7 +197,8 @@ public class ImportExportRxHandler {
 						  RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
 						  SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
 						  SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao, TalentDao talentDao,
-						  TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao, RMUDatabaseHelper helper) {
+						  TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao, RMUDatabaseHelper helper,
+						  AttackRxHandler attackRxHandler, SizeRxHandler sizeRxHandler) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
 		this.creatureArchetypeDao = creatureArchetypeDao;
@@ -226,6 +229,8 @@ public class ImportExportRxHandler {
 		this.talentCategoryDao = talentCategoryDao;
 		this.weaponTemplateDao = weaponTemplateDao;
 		this.helper = helper;
+		this.creatureVarietySerializer.setAttackRxHandler(attackRxHandler);
+		this.creatureVarietySerializer.setSizeRxHandler(sizeRxHandler);
 	}
 
 	/**

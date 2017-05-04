@@ -496,8 +496,6 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	// <editor-fold desc="Save/delete entity methods">
 	private void deleteItem(final Campaign item) {
 		campaignRxHandler.deleteById(item.getId())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
 				.subscribe(new Subscriber<Boolean>() {
 					@Override
 					public void onCompleted() {}

@@ -267,7 +267,7 @@ public class HexView extends View {
 				}
 				hexStrings.add(initials);
 			}
-			for(Map.Entry<Creature, CombatRoundInfo> entry : callbacks.getCombatSetup().getCreatureCombatInfo().entrySet()) {
+			for(Map.Entry<Creature, CombatRoundInfo> entry : callbacks.getCombatSetup().getEnemyCombatInfo().entrySet()) {
 				String abbreviation = entry.getKey().getCreatureVariety().getName().substring(0, 3);
 				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
 				if(hexStrings == null) {

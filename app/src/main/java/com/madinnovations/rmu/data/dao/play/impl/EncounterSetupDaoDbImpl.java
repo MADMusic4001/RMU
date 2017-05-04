@@ -168,9 +168,9 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		instance.setCurrentInitiative(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_INITIATIVE)));
 		Calendar startTime = Calendar.getInstance();
 		startTime.setTimeInMillis(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_COMBAT_START_TIME)));
-		instance.setCombatStartTime(startTime);
+		instance.setEncounterStartTime(startTime);
 		instance.setCharacterCombatInfo(getCharacterLocations(instance.getId()));
-		instance.setCreatureCombatInfo(getCreatureLocations(instance.getId()));
+		instance.setEnemyCombatInfo(getCreatureLocations(instance.getId()));
 
 		return instance;
 	}
@@ -188,7 +188,7 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CURRENT_INITIATIVE, instance.getCurrentInitiative());
-		values.put(COLUMN_COMBAT_START_TIME, instance.getCombatStartTime().getTimeInMillis());
+		values.put(COLUMN_COMBAT_START_TIME, instance.getEncounterStartTime().getTimeInMillis());
 
 		return values;
 	}
@@ -199,7 +199,7 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 
 		result = saveCharacterLocations(db, instance.getId(), instance.getCharacterCombatInfo());
 
-		result &= saveCreatureLocations(db, instance.getId(), instance.getCreatureCombatInfo());
+		result &= saveCreatureLocations(db, instance.getId(), instance.getEnemyCombatInfo());
 		return result;
 	}
 

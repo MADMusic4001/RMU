@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.campaign;
 
@@ -153,6 +153,7 @@ public class ImportExportCampaignRxHandler {
 											Log.i(TAG, "Loaded " + characters.size() + " characters.");
 											characters = null;
 											break;
+										case "CombatSetups":
 										case EncounterSetup.JSON_NAME:
 											List<EncounterSetup> encounterSetups = new ArrayList<>();
 											jsonReader.beginArray();
@@ -162,7 +163,7 @@ public class ImportExportCampaignRxHandler {
 											}
 											jsonReader.endArray();
 											encounterSetupDao.save(encounterSetups, true);
-											Log.i(TAG, "Loaded " + encounterSetups.size() + " combatSetups.");
+											Log.i(TAG, "Loaded " + encounterSetups.size() + " encounterSetups.");
 											encounterSetups = null;
 											break;
 										case Item.JSON_NAME:

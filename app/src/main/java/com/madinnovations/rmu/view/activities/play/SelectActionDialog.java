@@ -51,8 +51,8 @@ import rx.Subscriber;
 /**
  * Fragment to handle interaction with the Initiative dialog.
  */
-public class ActionDialog extends DialogFragment {
-	private static final String TAG = "ActionDialog";
+public class SelectActionDialog extends DialogFragment {
+	private static final String TAG = "SelectActionDialog";
 	public static final String COMBAT_INFO_ARG_KEY = "combatInfo";
 	public static final String CHARACTER_ARG_KEY = "character";
 	public static final String CREATURE_ARG_KEY = "creature";
@@ -61,9 +61,9 @@ public class ActionDialog extends DialogFragment {
 	@Inject
 	protected CreatureRxHandler  creatureRxHandler;
 	private   CombatRoundInfo    combatRoundInfo;
-	private Character character = null;
-	private Creature creature = null;
-	private ActionDialogListener listener = null;
+	private Character                  character = null;
+	private Creature                   creature  = null;
+	private SelectActionDialogListener listener  = null;
 	private ArrayAdapter<Action> actionArrayAdapter;
 	private List<String> listItems = new ArrayList<>();
 	private ArrayAdapter<String> opponentsListAdapter;
@@ -80,7 +80,7 @@ public class ActionDialog extends DialogFragment {
 		creature = (Creature)getArguments().getSerializable(CREATURE_ARG_KEY);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		View contentView = inflater.inflate(R.layout.action_dialog, null);
+		View contentView = inflater.inflate(R.layout.select_action_dialog, null);
 
 		TextView nameView = (TextView)contentView.findViewById(R.id.name_view);
 		if(character != null) {
@@ -101,13 +101,13 @@ public class ActionDialog extends DialogFragment {
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						listener.onActionOk(ActionDialog.this);
+						listener.onActionOk(SelectActionDialog.this);
 					}
 				})
 				.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						listener.onActionCancel(ActionDialog.this);
+						listener.onActionCancel(SelectActionDialog.this);
 					}
 				})
 				.setView(contentView);
@@ -217,10 +217,10 @@ public class ActionDialog extends DialogFragment {
 	}
 
 	// Getters and setters
-	public ActionDialogListener getListener() {
+	public SelectActionDialogListener getListener() {
 		return listener;
 	}
-	public void setListener(ActionDialogListener listener) {
+	public void setListener(SelectActionDialogListener listener) {
 		this.listener = listener;
 	}
 	public Character getCharacter() {
@@ -233,7 +233,7 @@ public class ActionDialog extends DialogFragment {
 		return combatRoundInfo;
 	}
 
-	public interface ActionDialogListener {
+	public interface SelectActionDialogListener {
 		/**
 		 * Callback method called when the user clicks the OK button
 		 *

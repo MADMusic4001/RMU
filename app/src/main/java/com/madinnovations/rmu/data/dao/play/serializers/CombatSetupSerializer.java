@@ -40,7 +40,7 @@ public class CombatSetupSerializer extends TypeAdapter<EncounterSetup> implement
 	public void write(JsonWriter out, EncounterSetup value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
-		out.name(COLUMN_COMBAT_START_TIME).value(value.getCombatStartTime().getTimeInMillis());
+		out.name(COLUMN_COMBAT_START_TIME).value(value.getEncounterStartTime().getTimeInMillis());
 		out.name(CombatSetupCharacterCombatInfoSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Character, CombatRoundInfo> entry : value.getCharacterCombatInfo().entrySet()) {
 			out.beginObject();
@@ -54,7 +54,7 @@ public class CombatSetupSerializer extends TypeAdapter<EncounterSetup> implement
 		}
 		out.endArray();
 		out.name(CombatSetupCreatureCombatInfoSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Creature, CombatRoundInfo> entry : value.getCreatureCombatInfo().entrySet()) {
+		for(Map.Entry<Creature, CombatRoundInfo> entry : value.getEnemyCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID).value(entry.getKey().getId());
 			out.name(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
@@ -80,7 +80,7 @@ public class CombatSetupSerializer extends TypeAdapter<EncounterSetup> implement
 				case COLUMN_COMBAT_START_TIME:
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(in.nextLong());
-					encounterSetup.setCombatStartTime(calendar);
+					encounterSetup.setEncounterStartTime(calendar);
 					break;
 				case CombatSetupCharacterCombatInfoSchema.TABLE_NAME:
 					readCharacterLocations(in, encounterSetup);
@@ -152,7 +152,7 @@ public class CombatSetupSerializer extends TypeAdapter<EncounterSetup> implement
 						break;
 				}
 			}
-			encounterSetup.getCreatureCombatInfo().put(creature, combatRoundInfo);
+			encounterSetup.getEnemyCombatInfo().put(creature, combatRoundInfo);
 			in.endObject();
 		}
 		in.endArray();

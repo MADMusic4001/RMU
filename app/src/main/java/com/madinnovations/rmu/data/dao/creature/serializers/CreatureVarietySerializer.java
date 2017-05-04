@@ -1,23 +1,25 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.creature.serializers;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyAttacksSchema;
@@ -45,12 +47,17 @@ import com.madinnovations.rmu.data.entities.spells.SpellList;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 /**
  * Json serializer and deserializer for the {@link CreatureVariety} entities
  */
+@Singleton
 public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> implements CreatureVarietySchema {
 	@SuppressWarnings("unused")
 	private static final String TAG = "CreatureVarietySerializ";
+	private AttackRxHandler attackRxHandler;
+	private SizeRxHandler sizeRxHandler;
 
 	@Override
 	public void write(JsonWriter out, CreatureVariety value) throws IOException {
@@ -178,6 +185,8 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	@Override
 	public CreatureVariety read(JsonReader in) throws IOException {
 		CreatureVariety creatureVariety = new CreatureVariety();
+		creatureVariety.setAttackRxHandler(attackRxHandler);
+		creatureVariety.setSizeRxHandler(sizeRxHandler);
 
 		in.beginObject();
 		while (in.hasNext()) {
@@ -424,5 +433,13 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			}
 		}
 		in.endArray();
+	}
+
+	// Getters and setters
+	public void setAttackRxHandler(AttackRxHandler attackRxHandler) {
+		this.attackRxHandler = attackRxHandler;
+	}
+	public void setSizeRxHandler(SizeRxHandler sizeRxHandler) {
+		this.sizeRxHandler = sizeRxHandler;
 	}
 }

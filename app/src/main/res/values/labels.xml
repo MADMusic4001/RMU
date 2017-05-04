@@ -408,6 +408,7 @@
   <string name="input_label_armor_type">AT:</string>
   <string name="input_label_attack_code">Attack Code:</string>
   <string name="input_label_attack_name">Attack Name:</string>
+  <string name="input_label_attack_roll">Attack Roll:</string>
   <string name="input_label_attack_sequence">Attack Sequence:</string>
   <string name="input_label_attack_specialization">Attack Specialization:</string>
   <string name="input_label_avg_height">Avg. Height:</string>
@@ -431,7 +432,10 @@
   <string name="input_label_constitution_bonus">Constitution Bonus:</string>
   <string name="input_label_cost_per_tier">Cost per tier:</string>
   <string name="input_label_creature_variety">Creature Variety:</string>
+  <string name="input_label_critical">Critical:</string>
   <string name="input_label_critical_codes">Critical Codes:</string>
+  <string name="input_label_critical_result">Critical Result:</string>
+  <string name="input_label_critical_roll">Critical Roll:</string>
   <string name="input_label_critical_size_modifier">Critical Size Modifier:</string>
   <string name="input_label_critical_type">Critical Type:</string>
   <string name="input_label_critical_severity_filter">Critical Severity Filter:</string>

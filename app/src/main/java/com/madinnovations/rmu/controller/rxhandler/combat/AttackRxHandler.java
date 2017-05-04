@@ -69,6 +69,30 @@ public class AttackRxHandler {
 	}
 
 	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a Attack instance with the given code.
+	 *
+	 * @param code  the code of the Attack to retrieve from persistent storage
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Attack instance.
+	 */
+	public Observable<Attack> getByCode(final String code) {
+		return Observable.create(
+				new Observable.OnSubscribe<Attack>() {
+					@Override
+					public void call(Subscriber<? super Attack> subscriber) {
+						try {
+							subscriber.onNext(dao.getByCode(code));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
 	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Attack instances.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Attack

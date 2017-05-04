@@ -68,6 +68,30 @@ public class SizeRxHandler {
 	}
 
 	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a Size instance with the given code.
+	 *
+	 * @param code  the code of the Size to retrieve from persistent storage
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Size instance.
+	 */
+	public Observable<Size> getByCode(final String code) {
+		return Observable.create(
+				new Observable.OnSubscribe<Size>() {
+					@Override
+					public void call(Subscriber<? super Size> subscriber) {
+						try {
+							subscriber.onNext(dao.getByCode(code));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
 	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Size instances.
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Size

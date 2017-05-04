@@ -34,4 +34,8 @@ dependencies {
 	compile 'io.reactivex:rxjava:1.1.7'
 	compile 'org.apache.commons:commons-lang3:3.4'
 	testCompile 'org.testng:testng:6.9.13.6'
+	testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+	testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.1'
+	testCompile 'org.powermock:powermock-module-junit4-rule:1.6.1'
+	testCompile 'org.powermock:powermock-module-junit4:1.6.1'
 }

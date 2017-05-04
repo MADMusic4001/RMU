@@ -18,6 +18,7 @@ package com.madinnovations.rmu.data.entities.creature;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.view.RMUApp;
 
@@ -43,6 +44,8 @@ public class Creature extends DatabaseObject implements Serializable {
 	private             short             fatigue         = 0;
 	private             short             powerPointLoss  = 0;
 	private             List<State>       currentStates   = new ArrayList<>();
+	private             CreatureAttack    lastAttack      = null;
+	private             short             numCreatures    = 1;
 
 	/**
 	 * Checks the validity of the Creature instance.
@@ -171,5 +174,17 @@ public class Creature extends DatabaseObject implements Serializable {
 	}
 	public void setCurrentStates(List<State> currentStates) {
 		this.currentStates = currentStates;
+	}
+	public CreatureAttack getLastAttack() {
+		return lastAttack;
+	}
+	public void setLastAttack(CreatureAttack lastAttack) {
+		this.lastAttack = lastAttack;
+	}
+	public short getNumCreatures() {
+		return numCreatures;
+	}
+	public void setNumCreatures(short numCreatures) {
+		this.numCreatures = numCreatures;
 	}
 }

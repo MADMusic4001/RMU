@@ -20,12 +20,14 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
@@ -40,7 +42,9 @@ import java.util.Map;
 /**
  * Fragment to handle interaction with the Initiative dialog.
  */
+@SuppressWarnings("unused")
 public class InitiativeDialog extends DialogFragment {
+	private static final String TAG = "InitiativeDialog";
 	public static final String COMBAT_SETUP_ARG_KEY = "combatSetup";
 	private EncounterSetup encounterSetup;
 	private InitiativeDialogListener listener = null;
@@ -57,7 +61,6 @@ public class InitiativeDialog extends DialogFragment {
 		initiativeListAdapter = new InitiativeListAdapter(getActivity());
 		initInitiativeList();
 		combatantsListView.setAdapter(initiativeListAdapter);
-
 		builder.setTitle(R.string.title_initiative)
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
@@ -82,25 +85,23 @@ public class InitiativeDialog extends DialogFragment {
 			listItem.setCharacter(entry.getKey());
 			listItem.setCombatRoundInfo(entry.getValue());
 			total = listItem.getCombatRoundInfo().getInitiativeRoll();
-//			listItem.setQuicknessBonus(Statistic.getBonus(entry.getKey().getStatTemps().get(Statistic.QUICKNESS)));
-//			total += listItem.getQuicknessBonus();
-//			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
-//			total += listItem.getOtherPenalties();
-//			listItem.getCombatRoundInfo().setBaseInitiative(total);
-//			listItem.getCombatRoundInfo().setOffensiveBonus(entry.getKey().getOffensiveBonus());
+			total += entry.getKey().getTotalStatBonus(Statistic.QUICKNESS);
+			total += entry.getKey().getInitiativePenalty();
+			entry.getValue().setBaseInitiative(total);
 			listItems.add(listItem);
 		}
-		for(Map.Entry<Creature, CombatRoundInfo> entry : encounterSetup.getCreatureCombatInfo().entrySet()) {
+		for(Map.Entry<Creature, CombatRoundInfo> entry : encounterSetup.getEnemyCombatInfo().entrySet()) {
 			InitiativeListItem listItem = new InitiativeListItem();
 			short total;
 			listItem.setCreature(entry.getKey());
 			listItem.setCombatRoundInfo(entry.getValue());
 			total = listItem.getCombatRoundInfo().getInitiativeRoll();
-//			listItem.setQuicknessBonus(entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS));
-//			total += listItem.getQuicknessBonus();
-//			listItem.setOtherPenalties(entry.getKey().getInitiativePenalty());
-//			total += listItem.getOtherPenalties();
-//			listItem.setBaseInitiative(total);
+			Short quickness = entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS);
+			if(quickness != null) {
+				total += quickness;
+			}
+			total += entry.getKey().getInitiativePenalty();
+			entry.getValue().setBaseInitiative(total);
 			listItems.add(listItem);
 		}
 		Collections.sort(listItems);

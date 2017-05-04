@@ -67,7 +67,7 @@ import rx.Subscriber;
  * Handles interactions with the UI for encounters.
  */
 public class StartEncounterFragment extends Fragment implements HexView.Callbacks, InitiativeDialog.InitiativeDialogListener,
-		ActionDialog.ActionDialogListener {
+		SelectActionDialog.SelectActionDialogListener {
 //	private static final short MAX_INITIATIVE = (short)55;
 	private static final String TAG = "StartEncounterFragment";
 	private static final String DRAG_CHARACTER = "drag-character";
@@ -138,18 +138,18 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 					if(entry.getValue().getHexCoordinate().equals(info.hexCoordinates)) {
 						currentInstance.getCharacterCombatInfo().remove(entry.getKey());
 						startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty()
-															 && !currentInstance.getCreatureCombatInfo().isEmpty());
+															 && !currentInstance.getEnemyCombatInfo().isEmpty());
 						hexView.invalidate();
 						break;
 					}
 				}
 				return true;
 			case R.id.context_remove_opponent:
-				for(Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getCreatureCombatInfo().entrySet()) {
+				for(Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
 					if(entry.getValue().getHexCoordinate().equals(info.hexCoordinates)) {
-						currentInstance.getCreatureCombatInfo().remove(entry.getKey());
+						currentInstance.getEnemyCombatInfo().remove(entry.getKey());
 						startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty()
-															 && !currentInstance.getCreatureCombatInfo().isEmpty());
+															 && !currentInstance.getEnemyCombatInfo().isEmpty());
 						hexView.invalidate();
 						break;
 					}
@@ -202,7 +202,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 				character = entry.getKey();
 			}
 		}
-		for(Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getCreatureCombatInfo().entrySet()) {
+		for(Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
 			nextInitiative = (short)(entry.getValue().getBaseInitiative() + (entry.getValue().getActionPointsRemaining() * 5));
 			if(nextInitiative > currentInitiative) {
 				currentInitiative = nextInitiative;
@@ -212,18 +212,18 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 			}
 		}
 		if(combatRoundInfo != null) {
-			ActionDialog actionDialog = new ActionDialog();
+			SelectActionDialog selectActionDialog = new SelectActionDialog();
 			Bundle bundle = new Bundle();
-			bundle.putSerializable(ActionDialog.COMBAT_INFO_ARG_KEY, combatRoundInfo);
+			bundle.putSerializable(SelectActionDialog.COMBAT_INFO_ARG_KEY, combatRoundInfo);
 			if(character != null) {
-				bundle.putSerializable(ActionDialog.CHARACTER_ARG_KEY, character);
+				bundle.putSerializable(SelectActionDialog.CHARACTER_ARG_KEY, character);
 			}
 			if(creature != null) {
-				bundle.putSerializable(ActionDialog.CREATURE_ARG_KEY, creature);
+				bundle.putSerializable(SelectActionDialog.CREATURE_ARG_KEY, creature);
 			}
-			actionDialog.setArguments(bundle);
-			actionDialog.setListener(StartEncounterFragment.this);
-			actionDialog.show(getFragmentManager(), "ActionDialogFragment");
+			selectActionDialog.setArguments(bundle);
+			selectActionDialog.setListener(StartEncounterFragment.this);
+			selectActionDialog.show(getFragmentManager(), "ActionDialogFragment");
 			return true;
 		}
 		else {
@@ -236,7 +236,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 		loadCreatures();
 		startEncounterButton.setEnabled(currentInstance.getCurrentInitiative() == 0
 											 && !currentInstance.getCharacterCombatInfo().isEmpty()
-											 && !currentInstance.getCreatureCombatInfo().isEmpty());
+											 && !currentInstance.getEnemyCombatInfo().isEmpty());
 		hexView.invalidate();
 	}
 
@@ -319,7 +319,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 
 		startEncounterButton.setEnabled(currentInstance.getCurrentInitiative() == 0
 											 && !currentInstance.getCharacterCombatInfo().isEmpty()
-											 && !currentInstance.getCreatureCombatInfo().isEmpty());
+											 && !currentInstance.getEnemyCombatInfo().isEmpty());
 
 		startEncounterButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -332,14 +332,13 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 
 	private void showInitiativeDialog() {
 		Random random = new Random();
-		encounterInProgress = !currentInstance.getCharacterCombatInfo().isEmpty() &&
-				!currentInstance.getCreatureCombatInfo().isEmpty();
+		encounterInProgress = !currentInstance.getEnemyCombatInfo().isEmpty();
 		if(encounterInProgress) {
 			for (Map.Entry<Character, CombatRoundInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
 				short initiativeRoll = (short) (random.nextInt(10) + random.nextInt(10) + 2);
 				entry.getValue().setInitiativeRoll(initiativeRoll);
 			}
-			for (Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getCreatureCombatInfo().entrySet()) {
+			for (Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
 				short initiativeRoll = (short) (random.nextInt(10) + random.nextInt(10) + 2);
 				entry.getValue().setInitiativeRoll(initiativeRoll);
 			}
@@ -478,7 +477,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 										}
 										combatRoundInfo.setHexCoordinate(hexCoordinates);
 										currentInstance.getCharacterCombatInfo().put(aCharacter, combatRoundInfo);
-										startEncounterButton.setEnabled(!currentInstance.getCreatureCombatInfo().isEmpty());
+										startEncounterButton.setEnabled(!currentInstance.getEnemyCombatInfo().isEmpty());
 										break;
 									}
 								}
@@ -487,12 +486,12 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 								int opponentId = Integer.valueOf(item.getText().toString());
 								for (Creature anOpponent : creatures) {
 									if (anOpponent.getId() == opponentId) {
-										CombatRoundInfo combatRoundInfo = currentInstance.getCreatureCombatInfo().get(anOpponent);
+										CombatRoundInfo combatRoundInfo = currentInstance.getEnemyCombatInfo().get(anOpponent);
 										if(combatRoundInfo == null) {
 											combatRoundInfo = new CombatRoundInfo();
 										}
 										combatRoundInfo.setHexCoordinate(hexCoordinates);
-										currentInstance.getCreatureCombatInfo().put(anOpponent, combatRoundInfo);
+										currentInstance.getEnemyCombatInfo().put(anOpponent, combatRoundInfo);
 										startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty());
 										break;
 									}

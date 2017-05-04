@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.adapters.play;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,13 +26,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.Statistic;
+import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.InitiativeListItem;
 
 /**
  * Populates a ListView with {@link InitiativeListItem} information
  */
 public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
+	private static final String TAG = "InitiativeListAdapter";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.list_initiative_row;
 	private LayoutInflater layoutInflater;
 
@@ -71,23 +75,38 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 		InitiativeListItem initiativeListItem = getItem(position);
 		holder.initiativeListItem = initiativeListItem;
 		if(initiativeListItem != null) {
+			Short shortValue;
 			if(initiativeListItem.getCharacter() != null) {
 				holder.nameView.setText(initiativeListItem.getCharacter().getKnownAs());
 				holder.initiativeRollEdit.setEnabled(true);
-				holder.quicknessBonusView.setText(String.valueOf(initiativeListItem.getCharacter()
-																		 .getTotalStatBonus(Statistic.QUICKNESS)));
+				shortValue = initiativeListItem.getCharacter().getTotalStatBonus(Statistic.QUICKNESS);
+				holder.quicknessBonusView.setText(String.valueOf(shortValue));
+				holder.otherPenaltiesView.setText(String.valueOf(initiativeListItem.getCharacter().getInitiativePenalty()));
+				holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCharacter().getOffensiveBonus()));
 			}
 			else if(initiativeListItem.getCreature() != null) {
-				holder.nameView.setText(initiativeListItem.getCreature().getCreatureVariety().getName());
+				Creature creature = initiativeListItem.getCreature();
+				holder.nameView.setText(creature.getCreatureVariety().getName());
 				holder.initiativeRollEdit.setEnabled(false);
-				holder.quicknessBonusView.setText(String.valueOf(initiativeListItem.getCreature().getCreatureVariety()
-																		 .getRacialStatBonuses().get(Statistic.QUICKNESS)));
+				shortValue = creature.getCreatureVariety().getRacialStatBonuses()
+						.get(Statistic.QUICKNESS);
+				if(shortValue != null) {
+					holder.quicknessBonusView.setText(String.valueOf(shortValue));
+				}
+				holder.otherPenaltiesView.setText(String.valueOf(creature.getInitiativePenalty()));
+				CreatureAttack nextAttack = creature.getCreatureVariety().getNextAttack(creature.getLastAttack(),
+																						creature.getNumCreatures());
+				if(nextAttack != null) {
+					short bonus = creature.getCreatureVariety().getOffensiveBonus(nextAttack.getBaseAttack());
+					holder.offensiveBonusView.setText(String.valueOf(bonus));
+				}
+				else {
+					holder.offensiveBonusView.setText(null);
+				}
 			}
 			holder.initiativeRollEdit.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getInitiativeRoll()));
 
-//			holder.otherPenaltiesView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getOtherPenalties()));
 			holder.baseInitiativeView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getBaseInitiative()));
-//			holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getOffensiveBonus()));
 //			holder.parryEdit.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getParry()));
 //			holder.defensiveBonusView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getDefensiveBonus()));
 		}

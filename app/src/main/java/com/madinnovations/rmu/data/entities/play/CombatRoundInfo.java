@@ -35,6 +35,7 @@ public class CombatRoundInfo implements Serializable {
 	private short  actionPointsRemaining;
 	private short  currentActionPointsSpent;
 	private Action actionInProgress;
+	private Object target;
 
 	// Getters and setters
 	public Point getHexCoordinate() {
@@ -72,5 +73,29 @@ public class CombatRoundInfo implements Serializable {
 	}
 	public void setActionInProgress(Action actionInProgress) {
 		this.actionInProgress = actionInProgress;
+	}
+	public short getOffensiveBonus() {
+		return offensiveBonus;
+	}
+	public void setOffensiveBonus(short offensiveBonus) {
+		this.offensiveBonus = offensiveBonus;
+	}
+	public short getParry() {
+		return parry;
+	}
+	public void setParry(short parry) {
+		this.parry = parry;
+	}
+	public short getDefensiveBonus() {
+		return defensiveBonus;
+	}
+	public void setDefensiveBonus(short defensiveBonus) {
+		this.defensiveBonus = defensiveBonus;
+	}
+	public Object getTarget() {
+		return target;
+	}
+	public void setTarget(Object target) {
+		this.target = target;
 	}
 }
