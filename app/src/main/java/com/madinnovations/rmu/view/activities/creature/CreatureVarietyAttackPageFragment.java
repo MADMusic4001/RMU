@@ -267,8 +267,8 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 
 		newSize = (Size)criticalSizeSpinner.getSelectedItem();
-		Log.d(TAG, "copyViewsToItem: newSize = " + newSize);
-		Log.d(TAG, "copyViewsToItem: newSize.equals(noSizeModifier) " + noSizeModifier.equals(newSize));
+		Log.d(TAG, "copyViewsToItems: newSize = " + newSize);
+		Log.d(TAG, "copyViewsToItems: newSize.equals(noSizeModifier) " + noSizeModifier.equals(newSize));
 		if((newSize == null || noSizeModifier.equals(newSize)) && creatureVariety.getCriticalSizeModifier() != null) {
 			creatureVariety.setCriticalSizeModifier(null);
 			changed = true;
@@ -278,7 +278,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			creatureVariety.setCriticalSizeModifier(newSize);
 			changed = true;
 		}
-		Log.d(TAG, "copyViewsToItem: criticalSizeModifier = " + creatureVariety.getCriticalSizeModifier());
+		Log.d(TAG, "copyViewsToItems: criticalSizeModifier = " + creatureVariety.getCriticalSizeModifier());
 
 		return changed;
 	}

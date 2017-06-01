@@ -54,10 +54,10 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 import com.madinnovations.rmu.view.utils.Boast;
 import com.madinnovations.rmu.view.utils.HexDragShadowBuilder;
+import com.madinnovations.rmu.view.utils.RandomUtils;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -67,7 +67,7 @@ import rx.Subscriber;
  * Handles interactions with the UI for encounters.
  */
 public class StartEncounterFragment extends Fragment implements HexView.Callbacks, InitiativeDialog.InitiativeDialogListener,
-		SelectActionDialog.SelectActionDialogListener {
+		SelectActionDialog.SelectActionDialogListener, ResolveAttackDialog.ResolveAttackDialogListener {
 //	private static final short MAX_INITIATIVE = (short)55;
 	private static final String TAG = "StartEncounterFragment";
 	private static final String DRAG_CHARACTER = "drag-character";
@@ -89,6 +89,8 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 	private Collection<Creature>      creatures             = null;
 	private EncounterSetup            currentInstance       = new EncounterSetup();
 	private boolean                   encounterInProgress;
+	private SelectActionDialog        selectActionDialog = null;
+	private ResolveAttackDialog       resolveAttackDialog = null;
 	// TODO: Re-roll critical option if player successfully used Sense Weakness talent at the beginning of combat.
 	// TODO: Add riposte option if player with Riposte talent uses all his OB to parry and parry is effective (no hits delivered). Riposte is weapon skill specific.
 	// TODO: Add Opportunistic Strike option when player has the talent and his opponent fumbles.
@@ -179,6 +181,9 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 
 	@Override
 	public void onActionOk(DialogFragment dialog) {
+		if(selectActionDialog.copyViewsToItems()) {
+			saveItem();
+		}
 		nextAction();
 	}
 
@@ -187,43 +192,81 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 
 	}
 
+	@Override
+	public void onResolveAttackOk(DialogFragment dialog) {
+		if(resolveAttackDialog.copyViewsToItems()) {
+			saveItem();
+		}
+		nextAction();
+	}
+
+	@Override
+	public void onResolveAttackCancel(DialogFragment dialog) {
+
+	}
+
 	private boolean nextAction() {
-//		boolean changed = false;
 		CombatRoundInfo combatRoundInfo = null;
 		short currentInitiative = Short.MIN_VALUE;
 		short nextInitiative;
 		Character character = null;
 		Creature creature = null;
 		for(Map.Entry<Character, CombatRoundInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
-			nextInitiative = (short)(entry.getValue().getBaseInitiative() + (entry.getValue().getActionPointsRemaining() * 5));
-			if(nextInitiative > currentInitiative) {
-				currentInitiative = nextInitiative;
-				combatRoundInfo = entry.getValue();
-				character = entry.getKey();
+			if(entry.getValue().getActionPointsRemaining() > 0 || entry.getValue().getActionInProgress() != null) {
+				nextInitiative = (short) (entry.getValue().getBaseInitiative() + (entry.getValue().getActionPointsRemaining()
+						* 5));
+				if (nextInitiative > currentInitiative) {
+					currentInitiative = nextInitiative;
+					combatRoundInfo = entry.getValue();
+					character = entry.getKey();
+				}
 			}
 		}
 		for(Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-			nextInitiative = (short)(entry.getValue().getBaseInitiative() + (entry.getValue().getActionPointsRemaining() * 5));
-			if(nextInitiative > currentInitiative) {
-				currentInitiative = nextInitiative;
-				combatRoundInfo = entry.getValue();
-				character = null;
-				creature = entry.getKey();
+			if(entry.getValue().getActionPointsRemaining() > 0 || entry.getValue().getActionInProgress() != null) {
+				nextInitiative = (short) (entry.getValue().getBaseInitiative() + (entry.getValue().getActionPointsRemaining()
+						* 5));
+				if (nextInitiative > currentInitiative) {
+					currentInitiative = nextInitiative;
+					combatRoundInfo = entry.getValue();
+					character = null;
+					creature = entry.getKey();
+				}
 			}
 		}
 		if(combatRoundInfo != null) {
-			SelectActionDialog selectActionDialog = new SelectActionDialog();
-			Bundle bundle = new Bundle();
-			bundle.putSerializable(SelectActionDialog.COMBAT_INFO_ARG_KEY, combatRoundInfo);
-			if(character != null) {
-				bundle.putSerializable(SelectActionDialog.CHARACTER_ARG_KEY, character);
+			Log.d(TAG, "nextAction: combatRoundInfo = " + combatRoundInfo);
+			Log.d(TAG, "nextAction: currentInitiative = " + currentInitiative);
+			if(combatRoundInfo.getActionInProgress() != null) {
+				resolveAttackDialog = new ResolveAttackDialog();
+				selectActionDialog = null;
+				Bundle bundle = new Bundle();
+				bundle.putSerializable(ResolveAttackDialog.COMBAT_INFO_ARG_KEY, combatRoundInfo);
+				if (character != null) {
+					bundle.putSerializable(ResolveAttackDialog.CHARACTER_ARG_KEY, character);
+				}
+				if (creature != null) {
+					bundle.putSerializable(ResolveAttackDialog.CREATURE_ARG_KEY, creature);
+				}
+				resolveAttackDialog.setArguments(bundle);
+				resolveAttackDialog.setListener(StartEncounterFragment.this);
+				resolveAttackDialog.show(getFragmentManager(), "ActionDialogFragment");
 			}
-			if(creature != null) {
-				bundle.putSerializable(SelectActionDialog.CREATURE_ARG_KEY, creature);
+			else {
+				selectActionDialog = new SelectActionDialog();
+				resolveAttackDialog = null;
+				Bundle bundle = new Bundle();
+				bundle.putSerializable(SelectActionDialog.COMBAT_INFO_ARG_KEY, combatRoundInfo);
+				if (character != null) {
+					bundle.putSerializable(SelectActionDialog.CHARACTER_ARG_KEY, character);
+				}
+				if (creature != null) {
+					bundle.putSerializable(SelectActionDialog.CREATURE_ARG_KEY, creature);
+				}
+				selectActionDialog.setArguments(bundle);
+				selectActionDialog.setListener(StartEncounterFragment.this);
+				selectActionDialog.show(getFragmentManager(), "ActionDialogFragment");
 			}
-			selectActionDialog.setArguments(bundle);
-			selectActionDialog.setListener(StartEncounterFragment.this);
-			selectActionDialog.show(getFragmentManager(), "ActionDialogFragment");
 			return true;
 		}
 		else {
@@ -331,15 +374,14 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 	}
 
 	private void showInitiativeDialog() {
-		Random random = new Random();
 		encounterInProgress = !currentInstance.getEnemyCombatInfo().isEmpty();
 		if(encounterInProgress) {
 			for (Map.Entry<Character, CombatRoundInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
-				short initiativeRoll = (short) (random.nextInt(10) + random.nextInt(10) + 2);
+				short initiativeRoll = RandomUtils.roll2d10();
 				entry.getValue().setInitiativeRoll(initiativeRoll);
 			}
 			for (Map.Entry<Creature, CombatRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-				short initiativeRoll = (short) (random.nextInt(10) + random.nextInt(10) + 2);
+				short initiativeRoll = RandomUtils.roll2d10();
 				entry.getValue().setInitiativeRoll(initiativeRoll);
 			}
 			InitiativeDialog dialog = new InitiativeDialog();

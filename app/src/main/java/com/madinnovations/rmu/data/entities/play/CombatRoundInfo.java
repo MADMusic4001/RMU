@@ -19,6 +19,9 @@ import android.graphics.Point;
 
 import com.madinnovations.rmu.data.entities.combat.Action;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 
 /**
@@ -32,10 +35,27 @@ public class CombatRoundInfo implements Serializable {
 	private short  offensiveBonus = 0;
 	private short  parry = 0;
 	private short  defensiveBonus = 0;
-	private short  actionPointsRemaining;
-	private short  currentActionPointsSpent;
-	private Action actionInProgress;
+	private short  actionPointsRemaining = 4;
+	private short  currentActionPointsSpent = 0;
+	private Action actionInProgress = null;
 	private Object target;
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("hexCoordinate", hexCoordinate)
+				.append("initiativeRoll", initiativeRoll)
+				.append("baseInitiative", baseInitiative)
+				.append("offensiveBonus", offensiveBonus)
+				.append("parry", parry)
+				.append("defensiveBonus", defensiveBonus)
+				.append("actionPointsRemaining", actionPointsRemaining)
+				.append("currentActionPointsSpent", currentActionPointsSpent)
+				.append("actionInProgress", actionInProgress)
+				.append("target", target)
+				.toString();
+	}
 
 	// Getters and setters
 	public Point getHexCoordinate() {

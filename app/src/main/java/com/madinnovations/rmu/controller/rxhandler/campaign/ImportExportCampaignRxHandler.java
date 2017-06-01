@@ -139,7 +139,7 @@ public class ImportExportCampaignRxHandler {
 											Campaign campaign = gson.fromJson(jsonReader, Campaign.class);
 											helper.clearCampaignTables(campaign);
 											campaignDao.save(campaign, true);
-											Log.i(TAG, "Loaded " + campaign.getName() + " campaign.");
+											Log.i(TAG, "Campaign loaded.");
 											break;
 										case Character.JSON_NAME:
 											List<Character> characters = new ArrayList<>();

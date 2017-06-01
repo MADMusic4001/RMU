@@ -67,6 +67,8 @@ public class SelectActionDialog extends DialogFragment {
 	private ArrayAdapter<Action> actionArrayAdapter;
 	private List<String> listItems = new ArrayList<>();
 	private ArrayAdapter<String> opponentsListAdapter;
+	private Spinner actionsSpinner;
+	private Spinner actionPointsSpinner;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -112,6 +114,22 @@ public class SelectActionDialog extends DialogFragment {
 				})
 				.setView(contentView);
 		return builder.create();
+	}
+
+	public boolean copyViewsToItems() {
+		boolean result = false;
+		Action selectedAction = (Action)actionsSpinner.getSelectedItem();
+		Short selectedActionPoints = (Short)actionPointsSpinner.getSelectedItem();
+
+		if(!Action.AUTO.equals(selectedAction)
+				&& !selectedAction.equals(combatRoundInfo.getActionInProgress())
+				&& selectedActionPoints <= combatRoundInfo.getActionPointsRemaining()) {
+			result = true;
+			combatRoundInfo.setActionInProgress(selectedAction);
+			combatRoundInfo.setActionPointsRemaining((short)(combatRoundInfo.getActionPointsRemaining() - selectedActionPoints));
+		}
+
+		return result;
 	}
 
 	private void initOpponentsList() {
@@ -162,7 +180,7 @@ public class SelectActionDialog extends DialogFragment {
 	}
 
 	private void initActionsSpinner(View layout) {
-		Spinner actionsSpinner = (Spinner)layout.findViewById(R.id.action_spinner);
+		actionsSpinner = (Spinner)layout.findViewById(R.id.action_spinner);
 		actionArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		actionsSpinner.setAdapter(actionArrayAdapter);
 
@@ -170,7 +188,7 @@ public class SelectActionDialog extends DialogFragment {
 		actionArrayAdapter.addAll(Action.values());
 		actionArrayAdapter.notifyDataSetChanged();
 
-		Spinner actionPointsSpinner = (Spinner)layout.findViewById(R.id.action_points_spinner);
+		actionPointsSpinner = (Spinner)layout.findViewById(R.id.action_points_spinner);
 		final ArrayAdapter<Short> actionPointsArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		actionPointsSpinner.setAdapter(actionPointsArrayAdapter);
 		initActionPointsSpinner((Action)actionsSpinner.getSelectedItem(), actionPointsArrayAdapter);
@@ -179,15 +197,7 @@ public class SelectActionDialog extends DialogFragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Action action = actionArrayAdapter.getItem(position);
-				combatRoundInfo.setActionInProgress(action);
 				if (action != null) {
-					short actionPoints = action.getMaxActionPoints();
-					while(combatRoundInfo.getActionPointsRemaining() < actionPoints && actionPoints > action.getMinActionPoints()) {
-						actionPoints--;
-					}
-
-					combatRoundInfo.setActionPointsRemaining(
-							(short)(combatRoundInfo.getActionPointsRemaining() - action.getMaxActionPoints()));
 					initActionPointsSpinner(action, actionPointsArrayAdapter);
 				}
 			}

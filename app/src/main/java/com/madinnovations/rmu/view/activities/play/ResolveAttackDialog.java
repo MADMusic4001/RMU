@@ -7,17 +7,19 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
-import com.madinnovations.rmu.data.entities.play.EncounterSetup;
+import com.madinnovations.rmu.view.utils.RandomUtils;
 
 /**
  * Fragment to handle interaction with the Resolve Action dialog UI.
  */
+@SuppressWarnings("unused")
 public class ResolveAttackDialog extends DialogFragment {
 	private static final String TAG = "ResolveAttackDialog";
 	public static final String COMBAT_INFO_ARG_KEY = "combatInfo";
@@ -55,6 +57,9 @@ public class ResolveAttackDialog extends DialogFragment {
 			targetView.setText(((Creature)combatRoundInfo.getTarget()).getCreatureVariety().getName());
 		}
 
+		EditText attackRollEdit = (EditText)contentView.findViewById((R.id.attack_roll_edit));
+		attackRollEdit.setText(String.valueOf(RandomUtils.roll1d100OE()));
+
 		builder.setTitle(R.string.title_initiative)
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
@@ -70,6 +75,31 @@ public class ResolveAttackDialog extends DialogFragment {
 				})
 				.setView(contentView);
 		return builder.create();
+	}
+
+	public boolean copyViewsToItems() {
+		boolean result = false;
+
+		combatRoundInfo.setActionInProgress(null);
+		result = true;
+
+		return result;
+	}
+
+	public ResolveAttackDialog.ResolveAttackDialogListener getListener() {
+		return listener;
+	}
+	public void setListener(ResolveAttackDialog.ResolveAttackDialogListener listener) {
+		this.listener = listener;
+	}
+	public Character getCharacter() {
+		return character;
+	}
+	public Creature getCreature() {
+		return creature;
+	}
+	public CombatRoundInfo getCombatRoundInfo() {
+		return combatRoundInfo;
 	}
 
 	public interface ResolveAttackDialogListener {
