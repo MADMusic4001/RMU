@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
   <item
       android:id="@+id/action_export"
       android:title="@string/label_export"
-      android:showAsAction="ifRoom"/>
+      app:showAsAction="ifRoom"/>
   <item
       android:id="@+id/action_import"
       android:title="@string/label_import"
-      android:showAsAction="ifRoom"/>
+      app:showAsAction="ifRoom"/>
   <item
       android:id="@+id/action_import_campaign"
       android:title="@string/label_import_campaign"
-      android:showAsAction="ifRoom"/>
+      app:showAsAction="ifRoom"/>
   <item
       android:id="@+id/action_export_campaign"
       android:title="@string/label_export_campaign"
-      android:showAsAction="ifRoom"/>
+      app:showAsAction="ifRoom"/>
 </menu>

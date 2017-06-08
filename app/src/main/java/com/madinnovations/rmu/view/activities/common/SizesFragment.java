@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.common;
 
@@ -55,6 +55,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for sizes.
  */
 public class SizesFragment extends Fragment implements ThreeFieldListAdapter.GetValues<Size> {
+	private static final String TAG = "SizesFragment";
 	@Inject
 	protected SizeRxHandler   sizeRxHandler;
 	private ThreeFieldListAdapter<Size> listAdapter;
@@ -299,7 +300,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e("SizesFragment", "Exception saving new Size: " + currentInstance, e);
+							Log.e(TAG, "Exception saving new Size: " + currentInstance, e);
 							Toast.makeText(getActivity(), R.string.toast_size_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -339,7 +340,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SizesFragment", "Exception when deleting: " + item, e);
+						Log.e(TAG, "Exception when deleting: " + item, e);
 						Toast.makeText(getActivity(), R.string.toast_size_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
@@ -629,7 +630,7 @@ public class SizesFragment extends Fragment implements ThreeFieldListAdapter.Get
 					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("SizesFragment", "Exception caught getting all Size instances", e);
+						Log.e(TAG, "Exception caught getting all Size instances", e);
 						Toast.makeText(SizesFragment.this.getActivity(), R.string.toast_sizes_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
