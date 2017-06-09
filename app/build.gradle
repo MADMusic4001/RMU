@@ -40,4 +40,6 @@ dependencies {
 	testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.1'
 	testCompile 'org.powermock:powermock-module-junit4-rule:1.6.1'
 	testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+	compile 'com.nineoldandroids:library:2.4.0'
+	compile 'com.nhaarman.supertooltips:library:3.0.0'
 }
