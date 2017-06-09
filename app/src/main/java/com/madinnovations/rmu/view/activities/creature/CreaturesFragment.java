@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -48,6 +49,9 @@ import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.utils.Boast;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+import com.nhaarman.supertooltips.ToolTip;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 
 import java.util.Collection;
 
@@ -76,6 +80,8 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 	private   EditText                      levelEdit;
 	private   Creature                      currentInstance = new Creature();
 	private   boolean                       isNew           = true;
+	private   ToolTipView                   toolTipView;
+	private   ToolTipRelativeLayout         toolTipFrameLayout;
 
 	@Nullable
 	@Override
@@ -88,9 +94,8 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 		((TextView)layout.findViewById(R.id.header_field1)).setText(R.string.label_creature_name);
 		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_campaign_name);
 
+		initLevelEdit(layout);
 
-		levelEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.creature_level_edit,
-								R.string.validation_creature_level_required);
 		campaignSpinnerUtils = new SpinnerUtils<>();
 		campaignSpinnerUtils.initSpinner(layout, getActivity(), campaignRxHandler.getAll(), this, R.id.campaign_spinner, null);
 		creatureVarietySpinnerUtils = new SpinnerUtils<>();
@@ -360,6 +365,32 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 						}
 					}
 				});
+	}
+
+	private void initLevelEdit(View layout) {
+		levelEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.creature_level_edit,
+										   R.string.validation_creature_level_required);
+		toolTipFrameLayout = (ToolTipRelativeLayout) layout.findViewById(R.id.activity_main_tooltipframelayout);
+
+		levelEdit.setOnHoverListener(new View.OnHoverListener() {
+			@Override
+			public boolean onHover(View v, MotionEvent event) {
+				switch (event.getAction()) {
+					case MotionEvent.ACTION_HOVER_ENTER:
+						ToolTip toolTip = new ToolTip()
+								.withText(levelEdit.getContentDescription())
+								.withAnimationType(ToolTip.AnimationType.FROM_TOP);
+						toolTipView = toolTipFrameLayout.showToolTipForView(
+								toolTip,
+								CreaturesFragment.this.getActivity().findViewById(R.id.creature_level_edit));
+						break;
+					case MotionEvent.ACTION_HOVER_EXIT:
+						toolTipView.remove();
+						break;
+				}
+				return false;
+			}
+		});
 	}
 
 	private void initListView(View layout) {

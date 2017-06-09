@@ -37,4 +37,5 @@
   <!-- ImageButton content descriptions -->
   <string name="decrement">Decrement</string>
   <string name="increment">Increment</string>
+  <string name="creature_level_content_description">The level this specific creature will be.</string>
 </resources>
