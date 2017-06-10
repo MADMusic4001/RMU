@@ -172,9 +172,14 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 			else {
 				selectionArgs[0] = "1";
 			}
-			selectionArgs[1] = String.valueOf(character.getProfession().getId());
-			selection = COLUMN_REALM_ID + " = ? and (" + COLUMN_PROFESSION_ID + " is null or "
-					+ COLUMN_PROFESSION_ID + " = ?)";
+			if(character.getProfession() != null) {
+				selectionArgs[1] = String.valueOf(character.getProfession().getId());
+				selection = COLUMN_REALM_ID + " = ? and (" + COLUMN_PROFESSION_ID + " is null or "
+						+ COLUMN_PROFESSION_ID + " = ?)";
+			}
+			else {
+				selection = COLUMN_REALM_ID + " = ? and " + COLUMN_PROFESSION_ID + " is null";
+			}
 		}
 		List<SpellList> list = new ArrayList<>();
 

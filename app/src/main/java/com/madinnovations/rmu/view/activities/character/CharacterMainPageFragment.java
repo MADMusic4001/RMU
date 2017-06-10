@@ -22,9 +22,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -100,9 +102,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   Button                   generateStatsButton;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
-	private   TextView                 statPointsLabel;
+	private   TextInputLayout          statPointsLabel;
 	private   EditText                 statPointsView;
-	private   LinearLayout             newCharacterRow;
+//	private   LinearLayout             newCharacterRow;
 	private Map<Statistic, ViewHolder> viewHolderMap = new HashMap<>(Statistic.NUM_STATS);
 	private   Realm                    noRealm = null;
 
@@ -138,6 +140,14 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		campaignSpinner.setEnabled(charactersFragment.getCurrentInstance().getCurrentLevel() == 0);
 		firstNameEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.first_name_textInputLayout,
 				R.id.first_name_edit, R.string.validation_character_first_name_required);
+		firstNameEdit.setOnHoverListener(new View.OnHoverListener() {
+			@Override
+			public boolean onHover(View v, MotionEvent event) {
+				Toast.makeText(CharacterMainPageFragment.this.getActivity(), R.string.hint_character_first_name,
+							   Toast.LENGTH_LONG).show();
+				return false;
+			}
+		});
 		lastNameEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.last_name_textInputLayout,
 													 R.id.last_name_edit, R.string.validation_character_last_name_required);
 		knownAsEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.known_as_textInputLayout,
@@ -156,11 +166,11 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		noRealm.setName(getString(R.string.label_no_realm));
 		realm2SpinnerUtils = new SpinnerUtils<>();
 		realm2SpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm2_spinner, noRealm);
-		heightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.height_edit,
+		heightEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.height_textInputLayout, R.id.height_edit,
 											R.string.validation_character_height_required);
-		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit,
+		weightEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.weight_textInputLayout, R.id.weight_edit,
 											R.string.validation_character_weight_required);
-		statPointsLabel = (TextView)layout.findViewById(R.id.stat_points_label);
+		statPointsLabel = (TextInputLayout)layout.findViewById(R.id.stat_points_textInputLayout);
 		statPointsView = (EditText)layout.findViewById(R.id.stat_points_view);
 		setStatPointsViews();
 		for(Statistic statistic : Statistic.getAllStats()) {
@@ -615,7 +625,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 												   && !character.getCampaign().isBuyStats());
 
 			if (character.getExperiencePoints() > 0) {
-				newCharacterRow.setVisibility(View.GONE);
+//				newCharacterRow.setVisibility(View.GONE);
 				firstNameEdit.setEnabled(false);
 				lastNameEdit.setEnabled(false);
 				raceSpinnerUtils.getSpinner().setEnabled(false);
@@ -626,9 +636,9 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				weightEdit.setEnabled(false);
 				campaignSpinner.setEnabled(false);
 			}
-			else {
-				newCharacterRow.setVisibility(View.VISIBLE);
-			}
+//			else {
+//				newCharacterRow.setVisibility(View.VISIBLE);
+//			}
 		}
 	}
 
@@ -649,7 +659,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	}
 
 	private void initGenerateStatsButton(View layout) {
-		newCharacterRow = (LinearLayout)layout.findViewById(R.id.new_character_row);
+//		newCharacterRow = (LinearLayout)layout.findViewById(R.id.new_character_row);
 		generateStatsButton = (Button)layout.findViewById(R.id.generate_stats_button);
 		Character character = charactersFragment.getCurrentInstance();
 		generateStatsButton.setEnabled(character.getCurrentLevel() == 0 && character.getCampaign() != null
