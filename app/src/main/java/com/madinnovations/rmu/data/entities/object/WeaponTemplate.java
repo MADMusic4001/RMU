@@ -69,7 +69,7 @@ public class WeaponTemplate extends ItemTemplate {
      * @return true if the Weapon instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return combatSkill != null && damageTable != null;
+        return combatSkill != null && damageTable != null && super.isValid();
     }
 
 	/**
@@ -77,8 +77,9 @@ public class WeaponTemplate extends ItemTemplate {
 	 *
 	 * @return a String of this instance's attributes.
 	 */
-	public String debugToString() {
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("ItemTemplate", super.print())
 				.append("combatSkill", combatSkill)
 				.append("damageTable", damageTable)
 				.append("braceable", braceable)
@@ -103,5 +104,9 @@ public class WeaponTemplate extends ItemTemplate {
 	}
 	public void setBraceable(boolean braceable) {
 		this.braceable = braceable;
+	}
+	@Override
+	public String getJsonName() {
+		return JSON_NAME;
 	}
 }

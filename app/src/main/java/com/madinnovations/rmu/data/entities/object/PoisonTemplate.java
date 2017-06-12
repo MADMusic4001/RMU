@@ -20,4 +20,33 @@ package com.madinnovations.rmu.data.entities.object;
  */
 public class PoisonTemplate extends NaturalsTemplate {
 	public static final String JSON_NAME = "PoisonTemplate";
+
+	/**
+	 * Creates a new PoisonTemplate instance
+	 */
+	public PoisonTemplate() {
+	}
+
+	/**
+	 * Creates a new PoisonTemplate instance with the given id
+	 *
+	 * @param id  the id to use for the new instance
+	 */
+	public PoisonTemplate(int id) {
+		super(id);
+	}
+
+	/**
+	 * Creates a new PoisonTemplate instance from the given ItemTemplate
+	 *
+	 * @param other  an ItemTemplate instance
+	 */
+	public PoisonTemplate(NaturalsTemplate other) {
+		super(other);
+	}
+
+	@Override
+	public String getJsonName() {
+		return JSON_NAME;
+	}
 }

@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2017 MadInnovations
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2017 MadInnovations
+  <p>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.object;
 
@@ -24,7 +24,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Substance attributes
  */
-public class Substance extends ItemTemplate {
+public class SubstanceTemplate extends ItemTemplate {
+	public static final String JSON_NAME = "SubstanceTemplate";
 	private SubstanceType substanceType;
 	private float hardness;
 	private String description;
@@ -32,7 +33,7 @@ public class Substance extends ItemTemplate {
 	/**
 	 * Creates a new Substance instance.
 	 */
-	public Substance() {
+	public SubstanceTemplate() {
 	}
 
 	/**
@@ -40,8 +41,26 @@ public class Substance extends ItemTemplate {
 	 *
 	 * @param id  the id of the new Substance instance
 	 */
-	public Substance(int id) {
+	public SubstanceTemplate(int id) {
 		super(id);
+	}
+
+	/**
+	 * Creates a new SubstanceTemplate instance from the given ItemTemplate
+	 *
+	 * @param other  an ItemTemplate instance
+	 */
+	public SubstanceTemplate(ItemTemplate other) {
+		this.setId(other.getId());
+		this.setName(other.getName());
+		this.setWeight(other.getWeight());
+		this.setBaseCost(other.getBaseCost());
+		this.setStrength(other.getStrength());
+		this.setConstructionTime(other.getConstructionTime());
+		this.setManeuverDifficulty(other.getManeuverDifficulty());
+		this.setNotes(other.getNotes());
+		this.setPrimarySlot(other.getPrimarySlot());
+		this.setSecondarySlot(other.getSecondarySlot());
 	}
 
 	/**
@@ -65,6 +84,7 @@ public class Substance extends ItemTemplate {
 	 */
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("ItemTemplate", super.print())
 				.append("name", getName())
 				.append("substanceType", substanceType)
 				.append("hardness", hardness)
@@ -90,5 +110,9 @@ public class Substance extends ItemTemplate {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	@Override
+	public String getJsonName() {
+		return JSON_NAME;
 	}
 }
