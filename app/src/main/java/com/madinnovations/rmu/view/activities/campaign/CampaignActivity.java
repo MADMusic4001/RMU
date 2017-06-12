@@ -259,7 +259,7 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 									toast.cancel();
 								}
 								toast = Toast.makeText(getApplication(),
-													   String.format(getString(R.string.export_status), percentComplete),
+													   String.format(getString(R.string.import_status), percentComplete),
 													   Toast.LENGTH_SHORT);
 								toast.show();
 								request(1);

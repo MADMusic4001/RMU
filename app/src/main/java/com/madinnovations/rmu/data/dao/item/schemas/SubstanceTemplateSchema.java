@@ -18,8 +18,9 @@ package com.madinnovations.rmu.data.dao.item.schemas;
 /**
  * Database schema data for the substances table
  */
-public interface SubstanceSchema {
-	String TABLE_NAME = "substances";
+public interface SubstanceTemplateSchema {
+	String TABLE_NAME = "substance_templates";
+	String SUBSTANCE_ID = "substanceId";
 
 	String COLUMN_ID                  = "id";
 	String COLUMN_SUBSTANCE_TYPE_NAME = "substanceTypeName";

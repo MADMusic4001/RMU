@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.item.impl;
 
@@ -22,11 +22,28 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
+import com.madinnovations.rmu.data.dao.common.BiomeDao;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
+import com.madinnovations.rmu.data.dao.item.schemas.ArmorTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.HerbTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.NaturalsTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.PoisonTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
+import com.madinnovations.rmu.data.entities.object.ArmorTemplate;
+import com.madinnovations.rmu.data.entities.object.Form;
+import com.madinnovations.rmu.data.entities.object.HerbTemplate;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.PoisonTemplate;
+import com.madinnovations.rmu.data.entities.object.Prep;
 import com.madinnovations.rmu.data.entities.object.Slot;
+import com.madinnovations.rmu.data.entities.object.SubstanceTemplate;
+import com.madinnovations.rmu.data.entities.object.SubstanceType;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,19 +56,51 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implements ItemTemplateDao, ItemTemplateSchema {
+	private BiomeDao biomeDao;
+	private SkillDao skillDao;
+	private DamageTableDao damageTableDao;
+
     /**
      * Creates a new instance of ItemTemplateDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public ItemTemplateDaoDbImpl(SQLiteOpenHelper helper) {
+    public ItemTemplateDaoDbImpl(SQLiteOpenHelper helper, BiomeDao biomeDao, SkillDao skillDao, DamageTableDao damageTableDao) {
         super(helper);
+		this.biomeDao = biomeDao;
+		this.skillDao = skillDao;
+		this.damageTableDao = damageTableDao;
     }
 
 	@Override
 	public ItemTemplate getById(int id) {
-		return super.getById(id);
+		final String selectionArgs[] = { String.valueOf(id) };
+		ItemTemplate instance = null;
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = db.rawQuery(ItemTemplateSchema.QUERY_BY_ID, selectionArgs);
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					instance = cursorToEntity(cursor);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return instance;
 	}
 
 	@Override
@@ -131,8 +180,48 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 
 	@Override
     protected ItemTemplate cursorToEntity(@NonNull Cursor cursor) {
-		ItemTemplate instance = new ItemTemplate();
+		ItemTemplate instance;
 
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.ARMOR_ID))) {
+			instance = new ArmorTemplate();
+			((ArmorTemplate)instance).setSmallCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_SMALL_COST)));
+			((ArmorTemplate)instance).setMediumCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_MEDIUM_COST)));
+			((ArmorTemplate)instance).setBigCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_BIG_COST)));
+			((ArmorTemplate)instance).setLargeCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_LARGE_COST)));
+			((ArmorTemplate)instance).setWeightPercent(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_WEIGHT_PERCENT)));
+			((ArmorTemplate)instance).setArmorType(cursor.getShort(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_ARMOR_TYPE)));
+		}
+		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(HerbTemplateSchema.HERB_ID))) {
+			instance = new HerbTemplate();
+			((HerbTemplate)instance).setBiome(biomeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_BIOME_ID))));
+			((HerbTemplate)instance).setForm(Form.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_FORM_NAME))));
+			((HerbTemplate)instance).setPrep(Prep.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_PREP_NAME))));
+			((HerbTemplate)instance).setSeason(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_SEASON)));
+			((HerbTemplate)instance).setEffects(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_EFFECTS)));
+		}
+		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(PoisonTemplateSchema.POISON_ID))) {
+			instance = new PoisonTemplate();
+			((PoisonTemplate)instance).setBiome(biomeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_BIOME_ID))));
+			((PoisonTemplate)instance).setForm(Form.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_FORM_NAME))));
+			((PoisonTemplate)instance).setPrep(Prep.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_PREP_NAME))));
+			((PoisonTemplate)instance).setSeason(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_SEASON)));
+			((PoisonTemplate)instance).setEffects(cursor.getString(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_EFFECTS)));
+		}
+		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.SUBSTANCE_ID))) {
+			instance = new SubstanceTemplate();
+			((SubstanceTemplate)instance).setSubstanceType(SubstanceType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_SUBSTANCE_TYPE_NAME))));
+			((SubstanceTemplate)instance).setHardness(cursor.getFloat(cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_HARDNESS)));
+			((SubstanceTemplate)instance).setDescription(cursor.getString(cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_DESCRIPTION)));
+		}
+		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.WEAPON_ID))) {
+			instance = new WeaponTemplate();
+			((WeaponTemplate)instance).setBraceable(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_BRACEABLE)) != 0);
+			((WeaponTemplate)instance).setCombatSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_SKILL_ID))));
+			((WeaponTemplate)instance).setDamageTable(damageTableDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID))));
+		}
+		else {
+			instance = new ItemTemplate();
+		}
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setWeight(cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));

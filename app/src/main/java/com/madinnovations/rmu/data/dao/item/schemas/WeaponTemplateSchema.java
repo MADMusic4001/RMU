@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
  */
 public interface WeaponTemplateSchema {
     String TABLE_NAME = "weapon_templates";
+	String WEAPON_ID = "weaponId";
 
     String COLUMN_ID = "id";
     String COLUMN_SKILL_ID = "skillId";

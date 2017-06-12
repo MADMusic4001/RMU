@@ -20,6 +20,7 @@ package com.madinnovations.rmu.data.dao.item.schemas;
  */
 public interface HerbTemplateSchema {
 	String TABLE_NAME = "herb_templates";
+	String HERB_ID = "herbId";
 
 	String COLUMN_NATURALS_TEMPLATE_ID = "naturalsTemplateId";
 

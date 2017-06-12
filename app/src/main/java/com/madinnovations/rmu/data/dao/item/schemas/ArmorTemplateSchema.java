@@ -20,6 +20,7 @@ package com.madinnovations.rmu.data.dao.item.schemas;
  */
 public interface ArmorTemplateSchema {
 	String TABLE_NAME = "armor_templates";
+	String ARMOR_ID = "armorId";
 
 	String COLUMN_ID = "id";
 	String COLUMN_SMALL_COST = "smallCost";

@@ -22,6 +22,7 @@ import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
  */
 public interface NaturalsTemplateSchema {
 	String TABLE_NAME = "naturals_templates";
+	String NATURAL_ID = "naturalId";
 
 	String COLUMN_ITEM_TEMPLATE_ID = "itemTemplateId";
 	String COLUMN_BIOME_ID         = "biomeId";

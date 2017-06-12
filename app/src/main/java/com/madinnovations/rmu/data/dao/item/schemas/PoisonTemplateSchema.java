@@ -20,6 +20,7 @@ package com.madinnovations.rmu.data.dao.item.schemas;
  */
 public interface PoisonTemplateSchema {
 	String TABLE_NAME = "poison_templates";
+	String POISON_ID = "poisonId";
 
 	String COLUMN_NATURALS_TEMPLATE_ID = "naturalsTemplateId";
 
