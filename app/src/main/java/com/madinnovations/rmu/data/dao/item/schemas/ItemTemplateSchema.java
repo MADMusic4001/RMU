@@ -47,7 +47,7 @@ public interface ItemTemplateSchema {
 			+ COLUMN_SECONDARY_SLOT + " TEXT"
 			+ ")";
 
-	String QUERY_BY_ID = "SELECT"
+	String QUERY_ALL = "SELECT"
 			+ " ITEM." + COLUMN_ID
 			+ ", ITEM." + COLUMN_NAME
 			+ ", ITEM." + COLUMN_WEIGHT
@@ -93,8 +93,9 @@ public interface ItemTemplateSchema {
 				+ " LEFT OUTER JOIN " + SubstanceTemplateSchema.TABLE_NAME + " SUBSTANCES"
 					+ " ON SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID
 				+ " LEFT OUTER JOIN " + WeaponTemplateSchema.TABLE_NAME + " WEAPON"
-					+ " ON WEAPON." + WeaponTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID
-			+ " WHERE ITEM." + ItemTemplateSchema.COLUMN_ID + " = ?";
+					+ " ON WEAPON." + WeaponTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID;
+
+	String QUERY_BY_ID = QUERY_ALL + " WHERE ITEM." + ItemTemplateSchema.COLUMN_ID + " = ?";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_WEIGHT, COLUMN_BASE_COST, COLUMN_STRENGTH,
 			COLUMN_CONSTRUCTION_TIME, COLUMN_MANEUVER_DIFFICULTY, COLUMN_NOTES, COLUMN_PRIMARY_SLOT, COLUMN_SECONDARY_SLOT};
