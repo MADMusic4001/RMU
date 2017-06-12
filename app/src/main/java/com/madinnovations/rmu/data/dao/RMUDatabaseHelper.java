@@ -93,9 +93,9 @@ import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCharacterCombatInfoSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCreatureCombatInfoSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCharacterEncounterInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCreatureEncounterInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellAreaOfEffectParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellDurationParamSchema;
@@ -159,9 +159,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(BodyPartSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(BiomeSchema.TABLE_CREATE);
 
-			sqLiteDatabase.execSQL(CombatSetupSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(CombatSetupCharacterCombatInfoSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(CombatSetupCreatureCombatInfoSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(EncounterSetupSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(EncounterSetupCharacterEncounterInfoSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(EncounterSetupCreatureEncounterInfoSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RealmSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyStatsSchema.TABLE_CREATE);
@@ -316,9 +316,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CreatureVarietySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(RealmSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellTypeSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(CombatSetupCreatureCombatInfoSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(CombatSetupCharacterCombatInfoSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(CombatSetupSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(EncounterSetupSchema.TABLE_NAME, null, null);
 
 		sqLiteDatabase.delete(BiomeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(BodyPartSchema.TABLE_NAME, null, null);
@@ -349,8 +349,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		selection = ItemSchema.COLUMN_CAMPAIGN_ID + " = ?";
 		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, selection, selectionArgs);
 
-		selection = CombatSetupSchema.COLUMN_CAMPAIGN_ID + " = ?";
-		sqLiteDatabase.delete(CombatSetupSchema.TABLE_NAME, selection, selectionArgs);
+		selection = EncounterSetupSchema.COLUMN_CAMPAIGN_ID + " = ?";
+		sqLiteDatabase.delete(EncounterSetupSchema.TABLE_NAME, selection, selectionArgs);
 
 		selection = CharacterSchema.COLUMN_CAMPAIGN_ID + " = ?";
 		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, selection, selectionArgs);

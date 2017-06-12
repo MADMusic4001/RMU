@@ -25,20 +25,22 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.io.Serializable;
 
 /**
- * Per round combat information
+ * Per round encounter information
  */
-public class CombatRoundInfo implements Serializable {
+public class EncounterRoundInfo implements Serializable {
 	private static final long serialVersionUID = 7312314437576720214L;
-	private Point  hexCoordinate;
-	private short  initiativeRoll;
-	private short  baseInitiative;
-	private short  offensiveBonus = 0;
-	private short  parry = 0;
-	private short  defensiveBonus = 0;
-	private short  actionPointsRemaining = 4;
-	private short  currentActionPointsSpent = 0;
-	private Action actionInProgress = null;
-	private Object target;
+	private Point   hexCoordinate;
+	private short   initiativeRoll;
+	private short   baseInitiative;
+	private short   offensiveBonus = 0;
+	private short   parry = 0;
+	private short   defensiveBonus = 0;
+	private short   actionPointsRemaining = 4;
+	private short   currentActionPointsSpent = 0;
+	private boolean instantaneousUsed = false;
+	private boolean concentrating = false;
+	private Action  actionInProgress = null;
+	private Object  target;
 
 	@Override
 	public String toString() {
@@ -87,6 +89,21 @@ public class CombatRoundInfo implements Serializable {
 	}
 	public void setCurrentActionPointsSpent(short currentActionPointsSpent) {
 		this.currentActionPointsSpent = currentActionPointsSpent;
+	}
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+	public boolean isInstantaneousUsed() {
+		return instantaneousUsed;
+	}
+	public void setInstantaneousUsed(boolean instantaneousUsed) {
+		this.instantaneousUsed = instantaneousUsed;
+	}
+	public boolean isConcentrating() {
+		return concentrating;
+	}
+	public void setConcentrating(boolean concentrating) {
+		this.concentrating = concentrating;
 	}
 	public Action getActionInProgress() {
 		return actionInProgress;

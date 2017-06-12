@@ -17,7 +17,6 @@ package com.madinnovations.rmu.view.adapters.play;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,9 +103,9 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 					holder.offensiveBonusView.setText(null);
 				}
 			}
-			holder.initiativeRollEdit.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getInitiativeRoll()));
+			holder.initiativeRollEdit.setText(String.valueOf(initiativeListItem.getEncounterRoundInfo().getInitiativeRoll()));
 
-			holder.baseInitiativeView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getBaseInitiative()));
+			holder.baseInitiativeView.setText(String.valueOf(initiativeListItem.getEncounterRoundInfo().getBaseInitiative()));
 //			holder.parryEdit.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getParry()));
 //			holder.defensiveBonusView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getDefensiveBonus()));
 		}
@@ -145,13 +144,13 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 					if (!hasFocus) {
 						if(initiativeRollEdit.getText().length() > 0) {
 							short newValue = Short.valueOf(initiativeRollEdit.getText().toString());
-							short oldValue = initiativeListItem.getCombatRoundInfo().getInitiativeRoll();
+							short oldValue = initiativeListItem.getEncounterRoundInfo().getInitiativeRoll();
 
 							if (newValue != oldValue) {
-								short newTotal = (short)(initiativeListItem.getCombatRoundInfo().getBaseInitiative() - oldValue
+								short newTotal = (short)(initiativeListItem.getEncounterRoundInfo().getBaseInitiative() - oldValue
 										+ newValue);
-								initiativeListItem.getCombatRoundInfo().setInitiativeRoll(newValue);
-								initiativeListItem.getCombatRoundInfo().setBaseInitiative(newTotal);
+								initiativeListItem.getEncounterRoundInfo().setInitiativeRoll(newValue);
+								initiativeListItem.getEncounterRoundInfo().setBaseInitiative(newTotal);
 								baseInitiativeView.setText(String.valueOf(newTotal));
 							}
 						}

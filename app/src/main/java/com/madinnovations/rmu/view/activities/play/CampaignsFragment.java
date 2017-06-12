@@ -146,6 +146,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 
 		setHasOptionsMenu(true);
 
+
 		return layout;
 	}
 

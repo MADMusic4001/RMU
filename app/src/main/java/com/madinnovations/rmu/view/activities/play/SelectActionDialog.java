@@ -35,7 +35,7 @@ import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
@@ -60,7 +60,7 @@ public class SelectActionDialog extends DialogFragment {
 	protected CharacterRxHandler characterRxHandler;
 	@Inject
 	protected CreatureRxHandler  creatureRxHandler;
-	private   CombatRoundInfo    combatRoundInfo;
+	private   EncounterRoundInfo encounterRoundInfo;
 	private Character                  character = null;
 	private Creature                   creature  = null;
 	private SelectActionDialogListener listener  = null;
@@ -77,7 +77,7 @@ public class SelectActionDialog extends DialogFragment {
 
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
-		combatRoundInfo = (CombatRoundInfo) getArguments().getSerializable(COMBAT_INFO_ARG_KEY);
+		encounterRoundInfo = (EncounterRoundInfo) getArguments().getSerializable(COMBAT_INFO_ARG_KEY);
 		character = (Character)getArguments().getSerializable(CHARACTER_ARG_KEY);
 		creature = (Creature)getArguments().getSerializable(CREATURE_ARG_KEY);
 
@@ -122,11 +122,11 @@ public class SelectActionDialog extends DialogFragment {
 		Short selectedActionPoints = (Short)actionPointsSpinner.getSelectedItem();
 
 		if(!Action.AUTO.equals(selectedAction)
-				&& !selectedAction.equals(combatRoundInfo.getActionInProgress())
-				&& selectedActionPoints <= combatRoundInfo.getActionPointsRemaining()) {
+				&& !selectedAction.equals(encounterRoundInfo.getActionInProgress())
+				&& selectedActionPoints <= encounterRoundInfo.getActionPointsRemaining()) {
 			result = true;
-			combatRoundInfo.setActionInProgress(selectedAction);
-			combatRoundInfo.setActionPointsRemaining((short)(combatRoundInfo.getActionPointsRemaining() - selectedActionPoints));
+			encounterRoundInfo.setActionInProgress(selectedAction);
+			encounterRoundInfo.setActionPointsRemaining((short)(encounterRoundInfo.getActionPointsRemaining() - selectedActionPoints));
 		}
 
 		return result;
@@ -239,8 +239,8 @@ public class SelectActionDialog extends DialogFragment {
 	public Creature getCreature() {
 		return creature;
 	}
-	public CombatRoundInfo getCombatRoundInfo() {
-		return combatRoundInfo;
+	public EncounterRoundInfo getEncounterRoundInfo() {
+		return encounterRoundInfo;
 	}
 
 	public interface SelectActionDialogListener {

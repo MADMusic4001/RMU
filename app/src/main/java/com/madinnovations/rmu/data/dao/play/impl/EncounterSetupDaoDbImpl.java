@@ -27,13 +27,13 @@ import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
 import com.madinnovations.rmu.data.dao.play.EncounterSetupDao;
-import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCharacterCombatInfoSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupCreatureCombatInfoSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.CombatSetupSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCharacterEncounterInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCreatureEncounterInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import javax.inject.Singleton;
  * Methods for managing {@link EncounterSetup} objects in a SQLite database.
  */
 @Singleton
-public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> implements EncounterSetupDao, CombatSetupSchema {
+public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> implements EncounterSetupDao, EncounterSetupSchema {
 	private CharacterDao characterDao;
 	private CreatureDao creatureDao;
 	private CampaignDao campaignDao;
@@ -107,7 +107,7 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_COMBAT_START_TIME + " DESC");
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_ENCOUNTER_START_TIME + " DESC");
 
 			if (cursor != null) {
 				if(cursor.moveToFirst()) {
@@ -137,7 +137,7 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_COMBAT_START_TIME + " DESC");
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_ENCOUNTER_START_TIME + " DESC");
 
 			if (cursor != null) {
 				cursor.moveToFirst();
@@ -167,7 +167,7 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		instance.setCampaign(campaignDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CAMPAIGN_ID))));
 		instance.setCurrentInitiative(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_INITIATIVE)));
 		Calendar startTime = Calendar.getInstance();
-		startTime.setTimeInMillis(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_COMBAT_START_TIME)));
+		startTime.setTimeInMillis(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ENCOUNTER_START_TIME)));
 		instance.setEncounterStartTime(startTime);
 		instance.setCharacterCombatInfo(getCharacterLocations(instance.getId()));
 		instance.setEnemyCombatInfo(getCreatureLocations(instance.getId()));
@@ -188,7 +188,7 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CURRENT_INITIATIVE, instance.getCurrentInitiative());
-		values.put(COLUMN_COMBAT_START_TIME, instance.getEncounterStartTime().getTimeInMillis());
+		values.put(COLUMN_ENCOUNTER_START_TIME, instance.getEncounterStartTime().getTimeInMillis());
 
 		return values;
 	}
@@ -203,85 +203,85 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		return result;
 	}
 
-	private boolean saveCharacterLocations(SQLiteDatabase db, int combatSetupId, Map<Character, CombatRoundInfo> characterLocations) {
+	private boolean saveCharacterLocations(SQLiteDatabase db, int combatSetupId, Map<Character, EncounterRoundInfo> characterLocations) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(combatSetupId) };
-		final String selection = CombatSetupCharacterCombatInfoSchema.COLUMN_COMBAT_SETUP_ID + " = ?";
+		final String selection = EncounterSetupCharacterEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID + " = ?";
 
-		db.delete(CombatSetupCharacterCombatInfoSchema.TABLE_NAME, selection, selectionArgs);
+		db.delete(EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Character, CombatRoundInfo> entry : characterLocations.entrySet()) {
-			result &= (db.insertWithOnConflict(CombatSetupCharacterCombatInfoSchema.TABLE_NAME, null,
+		for(Map.Entry<Character, EncounterRoundInfo> entry : characterLocations.entrySet()) {
+			result &= (db.insertWithOnConflict(EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME, null,
 											   getCharacterLocationsContentValues(combatSetupId, entry.getKey(), entry.getValue
 													   ()), SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
 
-	private ContentValues getCharacterLocationsContentValues(int combatSetupId, Character character, CombatRoundInfo combatRoundInfo) {
+	private ContentValues getCharacterLocationsContentValues(int combatSetupId, Character character, EncounterRoundInfo encounterRoundInfo) {
 		ContentValues values = new ContentValues(6);
 
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_COMBAT_SETUP_ID, combatSetupId);
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID, character.getId());
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X, combatRoundInfo.getHexCoordinate().x);
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_Y, combatRoundInfo.getHexCoordinate().y);
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE, combatRoundInfo.getInitiativeRoll());
-		values.put(CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING, combatRoundInfo.getActionPointsRemaining());
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID, combatSetupId);
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID, character.getId());
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X, encounterRoundInfo.getHexCoordinate().x);
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y, encounterRoundInfo.getHexCoordinate().y);
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE, encounterRoundInfo.getInitiativeRoll());
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING, encounterRoundInfo.getActionPointsRemaining());
 
 		return values;
 	}
 
-	private boolean saveCreatureLocations(SQLiteDatabase db, int combatSetupId, Map<Creature, CombatRoundInfo> creatureLocations) {
+	private boolean saveCreatureLocations(SQLiteDatabase db, int combatSetupId, Map<Creature, EncounterRoundInfo> creatureLocations) {
 		boolean result = true;
 		final String selectionArgs[] = { String.valueOf(combatSetupId) };
-		final String selection = CombatSetupCreatureCombatInfoSchema.COLUMN_COMBAT_SETUP_ID + " = ?";
+		final String selection = EncounterSetupCreatureEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID + " = ?";
 
-		db.delete(CombatSetupCreatureCombatInfoSchema.TABLE_NAME, selection, selectionArgs);
+		db.delete(EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Creature, CombatRoundInfo> entry : creatureLocations.entrySet()) {
-			result &= (db.insertWithOnConflict(CombatSetupCreatureCombatInfoSchema.TABLE_NAME, null,
+		for(Map.Entry<Creature, EncounterRoundInfo> entry : creatureLocations.entrySet()) {
+			result &= (db.insertWithOnConflict(EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME, null,
 											   getCharacterLocationsContentValues(combatSetupId, entry.getKey(), entry.getValue
 													   ()), SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
 
-	private ContentValues getCharacterLocationsContentValues(int combatSetupId, Creature creature, CombatRoundInfo combatRoundInfo) {
+	private ContentValues getCharacterLocationsContentValues(int combatSetupId, Creature creature, EncounterRoundInfo encounterRoundInfo) {
 		ContentValues values = new ContentValues(6);
 
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_COMBAT_SETUP_ID, combatSetupId);
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID, creature.getId());
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X, combatRoundInfo.getHexCoordinate().x);
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_Y, combatRoundInfo.getHexCoordinate().y);
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE, combatRoundInfo.getInitiativeRoll());
-		values.put(CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING, combatRoundInfo.getActionPointsRemaining());
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID, combatSetupId);
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID, creature.getId());
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X, encounterRoundInfo.getHexCoordinate().x);
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y, encounterRoundInfo.getHexCoordinate().y);
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE, encounterRoundInfo.getInitiativeRoll());
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING, encounterRoundInfo.getActionPointsRemaining());
 
 		return values;
 	}
 
-	private Map<Character, CombatRoundInfo> getCharacterLocations(int id) {
+	private Map<Character, EncounterRoundInfo> getCharacterLocations(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = CombatSetupCharacterCombatInfoSchema.COLUMN_COMBAT_SETUP_ID + " = ?";
+		final String selection = EncounterSetupCharacterEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID + " = ?";
 
-		Cursor cursor = super.query(CombatSetupCharacterCombatInfoSchema.TABLE_NAME, CombatSetupCharacterCombatInfoSchema.COLUMNS,
-									selection, selectionArgs, CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID);
-		Map<Character, CombatRoundInfo> map = new HashMap<>(cursor.getCount());
+		Cursor cursor = super.query(EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME, EncounterSetupCharacterEncounterInfoSchema.COLUMNS,
+									selection, selectionArgs, EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID);
+		Map<Character, EncounterRoundInfo> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			CombatRoundInfo combatRoundInfo = new CombatRoundInfo();
-			combatRoundInfo.setHexCoordinate(new Point());
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CombatSetupCharacterCombatInfoSchema.COLUMN_CHARACTER_ID));
+			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
+			encounterRoundInfo.setHexCoordinate(new Point());
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID));
 			Character instance = characterDao.getById(mappedId);
-			combatRoundInfo.getHexCoordinate().x = cursor.getInt(cursor.getColumnIndexOrThrow(
-					CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_X));
-			combatRoundInfo.getHexCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
-					CombatSetupCharacterCombatInfoSchema.COLUMN_LOCATION_Y));
-			combatRoundInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
-					CombatSetupCharacterCombatInfoSchema.COLUMN_BASE_INITIATIVE)));
-			combatRoundInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
-					CombatSetupCharacterCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING)));
+			encounterRoundInfo.getHexCoordinate().x = cursor.getInt(cursor.getColumnIndexOrThrow(
+					EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X));
+			encounterRoundInfo.getHexCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
+					EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y));
+			encounterRoundInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
+					EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE)));
+			encounterRoundInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
+					EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING)));
 			if(instance != null) {
-				map.put(instance, combatRoundInfo);
+				map.put(instance, encounterRoundInfo);
 			}
 			cursor.moveToNext();
 		}
@@ -290,29 +290,29 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		return map;
 	}
 
-	private Map<Creature, CombatRoundInfo> getCreatureLocations(int id) {
+	private Map<Creature, EncounterRoundInfo> getCreatureLocations(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
-		final String selection = CombatSetupCreatureCombatInfoSchema.COLUMN_COMBAT_SETUP_ID + " = ?";
+		final String selection = EncounterSetupCreatureEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID + " = ?";
 
-		Cursor cursor = super.query(CombatSetupCreatureCombatInfoSchema.TABLE_NAME, CombatSetupCreatureCombatInfoSchema.COLUMNS,
-									selection, selectionArgs, CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID);
-		Map<Creature, CombatRoundInfo> map = new HashMap<>(cursor.getCount());
+		Cursor cursor = super.query(EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME, EncounterSetupCreatureEncounterInfoSchema.COLUMNS,
+									selection, selectionArgs, EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID);
+		Map<Creature, EncounterRoundInfo> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			CombatRoundInfo combatRoundInfo = new CombatRoundInfo();
-			combatRoundInfo.setHexCoordinate(new Point());
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CombatSetupCreatureCombatInfoSchema.COLUMN_CREATURE_ID));
+			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
+			encounterRoundInfo.setHexCoordinate(new Point());
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID));
 			Creature instance = creatureDao.getById(mappedId);
-			combatRoundInfo.getHexCoordinate().x = cursor.getInt(cursor.getColumnIndexOrThrow(
-					CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_X));
-			combatRoundInfo.getHexCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
-					CombatSetupCreatureCombatInfoSchema.COLUMN_LOCATION_Y));
-			combatRoundInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
-					CombatSetupCreatureCombatInfoSchema.COLUMN_BASE_INITIATIVE)));
-			combatRoundInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
-					CombatSetupCreatureCombatInfoSchema.COLUMN_ACTION_POINTS_REMAINING)));
+			encounterRoundInfo.getHexCoordinate().x = cursor.getInt(cursor.getColumnIndexOrThrow(
+					EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X));
+			encounterRoundInfo.getHexCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
+					EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y));
+			encounterRoundInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
+					EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE)));
+			encounterRoundInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
+					EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING)));
 			if(instance != null) {
-				map.put(instance, combatRoundInfo);
+				map.put(instance, encounterRoundInfo);
 			}
 			cursor.moveToNext();
 		}

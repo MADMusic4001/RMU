@@ -37,7 +37,7 @@ import android.view.View;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 import com.madinnovations.rmu.view.utils.Cube;
@@ -257,7 +257,7 @@ public class HexView extends View {
 		}
 		if(callbacks != null) {
 			Map<Point, List<String>> hexStringsMap = new HashMap<>();
-			for(Map.Entry<Character, CombatRoundInfo> entry : callbacks.getCombatSetup().getCharacterCombatInfo().entrySet()) {
+			for(Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup().getCharacterCombatInfo().entrySet()) {
 				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
 																	entry.getKey().getKnownAs().length() : 3);
 				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
@@ -267,7 +267,7 @@ public class HexView extends View {
 				}
 				hexStrings.add(initials);
 			}
-			for(Map.Entry<Creature, CombatRoundInfo> entry : callbacks.getCombatSetup().getEnemyCombatInfo().entrySet()) {
+			for(Map.Entry<Creature, EncounterRoundInfo> entry : callbacks.getEncounterSetup().getEnemyCombatInfo().entrySet()) {
 				String abbreviation = entry.getKey().getCreatureVariety().getName().substring(0, 3);
 				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
 				if(hexStrings == null) {
@@ -351,7 +351,7 @@ public class HexView extends View {
 	}
 
 	public interface Callbacks {
-		EncounterSetup getCombatSetup();
+		EncounterSetup getEncounterSetup();
 	}
 
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

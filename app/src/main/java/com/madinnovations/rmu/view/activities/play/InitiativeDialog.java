@@ -20,7 +20,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -29,7 +28,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.play.CombatRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.data.entities.play.InitiativeListItem;
 import com.madinnovations.rmu.view.adapters.play.InitiativeListAdapter;
@@ -44,8 +43,8 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public class InitiativeDialog extends DialogFragment {
-	private static final String TAG = "InitiativeDialog";
-	public static final String COMBAT_SETUP_ARG_KEY = "combatSetup";
+	private static final String TAG                     = "InitiativeDialog";
+	public static final String  ENCOUNTER_SETUP_ARG_KEY = "encounterSetup";
 	private EncounterSetup encounterSetup;
 	private InitiativeDialogListener listener = null;
 	private InitiativeListAdapter initiativeListAdapter;
@@ -54,7 +53,7 @@ public class InitiativeDialog extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		encounterSetup = (EncounterSetup) getArguments().getSerializable(COMBAT_SETUP_ARG_KEY);
+		encounterSetup = (EncounterSetup) getArguments().getSerializable(ENCOUNTER_SETUP_ARG_KEY);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		View contentView = inflater.inflate(R.layout.initiative_dialog, null);
 		ListView combatantsListView = (ListView)contentView.findViewById(R.id.combatants_list_view);
@@ -79,23 +78,23 @@ public class InitiativeDialog extends DialogFragment {
 	}
 
 	private void initInitiativeList() {
-		for(Map.Entry<Character, CombatRoundInfo> entry : encounterSetup.getCharacterCombatInfo().entrySet()) {
+		for(Map.Entry<Character, EncounterRoundInfo> entry : encounterSetup.getCharacterCombatInfo().entrySet()) {
 			InitiativeListItem listItem = new InitiativeListItem();
 			short total;
 			listItem.setCharacter(entry.getKey());
-			listItem.setCombatRoundInfo(entry.getValue());
-			total = listItem.getCombatRoundInfo().getInitiativeRoll();
+			listItem.setEncounterRoundInfo(entry.getValue());
+			total = listItem.getEncounterRoundInfo().getInitiativeRoll();
 			total += entry.getKey().getTotalStatBonus(Statistic.QUICKNESS);
 			total += entry.getKey().getInitiativePenalty();
 			entry.getValue().setBaseInitiative(total);
 			listItems.add(listItem);
 		}
-		for(Map.Entry<Creature, CombatRoundInfo> entry : encounterSetup.getEnemyCombatInfo().entrySet()) {
+		for(Map.Entry<Creature, EncounterRoundInfo> entry : encounterSetup.getEnemyCombatInfo().entrySet()) {
 			InitiativeListItem listItem = new InitiativeListItem();
 			short total;
 			listItem.setCreature(entry.getKey());
-			listItem.setCombatRoundInfo(entry.getValue());
-			total = listItem.getCombatRoundInfo().getInitiativeRoll();
+			listItem.setEncounterRoundInfo(entry.getValue());
+			total = listItem.getEncounterRoundInfo().getInitiativeRoll();
 			Short quickness = entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS);
 			if(quickness != null) {
 				total += quickness;

@@ -24,13 +24,13 @@ import com.madinnovations.rmu.data.entities.creature.Creature;
  * Class used by the ListView adapter in the Initiative dialog UI to encapsulate data for each row.
  */
 public class InitiativeListItem implements Comparable<InitiativeListItem> {
-	private Character character;
-	private Creature  creature;
-	private CombatRoundInfo combatRoundInfo;
+	private Character          character;
+	private Creature           creature;
+	private EncounterRoundInfo encounterRoundInfo;
 
 	@Override
 	public int compareTo(@NonNull InitiativeListItem o) {
-		return o.combatRoundInfo.getBaseInitiative() - combatRoundInfo.getBaseInitiative();
+		return o.encounterRoundInfo.getBaseInitiative() - encounterRoundInfo.getBaseInitiative();
 	}
 
 	// Getters and setters
@@ -46,10 +46,10 @@ public class InitiativeListItem implements Comparable<InitiativeListItem> {
 	public void setCreature(Creature creature) {
 		this.creature = creature;
 	}
-	public CombatRoundInfo getCombatRoundInfo() {
-		return combatRoundInfo;
+	public EncounterRoundInfo getEncounterRoundInfo() {
+		return encounterRoundInfo;
 	}
-	public void setCombatRoundInfo(CombatRoundInfo combatRoundInfo) {
-		this.combatRoundInfo = combatRoundInfo;
+	public void setEncounterRoundInfo(EncounterRoundInfo encounterRoundInfo) {
+		this.encounterRoundInfo = encounterRoundInfo;
 	}
 }

@@ -33,7 +33,7 @@ import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.serializers.ItemSerializer;
 import com.madinnovations.rmu.data.dao.item.serializers.WeaponSerializer;
 import com.madinnovations.rmu.data.dao.play.EncounterSetupDao;
-import com.madinnovations.rmu.data.dao.play.serializers.CombatSetupSerializer;
+import com.madinnovations.rmu.data.dao.play.serializers.EncounterSetupSerializer;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.object.Item;
@@ -67,7 +67,7 @@ public class ImportExportCampaignRxHandler {
 	private CharacterDao                characterDao;
 	private CharacterSerializer         characterSerializer = new CharacterSerializer();
 	private EncounterSetupDao encounterSetupDao;
-	private CombatSetupSerializer       combatSetupSerializer = new CombatSetupSerializer();
+	private EncounterSetupSerializer encounterSetupSerializer = new EncounterSetupSerializer();
 	private ItemDao                     itemDao;
 	private ItemSerializer              itemSerializer = new ItemSerializer();
 	private WeaponDao                   weaponDao;
@@ -111,7 +111,7 @@ public class ImportExportCampaignRxHandler {
 							BufferedReader reader = new BufferedReader(new FileReader(fileName));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
-							gsonBuilder.registerTypeAdapter(EncounterSetup.class, combatSetupSerializer);
+							gsonBuilder.registerTypeAdapter(EncounterSetup.class, encounterSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
 							gsonBuilder.registerTypeAdapter(Weapon.class, weaponSerializer);
 							gsonBuilder.setLenient();
@@ -239,7 +239,7 @@ public class ImportExportCampaignRxHandler {
 							BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
-							gsonBuilder.registerTypeAdapter(EncounterSetup.class, combatSetupSerializer);
+							gsonBuilder.registerTypeAdapter(EncounterSetup.class, encounterSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
 							gsonBuilder.registerTypeAdapter(Weapon.class, weaponSerializer);
 							final Gson gson = gsonBuilder.create();

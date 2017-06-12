@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         style="@style/ReadOnlyEditText"/>
   </LinearLayout>
+
   <LinearLayout
       android:orientation="horizontal"
       android:layout_width="match_parent"
