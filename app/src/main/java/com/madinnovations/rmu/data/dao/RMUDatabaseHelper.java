@@ -178,6 +178,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(ArchetypeSpellsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(ArchetypeSkillsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(TalentSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(TalentParametersPerUnitSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureTypeTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureCategoryTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyTalentTiersSchema.TABLE_CREATE);
@@ -299,6 +300,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(VarietyTalentTiersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureCategoryTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureTypeTalentsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(TalentParametersPerUnitSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ArchetypeSkillsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ArchetypeSpellsSchema.TABLE_NAME, null, null);
