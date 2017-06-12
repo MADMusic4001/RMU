@@ -144,7 +144,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, COLUMN_LEVEL);
+			Cursor cursor = db.rawQuery(QUERY_BY_CAMPAIGN, selectionArgs);
 
 			if (cursor != null) {
 				cursor.moveToFirst();
