@@ -70,7 +70,7 @@ public class Item extends DatabaseObject {
 	 *
 	 * @return a String of this instance's attributes.
 	 */
-	public String debugToString() {
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", getId())
 				.append("campaign", campaign)

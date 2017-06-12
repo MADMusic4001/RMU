@@ -19,8 +19,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -183,7 +181,7 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 		nameEdit.setText(currentInstance.getName());
 		historyEdit.setText(currentInstance.getHistory());
 
-		Log.d(TAG, "copyItemToViews: item = " + ((Weapon)currentInstance).debugToString());
+		Log.d(TAG, "copyItemToViews: item = " + ((Weapon)currentInstance).print());
 		if(currentInstance.getCampaign() == null) {
 			Log.d(TAG, "copyItemToViews: selected campaign item = " + campaignSpinnerUtils.getSelectedItem());
 			if(campaignSpinnerUtils.getSelectedItem() != null) {

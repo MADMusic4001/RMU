@@ -250,7 +250,7 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	@Override
 	public void saveItem() {
-		Log.d(TAG, "saveItem: saving weapon " + currentInstance.debugToString());
+		Log.d(TAG, "saveItem: saving weapon " + currentInstance.print());
 		if(currentInstance.isValid()) {
 			final boolean wasNew = isNew;
 			isNew = false;

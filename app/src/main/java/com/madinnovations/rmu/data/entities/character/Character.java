@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import android.util.Log;
+
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
@@ -46,6 +48,7 @@ import java.util.Random;
 @SuppressWarnings("unused")
 public class Character extends DatabaseObject implements Serializable {
 	private static final long serialVersionUID = 5800697497948561223L;
+	private static final String TAG = "Character";
 	public static final String         JSON_NAME                       = "Characters";
 	public static final short          INITIAL_DP                      = 50;
 	private Campaign                   campaign                        = null;
@@ -458,9 +461,12 @@ public class Character extends DatabaseObject implements Serializable {
 	public short getOffensiveBonus() {
 		short result = -25;
 
+		Log.d(TAG, "getOffensiveBonus: mainHandItem = " + mainHandItem.print());
 		if(mainHandItem != null && mainHandItem instanceof Weapon) {
+			Log.d(TAG, "getOffensiveBonus: weaponTemplate = " + mainHandItem.getItemTemplate().print());
 			WeaponTemplate weaponTemplate = (WeaponTemplate)mainHandItem.getItemTemplate();
 			Skill skill = weaponTemplate.getCombatSkill();
+			Log.d(TAG, "getOffensiveBonus: skill = " + skill.print());
 			result = skill.getRankBonus(getSkillRanks().get(skill));
 		}
 

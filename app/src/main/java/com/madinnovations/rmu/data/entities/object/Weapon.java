@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
-import com.madinnovations.rmu.data.entities.common.Size;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -67,10 +65,10 @@ public class Weapon extends Item {
 	}
 
 	@Override
-	public String debugToString() {
+	public String print() {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
-				.append("item", super.debugToString())
+				.append("item", super.print())
 				.append("bonus", bonus)
 				.append("twoHanded", twoHanded)
 				.toString();
