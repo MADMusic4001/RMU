@@ -460,7 +460,7 @@ public class ImportExportRxHandler {
 												weaponTemplates.add(weaponTemplate);
 											}
 											jsonReader.endArray();
-											weaponTemplateDao.save(weaponTemplates, true);
+//											weaponTemplateDao.save(weaponTemplates, true);
 											Log.i(TAG, "Loaded " + weaponTemplates.size() + " weaponTemplates.");
 											weaponTemplates = null;
 											break;

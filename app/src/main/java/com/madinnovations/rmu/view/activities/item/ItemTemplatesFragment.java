@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.item;
 
@@ -34,7 +34,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.item.WeaponTemplateRxHandler;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
@@ -49,6 +52,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Handles interactions with the UI for item templates.
  */
@@ -57,10 +62,16 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 	private static final long serialVersionUID = 1672923104734079235L;
 	@Inject
 	protected ItemTemplateRxHandler             itemRxHandler;
+	@Inject
+	protected SpecializationRxHandler           specializationRxHandler;
+	@Inject
+	protected DamageTableRxHandler              damageTableRxHandler;
+	@Inject
+	protected WeaponTemplateRxHandler           weaponTemplateRxHandler;
 	private   TwoFieldListAdapter<ItemTemplate> listAdapter;
 	private   ListView                          listView;
 	private   ItemTemplate                      currentInstance = new ItemTemplate();
-	private ItemTemplatePaneFragment itemTemplatePaneFragment;
+	private   ItemTemplatePaneFragment          itemTemplatePaneFragment;
 	private   boolean                           isNew = true;
 
 	@Nullable
@@ -131,6 +142,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 					deleteItem(item);
 					return true;
 				}
+				break;
 		}
 		return super.onContextItemSelected(menuItem);
 	}
@@ -183,37 +195,38 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 	}
 
 	private void deleteItem(@NonNull final ItemTemplate item) {
-		itemRxHandler.deleteById(item.getId())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
+		weaponTemplateRxHandler.deleteById(item.getId())
 				.subscribe(new Subscriber<Boolean>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {
+						Log.d(TAG, "onCompleted: weapon template deleted");
+					}
 					@Override
 					public void onError(Throwable e) {
-						Log.e("ItemTemplatesFragment", "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
+						Log.e(TAG, "onError: Exception caught deleting weapon templage", e);
 					}
 					@Override
 					public void onNext(Boolean success) {
 						if(success) {
-							int position = listAdapter.getPosition(item);
-							if(position == listAdapter.getCount() -1) {
-								position--;
-							}
-							listAdapter.remove(item);
-							listAdapter.notifyDataSetChanged();
-							if(position >= 0) {
-								listView.setSelection(position);
-								listView.setItemChecked(position, true);
-								currentInstance = listAdapter.getItem(position);
-							}
-							else {
-								currentInstance = new ItemTemplate();
-								isNew = true;
-							}
-							copyItemToViews();
-							Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
+							removeItemFromList(item);
+						}
+						else {
+							itemRxHandler.deleteById(item.getId())
+									.subscribe(new Subscriber<Boolean>() {
+										@Override
+										public void onCompleted() {}
+										@Override
+										public void onError(Throwable e) {
+											Log.e("ItemTemplatesFragment", "Exception when deleting: " + item, e);
+											Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
+										}
+										@Override
+										public void onNext(Boolean success) {
+											if(success) {
+												removeItemFromList(item);
+											}
+										}
+									});
 						}
 					}
 				});
@@ -223,12 +236,32 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 		itemTemplatePaneFragment.copyItemToViews();
 	}
 
+	private void removeItemFromList(@NonNull final ItemTemplate item) {
+		int position = listAdapter.getPosition(item);
+		if(position == listAdapter.getCount() -1) {
+			position--;
+		}
+		listAdapter.remove(item);
+		listAdapter.notifyDataSetChanged();
+		if(position >= 0) {
+			listView.setSelection(position);
+			listView.setItemChecked(position, true);
+			currentInstance = listAdapter.getItem(position);
+		}
+		else {
+			currentInstance = new ItemTemplate();
+			isNew = true;
+		}
+		copyItemToViews();
+		Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
+	}
+
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
 		listAdapter = new TwoFieldListAdapter<>(this.getActivity(), 1, 5, this);
 		listView.setAdapter(listAdapter);
 
-		itemRxHandler.getAll()
+		itemRxHandler.getAllWithoutSubclass()
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Collection<ItemTemplate>>() {
 					@Override

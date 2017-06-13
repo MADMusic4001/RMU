@@ -86,7 +86,14 @@ public interface ItemTemplateDao {
 	 * Retrieves all ItemTemplate objects from persistent storage that can be equipped in the given slot.
 	 *
 	 * @param slot  an equipment slot
-	 * @return  a List containing all ItemTemplate objects currently in persistent storage that can be equipped in the given slot.
+	 * @return  a Collection containing all ItemTemplate objects currently in persistent storage that can be equipped in the given slot.
 	 */
     public Collection<ItemTemplate> getAllForSlot(@NonNull Slot slot);
+
+	/**
+	 * Retrieves all ItemTemplate objects from persistent storage that have no subclass.
+	 *
+	 * @return  a Collection containing all ItemTemplate objects with no subclass currently in persistent storage.
+	 */
+	public Collection<ItemTemplate> getAllWithoutSubclass();
 }

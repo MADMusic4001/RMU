@@ -26,8 +26,11 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.Exceptions;
+import rx.observables.SyncOnSubscribe;
 import rx.schedulers.Schedulers;
 
 /**
@@ -190,5 +193,34 @@ public class ItemTemplateRxHandler {
 			}
 		}).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all ItemTemplate
+	 * instances that have no subclass.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of ItemTemplate
+	 * instances.
+	 */
+	public Observable<Collection<ItemTemplate>> getAllWithoutSubclass() {
+		return Observable.create(
+				new SyncOnSubscribe<Integer, Collection<ItemTemplate>>() {
+					@Override
+					protected Integer generateState() {
+						return null;
+					}
+					@Override
+					protected Integer next(Integer state, Observer<? super Collection<ItemTemplate>> observer) {
+						try {
+							Collection<ItemTemplate> items = dao.getAllWithoutSubclass();
+							observer.onNext(items);
+						} catch (Exception e) {
+							Exceptions.throwOrReport(e, observer);
+						}
+						observer.onCompleted();
+						return null;
+					}
+				}).subscribeOn(Schedulers.io())
+						.observeOn(AndroidSchedulers.mainThread());
 	}
 }

@@ -97,6 +97,13 @@ public interface ItemTemplateSchema {
 
 	String QUERY_BY_ID = QUERY_ALL + " WHERE ITEM." + ItemTemplateSchema.COLUMN_ID + " = ?";
 
+	String QUERY_NO_SUBCLASS = QUERY_ALL + " WHERE ARMOR." + ArmorTemplateSchema.COLUMN_ID + " IS NULL AND"
+			+ " HERBS." + HerbTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " IS NULL AND"
+			+ " NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " IS NULL AND"
+			+ " POISONS." + PoisonTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " IS NULL AND"
+			+ " SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ID + " IS NULL AND"
+			+ " WEAPON." + WeaponTemplateSchema.COLUMN_ID + " IS NULL";
+
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_WEIGHT, COLUMN_BASE_COST, COLUMN_STRENGTH,
 			COLUMN_CONSTRUCTION_TIME, COLUMN_MANEUVER_DIFFICULTY, COLUMN_NOTES, COLUMN_PRIMARY_SLOT, COLUMN_SECONDARY_SLOT};
 }

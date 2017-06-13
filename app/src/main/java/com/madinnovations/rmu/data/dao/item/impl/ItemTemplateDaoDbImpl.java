@@ -20,7 +20,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
@@ -190,6 +189,37 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		try {
 			Cursor cursor = query(getTableName(), getColumns(), selection,
 								  selectionArgs, getSortString());
+			if (cursor != null) {
+				itemTemplates = new ArrayList<>(cursor.getCount());
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					ItemTemplate instance = cursorToEntity(cursor);
+					itemTemplates.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return itemTemplates;
+	}
+
+	@Override
+	public Collection<ItemTemplate> getAllWithoutSubclass() {
+		Collection<ItemTemplate> itemTemplates = null;
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = rawQuery(QUERY_NO_SUBCLASS, null);
 			if (cursor != null) {
 				itemTemplates = new ArrayList<>(cursor.getCount());
 				cursor.moveToFirst();

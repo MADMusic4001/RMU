@@ -69,7 +69,7 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
 			final String selectionArgs[] = {String.valueOf(getId(instance))};
 			final String selection = getIdColumnName() + " = ?";
 			ContentValues contentValues = getContentValues(instance);
-			boolean result;
+			boolean result = false;
 
 			SQLiteDatabase db = helper.getWritableDatabase();
 			boolean newTransaction = !db.inTransaction();
@@ -77,12 +77,12 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
 				db.beginTransaction();
 			}
 			try {
-				if (isNew) {
-					result = (db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE) == id);
-				}
-				else {
+				if (!isNew) {
 					int count = db.update(getTableName(), contentValues, selection, selectionArgs);
 					result = (count == 1);
+				}
+				if(isNew || !result){
+					result = (db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE) == id);
 				}
 				result &= saveRelationships(db, instance);
 				if (result && newTransaction) {
