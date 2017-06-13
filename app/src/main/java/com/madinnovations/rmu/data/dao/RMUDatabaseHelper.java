@@ -299,7 +299,15 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(DamageResultSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CampaignAttackRestrictionsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(WeaponSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(ItemSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ArmorTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(HerbTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(PoisonTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(NaturalsTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(SubstanceTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(WeaponTemplateSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(ItemTemplateSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpecializationStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(TalentParametersPerUnitSchema.TABLE_NAME, null, null);

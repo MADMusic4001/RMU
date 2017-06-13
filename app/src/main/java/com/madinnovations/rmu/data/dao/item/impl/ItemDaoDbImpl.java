@@ -135,7 +135,6 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	@Override
 	public Collection<Item> getAllForCampaign(Campaign campaign) {
 		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
-		final String selection = COLUMN_CAMPAIGN_ID + " = ?";
 		Collection<Item> collection = new ArrayList<>();
 
 		SQLiteDatabase db = helper.getReadableDatabase();

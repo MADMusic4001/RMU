@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.item.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -48,6 +46,7 @@ import java.io.IOException;
  * Json serializer and deserializer for the {@link ItemTemplate} entities
  */
 public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements ItemTemplateSchema {
+	@SuppressWarnings("unused")
 	private static final String TAG = "ItemTemplateSerializer";
 	private static final String ITEM_TEMPLATE_TYPE = "itemTemplateType";
 
@@ -95,6 +94,7 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 							weaponTemplate = true;
 							break;
 					}
+					break;
 				case COLUMN_ID:
 					itemTemplate.setId(in.nextInt());
 					break;

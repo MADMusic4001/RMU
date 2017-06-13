@@ -118,15 +118,13 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 			Cursor cursor = db.rawQuery(QUERY_ALL, null);
 
 			Log.d("TAG", "getAll: count = " + cursor.getCount());
-			if (cursor != null) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					ItemTemplate instance = cursorToEntity(cursor);
-					list.add(instance);
-					cursor.moveToNext();
-				}
-				cursor.close();
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				ItemTemplate instance = cursorToEntity(cursor);
+				list.add(instance);
+				cursor.moveToNext();
 			}
+			cursor.close();
 		}
 		finally {
 			if(newTransaction) {

@@ -57,6 +57,7 @@ public class ItemSerializer extends TypeAdapter<Item> implements ItemSchema {
 							weapon = true;
 							break;
 					}
+					break;
 				case COLUMN_ID:
 					item.setId(in.nextInt());
 					break;
