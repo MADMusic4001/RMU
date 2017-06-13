@@ -34,6 +34,7 @@ import com.madinnovations.rmu.data.dao.play.serializers.EncounterSetupSerializer
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.RMUAppException;
 
@@ -59,14 +60,14 @@ public class ImportExportCampaignRxHandler {
 	private static final int NUM_TYPES = 5;
 	private static final String TAG = "ImportExportCampaignRxH";
 	private static final String VERSION = "version";
-	private CampaignDao                 campaignDao;
-	private CharacterDao                characterDao;
-	private CharacterSerializer         characterSerializer = new CharacterSerializer();
-	private EncounterSetupDao encounterSetupDao;
+	private CampaignDao              campaignDao;
+	private CharacterDao             characterDao;
+	private CharacterSerializer      characterSerializer = new CharacterSerializer();
+	private EncounterSetupDao        encounterSetupDao;
 	private EncounterSetupSerializer encounterSetupSerializer = new EncounterSetupSerializer();
-	private ItemDao                     itemDao;
-	private ItemSerializer              itemSerializer = new ItemSerializer();
-	private RMUDatabaseHelper           helper;
+	private ItemDao                  itemDao;
+	private ItemSerializer           itemSerializer = new ItemSerializer();
+	private RMUDatabaseHelper        helper;
 
 	/**
 	 * Creates a new ImportExportRxHandler instance
@@ -103,6 +104,7 @@ public class ImportExportCampaignRxHandler {
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
 							gsonBuilder.registerTypeAdapter(EncounterSetup.class, encounterSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
+							gsonBuilder.registerTypeAdapter(Weapon.class, itemSerializer);
 							gsonBuilder.setLenient();
 							final Gson gson = gsonBuilder.create();
 
@@ -216,6 +218,7 @@ public class ImportExportCampaignRxHandler {
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
 							gsonBuilder.registerTypeAdapter(EncounterSetup.class, encounterSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
+							gsonBuilder.registerTypeAdapter(Weapon.class, itemSerializer);
 							final Gson gson = gsonBuilder.create();
 
 							JsonWriter jsonWriter = gson.newJsonWriter(writer);

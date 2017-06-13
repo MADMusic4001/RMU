@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
@@ -116,6 +117,7 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		try {
 			Cursor cursor = db.rawQuery(QUERY_ALL, null);
 
+			Log.d("TAG", "getAll: count = " + cursor.getCount());
 			if (cursor != null) {
 				cursor.moveToFirst();
 				while (!cursor.isAfterLast()) {

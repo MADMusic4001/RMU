@@ -68,7 +68,6 @@ import com.madinnovations.rmu.data.dao.creature.serializers.CreatureVarietySeria
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.serializers.ItemTemplateSerializer;
-import com.madinnovations.rmu.data.dao.item.serializers.WeaponTemplateSerializer;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
@@ -100,7 +99,11 @@ import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
+import com.madinnovations.rmu.data.entities.object.ArmorTemplate;
+import com.madinnovations.rmu.data.entities.object.HerbTemplate;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.PoisonTemplate;
+import com.madinnovations.rmu.data.entities.object.SubstanceTemplate;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.Spell;
@@ -181,7 +184,6 @@ public class ImportExportRxHandler {
 	private TalentSerializer            talentSerializer = new TalentSerializer();
 	private TalentCategoryDao           talentCategoryDao;
 	private WeaponTemplateDao           weaponTemplateDao;
-	private WeaponTemplateSerializer    weaponTemplateSerializer = new WeaponTemplateSerializer();
 	private RMUDatabaseHelper helper;
 
 	/**
@@ -273,7 +275,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
 							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
 							gsonBuilder.registerTypeAdapter(Talent.class, talentSerializer);
-							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, weaponTemplateSerializer);
+							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, itemTemplateSerializer);
 							gsonBuilder.setLenient();
 							final Gson gson = gsonBuilder.create();
 
@@ -699,6 +701,11 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(DamageResultRow.class, damageResultRowSerializer);
 							gsonBuilder.registerTypeAdapter(DamageTable.class, damageTableSerializer);
 							gsonBuilder.registerTypeAdapter(ItemTemplate.class, itemTemplateSerializer);
+							gsonBuilder.registerTypeAdapter(ArmorTemplate.class, itemTemplateSerializer);
+							gsonBuilder.registerTypeAdapter(HerbTemplate.class, itemTemplateSerializer);
+							gsonBuilder.registerTypeAdapter(PoisonTemplate.class, itemTemplateSerializer);
+							gsonBuilder.registerTypeAdapter(SubstanceTemplate.class, itemTemplateSerializer);
+							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, itemTemplateSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
 							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
 							gsonBuilder.registerTypeAdapter(Realm.class, realmSerializer);
@@ -708,7 +715,6 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(Spell.class, spellSerializer);
 							gsonBuilder.registerTypeAdapter(SpellList.class, spellListSerializer);
 							gsonBuilder.registerTypeAdapter(Talent.class, talentSerializer);
-							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, weaponTemplateSerializer);
 							final Gson gson = gsonBuilder.create();
 
 							JsonWriter jsonWriter = gson.newJsonWriter(writer);
