@@ -15,7 +15,11 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.item.schemas.NaturalsTemplateSchema;
 import com.madinnovations.rmu.data.entities.common.Biome;
+
+import java.io.IOException;
 
 /**
  * Attributes of items found in nature (herbs, poisons, etc.)
@@ -70,6 +74,25 @@ public abstract class NaturalsTemplate extends ItemTemplate {
 		return super.isValid() && biome != null && form != null && prep != null && effects != null;
 	}
 
+	/**
+	 * Writes this instances fields to a JSONWriter
+	 *
+	 * @param out  a JSONWrite instance to write the fields to
+	 * @throws IOException  when an IO error occurs
+	 */
+	public void serialize(JsonWriter out)
+	throws IOException {
+		super.serialize(out);
+		out.name(NaturalsTemplateSchema.COLUMN_BIOME_ID).value(getBiome().getId());
+		out.name(NaturalsTemplateSchema.COLUMN_FORM_NAME).value(getForm().name());
+		out.name(NaturalsTemplateSchema.COLUMN_PREP_NAME).value(getPrep().name());
+		if(season != null) {
+			out.name(NaturalsTemplateSchema.COLUMN_SEASON).value(getSeason());
+		}
+		out.name(NaturalsTemplateSchema.COLUMN_EFFECTS).value(getEffects());
+	}
+
+	// Getters and setters
 	public Biome getBiome() {
 		return biome;
 	}

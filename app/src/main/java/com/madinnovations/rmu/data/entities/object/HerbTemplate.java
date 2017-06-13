@@ -15,6 +15,11 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.item.schemas.ArmorTemplateSchema;
+
+import java.io.IOException;
+
 /**
  * Herbs attributes
  */
@@ -41,8 +46,19 @@ public class HerbTemplate extends NaturalsTemplate {
 	 *
 	 * @param other  an ItemTemplate instance
 	 */
-	public HerbTemplate(NaturalsTemplate other) {
+	public HerbTemplate(ItemTemplate other) {
 		super(other);
+	}
+
+	/**
+	 * Writes this instances fields to a JSONWriter
+	 *
+	 * @param out  a JSONWrite instance to write the fields to
+	 * @throws IOException  when an IO error occurs
+	 */
+	public void serialize(JsonWriter out)
+	throws IOException {
+		super.serialize(out);
 	}
 
 	@Override

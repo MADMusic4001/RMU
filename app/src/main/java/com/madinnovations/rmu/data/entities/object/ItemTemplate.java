@@ -15,11 +15,15 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.IOException;
 
 /**
  * ${CLASS_DESCRIPTION}
@@ -87,6 +91,34 @@ public class ItemTemplate extends DatabaseObject {
 				.append("primarySlot", primarySlot)
 				.append("secondarySlot", secondarySlot)
 				.toString();
+	}
+
+	/**
+	 * Writes this instances fields to a JSONWriter
+	 *
+	 * @param out  a JSONWrite instance to write the fields to
+	 * @throws IOException  when an IO error occurs
+	 */
+	public void serialize(JsonWriter out)
+	throws IOException {
+		out.name(ItemTemplateSchema.COLUMN_ID).value(getId());
+		out.name(ItemTemplateSchema.COLUMN_NAME).value(getName());
+		out.name(ItemTemplateSchema.COLUMN_WEIGHT).value(getWeight());
+		out.name(ItemTemplateSchema.COLUMN_BASE_COST).value(getBaseCost());
+		out.name(ItemTemplateSchema.COLUMN_STRENGTH).value(getStrength());
+		out.name(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME).value(getConstructionTime());
+		if(getManeuverDifficulty() != null) {
+			out.name(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY).value(getManeuverDifficulty().name());
+		}
+		if(getNotes() != null) {
+			out.name(ItemTemplateSchema.COLUMN_NOTES).value(getNotes());
+		}
+		if(getPrimarySlot() != null) {
+			out.name(ItemTemplateSchema.COLUMN_PRIMARY_SLOT).value(getPrimarySlot().name());
+		}
+		if(getSecondarySlot() != null) {
+			out.name(ItemTemplateSchema.COLUMN_SECONDARY_SLOT).value(getSecondarySlot().name());
+		}
 	}
 
 	// Getters and setters

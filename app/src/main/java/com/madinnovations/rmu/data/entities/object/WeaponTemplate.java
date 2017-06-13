@@ -15,11 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Skill;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.IOException;
 
 /**
  * Weapon attributes
@@ -84,6 +89,20 @@ public class WeaponTemplate extends ItemTemplate {
 				.append("damageTable", damageTable)
 				.append("braceable", braceable)
 				.toString();
+	}
+
+	/**
+	 * Writes this instances fields to a JSONWriter
+	 *
+	 * @param out  a JSONWrite instance to write the fields to
+	 * @throws IOException  when an IO error occurs
+	 */
+	public void serialize(JsonWriter out)
+	throws IOException {
+		super.serialize(out);
+		out.name(WeaponTemplateSchema.COLUMN_SKILL_ID).value(getCombatSkill().getId());
+		out.name(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID).value(getDamageTable().getId());
+		out.name(WeaponTemplateSchema.COLUMN_BRACEABLE).value(isBraceable());
 	}
 
 	// Getters and setters

@@ -15,8 +15,14 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.item.schemas.ArmorTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.IOException;
 
 /**
  * Armor Attributes
@@ -78,6 +84,23 @@ public class ArmorTemplate extends ItemTemplate {
 				.append("weightPercent", weightPercent)
 				.append("armorType", armorType)
 				.toString();
+	}
+
+	/**
+	 * Writes this instances fields to a JSONWriter
+	 *
+	 * @param out  a JSONWrite instance to write the fields to
+	 * @throws IOException  when an IO error occurs
+	 */
+	public void serialize(JsonWriter out)
+	throws IOException {
+		super.serialize(out);
+		out.name(ArmorTemplateSchema.COLUMN_SMALL_COST).value(getSmallCost());
+		out.name(ArmorTemplateSchema.COLUMN_MEDIUM_COST).value(getMediumCost());
+		out.name(ArmorTemplateSchema.COLUMN_BIG_COST).value(getBigCost());
+		out.name(ArmorTemplateSchema.COLUMN_LARGE_COST).value(getLargeCost());
+		out.name(ArmorTemplateSchema.COLUMN_WEIGHT_PERCENT).value(getWeightPercent());
+		out.name(ArmorTemplateSchema.COLUMN_ARMOR_TYPE).value(getArmorType());
 	}
 
 	// Getters and setters

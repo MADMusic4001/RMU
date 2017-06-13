@@ -15,11 +15,16 @@
  */
 package com.madinnovations.rmu.data.entities.object;
 
+import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.dao.item.schemas.NaturalsTemplateSchema;
+import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
 import com.madinnovations.rmu.view.RMUApp;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.IOException;
 
 /**
  * Substance attributes
@@ -90,6 +95,20 @@ public class SubstanceTemplate extends ItemTemplate {
 				.append("hardness", hardness)
 				.append("description", description)
 				.toString();
+	}
+
+	/**
+	 * Writes this instances fields to a JSONWriter
+	 *
+	 * @param out  a JSONWrite instance to write the fields to
+	 * @throws IOException  when an IO error occurs
+	 */
+	public void serialize(JsonWriter out)
+	throws IOException {
+		super.serialize(out);
+		out.name(SubstanceTemplateSchema.COLUMN_SUBSTANCE_TYPE_NAME).value(getSubstanceType().name());
+		out.name(SubstanceTemplateSchema.COLUMN_HARDNESS).value(getHardness());
+		out.name(SubstanceTemplateSchema.COLUMN_DESCRIPTION).value(getDescription());
 	}
 
 	// Getters and setters
