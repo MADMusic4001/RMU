@@ -318,7 +318,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = mainHandSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getMainHandItem())) {
+			if (item != null && !item.equals(character.getMainHandItem())) {
 				if(item.equals(mainHandSlotItem)) {
 					character.setMainHandItem(null);
 				}
@@ -328,7 +328,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = offHandSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getOffhandItem())) {
+			if (item != null && !item.equals(character.getOffhandItem())) {
 				if(item.equals(offhandSlotItem)) {
 					character.setOffhandItem(null);
 				}
@@ -338,7 +338,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = handsSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getHandsItem())) {
+			if (item != null && !item.equals(character.getHandsItem())) {
 				if(item.equals(handsSlotItem)) {
 					character.setHandsItem(null);
 				}
@@ -348,7 +348,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = chestSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getChestItem())) {
+			if (item != null && !item.equals(character.getChestItem())) {
 				if(item.equals(chestSlotItem)) {
 					character.setChestItem(null);
 				}
@@ -358,7 +358,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = armsSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getArmsItem())) {
+			if (item != null && !item.equals(character.getArmsItem())) {
 				if(item.equals(armsSlotItem)) {
 					character.setArmsItem(null);
 				}
@@ -368,7 +368,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = legsSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getLegsItem())) {
+			if (item != null && !item.equals(character.getLegsItem())) {
 				if(item.equals(legsSlotItem)) {
 					character.setLegsItem(null);
 				}
@@ -378,7 +378,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = feetSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getFeetItem())) {
+			if (item != null && !item.equals(character.getFeetItem())) {
 				if(item.equals(feetSlotItem)) {
 					character.setFeetItem(null);
 				}
@@ -388,7 +388,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = backSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getBackItem())) {
+			if (item != null && !item.equals(character.getBackItem())) {
 				if(item.equals(backSlotItem)) {
 					character.setBackItem(null);
 				}
@@ -398,7 +398,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = shirtSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getShirtItem())) {
+			if (item != null && !item.equals(character.getShirtItem())) {
 				if(item.equals(shirtSlotItem)) {
 					character.setShirtItem(null);
 				}
@@ -408,7 +408,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = pantsSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getPantsItem())) {
+			if (item != null && !item.equals(character.getPantsItem())) {
 				if(item.equals(pantsSlotItem)) {
 					character.setPantsItem(null);
 				}
@@ -418,7 +418,7 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 				result = true;
 			}
 			item = backSlotSpinnerUtils.getSelectedItem();
-			if (!item.equals(character.getBackpackItem())) {
+			if (item != null && !item.equals(character.getBackpackItem())) {
 				if(item.equals(backpackSlotItem)) {
 					character.setBackpackItem(null);
 				}

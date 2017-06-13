@@ -134,7 +134,7 @@ public class Skill extends DatabaseObject implements Comparable {
 	 * @param ranks  the number of ranks in the skill
 	 * @return  the skill rank bonus.
 	 */
-	public short getRankBonus(short ranks) {
+	public static short getRankBonus(short ranks) {
 		short result = 0;
 
 		if(ranks > 30) {

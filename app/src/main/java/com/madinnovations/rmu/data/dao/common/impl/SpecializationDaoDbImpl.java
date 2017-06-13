@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.common.impl;
 
@@ -89,7 +89,7 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
         return cursorToEntity(cursor, skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SKILL_ID))));
     }
 
-    @Override
+	@Override
     protected ContentValues getContentValues(Specialization instance) {
         ContentValues values;
 
@@ -220,6 +220,38 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
 		}
 		try {
 			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Specialization instance = cursorToEntity(cursor);
+
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public Collection<Specialization> getWeaponSpecializations() {
+		List<Specialization> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = rawQuery(QUERY_COMBAT_SPECIALIZATIONS, null);
 
 			if (cursor != null) {
 				cursor.moveToFirst();

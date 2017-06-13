@@ -41,6 +41,18 @@ public interface SpecializationSchema {
 				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + ") ON DELETE CASCADE"
 			+ ")";
 
+	String QUERY_COMBAT_SPECIALIZATIONS = "SELECT "
+			+ "A." + COLUMN_ID + ","
+			+ "A." + COLUMN_NAME + ","
+			+ "A." + COLUMN_DESCRIPTION + ","
+			+ "A." + COLUMN_SKILL_ID + ","
+			+ "A." + COLUMN_SKILL_STATS + ","
+			+ "A." + COLUMN_CREATURE_ONLY
+			+ " FROM " + TABLE_NAME + " A, " + SkillSchema.TABLE_NAME + " B, " + SkillCategorySchema.TABLE_NAME + " C"
+			+ " WHERE A." + COLUMN_SKILL_ID + " = B." + SkillSchema.COLUMN_ID
+			+ " AND B." + SkillSchema.COLUMN_CATEGORY_ID + " = C." + SkillCategorySchema.COLUMN_ID
+			+ " AND C." + SkillCategorySchema.COLUMN_IS_COMBAT + " <> 0";
+
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SKILL_ID, COLUMN_SKILL_STATS,
 			COLUMN_CREATURE_ONLY};
 }

@@ -102,4 +102,11 @@ public interface SpecializationDao {
 	 * @return  a Collection of Specialization instances.
 	 */
 	public Collection<Specialization> getCharacterPurchasableSpecializations();
+
+	/**
+	 * Retrieves all Specializations for weapon skills.
+	 *
+	 * @return  a Collection of Specialization instances.
+	 */
+	public Collection<Specialization> getWeaponSpecializations();
 }

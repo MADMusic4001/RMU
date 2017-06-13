@@ -465,9 +465,11 @@ public class Character extends DatabaseObject implements Serializable {
 		if(mainHandItem != null && mainHandItem instanceof Weapon) {
 			Log.d(TAG, "getOffensiveBonus: weaponTemplate = " + mainHandItem.getItemTemplate().print());
 			WeaponTemplate weaponTemplate = (WeaponTemplate)mainHandItem.getItemTemplate();
-			Skill skill = weaponTemplate.getCombatSkill();
-			Log.d(TAG, "getOffensiveBonus: skill = " + skill.print());
-			result = skill.getRankBonus(getSkillRanks().get(skill));
+			Specialization specialization = weaponTemplate.getCombatSpecialization();
+			Log.d(TAG, "getOffensiveBonus: skill = " + specialization.print());
+			if(getSpecializationRanks().get(specialization) != null) {
+				result = Skill.getRankBonus(getSpecializationRanks().get(specialization));
+			}
 		}
 
 		return result;

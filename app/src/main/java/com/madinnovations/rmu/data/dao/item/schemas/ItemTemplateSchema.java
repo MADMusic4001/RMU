@@ -78,7 +78,7 @@ public interface ItemTemplateSchema {
 			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_HARDNESS
 			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_DESCRIPTION
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_ID + " AS " + WeaponTemplateSchema.WEAPON_ID
-			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_SKILL_ID
+			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_BRACEABLE
 			+ " FROM " + TABLE_NAME + " ITEM"

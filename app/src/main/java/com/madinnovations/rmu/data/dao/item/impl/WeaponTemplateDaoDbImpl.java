@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.item.impl;
 
@@ -20,11 +20,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
@@ -39,9 +38,9 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> implements WeaponTemplateDao, WeaponTemplateSchema {
-	ItemTemplateDao itemTemplateDao;
-    SkillDao skillDao;
-	DamageTableDao damageTableDao;
+	private ItemTemplateDao   itemTemplateDao;
+	private SpecializationDao specializationDao;
+	private DamageTableDao    damageTableDao;
 
     /**
      * Creates a new instance of WeaponDaoDbImpl
@@ -49,11 +48,11 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public WeaponTemplateDaoDbImpl(SQLiteOpenHelper helper, ItemTemplateDao itemTemplateDao, SkillDao skillDao,
+    public WeaponTemplateDaoDbImpl(SQLiteOpenHelper helper, ItemTemplateDao itemTemplateDao, SpecializationDao specializationDao,
 								   DamageTableDao damageTableDao) {
         super(helper);
 		this.itemTemplateDao = itemTemplateDao;
-		this.skillDao = skillDao;
+		this.specializationDao = specializationDao;
 		this.damageTableDao = damageTableDao;
     }
 
@@ -138,7 +137,8 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
     protected WeaponTemplate cursorToEntity(@NonNull Cursor cursor) {
 		ItemTemplate itemTemplate = itemTemplateDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		WeaponTemplate instance = new WeaponTemplate(itemTemplate);
-        instance.setCombatSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SKILL_ID))));
+        instance.setCombatSpecialization(specializationDao.getById(cursor.getInt(
+        		cursor.getColumnIndexOrThrow(COLUMN_SPECIALIZATION_ID))));
 		instance.setDamageTable(damageTableDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_DAMAGE_TABLE_ID))));
 		instance.setBraceable(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BRACEABLE)) != 0);
 
@@ -150,7 +150,7 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
 		ContentValues contentValues = new ContentValues(4);
 
 		contentValues.put(COLUMN_ID, instance.getId());
-		contentValues.put(COLUMN_SKILL_ID, instance.getCombatSkill().getId());
+		contentValues.put(COLUMN_SPECIALIZATION_ID, instance.getCombatSpecialization().getId());
 		contentValues.put(COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
 		contentValues.put(COLUMN_BRACEABLE, instance.isBraceable());
 

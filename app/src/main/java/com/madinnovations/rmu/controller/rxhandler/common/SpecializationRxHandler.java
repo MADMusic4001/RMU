@@ -1,19 +1,21 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.common;
+
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
@@ -29,8 +31,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.Exceptions;
+import rx.observables.SyncOnSubscribe;
 import rx.schedulers.Schedulers;
 
 /**
@@ -318,5 +323,34 @@ public class SpecializationRxHandler {
 				}
 		).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all Specialization
+	 * instances that are part of a combat skill category.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Specialization
+	 * instances.
+	 */
+	public Observable<Collection<Specialization>> getWeaponSpecializations() {
+		return Observable.create(
+				new SyncOnSubscribe<Integer, Collection<Specialization>>() {
+					@Override
+					protected Integer generateState() {
+						return null;
+					}
+					@Override
+					protected Integer next(Integer state, Observer<? super Collection<Specialization>> observer) {
+						try {
+							Collection<Specialization> result = dao.getWeaponSpecializations();
+							observer.onNext(result);
+						} catch (Exception e) {
+							Exceptions.throwOrReport(e, observer);
+						}
+						observer.onCompleted();
+						return null;
+					}
+				}).subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread());
 	}
 }

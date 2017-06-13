@@ -37,11 +37,11 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.WeaponTemplateRxHandler;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -69,12 +69,12 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 	@Inject
 	protected ItemTemplateRxHandler               itemTemplateRxHandler;
 	@Inject
-	protected SkillRxHandler                      skillRxHandler;
+	protected SpecializationRxHandler             specializationRxHandler;
 	@Inject
 	protected WeaponTemplateRxHandler             weaponTemplateRxHandler;
 	private   TwoFieldListAdapter<WeaponTemplate> listAdapter;
 	private   ListView                            listView;
-	private   SpinnerUtils<Skill>                 combatSkillSpinnerUtils;
+	private   SpinnerUtils<Specialization>        combatSpecializationSpinnerUtils;
 	private   SpinnerUtils<DamageTable>           damageTableSpinnerUtils;
 	private   CheckBox                            braceableCheckbox;
 	private   WeaponTemplate                      currentInstance = new WeaponTemplate();
@@ -96,9 +96,9 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		itemTemplatePaneFragment.setDataAccessInterface(this);
 		getFragmentManager().beginTransaction().add(R.id.item_template_pane_container, itemTemplatePaneFragment).commit();
 
-		combatSkillSpinnerUtils = new SpinnerUtils<>();
-		combatSkillSpinnerUtils.initSpinner(layout, getActivity(), skillRxHandler.getCombatTrainingSkills(), this,
-											R.id.combat_skill_spinner, null);
+		combatSpecializationSpinnerUtils = new SpinnerUtils<>();
+		combatSpecializationSpinnerUtils.initSpinner(layout, getActivity(), specializationRxHandler.getWeaponSpecializations(),
+													 this, R.id.combat_specialization_spinner, null);
 		damageTableSpinnerUtils = new SpinnerUtils<>();
 		damageTableSpinnerUtils.initSpinner(layout, getActivity(), damageTableRxHandler.getAll(), this,
 											R.id.damage_table_spinner, null);
@@ -172,8 +172,8 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		Object result = null;
 
 		switch (spinnerId) {
-			case R.id.combat_skill_spinner:
-				result = currentInstance.getCombatSkill();
+			case R.id.combat_specialization_spinner:
+				result = currentInstance.getCombatSpecialization();
 				break;
 			case R.id.damage_table_spinner:
 				result = currentInstance.getDamageTable();
@@ -186,8 +186,8 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 	@Override
 	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
 		switch (spinnerId) {
-			case R.id.combat_skill_spinner:
-				currentInstance.setCombatSkill((Skill)newItem);
+			case R.id.combat_specialization_spinner:
+				currentInstance.setCombatSpecialization((Specialization) newItem);
 				saveItem();
 				break;
 			case R.id.damage_table_spinner:
@@ -306,8 +306,8 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 	private void copyItemToViews() {
 		itemTemplatePaneFragment.copyItemToViews();
 
-		if(currentInstance.getCombatSkill() != null) {
-			combatSkillSpinnerUtils.setSelection(currentInstance.getCombatSkill());
+		if(currentInstance.getCombatSpecialization() != null) {
+			combatSpecializationSpinnerUtils.setSelection(currentInstance.getCombatSpecialization());
 		}
 
 		if(currentInstance.getDamageTable() != null) {

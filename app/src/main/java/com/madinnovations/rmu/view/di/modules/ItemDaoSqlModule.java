@@ -20,7 +20,7 @@ import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
 import com.madinnovations.rmu.data.dao.common.SizeDao;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.WeaponDao;
@@ -46,8 +46,9 @@ public class ItemDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	ItemTemplateDao provideItemTemplateDap(RMUDatabaseHelper helper, BiomeDao biomeDao, SkillDao skillDao, DamageTableDao damageTableDao) {
-		return new ItemTemplateDaoDbImpl(helper, biomeDao, skillDao, damageTableDao);
+	ItemTemplateDao provideItemTemplateDap(RMUDatabaseHelper helper, BiomeDao biomeDao, SpecializationDao specializationDao,
+										   DamageTableDao damageTableDao) {
+		return new ItemTemplateDaoDbImpl(helper, biomeDao, specializationDao, damageTableDao);
 	}
 
 	@Provides @Singleton
@@ -56,8 +57,8 @@ public class ItemDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao, SkillDao skillDao,
-											   DamageTableDao damageTableDao) {
-		return new WeaponTemplateDaoDbImpl(helper, itemTemplateDao, skillDao, damageTableDao);
+	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao,
+											   SpecializationDao specializationDao, DamageTableDao damageTableDao) {
+		return new WeaponTemplateDaoDbImpl(helper, itemTemplateDao, specializationDao, damageTableDao);
 	}
 }

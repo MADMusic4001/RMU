@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.data.dao.item.schemas;
 
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.common.schemas.SpecializationSchema;
 
 /**
  * Database schema data for the weapons table
@@ -26,7 +26,7 @@ public interface WeaponTemplateSchema {
 	String WEAPON_ID = "weaponId";
 
     String COLUMN_ID = "id";
-    String COLUMN_SKILL_ID = "skillId";
+    String COLUMN_SPECIALIZATION_ID = "specializationId";
     String COLUMN_DAMAGE_TABLE_ID = "damageTableId";
 	String COLUMN_BRACEABLE = "braceable";
 
@@ -35,12 +35,12 @@ public interface WeaponTemplateSchema {
             + " ("
             + COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
                 + ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
-            + COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
-				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
+            + COLUMN_SPECIALIZATION_ID + " INTEGER NOT NULL REFERENCES "
+				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + "), "
             + COLUMN_DAMAGE_TABLE_ID + " INTEGER NOT NULL REFERENCES "
 				+ DamageTableSchema.TABLE_NAME + "(" + DamageTableSchema.COLUMN_ID + "), "
 			+ COLUMN_BRACEABLE + " INTEGER NOT NULL"
             + ")";
 
-    String[] COLUMNS = new String[]{COLUMN_ID, COLUMN_SKILL_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_BRACEABLE};
+    String[] COLUMNS = new String[]{COLUMN_ID, COLUMN_SPECIALIZATION_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_BRACEABLE};
 }

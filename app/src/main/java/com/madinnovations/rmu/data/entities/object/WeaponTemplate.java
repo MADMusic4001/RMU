@@ -1,25 +1,24 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.object;
 
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -30,10 +29,10 @@ import java.io.IOException;
  * Weapon attributes
  */
 public class WeaponTemplate extends ItemTemplate {
-	public static final String JSON_NAME = "WeaponTemplate";
-    private Skill combatSkill = null;
-    private DamageTable damageTable = null;
-    private boolean braceable = false;
+	public static final String         JSON_NAME   = "WeaponTemplate";
+    private Specialization combatSpecialization = null;
+    private DamageTable    damageTable = null;
+    private boolean        braceable   = false;
 
 	/**
 	 * Creates a new WeaponTemplate instance
@@ -74,7 +73,7 @@ public class WeaponTemplate extends ItemTemplate {
      * @return true if the Weapon instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return combatSkill != null && damageTable != null && super.isValid();
+        return combatSpecialization != null && damageTable != null && super.isValid();
     }
 
 	/**
@@ -85,7 +84,7 @@ public class WeaponTemplate extends ItemTemplate {
 	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("ItemTemplate", super.print())
-				.append("combatSkill", combatSkill)
+				.append("combatSpecialization", combatSpecialization)
 				.append("damageTable", damageTable)
 				.append("braceable", braceable)
 				.toString();
@@ -100,19 +99,19 @@ public class WeaponTemplate extends ItemTemplate {
 	public void serialize(JsonWriter out)
 	throws IOException {
 		super.serialize(out);
-		out.name(WeaponTemplateSchema.COLUMN_SKILL_ID).value(getCombatSkill().getId());
+		out.name(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID).value(getCombatSpecialization().getId());
 		out.name(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID).value(getDamageTable().getId());
 		out.name(WeaponTemplateSchema.COLUMN_BRACEABLE).value(isBraceable());
 	}
 
 	// Getters and setters
-    public Skill getCombatSkill() {
-        return combatSkill;
-    }
-    public void setCombatSkill(Skill combatSkill) {
-        this.combatSkill = combatSkill;
-    }
-    public DamageTable getDamageTable() {
+	public Specialization getCombatSpecialization() {
+		return combatSpecialization;
+	}
+	public void setCombatSpecialization(Specialization combatSpecialization) {
+		this.combatSpecialization = combatSpecialization;
+	}
+	public DamageTable getDamageTable() {
         return damageTable;
     }
     public void setDamageTable(DamageTable damageTable) {

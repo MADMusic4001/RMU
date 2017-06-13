@@ -25,7 +25,7 @@ import android.util.Log;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
-import com.madinnovations.rmu.data.dao.common.SkillDao;
+import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.schemas.ArmorTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.HerbTemplateSchema;
@@ -58,9 +58,9 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implements ItemTemplateDao, ItemTemplateSchema {
-	private BiomeDao biomeDao;
-	private SkillDao skillDao;
-	private DamageTableDao damageTableDao;
+	private BiomeDao          biomeDao;
+	private SpecializationDao specializationDao;
+	private DamageTableDao    damageTableDao;
 
     /**
      * Creates a new instance of ItemTemplateDaoDbImpl
@@ -68,10 +68,11 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public ItemTemplateDaoDbImpl(SQLiteOpenHelper helper, BiomeDao biomeDao, SkillDao skillDao, DamageTableDao damageTableDao) {
+    public ItemTemplateDaoDbImpl(SQLiteOpenHelper helper, BiomeDao biomeDao, SpecializationDao specializationDao,
+								 DamageTableDao damageTableDao) {
         super(helper);
 		this.biomeDao = biomeDao;
-		this.skillDao = skillDao;
+		this.specializationDao = specializationDao;
 		this.damageTableDao = damageTableDao;
     }
 
@@ -117,7 +118,6 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		try {
 			Cursor cursor = db.rawQuery(QUERY_ALL, null);
 
-			Log.d("TAG", "getAll: count = " + cursor.getCount());
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				ItemTemplate instance = cursorToEntity(cursor);
@@ -248,7 +248,8 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.WEAPON_ID))) {
 			instance = new WeaponTemplate();
 			((WeaponTemplate)instance).setBraceable(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_BRACEABLE)) != 0);
-			((WeaponTemplate)instance).setCombatSkill(skillDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_SKILL_ID))));
+			((WeaponTemplate)instance).setCombatSpecialization(specializationDao.getById(cursor.getInt(
+					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID))));
 			((WeaponTemplate)instance).setDamageTable(damageTableDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID))));
 		}
 		else {

@@ -26,7 +26,7 @@ import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Biome;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.object.ArmorTemplate;
 import com.madinnovations.rmu.data.entities.object.Form;
 import com.madinnovations.rmu.data.entities.object.HerbTemplate;
@@ -195,9 +195,9 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 						((SubstanceTemplate)itemTemplate).setDescription(in.nextString());
 					}
 					break;
-				case WeaponTemplateSchema.COLUMN_SKILL_ID:
+				case WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID:
 					if(weaponTemplate) {
-						((WeaponTemplate)itemTemplate).setCombatSkill(new Skill(in.nextInt()));
+						((WeaponTemplate)itemTemplate).setCombatSpecialization(new Specialization(in.nextInt()));
 					}
 					break;
 				case WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID:
