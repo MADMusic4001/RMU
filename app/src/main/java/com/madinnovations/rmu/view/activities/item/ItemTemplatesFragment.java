@@ -38,7 +38,10 @@ import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.WeaponTemplateRxHandler;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
@@ -73,6 +76,8 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 	private   ItemTemplate                      currentInstance = new ItemTemplate();
 	private   ItemTemplatePaneFragment          itemTemplatePaneFragment;
 	private   boolean                           isNew = true;
+	private   Specialization                    defaultCombatSpecialization;
+	private   DamageTable                       defaultDamageTable;
 
 	@Nullable
 	@Override
@@ -92,6 +97,7 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 
 		setHasOptionsMenu(true);
 
+		initCombatDefaults();
 		return layout;
 	}
 
@@ -141,6 +147,30 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 				if(item != null) {
 					deleteItem(item);
 					return true;
+				}
+				break;
+			case R.id.context_make_weapon:
+				item = (ItemTemplate)listView.getItemAtPosition(info.position);
+				if(item != null) {
+					WeaponTemplate weaponTemplate = new WeaponTemplate(item);
+					weaponTemplate.setCombatSpecialization(defaultCombatSpecialization);
+					weaponTemplate.setDamageTable(defaultDamageTable);
+					removeItemFromList(item);
+					weaponTemplateRxHandler.save(weaponTemplate).subscribe(new Subscriber<WeaponTemplate>() {
+						@Override
+						public void onCompleted() {}
+						@Override
+						public void onError(Throwable e) {
+							Log.e(TAG, "onError: Excception caught saving weapon template.", e);
+							Toast.makeText(ItemTemplatesFragment.this.getActivity(), R.string.toast_weapon_template_save_failed,
+									Toast.LENGTH_LONG).show();
+						}
+						@Override
+						public void onNext(WeaponTemplate weaponTemplate) {
+							Toast.makeText(ItemTemplatesFragment.this.getActivity(), R.string.toast_weapon_template_saved,
+									Toast.LENGTH_LONG).show();
+						}
+					});
 				}
 				break;
 		}
@@ -317,5 +347,33 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 	@Override
 	public CharSequence getField2Value(ItemTemplate item) {
 		return item.getNotes();
+	}
+
+	private void initCombatDefaults() {
+		specializationRxHandler.getAllAttackSpecializations().subscribe(new Subscriber<Collection<Specialization>>() {
+			@Override
+			public void onCompleted() {}
+			@Override
+			public void onError(Throwable e) {
+				Log.e(TAG, "onError: Exception caught getting attack specializations.", e);
+			}
+			@Override
+			public void onNext(Collection<Specialization> specializations) {
+				defaultCombatSpecialization = specializations.iterator().next();
+			}
+		});
+
+		damageTableRxHandler.getAll().subscribe(new Subscriber<Collection<DamageTable>>() {
+			@Override
+			public void onCompleted() {}
+			@Override
+			public void onError(Throwable e) {
+				Log.e(TAG, "onError: Exception caught getting all DamageTable instances.", e);
+			}
+			@Override
+			public void onNext(Collection<DamageTable> damageTables) {
+				defaultDamageTable = damageTables.iterator().next();
+			}
+		});
 	}
 }

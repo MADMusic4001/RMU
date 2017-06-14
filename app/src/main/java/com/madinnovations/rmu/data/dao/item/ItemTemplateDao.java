@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.item;
 
@@ -33,14 +33,14 @@ public interface ItemTemplateDao {
      * @param id  the id of the ItemTemplate object to retrieve
      * @return the ItemTemplate instance with the given id or null if not found.
      */
-    public ItemTemplate getById(int id);
+    ItemTemplate getById(int id);
 
     /**
      * Retrieves all ItemTemplate objects from persistent storage.
      *
      * @return  a List containing all ItemTemplate objects currently in persistent storage.
      */
-    public List<ItemTemplate> getAll();
+    List<ItemTemplate> getAll();
 
     /**
      * Saves a collection of ItemTemplate instances to persistent storage.
@@ -49,7 +49,7 @@ public interface ItemTemplateDao {
      * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
      * @return true if successful, otherwise false.
      */
-    public boolean save(Collection<ItemTemplate> instance, boolean isNew);
+    boolean save(Collection<ItemTemplate> instance, boolean isNew);
 
     /**
      * Saves a collection of ItemTemplate instances to persistent storage.
@@ -57,7 +57,7 @@ public interface ItemTemplateDao {
      * @param instance  the collection of ItemTemplate instances to be saved
      * @return true if successful, otherwise false.
      */
-    public boolean save(Collection<ItemTemplate> instance);
+    boolean save(Collection<ItemTemplate> instance);
 
     /**
      * Saves a ItemTemplate object to persistent storage.
@@ -65,7 +65,16 @@ public interface ItemTemplateDao {
      * @param instance  the ItemTemplate object to be saved
      * @return true if successful, otherwise false.
      */
-    public boolean save(ItemTemplate instance);
+    boolean save(ItemTemplate instance);
+
+	/**
+	 * Saves an ItemTemplate object to persistent storage.
+	 *
+	 * @param instance  the ItemTemplate object to be saved
+	 * @param isNew  true if the instances should be treated as new regardless of their ID values
+	 * @return true if successful, otherwise false.
+	 */
+	boolean save(ItemTemplate instance, boolean isNew);
 
     /**
      * Delete the ItemTemplate object with the given id from persistent storage.
@@ -73,14 +82,14 @@ public interface ItemTemplateDao {
      * @param id  the id of the ItemTemplate object to delete
      * @return true if successful, otherwise false.
      */
-    public boolean deleteById(int id);
+    boolean deleteById(int id);
 
     /**
      * Delete all ItemTemplate objects from persistent storage.
      *
      * @return the number of instances that were deleted.
      */
-    public int deleteAll();
+    int deleteAll();
 
 	/**
 	 * Retrieves all ItemTemplate objects from persistent storage that can be equipped in the given slot.
@@ -88,12 +97,12 @@ public interface ItemTemplateDao {
 	 * @param slot  an equipment slot
 	 * @return  a Collection containing all ItemTemplate objects currently in persistent storage that can be equipped in the given slot.
 	 */
-    public Collection<ItemTemplate> getAllForSlot(@NonNull Slot slot);
+    Collection<ItemTemplate> getAllForSlot(@NonNull Slot slot);
 
 	/**
 	 * Retrieves all ItemTemplate objects from persistent storage that have no subclass.
 	 *
 	 * @return  a Collection containing all ItemTemplate objects with no subclass currently in persistent storage.
 	 */
-	public Collection<ItemTemplate> getAllWithoutSubclass();
+	Collection<ItemTemplate> getAllWithoutSubclass();
 }

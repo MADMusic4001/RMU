@@ -27,7 +27,6 @@ import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.object.Item;
@@ -167,10 +166,6 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	@Override
 	public Collection<Item> getAllForSlot(@NonNull Slot slot) {
 		final String selectionArgs[] = { slot.name(), slot.name(), Slot.ANY.name() };
-		final String selection = " EXISTS(SELECT NULL FROM " + ItemTemplateSchema.TABLE_NAME + " a WHERE a."
-				+ ItemTemplateSchema.COLUMN_ID + " = " + COLUMN_ITEM_TEMPLATE_ID + " AND a."
-				+ ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ? OR a." + ItemTemplateSchema.COLUMN_SECONDARY_SLOT
-				+ " = ? OR a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ?)";
 		Collection<Item> items = null;
 
 		SQLiteDatabase db = helper.getReadableDatabase();
@@ -179,8 +174,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection,
-								  selectionArgs, getSortString());
+			Cursor cursor = rawQuery(QUERY_BY_SLOT, selectionArgs);
 			if (cursor != null) {
 				items = new ArrayList<>(cursor.getCount());
 				cursor.moveToFirst();

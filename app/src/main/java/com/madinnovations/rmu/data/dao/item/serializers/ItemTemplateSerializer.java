@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.dao.item.serializers;
 
+import android.util.Log;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -90,6 +92,7 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 							itemTemplate = new SubstanceTemplate(itemTemplate);
 							break;
 						case WeaponTemplate.JSON_NAME:
+							Log.d(TAG, "read: Found weapon template");
 							itemTemplate = new WeaponTemplate(itemTemplate);
 							weaponTemplate = true;
 							break;
@@ -197,16 +200,21 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 					break;
 				case WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID:
 					if(weaponTemplate) {
-						((WeaponTemplate)itemTemplate).setCombatSpecialization(new Specialization(in.nextInt()));
+						int id = in.nextInt();
+						Log.d(TAG, "read: Setting combat specialization id = " + id);
+						((WeaponTemplate)itemTemplate).setCombatSpecialization(new Specialization(id));
 					}
 					break;
 				case WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID:
 					if(weaponTemplate) {
-						((WeaponTemplate)itemTemplate).setDamageTable(new DamageTable(in.nextInt()));
+						int id = in.nextInt();
+						Log.d(TAG, "read: setting damage table id = " + id);
+						((WeaponTemplate)itemTemplate).setDamageTable(new DamageTable(id));
 					}
 					break;
 				case WeaponTemplateSchema.COLUMN_BRACEABLE:
 					if(weaponTemplate) {
+						Log.d(TAG, "read: setting braceable indicator");
 						((WeaponTemplate)itemTemplate).setBraceable(in.nextBoolean());
 					}
 					break;

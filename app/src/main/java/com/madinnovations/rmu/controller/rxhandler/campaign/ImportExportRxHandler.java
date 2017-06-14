@@ -452,18 +452,6 @@ public class ImportExportRxHandler {
 											Log.i(TAG, "Loaded " + damageResults.size() + " damageResults.");
 											damageResults = null;
 											break;
-										case WeaponTemplate.JSON_NAME:
-											List<WeaponTemplate> weaponTemplates = new ArrayList<>();
-											jsonReader.beginArray();
-											while (jsonReader.hasNext()) {
-												WeaponTemplate weaponTemplate = gson.fromJson(jsonReader, WeaponTemplate.class);
-												weaponTemplates.add(weaponTemplate);
-											}
-											jsonReader.endArray();
-//											weaponTemplateDao.save(weaponTemplates, true);
-											Log.i(TAG, "Loaded " + weaponTemplates.size() + " weaponTemplates.");
-											weaponTemplates = null;
-											break;
 										case CreatureCategory.JSON_NAME:
 											List<CreatureCategory> creatureCategories = new ArrayList<>();
 											jsonReader.beginArray();
@@ -739,8 +727,6 @@ public class ImportExportRxHandler {
 							;
 							subscriber.onNext(20);
 							jsonWriter
-									.name(ItemTemplate.JSON_NAME)
-									.jsonValue(gson.toJson(itemTemplateDao.getAll()))
 									.name(BodyPart.JSON_NAME)
 									.jsonValue(gson.toJson(bodyPartDao.getAll()))
 							;
@@ -759,8 +745,6 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(damageResultRowDao.getAll()))
 									.name(DamageResult.JSON_NAME)
 									.jsonValue(gson.toJson(damageResultDao.getAll()))
-									.name(WeaponTemplate.JSON_NAME)
-									.jsonValue(gson.toJson(weaponTemplateDao.getAll()))
 									.name(CreatureCategory.JSON_NAME)
 									.jsonValue(gson.toJson(creatureCategoryDao.getAll()))
 							;
@@ -786,6 +770,8 @@ public class ImportExportRxHandler {
 							jsonWriter
 									.name(Specialization.JSON_NAME)
 									.jsonValue(gson.toJson(specializationDao.getAll()))
+									.name(ItemTemplate.JSON_NAME)
+									.jsonValue(gson.toJson(itemTemplateDao.getAll()))
 									.name(Attack.JSON_NAME)
 									.jsonValue(gson.toJson(attackDao.getAll()))
 									.name(CreatureArchetype.JSON_NAME)

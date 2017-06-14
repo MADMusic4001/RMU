@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
@@ -51,6 +52,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Methods for managing {@link ItemTemplate} objects in a SQLite database.
@@ -172,6 +175,54 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 	@Override
 	protected void setId(ItemTemplate instance, int id) {
 		instance.setId(id);
+	}
+
+	@Override
+	public boolean save(ItemTemplate instance, boolean isNew) {
+		Log.d(TAG, "save: ");
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+		final String selection = COLUMN_ID + " = ?";
+		final String weaponTemplateSelection = WeaponTemplateSchema.COLUMN_ID + " = ?";
+		ContentValues contentValues = getContentValues(instance);
+		boolean result;
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			if(getId(instance) == -1 || isNew) {
+				setId(instance, (int)db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE));
+				result = (getId(instance) != -1);
+				if(instance instanceof WeaponTemplate) {
+					Log.d(TAG, "save: instance = " + instance.print());
+					ContentValues weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
+					db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
+				}
+			}
+			else {
+				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
+				result = (count == 1);
+				if(instance instanceof WeaponTemplate) {
+					ContentValues weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
+					if(db.update(WeaponTemplateSchema.TABLE_NAME, weaponContentValues, weaponTemplateSelection, selectionArgs) != 1) {
+						Log.d(TAG, "save: instance = " + instance.print());
+						weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
+						db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
+					}
+				}
+			}
+			if(result && newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -351,4 +402,21 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 
 		return values;
     }
+
+	private ContentValues getWeaponContentValues(WeaponTemplate instance) {
+		ContentValues values;
+
+		if(instance.getId() != -1) {
+			values = new ContentValues(4);
+			values.put(WeaponTemplateSchema.COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(3);
+		}
+		values.put(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID, instance.getCombatSpecialization().getId());
+		values.put(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
+		values.put(WeaponTemplateSchema.COLUMN_BRACEABLE, instance.isBraceable());
+
+		return values;
+	}
 }

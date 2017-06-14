@@ -17,7 +17,6 @@ package com.madinnovations.rmu.data.dao.item.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
@@ -61,44 +60,12 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
         return super.getById(id);
     }
 
-    @Override
-    public boolean save(WeaponTemplate instance) {
-		boolean isNew = (instance.getId() == -1);
-		if(itemTemplateDao.save(instance)) {
-			int id = instance.getId();
-			final String selectionArgs[] = {String.valueOf(getId(instance))};
-			final String selection = getIdColumnName() + " = ?";
-			ContentValues contentValues = getContentValues(instance);
-			boolean result = false;
+	@Override
+	public boolean save(WeaponTemplate instance, boolean isNew) {
+		return itemTemplateDao.save(instance, isNew);
+	}
 
-			SQLiteDatabase db = helper.getWritableDatabase();
-			boolean newTransaction = !db.inTransaction();
-			if (newTransaction) {
-				db.beginTransaction();
-			}
-			try {
-				if (!isNew) {
-					int count = db.update(getTableName(), contentValues, selection, selectionArgs);
-					result = (count == 1);
-				}
-				if(isNew || !result){
-					result = (db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE) == id);
-				}
-				result &= saveRelationships(db, instance);
-				if (result && newTransaction) {
-					db.setTransactionSuccessful();
-				}
-			}
-			finally {
-				if (newTransaction) {
-					db.endTransaction();
-				}
-			}
-		}
-		return true;
-    }
-
-    @Override
+	@Override
     public boolean deleteById(int id) {
         return super.deleteById(id);
     }

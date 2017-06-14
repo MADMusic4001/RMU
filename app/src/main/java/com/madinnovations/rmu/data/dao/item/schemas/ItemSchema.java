@@ -47,7 +47,7 @@ public interface ItemSchema {
 			+ COLUMN_LEVEL + " INTEGER NOT NULL"
             + ")";
 
-	String QUERY_BY_ID = "SELECT"
+	String SELECTION = "SELECT"
 		+ " ITEM." + COLUMN_ID
 		+ ", ITEM." + COLUMN_CAMPAIGN_ID
 		+ ", ITEM." + COLUMN_ITEM_TEMPLATE_ID
@@ -58,20 +58,14 @@ public interface ItemSchema {
 		+ ", WEAPON." + WeaponSchema.COLUMN_BONUS
 		+ ", WEAPON." + WeaponSchema.COLUMN_TWO_HANDED
 		+ " FROM " + TABLE_NAME + " ITEM LEFT OUTER JOIN " + WeaponSchema.TABLE_NAME + " WEAPON "
-		+ " ON WEAPON.ID = ITEM.ID WHERE ITEM.ID = ?";
+		+ " ON WEAPON.ID = ITEM.ID";
 
-	String QUERY_BY_CAMPAIGN = "SELECT"
-			+ " ITEM." + COLUMN_ID
-			+ ", ITEM." + COLUMN_CAMPAIGN_ID
-			+ ", ITEM." + COLUMN_ITEM_TEMPLATE_ID
-			+ ", ITEM." + COLUMN_NAME
-			+ ", ITEM." + COLUMN_HISTORY
-			+ ", ITEM." + COLUMN_SIZE_ID
-			+ ", ITEM." + COLUMN_LEVEL
-			+ ", WEAPON." + WeaponSchema.COLUMN_BONUS
-			+ ", WEAPON." + WeaponSchema.COLUMN_TWO_HANDED
-			+ " FROM " + TABLE_NAME + " ITEM LEFT OUTER JOIN " + WeaponSchema.TABLE_NAME + " WEAPON "
-			+ " ON WEAPON.ID = ITEM.ID WHERE ITEM." + COLUMN_CAMPAIGN_ID + " = ?";
+	String QUERY_BY_ID = SELECTION + " WHERE ITEM." + COLUMN_ID + " = ?";
+	String QUERY_BY_CAMPAIGN = SELECTION + " WHERE ITEM." + COLUMN_CAMPAIGN_ID + " = ?";
+	String QUERY_BY_SLOT = SELECTION + " WHERE EXISTS(SELECT NULL FROM " + ItemTemplateSchema.TABLE_NAME + " a WHERE a."
+			+ ItemTemplateSchema.COLUMN_ID + " = " + COLUMN_ITEM_TEMPLATE_ID + " AND a."
+			+ ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ? OR a." + ItemTemplateSchema.COLUMN_SECONDARY_SLOT
+			+ " = ? OR a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ?)";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CAMPAIGN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_NAME, COLUMN_HISTORY,
 			COLUMN_SIZE_ID, COLUMN_LEVEL};

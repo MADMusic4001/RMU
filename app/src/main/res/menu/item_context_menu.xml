@@ -21,4 +21,7 @@
   <item
       android:id="@+id/context_delete_item"
       android:title="@string/label_delete_item"/>
+  <item
+      android:id="@+id/context_make_weapon"
+      android:title="Convert to weapon template"/>
 </menu>
