@@ -201,20 +201,17 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 				case WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID:
 					if(weaponTemplate) {
 						int id = in.nextInt();
-						Log.d(TAG, "read: Setting combat specialization id = " + id);
 						((WeaponTemplate)itemTemplate).setCombatSpecialization(new Specialization(id));
 					}
 					break;
 				case WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID:
 					if(weaponTemplate) {
 						int id = in.nextInt();
-						Log.d(TAG, "read: setting damage table id = " + id);
 						((WeaponTemplate)itemTemplate).setDamageTable(new DamageTable(id));
 					}
 					break;
 				case WeaponTemplateSchema.COLUMN_BRACEABLE:
 					if(weaponTemplate) {
-						Log.d(TAG, "read: setting braceable indicator");
 						((WeaponTemplate)itemTemplate).setBraceable(in.nextBoolean());
 					}
 					break;

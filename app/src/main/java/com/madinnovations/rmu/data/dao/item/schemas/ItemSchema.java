@@ -60,6 +60,7 @@ public interface ItemSchema {
 		+ " FROM " + TABLE_NAME + " ITEM LEFT OUTER JOIN " + WeaponSchema.TABLE_NAME + " WEAPON "
 		+ " ON WEAPON.ID = ITEM.ID";
 
+	String QUERY_ALL = SELECTION;
 	String QUERY_BY_ID = SELECTION + " WHERE ITEM." + COLUMN_ID + " = ?";
 	String QUERY_BY_CAMPAIGN = SELECTION + " WHERE ITEM." + COLUMN_CAMPAIGN_ID + " = ?";
 	String QUERY_BY_SLOT = SELECTION + " WHERE EXISTS(SELECT NULL FROM " + ItemTemplateSchema.TABLE_NAME + " a WHERE a."

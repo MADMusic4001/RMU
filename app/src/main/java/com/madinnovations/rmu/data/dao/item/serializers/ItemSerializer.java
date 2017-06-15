@@ -51,6 +51,7 @@ public class ItemSerializer extends TypeAdapter<Item> implements ItemSchema {
 				case ITEM_TYPE:
 					switch (in.nextString()) {
 						case Item.JSON_NAME:
+							weapon = false;
 							break;
 						case Weapon.JSON_NAME:
 							item = new Weapon(item);

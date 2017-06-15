@@ -66,7 +66,6 @@ import com.madinnovations.rmu.data.dao.creature.serializers.CreatureCategorySeri
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureVarietySerializer;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.serializers.ItemTemplateSerializer;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellDao;
@@ -183,7 +182,6 @@ public class ImportExportRxHandler {
 	private TalentDao                   talentDao;
 	private TalentSerializer            talentSerializer = new TalentSerializer();
 	private TalentCategoryDao           talentCategoryDao;
-	private WeaponTemplateDao           weaponTemplateDao;
 	private RMUDatabaseHelper helper;
 
 	/**
@@ -199,8 +197,8 @@ public class ImportExportRxHandler {
 						  RealmDao realmDao, SizeDao sizeDao, SkillDao skillDao, SkillCategoryDao skillCategoryDao,
 						  SpecializationDao specializationDao, SpellDao spellDao, SpellListDao spellListDao,
 						  SpellSubTypeDao spellSubTypeDao, SpellTypeDao spellTypeDao, TalentDao talentDao,
-						  TalentCategoryDao talentCategoryDao, WeaponTemplateDao weaponTemplateDao, RMUDatabaseHelper helper,
-						  AttackRxHandler attackRxHandler, SizeRxHandler sizeRxHandler) {
+						  TalentCategoryDao talentCategoryDao, RMUDatabaseHelper helper, AttackRxHandler attackRxHandler,
+						  SizeRxHandler sizeRxHandler) {
 		this.attackDao = attackDao;
 		this.bodyPartDao = bodyPartDao;
 		this.creatureArchetypeDao = creatureArchetypeDao;
@@ -229,7 +227,6 @@ public class ImportExportRxHandler {
 		this.spellTypeDao = spellTypeDao;
 		this.talentDao = talentDao;
 		this.talentCategoryDao = talentCategoryDao;
-		this.weaponTemplateDao = weaponTemplateDao;
 		this.helper = helper;
 		this.creatureVarietySerializer.setAttackRxHandler(attackRxHandler);
 		this.creatureVarietySerializer.setSizeRxHandler(sizeRxHandler);

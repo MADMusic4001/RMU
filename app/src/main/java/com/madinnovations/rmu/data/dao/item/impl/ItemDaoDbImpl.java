@@ -30,11 +30,13 @@ import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.data.entities.object.Slot;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -132,6 +134,35 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	}
 
 	@Override
+	public List<Item> getAll() {
+		List<Item> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = db.rawQuery(QUERY_ALL, null);
+
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				Item instance = cursorToEntity(cursor);
+				list.add(instance);
+				cursor.moveToNext();
+			}
+			cursor.close();
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
 	public Collection<Item> getAllForCampaign(Campaign campaign) {
 		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
 		Collection<Item> collection = new ArrayList<>();
@@ -174,7 +205,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = rawQuery(QUERY_BY_SLOT, selectionArgs);
+			Cursor cursor = db.rawQuery(QUERY_BY_SLOT, selectionArgs);
 			if (cursor != null) {
 				items = new ArrayList<>(cursor.getCount());
 				cursor.moveToFirst();
@@ -199,13 +230,13 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
     protected Item cursorToEntity(@NonNull Cursor cursor) {
 		Item instance;
 
-		if(cursor.isNull(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS))) {
-			instance = new Item();
-		}
-		else {
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS))) {
 			instance = new Weapon();
 			((Weapon)instance).setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS)));
 			((Weapon)instance).setTwoHanded(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_TWO_HANDED)) != 0);
+		}
+		else {
+			instance = new Item();
 		}
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setCampaign(campaignDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CAMPAIGN_ID))));

@@ -179,7 +179,6 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 
 	@Override
 	public boolean save(ItemTemplate instance, boolean isNew) {
-		Log.d(TAG, "save: ");
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
 		final String weaponTemplateSelection = WeaponTemplateSchema.COLUMN_ID + " = ?";
@@ -196,7 +195,6 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 				setId(instance, (int)db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE));
 				result = (getId(instance) != -1);
 				if(instance instanceof WeaponTemplate) {
-					Log.d(TAG, "save: instance = " + instance.print());
 					ContentValues weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
 					db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
 				}
@@ -207,7 +205,6 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 				if(instance instanceof WeaponTemplate) {
 					ContentValues weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
 					if(db.update(WeaponTemplateSchema.TABLE_NAME, weaponContentValues, weaponTemplateSelection, selectionArgs) != 1) {
-						Log.d(TAG, "save: instance = " + instance.print());
 						weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
 						db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
 					}
@@ -228,8 +225,6 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 	@Override
 	public Collection<ItemTemplate> getAllForSlot(@NonNull Slot slot) {
 		final String selectionArgs[] = { slot.name(), slot.name(), Slot.ANY.name() };
-		final String selection = COLUMN_PRIMARY_SLOT + " = ? OR " + COLUMN_SECONDARY_SLOT + " = ? OR "
-				+ COLUMN_PRIMARY_SLOT + " = ?";
 		Collection<ItemTemplate> itemTemplates = null;
 
 		SQLiteDatabase db = helper.getReadableDatabase();
@@ -238,8 +233,7 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection,
-								  selectionArgs, getSortString());
+			Cursor cursor = db.rawQuery(QUERY_FOR_SLOT, selectionArgs);
 			if (cursor != null) {
 				itemTemplates = new ArrayList<>(cursor.getCount());
 				cursor.moveToFirst();
@@ -270,7 +264,7 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = rawQuery(QUERY_NO_SUBCLASS, null);
+			Cursor cursor = db.rawQuery(QUERY_NO_SUBCLASS, null);
 			if (cursor != null) {
 				itemTemplates = new ArrayList<>(cursor.getCount());
 				cursor.moveToFirst();
