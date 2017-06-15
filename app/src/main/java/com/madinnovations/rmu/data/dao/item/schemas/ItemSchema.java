@@ -67,6 +67,7 @@ public interface ItemSchema {
 			+ ItemTemplateSchema.COLUMN_ID + " = " + COLUMN_ITEM_TEMPLATE_ID + " AND a."
 			+ ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ? OR a." + ItemTemplateSchema.COLUMN_SECONDARY_SLOT
 			+ " = ? OR a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ?)";
+	String QUERY_NO_SUBCLASS = QUERY_ALL + " WHERE WEAPON." + WeaponSchema.COLUMN_ID + " IS NULL";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CAMPAIGN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_NAME, COLUMN_HISTORY,
 			COLUMN_SIZE_ID, COLUMN_LEVEL};

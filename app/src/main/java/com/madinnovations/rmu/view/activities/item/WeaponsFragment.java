@@ -262,7 +262,7 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new Weapon: " + currentInstance, e);
-							Toast.makeText(getActivity(), R.string.toast_item_save_failed, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_weapon_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(Weapon savedWeapon) {
@@ -275,7 +275,7 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), R.string.toast_item_saved, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_weapon_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedWeapon);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -301,7 +301,7 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_weapon_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -322,7 +322,7 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_weapon_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -365,12 +365,12 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Collection<Weapon> creatureCategories) {
+					public void onNext(Collection<Weapon> weapons) {
 						listAdapter.clear();
-						listAdapter.addAll(creatureCategories);
+						listAdapter.addAll(weapons);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
-						toastString = String.format(getString(R.string.toast_items_loaded), creatureCategories.size());
+						toastString = String.format(getString(R.string.toast_weapons_loaded), weapons.size());
 						Toast.makeText(WeaponsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});

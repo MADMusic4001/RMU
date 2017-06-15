@@ -56,6 +56,7 @@ import com.madinnovations.rmu.view.activities.creature.CreatureTypesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreatureVarietiesFragment;
 import com.madinnovations.rmu.view.activities.creature.CreaturesFragment;
 import com.madinnovations.rmu.view.activities.creature.OutlooksFragment;
+import com.madinnovations.rmu.view.activities.item.ItemFragment;
 import com.madinnovations.rmu.view.activities.item.ItemTemplatesFragment;
 import com.madinnovations.rmu.view.activities.item.WeaponTemplatesFragment;
 import com.madinnovations.rmu.view.activities.item.WeaponsFragment;
@@ -124,6 +125,7 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 	private TalentsFragment          talentsFragment;
 	private WeaponsFragment          weaponsFragment;
 	private WeaponTemplatesFragment  weaponTemplatesFragment;
+	private ItemFragment             itemFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -576,6 +578,13 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 			weaponTemplatesFragment = new WeaponTemplatesFragment();
 		}
 		replaceDetailFragment(weaponTemplatesFragment);
+	}
+
+	public void showCreateItems() {
+		if(itemFragment == null) {
+			itemFragment = new ItemFragment();
+		}
+		replaceDetailFragment(itemFragment);
 	}
 
 	private void replaceDetailFragment(Fragment fragment) {

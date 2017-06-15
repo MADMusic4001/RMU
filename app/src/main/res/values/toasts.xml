@@ -283,6 +283,13 @@
   <string name="toast_talent_category_deleted">Talent Category deleted.</string>
   <string name="toast_talent_category_delete_failed">Talent Category deletion failed.</string>
 
+  <string name="toast_weapons_load_failed">Failed to load Weapons</string>
+  <string name="toast_weapons_loaded">%1$d Weapons loaded.</string>
+  <string name="toast_weapon_saved">Weapon saved.</string>
+  <string name="toast_weapon_save_failed">Weapon save failed.</string>
+  <string name="toast_weapon_deleted">Weapon deleted.</string>
+  <string name="toast_weapon_delete_failed">Weapon deletion failed.</string>
+
   <string name="toast_weapon_templates_load_failed">Failed to load Weapon Templates</string>
   <string name="toast_weapon_templates_loaded">%1$d Weapon Templates loaded.</string>
   <string name="toast_weapon_template_saved">Weapon Template saved.</string>

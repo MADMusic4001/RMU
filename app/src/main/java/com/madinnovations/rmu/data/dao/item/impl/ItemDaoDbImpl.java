@@ -30,7 +30,6 @@ import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.data.entities.object.Slot;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 
@@ -206,6 +205,37 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 		}
 		try {
 			Cursor cursor = db.rawQuery(QUERY_BY_SLOT, selectionArgs);
+			if (cursor != null) {
+				items = new ArrayList<>(cursor.getCount());
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Item instance = cursorToEntity(cursor);
+					items.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return items;
+	}
+
+	@Override
+	public Collection<Item> getAllWithoutSubclass() {
+		Collection<Item> items = null;
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = db.rawQuery(QUERY_NO_SUBCLASS, null);
 			if (cursor != null) {
 				items = new ArrayList<>(cursor.getCount());
 				cursor.moveToFirst();

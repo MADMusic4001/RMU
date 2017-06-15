@@ -283,7 +283,6 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 			isNew = true;
 		}
 		copyItemToViews();
-		Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
 	}
 
 	private void initListView(View layout) {

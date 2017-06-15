@@ -198,7 +198,7 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showWeaponTemplates();
 								break;
 							case 6:
-//								((CampaignActivity)getActivity()).showCreateItems();
+								((CampaignActivity)getActivity()).showCreateItems();
 								break;
 							case 7:
 //								((CampaignActivity)getActivity()).showCreateArmor();

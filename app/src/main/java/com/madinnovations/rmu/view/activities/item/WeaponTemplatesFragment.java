@@ -238,7 +238,7 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving new WeaponTemplate: " + currentInstance, e);
-							Toast.makeText(getActivity(), R.string.toast_item_save_failed, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_weapon_template_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
 						public void onNext(WeaponTemplate savedWeaponTemplate) {
@@ -251,7 +251,7 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 								listAdapter.notifyDataSetChanged();
 							}
 							if(getActivity() != null) {
-								Toast.makeText(getActivity(), R.string.toast_item_saved, Toast.LENGTH_SHORT).show();
+								Toast.makeText(getActivity(), R.string.toast_weapon_template_saved, Toast.LENGTH_SHORT).show();
 								int position = listAdapter.getPosition(savedWeaponTemplate);
 								LinearLayout v = (LinearLayout) listView.getChildAt(position - listView.getFirstVisiblePosition());
 								if (v != null) {
@@ -276,7 +276,7 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 					@Override
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception when deleting: " + item, e);
-						Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), R.string.toast_weapon_template_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
@@ -297,7 +297,7 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 								isNew = true;
 							}
 							copyItemToViews();
-							Toast.makeText(getActivity(), R.string.toast_talent_category_deleted, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getActivity(), R.string.toast_weapon_template_deleted, Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
@@ -340,16 +340,16 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 					public void onError(Throwable e) {
 						Log.e(TAG, "Exception caught loading all WeaponTemplate instances in onCreateView", e);
 						Toast.makeText(WeaponTemplatesFragment.this.getActivity(),
-								R.string.toast_items_load_failed,
+								R.string.toast_weapon_templates_load_failed,
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Collection<WeaponTemplate> creatureCategories) {
+					public void onNext(Collection<WeaponTemplate> weaponTemplates) {
 						listAdapter.clear();
-						listAdapter.addAll(creatureCategories);
+						listAdapter.addAll(weaponTemplates);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
-						toastString = String.format(getString(R.string.toast_items_loaded), creatureCategories.size());
+						toastString = String.format(getString(R.string.toast_weapon_templates_loaded), weaponTemplates.size());
 						Toast.makeText(WeaponTemplatesFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
