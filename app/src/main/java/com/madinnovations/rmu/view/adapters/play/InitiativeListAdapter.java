@@ -81,7 +81,7 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 				shortValue = initiativeListItem.getCharacter().getTotalStatBonus(Statistic.QUICKNESS);
 				holder.quicknessBonusView.setText(String.valueOf(shortValue));
 				holder.otherPenaltiesView.setText(String.valueOf(initiativeListItem.getCharacter().getInitiativePenalty()));
-				holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCharacter().getOffensiveBonus()));
+//				holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCharacter().getOffensiveBonuses()));
 			}
 			else if(initiativeListItem.getCreature() != null) {
 				Creature creature = initiativeListItem.getCreature();

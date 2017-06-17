@@ -186,10 +186,16 @@
   <string name="hint_select_start_or_end">Select Range Start or End</string>
 
   <!-- Item -->
+  <string name="hint_item_base_cost">Base Cost</string>
+  <string name="hint_item_construction_time">Construction Time</string>
   <string name="hint_item_description">Item Description</string>
+  <string name="hint_item_maneuver_difficulty">Maneuver Difficulty</string>
   <string name="hint_item_name">Item Name</string>
-  <string name="hint_item_weight">Item Weight</string>
+  <string name="hint_item_primary_slot">Primary Slot</string>
+  <string name="hint_item_secondary_slot">Secondary Slot</string>
+  <string name="hint_item_strength">Item Strength</string>
   <string name="hint_item_template_name">Template Name</string>
+  <string name="hint_item_weight">Item Weight</string>
 
   <!-- Spell -->
   <string name="hint_realm_description">Realm Description</string>

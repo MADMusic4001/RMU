@@ -29,19 +29,19 @@ import java.io.IOException;
  * ${CLASS_DESCRIPTION}
  *
  * @author Mark
- * Created 10/16/2016.
+ *         Created 10/16/2016.
  */
 public class ItemTemplate extends DatabaseObject {
-	public static final String JSON_NAME = "ItemTemplate";
-	private String name = null;
-	private float weight = 0.5f;
-	private float baseCost = 0.0f;
-	private short strength = 0;
-	private float constructionTime = 0.0f;
-	private ManeuverDifficulty maneuverDifficulty = null;
-	private String notes = null;
-	private Slot primarySlot = null;
-	private Slot secondarySlot = null;
+	public static final String             JSON_NAME          = "ItemTemplate";
+	private             String             name               = null;
+	private             float              weight             = 0.5f;
+	private             int                baseCost           = 1;
+	private             short              strength           = 70;
+	private             int                constructionTime   = 1;
+	private             ManeuverDifficulty maneuverDifficulty = ManeuverDifficulty.MEDIUM;
+	private             String             notes              = null;
+	private             Slot               primarySlot        = null;
+	private             Slot               secondarySlot      = null;
 
 	/**
 	 * Creates a new ItemTemplate instance.
@@ -52,26 +52,20 @@ public class ItemTemplate extends DatabaseObject {
 	/**
 	 * Creates a new ItemTemplate instance with the given id.
 	 *
-	 * @param id  the id of the new ItemTemplate instance
+	 * @param id the id of the new ItemTemplate instance
 	 */
 	public ItemTemplate(int id) {
 		super(id);
 	}
 
-	/**
-	 * Checks the validity of the Item instance.
-	 *
-	 * @return true if the ItemTemplate instance is valid, otherwise false.
-	 */
-	public boolean isValid() {
-		return name != null && !name.isEmpty();
-	}
-
+// <editor-fold desc="Overridden methods">
 	@Override
 	public String toString() {
 		return name;
 	}
+// </editor-fold> Overridden methods
 
+// <editor-fold desc="Public methods">
 	/**
 	 * Debug output of this instance.
 	 *
@@ -96,8 +90,8 @@ public class ItemTemplate extends DatabaseObject {
 	/**
 	 * Writes this instances fields to a JSONWriter
 	 *
-	 * @param out  a JSONWrite instance to write the fields to
-	 * @throws IOException  when an IO error occurs
+	 * @param out a JSONWrite instance to write the fields to
+	 * @throws IOException when an IO error occurs
 	 */
 	public void serialize(JsonWriter out)
 	throws IOException {
@@ -107,76 +101,106 @@ public class ItemTemplate extends DatabaseObject {
 		out.name(ItemTemplateSchema.COLUMN_BASE_COST).value(getBaseCost());
 		out.name(ItemTemplateSchema.COLUMN_STRENGTH).value(getStrength());
 		out.name(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME).value(getConstructionTime());
-		if(getManeuverDifficulty() != null) {
+		if (getManeuverDifficulty() != null) {
 			out.name(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY).value(getManeuverDifficulty().name());
 		}
-		if(getNotes() != null) {
+		if (getNotes() != null) {
 			out.name(ItemTemplateSchema.COLUMN_NOTES).value(getNotes());
 		}
-		if(getPrimarySlot() != null) {
+		if (getPrimarySlot() != null) {
 			out.name(ItemTemplateSchema.COLUMN_PRIMARY_SLOT).value(getPrimarySlot().name());
 		}
-		if(getSecondarySlot() != null) {
+		if (getSecondarySlot() != null) {
 			out.name(ItemTemplateSchema.COLUMN_SECONDARY_SLOT).value(getSecondarySlot().name());
 		}
+	}
+// </editor-fold> Public methods
+
+// <editor-fold desc="Getters and setters">
+	/**
+	 * Checks the validity of the Item instance.
+	 *
+	 * @return true if the ItemTemplate instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return name != null && !name.isEmpty();
 	}
 
 	// Getters and setters
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public float getWeight() {
 		return weight;
 	}
+
 	public void setWeight(float weight) {
 		this.weight = weight;
 	}
-	public float getBaseCost() {
+
+	public int getBaseCost() {
 		return baseCost;
 	}
-	public void setBaseCost(float baseCost) {
+
+	public void setBaseCost(int baseCost) {
 		this.baseCost = baseCost;
 	}
+
 	public short getStrength() {
 		return strength;
 	}
+
 	public void setStrength(short strength) {
 		this.strength = strength;
 	}
-	public float getConstructionTime() {
+
+	public int getConstructionTime() {
 		return constructionTime;
 	}
-	public void setConstructionTime(float constructionTime) {
+
+	public void setConstructionTime(int constructionTime) {
 		this.constructionTime = constructionTime;
 	}
+
 	public ManeuverDifficulty getManeuverDifficulty() {
 		return maneuverDifficulty;
 	}
+
 	public void setManeuverDifficulty(ManeuverDifficulty maneuverDifficulty) {
 		this.maneuverDifficulty = maneuverDifficulty;
 	}
+
 	public String getNotes() {
 		return notes;
 	}
+
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
 	public Slot getPrimarySlot() {
 		return primarySlot;
 	}
+
 	public void setPrimarySlot(Slot primarySlot) {
 		this.primarySlot = primarySlot;
 	}
+
 	public Slot getSecondarySlot() {
 		return secondarySlot;
 	}
+
 	public void setSecondarySlot(Slot secondarySlot) {
 		this.secondarySlot = secondarySlot;
 	}
+
 	public String getJsonName() {
 		return JSON_NAME;
 	}
+// </editor-fold> Getters and setters
 }

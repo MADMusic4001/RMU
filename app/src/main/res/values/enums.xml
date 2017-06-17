@@ -254,6 +254,13 @@
   <string name="enum_resistance_mentalism">Mentalism</string>
   <string name="enum_resistance_poison">Poison</string>
 
+  <!-- RestrictedQuarters enum strings -->
+  <string name="enum_restricted_quarters_normal">Normal</string>
+  <string name="enum_restricted_quarters_close">Close</string>
+  <string name="enum_restricted_quarters_cramped">Cramped</string>
+  <string name="enum_restricted_quarters_tight">Tight</string>
+  <string name="enum_restricted_quarters_confined">Confined</string>
+
   <!-- Severity enum strings -->
   <string name="enum_severity_mild">Mild</string>
   <string name="enum_severity_moderate">Moderate</string>

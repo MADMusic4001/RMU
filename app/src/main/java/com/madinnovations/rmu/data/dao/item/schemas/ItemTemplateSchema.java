@@ -38,9 +38,9 @@ public interface ItemTemplateSchema {
 			+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ COLUMN_NAME  + " TEXT NOT NULL, "
 			+ COLUMN_WEIGHT + " REAL NOT NULL, "
-			+ COLUMN_BASE_COST + " REAL NOT NULL, "
+			+ COLUMN_BASE_COST + " INTEGER NOT NULL, "
 			+ COLUMN_STRENGTH + " INTEGER NOT NULL, "
-			+ COLUMN_CONSTRUCTION_TIME + " REAL NOT NULL, "
+			+ COLUMN_CONSTRUCTION_TIME + " INTEGER NOT NULL, "
 			+ COLUMN_MANEUVER_DIFFICULTY + " TEXT, "
 			+ COLUMN_NOTES + " TEXT, "
 			+ COLUMN_PRIMARY_SLOT + " TEXT, "
@@ -81,6 +81,9 @@ public interface ItemTemplateSchema {
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_BRACEABLE
+			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_FUMBLE
+			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_LENGTH
+			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT
 			+ " FROM " + TABLE_NAME + " ITEM"
 				+ " LEFT OUTER JOIN " + ArmorTemplateSchema.TABLE_NAME + " ARMOR"
 					+ " ON ARMOR." + ArmorTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID

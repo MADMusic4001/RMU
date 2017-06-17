@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2017 MadInnovations
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2017 MadInnovations
+  <p>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.item;
 
@@ -25,24 +25,30 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.data.entities.object.Slot;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
-import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
 import java.util.Arrays;
 
 /**
  * Handles interactions with the UI for item templates.
  */
-public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.ValuesCallback, EditTextUtils.ValuesCallback {
+public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.ValuesCallback,
+		TextInputLayoutUtils.ValuesCallback {
 	@SuppressWarnings("unused")
 	private static final String TAG = "ItemTemplatePaneFrag";
 	private   EditText                          nameEdit;
 	private   EditText                          notesEdit;
 	private   EditText                          weightEdit;
+	private   EditText                          strengthEdit;
+	private   EditText                          baseCostEdit;
+	private   EditText                          constructionTimeEdit;
+	private   SpinnerUtils<ManeuverDifficulty>  maneuverDifficultySpinnerUtil;
 	private   SpinnerUtils<Slot>                primarySlotSpinnerUtil;
 	private   SpinnerUtils<Slot>                secondarySlotSpinnerUtil;
 	private   DataAccessInterface               dataAccessInterface;
@@ -55,10 +61,23 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 
 		View layout = inflater.inflate(R.layout.item_templates_pane, container, false);
 
-		nameEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.name_edit, 0);
-		notesEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.notes_edit, 0);
-		weightEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.weight_edit, 0);
+		nameEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.name_textInputLayout,
+												 R.id.name_edit, R.string.validation_item_name_required);
+		notesEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.notes_textInputLayout,
+												  R.id.notes_edit, 0);
+		weightEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.weight_textInputLayout,
+												   R.id.weight_edit, R.string.validation_item_weight_required);
+		baseCostEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.base_cost_textInputLayout,
+													 R.id.base_cost_edit, R.string.validation_item_base_cost_required);
+		strengthEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.strength_textInputLayout,
+													 R.id.strength_edit, R.string.validation_item_strength_required);
+		constructionTimeEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.construction_time_textInputLayout,
+															 R.id.construction_time_edit,
+															 R.string.validation_item_construction_time_required);
 
+		maneuverDifficultySpinnerUtil = new SpinnerUtils<>();
+		maneuverDifficultySpinnerUtil.initSpinner(layout, getActivity(), Arrays.asList(ManeuverDifficulty.values()), this,
+										   R.id.maneuver_difficulty_spinner, null);
 		primarySlotSpinnerUtil = new SpinnerUtils<>();
 		primarySlotSpinnerUtil.initSpinner(layout, getActivity(), Arrays.asList(Slot.getAnyOrAll()), this,
 										   R.id.primary_slot_spinner, null);
@@ -74,6 +93,11 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		Object result = null;
 
 		switch (spinnerId) {
+			case R.id.maneuver_difficulty_spinner:
+				if(dataAccessInterface.getItemTemplate() != null) {
+					result = dataAccessInterface.getItemTemplate().getManeuverDifficulty();
+				}
+				break;
 			case R.id.primary_slot_spinner:
 				if(dataAccessInterface.getItemTemplate() != null) {
 					result = dataAccessInterface.getItemTemplate().getPrimarySlot();
@@ -98,6 +122,10 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 	@Override
 	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
 		switch (spinnerId) {
+			case R.id.maneuver_difficulty_spinner:
+				dataAccessInterface.getItemTemplate().setManeuverDifficulty((ManeuverDifficulty) newItem);
+				dataAccessInterface.saveItem();
+				break;
 			case R.id.primary_slot_spinner:
 				dataAccessInterface.getItemTemplate().setPrimarySlot((Slot)newItem);
 				dataAccessInterface.saveItem();
@@ -127,6 +155,15 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 			case R.id.notes_edit:
 				result = dataAccessInterface.getItemTemplate().getNotes();
 				break;
+			case R.id.base_cost_edit:
+				result = String.valueOf(dataAccessInterface.getItemTemplate().getBaseCost());
+				break;
+			case R.id.strength_edit:
+				result = String.valueOf(dataAccessInterface.getItemTemplate().getStrength());
+				break;
+			case R.id.construction_time_edit:
+				result = String.valueOf(dataAccessInterface.getItemTemplate().getConstructionTime());
+				break;
 		}
 
 		return result;
@@ -147,6 +184,18 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 				dataAccessInterface.getItemTemplate().setNotes(newString);
 				dataAccessInterface.saveItem();
 				break;
+			case R.id.base_cost_edit:
+				dataAccessInterface.getItemTemplate().setBaseCost(Integer.valueOf(newString));
+				dataAccessInterface.saveItem();
+				break;
+			case R.id.strength_edit:
+				dataAccessInterface.getItemTemplate().setStrength(Short.valueOf(newString));
+				dataAccessInterface.saveItem();
+				break;
+			case R.id.construction_time_edit:
+				dataAccessInterface.getItemTemplate().setConstructionTime(Integer.valueOf(newString));
+				dataAccessInterface.saveItem();
+				break;
 		}
 	}
 
@@ -160,6 +209,15 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		nameEdit.setText(currentInstance.getName());
 		notesEdit.setText(currentInstance.getNotes());
 		weightEdit.setText(String.valueOf(currentInstance.getWeight()));
+		baseCostEdit.setText(String.valueOf(currentInstance.getBaseCost()));
+		strengthEdit.setText(String.valueOf(currentInstance.getStrength()));
+		constructionTimeEdit.setText(String.valueOf(currentInstance.getConstructionTime()));
+		if(currentInstance.getManeuverDifficulty() == null) {
+			maneuverDifficultySpinnerUtil.setSelection(ManeuverDifficulty.MEDIUM);
+		}
+		else {
+			maneuverDifficultySpinnerUtil.setSelection(currentInstance.getManeuverDifficulty());
+		}
 		if(currentInstance.getPrimarySlot() == null) {
 			primarySlotSpinnerUtil.setSelection(Slot.ANY);
 		}
@@ -176,10 +234,10 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
 			nameEdit.setError(null);
 		}
-		if(currentInstance.getNotes() != null && !currentInstance.getNotes().isEmpty()) {
-			notesEdit.setError(null);
-		}
 		weightEdit.setError(null);
+		baseCostEdit.setError(null);
+		strengthEdit.setError(null);
+		constructionTimeEdit.setError(null);
 	}
 
 	// Setters

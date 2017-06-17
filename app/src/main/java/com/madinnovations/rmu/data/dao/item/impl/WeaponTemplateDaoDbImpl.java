@@ -108,18 +108,30 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
         		cursor.getColumnIndexOrThrow(COLUMN_SPECIALIZATION_ID))));
 		instance.setDamageTable(damageTableDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_DAMAGE_TABLE_ID))));
 		instance.setBraceable(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BRACEABLE)) != 0);
-
+		instance.setFumble(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FUMBLE)));
+		instance.setLength(cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_LENGTH)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ADJUSTMENT))) {
+			instance.setSizeAdjustment(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ADJUSTMENT)));
+		}
         return instance;
     }
 
     @Override
     protected ContentValues getContentValues(WeaponTemplate instance) {
-		ContentValues contentValues = new ContentValues(4);
+		ContentValues contentValues = new ContentValues(7);
 
 		contentValues.put(COLUMN_ID, instance.getId());
 		contentValues.put(COLUMN_SPECIALIZATION_ID, instance.getCombatSpecialization().getId());
 		contentValues.put(COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
 		contentValues.put(COLUMN_BRACEABLE, instance.isBraceable());
+		contentValues.put(COLUMN_FUMBLE, instance.getFumble());
+		contentValues.put(COLUMN_LENGTH, instance.getLength());
+		if(instance.getSizeAdjustment() != null) {
+			contentValues.put(COLUMN_SIZE_ADJUSTMENT, instance.getSizeAdjustment());
+		}
+		else {
+			contentValues.putNull(COLUMN_SIZE_ADJUSTMENT);
+		}
 
         return contentValues;
     }

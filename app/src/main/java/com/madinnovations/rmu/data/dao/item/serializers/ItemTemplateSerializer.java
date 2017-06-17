@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.item.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -92,7 +90,6 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 							itemTemplate = new SubstanceTemplate(itemTemplate);
 							break;
 						case WeaponTemplate.JSON_NAME:
-							Log.d(TAG, "read: Found weapon template");
 							itemTemplate = new WeaponTemplate(itemTemplate);
 							weaponTemplate = true;
 							break;
@@ -108,13 +105,13 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 					itemTemplate.setWeight((float)in.nextDouble());
 					break;
 				case COLUMN_BASE_COST:
-					itemTemplate.setBaseCost((float)in.nextDouble());
+					itemTemplate.setBaseCost(in.nextInt());
 					break;
 				case COLUMN_STRENGTH:
 					itemTemplate.setStrength((short)in.nextInt());
 					break;
 				case COLUMN_CONSTRUCTION_TIME:
-					itemTemplate.setConstructionTime((float)in.nextDouble());
+					itemTemplate.setConstructionTime(in.nextInt());
 					break;
 				case COLUMN_MANEUVER_DIFFICULTY:
 					itemTemplate.setManeuverDifficulty(ManeuverDifficulty.valueOf(in.nextString()));
@@ -213,6 +210,21 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 				case WeaponTemplateSchema.COLUMN_BRACEABLE:
 					if(weaponTemplate) {
 						((WeaponTemplate)itemTemplate).setBraceable(in.nextBoolean());
+					}
+					break;
+				case WeaponTemplateSchema.COLUMN_FUMBLE:
+					if(weaponTemplate) {
+						((WeaponTemplate)itemTemplate).setFumble((short)in.nextInt());
+					}
+					break;
+				case WeaponTemplateSchema.COLUMN_LENGTH:
+					if(weaponTemplate) {
+						((WeaponTemplate)itemTemplate).setLength((float)in.nextDouble());
+					}
+					break;
+				case WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT:
+					if(weaponTemplate) {
+						((WeaponTemplate)itemTemplate).setSizeAdjustment((short)in.nextInt());
 					}
 					break;
 			}

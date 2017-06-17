@@ -133,6 +133,51 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	}
 
 	@Override
+	public boolean save(Item instance, boolean isNew) {
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+		final String selection = COLUMN_ID + " = ?";
+		final String weaponSelection = WeaponSchema.COLUMN_ID + " = ?";
+		ContentValues contentValues = getContentValues(instance);
+		boolean result;
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			if(getId(instance) == -1 || isNew) {
+				setId(instance, (int)db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE));
+				result = (getId(instance) != -1);
+				if(instance instanceof Weapon) {
+					ContentValues weaponContentValues = getWeaponContentValues((Weapon)instance);
+					db.insertWithOnConflict(WeaponSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
+				}
+			}
+			else {
+				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
+				result = (count == 1);
+				if(instance instanceof Weapon) {
+					ContentValues weaponContentValues = getWeaponContentValues((Weapon)instance);
+					if(db.update(WeaponSchema.TABLE_NAME, weaponContentValues, weaponSelection, selectionArgs) != 1) {
+						weaponContentValues = getWeaponContentValues((Weapon)instance);
+						db.insertWithOnConflict(WeaponSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
+					}
+				}
+			}
+			if(result && newTransaction) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public List<Item> getAll() {
 		List<Item> list = new ArrayList<>();
 
@@ -314,4 +359,20 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 
 		return values;
     }
+
+	private ContentValues getWeaponContentValues(Weapon instance) {
+		ContentValues values;
+
+		if(instance.getId() != -1) {
+			values = new ContentValues(3);
+			values.put(WeaponSchema.COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(2);
+		}
+		values.put(WeaponSchema.COLUMN_BONUS, instance.getBonus());
+		values.put(WeaponSchema.COLUMN_TWO_HANDED, instance.isTwoHanded());
+
+		return values;
+	}
 }

@@ -395,7 +395,7 @@ public class WeaponsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	@Override
 	public CharSequence getField1Value(Weapon item) {
-		return item.getName() == null ? item.getItemTemplate().getName() : item.getName();
+		return item.getName() == null ? item.getItemTemplate() == null ? "" : item.getItemTemplate().getName() : item.getName();
 	}
 
 	@Override

@@ -33,6 +33,9 @@ public class WeaponTemplate extends ItemTemplate {
     private Specialization combatSpecialization = null;
     private DamageTable    damageTable = null;
     private boolean        braceable   = false;
+	private short	       fumble = 3;
+	private float          length = 4.0f;
+	private Short          sizeAdjustment = null;
 
 	/**
 	 * Creates a new WeaponTemplate instance
@@ -122,6 +125,24 @@ public class WeaponTemplate extends ItemTemplate {
 	}
 	public void setBraceable(boolean braceable) {
 		this.braceable = braceable;
+	}
+	public short getFumble() {
+		return fumble;
+	}
+	public void setFumble(short fumble) {
+		this.fumble = fumble;
+	}
+	public float getLength() {
+		return length;
+	}
+	public void setLength(float length) {
+		this.length = length;
+	}
+	public Short getSizeAdjustment() {
+		return sizeAdjustment;
+	}
+	public void setSizeAdjustment(Short sizeAdjustment) {
+		this.sizeAdjustment = sizeAdjustment;
 	}
 	@Override
 	public String getJsonName() {
