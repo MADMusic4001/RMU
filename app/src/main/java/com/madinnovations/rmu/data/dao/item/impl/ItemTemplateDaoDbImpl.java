@@ -437,7 +437,7 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		values.put(WeaponTemplateSchema.COLUMN_FUMBLE, instance.getFumble());
 		values.put(WeaponTemplateSchema.COLUMN_LENGTH, instance.getLength());
 		if(instance.getSizeAdjustment() != null) {
-			values.put(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT, instance.isBraceable());
+			values.put(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT, instance.getSizeAdjustment());
 		}
 		else {
 			values.putNull(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT);
