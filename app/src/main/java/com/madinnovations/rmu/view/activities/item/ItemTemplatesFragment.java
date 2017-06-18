@@ -225,38 +225,19 @@ public class ItemTemplatesFragment extends Fragment implements TwoFieldListAdapt
 	}
 
 	private void deleteItem(@NonNull final ItemTemplate item) {
-		weaponTemplateRxHandler.deleteById(item.getId())
+		itemRxHandler.deleteById(item.getId())
 				.subscribe(new Subscriber<Boolean>() {
 					@Override
-					public void onCompleted() {
-						Log.d(TAG, "onCompleted: weapon template deleted");
-					}
+					public void onCompleted() {}
 					@Override
 					public void onError(Throwable e) {
-						Log.e(TAG, "onError: Exception caught deleting weapon templage", e);
+						Log.e("ItemTemplatesFragment", "Exception when deleting: " + item, e);
+						Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
 					}
 					@Override
 					public void onNext(Boolean success) {
 						if(success) {
 							removeItemFromList(item);
-						}
-						else {
-							itemRxHandler.deleteById(item.getId())
-									.subscribe(new Subscriber<Boolean>() {
-										@Override
-										public void onCompleted() {}
-										@Override
-										public void onError(Throwable e) {
-											Log.e("ItemTemplatesFragment", "Exception when deleting: " + item, e);
-											Toast.makeText(getActivity(), R.string.toast_item_delete_failed, Toast.LENGTH_SHORT).show();
-										}
-										@Override
-										public void onNext(Boolean success) {
-											if(success) {
-												removeItemFromList(item);
-											}
-										}
-									});
 						}
 					}
 				});

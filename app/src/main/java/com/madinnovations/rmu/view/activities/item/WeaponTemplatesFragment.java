@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -49,6 +51,7 @@ import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
 import java.util.Collection;
 
@@ -62,7 +65,8 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for item templates.
  */
 public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAdapter.GetValues<WeaponTemplate>,
-		ItemTemplatePaneFragment.DataAccessInterface, SpinnerUtils.ValuesCallback, CheckBoxUtils.ValuesCallback {
+		ItemTemplatePaneFragment.DataAccessInterface, SpinnerUtils.ValuesCallback, CheckBoxUtils.ValuesCallback,
+		TextInputLayoutUtils.ValuesCallback {
 	private static final String TAG = "WeaponTemplatesFragment";
 	@Inject
 	protected DamageTableRxHandler                damageTableRxHandler;
@@ -77,6 +81,9 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 	private   SpinnerUtils<Specialization>        combatSpecializationSpinnerUtils;
 	private   SpinnerUtils<DamageTable>           damageTableSpinnerUtils;
 	private   CheckBox                            braceableCheckbox;
+	private   EditText                            fumbleEdit;
+	private   EditText                            lengthEdit;
+	private   EditText                            sizeAdjustmentEdit;
 	private   WeaponTemplate                      currentInstance = new WeaponTemplate();
 	private   boolean                             isNew = true;
 	private   ItemTemplatePaneFragment            itemTemplatePaneFragment;
@@ -104,6 +111,12 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 											R.id.damage_table_spinner, null);
 		braceableCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.braceable_checkbox);
 
+		fumbleEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.fumble_textInputLayout,
+												   R.id.fumble_edit, R.string.validation_weapon_template_fumble_required);
+		lengthEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.length_textInputLayout,
+												   R.id.length_edit, R.string.validation_weapon_template_length_required);
+		sizeAdjustmentEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.size_adjustment_textInputLayout,
+												   R.id.size_adjustment_edit, 0);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -121,6 +134,9 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_new_item) {
+			if(copyViewsToItem()) {
+				saveItem();
+			}
 			currentInstance = new WeaponTemplate();
 			isNew = true;
 			copyItemToViews();
@@ -146,6 +162,9 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 
 		switch (menuItem.getItemId()) {
 			case R.id.context_new_item:
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = new WeaponTemplate();
 				isNew = true;
 				copyItemToViews();
@@ -222,6 +241,53 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 				saveItem();
 				break;
 		}
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+
+		switch (editTextId) {
+			case R.id.fumble_edit:
+				result = String.valueOf(currentInstance.getFumble());
+				break;
+			case R.id.length_edit:
+				result = String.valueOf(currentInstance.getLength());
+				break;
+			case R.id.size_adjustment_edit:
+				result = String.valueOf(currentInstance.getSizeAdjustment());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.fumble_edit:
+				currentInstance.setFumble(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.length_edit:
+				currentInstance.setLength(Float.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.size_adjustment_edit:
+				if(newString.isEmpty()) {
+					currentInstance.setSizeAdjustment(null);
+				}
+				else {
+					currentInstance.setSizeAdjustment(Short.valueOf(newString));
+				}
+				saveItem();
+				break;
+		}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
 	}
 
 	@Override
@@ -303,6 +369,63 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 				});
 	}
 
+	private boolean copyViewsToItem() {
+		boolean changed;
+
+		changed = itemTemplatePaneFragment.copyViewsToItem();
+
+		Specialization newSpecialization = combatSpecializationSpinnerUtils.getSelectedItem();
+		if(!newSpecialization.equals(currentInstance.getCombatSpecialization())) {
+			currentInstance.setCombatSpecialization(newSpecialization);
+			changed = true;
+		}
+
+		DamageTable newDamageTable = damageTableSpinnerUtils.getSelectedItem();
+		if(!newDamageTable.equals(currentInstance.getDamageTable())) {
+			currentInstance.setDamageTable(newDamageTable);
+			changed = true;
+		}
+
+		boolean newBoolean = braceableCheckbox.isChecked();
+		if(newBoolean != currentInstance.isBraceable()) {
+			currentInstance.setBraceable(newBoolean);
+			changed = true;
+		}
+
+		String newString = fumbleEdit.getText().toString();
+		if(!newString.isEmpty()) {
+			short newShort = Short.valueOf(newString);
+			if (newShort != currentInstance.getFumble()) {
+				currentInstance.setFumble(newShort);
+				changed = true;
+			}
+		}
+
+		newString = lengthEdit.getText().toString();
+		if(!newString.isEmpty()) {
+			float newFloat = Float.valueOf(newString);
+			if (newFloat != currentInstance.getLength()) {
+				currentInstance.setLength(newFloat);
+				changed = true;
+			}
+		}
+
+		newString = sizeAdjustmentEdit.getText().toString();
+		if(newString.isEmpty() && currentInstance.getSizeAdjustment() != null) {
+			currentInstance.setSizeAdjustment(null);
+			changed = true;
+		}
+		else if(!newString.isEmpty()) {
+			short newShort = Short.valueOf(newString);
+			if (currentInstance.getSizeAdjustment() == null || newShort != currentInstance.getSizeAdjustment()) {
+				currentInstance.setSizeAdjustment(newShort);
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
 	private void copyItemToViews() {
 		itemTemplatePaneFragment.copyItemToViews();
 
@@ -315,6 +438,16 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		}
 
 		braceableCheckbox.setChecked(currentInstance.isBraceable());
+		fumbleEdit.setText(String.valueOf(currentInstance.getFumble()));
+		((TextInputLayout)getActivity().findViewById(R.id.fumble_textInputLayout)).setErrorEnabled(false);
+		lengthEdit.setText(String.valueOf(currentInstance.getLength()));
+		((TextInputLayout)getActivity().findViewById(R.id.length_textInputLayout)).setErrorEnabled(false);
+		if(currentInstance.getSizeAdjustment() == null) {
+			sizeAdjustmentEdit.setText("");
+		}
+		else {
+			sizeAdjustmentEdit.setText(String.valueOf(currentInstance.getSizeAdjustment()));
+		}
 	}
 
 	private void initListView(View layout) {
@@ -357,6 +490,9 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(copyViewsToItem()) {
+					saveItem();
+				}
 				currentInstance = (WeaponTemplate) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {

@@ -138,7 +138,7 @@
           android:layout_height="wrap_content"
           android:inputType="numberSigned"
           android:maxLength="2"
-          android:hint="@string/input_label_strength"/>
+          android:hint="@string/input_label_size_adjustment"/>
     </android.support.design.widget.TextInputLayout>
 
   </android.support.constraint.ConstraintLayout>

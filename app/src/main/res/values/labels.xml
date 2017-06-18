@@ -528,6 +528,7 @@
   <string name="input_label_sense">Sense</string>
   <string name="input_label_severity">Severity</string>
   <string name="input_label_size">Size</string>
+  <string name="input_label_size_adjustment">Size Adjustment</string>
   <string name="input_label_skill_filter">Skill Filter</string>
   <string name="input_label_skill">Skill</string>
   <string name="input_label_skill_costs">Skill Costs</string>

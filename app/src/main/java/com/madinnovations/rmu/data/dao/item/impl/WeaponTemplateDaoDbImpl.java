@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.dao.item.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
@@ -67,7 +68,27 @@ public class WeaponTemplateDaoDbImpl extends BaseDaoDbImpl<WeaponTemplate> imple
 
 	@Override
     public boolean deleteById(int id) {
-        return super.deleteById(id);
+		SQLiteDatabase db = helper.getWritableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		boolean result;
+		try {
+			result = super.deleteById(id);
+			if (result) {
+				result = itemTemplateDao.deleteById(id);
+			}
+			if(newTransaction && result) {
+				db.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+		return result;
     }
 
     @Override

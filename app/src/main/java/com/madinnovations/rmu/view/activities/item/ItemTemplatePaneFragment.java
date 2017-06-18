@@ -204,6 +204,71 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		return false;
 	}
 
+	public boolean copyViewsToItem() {
+		boolean changed = false;
+		ItemTemplate currentInstance = dataAccessInterface.getItemTemplate();
+
+		String newString = nameEdit.getText().toString();
+		if(!newString.equals(currentInstance.getName())) {
+			currentInstance.setName(newString);
+			changed = true;
+		}
+
+		newString = notesEdit.getText().toString();
+		if(!newString.equals(currentInstance.getNotes())) {
+			currentInstance.setNotes(newString);
+			changed = true;
+		}
+
+		newString = weightEdit.getText().toString();
+		float newFloat = Float.valueOf(newString);
+		if(newFloat != currentInstance.getWeight()) {
+			currentInstance.setWeight(newFloat);
+			changed = true;
+		}
+
+		newString = baseCostEdit.getText().toString();
+		int newInt = Integer.valueOf(newString);
+		if(newInt != currentInstance.getBaseCost()) {
+			currentInstance.setBaseCost(newInt);
+			changed = true;
+		}
+
+		newString = strengthEdit.getText().toString();
+		short newShort = Short.valueOf(newString);
+		if(newShort != currentInstance.getStrength()) {
+			currentInstance.setStrength(newShort);
+			changed = true;
+		}
+
+		newString = constructionTimeEdit.getText().toString();
+		newInt = Integer.valueOf(newString);
+		if(newInt != currentInstance.getConstructionTime()) {
+			currentInstance.setConstructionTime(newInt);
+			changed = true;
+		}
+
+		ManeuverDifficulty newManeuverDifficulty = maneuverDifficultySpinnerUtil.getSelectedItem();
+		if(!newManeuverDifficulty.equals(currentInstance.getManeuverDifficulty())) {
+			currentInstance.setManeuverDifficulty(newManeuverDifficulty);
+			changed = true;
+		}
+
+		Slot newSlot = primarySlotSpinnerUtil.getSelectedItem();
+		if(!newSlot.equals(currentInstance.getPrimarySlot())) {
+			currentInstance.setPrimarySlot(newSlot);
+			changed = true;
+		}
+
+		newSlot = secondarySlotSpinnerUtil.getSelectedItem();
+		if(!newSlot.equals(currentInstance.getSecondarySlot())) {
+			currentInstance.setSecondarySlot(newSlot);
+			changed = true;
+		}
+
+		return changed;
+	}
+
 	public void copyItemToViews() {
 		ItemTemplate currentInstance = dataAccessInterface.getItemTemplate();
 		nameEdit.setText(currentInstance.getName());
