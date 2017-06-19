@@ -16,7 +16,9 @@
 package com.madinnovations.rmu.data.entities.character;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.combat.CombatPosition;
 import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -115,6 +117,7 @@ public class Character extends DatabaseObject implements Serializable {
 	private              Item                             feetItem                        = null;
 	private              Item                             backItem                        = null;
 	private              Item                             backpackItem                    = null;
+	private              Position                         position                        = null;
 
 	/**
 	 * Creates a new Character instance with default values
@@ -342,7 +345,7 @@ public class Character extends DatabaseObject implements Serializable {
 	public short[] getOffensiveBonuses(Creature[] opponents, RestrictedQuarters restrictedQuarters) {
 		short baseOB = -25;
 		WeaponTemplate weaponTemplate = null;
-		short[] results = new short[opponents.length];
+		short[] results = new short[opponents.length + 1];
 
 		if (mainHandItem != null && mainHandItem instanceof Weapon && mainHandItem.getItemTemplate() instanceof WeaponTemplate) {
 			weaponTemplate = (WeaponTemplate) mainHandItem.getItemTemplate();
@@ -375,6 +378,51 @@ public class Character extends DatabaseObject implements Serializable {
 			}
 		}
 		baseOB += restrictedQuarters.getModifier();
+		results[0] = baseOB;
+
+		for(int i = 0; i < opponents.length; i++) {
+			Creature creature = opponents[i];
+			short ob = baseOB;
+			for(State state : creature.getCurrentStates()) {
+				switch (state.getStateType()) {
+					case STUNNED:
+						ob += 20;
+						break;
+					case SURPRISED:
+						ob += 25;
+						break;
+					case FLATFOOTED:
+						ob += 60;
+						break;
+					case PRONE:
+						ob += 30;
+						break;
+				}
+			}
+			if(position != null && creature.getPosition() != null) {
+				CombatPosition defendPosition = position.canAttack(creature.getPosition());
+				switch (defendPosition) {
+					case RIGHT_FLANK:
+					case LEFT_FLANK:
+						ob += 15;
+						break;
+					case REAR:
+						ob += 35;
+						break;
+				}
+				CombatPosition attackPosition = position.getAttackPosition(creature.getPosition());
+				switch (attackPosition) {
+					case RIGHT_FLANK:
+					case LEFT_FLANK:
+						ob -= 30;
+						break;
+					case REAR:
+						ob -= 30;
+						break;
+				}
+			}
+			results[i+1] = ob;
+		}
 
 		return results;
 	}
@@ -981,6 +1029,14 @@ public class Character extends DatabaseObject implements Serializable {
 
 	public void setBackpackItem(Item backpackItem) {
 		this.backpackItem = backpackItem;
+	}
+
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 // </editor-fold> Getters and setters
 }

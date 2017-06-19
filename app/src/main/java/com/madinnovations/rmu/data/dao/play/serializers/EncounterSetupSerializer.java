@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.play.serializers;
 
-import android.graphics.Point;
+import android.graphics.PointF;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -45,8 +45,8 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 		for(Map.Entry<Character, EncounterRoundInfo> entry : value.getCharacterCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID).value(entry.getKey().getId());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getHexCoordinate().y);
+			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getCoordinate().x);
+			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getCoordinate().y);
 			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
 			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
 					entry.getValue().getActionPointsRemaining());
@@ -57,8 +57,8 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 		for(Map.Entry<Creature, EncounterRoundInfo> entry : value.getEnemyCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID).value(entry.getKey().getId());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getHexCoordinate().x);
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getHexCoordinate().y);
+			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getCoordinate().x);
+			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getCoordinate().y);
 			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
 			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
 					entry.getValue().getActionPointsRemaining());
@@ -100,17 +100,17 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 			in.beginObject();
 			Character character = new Character();
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			encounterRoundInfo.setHexCoordinate(new Point());
+			encounterRoundInfo.setCoordinate(new PointF());
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID:
 						character.setId(in.nextInt());
 						break;
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X:
-						encounterRoundInfo.getHexCoordinate().x = in.nextInt();
+						encounterRoundInfo.getCoordinate().x = (float)in.nextDouble();
 						break;
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y:
-						encounterRoundInfo.getHexCoordinate().y = in.nextInt();
+						encounterRoundInfo.getCoordinate().y = (float)in.nextDouble();
 						break;
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
 						encounterRoundInfo.setInitiativeRoll((short)in.nextInt());
@@ -132,17 +132,17 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 			in.beginObject();
 			Creature creature = new Creature();
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			encounterRoundInfo.setHexCoordinate(new Point());
+			encounterRoundInfo.setCoordinate(new PointF());
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID:
 						creature.setId(in.nextInt());
 						break;
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X:
-						encounterRoundInfo.getHexCoordinate().x = in.nextInt();
+						encounterRoundInfo.getCoordinate().x = (float)in.nextDouble();
 						break;
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y:
-						encounterRoundInfo.getHexCoordinate().y = in.nextInt();
+						encounterRoundInfo.getCoordinate().y = (float)in.nextDouble();
 						break;
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
 						encounterRoundInfo.setInitiativeRoll((short)in.nextInt());

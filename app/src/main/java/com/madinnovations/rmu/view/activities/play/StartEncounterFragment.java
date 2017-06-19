@@ -19,7 +19,6 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -44,17 +43,20 @@ import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.play.EncounterSetupRxHandler;
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
-import com.madinnovations.rmu.view.HexView;
+import com.madinnovations.rmu.view.TerrainView;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 import com.madinnovations.rmu.view.utils.Boast;
-import com.madinnovations.rmu.view.utils.HexDragShadowBuilder;
 import com.madinnovations.rmu.view.utils.RandomUtils;
+import com.madinnovations.rmu.view.utils.TerrainDragShadowBuilder;
 
 import java.util.Collection;
 import java.util.Map;
@@ -66,7 +68,7 @@ import rx.Subscriber;
 /**
  * Handles interactions with the UI for encounters.
  */
-public class StartEncounterFragment extends Fragment implements HexView.Callbacks, InitiativeDialog.InitiativeDialogListener,
+public class StartEncounterFragment extends Fragment implements TerrainView.Callbacks, InitiativeDialog.InitiativeDialogListener,
 		SelectActionDialog.SelectActionDialogListener, ResolveAttackDialog.ResolveAttackDialogListener {
 //	private static final short MAX_INITIATIVE = (short)55;
 	private static final String TAG = "StartEncounterFragment";
@@ -80,7 +82,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 	protected CreatureRxHandler       creatureRxHandler;
 	@Inject
 	protected EncounterSetupRxHandler encounterSetupRxHandler;
-	private   HexView                 hexView;
+	private   TerrainView             terrainView;
 	private   Spinner                 campaignSpinner;
 	private   Button                  startEncounterButton;
 	private ArrayAdapter<Character>   charactersListAdapter = null;
@@ -112,7 +114,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 		initCampaignSpinner(layout);
 		initStartEncounter(layout);
 		initReset(layout);
-		initHexView(layout);
+		initTerrainView(layout);
 		initCharactersListView(layout);
 		initCreaturesListView(layout);
 		return layout;
@@ -132,27 +134,27 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		HexView.HexViewContextMenuInfo info = (HexView.HexViewContextMenuInfo)item.getMenuInfo();
+		TerrainView.TerrainViewContextMenuInfo info = (TerrainView.TerrainViewContextMenuInfo)item.getMenuInfo();
 
 		switch (item.getItemId()) {
 			case R.id.context_remove_character:
 				for(Map.Entry<Character, EncounterRoundInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
-					if(entry.getValue().getHexCoordinate().equals(info.hexCoordinates)) {
+					if(entry.getValue().getCoordinate().equals(info.terrainCoordinates)) {
 						currentInstance.getCharacterCombatInfo().remove(entry.getKey());
 						startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty()
 															 && !currentInstance.getEnemyCombatInfo().isEmpty());
-						hexView.invalidate();
+						terrainView.invalidate();
 						break;
 					}
 				}
 				return true;
 			case R.id.context_remove_opponent:
 				for(Map.Entry<Creature, EncounterRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-					if(entry.getValue().getHexCoordinate().equals(info.hexCoordinates)) {
+					if(entry.getValue().getCoordinate().equals(info.terrainCoordinates)) {
 						currentInstance.getEnemyCombatInfo().remove(entry.getKey());
 						startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty()
 															 && !currentInstance.getEnemyCombatInfo().isEmpty());
-						hexView.invalidate();
+						terrainView.invalidate();
 						break;
 					}
 				}
@@ -280,7 +282,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 		startEncounterButton.setEnabled(currentInstance.getCurrentInitiative() == 0
 											 && !currentInstance.getCharacterCombatInfo().isEmpty()
 											 && !currentInstance.getEnemyCombatInfo().isEmpty());
-		hexView.invalidate();
+		terrainView.invalidate();
 	}
 
 	private void saveItem() {
@@ -446,18 +448,18 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 		});
 	}
 
-	private void initHexView(View layout) {
-		hexView = (HexView)layout.findViewById(R.id.hex_view);
-		hexView.setCallbacks(this);
+	private void initTerrainView(View layout) {
+		terrainView = (TerrainView)layout.findViewById(R.id.terrain_view);
+		terrainView.setCallbacks(this);
 
-		registerForContextMenu(hexView);
+		registerForContextMenu(terrainView);
 
-		hexView.setOnDragListener(new View.OnDragListener() {
+		terrainView.setOnDragListener(new View.OnDragListener() {
 			private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
 																	   R.drawable.drag_target_background, null);
 			private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
 																	   R.drawable.drag_hover_background, null);
-			private Drawable normalShape = hexView.getBackground();
+			private Drawable normalShape = terrainView.getBackground();
 
 			@Override
 			public boolean onDrag(View v, DragEvent event) {
@@ -479,7 +481,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
 								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
 							v.setBackground(hoverShape);
-							((HexView)v).setHighlightHex(pointf);
+							((TerrainView)v).setHighlightPoint(pointf);
 							v.invalidate();
 						}
 						else {
@@ -489,14 +491,14 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 					case DragEvent.ACTION_DRAG_LOCATION:
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
 								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
-							((HexView)v).setHighlightHex(pointf);
+							((TerrainView)v).setHighlightPoint(pointf);
 							v.invalidate();
 						}
 						break;
 					case DragEvent.ACTION_DRAG_EXITED:
 						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
 								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
-							((HexView)v).clearHighlightCenterPoint();
+							((TerrainView)v).setHighlightPoint(null);
 							v.setBackground(targetShape);
 							v.invalidate();
 						}
@@ -506,8 +508,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 						break;
 					case DragEvent.ACTION_DROP:
 						if(event.getClipDescription() != null) {
-							Point hexCoordinates = ((HexView)v).getHexCoordinates(pointf);
-							((HexView)v).setHighlightHex(hexCoordinates);
+							((TerrainView)v).setHighlightPoint(pointf);
 							if (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
 								ClipData.Item item = event.getClipData().getItemAt(0);
 								int characterId = Integer.valueOf(item.getText().toString());
@@ -518,7 +519,7 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 										if(encounterRoundInfo == null) {
 											encounterRoundInfo = new EncounterRoundInfo();
 										}
-										encounterRoundInfo.setHexCoordinate(hexCoordinates);
+										encounterRoundInfo.setCoordinate(pointf);
 										currentInstance.getCharacterCombatInfo().put(aCharacter, encounterRoundInfo);
 										startEncounterButton.setEnabled(!currentInstance.getEnemyCombatInfo().isEmpty());
 										break;
@@ -534,14 +535,14 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 										if(encounterRoundInfo == null) {
 											encounterRoundInfo = new EncounterRoundInfo();
 										}
-										encounterRoundInfo.setHexCoordinate(hexCoordinates);
+										encounterRoundInfo.setCoordinate(pointf);
 										currentInstance.getEnemyCombatInfo().put(anOpponent, encounterRoundInfo);
 										startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty());
 										break;
 									}
 								}
 							}
-							((HexView)v).clearHighlightCenterPoint();
+							((TerrainView)v).setHighlightPoint(null);
 							v.setBackground(normalShape);
 							v.invalidate();
 						}
@@ -579,12 +580,22 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 				ClipData dragData = null;
 
 				Character character = charactersListAdapter.getItem(position);
+				float weaponLength = 0;
+				float height = 4.0f;
 				if(character != null) {
 					String characterIdString = String.valueOf(character.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
 					dragData = new ClipData(DRAG_CHARACTER, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					if(character.getMainHandItem() != null && character.getMainHandItem() instanceof Weapon) {
+						weaponLength = ((WeaponTemplate)character.getMainHandItem().getItemTemplate()).getLength();
+					}
+					else if(character.getOffhandItem() != null && character.getOffhandItem() instanceof Weapon) {
+						weaponLength = ((WeaponTemplate)character.getOffhandItem().getItemTemplate()).getLength();
+					}
+					height = character.getHeight();
 				}
-				HexDragShadowBuilder myShadow = new HexDragShadowBuilder(hexView);
+				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(
+						terrainView, new Position(0, 0, 0, height, weaponLength));
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -641,12 +652,14 @@ public class StartEncounterFragment extends Fragment implements HexView.Callback
 				ClipData dragData = null;
 
 				Creature creature = creaturesListAdapter.getItem(position);
+				int height = 4;
 				if(creature != null) {
 					String creatureIdString = String.valueOf(creature.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(creatureIdString);
 					dragData = new ClipData(DRAG_OPPONENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					height = creature.getCreatureVariety().getHeight();
 				}
-				HexDragShadowBuilder myShadow = new HexDragShadowBuilder(hexView);
+				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(terrainView, new Position(0, 0, 0, height, 0));
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);

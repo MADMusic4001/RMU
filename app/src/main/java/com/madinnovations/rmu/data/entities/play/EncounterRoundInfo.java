@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.play;
 
-import android.graphics.Point;
+import android.graphics.PointF;
 
 import com.madinnovations.rmu.data.entities.combat.Action;
 
@@ -29,7 +29,7 @@ import java.io.Serializable;
  */
 public class EncounterRoundInfo implements Serializable {
 	private static final long serialVersionUID = 7312314437576720214L;
-	private Point   hexCoordinate;
+	private PointF   coordinate;
 	private short   initiativeRoll;
 	private short   baseInitiative;
 	private short   offensiveBonus = 0;
@@ -46,7 +46,7 @@ public class EncounterRoundInfo implements Serializable {
 	public String toString() {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
-				.append("hexCoordinate", hexCoordinate)
+				.append("coordinate", coordinate)
 				.append("initiativeRoll", initiativeRoll)
 				.append("baseInitiative", baseInitiative)
 				.append("offensiveBonus", offensiveBonus)
@@ -60,11 +60,11 @@ public class EncounterRoundInfo implements Serializable {
 	}
 
 	// Getters and setters
-	public Point getHexCoordinate() {
-		return hexCoordinate;
+	public PointF getCoordinate() {
+		return coordinate;
 	}
-	public void setHexCoordinate(Point hexCoordinate) {
-		this.hexCoordinate = hexCoordinate;
+	public void setCoordinate(PointF coordinate) {
+		this.coordinate = coordinate;
 	}
 	public short getInitiativeRoll() {
 		return initiativeRoll;

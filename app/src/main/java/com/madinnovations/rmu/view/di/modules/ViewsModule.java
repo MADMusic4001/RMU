@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.view.HexView;
+import com.madinnovations.rmu.view.TerrainView;
 import com.madinnovations.rmu.view.di.PerFragment;
 import com.madinnovations.rmu.view.di.PerView;
 
@@ -28,14 +29,23 @@ import dagger.Provides;
 @Module
 public class ViewsModule {
 	private HexView hexView;
+	private TerrainView terrainView;
 
 	public ViewsModule(HexView hexView) {
 		this.hexView = hexView;
+	}
+	public ViewsModule(TerrainView terrainView) {
+		this.terrainView = terrainView;
 	}
 
 	@Provides
 	@PerView
 	HexView providesHexView() {
 		return this.hexView;
+	}
+	@Provides
+	@PerView
+	TerrainView providesTerrainView() {
+		return this.terrainView;
 	}
 }

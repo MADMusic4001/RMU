@@ -255,28 +255,28 @@ public class HexView extends View {
 			canvas.restore();
 		}
 		if(callbacks != null) {
-			Map<Point, List<String>> hexStringsMap = new HashMap<>();
+			Map<PointF, List<String>> hexStringsMap = new HashMap<>();
 			for(Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup().getCharacterCombatInfo().entrySet()) {
 				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
 																	entry.getKey().getKnownAs().length() : 3);
-				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
+				List<String> hexStrings = hexStringsMap.get(entry.getValue().getCoordinate());
 				if(hexStrings == null) {
 					hexStrings = new ArrayList<>();
-					hexStringsMap.put(entry.getValue().getHexCoordinate(), hexStrings);
+					hexStringsMap.put(entry.getValue().getCoordinate(), hexStrings);
 				}
 				hexStrings.add(initials);
 			}
 			for(Map.Entry<Creature, EncounterRoundInfo> entry : callbacks.getEncounterSetup().getEnemyCombatInfo().entrySet()) {
 				String abbreviation = entry.getKey().getCreatureVariety().getName().substring(0, 3);
-				List<String> hexStrings = hexStringsMap.get(entry.getValue().getHexCoordinate());
+				List<String> hexStrings = hexStringsMap.get(entry.getValue().getCoordinate());
 				if(hexStrings == null) {
 					hexStrings = new ArrayList<>();
-					hexStringsMap.put(entry.getValue().getHexCoordinate(), hexStrings);
+					hexStringsMap.put(entry.getValue().getCoordinate(), hexStrings);
 				}
 				hexStrings.add(abbreviation);
 			}
 
-			for(Map.Entry<Point, List<String>> entry : hexStringsMap.entrySet()) {
+			for(Map.Entry<PointF, List<String>> entry : hexStringsMap.entrySet()) {
 				int offset = (entry.getValue().size() * textSize / 2) - textSize/2;
 				PointF pixelCoords = getCenterPoint(entry.getKey());
 				for(String initials : entry.getValue()) {

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.State;
@@ -38,14 +39,15 @@ public class Creature extends DatabaseObject implements Serializable {
 	private             Campaign          campaign        = null;
 	private             CreatureVariety   creatureVariety = null;
 	private             short             level           = 0;
-	private             int               maxHits         = 0;
-	private             int               currentHits     = 0;
-	private             CreatureArchetype archetype       = null;
-	private             short             fatigue         = 0;
-	private             short             powerPointLoss  = 0;
-	private             List<State>       currentStates   = new ArrayList<>();
-	private             CreatureAttack    lastAttack      = null;
-	private             short             numCreatures    = 1;
+	private int               maxHits        = 0;
+	private int               currentHits    = 0;
+	private CreatureArchetype archetype      = null;
+	private short             fatigue        = 0;
+	private short             powerPointLoss = 0;
+	private List<State>       currentStates  = new ArrayList<>();
+	private CreatureAttack    lastAttack     = null;
+	private short             numCreatures   = 1;
+	private Position          position       = null;
 
 	/**
 	 * Checks the validity of the Creature instance.
@@ -186,5 +188,11 @@ public class Creature extends DatabaseObject implements Serializable {
 	}
 	public void setNumCreatures(short numCreatures) {
 		this.numCreatures = numCreatures;
+	}
+	public Position getPosition() {
+		return position;
+	}
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 }

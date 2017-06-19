@@ -25,17 +25,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.Position;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
+import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.play.InitiativeListItem;
 
 /**
  * Populates a ListView with {@link InitiativeListItem} information
  */
 public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
-	private static final String TAG = "InitiativeListAdapter";
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_initiative_row;
+	@SuppressWarnings("unused")
+	private static final String TAG                = "InitiativeListAdapter";
+	private static final int    LAYOUT_RESOURCE_ID = R.layout.list_initiative_row;
 	private LayoutInflater layoutInflater;
 
 	/**
@@ -76,12 +82,40 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 		if(initiativeListItem != null) {
 			Short shortValue;
 			if(initiativeListItem.getCharacter() != null) {
+				Character character = initiativeListItem.getCharacter();
+				Weapon weapon = null;
+				if(character.getMainHandItem() instanceof Weapon) {
+					weapon = (Weapon) character.getMainHandItem();
+				}
+				else if(character.getOffhandItem() instanceof Weapon) {
+					weapon = (Weapon)character.getOffhandItem();
+				}
+				float weaponLength = 0.0f;
+				if(weapon != null) {
+					weaponLength = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
+				}
+				initiativeListItem.getCharacter().setPosition(
+						new Position(0.0f, 0.0f, 0.0f, initiativeListItem.getCharacter().getHeight(), weaponLength));
+				Creature creature = initiativeListItem.getCreature();
+				if(creature != null) {
+					initiativeListItem.getCreature().setPosition(
+							new Position(1.0f, 1.0f, 0.0f, creature.getCreatureVariety().getHeight(), 0.0f));
+				}
 				holder.nameView.setText(initiativeListItem.getCharacter().getKnownAs());
 				holder.initiativeRollEdit.setEnabled(true);
 				shortValue = initiativeListItem.getCharacter().getTotalStatBonus(Statistic.QUICKNESS);
 				holder.quicknessBonusView.setText(String.valueOf(shortValue));
 				holder.otherPenaltiesView.setText(String.valueOf(initiativeListItem.getCharacter().getInitiativePenalty()));
-//				holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCharacter().getOffensiveBonuses()));
+				Creature[] creatures;
+				if(creature != null) {
+					creatures = new Creature[1];
+					creatures[0] = initiativeListItem.getCreature();
+				}
+				else {
+					creatures = new Creature[0];
+				}
+				holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCharacter().getOffensiveBonuses(
+						creatures, RestrictedQuarters.NORMAL)[0]));
 			}
 			else if(initiativeListItem.getCreature() != null) {
 				Creature creature = initiativeListItem.getCreature();
@@ -106,8 +140,8 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 			holder.initiativeRollEdit.setText(String.valueOf(initiativeListItem.getEncounterRoundInfo().getInitiativeRoll()));
 
 			holder.baseInitiativeView.setText(String.valueOf(initiativeListItem.getEncounterRoundInfo().getBaseInitiative()));
-//			holder.parryEdit.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getParry()));
-//			holder.defensiveBonusView.setText(String.valueOf(initiativeListItem.getCombatRoundInfo().getDefensiveBonus()));
+			holder.parryEdit.setText(String.valueOf(initiativeListItem.getEncounterRoundInfo().getParry()));
+			holder.defensiveBonusView.setText(String.valueOf(initiativeListItem.getEncounterRoundInfo().getDefensiveBonus()));
 		}
 		return rowView;
 	}
