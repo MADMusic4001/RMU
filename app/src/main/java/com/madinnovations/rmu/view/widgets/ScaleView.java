@@ -26,7 +26,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.madinnovations.rmu.R;
@@ -37,11 +36,14 @@ import com.madinnovations.rmu.view.TerrainView;
  */
 public class ScaleView extends View {
 	private static final String TAG = "ScaleView";
+	private static final int HORIZONTAL_PADDING = 2;
+	private static final int VERICAL_PADDING = 4;
+	private static final int TEN_FEET_IN_INCHES = 120;
 	private TerrainView terrainView;
 	private Paint       linePaint;
 	private Paint       fontPaint;
-	private int         textSize;
 	private Rect        textBounds = new Rect();
+	private int         textSize;
 	private String      text;
 
 	public ScaleView(Context context) {
@@ -63,26 +65,27 @@ public class ScaleView extends View {
 	private void init() {
 		linePaint = new Paint();
 		linePaint.setAntiAlias(true);
-		linePaint.setStrokeWidth(2f);
+		linePaint.setStrokeWidth(4f);
 		linePaint.setColor(Color.RED);
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeJoin(Paint.Join.ROUND);
-		textSize = getContext().getResources().getDimensionPixelSize(R.dimen.textSizeInSp);
 		fontPaint = new Paint();
 //		Typeface raleway = Typeface.createFromAsset(getContext().getAssets(), "fonts/raleway-bold.ttf");
 //		fontPaint.setTypeface(raleway);
+		fontPaint.setStrokeWidth(4f);
 		fontPaint.setAntiAlias(true);
+		textSize = getContext().getResources().getDimensionPixelSize(R.dimen.textSizeInSp);
 		fontPaint.setTextSize(textSize);
 		fontPaint.setColor(Color.GREEN);
-		fontPaint.setTextAlign(Paint.Align.CENTER);
+		fontPaint.setTextAlign(Paint.Align.LEFT);
 		text = getContext().getResources().getString(R.string.ten_feet);
 		fontPaint.getTextBounds(text, 0, text.length(), textBounds);
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		int desiredWidth = textBounds.width();
-		int desiredHeight = textBounds.height() + 8;
+		int desiredWidth = textBounds.width() + HORIZONTAL_PADDING * 2;
+		int desiredHeight = textSize * 2 + VERICAL_PADDING * 4;
 
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -100,38 +103,35 @@ public class ScaleView extends View {
 			width = Math.max(desiredWidth, widthSize);
 		}
 
-		//Measure Height
 		if (heightMode == MeasureSpec.EXACTLY) {
 			height = heightSize;
 		} else if (heightMode == MeasureSpec.AT_MOST) {
-			//Can't be bigger than...
 			height = Math.min(desiredHeight, heightSize);
 		} else {
-			//Be whatever you want
 			height = desiredHeight;
 		}
 
-		Log.d(TAG, "onMeasure: text = " + text);
-		Log.d(TAG, "onMeasure: textBounds.left = " + textBounds.left);
-		Log.d(TAG, "onMeasure: textBounds.top = " + textBounds.top);
-		Log.d(TAG, "onMeasure: textBounds.right = " + textBounds.right);
-		Log.d(TAG, "onMeasure: textBounds.bottom = " + textBounds.bottom);
-		Log.d(TAG, "onMeasure: textBounds.width = " + textBounds.width());
-		Log.d(TAG, "onMeasure: textBounds.height = " + textBounds.height());
-		Log.d(TAG, "onMeasure: width = " + width);
-		Log.d(TAG, "onMeasure: height = " + height);
-		//MUST CALL THIS
 		setMeasuredDimension(width, height);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		canvas.drawLine(0, textBounds.top + 8, 0, getHeight(), linePaint);
-		canvas.drawLine(0,  textBounds.top + 8 + (getHeight() - textBounds.top + 8)/ 2, terrainView.getScaleFactor() * 10,
-						textBounds.top + 8 + (getHeight() - textBounds.top + 8)/ 2, linePaint);
-		canvas.drawLine(10 * terrainView.getScaleFactor(), textBounds.top + 8, 10 * terrainView.getScaleFactor(), getHeight(),
-						linePaint);
-		canvas.drawText(text, 0, textBounds.top, fontPaint);
+		canvas.drawLine(HORIZONTAL_PADDING,
+				textSize + VERICAL_PADDING * 3,
+				HORIZONTAL_PADDING,
+				textSize*2 + VERICAL_PADDING * 3,
+				linePaint);
+		canvas.drawLine(HORIZONTAL_PADDING,
+				(float)(textSize * 1.5 + VERICAL_PADDING * 3),
+				terrainView.getScaleFactor() * 120 + HORIZONTAL_PADDING,
+				(float)(textSize * 1.5 + VERICAL_PADDING * 3),
+				linePaint);
+		canvas.drawLine(TEN_FEET_IN_INCHES * terrainView.getScaleFactor() + HORIZONTAL_PADDING,
+				textSize + VERICAL_PADDING * 3,
+				TEN_FEET_IN_INCHES * terrainView.getScaleFactor() + HORIZONTAL_PADDING,
+				textSize * 2 + VERICAL_PADDING * 3,
+				linePaint);
+		canvas.drawText(text, HORIZONTAL_PADDING, textSize + VERICAL_PADDING, fontPaint);
 	}
 
 	// Getters and setters

@@ -78,6 +78,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	private   TerrainView             terrainView;
 	private   Spinner                 campaignSpinner;
 	private   Button                  startEncounterButton;
+	private   ScaleView               scaleView;
 	private ArrayAdapter<Character>   charactersListAdapter = null;
 	private ArrayAdapter<Creature>    creaturesListAdapter  = null;
 	private Collection<Character>     characters            = null;
@@ -108,7 +109,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		initStartEncounter(layout);
 		initReset(layout);
 		initTerrainView(layout);
-		ScaleView scaleView = (ScaleView)layout.findViewById(R.id.scale_view);
+		scaleView = (ScaleView)layout.findViewById(R.id.scale_view);
 		scaleView.setTerrainView(terrainView);
 		initCharactersListView(layout);
 		initCreaturesListView(layout);
@@ -139,6 +140,11 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	@Override
 	public void enableEncounterButton(boolean enable) {
 		startEncounterButton.setEnabled(enable);
+	}
+
+	@Override
+	public void scaleChanged(float newScaleFactor) {
+		scaleView.invalidate();
 	}
 
 	@Override

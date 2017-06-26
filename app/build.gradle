@@ -42,4 +42,5 @@ dependencies {
 	testCompile 'org.powermock:powermock-module-junit4:1.6.1'
 	compile 'com.nineoldandroids:library:2.4.0'
 	compile 'com.nhaarman.supertooltips:library:3.0.0'
+	compile 'com.android.support:support-annotations:26.0.0-alpha1'
 }

@@ -536,7 +536,7 @@ public abstract class BaseDaoDbImpl<T> {
 	 *                          selectionArgs. The values will be bound as Strings.
 	 * @return  A {@link Cursor} object, which is positioned before the first entry. Note that Cursors are not synchronized
 	 */
-	@SuppressWarnings("unused")
+	@SuppressWarnings({"unused", "WeakerAccess"})
 	public Cursor rawQuery(String sql, String[] selectionArgs) {
 		SQLiteDatabase db = helper.getReadableDatabase();
 		return db.rawQuery(sql, selectionArgs);

@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -73,7 +74,7 @@ public class TerrainView extends View{
 	private              Paint                      rearPaint;
 	private              ScaleGestureDetector       scaleGestureDetector;
 	private              GestureDetector            gestureDetector;
-	private              float                      scaleFactor = 5.f;
+	private              float                      scaleFactor = 1.0f;
 	private              int                        textSize;
 	private              float                      lastX;
 	private              float                      lastY;
@@ -118,7 +119,6 @@ public class TerrainView extends View{
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		canvas.drawColor(Color.WHITE);
-		drawScale(canvas);
 		if(callbacks != null) {
 			for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
 					.getCharacterCombatInfo()
@@ -184,59 +184,6 @@ public class TerrainView extends View{
 		destRect = new RectF(0, 0, getWidth(), getHeight());
 		scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
 		gestureDetector = new GestureDetector(getContext(), new TerrainViewGestureListener());
-
-		setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View view) {
-				if(callbacks != null) {
-					for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
-							.getCharacterCombatInfo()
-							.entrySet()) {
-						if(entry.getValue().getPosition() != null) {
-							float weaponLength = 0.0f;
-							Weapon weapon = entry.getKey().getWeapon();
-							if(weapon != null) {
-								weaponLength = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
-							}
-							CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-									lastX, lastY, entry.getKey().getHeight(), weaponLength);
-							ClipData dragData = null;
-							String characterIdString = String.valueOf(entry.getKey().getId());
-							ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
-							DragShadowBuilder myShadowBuilder = null;
-							switch (combatPosition) {
-								case FRONT:
-									dragData = new ClipData(DRAG_DIRECTION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-															clipDataItem);
-									myShadowBuilder = new DirectionDragShadowBuilder(
-											TerrainView.this, entry.getValue(), entry.getKey());
-
-									break;
-								case LEFT_FLANK:
-								case RIGHT_FLANK:
-								case REAR:
-									dragData = new ClipData(DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-															clipDataItem);
-									myShadowBuilder = new TerrainDragShadowBuilder(
-											TerrainView.this, new Position(0, 0, 0), entry.getKey());
-
-									break;
-							}
-							if(dragData != null) {
-								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-									view.startDragAndDrop(dragData, myShadowBuilder, null, 0);
-								}
-								else {
-									//noinspection deprecation
-									view.startDrag(dragData, myShadowBuilder, null, 0);
-								}
-							}
-						}
-					}
-				}
-				return false;
-			}
-		});
 
 		setOnDragListener(new View.OnDragListener() {
 			private Drawable targetShape = ResourcesCompat.getDrawable(getContext().getResources(),
@@ -373,16 +320,9 @@ public class TerrainView extends View{
 		this.callbacks = callbacks;
 	}
 
-	private void drawScale(Canvas canvas) {
-		canvas.drawLine(-5, 490, -5, 489, linePaint);
-		canvas.drawLine(5, 490, 5, 489, linePaint);
-		canvas.drawLine(-5, 489.5f, 5, 489.5f, linePaint);
-		canvas.drawText("10 feet", -3, 492, linePaint);
-	}
-
 	private void drawCombatant(Canvas canvas, Position position, float height, float weaponLength) {
-		float innerRadius = height / 2;
-		float outerRadius = innerRadius + weaponLength;
+		float innerRadius = (height / 2) * scaleFactor;
+		float outerRadius = (innerRadius + weaponLength * 12) * scaleFactor;
 		RectF oval = new RectF(position.getX() - outerRadius, position.getY() - outerRadius,
 							   position.getX() + outerRadius, position.getY() + outerRadius);
 		float directionDegrees = (float)Math.toDegrees(position.getDirection());
@@ -418,9 +358,11 @@ public class TerrainView extends View{
 		Collection<Creature> getCreatures();
 		EncounterSetup getEncounterSetup();
 		void enableEncounterButton(boolean enable);
+		void scaleChanged(float newScaleFactor);
 	}
 
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
 			scaleFactor *= detector.getScaleFactor();
@@ -428,12 +370,65 @@ public class TerrainView extends View{
 			// Don't let the object get too small or too large.
 			scaleFactor = Math.max(1.0f, Math.min(scaleFactor, 5.0f));
 
+			callbacks.scaleChanged(scaleFactor);
 			invalidate();
 			return true;
 		}
 	}
 
 	private class TerrainViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+		@Override
+		public void onLongPress(MotionEvent e) {
+			super.onLongPress(e);
+			Log.d(TAG, "onLongPress: ");
+			if(callbacks != null) {
+				for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
+						.getCharacterCombatInfo()
+						.entrySet()) {
+					if(entry.getValue().getPosition() != null) {
+						float weaponLength = 0.0f;
+						Weapon weapon = entry.getKey().getWeapon();
+						if(weapon != null) {
+							weaponLength = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
+						}
+						CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
+								lastX, lastY, entry.getKey().getHeight(), weaponLength);
+						ClipData dragData = null;
+						String characterIdString = String.valueOf(entry.getKey().getId());
+						ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
+						DragShadowBuilder myShadowBuilder = null;
+						switch (combatPosition) {
+							case FRONT:
+								dragData = new ClipData(DRAG_DIRECTION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+										clipDataItem);
+								myShadowBuilder = new DirectionDragShadowBuilder(
+										TerrainView.this, entry.getValue(), entry.getKey());
+
+								break;
+							case LEFT_FLANK:
+							case RIGHT_FLANK:
+							case REAR:
+								dragData = new ClipData(DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+										clipDataItem);
+								myShadowBuilder = new TerrainDragShadowBuilder(
+										TerrainView.this, new Position(0, 0, 0), entry.getKey());
+
+								break;
+						}
+						if(dragData != null) {
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+								TerrainView.this.startDragAndDrop(dragData, myShadowBuilder, null, 0);
+							}
+							else {
+								//noinspection deprecation
+								TerrainView.this.startDrag(dragData, myShadowBuilder, null, 0);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		@Override
 		public boolean onDown(MotionEvent e) {
 			lastX = e.getX();
