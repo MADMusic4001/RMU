@@ -15,9 +15,9 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
+import com.madinnovations.rmu.data.dao.common.Being;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.Position;
-import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.combat.CombatPosition;
 import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
@@ -31,7 +31,7 @@ import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -53,13 +53,11 @@ import static com.madinnovations.rmu.data.entities.Modifiers.STAGGERED;
  * Character attributes
  */
 @SuppressWarnings("unused")
-public class Character extends DatabaseObject implements Serializable {
+public class Character extends Being implements Serializable {
 	public static final  String                           JSON_NAME                       = "Characters";
 	public static final  short                            INITIAL_DP                      = 50;
 	private static final long                             serialVersionUID                = 5800697497948561223L;
 	private static final String                           TAG                             = "Character";
-	private              Campaign                         campaign                        = null;
-	private              short                            currentLevel                    = 0;
 	private              int                              experiencePoints                = 0;
 	private              short                            statPurchasePoints              = 0;
 	private              String                           firstName                       = null;
@@ -79,15 +77,7 @@ public class Character extends DatabaseObject implements Serializable {
 	private              Race                             race                            = null;
 	private              Culture                          culture                         = null;
 	private              Profession                       profession                      = null;
-	private              Realm                            realm                           = null;
-	private              Realm                            realm2                          = null;
-	private              Realm                            realm3                          = null;
-	private              short                            height                          = 70;
-	private              short                            weight                          = 185;
-	private              int                              hitPointLoss                    = 0;
 	private              short                            currentDevelopmentPoints        = INITIAL_DP;
-	private              short                            fatigue                         = 0;
-	private              short                            powerPointLoss                  = 0;
 	private              Map<Skill, DevelopmentCostGroup> skillCosts                      = new HashMap<>();
 	private              Map<Skill, Short>                skillRanks                      = new HashMap<>();
 	private              Map<Specialization, Short>       specializationRanks             = new HashMap<>();
@@ -102,28 +92,13 @@ public class Character extends DatabaseObject implements Serializable {
 	private              Map<TalentInstance, Short>       currentLevelTalentTiers         = new HashMap<>();
 	private              Map<DatabaseObject, Short>       purchasedCultureRanks           = new HashMap<>();
 	private              int                              statIncreases                   = 0;
-	private              List<State>                      currentStates                   = new ArrayList<>();
 	private              List<DatabaseObject>             professionSkills                = new ArrayList<>();
 	private              List<DatabaseObject>             knacks                          = new ArrayList<>();
-	private              Item                             mainHandItem                    = null;
-	private              Item                             offhandItem                     = null;
-	private              Item                             shirtItem                       = null;
-	private              Item                             pantsItem                       = null;
-	private              Item                             headItem                        = null;
-	private              Item                             chestItem                       = null;
-	private              Item                             armsItem                        = null;
-	private              Item                             handsItem                       = null;
-	private              Item                             legsItem                        = null;
-	private              Item                             feetItem                        = null;
-	private              Item                             backItem                        = null;
-	private              Item                             backpackItem                    = null;
-	private              Position                         position                        = null;
 
 	/**
-	 * Creates a new Character instance with default values
+	 * Creates a new Character instance.
 	 */
-	public Character() {
-	}
+	public Character() {}
 
 	/**
 	 * Creates a new Character instance with the give id.
@@ -342,10 +317,11 @@ public class Character extends DatabaseObject implements Serializable {
 	 *
 	 * @return the character's offensive bonus.
 	 */
-	public short[] getOffensiveBonuses(Creature[] opponents, RestrictedQuarters restrictedQuarters) {
+	public short[] getOffensiveBonuses(Position position, Map<Creature, EncounterRoundInfo> opponentsInfo, RestrictedQuarters
+			restrictedQuarters) {
 		short baseOB = -25;
 		WeaponTemplate weaponTemplate = null;
-		short[] results = new short[opponents.length + 1];
+		short[] results = new short[opponentsInfo.size() + 1];
 
 		if (mainHandItem != null && mainHandItem instanceof Weapon && mainHandItem.getItemTemplate() instanceof WeaponTemplate) {
 			weaponTemplate = (WeaponTemplate) mainHandItem.getItemTemplate();
@@ -380,8 +356,9 @@ public class Character extends DatabaseObject implements Serializable {
 		baseOB += restrictedQuarters.getModifier();
 		results[0] = baseOB;
 
-		for(int i = 0; i < opponents.length; i++) {
-			Creature creature = opponents[i];
+		int i = 1;
+		for(Map.Entry<Creature, EncounterRoundInfo> entry : opponentsInfo.entrySet()) {
+			Creature creature = entry.getKey();
 			short ob = baseOB;
 			for(State state : creature.getCurrentStates()) {
 				switch (state.getStateType()) {
@@ -399,8 +376,10 @@ public class Character extends DatabaseObject implements Serializable {
 						break;
 				}
 			}
-			if(position != null && creature.getPosition() != null) {
-				CombatPosition defendPosition = position.canAttack(creature.getPosition());
+			if(position != null && entry.getValue().getPosition() != null) {
+				CombatPosition defendPosition = position.canAttack(entry.getValue().getPosition(),
+																   creature.getCreatureVariety().getHeight(),
+																   getHeight(), getWeaponLength());
 				switch (defendPosition) {
 					case RIGHT_FLANK:
 					case LEFT_FLANK:
@@ -410,7 +389,7 @@ public class Character extends DatabaseObject implements Serializable {
 						ob += 35;
 						break;
 				}
-				CombatPosition attackPosition = position.getAttackPosition(creature.getPosition());
+				CombatPosition attackPosition = position.getAttackPosition(entry.getValue().getPosition());
 				switch (attackPosition) {
 					case RIGHT_FLANK:
 					case LEFT_FLANK:
@@ -421,7 +400,7 @@ public class Character extends DatabaseObject implements Serializable {
 						break;
 				}
 			}
-			results[i+1] = ob;
+			results[i++] = ob;
 		}
 
 		return results;
@@ -547,23 +526,6 @@ public class Character extends DatabaseObject implements Serializable {
 			}
 		}
 		return (short) (totalPenalty / 10);
-	}
-
-	// Getters and setters
-	public Campaign getCampaign() {
-		return campaign;
-	}
-
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
-
-	public short getCurrentLevel() {
-		return currentLevel;
-	}
-
-	public void setCurrentLevel(short currentLevel) {
-		this.currentLevel = currentLevel;
 	}
 
 	public int getExperiencePoints() {
@@ -718,54 +680,6 @@ public class Character extends DatabaseObject implements Serializable {
 		this.profession = profession;
 	}
 
-	public Realm getRealm() {
-		return realm;
-	}
-
-	public void setRealm(Realm realm) {
-		this.realm = realm;
-	}
-
-	public Realm getRealm2() {
-		return realm2;
-	}
-
-	public void setRealm2(Realm realm2) {
-		this.realm2 = realm2;
-	}
-
-	public Realm getRealm3() {
-		return realm3;
-	}
-
-	public void setRealm3(Realm realm3) {
-		this.realm3 = realm3;
-	}
-
-	public short getHeight() {
-		return height;
-	}
-
-	public void setHeight(short height) {
-		this.height = height;
-	}
-
-	public short getWeight() {
-		return weight;
-	}
-
-	public void setWeight(short weight) {
-		this.weight = weight;
-	}
-
-	public int getHitPointLoss() {
-		return hitPointLoss;
-	}
-
-	public void setHitPointLoss(int hitPointLoss) {
-		this.hitPointLoss = hitPointLoss;
-	}
-
 	public short getCurrentDevelopmentPoints() {
 		return currentDevelopmentPoints;
 	}
@@ -774,27 +688,12 @@ public class Character extends DatabaseObject implements Serializable {
 		this.currentDevelopmentPoints = currentDevelopmentPoints;
 	}
 
-	public short getFatigue() {
-		return fatigue;
-	}
-
-	public void setFatigue(short fatigue) {
-		this.fatigue = fatigue;
-	}
-
-	public short getPowerPointLoss() {
-		return powerPointLoss;
-	}
-
-	public void setPowerPointLoss(short powerPointLoss) {
-		this.powerPointLoss = powerPointLoss;
-	}
-
 	public Map<Skill, DevelopmentCostGroup> getSkillCosts() {
 		return skillCosts;
 	}
 
-	public void setSkillCosts(Map<Skill, DevelopmentCostGroup> skillCosts) {
+	public void setSkillCosts(
+			Map<Skill, DevelopmentCostGroup> skillCosts) {
 		this.skillCosts = skillCosts;
 	}
 
@@ -859,7 +758,8 @@ public class Character extends DatabaseObject implements Serializable {
 		return currentLevelSkillRanks;
 	}
 
-	public void setCurrentLevelSkillRanks(Map<Skill, Short> currentLevelSkillRanks) {
+	public void setCurrentLevelSkillRanks(
+			Map<Skill, Short> currentLevelSkillRanks) {
 		this.currentLevelSkillRanks = currentLevelSkillRanks;
 	}
 
@@ -867,7 +767,8 @@ public class Character extends DatabaseObject implements Serializable {
 		return currentLevelSpecializationRanks;
 	}
 
-	public void setCurrentLevelSpecializationRanks(Map<Specialization, Short> currentLevelSpecializationRanks) {
+	public void setCurrentLevelSpecializationRanks(
+			Map<Specialization, Short> currentLevelSpecializationRanks) {
 		this.currentLevelSpecializationRanks = currentLevelSpecializationRanks;
 	}
 
@@ -893,7 +794,8 @@ public class Character extends DatabaseObject implements Serializable {
 		return purchasedCultureRanks;
 	}
 
-	public void setPurchasedCultureRanks(Map<DatabaseObject, Short> purchasedCultureRanks) {
+	public void setPurchasedCultureRanks(
+			Map<DatabaseObject, Short> purchasedCultureRanks) {
 		this.purchasedCultureRanks = purchasedCultureRanks;
 	}
 
@@ -901,12 +803,6 @@ public class Character extends DatabaseObject implements Serializable {
 		return statIncreases;
 	}
 
-	/**
-	 * Sets the value of statIncreases to a specific value. Typically this should only be used when the value is read from
-	 * persistent storage.
-	 *
-	 * @param statIncreases the value to set
-	 */
 	public void setStatIncreases(int statIncreases) {
 		this.statIncreases = statIncreases;
 	}
@@ -927,116 +823,5 @@ public class Character extends DatabaseObject implements Serializable {
 		this.knacks = knacks;
 	}
 
-	public List<State> getCurrentStates() {
-		return currentStates;
-	}
-
-	public void setCurrentStates(List<State> currentStates) {
-		this.currentStates = currentStates;
-	}
-
-	public Item getMainHandItem() {
-		return mainHandItem;
-	}
-
-	public void setMainHandItem(Item mainHandItem) {
-		this.mainHandItem = mainHandItem;
-	}
-
-	public Item getOffhandItem() {
-		return offhandItem;
-	}
-
-	public void setOffhandItem(Item offhandItem) {
-		this.offhandItem = offhandItem;
-	}
-
-	public Item getShirtItem() {
-		return shirtItem;
-	}
-
-	public void setShirtItem(Item shirtItem) {
-		this.shirtItem = shirtItem;
-	}
-
-	public Item getPantsItem() {
-		return pantsItem;
-	}
-
-	public void setPantsItem(Item pantsItem) {
-		this.pantsItem = pantsItem;
-	}
-
-	public Item getHeadItem() {
-		return headItem;
-	}
-
-	public void setHeadItem(Item headItem) {
-		this.headItem = headItem;
-	}
-
-	public Item getChestItem() {
-		return chestItem;
-	}
-
-	public void setChestItem(Item chestItem) {
-		this.chestItem = chestItem;
-	}
-
-	public Item getArmsItem() {
-		return armsItem;
-	}
-
-	public void setArmsItem(Item armsItem) {
-		this.armsItem = armsItem;
-	}
-
-	public Item getHandsItem() {
-		return handsItem;
-	}
-
-	public void setHandsItem(Item handsItem) {
-		this.handsItem = handsItem;
-	}
-
-	public Item getLegsItem() {
-		return legsItem;
-	}
-
-	public void setLegsItem(Item legsItem) {
-		this.legsItem = legsItem;
-	}
-
-	public Item getFeetItem() {
-		return feetItem;
-	}
-
-	public void setFeetItem(Item feetItem) {
-		this.feetItem = feetItem;
-	}
-
-	public Item getBackItem() {
-		return backItem;
-	}
-
-	public void setBackItem(Item backItem) {
-		this.backItem = backItem;
-	}
-
-	public Item getBackpackItem() {
-		return backpackItem;
-	}
-
-	public void setBackpackItem(Item backpackItem) {
-		this.backpackItem = backpackItem;
-	}
-
-	public Position getPosition() {
-		return position;
-	}
-
-	public void setPosition(Position position) {
-		this.position = position;
-	}
 // </editor-fold> Getters and setters
 }

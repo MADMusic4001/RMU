@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.entities.play;
 
 import android.graphics.PointF;
 
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.combat.Action;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,24 +30,24 @@ import java.io.Serializable;
  */
 public class EncounterRoundInfo implements Serializable {
 	private static final long serialVersionUID = 7312314437576720214L;
-	private PointF   coordinate;
-	private short   initiativeRoll;
-	private short   baseInitiative;
-	private short   offensiveBonus = 0;
-	private short   parry = 0;
-	private short   defensiveBonus = 0;
-	private short   actionPointsRemaining = 4;
-	private short   currentActionPointsSpent = 0;
-	private boolean instantaneousUsed = false;
-	private boolean concentrating = false;
-	private Action  actionInProgress = null;
-	private Object  target;
+	private Position position;
+	private short    initiativeRoll;
+	private short    baseInitiative;
+	private short    offensiveBonus = 0;
+	private short    parry = 0;
+	private short    defensiveBonus = 0;
+	private short    actionPointsRemaining = 4;
+	private short    currentActionPointsSpent = 0;
+	private boolean  instantaneousUsed = false;
+	private boolean  concentrating = false;
+	private Action   actionInProgress = null;
+	private Object   target;
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
-				.append("coordinate", coordinate)
+				.append("position", position)
 				.append("initiativeRoll", initiativeRoll)
 				.append("baseInitiative", baseInitiative)
 				.append("offensiveBonus", offensiveBonus)
@@ -60,11 +61,11 @@ public class EncounterRoundInfo implements Serializable {
 	}
 
 	// Getters and setters
-	public PointF getCoordinate() {
-		return coordinate;
+	public Position getPosition() {
+		return position;
 	}
-	public void setCoordinate(PointF coordinate) {
-		this.coordinate = coordinate;
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 	public short getInitiativeRoll() {
 		return initiativeRoll;

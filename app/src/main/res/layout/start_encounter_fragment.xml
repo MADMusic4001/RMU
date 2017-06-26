@@ -61,6 +61,10 @@
         android:layout_height="120dp"
         android:minHeight="20dp"/>
   </LinearLayout>
+  <com.madinnovations.rmu.view.widgets.ScaleView
+      android:id="@+id/scale_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
   <com.madinnovations.rmu.view.TerrainView
       android:id="@+id/terrain_view"
       android:layout_width="match_parent"

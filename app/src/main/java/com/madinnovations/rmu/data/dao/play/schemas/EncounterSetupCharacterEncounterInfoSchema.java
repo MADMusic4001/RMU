@@ -25,6 +25,7 @@ public interface EncounterSetupCharacterEncounterInfoSchema {
 	String COLUMN_CHARACTER_ID            = "characterId";
 	String COLUMN_LOCATION_X              = "locationX";
 	String COLUMN_LOCATION_Y              = "locationY";
+	String COLUMN_DIRECTION               = "direction";
 	String COLUMN_BASE_INITIATIVE         = "baseInitiative";
 	String COLUMN_ACTION_POINTS_REMAINING = "actionPointsRemaining";
 	String COLUMN_INSTANTANEOUS_USED      = "instantaneousUsed";
@@ -37,6 +38,7 @@ public interface EncounterSetupCharacterEncounterInfoSchema {
 			+ COLUMN_CHARACTER_ID + " INTEGER NOT NULL, "
 			+ COLUMN_LOCATION_X + " REAL NOT NULL, "
 			+ COLUMN_LOCATION_Y + " REAL NOT NULL, "
+			+ COLUMN_DIRECTION + " REAL NOT NULL, "
 			+ COLUMN_BASE_INITIATIVE + " INTEGER NOT NULL, "
 			+ COLUMN_ACTION_POINTS_REMAINING + " INTEGER NOT NULL, "
 			+ COLUMN_INSTANTANEOUS_USED + " INTEGER NOT NULL, "

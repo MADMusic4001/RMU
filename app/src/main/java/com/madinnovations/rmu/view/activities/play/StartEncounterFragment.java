@@ -19,17 +19,11 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -47,16 +41,15 @@ import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
+import com.madinnovations.rmu.view.TerrainDragShadowBuilder;
 import com.madinnovations.rmu.view.TerrainView;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 import com.madinnovations.rmu.view.utils.Boast;
 import com.madinnovations.rmu.view.utils.RandomUtils;
-import com.madinnovations.rmu.view.utils.TerrainDragShadowBuilder;
+import com.madinnovations.rmu.view.widgets.ScaleView;
 
 import java.util.Collection;
 import java.util.Map;
@@ -72,8 +65,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		SelectActionDialog.SelectActionDialogListener, ResolveAttackDialog.ResolveAttackDialogListener {
 //	private static final short MAX_INITIATIVE = (short)55;
 	private static final String TAG = "StartEncounterFragment";
-	private static final String DRAG_CHARACTER = "drag-character";
-	private static final String DRAG_OPPONENT = "drag-opponent";
+	public static final String DRAG_CHARACTER = "drag-character";
+	public static final String DRAG_OPPONENT = "drag-opponent";
 	@Inject
 	protected CampaignRxHandler       campaignRxHandler;
 	@Inject
@@ -115,6 +108,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		initStartEncounter(layout);
 		initReset(layout);
 		initTerrainView(layout);
+		ScaleView scaleView = (ScaleView)layout.findViewById(R.id.scale_view);
+		scaleView.setTerrainView(terrainView);
 		initCharactersListView(layout);
 		initCreaturesListView(layout);
 		return layout;
@@ -127,45 +122,23 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.start_combat_context_menu, menu);
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		TerrainView.TerrainViewContextMenuInfo info = (TerrainView.TerrainViewContextMenuInfo)item.getMenuInfo();
-
-		switch (item.getItemId()) {
-			case R.id.context_remove_character:
-				for(Map.Entry<Character, EncounterRoundInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
-					if(entry.getValue().getCoordinate().equals(info.terrainCoordinates)) {
-						currentInstance.getCharacterCombatInfo().remove(entry.getKey());
-						startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty()
-															 && !currentInstance.getEnemyCombatInfo().isEmpty());
-						terrainView.invalidate();
-						break;
-					}
-				}
-				return true;
-			case R.id.context_remove_opponent:
-				for(Map.Entry<Creature, EncounterRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-					if(entry.getValue().getCoordinate().equals(info.terrainCoordinates)) {
-						currentInstance.getEnemyCombatInfo().remove(entry.getKey());
-						startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty()
-															 && !currentInstance.getEnemyCombatInfo().isEmpty());
-						terrainView.invalidate();
-						break;
-					}
-				}
-				return true;
-		}
-		return super.onContextItemSelected(item);
-	}
-
-	@Override
 	public EncounterSetup getEncounterSetup() {
 		return currentInstance;
+	}
+
+	@Override
+	public Collection<Character> getCharacters() {
+		return characters;
+	}
+
+	@Override
+	public Collection<Creature> getCreatures() {
+		return creatures;
+	}
+
+	@Override
+	public void enableEncounterButton(boolean enable) {
+		startEncounterButton.setEnabled(enable);
 	}
 
 	@Override
@@ -451,113 +424,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	private void initTerrainView(View layout) {
 		terrainView = (TerrainView)layout.findViewById(R.id.terrain_view);
 		terrainView.setCallbacks(this);
-
-		registerForContextMenu(terrainView);
-
-		terrainView.setOnDragListener(new View.OnDragListener() {
-			private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
-																	   R.drawable.drag_target_background, null);
-			private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
-																	   R.drawable.drag_hover_background, null);
-			private Drawable normalShape = terrainView.getBackground();
-
-			@Override
-			public boolean onDrag(View v, DragEvent event) {
-				final int action = event.getAction();
-				PointF pointf = new PointF(event.getX(), event.getY());
-
-				switch (action) {
-					case DragEvent.ACTION_DRAG_STARTED:
-						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
-								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
-							v.setBackground(targetShape);
-							v.invalidate();
-						}
-						else {
-							return false;
-						}
-						break;
-					case DragEvent.ACTION_DRAG_ENTERED:
-						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
-								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
-							v.setBackground(hoverShape);
-							((TerrainView)v).setHighlightPoint(pointf);
-							v.invalidate();
-						}
-						else {
-							return false;
-						}
-						break;
-					case DragEvent.ACTION_DRAG_LOCATION:
-						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
-								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
-							((TerrainView)v).setHighlightPoint(pointf);
-							v.invalidate();
-						}
-						break;
-					case DragEvent.ACTION_DRAG_EXITED:
-						if(event.getClipDescription() != null && (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())
-								|| DRAG_OPPONENT.equals(event.getClipDescription().getLabel()))) {
-							((TerrainView)v).setHighlightPoint(null);
-							v.setBackground(targetShape);
-							v.invalidate();
-						}
-						else {
-							return false;
-						}
-						break;
-					case DragEvent.ACTION_DROP:
-						if(event.getClipDescription() != null) {
-							((TerrainView)v).setHighlightPoint(pointf);
-							if (DRAG_CHARACTER.equals(event.getClipDescription().getLabel())) {
-								ClipData.Item item = event.getClipData().getItemAt(0);
-								int characterId = Integer.valueOf(item.getText().toString());
-								for (Character aCharacter : characters) {
-									if (aCharacter.getId() == characterId) {
-										EncounterRoundInfo encounterRoundInfo
-												= currentInstance.getCharacterCombatInfo().get(aCharacter);
-										if(encounterRoundInfo == null) {
-											encounterRoundInfo = new EncounterRoundInfo();
-										}
-										encounterRoundInfo.setCoordinate(pointf);
-										currentInstance.getCharacterCombatInfo().put(aCharacter, encounterRoundInfo);
-										startEncounterButton.setEnabled(!currentInstance.getEnemyCombatInfo().isEmpty());
-										break;
-									}
-								}
-							} else if(DRAG_OPPONENT.equals(event.getClipDescription().getLabel())) {
-								ClipData.Item item = event.getClipData().getItemAt(0);
-								int opponentId = Integer.valueOf(item.getText().toString());
-								for (Creature anOpponent : creatures) {
-									if (anOpponent.getId() == opponentId) {
-										EncounterRoundInfo encounterRoundInfo
-												= currentInstance.getEnemyCombatInfo().get(anOpponent);
-										if(encounterRoundInfo == null) {
-											encounterRoundInfo = new EncounterRoundInfo();
-										}
-										encounterRoundInfo.setCoordinate(pointf);
-										currentInstance.getEnemyCombatInfo().put(anOpponent, encounterRoundInfo);
-										startEncounterButton.setEnabled(!currentInstance.getCharacterCombatInfo().isEmpty());
-										break;
-									}
-								}
-							}
-							((TerrainView)v).setHighlightPoint(null);
-							v.setBackground(normalShape);
-							v.invalidate();
-						}
-						else {
-							return false;
-						}
-						break;
-					case DragEvent.ACTION_DRAG_ENDED:
-						v.setBackground(normalShape);
-						v.invalidate();
-						break;
-				}
-				return true;
-			}
-		});
 	}
 
 	private void initCharactersListView(View layout) {
@@ -580,22 +446,13 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				ClipData dragData = null;
 
 				Character character = charactersListAdapter.getItem(position);
-				float weaponLength = 0;
-				float height = 4.0f;
 				if(character != null) {
 					String characterIdString = String.valueOf(character.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
 					dragData = new ClipData(DRAG_CHARACTER, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-					if(character.getMainHandItem() != null && character.getMainHandItem() instanceof Weapon) {
-						weaponLength = ((WeaponTemplate)character.getMainHandItem().getItemTemplate()).getLength();
-					}
-					else if(character.getOffhandItem() != null && character.getOffhandItem() instanceof Weapon) {
-						weaponLength = ((WeaponTemplate)character.getOffhandItem().getItemTemplate()).getLength();
-					}
-					height = character.getHeight();
 				}
 				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(
-						terrainView, new Position(0, 0, 0, height, weaponLength));
+						terrainView, new Position(0, 0, 0), character);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);
@@ -652,14 +509,12 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				ClipData dragData = null;
 
 				Creature creature = creaturesListAdapter.getItem(position);
-				int height = 4;
 				if(creature != null) {
 					String creatureIdString = String.valueOf(creature.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(creatureIdString);
 					dragData = new ClipData(DRAG_OPPONENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
-					height = creature.getCreatureVariety().getHeight();
 				}
-				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(terrainView, new Position(0, 0, 0, height, 0));
+				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(terrainView, new Position(0, 0, 0), creature);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					view.startDragAndDrop(dragData, myShadow, null, 0);

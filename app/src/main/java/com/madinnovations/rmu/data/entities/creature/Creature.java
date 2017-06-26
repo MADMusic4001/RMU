@@ -1,53 +1,58 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.DatabaseObject;
-import com.madinnovations.rmu.data.entities.Position;
-import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.dao.common.Being;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.State;
+import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.view.RMUApp;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Creature attributes
  */
-public class Creature extends DatabaseObject implements Serializable {
-	private static final long serialVersionUID = 2106087301956452748L;
-	public static final String            JSON_NAME       = "Creatures";
-	private             Campaign          campaign        = null;
-	private             CreatureVariety   creatureVariety = null;
-	private             short             level           = 0;
-	private int               maxHits        = 0;
-	private int               currentHits    = 0;
-	private CreatureArchetype archetype      = null;
-	private short             fatigue        = 0;
-	private short             powerPointLoss = 0;
-	private List<State>       currentStates  = new ArrayList<>();
-	private CreatureAttack    lastAttack     = null;
-	private short             numCreatures   = 1;
-	private Position          position       = null;
+public class Creature extends Being implements Serializable {
+	private static final long              serialVersionUID = 2106087301956452748L;
+	public static final  String            JSON_NAME        = "Creatures";
+	private              CreatureVariety   creatureVariety  = null;
+	private              CreatureArchetype archetype        = null;
+	private              CreatureAttack    lastAttack       = null;
+	private              short             numCreatures     = 1;
+
+	/**
+	 * Creates a new Creature instance with default values
+	 */
+	public Creature() {
+	}
+
+	/**
+	 * Creates a new Creature instance with default values
+	 *
+	 * @param id  the database id of the new creature
+	 */
+	public Creature(int id) {
+		super(id);
+	}
 
 	/**
 	 * Checks the validity of the Creature instance.
@@ -60,7 +65,7 @@ public class Creature extends DatabaseObject implements Serializable {
 
 	@Override
 	public String toString() {
-		return String.format(RMUApp.getResourceUtils().getString(R.string.creature_name_format_string), level,
+		return String.format(RMUApp.getResourceUtils().getString(R.string.creature_name_format_string), currentLevel,
 							 creatureVariety.getName());
 	}
 
@@ -74,7 +79,7 @@ public class Creature extends DatabaseObject implements Serializable {
 				.append("id", getId())
 				.append("campaign", campaign)
 				.append("creatureVariety", creatureVariety)
-				.append("level", level)
+				.append("currentLevel", currentLevel)
 				.append("maxHits", maxHits)
 				.append("currentHits", currentHits)
 				.append("archetype", archetype)
@@ -122,60 +127,52 @@ public class Creature extends DatabaseObject implements Serializable {
 		return (short)(totalPenalty/10);
 	}
 
+	/**
+	 * Gets the current primary weapon in use by this character or null if no weapon is equipped.
+	 *
+	 * @return a Weapon instance or null if none are equipped.
+	 */
+	public Weapon getWeapon() {
+		Weapon result = null;
+
+		if(mainHandItem != null && mainHandItem instanceof Weapon) {
+			result = (Weapon)mainHandItem;
+		}
+		else if(offhandItem != null && offhandItem instanceof Weapon) {
+			result = (Weapon)offhandItem;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the length of the currently equipped weapon or 0 if no weapon is equipped.
+	 *
+	 * @return  the length of the equipped weapon or 0 if no weapon is equipped.
+	 */
+	public float getWeaponLength() {
+		float result = 0.0f;
+
+		Weapon weapon = getWeapon();
+		if(weapon != null) {
+			result = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
+		}
+
+		return result;
+	}
+
 	// Getters and setters
-	public Campaign getCampaign() {
-		return campaign;
-	}
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
 	public CreatureVariety getCreatureVariety() {
 		return creatureVariety;
 	}
 	public void setCreatureVariety(CreatureVariety creatureVariety) {
 		this.creatureVariety = creatureVariety;
 	}
-	public short getLevel() {
-		return level;
-	}
-	public void setLevel(short level) {
-		this.level = level;
-	}
-	public int getMaxHits() {
-		return maxHits;
-	}
-	public void setMaxHits(int maxHits) {
-		this.maxHits = maxHits;
-	}
-	public int getCurrentHits() {
-		return currentHits;
-	}
-	public void setCurrentHits(int currentHits) {
-		this.currentHits = currentHits;
-	}
 	public CreatureArchetype getArchetype() {
 		return archetype;
 	}
 	public void setArchetype(CreatureArchetype archetype) {
 		this.archetype = archetype;
-	}
-	public short getFatigue() {
-		return fatigue;
-	}
-	public void setFatigue(short fatigue) {
-		this.fatigue = fatigue;
-	}
-	public short getPowerPointLoss() {
-		return powerPointLoss;
-	}
-	public void setPowerPointLoss(short powerPointLoss) {
-		this.powerPointLoss = powerPointLoss;
-	}
-	public List<State> getCurrentStates() {
-		return currentStates;
-	}
-	public void setCurrentStates(List<State> currentStates) {
-		this.currentStates = currentStates;
 	}
 	public CreatureAttack getLastAttack() {
 		return lastAttack;
@@ -188,11 +185,5 @@ public class Creature extends DatabaseObject implements Serializable {
 	}
 	public void setNumCreatures(short numCreatures) {
 		this.numCreatures = numCreatures;
-	}
-	public Position getPosition() {
-		return position;
-	}
-	public void setPosition(Position position) {
-		this.position = position;
 	}
 }

@@ -26,14 +26,15 @@ import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.Position;
-import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.InitiativeListItem;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Populates a ListView with {@link InitiativeListItem} information
@@ -82,40 +83,21 @@ public class InitiativeListAdapter extends ArrayAdapter<InitiativeListItem> {
 		if(initiativeListItem != null) {
 			Short shortValue;
 			if(initiativeListItem.getCharacter() != null) {
-				Character character = initiativeListItem.getCharacter();
-				Weapon weapon = null;
-				if(character.getMainHandItem() instanceof Weapon) {
-					weapon = (Weapon) character.getMainHandItem();
-				}
-				else if(character.getOffhandItem() instanceof Weapon) {
-					weapon = (Weapon)character.getOffhandItem();
-				}
-				float weaponLength = 0.0f;
-				if(weapon != null) {
-					weaponLength = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
-				}
-				initiativeListItem.getCharacter().setPosition(
-						new Position(0.0f, 0.0f, 0.0f, initiativeListItem.getCharacter().getHeight(), weaponLength));
+				initiativeListItem.getEncounterRoundInfo().setPosition(
+						new Position(0.0f, 0.0f, 0.0f));
 				Creature creature = initiativeListItem.getCreature();
-				if(creature != null) {
-					initiativeListItem.getCreature().setPosition(
-							new Position(1.0f, 1.0f, 0.0f, creature.getCreatureVariety().getHeight(), 0.0f));
-				}
 				holder.nameView.setText(initiativeListItem.getCharacter().getKnownAs());
 				holder.initiativeRollEdit.setEnabled(true);
 				shortValue = initiativeListItem.getCharacter().getTotalStatBonus(Statistic.QUICKNESS);
 				holder.quicknessBonusView.setText(String.valueOf(shortValue));
 				holder.otherPenaltiesView.setText(String.valueOf(initiativeListItem.getCharacter().getInitiativePenalty()));
-				Creature[] creatures;
+				Map<Creature, EncounterRoundInfo> creatureEncounterRoundInfoMap = new HashMap<>();
 				if(creature != null) {
-					creatures = new Creature[1];
-					creatures[0] = initiativeListItem.getCreature();
-				}
-				else {
-					creatures = new Creature[0];
+					creatureEncounterRoundInfoMap.put(creature, initiativeListItem.getEncounterRoundInfo());
 				}
 				holder.offensiveBonusView.setText(String.valueOf(initiativeListItem.getCharacter().getOffensiveBonuses(
-						creatures, RestrictedQuarters.NORMAL)[0]));
+						initiativeListItem.getEncounterRoundInfo().getPosition(), creatureEncounterRoundInfoMap,
+						RestrictedQuarters.NORMAL)[0]));
 			}
 			else if(initiativeListItem.getCreature() != null) {
 				Creature creature = initiativeListItem.getCreature();

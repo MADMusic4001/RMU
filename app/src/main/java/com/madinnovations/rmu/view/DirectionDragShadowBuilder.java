@@ -13,56 +13,56 @@
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
- *  
+ *
  *
  */
-package com.madinnovations.rmu.view.utils;
+
+package com.madinnovations.rmu.view;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.PointF;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
-import com.madinnovations.rmu.data.entities.Position;
-import com.madinnovations.rmu.view.TerrainView;
-import com.madinnovations.rmu.view.TerrainView;
+import com.madinnovations.rmu.data.dao.common.Being;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 
 /**
  * A DragShadowBuilder that draws a hex shaped drag shadow.
  */
-public class TerrainDragShadowBuilder extends View.DragShadowBuilder {
-	private static final String TAG = "TerrainDragShadowBuilde";
-	private Paint    linePaint;
-	private Position position;
+public class DirectionDragShadowBuilder extends View.DragShadowBuilder {
+	private static final String TAG = "DirectionDragShadowBuil";
+	private TerrainView        terrainView;
+	private Paint              linePaint;
+	private Being              being;
+	private EncounterRoundInfo encounterRoundInfo;
 
 	/**
-	 * Creates a new TerrainDragShadowBuilder instance.
+	 * Creates a new DirectionDragShadowBuilder instance.
 	 *
-	 * @param view  the view that this TerrainDragShadowBuilder will be associated with
+	 * @param view  the view that this DirectionDragShadowBuilder will be associated with
 	 */
-	public TerrainDragShadowBuilder(TerrainView view, Position position) {
+	public DirectionDragShadowBuilder(TerrainView view, EncounterRoundInfo encounterRoundInfo, Being being) {
 		super(view);
+		this.terrainView = view;
+		this.being = being;
+		this.encounterRoundInfo = encounterRoundInfo;
 		init();
-		this.position = position;
-		Log.d(TAG, "TerrainDragShadowBuilder: constructed " + this);
 	}
 
 	@Override
 	public void onDrawShadow(Canvas canvas) {
 		canvas.save();
-		float radius = position.getHeight() / 2 + position.getWeaponLength();
-		canvas.drawCircle(position.getX() + radius, position.getY() + radius, radius, linePaint);
+		canvas.drawLine(encounterRoundInfo.getPosition().getX(), encounterRoundInfo.getPosition().getY(), terrainView.getLastX(),
+						terrainView.getLastY(), linePaint);
 	}
 
 	@Override
 	public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
 		try {
-			float width = (position.getHeight() / 2 + position.getWeaponLength()) * 2;
+			float width = (being.getHeight() / 2 + being.getWeaponLength()) * 2;
 			outShadowSize.set((int) width, (int) width);
 			outShadowTouchPoint.set((int) width / 2, (int) width / 2);
 		}

@@ -15,14 +15,13 @@
  */
 package com.madinnovations.rmu.data.dao.play.serializers;
 
-import android.graphics.PointF;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCharacterEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCreatureEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
@@ -45,8 +44,10 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 		for(Map.Entry<Character, EncounterRoundInfo> entry : value.getCharacterCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID).value(entry.getKey().getId());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getCoordinate().x);
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getCoordinate().y);
+			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getPosition().getX());
+			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getPosition().getY());
+			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_DIRECTION).value(
+					entry.getValue().getPosition().getDirection());
 			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
 			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
 					entry.getValue().getActionPointsRemaining());
@@ -57,8 +58,10 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 		for(Map.Entry<Creature, EncounterRoundInfo> entry : value.getEnemyCombatInfo().entrySet()) {
 			out.beginObject();
 			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID).value(entry.getKey().getId());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getCoordinate().x);
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getCoordinate().y);
+			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getPosition().getX());
+			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getPosition().getY());
+			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_DIRECTION).value(
+					entry.getValue().getPosition().getDirection());
 			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
 			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
 					entry.getValue().getActionPointsRemaining());
@@ -100,17 +103,20 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 			in.beginObject();
 			Character character = new Character();
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			encounterRoundInfo.setCoordinate(new PointF());
+			float x = 0, y = 0, direction = 0;
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID:
 						character.setId(in.nextInt());
 						break;
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X:
-						encounterRoundInfo.getCoordinate().x = (float)in.nextDouble();
+						x = (float)in.nextDouble();
 						break;
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y:
-						encounterRoundInfo.getCoordinate().y = (float)in.nextDouble();
+						y = (float)in.nextDouble();
+						break;
+					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_DIRECTION:
+						direction = (float)in.nextDouble();
 						break;
 					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
 						encounterRoundInfo.setInitiativeRoll((short)in.nextInt());
@@ -120,6 +126,7 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 						break;
 				}
 			}
+			encounterRoundInfo.setPosition(new Position(x, y, direction));
 			encounterSetup.getCharacterCombatInfo().put(character, encounterRoundInfo);
 			in.endObject();
 		}
@@ -132,17 +139,20 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 			in.beginObject();
 			Creature creature = new Creature();
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			encounterRoundInfo.setCoordinate(new PointF());
+			float x = 0, y = 0, direction = 0;
 			while(in.hasNext()) {
 				switch (in.nextName()) {
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID:
 						creature.setId(in.nextInt());
 						break;
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X:
-						encounterRoundInfo.getCoordinate().x = (float)in.nextDouble();
+						x = (float)in.nextDouble();
 						break;
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y:
-						encounterRoundInfo.getCoordinate().y = (float)in.nextDouble();
+						y = (float)in.nextDouble();
+						break;
+					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_DIRECTION:
+						direction = (float)in.nextDouble();
 						break;
 					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
 						encounterRoundInfo.setInitiativeRoll((short)in.nextInt());
@@ -152,6 +162,7 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 						break;
 				}
 			}
+			encounterRoundInfo.setPosition(new Position(x, y, direction));
 			encounterSetup.getEnemyCombatInfo().put(creature, encounterRoundInfo);
 			in.endObject();
 		}

@@ -19,7 +19,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.PointF;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
@@ -30,6 +29,7 @@ import com.madinnovations.rmu.data.dao.play.EncounterSetupDao;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCharacterEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCreatureEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
@@ -223,8 +223,8 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 
 		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID, combatSetupId);
 		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID, character.getId());
-		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X, encounterRoundInfo.getCoordinate().x);
-		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y, encounterRoundInfo.getCoordinate().y);
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X, encounterRoundInfo.getPosition().getX());
+		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y, encounterRoundInfo.getPosition().getY());
 		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE, encounterRoundInfo.getInitiativeRoll());
 		values.put(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING, encounterRoundInfo.getActionPointsRemaining());
 
@@ -251,8 +251,8 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 
 		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ENCOUNTER_SETUP_ID, combatSetupId);
 		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID, creature.getId());
-		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X, encounterRoundInfo.getCoordinate().x);
-		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y, encounterRoundInfo.getCoordinate().y);
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X, encounterRoundInfo.getPosition().getX());
+		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y, encounterRoundInfo.getPosition().getY());
 		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE, encounterRoundInfo.getInitiativeRoll());
 		values.put(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING, encounterRoundInfo.getActionPointsRemaining());
 
@@ -269,13 +269,13 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			encounterRoundInfo.setCoordinate(new PointF());
+			encounterRoundInfo.setPosition(new Position());
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID));
 			Character instance = characterDao.getById(mappedId);
-			encounterRoundInfo.getCoordinate().x = cursor.getFloat(cursor.getColumnIndexOrThrow(
-					EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X));
-			encounterRoundInfo.getCoordinate().y = cursor.getFloat(cursor.getColumnIndexOrThrow(
-					EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y));
+			encounterRoundInfo.getPosition().setX(cursor.getFloat(cursor.getColumnIndexOrThrow(
+					EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X)));
+			encounterRoundInfo.getPosition().setY(cursor.getFloat(cursor.getColumnIndexOrThrow(
+					EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y)));
 			encounterRoundInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
 					EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE)));
 			encounterRoundInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(
@@ -300,13 +300,13 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			encounterRoundInfo.setCoordinate(new PointF());
+			encounterRoundInfo.setPosition(new Position());
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID));
 			Creature instance = creatureDao.getById(mappedId);
-			encounterRoundInfo.getCoordinate().x = cursor.getInt(cursor.getColumnIndexOrThrow(
-					EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X));
-			encounterRoundInfo.getCoordinate().y = cursor.getInt(cursor.getColumnIndexOrThrow(
-					EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y));
+			encounterRoundInfo.getPosition().setX(cursor.getFloat(cursor.getColumnIndexOrThrow(
+					EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X)));
+			encounterRoundInfo.getPosition().setY(cursor.getFloat(cursor.getColumnIndexOrThrow(
+					EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y)));
 			encounterRoundInfo.setInitiativeRoll(cursor.getShort(cursor.getColumnIndexOrThrow(
 					EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE)));
 			encounterRoundInfo.setActionPointsRemaining(cursor.getShort(cursor.getColumnIndexOrThrow(

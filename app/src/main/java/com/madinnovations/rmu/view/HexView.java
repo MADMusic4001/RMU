@@ -34,6 +34,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
@@ -255,30 +256,30 @@ public class HexView extends View {
 			canvas.restore();
 		}
 		if(callbacks != null) {
-			Map<PointF, List<String>> hexStringsMap = new HashMap<>();
+			Map<Position, List<String>> hexStringsMap = new HashMap<>();
 			for(Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup().getCharacterCombatInfo().entrySet()) {
 				String initials = entry.getKey().getKnownAs().substring(0, entry.getKey().getKnownAs().length() < 3 ?
 																	entry.getKey().getKnownAs().length() : 3);
-				List<String> hexStrings = hexStringsMap.get(entry.getValue().getCoordinate());
+				List<String> hexStrings = hexStringsMap.get(entry.getValue().getPosition());
 				if(hexStrings == null) {
 					hexStrings = new ArrayList<>();
-					hexStringsMap.put(entry.getValue().getCoordinate(), hexStrings);
+					hexStringsMap.put(entry.getValue().getPosition(), hexStrings);
 				}
 				hexStrings.add(initials);
 			}
 			for(Map.Entry<Creature, EncounterRoundInfo> entry : callbacks.getEncounterSetup().getEnemyCombatInfo().entrySet()) {
 				String abbreviation = entry.getKey().getCreatureVariety().getName().substring(0, 3);
-				List<String> hexStrings = hexStringsMap.get(entry.getValue().getCoordinate());
+				List<String> hexStrings = hexStringsMap.get(entry.getValue().getPosition());
 				if(hexStrings == null) {
 					hexStrings = new ArrayList<>();
-					hexStringsMap.put(entry.getValue().getCoordinate(), hexStrings);
+					hexStringsMap.put(entry.getValue().getPosition(), hexStrings);
 				}
 				hexStrings.add(abbreviation);
 			}
 
-			for(Map.Entry<PointF, List<String>> entry : hexStringsMap.entrySet()) {
+			for(Map.Entry<Position, List<String>> entry : hexStringsMap.entrySet()) {
 				int offset = (entry.getValue().size() * textSize / 2) - textSize/2;
-				PointF pixelCoords = getCenterPoint(entry.getKey());
+				PointF pixelCoords = getCenterPoint(new PointF(entry.getKey().getX(), entry.getKey().getY()));
 				for(String initials : entry.getValue()) {
 					canvas.drawText(initials, pixelCoords.x, pixelCoords.y + offset, fontPaint);
 					offset -= textSize;
