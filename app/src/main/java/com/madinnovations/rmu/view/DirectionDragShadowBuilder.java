@@ -54,7 +54,10 @@ public class DirectionDragShadowBuilder extends View.DragShadowBuilder {
 
 	@Override
 	public void onDrawShadow(Canvas canvas) {
-		canvas.save();
+		Log.d(TAG, "onDrawShadow: sourceX = " + encounterRoundInfo.getPosition().getX());
+		Log.d(TAG, "onDrawShadow: sourceY = " + encounterRoundInfo.getPosition().getY());
+		Log.d(TAG, "onDrawShadow: dragX = " + terrainView.getLastX());
+		Log.d(TAG, "onDrawShadow: dragY = " + terrainView.getLastY());
 		canvas.drawLine(encounterRoundInfo.getPosition().getX(), encounterRoundInfo.getPosition().getY(), terrainView.getLastX(),
 						terrainView.getLastY(), linePaint);
 	}

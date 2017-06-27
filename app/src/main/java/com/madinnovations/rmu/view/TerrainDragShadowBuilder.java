@@ -52,22 +52,16 @@ public class TerrainDragShadowBuilder extends View.DragShadowBuilder {
 
 	@Override
 	public void onDrawShadow(Canvas canvas) {
-		canvas.save();
 		float radius = being.getHeight() / 2 + being.getWeaponLength();
 		canvas.drawCircle(position.getX() + radius, position.getY() + radius, radius, linePaint);
 	}
 
 	@Override
 	public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
-		try {
-			float width = (being.getHeight() / 2 + being.getWeaponLength()) * 2;
-			outShadowSize.set((int) width, (int) width);
-			outShadowTouchPoint.set((int) width / 2, (int) width / 2);
-		}
-		catch(NullPointerException e) {
-			Log.e(TAG, "onProvideShadowMetrics: this = " + this, e);
-			throw e;
-		}
+		float radius = being.getHeight() / 2 + being.getWeaponLength();
+		float width = radius * 2;
+		outShadowSize.set((int)width, (int) width);
+		outShadowTouchPoint.set((int) radius, (int) radius);
 	}
 
 	private void init() {

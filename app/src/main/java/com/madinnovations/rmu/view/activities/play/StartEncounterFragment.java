@@ -65,8 +65,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		SelectActionDialog.SelectActionDialogListener, ResolveAttackDialog.ResolveAttackDialogListener {
 //	private static final short MAX_INITIATIVE = (short)55;
 	private static final String TAG = "StartEncounterFragment";
-	public static final String DRAG_CHARACTER = "drag-character";
-	public static final String DRAG_OPPONENT = "drag-opponent";
 	@Inject
 	protected CampaignRxHandler       campaignRxHandler;
 	@Inject
@@ -455,17 +453,18 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				if(character != null) {
 					String characterIdString = String.valueOf(character.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
-					dragData = new ClipData(DRAG_CHARACTER, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					dragData = new ClipData(TerrainView.DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+											clipDataItem);
 				}
 				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(
 						terrainView, new Position(0, 0, 0), character);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
+					view.startDragAndDrop(dragData, myShadow, character, 0);
 				}
 				else {
 					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
+					view.startDrag(dragData, myShadow, character, 0);
 				}
 				return false;
 			}
@@ -518,16 +517,17 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				if(creature != null) {
 					String creatureIdString = String.valueOf(creature.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(creatureIdString);
-					dragData = new ClipData(DRAG_OPPONENT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, clipDataItem);
+					dragData = new ClipData(TerrainView.DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+											clipDataItem);
 				}
 				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(terrainView, new Position(0, 0, 0), creature);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
+					view.startDragAndDrop(dragData, myShadow, creature, 0);
 				}
 				else {
 					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
+					view.startDrag(dragData, myShadow, creature, 0);
 				}
 				return false;
 			}
