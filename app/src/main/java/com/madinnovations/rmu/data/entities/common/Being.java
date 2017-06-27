@@ -17,11 +17,10 @@
  *
  */
 
-package com.madinnovations.rmu.data.dao.common;
+package com.madinnovations.rmu.data.entities.common;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
@@ -33,32 +32,33 @@ import java.util.List;
 /**
  * Class with attributes common to player characters and non-player characters / creatures.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Being extends DatabaseObject {
-	protected Campaign    campaign       = null;
-	protected short       currentLevel   = 0;
-	protected int         maxHits        = 0;
-	protected int         currentHits    = 0;
-	protected Realm       realm          = null;
-	protected Realm       realm2         = null;
-	protected Realm       realm3         = null;
-	protected short       height         = 70;
-	protected short       weight         = 185;
-	protected int         hitPointLoss   = 0;
-	protected short       fatigue        = 0;
-	protected short       powerPointLoss = 0;
-	protected List<State> currentStates  = new ArrayList<>();
-	protected Item        mainHandItem   = null;
-	protected Item        offhandItem    = null;
-	protected Item        shirtItem      = null;
-	protected Item        pantsItem      = null;
-	protected Item        headItem       = null;
-	protected Item        chestItem      = null;
-	protected Item        armsItem       = null;
-	protected Item        handsItem      = null;
-	protected Item        legsItem       = null;
-	protected Item        feetItem       = null;
-	protected Item        backItem       = null;
-	protected Item        backpackItem   = null;
+	protected Campaign         campaign       = null;
+	protected short            currentLevel   = 0;
+	protected int              maxHits        = 0;
+	protected int              currentHits    = 0;
+	protected Realm            realm          = null;
+	protected Realm            realm2         = null;
+	protected Realm            realm3         = null;
+	protected short            height         = 70;
+	protected short            weight         = 185;
+	protected int              hitPointLoss   = 0;
+	protected short            fatigue        = 0;
+	protected short            powerPointLoss = 0;
+	protected List<State>      currentStates  = new ArrayList<>();
+	protected Item             mainHandItem   = null;
+	protected Item             offhandItem    = null;
+	protected Item             shirtItem      = null;
+	protected Item             pantsItem      = null;
+	protected Item             headItem       = null;
+	protected Item             chestItem      = null;
+	protected Item             armsItem       = null;
+	protected Item             handsItem      = null;
+	protected Item             legsItem       = null;
+	protected Item             feetItem       = null;
+	protected Item             backItem       = null;
+	protected Item             backpackItem   = null;
 
 	/**
 	 * Creates a new Being instance
@@ -69,7 +69,7 @@ public abstract class Being extends DatabaseObject {
 	/**
 	 * Creates a new Being instance
 	 *
-	 * @param id  the database ID of the new instance
+	 * @param id the database ID of the new instance
 	 */
 	public Being(int id) {
 		super(id);
@@ -83,11 +83,10 @@ public abstract class Being extends DatabaseObject {
 	public Weapon getWeapon() {
 		Weapon result = null;
 
-		if(mainHandItem != null && mainHandItem instanceof Weapon) {
-			result = (Weapon)mainHandItem;
-		}
-		else if(offhandItem != null && offhandItem instanceof Weapon) {
-			result = (Weapon)offhandItem;
+		if (mainHandItem != null && mainHandItem instanceof Weapon) {
+			result = (Weapon) mainHandItem;
+		} else if (offhandItem != null && offhandItem instanceof Weapon) {
+			result = (Weapon) offhandItem;
 		}
 
 		return result;
@@ -96,14 +95,14 @@ public abstract class Being extends DatabaseObject {
 	/**
 	 * Gets the length of the currently equipped weapon or 0 if no weapon is equipped.
 	 *
-	 * @return  the length of the equipped weapon or 0 if no weapon is equipped.
+	 * @return the length of the equipped weapon or 0 if no weapon is equipped.
 	 */
 	public float getWeaponLength() {
 		float result = 0.0f;
 
 		Weapon weapon = getWeapon();
-		if(weapon != null) {
-			result = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
+		if (weapon != null) {
+			result = ((WeaponTemplate) weapon.getItemTemplate()).getLength();
 		}
 
 		return result;
@@ -208,10 +207,6 @@ public abstract class Being extends DatabaseObject {
 
 	public List<State> getCurrentStates() {
 		return currentStates;
-	}
-
-	public void setCurrentStates(List<State> currentStates) {
-		this.currentStates = currentStates;
 	}
 
 	public Item getMainHandItem() {

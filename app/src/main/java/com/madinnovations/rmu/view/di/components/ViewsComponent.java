@@ -16,8 +16,8 @@
 package com.madinnovations.rmu.view.di.components;
 
 import com.madinnovations.rmu.view.HexView;
+import com.madinnovations.rmu.view.TerrainView;
 import com.madinnovations.rmu.view.di.PerView;
-import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
 import dagger.Subcomponent;
@@ -29,4 +29,5 @@ import dagger.Subcomponent;
 @Subcomponent(modules = ViewsModule.class)
 public interface ViewsComponent {
 	void injectInto(HexView hexView);
+	void injectInto(TerrainView terrainView);
 }

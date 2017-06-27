@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.dao.common.Being;
+import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.object.Weapon;

@@ -26,7 +26,7 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.View;
 
-import com.madinnovations.rmu.data.dao.common.Being;
+import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 
 /**

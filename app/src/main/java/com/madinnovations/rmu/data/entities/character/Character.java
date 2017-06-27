@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import com.madinnovations.rmu.data.dao.common.Being;
+import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.combat.CombatPosition;
