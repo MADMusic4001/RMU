@@ -192,8 +192,10 @@
   <string name="label_creature_category_name">Creature Category Name</string>
   <string name="label_creature_name">Creature Name</string>
   <string name="label_creature_type_description">Creature Type Description</string>
+  <string name="label_creature_type">Creature Type</string>
   <string name="label_creature_type_name">Creature Type Name</string>
   <string name="label_creature_variety_description">Creature Variety Description</string>
+  <string name="label_creature_variety_level_spread">Level Spread</string>
   <string name="label_creature_variety_name">Creature Variety Name</string>
   <string name="label_critical_code">Critical Code</string>
   <string name="label_critical_code_description">Critical Code Description</string>

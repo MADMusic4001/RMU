@@ -1,22 +1,23 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.creature;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -47,6 +48,7 @@ import com.madinnovations.rmu.data.entities.creature.Outlook;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
+import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,7 +63,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for creature varieties.
  */
-public class CreatureVarietyMainPageFragment extends Fragment{
+public class CreatureVarietyMainPageFragment extends Fragment implements TextInputLayoutUtils.ValuesCallback {
 	private static final String TAG = "CVMainPageFragment";
 	@Inject
 	protected AttackRxHandler            attackRxHandler;
@@ -132,23 +134,58 @@ public class CreatureVarietyMainPageFragment extends Fragment{
 
 		View layout = inflater.inflate(R.layout.creature_variety_main_page, container, false);
 
-		initNameEdit(layout);
-		initDescriptionEdit(layout);
+		nameEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.name_textInputLayout, R.id.name_edit,
+												 R.string.validation_creature_variety_name_required);
+		descriptionEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.notes_edit_textInputLayout,
+														R.id.notes_edit,
+														R.string.validation_creature_variety_description_required);
+		typicalLevelEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.typical_level_textInputLayout,
+														R.id.typical_level_edit,
+														R.string.validation_creature_variety_typical_level_required);
+		heightEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.height_textInputLayout,
+														 R.id.height_edit,
+														 R.string.validation_creature_variety_height_required);
+		lengthEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.length_textInputLayout,
+												   R.id.length_edit,
+												   R.string.validation_creature_variety_length_required);
+		weightEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.weight_textInputLayout,
+												   R.id.weight_edit,
+												   R.string.validation_creature_variety_weight_required);
+		healingRateEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.healing_rate_textInputLayout,
+												   R.id.healing_rate_edit,
+												   R.string.validation_creature_variety_healing_rate_required);
+		baseHitsEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.base_hits_textInputLayout,
+														R.id.base_hits_edit,
+														R.string.validation_creature_variety_base_hits_required);
+		baseEnduranceEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.base_endurance_textInputLayout,
+													 R.id.base_endurance_edit,
+													 R.string.validation_creature_variety_base_endurance_required);
+		armorTypeEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.armor_type_textInputLayout,
+														  R.id.armor_type_edit,
+														  R.string.validation_creature_variety_armor_type_required);
+		channelingRREdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this,
+														 R.id.base_channeling_rr_textInputLayout,
+														 R.id.base_channeling_rr_edit,
+														 R.string.validation_creature_variety_channeling_rr_required);
+		essenceRREdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this,
+														 R.id.base_essence_rr_textInputLayout,
+														 R.id.base_essence_rr_edit,
+														 R.string.validation_creature_variety_essence_rr_required);
+		mentalismRREdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this,
+														R.id.base_mentalism_rr_textInputLayout,
+													    R.id.base_mentalism_rr_edit,
+													    R.string.validation_creature_variety_mentalism_rr_required);
+		physicalRREdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this,
+														R.id.base_physical_rr_textInputLayout,
+														R.id.base_physical_rr_edit,
+														R.string.validation_creature_variety_physical_rr_required);
+		fearRREdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this,
+													   R.id.base_fear_rr_textInputLayout,
+													   R.id.base_fear_rr_edit,
+													   R.string.validation_creature_variety_fear_rr_required);
 		initCreatureTypeSpinner(layout);
-		initTypicalLevelEdit(layout);
 		initLevelSpreadSpinner(layout);
 		initSizeSpinner(layout);
-		initHeightEdit(layout);
-		initLengthEdit(layout);
-		initWeightEdit(layout);
-		initHealingRateEdit(layout);
-		initBaseHitsEdit(layout);
-		initBaseEnduranceEdit(layout);
-		initArmorTypeEdit(layout);
-		initChannelingRREdit(layout);
-		initEssenceRREdit(layout);
-		initMentalismRREdit(layout);
-		initPhysicalRREdit(layout);
 		initFearRREdit(layout);
 		initRealm1Spinner(layout);
 		initRealm2Spinner(layout);
@@ -169,6 +206,132 @@ public class CreatureVarietyMainPageFragment extends Fragment{
 	public void onResume() {
 		super.onResume();
 		copyItemToViews();
+	}
+
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = "";
+
+		switch (editTextId) {
+			case R.id.name_edit:
+				result = varietiesFragment.getCurrentInstance().getName();
+				break;
+			case R.id.notes_edit:
+				result = varietiesFragment.getCurrentInstance().getDescription();
+				break;
+			case R.id.typical_level_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getTypicalLevel());
+				break;
+			case R.id.height_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getHeight());
+				break;
+			case R.id.length_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getLength());
+				break;
+			case R.id.weight_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getWeight());
+				break;
+			case R.id.healing_rate_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getHealingRate());
+				break;
+			case R.id.base_hits_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBaseHits());
+				break;
+			case R.id.base_endurance_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBaseEndurance());
+				break;
+			case R.id.armor_type_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getArmorType());
+				break;
+			case R.id.base_channeling_rr_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBaseChannellingRR());
+				break;
+			case R.id.base_essence_rr_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBaseEssenceRR());
+				break;
+			case R.id.base_mentalism_rr_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBaseMentalismRR());
+				break;
+			case R.id.base_physical_rr_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBasePhysicalRR());
+				break;
+			case R.id.base_fear_rr_edit:
+				result = String.valueOf(varietiesFragment.getCurrentInstance().getBaseFearRR());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		switch (editTextId) {
+			case R.id.name_edit:
+				varietiesFragment.getCurrentInstance().setName(newString);
+				varietiesFragment.saveItem();
+				break;
+			case R.id.notes_edit:
+				varietiesFragment.getCurrentInstance().setDescription(newString);
+				varietiesFragment.saveItem();
+				break;
+			case R.id.typical_level_edit:
+				varietiesFragment.getCurrentInstance().setTypicalLevel(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.height_edit:
+				varietiesFragment.getCurrentInstance().setHeight(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.length_edit:
+				varietiesFragment.getCurrentInstance().setLength(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.weight_edit:
+				varietiesFragment.getCurrentInstance().setWeight(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.healing_rate_edit:
+				varietiesFragment.getCurrentInstance().setHealingRate(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_hits_edit:
+				varietiesFragment.getCurrentInstance().setBaseHits(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_endurance_edit:
+				varietiesFragment.getCurrentInstance().setBaseEndurance(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.armor_type_edit:
+				varietiesFragment.getCurrentInstance().setArmorType(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_channeling_rr_edit:
+				varietiesFragment.getCurrentInstance().setBaseChannellingRR(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_essence_rr_edit:
+				varietiesFragment.getCurrentInstance().setBaseEssenceRR(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_mentalism_rr_edit:
+				varietiesFragment.getCurrentInstance().setBaseMentalismRR(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_physical_rr_edit:
+				varietiesFragment.getCurrentInstance().setBasePhysicalRR(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+			case R.id.base_fear_rr_edit:
+				varietiesFragment.getCurrentInstance().setBaseFearRR(Short.valueOf(newString));
+				varietiesFragment.saveItem();
+				break;
+		}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -417,6 +580,8 @@ public class CreatureVarietyMainPageFragment extends Fragment{
 	}
 
 	private void initNameEdit(View layout) {
+		nameEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.name_textInputLayout, R.id.name_edit,
+												 R.string.validation_creature_variety_name_required);
 		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
 		nameEdit.addTextChangedListener(new TextWatcher() {
 			@Override
