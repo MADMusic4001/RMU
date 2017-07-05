@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.spells.serializers;
 
@@ -21,7 +21,7 @@ import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
@@ -37,9 +37,9 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_NOTES).value(value.getNotes());
-		out.name(COLUMN_REALM_ID).value(value.getRealmDBO().getId());
-		if(value.getRealmDBO2() != null) {
-			out.name(COLUMN_REALM2_ID).value(value.getRealmDBO2().getId());
+		out.name(COLUMN_REALM).value(value.getRealm().name());
+		if(value.getRealm2() != null) {
+			out.name(COLUMN_REALM2).value(value.getRealm2().name());
 		}
 		if(value.getProfession() != null) {
 			out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
@@ -65,11 +65,11 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 				case COLUMN_NOTES:
 					spellList.setNotes(in.nextString());
 					break;
-				case COLUMN_REALM_ID:
-					spellList.setRealmDBO(new RealmDBO(in.nextInt()));
+				case COLUMN_REALM:
+					spellList.setRealm(Realm.valueOf(in.nextString()));
 					break;
-				case COLUMN_REALM2_ID:
-					spellList.setRealmDBO2(new RealmDBO(in.nextInt()));
+				case COLUMN_REALM2:
+					spellList.setRealm2(Realm.valueOf(in.nextString()));
 					break;
 				case COLUMN_PROFESSION_ID:
 					spellList.setProfession(new Profession(in.nextInt()));

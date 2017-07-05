@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.spells;
 
@@ -31,8 +31,8 @@ public class SpellList extends DatabaseObject {
 	public static final String        JSON_NAME     = "SpellLists";
 	private             String        name          = null;
 	private             String        notes         = null;
-	private             RealmDBO      realmDBO      = null;
-	private             RealmDBO      realmDBO2     = null;
+	private             Realm         realm         = null;
+	private             Realm         realm2        = null;
 	private             Profession    profession    = null;
 	private             SpellListType spellListType = null;
 	private             Skill         skill         = null;
@@ -58,7 +58,7 @@ public class SpellList extends DatabaseObject {
 	 * @return true if the SpellList instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && realmDBO != null && spellListType != null;
+		return name != null && !name.isEmpty() && realm != null && spellListType != null;
 	}
 
 	/**
@@ -71,8 +71,8 @@ public class SpellList extends DatabaseObject {
 								   ToStringStyle.MULTI_LINE_STYLE)
 				.append("name", name)
 				.append("notes", notes)
-				.append("realm", realmDBO)
-				.append("realm2", realmDBO2)
+				.append("realm", realm)
+				.append("realm2", realm2)
 				.append("professionId", profession != null ? profession.getId() : null)
 				.append("spellListType", spellListType)
 				.append("skill", skill)
@@ -92,12 +92,12 @@ public class SpellList extends DatabaseObject {
 				result = String.format(formatString, name, profession.getName(), "");
 			}
 		}
-		else if (realmDBO != null) {
+		else if (realm != null) {
 			if(spellListType != null) {
-				result = String.format(formatString, name, getSpellListType(), realmDBO.getName());
+				result = String.format(formatString, name, getSpellListType(), realm.toString());
 			}
 			else {
-				result = String.format(formatString, name, realmDBO.getName(), "");
+				result = String.format(formatString, name, realm.toString(), "");
 			}
 		}
 		else {
@@ -120,17 +120,17 @@ public class SpellList extends DatabaseObject {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	public RealmDBO getRealmDBO() {
-		return realmDBO;
+	public Realm getRealm() {
+		return realm;
 	}
-	public void setRealmDBO(RealmDBO realmDBO) {
-		this.realmDBO = realmDBO;
+	public void setRealm(Realm realm) {
+		this.realm = realm;
 	}
-	public RealmDBO getRealmDBO2() {
-		return realmDBO2;
+	public Realm getRealm2() {
+		return realm2;
 	}
-	public void setRealmDBO2(RealmDBO realmDBO2) {
-		this.realmDBO2 = realmDBO2;
+	public void setRealm2(Realm realm2) {
+		this.realm2 = realm2;
 	}
 	public Profession getProfession() {
 		return profession;

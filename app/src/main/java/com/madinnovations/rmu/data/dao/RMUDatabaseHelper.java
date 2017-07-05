@@ -115,8 +115,11 @@ import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
+import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +135,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 3;
+	public static final  int    DATABASE_VERSION = 4;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -147,7 +150,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
-		db.setForeignKeyConstraintsEnabled(true);
+		db.setForeignKeyConstraintsEnabled(false);
     }
 
     @Override
@@ -335,6 +338,9 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 					break;
 				case 2:
 					upgradeFrom2To3(sqLiteDatabase);
+					break;
+				case 3:
+					upgradeFrom3To4(sqLiteDatabase);
 					break;
             }
             sqLiteDatabase.setTransactionSuccessful();
@@ -778,6 +784,99 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		else {
 			values.put(CharacterSchema.COLUMN_BACKPACK_ITEM_ID, instance.getBackpackItem().getId());
 		}
+
+		return values;
+	}
+
+	private void upgradeFrom3To4(SQLiteDatabase sqLiteDatabase) {
+		sqLiteDatabase.beginTransaction();
+		Cursor cursor = null;
+		try {
+			cursor = sqLiteDatabase.rawQuery("SELECT id,name,notes,realmId,realm2Id,professionId,spellListTypeName,"
+					+ "skillId FROM spell_lists", null);
+			if(cursor != null) {
+				cursor.moveToFirst();
+				List<SpellList> spellLists = new ArrayList<>(cursor.getCount());
+				while (!cursor.isAfterLast()) {
+					SpellList spellList = cursorToSpellListEntity(cursor);
+					spellLists.add(spellList);
+					cursor.moveToNext();
+				}
+				sqLiteDatabase.execSQL("DROP TABLE spell_lists");
+				sqLiteDatabase.execSQL(SpellListSchema.TABLE_CREATE);
+				for (SpellList spellList : spellLists) {
+					ContentValues values = getSpellListContentValues(spellList);
+					sqLiteDatabase.insert(SpellListSchema.TABLE_NAME, null, values);
+				}
+
+				sqLiteDatabase.setTransactionSuccessful();
+			}
+		}
+		finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			sqLiteDatabase.endTransaction();
+		}
+	}
+
+	private SpellList cursorToSpellListEntity(@NonNull Cursor cursor) {
+		SpellList instance = new SpellList();
+
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_NAME)));
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_NOTES))) {
+			instance.setNotes(null);
+		}
+		else {
+			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_NOTES)));
+		}
+		instance.setRealm(getRealm(cursor.getInt(cursor.getColumnIndexOrThrow("realmId"))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow("realm2Id"))) {
+			instance.setRealm2(getRealm(cursor.getInt(cursor.getColumnIndexOrThrow("realm2Id"))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_PROFESSION_ID))) {
+			instance.setProfession(new Profession(cursor.getInt(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_PROFESSION_ID))));
+		}
+		instance.setSpellListType(SpellListType.valueOf(
+				cursor.getString(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_SPELL_LIST_TYPE_NAME))));
+		instance.setSkill(new Skill(cursor.getInt(cursor.getColumnIndexOrThrow(SpellListSchema.COLUMN_SKILL_ID))));
+
+		return instance;
+	}
+
+	private ContentValues getSpellListContentValues(@NonNull SpellList instance) {
+		ContentValues values;
+
+		if(instance.getId() != -1) {
+			values = new ContentValues(8);
+			values.put(SpellListSchema.COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(7);
+		}
+		values.put(SpellListSchema.COLUMN_NAME, instance.getName());
+		if(instance.getNotes() == null) {
+			values.putNull(SpellListSchema.COLUMN_NOTES);
+		}
+		else {
+			values.put(SpellListSchema.COLUMN_NOTES, instance.getNotes());
+		}
+		values.put(SpellListSchema.COLUMN_REALM, instance.getRealm().name());
+		if(instance.getRealm2() == null ) {
+			values.putNull(SpellListSchema.COLUMN_REALM2);
+		}
+		else {
+			values.put(SpellListSchema.COLUMN_REALM2, instance.getRealm2().name());
+		}
+		if(instance.getProfession() == null) {
+			values.putNull(SpellListSchema.COLUMN_PROFESSION_ID);
+		}
+		else {
+			values.put(SpellListSchema.COLUMN_PROFESSION_ID, instance.getProfession().getId());
+		}
+		values.put(SpellListSchema.COLUMN_SPELL_LIST_TYPE_NAME, instance.getSpellListType().name());
+		values.put(SpellListSchema.COLUMN_SKILL_ID, instance.getSkill().getId());
 
 		return values;
 	}

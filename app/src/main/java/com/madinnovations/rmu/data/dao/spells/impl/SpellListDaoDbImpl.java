@@ -24,10 +24,10 @@ import android.support.annotation.NonNull;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.ProfessionDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
@@ -38,12 +38,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import static com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema.COLUMN_REALM_ID;
+import static com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema.COLUMN_REALM2_ID;
+
 /**
  * Methods for managing {@link SpellList} objects in a SQLite database.
  */
 @Singleton
 public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements SpellListDao, SpellListSchema {
-	private RealmDao realmDao;
 	private ProfessionDao professionDao;
 	private SkillDao skillDao;
 
@@ -51,15 +53,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 	 * Creates a new instance of SpellListDaoImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
-	 * @param realmDao  a {@link RealmDao} instance
 	 * @param professionDao  a {@link ProfessionDao} instance
 	 * @param skillDao  a {@link SkillDao} instance
 	 */
 	@Inject
-	public SpellListDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull RealmDao realmDao,
-							  @NonNull ProfessionDao professionDao, @NonNull SkillDao skillDao) {
+	public SpellListDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull ProfessionDao professionDao, @NonNull SkillDao skillDao) {
 		super(helper);
-		this.realmDao = realmDao;
 		this.professionDao = professionDao;
 		this.skillDao = skillDao;
 	}
@@ -101,9 +100,9 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 		else {
 			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTES)));
 		}
-		instance.setRealmDBO(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-			instance.setRealmDBO2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+		instance.setRealm(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2))) {
+			instance.setRealm2(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM2))));
 		}
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))) {
 			instance.setProfession(professionDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))));
@@ -133,12 +132,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 		else {
 			values.put(COLUMN_NOTES, instance.getNotes());
 		}
-		values.put(COLUMN_REALM_ID, instance.getRealmDBO().getId());
-		if(instance.getRealmDBO2() == null ) {
+		values.put(COLUMN_REALM_ID, instance.getRealm().name());
+		if(instance.getRealm2() == null ) {
 			values.putNull(COLUMN_REALM2_ID);
 		}
 		else {
-			values.put(COLUMN_REALM2_ID, instance.getRealmDBO2().getId());
+			values.put(COLUMN_REALM2_ID, instance.getRealm2().name());
 		}
 		if(instance.getProfession() == null) {
 			values.putNull(COLUMN_PROFESSION_ID);
