@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
@@ -46,7 +46,7 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.io.IOException;
@@ -83,7 +83,13 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_RACE_ID).value(value.getRace().getId());
 		out.name(COLUMN_CULTURE_ID).value(value.getCulture().getId());
 		out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
-		out.name(COLUMN_REALM_ID).value(value.getRealmDBO().getId());
+		out.name(COLUMN_REALM).value(value.getRealm().name());
+		if(value.getRealm2() != null) {
+			out.name(COLUMN_REALM2).value(value.getRealm2().name());
+		}
+		if(value.getRealm3() != null) {
+			out.name(COLUMN_REALM3).value(value.getRealm3().name());
+		}
 		out.name(COLUMN_HEIGHT).value(value.getHeight());
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
 		out.name(COLUMN_CURRENT_HP_LOSS).value(value.getHitPointLoss());
@@ -346,14 +352,42 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 				case COLUMN_PROFESSION_ID:
 					character.setProfession(new Profession(in.nextInt()));
 					break;
-				case COLUMN_REALM_ID:
-					character.setRealmDBO(new RealmDBO(in.nextInt()));
+				case "realmId":
+					int realmId = in.nextInt();
+					switch (realmId) {
+						case 1:
+							character.setRealm(Realm.CHANNELING);
+							break;
+						case 2:
+							character.setRealm(Realm.ESSENCE);
+							break;
+						case 3:
+							character.setRealm(Realm.MENTALISM);
+							break;
+					}
 					break;
-				case COLUMN_REALM2_ID:
-					character.setRealmDBO2(new RealmDBO(in.nextInt()));
+				case COLUMN_REALM:
+					character.setRealm(Realm.valueOf(in.nextString()));
 					break;
-				case COLUMN_REALM3_ID:
-					character.setRealmDBO3(new RealmDBO(in.nextInt()));
+				case "realm2Id":
+					realmId = in.nextInt();
+					switch (realmId) {
+						case 1:
+							character.setRealm2(Realm.CHANNELING);
+							break;
+						case 2:
+							character.setRealm2(Realm.ESSENCE);
+							break;
+						case 3:
+							character.setRealm2(Realm.MENTALISM);
+							break;
+					}
+					break;
+				case COLUMN_REALM2:
+					character.setRealm2(Realm.valueOf(in.nextString()));
+					break;
+				case COLUMN_REALM3:
+					character.setRealm3(Realm.valueOf(in.nextString()));
 					break;
 				case COLUMN_HEIGHT:
 					character.setHeight((short) in.nextInt());

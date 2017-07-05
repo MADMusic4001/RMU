@@ -156,18 +156,18 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 	public Collection<SpellList> getAllListsForCharacter(Character character) {
 		String selectionArgs[];
 		final String selection;
-		if(character.getRealmDBO2() != null) {
+		if(character.getRealm2() != null) {
 			selectionArgs = new String[3];
-			selectionArgs[0] = String.valueOf(character.getRealmDBO().getId());
-			selectionArgs[1] = String.valueOf(character.getRealmDBO2().getId());
+			selectionArgs[0] = String.valueOf(character.getRealm().name());
+			selectionArgs[1] = String.valueOf(character.getRealm2().name());
 			selectionArgs[2] = String.valueOf(character.getProfession().getId());
 			selection = COLUMN_REALM_ID + " in (?, ?) and (" + COLUMN_PROFESSION_ID + " is null or "
 					+ COLUMN_PROFESSION_ID + " = ?)";
 		}
 		else {
 			selectionArgs = new String[2];
-			if(character.getRealmDBO() != null) {
-				selectionArgs[0] = String.valueOf(character.getRealmDBO().getId());
+			if(character.getRealm() != null) {
+				selectionArgs[0] = String.valueOf(character.getRealm().name());
 			}
 			else {
 				selectionArgs[0] = "1";

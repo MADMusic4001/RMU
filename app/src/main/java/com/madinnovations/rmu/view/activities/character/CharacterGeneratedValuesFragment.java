@@ -343,7 +343,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		}
 		short rrBonus = (short) (statBonus + raceBonus);
 
-		if (realmDBO.equals(character.getRealmDBO()) || realmDBO.equals(character.getRealmDBO2()) || realmDBO.equals(character.getRealmDBO3())) {
+		if (realmDBO.equals(character.getRealm()) || realmDBO.equals(character.getRealm2()) || realmDBO.equals(character.getRealm3())) {
 			rrBonus += 10;
 		}
 

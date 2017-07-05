@@ -115,10 +115,10 @@ public class ImportExportCampaignRxHandler {
 								throw new RMUAppException("Input file does not begin with '" + VERSION + "'");
 							}
 							int version = jsonReader.nextInt();
-							if (version != RMUDatabaseHelper.DATABASE_VERSION) {
-								throw new RMUAppException("Input file version mismatch. Expected " +
-																  RMUDatabaseHelper.DATABASE_VERSION + " but found " + version);
-							}
+//							if (version != RMUDatabaseHelper.DATABASE_VERSION) {
+//								throw new RMUAppException("Input file version mismatch. Expected " +
+//																  RMUDatabaseHelper.DATABASE_VERSION + " but found " + version);
+//							}
 
 							try {
 								db = helper.getWritableDatabase();

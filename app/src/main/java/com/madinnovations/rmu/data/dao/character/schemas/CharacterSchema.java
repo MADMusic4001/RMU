@@ -1,22 +1,21 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.schemas;
 
 import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
-import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 
 /**
  * Database schema data for the characters table
@@ -45,9 +44,9 @@ public interface CharacterSchema {
 	String COLUMN_RACE_ID                    = "raceId";
 	String COLUMN_CULTURE_ID                 = "cultureId";
 	String COLUMN_PROFESSION_ID              = "professionId";
-	String COLUMN_REALM_ID                   = "realmId";
-	String COLUMN_REALM2_ID                  = "realm2Id";
-	String COLUMN_REALM3_ID                  = "realm3Id";
+	String COLUMN_REALM                      = "realm";
+	String COLUMN_REALM2                     = "realm2";
+	String COLUMN_REALM3                     = "realm3";
 	String COLUMN_HEIGHT                     = "height";
 	String COLUMN_WEIGHT                     = "weight";
 	String COLUMN_CURRENT_HP_LOSS            = "currentHPLoss";
@@ -94,12 +93,9 @@ public interface CharacterSchema {
 				+ CultureSchema.TABLE_NAME + "(" + CultureSchema.COLUMN_ID + "), "
 			+ COLUMN_PROFESSION_ID  + " INTEGER NOT NULL REFERENCES "
 				+ ProfessionSchema.TABLE_NAME + "(" + ProfessionSchema.COLUMN_ID + "), "
-			+ COLUMN_REALM_ID  + " INTEGER NOT NULL REFERENCES "
-				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ COLUMN_REALM2_ID  + " INTEGER REFERENCES "
-				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
-			+ COLUMN_REALM3_ID  + " INTEGER REFERENCES "
-				+ RealmSchema.TABLE_NAME + "(" + RealmSchema.COLUMN_ID + "), "
+			+ COLUMN_REALM  + " TEXT NOT NULL, "
+			+ COLUMN_REALM2  + " TEXT, "
+			+ COLUMN_REALM3  + " TEXT, "
 			+ COLUMN_HEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_WEIGHT + " INTEGER NOT NULL, "
 			+ COLUMN_CURRENT_HP_LOSS + " INTEGER NOT NULL, "
@@ -124,7 +120,7 @@ public interface CharacterSchema {
 			COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_KNOWN_AS, COLUMN_DESCRIPTION, COLUMN_HAIR_COLOR, COLUMN_HAIR_STYLE,
 			COLUMN_EYE_COLOR, COLUMN_SKIN_COMPLEXION, COLUMN_FACIAL_FEATURES, COLUMN_IDENTIFYING_MARKS, COLUMN_PERSONALITY,
 			COLUMN_MANNERISMS, COLUMN_HOMETOWN, COLUMN_FAMILY_INFO, COLUMN_RACE_ID, COLUMN_CULTURE_ID, COLUMN_PROFESSION_ID,
-			COLUMN_REALM_ID, COLUMN_REALM2_ID, COLUMN_REALM3_ID, COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_CURRENT_HP_LOSS,
+			COLUMN_REALM, COLUMN_REALM2, COLUMN_REALM3, COLUMN_HEIGHT, COLUMN_WEIGHT, COLUMN_CURRENT_HP_LOSS,
 			COLUMN_CURRENT_DEVELOPMENT_POINTS, COLUMN_CURRENT_FATIGUE, COLUMN_CURRENT_PP_LOSS, COLUMN_STAT_INCREASES,
 			COLUMN_MAIN_HAND_ITEM_ID, COLUMN_OFFHAND_ITEM_ID, COLUMN_SHIRT_ITEM_ID, COLUMN_PANTS_ITEM_ID, COLUMN_HEAD_ITEM_ID,
 			COLUMN_CHEST_ITEM_ID, COLUMN_ARMS_ITEM_ID, COLUMN_LEGS_ITEM_ID, COLUMN_FEET_ITEM_ID, COLUMN_BACK_ITEM_ID,

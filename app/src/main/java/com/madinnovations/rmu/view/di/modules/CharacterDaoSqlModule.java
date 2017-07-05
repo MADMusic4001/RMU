@@ -46,9 +46,9 @@ import dagger.Provides;
 public class CharacterDaoSqlModule {
 	@Provides @Singleton
 	CharacterDao provideCharacterDao(RMUDatabaseHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
-									 CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao,
+									 CultureDao cultureDao, ProfessionDao professionDao, ItemDao itemDao,
 									 SpecializationDao specializationDao, CampaignDao campaignDao, SpellListDao spellListDao) {
-		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, cultureDao, professionDao, realmDao, itemDao,
+		return new CharacterDaoDbImpl(helper, raceDao, skillDao, talentDao, cultureDao, professionDao, itemDao,
 				specializationDao, campaignDao, spellListDao);
 	}
 

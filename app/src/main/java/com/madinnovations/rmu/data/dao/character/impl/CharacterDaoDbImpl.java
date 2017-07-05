@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.impl;
 
@@ -46,7 +46,6 @@ import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
@@ -59,6 +58,7 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.ArrayList;
@@ -81,7 +81,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	private TalentDao talentDao;
 	private CultureDao cultureDao;
 	private ProfessionDao professionDao;
-	private RealmDao realmDao;
 	private ItemDao itemDao;
 	private SpecializationDao specializationDao;
 	private CampaignDao campaignDao;
@@ -96,7 +95,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	 * @param talentDao  a {@link TalentDao} instance
 	 * @param cultureDao  a {@link CultureDao} instance
 	 * @param professionDao  a {@link ProfessionDao} instance
-	 * @param realmDao  a {@link RealmDao} instance
 	 * @param itemDao  an {@link ItemDao} instance
 	 * @param specializationDao  a {@link SpecializationDao} instance
 	 * @param campaignDao  a {@link CampaignDao} instance
@@ -104,7 +102,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 	 */
 	@Inject
 	public CharacterDaoDbImpl(SQLiteOpenHelper helper, RaceDao raceDao, SkillDao skillDao, TalentDao talentDao,
-							  CultureDao cultureDao, ProfessionDao professionDao, RealmDao realmDao, ItemDao itemDao,
+							  CultureDao cultureDao, ProfessionDao professionDao, ItemDao itemDao,
 							  SpecializationDao specializationDao, CampaignDao campaignDao, SpellListDao spellListDao) {
 		super(helper);
 		this.raceDao = raceDao;
@@ -112,7 +110,6 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		this.talentDao = talentDao;
 		this.cultureDao = cultureDao;
 		this.professionDao = professionDao;
-		this.realmDao = realmDao;
 		this.itemDao = itemDao;
 		this.specializationDao = specializationDao;
 		this.campaignDao = campaignDao;
@@ -243,12 +240,12 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
 		instance.setCulture(cultureDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CULTURE_ID))));
 		instance.setProfession(professionDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))));
-		instance.setRealmDBO(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-			instance.setRealmDBO2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+		instance.setRealm(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2))) {
+			instance.setRealm2(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM2))));
 		}
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))) {
-			instance.setRealmDBO3(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM3))) {
+			instance.setRealm3(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM3))));
 		}
 		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
 		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
@@ -388,18 +385,18 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_RACE_ID, instance.getRace().getId());
 		values.put(COLUMN_CULTURE_ID, instance.getCulture().getId());
 		values.put(COLUMN_PROFESSION_ID, instance.getProfession().getId());
-		values.put(COLUMN_REALM_ID, instance.getRealmDBO().getId());
-		if(instance.getRealmDBO2() == null) {
-			values.putNull(COLUMN_REALM2_ID);
+		values.put(COLUMN_REALM, instance.getRealm().name());
+		if(instance.getRealm2() == null) {
+			values.putNull(COLUMN_REALM2);
 		}
 		else {
-			values.put(COLUMN_REALM2_ID, instance.getRealmDBO2().getId());
+			values.put(COLUMN_REALM2, instance.getRealm2().name());
 		}
-		if(instance.getRealmDBO3() == null) {
-			values.putNull(COLUMN_REALM3_ID);
+		if(instance.getRealm3() == null) {
+			values.putNull(COLUMN_REALM3);
 		}
 		else {
-			values.put(COLUMN_REALM3_ID, instance.getRealmDBO3().getId());
+			values.put(COLUMN_REALM3, instance.getRealm3().name());
 		}
 		values.put(COLUMN_HEIGHT, instance.getHeight());
 		values.put(COLUMN_WEIGHT, instance.getWeight());
