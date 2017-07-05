@@ -111,36 +111,8 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 				case COLUMN_DESCRIPTION:
 					profession.setDescription(in.nextString());
 					break;
-				case "realm1Id":
-					int realmId = in.nextInt();
-					switch (realmId) {
-						case 1:
-							profession.setRealm1(Realm.CHANNELING);
-							break;
-						case 2:
-							profession.setRealm1(Realm.ESSENCE);
-							break;
-						case 3:
-							profession.setRealm1(Realm.MENTALISM);
-							break;
-					}
-					break;
 				case COLUMN_REALM1:
 					profession.setRealm1(Realm.valueOf(in.nextString()));
-					break;
-				case "realm2Id":
-					realmId = in.nextInt();
-					switch (realmId) {
-						case 1:
-							profession.setRealm1(Realm.CHANNELING);
-							break;
-						case 2:
-							profession.setRealm1(Realm.ESSENCE);
-							break;
-						case 3:
-							profession.setRealm1(Realm.MENTALISM);
-							break;
-					}
 					break;
 				case COLUMN_REALM2:
 					profession.setRealm1(Realm.valueOf(in.nextString()));
@@ -183,12 +155,6 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 					case ProfessionSkillCategoryCostSchema.COLUMN_COST_GROUP_NAME:
 						costGroup = DevelopmentCostGroup.valueOf(in.nextString());
 						break;
-					case ProfessionSkillCategoryCostSchema.COLUMN_FIRST_COST:
-						skillCost.setFirstCost((short)in.nextInt());
-						break;
-					case ProfessionSkillCategoryCostSchema.COLUMN_SECOND_COST:
-						skillCost.setAdditionalCost((short)in.nextInt());
-						break;
 				}
 			}
 			if(costGroup == null) {
@@ -216,12 +182,6 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 						break;
 					case ProfessionSkillCostSchema.COLUMN_COST_GROUP_NAME:
 						costGroup = DevelopmentCostGroup.valueOf(in.nextString());
-						break;
-					case ProfessionSkillCostSchema.COLUMN_FIRST_COST:
-						skillCost.setFirstCost((short)in.nextInt());
-						break;
-					case ProfessionSkillCostSchema.COLUMN_SECOND_COST:
-						skillCost.setAdditionalCost((short)in.nextInt());
 						break;
 				}
 			}
@@ -257,12 +217,6 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 								switch (in.nextName()) {
 									case ProfessionAssignableSkillCostSchema.COLUMN_COST_GROUP_NAME:
 										costGroup = DevelopmentCostGroup.valueOf(in.nextString());
-										break;
-									case ProfessionAssignableSkillCostSchema.COLUMN_FIRST_COST:
-										skillCost.setFirstCost((short) in.nextInt());
-										break;
-									case ProfessionAssignableSkillCostSchema.COLUMN_SECOND_COST:
-										skillCost.setAdditionalCost((short) in.nextInt());
 										break;
 								}
 							}
