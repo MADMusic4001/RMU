@@ -26,17 +26,17 @@ import com.madinnovations.rmu.data.dao.CacheConfig;
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Methods for managing {@link Realm} objects in a SQLite database.
+ * Methods for managing {@link RealmDBO} objects in a SQLite database.
  */
 @Singleton
-public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, RealmSchema {
-	private LruCache<Integer, Realm> realmsCache = new LruCache<>(CacheConfig.REALM_CACHE_SIZE);
+public class RealmDaoDbImpl extends BaseDaoDbImpl<RealmDBO> implements RealmDao, RealmSchema {
+	private LruCache<Integer, RealmDBO> realmsCache = new LruCache<>(CacheConfig.REALM_CACHE_SIZE);
 
 	/**
 	 * Creates a new instance of RealmDaoImpl
@@ -64,23 +64,23 @@ public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, Re
 	}
 
 	@Override
-	protected int getId(Realm instance) {
+	protected int getId(RealmDBO instance) {
 		return instance.getId();
 	}
 
 	@Override
-	protected void setId(Realm instance, int id) {
+	protected void setId(RealmDBO instance, int id) {
 		instance.setId(id);
 	}
 
 	@Override
-	protected LruCache<Integer, Realm> getCache() {
+	protected LruCache<Integer, RealmDBO> getCache() {
 		return realmsCache;
 	}
 
 	@Override
-	protected Realm cursorToEntity(@NonNull Cursor cursor) {
-		Realm instance = new Realm();
+	protected RealmDBO cursorToEntity(@NonNull Cursor cursor) {
+		RealmDBO instance = new RealmDBO();
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
@@ -91,7 +91,7 @@ public class RealmDaoDbImpl extends BaseDaoDbImpl<Realm> implements RealmDao, Re
 	}
 
 	@Override
-	protected ContentValues getContentValues(Realm instance) {
+	protected ContentValues getContentValues(RealmDBO instance) {
 		ContentValues values;
 
 		if(instance.getId() != -1) {

@@ -24,7 +24,7 @@ import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,23 +34,23 @@ import java.util.List;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class Being extends DatabaseObject {
-	protected Campaign         campaign       = null;
-	protected short            currentLevel   = 0;
-	protected int              maxHits        = 0;
-	protected int              currentHits    = 0;
-	protected Realm            realm          = null;
-	protected Realm            realm2         = null;
-	protected Realm            realm3         = null;
-	protected short            height         = 70;
-	protected short            weight         = 185;
-	protected int              hitPointLoss   = 0;
-	protected short            fatigue        = 0;
-	protected short            powerPointLoss = 0;
-	protected List<State>      currentStates  = new ArrayList<>();
-	protected Item             mainHandItem   = null;
-	protected Item             offhandItem    = null;
-	protected Item             shirtItem      = null;
-	protected Item             pantsItem      = null;
+	protected Campaign    campaign       = null;
+	protected short       currentLevel   = 0;
+	protected int         maxHits        = 0;
+	protected int         currentHits    = 0;
+	protected RealmDBO    realmDBO       = null;
+	protected RealmDBO    realmDBO2      = null;
+	protected RealmDBO    realmDBO3      = null;
+	protected short       height         = 70;
+	protected short       weight         = 185;
+	protected int         hitPointLoss   = 0;
+	protected short       fatigue        = 0;
+	protected short       powerPointLoss = 0;
+	protected List<State> currentStates  = new ArrayList<>();
+	protected Item        mainHandItem   = null;
+	protected Item        offhandItem    = null;
+	protected Item        shirtItem      = null;
+	protected Item        pantsItem      = null;
 	protected Item             headItem       = null;
 	protected Item             chestItem      = null;
 	protected Item             armsItem       = null;
@@ -141,28 +141,28 @@ public abstract class Being extends DatabaseObject {
 		this.currentHits = currentHits;
 	}
 
-	public Realm getRealm() {
-		return realm;
+	public RealmDBO getRealmDBO() {
+		return realmDBO;
 	}
 
-	public void setRealm(Realm realm) {
-		this.realm = realm;
+	public void setRealmDBO(RealmDBO realmDBO) {
+		this.realmDBO = realmDBO;
 	}
 
-	public Realm getRealm2() {
-		return realm2;
+	public RealmDBO getRealmDBO2() {
+		return realmDBO2;
 	}
 
-	public void setRealm2(Realm realm2) {
-		this.realm2 = realm2;
+	public void setRealmDBO2(RealmDBO realmDBO2) {
+		this.realmDBO2 = realmDBO2;
 	}
 
-	public Realm getRealm3() {
-		return realm3;
+	public RealmDBO getRealmDBO3() {
+		return realmDBO3;
 	}
 
-	public void setRealm3(Realm realm3) {
-		this.realm3 = realm3;
+	public void setRealmDBO3(RealmDBO realmDBO3) {
+		this.realmDBO3 = realmDBO3;
 	}
 
 	public short getHeight() {

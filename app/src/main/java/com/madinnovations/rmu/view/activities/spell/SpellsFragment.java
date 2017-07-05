@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.spell;
 
@@ -19,7 +19,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -54,6 +54,7 @@ import com.madinnovations.rmu.data.entities.spells.SpellType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
+import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
 import java.util.Collection;
 
@@ -67,7 +68,8 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for spells.
  */
-public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Spell> {
+public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Spell>,
+		TextInputLayoutUtils.ValuesCallback {
 	private static final String TAG = "SpellsFragment";
 	@Inject
 	protected SpellRxHandler             spellRxHandler;
@@ -87,6 +89,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	private   TwoFieldListAdapter<Spell> listAdapter;
 	private   Spinner                    spellListFilterSpinner;
 	private   ListView                   listView;
+	private   EditText                   spellLevelEdit;
 	private   EditText                   nameEdit;
 	private   EditText                   descriptionEdit;
 	private   Spinner                    spellListSpinner;
@@ -102,6 +105,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	private   EditText                   durationParam2Edit;
 	private   Spinner                    rangeSpinner;
 	private   EditText                   rangeParamEdit;
+	private   EditText                   rrModEdit;
 	private Spell currentInstance = new Spell();
 	private boolean isNew = true;
 	private SpellSubType noSpellSubType = new SpellSubType();
@@ -120,23 +124,38 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		((TextView)layout.findViewById(R.id.header_field2)).setText(R.string.label_spell_description);
 
 		initSpellListFilterSpinner(layout);
+		spellLevelEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.spell_level_textInputLayout,
+													   R.id.spell_level_editText, R.string.validation_spell_level_required);
 		initNameEdit(layout);
 		initDescriptionEdit(layout);
 		initSpellListSpinner(layout);
 		initSpellTypeSpinner(layout);
 		initSpellSubTypeSpinner(layout);
 		initAreaOfEffectSpinner(layout);
-		aoeParam1Edit = initAoeParamEdit(layout, R.id.aoe_param1_edit, R.string.validation_spell_aoe_param1_required, 0);
-		aoeParam2Edit = initAoeParamEdit(layout, R.id.aoe_param2_edit, R.string.validation_spell_aoe_param2_required, 1);
-		aoeParam3Edit = initAoeParamEdit(layout, R.id.aoe_param3_edit, R.string.validation_spell_aoe_param3_required, 2);
-		aoeParam4Edit = initAoeParamEdit(layout, R.id.aoe_param4_edit, R.string.validation_spell_aoe_param4_required, 3);
+		aoeParam1Edit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.aoe_param1_textInputLayout,
+													  R.id.aoe_param1_edit,
+													  R.string.validation_spell_aoe_param1_required);
+		aoeParam2Edit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.aoe_param2_textInputLayout,
+													  R.id.aoe_param2_edit,
+													  R.string.validation_spell_aoe_param2_required);
+		aoeParam3Edit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.aoe_param2_textInputLayout,
+													  R.id.aoe_param3_edit,
+													  R.string.validation_spell_aoe_param3_required);
+		aoeParam4Edit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.aoe_param4_textInputLayout,
+													  R.id.aoe_param4_edit,
+													  R.string.validation_spell_aoe_param4_required);
 		initDurationSpinner(layout);
-		durationParam1Edit = initDurationParamEdit(layout, R.id.duration_param1_edit,
-							  R.string.validation_spell_duration_param1_required, 0);
-		durationParam2Edit = initDurationParamEdit(layout, R.id.duration_param2_edit,
-							  R.string.validation_spell_duration_param2_required, 1);
+		durationParam1Edit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.duration_param1_textInputLayout,
+														   R.id.duration_param1_edit,
+														   R.string.validation_spell_duration_param1_required);
+		durationParam2Edit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.duration_param2_textInputLayout,
+														   R.id.duration_param2_edit,
+														   R.string.validation_spell_duration_param2_required);
+		rangeParamEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.range_param_textInputLayout,
+													   R.id.range_param_edit, R.string.validation_spell_range_param_required);
 		initRangeSpinner(layout);
-		initRangeEdit(layout);
+		rrModEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.rr_mod_textInputLayout,
+												  R.id.rr_mod_editText, R.string.validation_spell_rr_mod_required);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -220,6 +239,156 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		return spell.getDescription();
 	}
 
+	@Override
+	public String getValueForEditText(@IdRes int editTextId) {
+		String result = null;
+		switch (editTextId) {
+			case R.id.spell_level_editText:
+				result = String.valueOf(currentInstance.getSpellLevel());
+				break;
+			case R.id.rr_mod_editText:
+				result = String.valueOf(currentInstance.getResistanceRollMod());
+				break;
+			case R.id.aoe_param1_edit:
+				if(currentInstance.getAreaOfEffectParams() != null && currentInstance.getAreaOfEffectParams().length > 0) {
+					result = String.valueOf(currentInstance.getAreaOfEffectParams()[0]);
+				}
+				break;
+			case R.id.aoe_param2_edit:
+				if(currentInstance.getAreaOfEffectParams() != null && currentInstance.getAreaOfEffectParams().length > 1) {
+					result = String.valueOf(currentInstance.getAreaOfEffectParams()[1]);
+				}
+				break;
+			case R.id.aoe_param3_edit:
+				if(currentInstance.getAreaOfEffectParams() != null && currentInstance.getAreaOfEffectParams().length > 2) {
+					result = String.valueOf(currentInstance.getAreaOfEffectParams()[2]);
+				}
+				break;
+			case R.id.aoe_param4_edit:
+				if(currentInstance.getAreaOfEffectParams() != null && currentInstance.getAreaOfEffectParams().length > 3) {
+					result = String.valueOf(currentInstance.getAreaOfEffectParams()[3]);
+				}
+				break;
+			case R.id.duration_param1_edit:
+				if(currentInstance.getDurationParams() != null && currentInstance.getDurationParams().length > 0) {
+					result = String.valueOf(currentInstance.getDurationParams()[0]);
+				}
+				break;
+			case R.id.duration_param2_edit:
+				if(currentInstance.getDurationParams() != null && currentInstance.getDurationParams().length > 1) {
+					result = String.valueOf(currentInstance.getDurationParams()[1]);
+				}
+				break;
+			case R.id.range_param_edit:
+				result = String.valueOf(currentInstance.getRangeParam());
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		newString = newString.trim();
+		switch (editTextId) {
+			case R.id.spell_level_editText:
+				currentInstance.setSpellLevel(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.rr_mod_editText:
+				currentInstance.setResistanceRollMod(Short.valueOf(newString));
+				saveItem();
+				break;
+			case R.id.aoe_param1_edit:
+				copyAoeParam(newString, 0);
+				break;
+			case R.id.aoe_param2_edit:
+				copyAoeParam(newString, 1);
+				break;
+			case R.id.aoe_param3_edit:
+				copyAoeParam(newString, 2);
+				break;
+			case R.id.aoe_param4_edit:
+				copyAoeParam(newString, 3);
+				break;
+			case R.id.duration_param1_edit:
+				copyDurationParam(newString, 0);
+				break;
+			case R.id.duration_param2_edit:
+				copyDurationParam(newString, 1);
+				break;
+			case R.id.range_param_edit:
+				if(newString.isEmpty()) {
+					currentInstance.setRangeParam(null);
+					saveItem();
+				}
+				else {
+					currentInstance.setRangeParam(Integer.valueOf(newString));
+					saveItem();
+				}
+				break;
+		}
+	}
+
+	@Override
+	public boolean performLongClick(@IdRes int editTextId) {
+		return false;
+	}
+
+	private void copyAoeParam(String newString, int paramIndex) {
+		if(!newString.isEmpty()) {
+			int param = 0;
+			try {
+				param = Integer.valueOf(newString);
+			}
+			catch(NumberFormatException ignored) {
+				Log.d(TAG, "copyAoeParam: NumberFormatException - newString = " + newString);
+			}
+			if(currentInstance.getAreaOfEffectParams().length <= paramIndex) {
+				int[] params = new int[currentInstance.getAreaOfEffect().getParameterCount()];
+				int length = params.length <= currentInstance.getAreaOfEffectParams().length ?
+							 params.length : currentInstance.getAreaOfEffectParams().length;
+				System.arraycopy(currentInstance.getAreaOfEffectParams(), 0, params, 0, length);
+				for(int i = currentInstance.getAreaOfEffectParams().length; i < paramIndex; i++) {
+					params[i] = 1;
+			}
+				if(currentInstance.getAreaOfEffect().getParameterCount() > paramIndex) {
+					params[paramIndex] = param;
+				}
+				currentInstance.setAreaOfEffectParams(params);
+				saveItem();
+			}
+			else if(currentInstance.getAreaOfEffectParams()[paramIndex] != param){
+				currentInstance.getAreaOfEffectParams()[paramIndex] = param;
+				saveItem();
+			}
+		}
+	}
+
+	private void copyDurationParam(String newString, int paramIndex) {
+		if(!newString.isEmpty()) {
+			int param = Integer.valueOf(newString);
+			if(currentInstance.getDurationParams().length <= paramIndex) {
+				int[] params = new int[currentInstance.getDuration().getParameterCount()];
+				int length = params.length <= currentInstance.getDurationParams().length ?
+							 params.length : currentInstance.getDurationParams().length;
+				System.arraycopy(currentInstance.getDurationParams(), 0, params, 0, length);
+				for(int i = currentInstance.getDurationParams().length; i < paramIndex; i++) {
+					params[i] = 1;
+				}
+				if(currentInstance.getDuration().getParameterCount() > paramIndex) {
+					params[paramIndex] = param;
+				}
+				currentInstance.setDurationParams(params);
+				saveItem();
+			}
+			else if(currentInstance.getDurationParams()[paramIndex] != param){
+				currentInstance.getDurationParams()[paramIndex] = param;
+				saveItem();
+			}
+		}
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		int position;
@@ -237,7 +406,16 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			currentFocusView.clearFocus();
 		}
 
-		String newValue = nameEdit.getText().toString();
+		String newValue = spellLevelEdit.getText().toString().trim();
+		if(!newValue.isEmpty()) {
+			short newShort = Short.valueOf(newValue);
+			if(newShort != currentInstance.getSpellLevel()) {
+				currentInstance.setSpellLevel(newShort);
+				changed = true;
+			}
+		}
+
+		newValue = nameEdit.getText().toString();
 		if(newValue.isEmpty()) {
 			newValue = null;
 		}
@@ -278,7 +456,14 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		position = spellSubTypeSpinner.getSelectedItemPosition();
 		if(position != -1) {
 			spellSubType = spellSubTypeSpinnerAdapter.getItem(position);
-			if(spellSubType != null && !spellSubType.equals(currentInstance.getSpellSubType())) {
+			if(spellSubType != null && spellSubType.equals(noSpellSubType)) {
+				spellSubType = null;
+			}
+			if(spellSubType == null && currentInstance.getSpellSubType() != null) {
+				currentInstance.setSpellSubType(null);
+				changed = true;
+			}
+			else if(spellSubType != null && !spellSubType.equals(currentInstance.getSpellSubType())) {
 				currentInstance.setSpellSubType(spellSubType);
 				changed = true;
 			}
@@ -317,8 +502,10 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					params = new int[duration.getParameterCount()];
 					changed |= copyParamToItem(params, currentInstance.getDurationParams(),
 							durationParam1Edit.getText().toString(), 0);
-					changed |= copyParamToItem(params, currentInstance.getDurationParams(),
-							durationParam2Edit.getText().toString(), 1);
+					if(duration.getParameterCount() > 1) {
+						changed |= copyParamToItem(params, currentInstance.getDurationParams(),
+												   durationParam2Edit.getText().toString(), 1);
+					}
 					currentInstance.setDurationParams(params);
 				} else {
 					if (currentInstance.getDurationParams() != null) {
@@ -356,6 +543,15 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			}
 		}
 
+		newValue = rrModEdit.getText().toString().trim();
+		if(!newValue.isEmpty()) {
+			short newShort = Short.valueOf(newValue);
+			if(newShort != currentInstance.getResistanceRollMod()) {
+				currentInstance.setResistanceRollMod(newShort);
+				changed = true;
+			}
+		}
+
 		return changed;
 	}
 
@@ -366,7 +562,9 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			return newParams.length != oldParams.length;
 		}
 		if(editText.length() > 0) {
-			newParams[index] = Integer.valueOf(editText);
+			try {
+				newParams[index] = Integer.valueOf(editText);
+			} catch(NumberFormatException ignored) {}
 		}
 		else {
 			newParams[index] = 1;
@@ -380,8 +578,26 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	}
 
 	private void copyItemToViews() {
+		spellLevelEdit.setText(String.valueOf(currentInstance.getSpellLevel()));
+		TextInputLayout spellLevelLayout = (TextInputLayout)getActivity().findViewById(R.id.spell_level_textInputLayout);
+		spellLevelLayout.setErrorEnabled(false);
+
 		nameEdit.setText(currentInstance.getName());
+		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
+			nameEdit.setError(null);
+		}
+		else {
+			nameEdit.setError(getString(R.string.validation_spell_name_required));
+		}
+
 		descriptionEdit.setText(currentInstance.getDescription());
+		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
+			descriptionEdit.setError(null);
+		}
+		else {
+			descriptionEdit.setError(getString(R.string.validation_spell_description_required));
+		}
+
 		if(currentInstance.getSpellList() == null) {
 			if(spellListSpinner.getSelectedItemPosition() != -1) {
 				currentInstance.setSpellList(spellListSpinnerAdapter.getItem(spellListSpinner.getSelectedItemPosition()));
@@ -391,90 +607,97 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			spellListSpinner.setSelection(spellListSpinnerAdapter.getPosition(currentInstance.getSpellList()));
 		}
 
-		spellTypeSpinner.setSelection(spellTypeSpinnerAdapter.getPosition(currentInstance.getSpellType()));
-		spellSubTypeSpinner.setSelection(spellSubTypeSpinnerAdapter.getPosition(currentInstance.getSpellSubType()));
-		areaOfEffectSpinner.setSelection(areaOfEffectSpinnerAdapter.getPosition(currentInstance.getAreaOfEffect()));
-		if(currentInstance.getAreaOfEffect() != null) {
-			aoeParam1Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 1);
-			aoeParam2Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 2);
-			aoeParam3Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 3);
-			aoeParam4Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 4);
-			if(currentInstance.getAreaOfEffectParams() != null) {
-				if(currentInstance.getAreaOfEffectParams().length >= 1) {
-					aoeParam1Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[0]));
-				}
-				else {
-					aoeParam1Edit.setError(null);
-				}
-				if(currentInstance.getAreaOfEffectParams().length >= 2) {
-					aoeParam2Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[1]));
-				}
-				else {
-					aoeParam2Edit.setError(null);
-				}
-				if(currentInstance.getAreaOfEffectParams().length >= 3) {
-					aoeParam3Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[2]));
-				}
-				else {
-					aoeParam3Edit.setError(null);
-				}
-				if(currentInstance.getAreaOfEffectParams().length >= 4) {
-					aoeParam4Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[3]));
-				}
-				else {
-					aoeParam4Edit.setError(null);
-				}
-			}
+		if(currentInstance.getSpellType() == null) {
+			currentInstance.setSpellType((SpellType)spellTypeSpinner.getSelectedItem());
 		}
 		else {
-			aoeParam1Edit.setEnabled(false);
-			aoeParam2Edit.setEnabled(false);
-			aoeParam3Edit.setEnabled(false);
-			aoeParam4Edit.setEnabled(false);
-		}
-		durationSpinner.setSelection(durationSpinnerAdapter.getPosition(currentInstance.getDuration()));
-		if(currentInstance.getDuration() != null) {
-			durationParam1Edit.setEnabled(currentInstance.getDuration().getParameterCount() >= 1);
-			durationParam2Edit.setEnabled(currentInstance.getDuration().getParameterCount() >= 2);
-			if(currentInstance.getDurationParams() != null) {
-				if(currentInstance.getDurationParams().length >= 1) {
-					durationParam1Edit.setText(String.valueOf(currentInstance.getDurationParams()[0]));
-				}
-				else {
-					durationParam1Edit.setError(null);
-				}
-				if(currentInstance.getDurationParams().length >= 2) {
-					durationParam2Edit.setText(String.valueOf(currentInstance.getDurationParams()[1]));
-				}
-				else {
-					durationParam2Edit.setError(null);
-				}
-			}
-		}
-		else {
-			durationParam1Edit.setEnabled(false);
-			durationParam2Edit.setEnabled(false);
-		}
-		rangeSpinner.setSelection(rangeSpinnerAdapter.getPosition(currentInstance.getRange()));
-		if(currentInstance.getRange() != null) {
-			rangeParamEdit.setEnabled(currentInstance.getRange().getParameterCount() >= 1);
-			if(currentInstance.getRangeParam() != null) {
-				rangeParamEdit.setText(String.valueOf(currentInstance.getRangeParam()));
-			}
-			else {
-				rangeParamEdit.setError(null);
-			}
-		}
-		else {
-			rangeParamEdit.setEnabled(false);
+			spellTypeSpinner.setSelection(spellTypeSpinnerAdapter.getPosition(currentInstance.getSpellType()));
 		}
 
-		if(currentInstance.getName() != null && !currentInstance.getName().isEmpty()) {
-			nameEdit.setError(null);
+		if(currentInstance.getSpellSubType() == null) {
+			spellSubTypeSpinner.setSelection(spellSubTypeSpinnerAdapter.getPosition(noSpellSubType));
 		}
-		if(currentInstance.getDescription() != null && !currentInstance.getDescription().isEmpty()) {
-			descriptionEdit.setError(null);
+		else {
+			spellSubTypeSpinner.setSelection(spellSubTypeSpinnerAdapter.getPosition(currentInstance.getSpellSubType()));
 		}
+
+		if(currentInstance.getAreaOfEffect() == null) {
+			currentInstance.setAreaOfEffect((AreaOfEffect)areaOfEffectSpinner.getSelectedItem());
+		}
+		else {
+			areaOfEffectSpinner.setSelection(areaOfEffectSpinnerAdapter.getPosition(currentInstance.getAreaOfEffect()));
+		}
+		aoeParam1Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 1);
+		aoeParam2Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 2);
+		aoeParam3Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 3);
+		aoeParam4Edit.setEnabled(currentInstance.getAreaOfEffect().getParameterCount() >= 4);
+		if(currentInstance.getAreaOfEffectParams() != null) {
+			if(currentInstance.getAreaOfEffectParams().length >= 1) {
+				aoeParam1Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[0]));
+			}
+			else {
+				aoeParam1Edit.setError(null);
+			}
+			if(currentInstance.getAreaOfEffectParams().length >= 2) {
+				aoeParam2Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[1]));
+			}
+			else {
+				aoeParam2Edit.setError(null);
+			}
+			if(currentInstance.getAreaOfEffectParams().length >= 3) {
+				aoeParam3Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[2]));
+			}
+			else {
+				aoeParam3Edit.setError(null);
+			}
+			if(currentInstance.getAreaOfEffectParams().length >= 4) {
+				aoeParam4Edit.setText(String.valueOf(currentInstance.getAreaOfEffectParams()[3]));
+			}
+			else {
+				aoeParam4Edit.setError(null);
+			}
+		}
+
+		if(currentInstance.getDuration() == null) {
+			currentInstance.setDuration((Duration)durationSpinner.getSelectedItem());
+		}
+		else {
+			durationSpinner.setSelection(durationSpinnerAdapter.getPosition(currentInstance.getDuration()));
+		}
+		durationParam1Edit.setEnabled(currentInstance.getDuration().getParameterCount() >= 1);
+		durationParam2Edit.setEnabled(currentInstance.getDuration().getParameterCount() >= 2);
+		if(currentInstance.getDurationParams() != null) {
+			if(currentInstance.getDurationParams().length >= 1) {
+				durationParam1Edit.setText(String.valueOf(currentInstance.getDurationParams()[0]));
+			}
+			else {
+				durationParam1Edit.setError(null);
+			}
+			if(currentInstance.getDurationParams().length >= 2) {
+				durationParam2Edit.setText(String.valueOf(currentInstance.getDurationParams()[1]));
+			}
+			else {
+				durationParam2Edit.setError(null);
+			}
+		}
+
+		if(currentInstance.getRange() == null) {
+			currentInstance.setRange((Range)rangeSpinner.getSelectedItem());
+		}
+		else {
+			rangeSpinner.setSelection(rangeSpinnerAdapter.getPosition(currentInstance.getRange()));
+		}
+		rangeParamEdit.setEnabled(currentInstance.getRange().getParameterCount() >= 1);
+		if(currentInstance.getRangeParam() != null) {
+			rangeParamEdit.setText(String.valueOf(currentInstance.getRangeParam()));
+		}
+		else {
+			rangeParamEdit.setError(null);
+		}
+
+		rrModEdit.setText(String.valueOf(currentInstance.getResistanceRollMod()));
+		TextInputLayout rrModLayout = (TextInputLayout)getActivity().findViewById(R.id.rr_mod_textInputLayout);
+		rrModLayout.setErrorEnabled(false);
 	}
 
 	private void deleteItem(final Spell item) {
@@ -526,7 +749,7 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
-							Log.e(TAG, "Exception saving Skill", e);
+							Log.e(TAG, "Exception saving Spell" + currentInstance.print(), e);
 							Toast.makeText(getActivity(), R.string.toast_spell_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
@@ -541,30 +764,13 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 							}
 							if (getActivity() != null) {
 								Toast.makeText(getActivity(), R.string.toast_spell_saved, Toast.LENGTH_SHORT).show();
-
-								int position = listAdapter.getPosition(currentInstance);
-								SpellList spellList = spellListFilterSpinnerAdapter.getItem
-										(spellListFilterSpinner.getSelectedItemPosition());
-								if(spellList != null) {
-									if (position >= 0) {
-										if (!spellList.getName().equals(savedSpell.getSpellList().getName())
-												&& spellList.getId() != -1) {
-											listAdapter.remove(savedSpell);
-											listAdapter.notifyDataSetChanged();
-										} else {
-											LinearLayout v = (LinearLayout) listView.getChildAt(
-													position - listView.getFirstVisiblePosition());
-											if (v != null) {
-												TextView textView = (TextView) v.findViewById(R.id.row_field1);
-												textView.setText(currentInstance.getName());
-												textView = (TextView) v.findViewById(R.id.row_field2);
-												textView.setText(currentInstance.getDescription());
-											}
-										}
-									} else if (spellList.equals(savedSpell.getSpellList()) && spellList.getId() != -1) {
-										listAdapter.add(savedSpell);
-										listAdapter.notifyDataSetChanged();
-									}
+								int position = listAdapter.getPosition(savedSpell);
+								LinearLayout v = (LinearLayout)listView.getChildAt(position - listView.getFirstVisiblePosition());
+								if (v != null) {
+									TextView textView = (TextView) v.findViewById(R.id.row_field1);
+									textView.setText(currentInstance.getName());
+									textView = (TextView) v.findViewById(R.id.row_field2);
+									textView.setText(currentInstance.getDescription());
 								}
 							}
 						}
@@ -867,53 +1073,6 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		}
 	}
 
-	private EditText initAoeParamEdit(View layout, @IdRes int id, @StringRes final int validationId,
-								  final int paramIndex) {
-		EditText editText = (EditText)layout.findViewById(id);
-		final EditText finalEditText = editText;
-		editText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					finalEditText.setError(getString(validationId));
-				}
-			}
-		});
-		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(finalEditText.getText().length() > 0) {
-						int param = Integer.valueOf(finalEditText.getText().toString());
-						if(currentInstance.getAreaOfEffectParams().length <= paramIndex) {
-							int[] params = new int[currentInstance.getAreaOfEffect().getParameterCount()];
-							int length = params.length <= currentInstance.getAreaOfEffectParams().length ?
-										 params.length : currentInstance.getAreaOfEffectParams().length;
-							System.arraycopy(currentInstance.getAreaOfEffectParams(), 0, params, 0, length);
-							for(int i = currentInstance.getAreaOfEffectParams().length; i < paramIndex; i++) {
-								params[i] = 1;
-							}
-							if(currentInstance.getAreaOfEffect().getParameterCount() > paramIndex) {
-								params[paramIndex] = param;
-							}
-							currentInstance.setAreaOfEffectParams(params);
-							saveItem();
-						}
-						else if(currentInstance.getAreaOfEffectParams()[paramIndex] != param){
-							currentInstance.getAreaOfEffectParams()[paramIndex] = param;
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-		return editText;
-	}
-
 	private void initDurationSpinner(View layout) {
 		durationSpinner = (Spinner)layout.findViewById(R.id.duration_spinner);
 		durationSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
@@ -971,53 +1130,6 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		}
 	}
 
-	private EditText initDurationParamEdit(View layout, @IdRes int id, @StringRes final int validationId,
-								  final int paramIndex) {
-		EditText editText = (EditText)layout.findViewById(id);
-		final EditText finalEditText = editText;
-		editText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					finalEditText.setError(getString(validationId));
-				}
-			}
-		});
-		editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(finalEditText.getText().length() > 0) {
-						int param = Integer.valueOf(finalEditText.getText().toString());
-						if(currentInstance.getDurationParams().length <= paramIndex) {
-							int[] params = new int[currentInstance.getDuration().getParameterCount()];
-							int length = params.length <= currentInstance.getDurationParams().length ?
-										 params.length : currentInstance.getDurationParams().length;
-							System.arraycopy(currentInstance.getDurationParams(), 0, params, 0, length);
-							for(int i = currentInstance.getDurationParams().length; i < paramIndex; i++) {
-								params[i] = 1;
-							}
-							if(currentInstance.getDuration().getParameterCount() > paramIndex) {
-								params[paramIndex] = param;
-							}
-							currentInstance.setDurationParams(params);
-							saveItem();
-						}
-						else if(currentInstance.getDurationParams()[paramIndex] != param){
-							currentInstance.getDurationParams()[paramIndex] = param;
-							saveItem();
-						}
-					}
-				}
-			}
-		});
-		return editText;
-	}
-
 	private void initRangeSpinner(View layout) {
 		rangeSpinner = (Spinner)layout.findViewById(R.id.range_spinner);
 		rangeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
@@ -1026,6 +1138,14 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		rangeSpinnerAdapter.clear();
 		rangeSpinnerAdapter.addAll(Range.values());
 		rangeSpinnerAdapter.notifyDataSetChanged();
+
+		Range range = (Range)rangeSpinner.getSelectedItem();
+		if(range != null && range.getParameterCount() > 0) {
+			rangeParamEdit.setEnabled(true);
+		}
+		else {
+			rangeParamEdit.setEnabled(false);
+		}
 
 		rangeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
@@ -1055,36 +1175,6 @@ public class SpellsFragment extends Fragment implements TwoFieldListAdapter.GetV
 					currentInstance.setRangeParam(null);
 					rangeParamEdit.setEnabled(false);
 					saveItem();
-				}
-			}
-		});
-	}
-
-	private void initRangeEdit(View layout) {
-		rangeParamEdit = (EditText)layout.findViewById(R.id.range_param_edit);
-		rangeParamEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					rangeParamEdit.setError(getString(R.string.validation_spell_range_param_required));
-				}
-			}
-		});
-		rangeParamEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(rangeParamEdit.getText().length() > 0) {
-						final int param = Integer.valueOf(descriptionEdit.getText().toString());
-						if (currentInstance.getRangeParam() == null || param != currentInstance.getRangeParam()) {
-							currentInstance.setRangeParam(param);
-							saveItem();
-						}
-					}
 				}
 			}
 		});

@@ -20,16 +20,16 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.RealmSchema;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.io.IOException;
 
 /**
- * Json serializer and deserializer for the {@link Realm} entities
+ * Json serializer and deserializer for the {@link RealmDBO} entities
  */
-public class RealmSerializer extends TypeAdapter<Realm> implements RealmSchema {
+public class RealmSerializer extends TypeAdapter<RealmDBO> implements RealmSchema {
 	@Override
-	public void write(JsonWriter out, Realm value) throws IOException {
+	public void write(JsonWriter out, RealmDBO value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
@@ -39,27 +39,27 @@ public class RealmSerializer extends TypeAdapter<Realm> implements RealmSchema {
 	}
 
 	@Override
-	public Realm read(JsonReader in) throws IOException {
-		Realm realm = new Realm();
+	public RealmDBO read(JsonReader in) throws IOException {
+		RealmDBO realmDBO = new RealmDBO();
 		in.beginObject();
 		while (in.hasNext()) {
 			switch (in.nextName()) {
 				case COLUMN_ID:
-					realm.setId(in.nextInt());
+					realmDBO.setId(in.nextInt());
 					break;
 				case COLUMN_NAME:
-					realm.setName(in.nextString());
+					realmDBO.setName(in.nextString());
 					break;
 				case COLUMN_DESCRIPTION:
-					realm.setDescription(in.nextString());
+					realmDBO.setDescription(in.nextString());
 					break;
 				case COLUMN_STAT_NAME:
 				case "statId":
-					realm.setStat(Statistic.valueOf(in.nextString()));
+					realmDBO.setStat(Statistic.valueOf(in.nextString()));
 					break;
 			}
 		}
 		in.endObject();
-		return realm;
+		return realmDBO;
 	}
 }

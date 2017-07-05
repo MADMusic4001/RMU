@@ -44,7 +44,7 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -75,8 +75,8 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	@Inject
 	protected SpellListRxHandler             spellTypeRxHandler;
 	private   ArrayAdapter<Profession>       professionSpinnerAdapter;
-	private   ArrayAdapter<Realm>            realm1SpinnerAdapter;
-	private   ArrayAdapter<Realm>            realm2SpinnerAdapter;
+	private   ArrayAdapter<RealmDBO>         realm1SpinnerAdapter;
+	private   ArrayAdapter<RealmDBO>         realm2SpinnerAdapter;
 	private   ArrayAdapter<SpellListType>    spellListTypeSpinnerAdapter;
 	private   TwoFieldListAdapter<SpellList> listAdapter;
 	private   ListView                       listView;
@@ -86,12 +86,12 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	private   Spinner                        realm2Spinner;
 	private   Spinner                        professionSpinner;
 	private   Spinner                        spellListTypeSpinner;
-	private   SpellList                      currentInstance = new SpellList();
-	private   boolean                        isNew = true;
-	private   Collection<Realm>              realms = null;
-	private   Realm                          noRealm = new Realm();
-	private   Profession                     noProfession = new Profession();
-	private   Map<SpellListType, Skill>      spellListSkillsMap = new HashMap<>(SpellListType.values().length);
+	private SpellList                 currentInstance    = new SpellList();
+	private boolean                   isNew              = true;
+	private Collection<RealmDBO>      realmDBOs          = null;
+	private RealmDBO                  noRealmDBO         = new RealmDBO();
+	private Profession                noProfession       = new Profession();
+	private Map<SpellListType, Skill> spellListSkillsMap = new HashMap<>(SpellListType.values().length);
 
 	@Nullable
 	@Override
@@ -99,7 +99,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newSpellFragmentComponent(new SpellFragmentModule(this)).injectInto(this);
 
-		noRealm.setName(getString(R.string.label_no_realm));
+		noRealmDBO.setName(getString(R.string.label_no_realm));
 		noProfession.setName(getString(R.string.label_no_profession));
 
 		View layout = inflater.inflate(R.layout.spell_lists_fragment, container, false);
@@ -200,7 +200,7 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		boolean changed = false;
 		int position;
 		String stringValue;
-		Realm realm;
+		RealmDBO realmDBO;
 		Profession profession;
 		SpellListType spellListType;
 
@@ -231,22 +231,22 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 		position = realm1Spinner.getSelectedItemPosition();
 		if(position != -1) {
-			realm = realm1SpinnerAdapter.getItem(position);
-			if (realm != null && !realm.equals(currentInstance.getRealm())) {
-				currentInstance.setRealm(realm);
+			realmDBO = realm1SpinnerAdapter.getItem(position);
+			if (realmDBO != null && !realmDBO.equals(currentInstance.getRealmDBO())) {
+				currentInstance.setRealmDBO(realmDBO);
 				changed = true;
 			}
 		}
 
 		position = realm2Spinner.getSelectedItemPosition();
 		if(position != -1) {
-			realm = realm2SpinnerAdapter.getItem(position);
-			if(realm != null) {
-				if (realm.getId() == -1 && currentInstance.getRealm2() != null) {
-					currentInstance.setRealm2(null);
+			realmDBO = realm2SpinnerAdapter.getItem(position);
+			if(realmDBO != null) {
+				if (realmDBO.getId() == -1 && currentInstance.getRealmDBO2() != null) {
+					currentInstance.setRealmDBO2(null);
 					changed = true;
-				} else if (realm.getId() != -1 && !realm.equals(currentInstance.getRealm2())) {
-					currentInstance.setRealm2(realm);
+				} else if (realmDBO.getId() != -1 && !realmDBO.equals(currentInstance.getRealmDBO2())) {
+					currentInstance.setRealmDBO2(realmDBO);
 					changed = true;
 				}
 			}
@@ -282,13 +282,13 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		Log.d(TAG, "copyItemToViews: currentInstance = " + currentInstance.print());
 		nameEdit.setText(currentInstance.getName());
 		notesEdit.setText(currentInstance.getNotes());
-		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(currentInstance.getRealm()));
+		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(currentInstance.getRealmDBO()));
 
-		if(currentInstance.getRealm2() == null) {
-			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealm));
+		if(currentInstance.getRealmDBO2() == null) {
+			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealmDBO));
 		}
 		else {
-			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(currentInstance.getRealm2()));
+			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(currentInstance.getRealmDBO2()));
 		}
 
 		int position;
@@ -454,14 +454,14 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
-		if(realms != null) {
+		if(realmDBOs != null) {
 			realm1SpinnerAdapter.clear();
-			realm1SpinnerAdapter.addAll(realms);
+			realm1SpinnerAdapter.addAll(realmDBOs);
 			realm1SpinnerAdapter.notifyDataSetChanged();
 		}
 		else {
 			realmRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Realm>>() {
+					.subscribe(new Subscriber<Collection<RealmDBO>>() {
 						@Override
 						public void onCompleted() {}
 						@Override
@@ -469,10 +469,10 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 							Log.e(TAG, "Exception caught getting all Realm instances", e);
 						}
 						@Override
-						public void onNext(Collection<Realm> realms) {
-							SpellListsFragment.this.realms = realms;
+						public void onNext(Collection<RealmDBO> realmDBOs) {
+							SpellListsFragment.this.realmDBOs = realmDBOs;
 							realm1SpinnerAdapter.clear();
-							realm1SpinnerAdapter.addAll(realms);
+							realm1SpinnerAdapter.addAll(realmDBOs);
 							realm1SpinnerAdapter.notifyDataSetChanged();
 						}
 					});
@@ -481,9 +481,9 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		realm1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Realm newRealm = realm1SpinnerAdapter.getItem(position);
-				if(newRealm != null && !newRealm.equals(currentInstance.getRealm())) {
-					currentInstance.setRealm(newRealm);
+				RealmDBO newRealmDBO = realm1SpinnerAdapter.getItem(position);
+				if(newRealmDBO != null && !newRealmDBO.equals(currentInstance.getRealmDBO())) {
+					currentInstance.setRealmDBO(newRealmDBO);
 					saveItem();
 				}
 			}
@@ -497,15 +497,15 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
-		if(realms != null) {
+		if(realmDBOs != null) {
 			realm2SpinnerAdapter.clear();
-			realm2SpinnerAdapter.add(noRealm);
-			realm2SpinnerAdapter.addAll(realms);
+			realm2SpinnerAdapter.add(noRealmDBO);
+			realm2SpinnerAdapter.addAll(realmDBOs);
 			realm2SpinnerAdapter.notifyDataSetChanged();
 		}
 		else {
 			realmRxHandler.getAll()
-					.subscribe(new Subscriber<Collection<Realm>>() {
+					.subscribe(new Subscriber<Collection<RealmDBO>>() {
 						@Override
 						public void onCompleted() {}
 						@Override
@@ -513,11 +513,11 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 							Log.e(TAG, "Exception caught getting all Realm instances", e);
 						}
 						@Override
-						public void onNext(Collection<Realm> realms) {
-							SpellListsFragment.this.realms = realms;
+						public void onNext(Collection<RealmDBO> realmDBOs) {
+							SpellListsFragment.this.realmDBOs = realmDBOs;
 							realm2SpinnerAdapter.clear();
-							realm2SpinnerAdapter.add(noRealm);
-							realm2SpinnerAdapter.addAll(realms);
+							realm2SpinnerAdapter.add(noRealmDBO);
+							realm2SpinnerAdapter.addAll(realmDBOs);
 							realm2SpinnerAdapter.notifyDataSetChanged();
 						}
 					});
@@ -526,16 +526,16 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 		realm2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Realm newRealm = realm2SpinnerAdapter.getItem(position);
-				if(noRealm.equals(newRealm)) {
-					newRealm = null;
+				RealmDBO newRealmDBO = realm2SpinnerAdapter.getItem(position);
+				if(noRealmDBO.equals(newRealmDBO)) {
+					newRealmDBO = null;
 				}
-				if(newRealm != null && !newRealm.equals(currentInstance.getRealm2())) {
-					currentInstance.setRealm2(newRealm);
+				if(newRealmDBO != null && !newRealmDBO.equals(currentInstance.getRealmDBO2())) {
+					currentInstance.setRealmDBO2(newRealmDBO);
 					saveItem();
 				}
-				else if(newRealm == null && currentInstance.getRealm2() != null) {
-					currentInstance.setRealm2(null);
+				else if(newRealmDBO == null && currentInstance.getRealmDBO2() != null) {
+					currentInstance.setRealmDBO2(null);
 					saveItem();
 				}
 			}

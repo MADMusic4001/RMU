@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.character;
 
@@ -41,7 +41,6 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.ProfessionSkillCategoryCost;
 import com.madinnovations.rmu.data.entities.character.SkillCostGroup;
@@ -49,7 +48,6 @@ import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.spells.Realm;
-import com.madinnovations.rmu.view.RMUAppException;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.character.ProfessionCategoryCostListAdapter;
@@ -79,13 +77,11 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	@Inject
 	protected ProfessionRxHandler               professionRxHandler;
 	@Inject
-	protected RealmRxHandler                    realmRxHandler;
-	@Inject
 	protected SkillRxHandler                    skillRxHandler;
 	@Inject
 	protected SkillCategoryRxHandler            skillCategoryRxHandler;
-	private   ArrayAdapter<Realm>               realm1SpinnerAdapter;
-	private   ArrayAdapter<Realm>               realm2SpinnerAdapter;
+	private   ArrayAdapter<String>              realm1SpinnerAdapter;
+	private   ArrayAdapter<String>              realm2SpinnerAdapter;
 	private   ProfessionCategoryCostListAdapter categoryCostListAdapter;
 	private   TwoFieldListAdapter<Profession>   listAdapter;
 	private   ListView                          listView;
@@ -93,6 +89,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	private   EditText                          descriptionEdit;
 	private   Spinner                           realm1Spinner;
 	private   Spinner                           realm2Spinner;
+	private   String                            noRealm = null;
 	private Collection<SkillCategory> skillCategories = new ArrayList<>();
 	private Collection<Skill> skills = new ArrayList<>();
 	private Profession currentInstance = new Profession();
@@ -105,6 +102,7 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCharacterFragmentComponent(new CharacterFragmentModule(this)).injectInto(this);
 
+		noRealm = getString(R.string.label_no_realm);
 		View layout = inflater.inflate(R.layout.professions_fragment, container, false);
 
 		((TextView)layout.findViewById(R.id.header_field1)).setText(getString(R.string.label_profession_name));
@@ -258,12 +256,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	@Override
 	public void saveItem() {
 		if(currentInstance.isValid()) {
-			try {
-				throw new RMUAppException();
-			}
-			catch (RMUAppException e) {
-				Log.e(TAG, "saveItem: stack trace", e);
-			}
 			final boolean wasNew = isNew;
 			isNew = false;
 			professionRxHandler.save(currentInstance)
@@ -309,7 +301,6 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		String newString;
-		Realm newRealm;
 
 		View currentFocusView = getActivity().getCurrentFocus();
 		if(currentFocusView != null) {
@@ -402,23 +393,27 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 			changed = true;
 		}
 
-		newRealm = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
-		if(newRealm != null) {
-			if (newRealm.getId() == -1 && currentInstance.getRealm1() != null) {
+		String newRealmName = realm1SpinnerAdapter.getItem(realm1Spinner.getSelectedItemPosition());
+		if(newRealmName != null) {
+			Realm newRealm = Realm.getRealmWithName(newRealmName);
+			if (newRealm == null && currentInstance.getRealm1() != null) {
 				currentInstance.setRealm1(null);
 				changed = true;
-			} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm1())) {
+			}
+			else if(newRealm != null && !newRealm.equals(currentInstance.getRealm1())) {
 				currentInstance.setRealm1(newRealm);
 				changed = true;
 			}
 		}
 
-		newRealm = realm2SpinnerAdapter.getItem(realm2Spinner.getSelectedItemPosition());
-		if(newRealm != null) {
-			if (newRealm.getId() == -1 && currentInstance.getRealm2() != null) {
+		newRealmName = realm2SpinnerAdapter.getItem(realm2Spinner.getSelectedItemPosition());
+		if(newRealmName != null) {
+			Realm newRealm = Realm.getRealmWithName(newRealmName);
+			if (newRealm == null && currentInstance.getRealm2() != null) {
 				currentInstance.setRealm2(null);
 				changed = true;
-			} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm2())) {
+			}
+			else if(newRealm != null && !newRealm.equals(currentInstance.getRealm2())) {
 				currentInstance.setRealm2(newRealm);
 				changed = true;
 			}
@@ -429,19 +424,26 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 
 	private void copyItemToViews() {
 		Realm currentRealm;
+		String realmName;
 
 		nameEdit.setText(currentInstance.getName());
 		descriptionEdit.setText(currentInstance.getDescription());
 		currentRealm = currentInstance.getRealm1();
 		if(currentRealm == null) {
-			currentRealm = new Realm();
+			realmName = noRealm;
 		}
-		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(currentRealm));
+		else {
+			realmName = currentRealm.toString();
+		}
+		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(realmName));
 		currentRealm = currentInstance.getRealm2();
 		if(currentRealm == null) {
-			currentRealm = new Realm();
+			realmName = noRealm;
 		}
-		realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(currentRealm));
+		else {
+			realmName = currentRealm.toString();
+		}
+		realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(realmName));
 
 		categoryCostListAdapter.clear();
 		categoryCostListAdapter.addAll(createCostList());
@@ -500,34 +502,23 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		realm1Spinner = (Spinner)layout.findViewById(R.id.realm1_spinner);
 		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
+		realm1SpinnerAdapter.add(noRealm);
+		for(Realm realm : Realm.values()) {
+			realm1SpinnerAdapter.add(realm.toString());
+		}
+		realm1SpinnerAdapter.notifyDataSetChanged();
 
-		realmRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Realm>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught loading Realm instances", e);
-					}
-					@Override
-					public void onNext(Collection<Realm> realms) {
-						realm1SpinnerAdapter.clear();
-						Realm noRealm = new Realm();
-						noRealm.setName(getString(R.string.label_no_realm));
-						realm1SpinnerAdapter.add(noRealm);
-						realm1SpinnerAdapter.addAll(realms);
-						realm1SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
 		realm1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Realm newRealm = realm1SpinnerAdapter.getItem(position);
-				if(newRealm != null) {
-					if (newRealm.getId() == -1 && currentInstance.getRealm1() != null) {
+				String newRealmName = realm1SpinnerAdapter.getItem(position);
+				if(newRealmName != null) {
+					Realm newRealm = Realm.getRealmWithName(newRealmName);
+					if (newRealm == null && currentInstance.getRealm1() != null) {
 						currentInstance.setRealm1(null);
 						saveItem();
-					} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm1())) {
+					}
+					else if (newRealm != null && !newRealm.equals(currentInstance.getRealm1())) {
 						currentInstance.setRealm1(newRealm);
 						saveItem();
 					}
@@ -543,34 +534,23 @@ public class ProfessionsFragment extends Fragment implements TwoFieldListAdapter
 		realm2Spinner = (Spinner)layout.findViewById(R.id.realm2_spinner);
 		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
+		realm2SpinnerAdapter.add(noRealm);
+		for(Realm realm : Realm.values()) {
+			realm2SpinnerAdapter.add(realm.toString());
+		}
+		realm2SpinnerAdapter.notifyDataSetChanged();
 
-		realmRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Realm>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught loading Realm instances", e);
-					}
-					@Override
-					public void onNext(Collection<Realm> realms) {
-						realm2SpinnerAdapter.clear();
-						Realm noRealm = new Realm();
-						noRealm.setName(getString(R.string.label_no_realm));
-						realm2SpinnerAdapter.add(noRealm);
-						realm2SpinnerAdapter.addAll(realms);
-						realm2SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
 		realm2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Realm newRealm = realm2SpinnerAdapter.getItem(position);
-				if(newRealm != null) {
-					if (newRealm.getId() == -1 && currentInstance.getRealm2() != null) {
+				String newRealmName = realm2SpinnerAdapter.getItem(position);
+				if(newRealmName != null) {
+					Realm newRealm = Realm.getRealmWithName(newRealmName);
+					if (newRealm == null && currentInstance.getRealm2() != null) {
 						currentInstance.setRealm2(null);
 						saveItem();
-					} else if (newRealm.getId() != -1 && !newRealm.equals(currentInstance.getRealm2())) {
+					}
+					else if (newRealm != null && !newRealm.equals(currentInstance.getRealm2())) {
 						currentInstance.setRealm2(newRealm);
 						saveItem();
 					}

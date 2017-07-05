@@ -1,152 +1,162 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.spells;
+
+import android.support.annotation.StringRes;
+
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Spell area of effect types.
  */
 public enum AreaOfEffect {
-	ANIMAL ("Animal (quantity)", (short)1),
-	ANIMAL_PER_LEVEL ("Animal/lvl (quantity, levels)", (short)2),
-	ARMOR ("Armor (quantity)", (short)1 ),
-	ATTACK ("Attack (quantity)", (short)1),
-	ATTACK_PER_LEVEL ("Attack/lvl (quantity, levels)", (short)2),
-	ATTACK_PER_ROUND ("Attack/rnd (quantity, rounds)", (short)2),
-	BEAM ("Beam (length)", (short)1),
-	BEING ("Being (quantity)", (short)1),
-	BODY_OF_WATER ("Body of Water (quantity)", (short)1),
-	CABIN ("Cabin (quantity)", (short)1),
-	CASTER ("Caster", (short)0),
-	CASTER_PLUS_DEMON ("Caster + Demon", (short)0),
-	CASTER_PLUS_TARGET ("Caster + Target (number of targets)", (short)1),
-	CHANNEL ("Channel (quantity)", (short)1),
-	CONDITION_PER_LEVEL ("Condition (quantity, levels", (short)2),
-	CONE_DIAMETER ("Cone (inner diameter, outer diameter, length)", (short)3),
-	CONE_RADIUS ("Cone (inner radius, outer radius, length)", (short)3),
-	CORPSE ("Corpse (quantity)", (short)1),
-	CREATURE ("Creature (quantity)", (short)1),
-	CUBE ("Cube (width, height, depth)", (short)3),
-	CUBE_PER_LEVEL_DEPTH ("Cube (width, height, depth/lvl)", (short)3),
-	CUBIC_FOOT_PER_LEVEL ("Cu'/lvl (cubic feet, levels)", (short)2),
-	CURSE ("Curse (quantity)", (short)1),
-	CYLINDER ("Cylinder (diameter, length", (short)2),
-	CYLINDER_PER_LEVEL ("Cylinder (diameter, length/lvl", (short)2),
-	DEITY ("Deity (quantity)", (short)1),
-	DEMON ("Demon (quantity)", (short)1),
-	DOOR ("Door (quantity)", (short)1),
-	EARTH_CU_FT ("Earth (cubic feet)", (short)2),
-	ELEMENTAL ("Elemental (quantity)", (short)1),
-	EMBLEM ("Emblem (quantity)", (short)1),
-	ENTITY ("Entity (quantity)", (short)1),
-	FAMILIAR ("Familiar (quantity)", (short)1),
-	FOOT ("Foot (length)", (short)1),
-	FOOT_PER_LEVEL ("Foot/lvl (length, levels)", (short)2),
-	FUNGUS ("Fungus (quantity)", (short)1),
-	GATEWAY ("Gateway (quantity)", (short)1),
-	HERB ("Herb (quantity)", (short)1),
-	HERB_PER_LEVEL ("Herb/lvl (quantity, levels)", (short)2),
-	ILLUSION ("Illusion (quantity)", (short)1),
-	INANIMATE_SOLID ("Inanimate Solid (cubic feet)", (short)1),
-	INORGANIC_OBJECT ("Inorganic Object (cubic feet)", (short)1),
-	INSTRUMENT ("Instrument (quantity)", (short)1),
-	ITEM ("Item (quantity)", (short)1),
-	LIMB ("Limb (quantity)", (short)1),
-	LOCATION ("Location (quantity)", (short)1),
-	LOCK ("Lock (quantity)", (short)1),
-	MACHINE ("Machine (quantity)", (short)1),
-	MECHANISM ("Mechanism (quantity)", (short)1),
-	METAL ("Metal (max diameter)", (short)1),
-	METAL_CU_FT ("Metal (cubic feet)", (short)1),
-	MILE ("Mile (distance)", (short)1),
-	MILE_PER_LEVEL ("Mile/lvl (distance, levels)", (short)2),
-	MISSILE ("Missile (quantity)", (short)1),
-	MISSILE_PER_LEVEL ("Missile/lvl (quantity, levels)", (short)2),
-	MOUNT ("Mount (quantity)", (short)1),
-	MOUNT_PER_CASTER ("Mount/caster (quantity)", (short)1),
-	OBJECT ("Object (quantity)", (short)1),
-	OBJECT_PER_LEVEL ("Object/lvl (quantity, levels)", (short)2),
-	OBJECT_PER_ROUND ("Object/rnd (quantity, rounds)", (short)2),
-	PARRY_PER_ROUND ("Parry/rnd (quantity, rounds)", (short)2),
-	PLANE ("Plane (width, height)", (short)2),
-	PLANE_SQ_FT ("Plane (square feet", (short)1),
-	PLANT ("Plant (quantity)", (short)1),
-	PLANT_PER_LEVEL ("Plant/lvl (quantity, levels)", (short)2),
-	POOL ("Pool (quantity)", (short)1),
-	POINT ("Point (quantity)", (short)1),
-	POISON ("Poison (quantity)", (short)1),
-	POSSESSOR ("Possessor (quantity)", (short)1),
-	POUND ("Pound (weight)", (short)1),
-	POUND_PER_LEVEL ("Pound/lvl (weight, levels)", (short)2),
-	RUNE ("Rune (quantity)", (short)1),
-	SEED ("Seed (quantity)", (short)1),
-	SHADOW_PER_LEVEL ("Shadow/lvl (quantity, levels)", (short)2),
-	SHIELD ("Shield (quantity)", (short)1),
-	SHIELD_PER_LEVEL ("Shield/lvl (quantity, levels)", (short)2),
-	SPECIAL ("Special", (short)0),
-	SPECIES ("Species (quantity)", (short)1),
-	SPELL ("Spell (quantity)", (short)1),
-	SPELL_AREA_EFFECT ("Spell [Area Effect] (quantity)", (short)1),
-	SPELL_DIRECTED ("Spell [Directed] (quantity)", (short)1),
-	SPELL_PER_TARGET ("Spell/target (quantity, targets)", (short)2),
-	STONE ("Stone (quantity)", (short)1),
-	STONE_CU_FT ("Stone (cubic feet)", (short)2),
-	STONE_CU_FT_PER_LEVEL ("Stone (cubic feet, levels)", (short)2),
-	SYMBOL ("Symbol (quantity)", (short)1),
-	TARGET ("Target (quantity)", (short)1),
-	TARGET_PER_LEVEL ("Target/lvl (quantity, levels)", (short)2),
-	TARGET_PER_ROUND ("Target/rnd (quantity, rounds)", (short)2),
-	TARGET_PLUS_RADIUS ("Target + Radius (quantity, radius)", (short)2),
-	TARGETS_UNLIMITED ("Targets (Unlimited)", (short)0),
-	TENT ("Tent (quantity)", (short)1),
-	TEXT ("Text (quantity)", (short)1),
-	TOWER ("Tower (quantity)", (short)1),
-	TRACKS ("Tracks (quantity)", (short)1),
-	TRANSFERENCE ("Transference (quantity)", (short)1),
-	TRAP ("Trap (quantity)", (short)1),
-	TREE ("Tree (quantity)", (short)1),
-	UNDEAD ("Undead (quantity)", (short)1),
-	VARIES ("Varies", (short)0),
-	WALL_WEDGE ("Wall [Wedge] (width, height, base depth, top depth)", (short)4),
-	WATER_CORRIDOR ("Water corridor (diameter, length, max depth)", (short)3),
-	WATER_CORRIDOR_PER_LEVEL ("Water corridor (diameter, length/lvl, max depth)", (short)3),
-	WATER_CU_FT ("Water (cubic feet)", (short)1),
-	WATER_FL_OZ ("Water (fluid ounces)", (short)1),
-	WATER_GALLON ("Water (gallons)", (short)1),
-	WAVE_PER_LEVEL ("Wave (height/lvl, width/lvl)", (short)2),
-	WEAPON ("Weapon (quantity)", (short)1),
-	WOOD ("Wood (max diameter)", (short)1),
-	WOOD_OBJECT ("Wood Object (quantity)", (short)1),
-	NA ("NA", (short)0);
+	ANIMAL (R.string.enum_aoe_animal, (short)1),
+	ANIMAL_PER_LEVEL (R.string.enum_aoe_animal_per_level, (short)2),
+	ARMOR (R.string.enum_aoe_armor, (short)1 ),
+	ATTACK (R.string.enum_aoe_attack, (short)1),
+	ATTACK_PER_LEVEL (R.string.enum_aoe_attack_per_level, (short)2),
+	ATTACK_PER_ROUND (R.string.enum_aoe_attack_per_round, (short)2),
+	ATTACKS_OR_MISSILES(R.string.enum_aoe_attacks_or_missiles, (short)1),
+	ATTACKS_OR_MISSILES_PER_LEVEL(R.string.enum_aoe_attacks_or_missiles_per_level, (short)2),
+	BEAM (R.string.enum_aoe_beam, (short)1),
+	BEING (R.string.enum_aoe_being, (short)1),
+	BODY_OF_WATER (R.string.enum_aoe_body_of_water, (short)1),
+	CABIN (R.string.enum_aoe_cabin, (short)1),
+	CASTER (R.string.enum_aoe_caster, (short)0),
+	CASTER_PLUS_DEMON (R.string.enum_aoe_caster_plus_demon, (short)0),
+	CASTER_PLUS_TARGET (R.string.enum_aoe_caster_plus_target, (short)1),
+	CHANNEL (R.string.enum_aoe_channel, (short)1),
+	CONDITION_PER_LEVEL (R.string.enum_aoe_condition, (short)2),
+	CONE_DIAMETER (R.string.enum_aoe_cone_diameter, (short)3),
+	CONE_RADIUS (R.string.enum_aoe_cone_radius, (short)3),
+	CORPSE (R.string.enum_aoe_corpse, (short)1),
+	CREATURE (R.string.enum_aoe_creature, (short)1),
+	CUBE (R.string.enum_aoe_cube, (short)3),
+	CUBE_PER_LEVEL_DEPTH (R.string.enum_aoe_cube_per_level_depth, (short)3),
+	CUBIC_FOOT_PER_LEVEL (R.string.enum_aoe_cubic_feet_per_level, (short)2),
+	CURSE (R.string.enum_aoe_curse, (short)1),
+	CYLINDER (R.string.enum_aoe_cylinder, (short)2),
+	CYLINDER_PER_LEVEL (R.string.enum_aoe_cylinder_per_level, (short)2),
+	DEITY (R.string.enum_aoe_deity, (short)1),
+	DEMON (R.string.enum_aoe_demon, (short)1),
+	DOOR (R.string.enum_aoe_door, (short)1),
+	EARTH_CU_FT (R.string.enum_aoe_earth_cubic_feet, (short)2),
+	ELEMENTAL (R.string.enum_aoe_elemental, (short)1),
+	EMBLEM (R.string.enum_aoe_emblem, (short)1),
+	ENTITY (R.string.enum_aoe_entity, (short)1),
+	FAMILIAR (R.string.enum_aoe_familiar, (short)1),
+	FOOT (R.string.enum_aoe_foot, (short)1),
+	FOOT_PER_LEVEL (R.string.enum_aoe_foot_per_level, (short)2),
+	FUNGUS (R.string.enum_aoe_fungus, (short)1),
+	GARMENT(R.string.enum_aoe_garment, (short)1),
+	GATEWAY (R.string.enum_aoe_gateway, (short)1),
+	HERB (R.string.enum_aoe_herb, (short)1),
+	HERB_PER_LEVEL (R.string.enum_aoe_herb_per_level, (short)2),
+	ILLUSION (R.string.enum_aoe_illusion, (short)1),
+	INANIMATE_SOLID (R.string.enum_aoe_inanimate_solid, (short)1),
+	INORGANIC_OBJECT (R.string.enum_aoe_inorganic_object, (short)1),
+	INSTRUMENT (R.string.enum_aoe_instrument, (short)1),
+	ITEM (R.string.enum_aoe_item, (short)1),
+	LIMB (R.string.enum_aoe_limb, (short)1),
+	LOCATION (R.string.enum_aoe_location, (short)1),
+	LOCK (R.string.enum_aoe_lock, (short)1),
+	MACHINE (R.string.enum_aoe_machine, (short)1),
+	MECHANISM (R.string.enum_aoe_mechanism, (short)1),
+	METAL (R.string.enum_aoe_metal, (short)1),
+	METAL_CU_FT (R.string.enum_aoe_metal_cu_ft, (short)1),
+	MILE (R.string.enum_aoe_mile, (short)1),
+	MILE_PER_LEVEL (R.string.enum_aoe_miles_per_level, (short)2),
+	MISSILE (R.string.enum_aoe_missile, (short)1),
+	MISSILE_PER_LEVEL (R.string.enum_aoe_missiles_per_level, (short)2),
+	MOUNT (R.string.enum_aoe_mount, (short)1),
+	MOUNT_PER_CASTER (R.string.enum_aoe_mount_per_caster, (short)1),
+	OBJECT (R.string.enum_aoe_object, (short)1),
+	OBJECT_PER_LEVEL (R.string.enum_aoe_objects_per_level, (short)2),
+	OBJECT_PER_ROUND (R.string.enum_aoe_objects_Per_round, (short)2),
+	PARRY_PER_ROUND (R.string.enum_aoe_parry_per_round, (short)2),
+	PLANE (R.string.enum_aoe_plane, (short)2),
+	PLANE_SQ_FT (R.string.enum_aoe_plane_sq_ft, (short)1),
+	PLANT (R.string.enum_aoe_plant, (short)1),
+	PLANT_PER_LEVEL (R.string.enum_aoe_plants_per_level, (short)2),
+	POOL (R.string.enum_aoe_pool, (short)1),
+	POINT (R.string.enum_aoe_point, (short)1),
+	POISON (R.string.enum_aoe_poison, (short)1),
+	POSSESSOR (R.string.enum_aoe_possessor, (short)1),
+	POUND (R.string.enum_aoe_pound, (short)1),
+	POUND_PER_LEVEL (R.string.enum_aoe_pounds_per_level, (short)2),
+	RADIUS_FEET(R.string.enum_aoe_radius_feet, (short)1),
+	RADIUS_FEET_PER_LEVEL(R.string.enum_aoe_radius_feet_per_level, (short)1),
+	RUNE (R.string.enum_aoe_rune, (short)1),
+	SEED (R.string.enum_aoe_seed, (short)1),
+	SHADOW_PER_LEVEL (R.string.enum_aoe_shadow_per_level, (short)2),
+	SHIELD (R.string.enum_aoe_shield, (short)1),
+	SHIELD_PER_LEVEL (R.string.enum_aoe_shields_per_level, (short)2),
+	SPECIAL (R.string.enum_aoe_special, (short)0),
+	SPECIES (R.string.enum_aoe_species, (short)1),
+	SPELL (R.string.enum_aoe_spell, (short)1),
+	SPELL_AREA_EFFECT (R.string.enum_aoe_spell_area_effect, (short)1),
+	SPELL_DIRECTED (R.string.enum_aoe_spell_directed, (short)1),
+	SPELL_PER_TARGET (R.string.enum_aoe_spell_per_target, (short)2),
+	STONE (R.string.enum_aoe_stone, (short)1),
+	STONE_CU_FT (R.string.enum_aoe_stone_cubic_feet, (short)2),
+	STONE_CU_FT_PER_LEVEL (R.string.enum_aoe_stone_cubic_feet_per_level, (short)2),
+	SYMBOL (R.string.enum_aoe_symbol, (short)1),
+	TARGET (R.string.enum_aoe_target, (short)1),
+	TARGET_PER_LEVEL (R.string.enum_aoe_targets_per_level, (short)2),
+	TARGET_PER_ROUND (R.string.enum_aoe_targets_per_round, (short)2),
+	TARGET_PLUS_RADIUS (R.string.enum_aoe_target_plus_radius, (short)2),
+	TARGETS_UNLIMITED (R.string.enum_aoe_targets_unlimited, (short)0),
+	TENT (R.string.enum_aoe_tent, (short)1),
+	TEXT (R.string.enum_aoe_text, (short)1),
+	TOWER (R.string.enum_aoe_tower, (short)1),
+	TRACKS (R.string.enum_aoe_tracks, (short)1),
+	TRANSFERENCE (R.string.enum_aoe_transference, (short)1),
+	TRAP (R.string.enum_aoe_trap, (short)1),
+	TREE (R.string.enum_aoe_tree, (short)1),
+	UNDEAD (R.string.enum_aoe_undead, (short)1),
+	VARIES (R.string.enum_aoe_varies, (short)0),
+	WALL_WEDGE (R.string.enum_aoe_wall_wedge, (short)4),
+	WATER_CORRIDOR (R.string.enum_aoe_water_corridor, (short)3),
+	WATER_CORRIDOR_PER_LEVEL (R.string.enum_aoe_water_corridor_per_level, (short)3),
+	WATER_CU_FT (R.string.enum_aoe_water_cubic_feet, (short)1),
+	WATER_FL_OZ (R.string.enum_aoe_water_fluid_ounces, (short)1),
+	WATER_GALLON (R.string.enum_aoe_water_gallons, (short)1),
+	WAVE_PER_LEVEL (R.string.enum_aoe_wave_per_level, (short)2),
+	WEAPON (R.string.enum_aoe_weapon, (short)1),
+	WOOD (R.string.enum_aoe_wood, (short)1),
+	WOOD_OBJECT (R.string.enum_aoe_wood_object, (short)1),
+	NA (R.string.enum_aoe_na, (short)0);
 
-	private String text;
+	private @StringRes int textResourceId;
 	private short parameterCount;
 
-	AreaOfEffect(String text, short parameterCount) {
-		this.text = text;
+	AreaOfEffect(@StringRes int textResourceId, short parameterCount) {
+		this.textResourceId = textResourceId;
 		this.parameterCount = parameterCount;
 	}
 
 	@Override
 	public String toString() {
-		return text;
+		return RMUApp.getResourceUtils().getString(textResourceId);
 	}
 
 	// Getters
-	public String getText() {
-		return text;
+	public int getTextResourceId() {
+		return textResourceId;
 	}
 	public short getParameterCount() {
 		return parameterCount;

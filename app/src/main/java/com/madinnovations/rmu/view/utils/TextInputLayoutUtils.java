@@ -85,7 +85,7 @@ public final class TextInputLayoutUtils {
 				if (textInputLayout != null) {
 					if (editable.length() == 0 && errorStringId != 0) {
 						textInputLayout.setError(context.getString(errorStringId));
-						editText.setError(context.getString(errorStringId));
+						textInputLayout.setErrorEnabled(true);
 					}
 					else {
 						textInputLayout.setErrorEnabled(false);

@@ -31,7 +31,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.io.IOException;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
 
 		out.name(RaceRealmRRModSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Realm, Short> entry : value.getRealmResistancesModifiers().entrySet()) {
+		for(Map.Entry<RealmDBO, Short> entry : value.getRealmResistancesModifiers().entrySet()) {
 			out.beginObject();
 			out.name(RaceRealmRRModSchema.COLUMN_REALM_ID).value(entry.getKey().getId());
 			out.name(RaceRealmRRModSchema.COLUMN_MODIFIER).value(entry.getValue());
@@ -184,13 +184,13 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 	private void readRaceRealmRRMods(JsonReader in, Race race) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
-			Realm newRealm = null;
+			RealmDBO newRealmDBO = null;
 			Short mods = null;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
 					case RaceRealmRRModSchema.COLUMN_REALM_ID:
-						newRealm = new Realm(in.nextInt());
+						newRealmDBO = new RealmDBO(in.nextInt());
 						break;
 					case RaceRealmRRModSchema.COLUMN_MODIFIER:
 						mods = (short)in.nextInt();
@@ -198,8 +198,8 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				}
 			}
 			in.endObject();
-			if(newRealm != null) {
-				race.getRealmResistancesModifiers().put(newRealm, mods);
+			if(newRealmDBO != null) {
+				race.getRealmResistancesModifiers().put(newRealmDBO, mods);
 			}
 		}
 		in.endArray();

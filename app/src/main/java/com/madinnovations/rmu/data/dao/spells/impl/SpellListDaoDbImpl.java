@@ -101,9 +101,9 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 		else {
 			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTES)));
 		}
-		instance.setRealm(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
+		instance.setRealmDBO(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-			instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+			instance.setRealmDBO2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
 		}
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))) {
 			instance.setProfession(professionDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))));
@@ -133,12 +133,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 		else {
 			values.put(COLUMN_NOTES, instance.getNotes());
 		}
-		values.put(COLUMN_REALM_ID, instance.getRealm().getId());
-		if(instance.getRealm2() == null ) {
+		values.put(COLUMN_REALM_ID, instance.getRealmDBO().getId());
+		if(instance.getRealmDBO2() == null ) {
 			values.putNull(COLUMN_REALM2_ID);
 		}
 		else {
-			values.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
+			values.put(COLUMN_REALM2_ID, instance.getRealmDBO2().getId());
 		}
 		if(instance.getProfession() == null) {
 			values.putNull(COLUMN_PROFESSION_ID);
@@ -156,18 +156,18 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 	public Collection<SpellList> getAllListsForCharacter(Character character) {
 		String selectionArgs[];
 		final String selection;
-		if(character.getRealm2() != null) {
+		if(character.getRealmDBO2() != null) {
 			selectionArgs = new String[3];
-			selectionArgs[0] = String.valueOf(character.getRealm().getId());
-			selectionArgs[1] = String.valueOf(character.getRealm2().getId());
+			selectionArgs[0] = String.valueOf(character.getRealmDBO().getId());
+			selectionArgs[1] = String.valueOf(character.getRealmDBO2().getId());
 			selectionArgs[2] = String.valueOf(character.getProfession().getId());
 			selection = COLUMN_REALM_ID + " in (?, ?) and (" + COLUMN_PROFESSION_ID + " is null or "
 					+ COLUMN_PROFESSION_ID + " = ?)";
 		}
 		else {
 			selectionArgs = new String[2];
-			if(character.getRealm() != null) {
-				selectionArgs[0] = String.valueOf(character.getRealm().getId());
+			if(character.getRealmDBO() != null) {
+				selectionArgs[0] = String.valueOf(character.getRealmDBO().getId());
 			}
 			else {
 				selectionArgs[0] = "1";

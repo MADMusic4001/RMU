@@ -18,9 +18,8 @@ package com.madinnovations.rmu.data.entities.character;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +30,12 @@ import java.util.Map;
  * Racial attributes
  */
 public class Race extends DatabaseObject {
-	public static final String JSON_NAME = "Races";
+	public static final String    JSON_NAME                  = "Races";
 	private String                name                       = null;
 	private String                description                = null;
 	private short                 bonusDevelopmentPoints     = 0;
 	private Map<Statistic, Short> statModifiers              = new HashMap<>();
-	private Map<Realm, Short>     realmResistancesModifiers  = new HashMap<>();
+	private Map<RealmDBO, Short>  realmResistancesModifiers  = new HashMap<>();
 	private short                 physicalResistanceModifier = 0;
 	private short                 enduranceModifier          = 0;
 	private short                 baseHits                   = 0;
@@ -104,11 +103,11 @@ public class Race extends DatabaseObject {
 	public void setStatModifiers(Map<Statistic, Short> statModifiers) {
 		this.statModifiers = statModifiers;
 	}
-	public Map<Realm, Short> getRealmResistancesModifiers() {
+	public Map<RealmDBO, Short> getRealmResistancesModifiers() {
 		return realmResistancesModifiers;
 	}
 	public void setRealmResistancesModifiers(
-			Map<Realm, Short> realmResistancesModifiers) {
+			Map<RealmDBO, Short> realmResistancesModifiers) {
 		this.realmResistancesModifiers = realmResistancesModifiers;
 	}
 	public short getPhysicalResistanceModifier() {

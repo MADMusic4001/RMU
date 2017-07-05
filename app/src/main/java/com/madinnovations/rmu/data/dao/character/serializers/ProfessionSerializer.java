@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
@@ -48,10 +48,10 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_DESCRIPTION).value(value.getDescription());
 		if(value.getRealm1() != null) {
-			out.name(COLUMN_REALM1_ID).value(value.getRealm1().getId());
+			out.name(COLUMN_REALM1).value(value.getRealm1().name());
 		}
 		if(value.getRealm2() != null) {
-			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
+			out.name(COLUMN_REALM2).value(value.getRealm2().name());
 		}
 
 		out.name(ProfessionSkillCategoryCostSchema.TABLE_NAME).beginArray();
@@ -111,11 +111,39 @@ public class ProfessionSerializer extends TypeAdapter<Profession> implements Pro
 				case COLUMN_DESCRIPTION:
 					profession.setDescription(in.nextString());
 					break;
-				case COLUMN_REALM1_ID:
-					profession.setRealm1(new Realm(in.nextInt()));
+				case "realm1Id":
+					int realmId = in.nextInt();
+					switch (realmId) {
+						case 1:
+							profession.setRealm1(Realm.CHANNELING);
+							break;
+						case 2:
+							profession.setRealm1(Realm.ESSENCE);
+							break;
+						case 3:
+							profession.setRealm1(Realm.MENTALISM);
+							break;
+					}
 					break;
-				case COLUMN_REALM2_ID:
-					profession.setRealm2(new Realm(in.nextInt()));
+				case COLUMN_REALM1:
+					profession.setRealm1(Realm.valueOf(in.nextString()));
+					break;
+				case "realm2Id":
+					realmId = in.nextInt();
+					switch (realmId) {
+						case 1:
+							profession.setRealm1(Realm.CHANNELING);
+							break;
+						case 2:
+							profession.setRealm1(Realm.ESSENCE);
+							break;
+						case 3:
+							profession.setRealm1(Realm.MENTALISM);
+							break;
+					}
+					break;
+				case COLUMN_REALM2:
+					profession.setRealm1(Realm.valueOf(in.nextString()));
 					break;
 				case ProfessionSkillCategoryCostSchema.TABLE_NAME:
 					readSkillCategoryCosts(in, profession);

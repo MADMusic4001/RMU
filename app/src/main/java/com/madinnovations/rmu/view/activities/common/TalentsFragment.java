@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.common;
 
@@ -61,12 +61,17 @@ import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
 import com.madinnovations.rmu.data.entities.common.UnitType;
+import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
+import com.madinnovations.rmu.data.entities.creature.CreatureType;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.CommonFragmentModule;
 import com.madinnovations.rmu.view.utils.CheckBoxUtils;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
+import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,7 +92,7 @@ import static android.view.View.VISIBLE;
  * Handles interactions with the UI for talents.
  */
 public class TalentsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Talent>, CheckBoxUtils.ValuesCallback,
-		EditTextUtils.ValuesCallback {
+		EditTextUtils.ValuesCallback, TextInputLayoutUtils.ValuesCallback {
 	private static final String TAG = "TalentsFragment";
 	@Inject
 	protected AttackRxHandler                          attackRxHandler;
@@ -319,6 +324,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	@Override
 	public void setValueFromEditText(@IdRes int editTextId, String newString) {
+		newString = newString.trim();
 		switch (editTextId) {
 			case R.id.name_edit:
 				currentInstance.setName(newString);
@@ -507,6 +513,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			}
 			else {
 				Integer nullableInteger = null;
+				BigDecimal nullableBigDecimal = null;
 				if(initialValueEdit.getText().length() > 0) {
 					nullableInteger = Integer.valueOf(initialValueEdit.getText().toString());
 				}
@@ -537,11 +544,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 							break;
 					}
 					if(valueEdit.getText().length() > 0) {
-						nullableInteger = Integer.valueOf(valueEdit.getText().toString());
+						nullableBigDecimal = new BigDecimal(valueEdit.getText().toString());
 					}
-					if(nullableInteger == null && parameterRow.getPerValues()[i] != null) {
+					if(nullableBigDecimal == null && parameterRow.getPerValues()[i] != null) {
 						if(i == 0) {
-							parameterRow.setPerValues(new Integer[0]);
+							parameterRow.setPerValues(new BigDecimal[0]);
 							parameterRow.setUnitTypes(new UnitType[0]);
 						}
 						else {
@@ -553,9 +560,9 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					UnitType selectedUnitType = (UnitType)valueSpinner.getSelectedItem();
 					if(nullableInteger != null && selectedUnitType != null) {
 						if (parameterRow.getPerValues().length > i && parameterRow.getUnitTypes().length > i
-								&& (!nullableInteger.equals(parameterRow.getPerValues()[i])
+								&& (!nullableBigDecimal.equals(parameterRow.getPerValues()[i])
 								|| !selectedUnitType.equals(parameterRow.getUnitTypes()[i]))) {
-							parameterRow.getPerValues()[i] = nullableInteger;
+							parameterRow.getPerValues()[i] = nullableBigDecimal;
 							parameterRow.getUnitTypes()[i] = (UnitType)valueSpinner.getSelectedItem();
 							changed = true;
 						}
@@ -922,7 +929,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			if (valuePerSpinner != null) {
 				valuePerSpinner.setAdapter(spinnerAdapter);
 			}
-			Integer value = null;
+			BigDecimal value = null;
 			UnitType unitType = null;
 			if(row.getPerValues().length > i && row.getUnitTypes().length > i) {
 				value = row.getPerValues()[i];
@@ -946,7 +953,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private void initValuePerEdit(final TalentParameterRow row, final int index, final EditText valuePerEdit,
 								  final Spinner valuePerSpinner, ArrayAdapter<UnitType> spinnerAdapter,
 								  final EditText nextValuePerEdit) {
-		Integer value;
+		BigDecimal value;
 		UnitType unitType;
 		if(row.getPerValues().length > index && row.getUnitTypes().length > index) {
 			value = row.getPerValues()[index];
@@ -991,15 +998,15 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					if(nextValuePerEdit != null) {
 						nextValuePerEdit.setVisibility(View.VISIBLE);
 					}
-					Integer newInteger = Integer.valueOf(valuePerEdit.getText().toString());
-					if(row.getPerValues().length > index && !newInteger.equals(row.getPerValues()[index])) {
-						row.getPerValues()[index] = newInteger;
+					BigDecimal newBigDecimal = new BigDecimal(valuePerEdit.getText().toString());
+					if(row.getPerValues().length > index && !newBigDecimal.equals(row.getPerValues()[index])) {
+						row.getPerValues()[index] = newBigDecimal;
 						saveItem();
 					}
 					else if(row.getPerValues().length <= index) {
-						Integer[] valuesPer = new Integer[index + 1];
+						BigDecimal[] valuesPer = new BigDecimal[index + 1];
 						System.arraycopy(row.getPerValues(), 0, valuesPer, 0, row.getPerValues().length);
-						valuesPer[index] = newInteger;
+						valuesPer[index] = newBigDecimal;
 						row.setPerValues(valuesPer);
 
 						UnitType[] unitTypes = new UnitType[index + 1];
@@ -1016,7 +1023,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 						nextValuePerEdit.setVisibility(GONE);
 					}
 					if(index == row.getPerValues().length - 1) {
-						Integer[] valuesPer = new Integer[index];
+						BigDecimal[] valuesPer = new BigDecimal[index];
 						if(index > 0) {
 							System.arraycopy(row.getPerValues(), 0, valuesPer, 0, row.getPerValues().length - 1);
 						}
@@ -1044,7 +1051,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					System.arraycopy(row.getUnitTypes(), 0, unitTypes, 0, row.getUnitTypes().length);
 					unitTypes[index] = (UnitType)valuePerSpinner.getSelectedItem();
 					row.setUnitTypes(unitTypes);
-					Log.d(TAG, "onItemSelected: saving " + currentInstance.print());
 					saveItem();
 				}
 			}
@@ -1073,6 +1079,11 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 					}
 					if (index < newLength) {
 						System.arraycopy(currentInstance.getTalentParameterRows(), position, newRows, index, newLength - index);
+						for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
+							if(entry.getValue() > index) {
+								entry.setValue(entry.getValue() - 1);
+							}
+						}
 					}
 					indexMap.remove(layout);
 				}
@@ -1196,8 +1207,88 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		final Spinner valuePer3Spinner = (Spinner)layout.findViewById(R.id.value_per3_spinner);
 
 		if(talentParameterRow.getParameter().getHandler() != null) {
-			final Collection<DatabaseObject> spinnerValues = parameterCollectionsCache.get(talentParameterRow.getParameter());
-			if(spinnerValues == null) {
+			Collection<DatabaseObject> spinnerValues = parameterCollectionsCache.get(talentParameterRow.getParameter());
+			Integer spellListId = null;
+			DatabaseObject databaseObject = null;
+			switch (talentParameterRow.getParameter().getHandler()) {
+				case SPELL_RX_HANDLER:
+					for(TalentParameterRow row : currentInstance.getTalentParameterRows()) {
+						if(row.getParameter().getHandler() != null &&
+								row.getParameter().getHandler().equals(ReactiveUtils.Handler.SPELL_LIST_RX_HANDLER)) {
+							databaseObject = new SpellList(row.getInitialValue());
+							break;
+						}
+					}
+					break;
+				case CREATURE_TYPE_RX_HANDLER:
+					for(TalentParameterRow row : currentInstance.getTalentParameterRows()) {
+						if(row.getParameter().getHandler() != null &&
+								row.getParameter().getHandler().equals(ReactiveUtils.Handler.CREATURE_CATEGORY_RX_HANDLER)) {
+							databaseObject = new CreatureCategory(row.getInitialValue());
+							break;
+						}
+					}
+					break;
+				case CREATURE_VARIETY_RX_HANDLER:
+					for(TalentParameterRow row : currentInstance.getTalentParameterRows()) {
+						if(row.getParameter().getHandler() != null &&
+								row.getParameter().getHandler().equals(ReactiveUtils.Handler.CREATURE_TYPE_RX_HANDLER)) {
+							databaseObject = new CreatureType(row.getInitialValue());
+							break;
+						}
+					}
+					break;
+			}
+			if(databaseObject != null) {
+				reactiveUtils.getGetSingleParameterObservable(talentParameterRow.getParameter().getHandler(),
+															  databaseObject)
+						.subscribe(new Subscriber<Object>() {
+							@Override
+							public void onCompleted() {}
+							@Override
+							public void onError(Throwable e) {
+								Log.e(TAG, "Exception caught getting parameter values.", e);
+							}
+							@Override
+							public void onNext(Object results) {
+								if(talentParameterRow.getParameter().getHandler()
+										== ReactiveUtils.Handler.SPECIALIZATION_RX_HANDLER) {
+									Collection<DatabaseObject> specializationResults = new ArrayList<>();
+									for(Skill skill : (Collection<Skill>)results) {
+										for(Specialization specialization : skill.getSpecializations()) {
+											specializationResults.add(specialization);
+										}
+									}
+									parameterCollectionsCache.put(talentParameterRow.getParameter(), specializationResults);
+								}
+								else {
+									parameterCollectionsCache.put(talentParameterRow.getParameter(),
+																  (Collection<DatabaseObject>) results);
+								}
+								valuesAdapter.clear();
+								valuesAdapter.add(choice);
+								valuesAdapter.addAll(parameterCollectionsCache.get(talentParameterRow.getParameter()));
+								String className = null;
+								for (DatabaseObject databaseObject : parameterCollectionsCache.get(
+										talentParameterRow.getParameter())) {
+									if(className == null) {
+										className = databaseObject.getClass().getSimpleName() + ":";
+									}
+									if(talentParameterRow.getInitialValue() == null) {
+										valuesSpinner.setSelection(valuesAdapter.getPosition(choice));
+									}
+									else if (databaseObject.getId() == talentParameterRow.getInitialValue()) {
+										valuesSpinner.setSelection(valuesAdapter.getPosition(databaseObject));
+										break;
+									}
+								}
+								valuesSpinnerLabel.setText(className);
+								setValuesSpinnerSelection(talentParameterRow, valuesSpinner, valuesAdapter,
+														  parameterCollectionsCache.get(talentParameterRow.getParameter()));
+							}
+						});
+			}
+			else if(spinnerValues == null) {
 				reactiveUtils.getGetAllObservable(talentParameterRow.getParameter().getHandler())
 						.subscribe(new Subscriber<Object>() {
 							@Override
@@ -1240,6 +1331,8 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 									}
 								}
 								valuesSpinnerLabel.setText(className);
+								setValuesSpinnerSelection(talentParameterRow, valuesSpinner, valuesAdapter,
+														  parameterCollectionsCache.get(talentParameterRow.getParameter()));
 							}
 						});
 			}
@@ -1247,7 +1340,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				valuesAdapter.clear();
 				valuesAdapter.add(choice);
 				String className = null;
-				DatabaseObject databaseObject = null;
+				databaseObject = null;
 				for(DatabaseObject databaseObject1 : spinnerValues) {
 					databaseObject = databaseObject1;
 				}
@@ -1256,6 +1349,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				}
 				valuesSpinnerLabel.setText(className);
 				valuesAdapter.addAll(spinnerValues);
+				setValuesSpinnerSelection(talentParameterRow, valuesSpinner, valuesAdapter, spinnerValues);
 			}
 			valuesSpinnerLabel.setVisibility(View.VISIBLE);
 			valuesSpinner.setVisibility(View.VISIBLE);
@@ -1330,7 +1424,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				valuePer2Spinner.setSelection(((ArrayAdapter<UnitType>)valuePer1Spinner.getAdapter()).getPosition(
 						talentParameterRow.getUnitTypes()[1]));
 			}
-			else {
+		else {
 				valuePer2Edit.setText(null);
 				valuePer2Spinner.setVisibility(GONE);
 			}
@@ -1341,7 +1435,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 				valuePer3Edit.setText(String.valueOf(talentParameterRow.getPerValues()[2]));
 				valuePer3Spinner.setVisibility(View.VISIBLE);
 				valuePer3Spinner.setSelection(((ArrayAdapter<UnitType>)valuePer1Spinner.getAdapter()).getPosition(
-						talentParameterRow.getUnitTypes()[2]));
+					talentParameterRow.getUnitTypes()[2]));
 			}
 			else {
 				valuePer3Edit.setText(null);
@@ -1353,6 +1447,17 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 			initialValueEdit.setVisibility(View.VISIBLE);
 		}
 	}
-	// </editor-fold>
 
+	private void setValuesSpinnerSelection(TalentParameterRow talentParameterRow, final Spinner valuesSpinner,
+										   final ArrayAdapter<Object> valuesAdapter, Collection<DatabaseObject> spinnerValues) {
+		if(talentParameterRow.getInitialValue() != null) {
+			for (DatabaseObject object : spinnerValues) {
+				if (object.getId() == talentParameterRow.getInitialValue()) {
+					valuesSpinner.setSelection(valuesAdapter.getPosition(object));
+					break;
+				}
+			}
+		}
+	}
+	// </editor-fold>
 }

@@ -134,6 +134,12 @@ public class TalentTierListAdapter extends ArrayAdapter<TalentInstance> {
 			}
 		}
 
+		rowView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				return false;
+			}
+		});
 		return rowView;
 	}
 

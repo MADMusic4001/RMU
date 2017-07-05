@@ -17,7 +17,7 @@
  *
  */
 
-package com.madinnovations.rmu.data.entities.spells;
+package com.madinnovations.rmu.data.entities.object;
 
 import android.support.annotation.StringRes;
 
@@ -25,42 +25,29 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * Enumeration of all magical realms.
+ * Enumeration of all of the available poison types.
  */
-public enum Realm {
-	CHANNELING(R.string.enum_realm_channeling),
-	ESSENCE(R.string.enum_realm_essence),
-	MENTALISM(R.string.enum_realm_mentalism);
+public enum PoisonType {
+	CIRCULATORY(R.string.enum_poison_circulatory),
+	MUSCLE(R.string.enum_poison_muscle),
+	NERVE(R.string.enum_poison_nerve),
+	RESPIRATORY(R.string.enum_poison_respiratory);
 
-	private @StringRes int textResourceId;
+	private @StringRes
+	int textResourceId;
 
 	/**
 	 * Creates a new Material instance
 	 *
 	 * @param textResourceId  the string resource ID for the material's name
 	 */
-	Realm(int textResourceId) {
+	PoisonType(int textResourceId) {
 		this.textResourceId = textResourceId;
 	}
 
 	@Override
 	public String toString() {
 		return RMUApp.getResourceUtils().getString(textResourceId);
-	}
-
-	/**
-	 * Gets the Realm with the given text value.
-	 *
-	 * @param textValue  the textValue of the desired Realm instance
-	 * @return the Realm instance with the given textValue or null if not found.
-	 */
-	public static Realm getRealmWithName(String textValue) {
-		for(Realm realm : Realm.values()) {
-			if(realm.toString().equals(textValue)) {
-				return realm;
-			}
-		}
-		return null;
 	}
 
 	/**

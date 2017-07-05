@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.common;
 
@@ -20,11 +20,29 @@ import android.support.annotation.StringRes;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
+import com.madinnovations.rmu.data.entities.creature.Extension;
+import com.madinnovations.rmu.data.entities.object.Material;
+import com.madinnovations.rmu.data.entities.object.PoisonType;
 import com.madinnovations.rmu.data.entities.spells.Element;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUApp;
 
-import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.*;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.ATTACK_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.COMBAT_TRAINING_SKILL_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_ARCHETYPE_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_CATEGORY_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_TYPE_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_VARIETY_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CRITICAL_TYPE_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.DISEASE_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.MELEE_ATTACK_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.RANGE_ATTACK_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.REALM_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SIZE_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SKILL_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SPECIALIZATION_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SPELL_LIST_RX_HANDLER;
+import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SPELL_RX_HANDLER;
 
 /**
  * Adjustable Attributes
@@ -58,6 +76,7 @@ public enum Parameter {
 	DEFENSIVE_BONUS(R.string.enum_parameter_defensive_bonus, null, null),
 	DEFENSIVE_SIZE(R.string.enum_parameter_defensive_size, SIZE_RX_HANDLER, null),
 	DESTINY_SENSE(R.string.enum_parameter_destiny_sense, null, DestinySense.values()),
+	DICE(R.string.enum_parameter_dice, null, Dice.values()),
 	DISEASE(R.string.enum_parameter_disease, DISEASE_RX_HANDLER, null),
 	DURATION(R.string.enum_parameter_duration, null, null),
 	EFFECT(R.string.enum_parameter_effect, null, null),
@@ -69,21 +88,27 @@ public enum Parameter {
 	ENCUMBRANCE_PENALTY(R.string.enum_parameter_encumbrance_penalty, null, null),
 	ENDURANCE(R.string.enum_parameter_endurance, null, null),
 	ENTER_STATE(R.string.enum_parameter_enter_state, null, StateType.values()),
+	EXTENSION(R.string.enum_parameter_extension, null, Extension.values()),
 	FATIGUE_PENALTY(R.string.enum_parameter_fatigue_penalty, null, null),
 	FEAR_RR(R.string.enum_parameter_fear_rr, null, Resistance.getFearResistances()),
 	FOLLOWER_FEAR_RR(R.string.enum_parameter_follower_fear_rr, null, Resistance.getFearResistances()),
 	FUMBLE_RANGE(R.string.enum_parameter_fumble_range, null, null),
+	HEIGHT(R.string.enum_parameter_height, null, null),
+	HIT_POINTS(R.string.enum_parameter_hit_points, null, null),
 	HOURS_REST(R.string.enum_parameter_hours_rest, null, null),
 	HP_RECOVERY_RATE(R.string.enum_parameter_recovery_rate, null, null),
 	HP_RECOVERY_RATE_MULT(R.string.enum_parameter_recovery_rate_mult, null, null),
 	INITIATIVE(R.string.enum_parameter_initiative, null, null),
 	INJURY_PENALTY(R.string.enum_parameter_injury_penalty, null, null),
 	INTERVAL(R.string.enum_parameter_interval, null, null),
+	LEVEL(R.string.enum_parameter_level, null, null),
 	LIGHTING_PENALTY(R.string.enum_parameter_lighting_penalty, null, null),
 	MAGICAL_RR(R.string.enum_parameter_magical_rr, null, Resistance.getMagicalResistances()),
 	MANEUVER_ROLL(R.string.enum_parameter_maneuver_roll, null, null),
+	MATERIAL(R.string.enum_parameter_material, null, Material.values()),
 	MELEE_ATTACK(R.string.enum_parameter_melee_attack, MELEE_ATTACK_RX_HANDLER, null),
 	MOVE(R.string.enum_parameter_move, null, null),
+	MULTIPLIER(R.string.enum_parameter_multiplier, null, null),
 	NUMBER(R.string.enum_parameter_number, null, null),
 	OFFENSIVE_BONUS(R.string.enum_parameter_offensive_bonus, null, null),
 	OFF_HAND_USAGE_PENALTY(R.string.enum_parameter_off_hand_usage_penalty, null, null),
@@ -93,13 +118,15 @@ public enum Parameter {
 	PENALTY(R.string.enum_parameter_penalty, null, null),
 	PERCENT(R.string.enum_parameter_percent, null, null),
 	PHYSICAL_RR(R.string.enum_parameter_physical_rr, null, Resistance.getPhysicalResistances()),
-	POISON(R.string.enum_parameter_poison, null, null),
-	RADIUS(R.string.enum_parameter_radius, null, null),
+	POISON(R.string.enum_parameter_poison, null, PoisonType.values()),
+	POWER_POINTS(R.string.enum_parameter_power_points, null, null),
+	RADIUS(R.string.enum_parameter_radius_feet, null, null),
 	RANGE(R.string.enum_parameter_range, null, null),
 	RANGE_ATTACK(R.string.enum_parameter_range_attack, RANGE_ATTACK_RX_HANDLER, null),
 	RANGE_PENALTY(R.string.enum_parameter_range_penalty, null, null),
 	RANK_BONUS(R.string.enum_parameter_rank_bonus, null, null),
 	RE_ROLL_CRITICAL(R.string.enum_parameter_re_roll_critical, null, null),
+	REALM(R.string.enum_parameter_realm, null, Realm.values()),
 	RR_MOD(R.string.enum_parameter_rr_mod, null, null),
 	SENSE(R.string.enum_parameter_sense, null, Sense.getNoChoiceSenses()),
 	SIZE_DIFFERENCE(R.string.enum_parameter_size_difference, null, null),
@@ -119,9 +146,13 @@ public enum Parameter {
 	SPELL_TARGETS(R.string.enum_parameter_spell_targets, null, null),
 	STAT(R.string.enum_parameter_stat, null, Statistic.getAllStats()),
 	TERRAIN(R.string.enum_parameter_terrain, null, Terrain.values()),
+	TIME_DAYS(R.string.enum_parameter_time_days, null, null),
+	TIME_MINUTES(R.string.enum_parameter_time_minutes, null, null),
+	TIME_ROUNDS(R.string.enum_parameter_time_rounds, null, null),
 	TOUCH_RANGE(R.string.enum_parameter_touch_range, null, null),
 	USES(R.string.enum_parameter_uses, null, null),
-	VISION_RANGE(R.string.enum_parameter_vision_range, null, null);
+	VISION_RANGE(R.string.enum_parameter_vision_range, null, null),
+	VOLUME(R.string.enum_parameter_volume, null, null);
 
 	private @StringRes int        textResourceId;
 	private ReactiveUtils.Handler handler;

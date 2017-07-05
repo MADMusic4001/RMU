@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.creature;
 
+import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 
 import java.util.Collection;
@@ -78,4 +79,12 @@ public interface CreatureTypeDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves a collection of all CreatureType instances in the give CreatureCategory.
+	 *
+	 * @param creatureCategory  the CreatureCategory that all the CreatureTypes retrieved will be part of.
+	 * @return a collection of all CreatureType instances in the give CreatureCategory.
+	 */
+	public List<CreatureType> getTypesForCategory(CreatureCategory creatureCategory);
 }

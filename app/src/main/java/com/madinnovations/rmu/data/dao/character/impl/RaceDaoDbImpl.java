@@ -39,7 +39,7 @@ import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -369,17 +369,17 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return values;
 	}
 
-	private Map<Realm, Short> getRealmResistanceModifiers(int id) {
+	private Map<RealmDBO, Short> getRealmResistanceModifiers(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
 
 		Cursor cursor = super.query(RaceRealmRRModSchema.TABLE_NAME, RaceRealmRRModSchema.COLUMNS, selection,
 									selectionArgs, RaceRealmRRModSchema.COLUMN_REALM_ID);
-		Map<Realm, Short> map = new HashMap<>(cursor.getCount());
+		Map<RealmDBO, Short> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_REALM_ID));
-			Realm instance = realmDao.getById(mappedId);
+			RealmDBO instance = realmDao.getById(mappedId);
 			if(instance != null) {
 				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_MODIFIER)));
 			}
@@ -390,21 +390,21 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return map;
 	}
 
-	private boolean saveRealmRRMods(SQLiteDatabase db, int raceId, Map<Realm, Short> realmRRMods) {
+	private boolean saveRealmRRMods(SQLiteDatabase db, int raceId, Map<RealmDBO, Short> realmRRMods) {
 		boolean result = true;
 		final String selectionArgs[] = {String.valueOf(raceId) };
 		final String selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
 
 		db.delete(RaceRealmRRModSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Realm, Short> entry : realmRRMods.entrySet()) {
+		for(Map.Entry<RealmDBO, Short> entry : realmRRMods.entrySet()) {
 			result &= (db.insertWithOnConflict(RaceRealmRRModSchema.TABLE_NAME, null, getRaceRealmRRModValues(raceId, entry),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
 
-	private ContentValues getRaceRealmRRModValues(int raceId, Map.Entry<Realm, Short> realmModEntry) {
+	private ContentValues getRaceRealmRRModValues(int raceId, Map.Entry<RealmDBO, Short> realmModEntry) {
 		ContentValues values = new ContentValues(3);
 		values.put(RaceRealmRRModSchema.COLUMN_RACE_ID, raceId);
 		values.put(RaceRealmRRModSchema.COLUMN_REALM_ID, realmModEntry.getKey().getId());

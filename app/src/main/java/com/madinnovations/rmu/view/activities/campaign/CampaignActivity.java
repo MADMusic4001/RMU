@@ -307,46 +307,52 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 
 	@Override
 	public void onCampaignSelected(Campaign campaign) {
-		File dir = fileRxHandler.getImportExportDir();
-		final File exportFile = new File(dir, campaign.getName().replace(" ", "_") + RMU_CAMPAIGN_FILE_EXTENSION);
-		importExportCampaignRxHandler.exportDatabase(exportFile, campaign)
-				.subscribe(new Subscriber<Integer>() {
-					Toast toast = null;
-					@Override
-					public void onStart() {
-						request(1);
-					}
-					@Override
-					public void onCompleted() {
-						if (toast != null) {
-							toast.cancel();
+		if(campaign != null) {
+			File dir = fileRxHandler.getImportExportDir();
+			final File exportFile = new File(dir, campaign.getName().replace(" ", "_") + RMU_CAMPAIGN_FILE_EXTENSION);
+			importExportCampaignRxHandler.exportDatabase(exportFile, campaign)
+					.subscribe(new Subscriber<Integer>() {
+						Toast toast = null;
+
+						@Override
+						public void onStart() {
+							request(1);
 						}
-						Toast.makeText(getApplication(),
-									   String.format(getString(R.string.toast_db_exported),
-													 exportFile.getAbsolutePath()),
-									   Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onError(Throwable e) {
-						Log.e("CampaignActivity", "Error occurred exporting database.", e);
-						if (toast != null) {
-							toast.cancel();
+
+						@Override
+						public void onCompleted() {
+							if (toast != null) {
+								toast.cancel();
+							}
+							Toast.makeText(getApplication(),
+										   String.format(getString(R.string.toast_db_exported),
+														 exportFile.getAbsolutePath()),
+										   Toast.LENGTH_SHORT).show();
 						}
-						Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
-									   Toast.LENGTH_SHORT).show();
-					}
-					@Override
-					public void onNext(Integer percentComplete) {
-						if (toast != null) {
-							toast.cancel();
+
+						@Override
+						public void onError(Throwable e) {
+							Log.e("CampaignActivity", "Error occurred exporting database.", e);
+							if (toast != null) {
+								toast.cancel();
+							}
+							Toast.makeText(getApplication(), getString(R.string.toast_db_export_failed),
+										   Toast.LENGTH_SHORT).show();
 						}
-						toast = Toast.makeText(getApplication(),
-											   String.format(getString(R.string.export_status), percentComplete),
-											   Toast.LENGTH_SHORT);
-						toast.show();
-						request(1);
-					}
-				});
+
+						@Override
+						public void onNext(Integer percentComplete) {
+							if (toast != null) {
+								toast.cancel();
+							}
+							toast = Toast.makeText(getApplication(),
+												   String.format(getString(R.string.export_status), percentComplete),
+												   Toast.LENGTH_SHORT);
+							toast.show();
+							request(1);
+						}
+					});
+		}
 	}
 
 	public void showAbout() {

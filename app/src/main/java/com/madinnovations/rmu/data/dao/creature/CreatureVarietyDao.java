@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.creature;
 
+import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 
 import java.util.Collection;
@@ -78,4 +79,12 @@ public interface CreatureVarietyDao {
 	 * @return the number of instances that were deleted.
 	 */
 	public int deleteAll();
+
+	/**
+	 * Retrieves all CreatureVariety objects from persistent storage that are of the given CreatureType.
+	 *
+	 * @param creatureType  the CreatureType that all the instances are part of
+	 * @return  a List containing all CreatureVariety objects currently in persistent storage of the given CreatureType.
+	 */
+	public List<CreatureVariety> getVarietiesForType(CreatureType creatureType);
 }

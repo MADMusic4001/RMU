@@ -42,7 +42,7 @@ import android.widget.Toast;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.SpellFragmentModule;
@@ -58,18 +58,18 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for skill categories.
  */
-public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetValues<Realm> {
+public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetValues<RealmDBO> {
 	private static final String TAG = "RealmsFragment";
 	@Inject
-	protected RealmRxHandler             realmRxHandler;
-	private   ArrayAdapter<Statistic>         statSpinnerAdapter;
-	private   TwoFieldListAdapter<Realm> listAdapter;
-	private   ListView                   listView;
-	private   EditText                   nameEdit;
-	private   EditText                   descriptionEdit;
-	private   Spinner                    statSpinner;
-	private Realm currentInstance = new Realm();
-	private boolean isNew = true;
+	protected RealmRxHandler                realmRxHandler;
+	private   ArrayAdapter<Statistic>       statSpinnerAdapter;
+	private   TwoFieldListAdapter<RealmDBO> listAdapter;
+	private   ListView                      listView;
+	private   EditText                      nameEdit;
+	private   EditText                      descriptionEdit;
+	private   Spinner                       statSpinner;
+	private RealmDBO currentInstance = new RealmDBO();
+	private boolean  isNew           = true;
 
 	@Nullable
 	@Override
@@ -113,7 +113,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			if(copyViewsToItem()) {
 				saveItem();
 			}
-			currentInstance = new Realm();
+			currentInstance = new RealmDBO();
 			isNew = true;
 			copyItemToViews();
 			listView.clearChoices();
@@ -131,7 +131,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final Realm realm;
+		final RealmDBO realmDBO;
 
 		AdapterView.AdapterContextMenuInfo info =
 				(AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
@@ -141,16 +141,16 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = new Realm();
+				currentInstance = new RealmDBO();
 				isNew = true;
 				copyItemToViews();
 				listView.clearChoices();
 				listAdapter.notifyDataSetChanged();
 				return true;
 			case R.id.context_delete_realm:
-				realm = (Realm) listView.getItemAtPosition(info.position);
-				if(realm != null) {
-					deleteItem(realm);
+				realmDBO = (RealmDBO) listView.getItemAtPosition(info.position);
+				if(realmDBO != null) {
+					deleteItem(realmDBO);
 					return true;
 				}
 				break;
@@ -222,7 +222,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 			realmRxHandler.save(currentInstance)
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribeOn(Schedulers.io())
-					.subscribe(new Subscriber<Realm>() {
+					.subscribe(new Subscriber<RealmDBO>() {
 						@Override
 						public void onCompleted() {}
 						@Override
@@ -231,7 +231,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 							Toast.makeText(getActivity(), R.string.toast_realm_save_failed, Toast.LENGTH_SHORT).show();
 						}
 						@Override
-						public void onNext(Realm savedItem) {
+						public void onNext(RealmDBO savedItem) {
 							if (wasNew) {
 								listAdapter.add(savedItem);
 								if(savedItem == currentInstance) {
@@ -256,7 +256,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 		}
 	}
 
-	private void deleteItem(@NonNull final Realm item) {
+	private void deleteItem(@NonNull final RealmDBO item) {
 		realmRxHandler.deleteById(item.getId())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
@@ -283,7 +283,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								currentInstance = listAdapter.getItem(position);
 							}
 							else {
-								currentInstance = new Realm();
+								currentInstance = new RealmDBO();
 								isNew = true;
 							}
 							copyItemToViews();
@@ -393,7 +393,7 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 
 		realmRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Realm>>() {
+				.subscribe(new Subscriber<Collection<RealmDBO>>() {
 					@Override
 					public void onCompleted() {
 						if(listAdapter.getCount() > 0) {
@@ -413,12 +413,12 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 								Toast.LENGTH_SHORT).show();
 					}
 					@Override
-					public void onNext(Collection<Realm> realms) {
+					public void onNext(Collection<RealmDBO> realmDBOs) {
 						listAdapter.clear();
-						listAdapter.addAll(realms);
+						listAdapter.addAll(realmDBOs);
 						listAdapter.notifyDataSetChanged();
 						String toastString;
-						toastString = String.format(getString(R.string.toast_realms_loaded), realms.size());
+						toastString = String.format(getString(R.string.toast_realms_loaded), realmDBOs.size());
 						Toast.makeText(RealmsFragment.this.getActivity(), toastString, Toast.LENGTH_SHORT).show();
 					}
 				});
@@ -429,10 +429,10 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 				if(copyViewsToItem()) {
 					saveItem();
 				}
-				currentInstance = (Realm) listView.getItemAtPosition(position);
+				currentInstance = (RealmDBO) listView.getItemAtPosition(position);
 				isNew = false;
 				if (currentInstance == null) {
-					currentInstance = new Realm();
+					currentInstance = new RealmDBO();
 					isNew = true;
 				}
 				copyItemToViews();
@@ -442,12 +442,12 @@ public class RealmsFragment extends Fragment implements TwoFieldListAdapter.GetV
 	}
 
 	@Override
-	public CharSequence getField1Value(Realm realm) {
-		return realm.getName();
+	public CharSequence getField1Value(RealmDBO realmDBO) {
+		return realmDBO.getName();
 	}
 
 	@Override
-	public CharSequence getField2Value(Realm realm) {
-		return realm.getDescription();
+	public CharSequence getField2Value(RealmDBO realmDBO) {
+		return realmDBO.getDescription();
 	}
 }

@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.creature;
 
@@ -21,6 +21,7 @@ import android.content.ClipDescription;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -34,6 +35,7 @@ import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Specialization;
@@ -76,9 +78,9 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 	private   RacialStatBonusListAdapter racialStatBonusListAdapter;
 	private   ArrayAdapter<SkillBonus>   skillsListAdapter;
 	private   SkillBonusListAdapter      skillBonusesListAdapter;
-	private   ListView                   racialStatBonusList;
 	private   ListView                   skillsList;
 	private   ListView                   skillBonusesList;
+	private   TextInputEditText          currentDpEditText;
 	private   CreatureVarietiesFragment  varietiesFragment;
 	private   StatBonusComparator        statBonusComparator = new StatBonusComparator();
 	private   SkillBonusComparator       skillBonusComparator = new SkillBonusComparator();
@@ -102,6 +104,8 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 
 		View layout = inflater.inflate(R.layout.creature_variety_stats_and_skills_page, container, false);
 
+		currentDpEditText = (TextInputEditText)layout.findViewById(R.id.current_dp_text);
+		currentDpEditText.setText(String.valueOf(varietiesFragment.getCurrentInstance().getLeftoverDP()));
 		initRacialStatBonusList(layout);
 		initSkillsList(layout);
 		initSkillBonusesList(layout);
@@ -147,7 +151,6 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 	public boolean copyViewsToItem() {
 		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
 		boolean changed = false;
-		SparseBooleanArray checkedItemPositions;
 		RacialStatBonus racialStatBonus;
 		Map<Statistic, Short> newStatBonusMap;
 		List<SkillBonus> newSkillList;
@@ -175,34 +178,27 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 		creatureVariety.setSkillBonusesList(newSkillList);
 
 		if(this.getView() != null) {
-			checkedItemPositions = racialStatBonusList.getCheckedItemPositions();
-			if (checkedItemPositions != null) {
-				newStatBonusMap = new HashMap<>(checkedItemPositions.size());
-				for (int i = 0; i < checkedItemPositions.size(); i++) {
-					racialStatBonus = racialStatBonusListAdapter.getItem(checkedItemPositions.keyAt(i));
-					if(racialStatBonus != null) {
-						if (creatureVariety.getRacialStatBonuses().containsKey(racialStatBonus.getStat())) {
-							if (!creatureVariety
-									.getRacialStatBonuses()
-									.get(racialStatBonus.getStat())
-									.equals(racialStatBonus.getBonus())) {
-								changed = true;
-							}
-							creatureVariety.getRacialStatBonuses().remove(racialStatBonus.getStat());
-						} else {
+			Map<Statistic, Short> oldStatBonusMap = creatureVariety.getRacialStatBonuses();
+			newStatBonusMap = new HashMap<>(racialStatBonusListAdapter.getCount());
+			for (int i = 0; i < racialStatBonusListAdapter.getCount(); i++) {
+				racialStatBonus = racialStatBonusListAdapter.getItem(i);
+				if(racialStatBonus != null) {
+					if (oldStatBonusMap.containsKey(racialStatBonus.getStat())) {
+						if (!oldStatBonusMap.get(racialStatBonus.getStat()).equals(racialStatBonus.getBonus())) {
 							changed = true;
 						}
-						newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
+						oldStatBonusMap.remove(racialStatBonus.getStat());
 					}
+					else {
+						changed = true;
+					}
+					newStatBonusMap.put(racialStatBonus.getStat(), racialStatBonus.getBonus());
 				}
-				if (!creatureVariety.getRacialStatBonuses().isEmpty() && !newStatBonusMap.isEmpty()) {
-					changed = true;
-				}
-				creatureVariety.setRacialStatBonuses(newStatBonusMap);
 			}
-			else {
-				creatureVariety.getRacialStatBonuses().clear();
+			if (!oldStatBonusMap.isEmpty() && !newStatBonusMap.isEmpty()) {
+				changed = true;
 			}
+			creatureVariety.setRacialStatBonuses(newStatBonusMap);
 		}
 
 		return changed;
@@ -210,6 +206,8 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 
 	public void copyItemToViews() {
 		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
+
+		currentDpEditText.setText(String.valueOf(varietiesFragment.getCurrentInstance().getLeftoverDP()));
 
 		racialStatBonusListAdapter.clear();
 		for(Statistic statistic : Statistic.getAllStats()) {
@@ -235,7 +233,7 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 	}
 
 	private void initRacialStatBonusList(View layout) {
-		racialStatBonusList = (ListView) layout.findViewById(R.id.racial_stat_bonuses_list);
+		ListView racialStatBonusList = (ListView) layout.findViewById(R.id.racial_stat_bonuses_list);
 		racialStatBonusListAdapter = new RacialStatBonusListAdapter(this.getActivity(), this);
 		racialStatBonusList.setAdapter(racialStatBonusListAdapter);
 
@@ -322,33 +320,31 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 
 				SparseBooleanArray checkedItems = skillsList.getCheckedItemPositions();
 				List<View> checkedViews = new ArrayList<>(skillsList.getCheckedItemCount());
+				List<DatabaseObject> skillList = new ArrayList<>();
 				for(int i = 0; i < checkedItems.size(); i++) {
 					if(checkedItems.valueAt(i)) {
 						int currentPosition = checkedItems.keyAt(i);
 						SkillBonus skillBonus = skillsListAdapter.getItem(currentPosition);
 						if (skillBonus != null) {
 							String typeString = null;
-							String idString = null;
 							if (skillBonus.getSkill() != null) {
-								idString = String.valueOf(skillBonus.getSkill().getId());
+								skillList.add(skillBonus.getSkill());
 								typeString = SKILL_TYPE_STRING;
 							}
 							else if (skillBonus.getSpecialization() != null) {
-								idString = String.valueOf(skillBonus.getSpecialization().getId());
+								skillList.add(skillBonus.getSpecialization());
 								typeString = SPECIALIZATION_TYPE_STRING;
 							}
 							else if (skillBonus.getSpellList() != null) {
-								idString = String.valueOf(skillBonus.getSpellList().getId());
+								skillList.add(skillBonus.getSpellList());
 								typeString = SPELL_LIST_TYPE_STRING;
 							}
 							if (dragData == null) {
 								dragData = new ClipData(DRAG_ADD_SKILL, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
 														new ClipData.Item(typeString));
-								dragData.addItem(new ClipData.Item(idString));
 							}
 							else {
 								dragData.addItem(new ClipData.Item(typeString));
-								dragData.addItem(new ClipData.Item(idString));
 							}
 							checkedViews.add(getViewByPosition(checkedItems.keyAt(i), skillsList));
 						}
@@ -357,11 +353,11 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
+					view.startDragAndDrop(dragData, myShadow, skillList, 0);
 				}
 				else {
 					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
+					view.startDrag(dragData, myShadow, skillList, 0);
 				}
 				return false;
 			}
@@ -393,32 +389,30 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 
 				SparseBooleanArray checkedItems = skillBonusesList.getCheckedItemPositions();
 				List<View> checkedViews = new ArrayList<>(skillBonusesList.getCheckedItemCount());
+				List<DatabaseObject> skillList = new ArrayList<>();
 				for(int i = 0; i < checkedItems.size(); i++) {
 					int currentPosition = checkedItems.keyAt(i);
 					SkillBonus skillBonus = skillBonusesListAdapter.getItem(currentPosition);
 					if (checkedItems.valueAt(i) && skillBonus != null) {
 						String typeString = null;
-						String idString = null;
 						if(skillBonus.getSkill() != null) {
 							typeString = SKILL_TYPE_STRING;
-							idString = String.valueOf(skillBonus.getSkill().getId());
+							skillList.add(skillBonus.getSkill());
 						}
 						else if(skillBonus.getSpecialization() != null) {
 							typeString = SPECIALIZATION_TYPE_STRING;
-							idString = String.valueOf(skillBonus.getSpecialization().getId());
+							skillList.add(skillBonus.getSpecialization());
 						}
 						else if(skillBonus.getSpellList() != null) {
 							typeString = SPELL_LIST_TYPE_STRING;
-							idString = String.valueOf(skillBonus.getSpellList().getId());
+							skillList.add(skillBonus.getSpellList());
 						}
 						if (dragData == null) {
 							dragData = new ClipData(DRAG_REMOVE_SKILL, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
 													new ClipData.Item(typeString));
-							dragData.addItem(new ClipData.Item(idString));
 						}
 						else {
 							dragData.addItem(new ClipData.Item(typeString));
-							dragData.addItem(new ClipData.Item(idString));
 						}
 						checkedViews.add(getViewByPosition(checkedItems.keyAt(i), skillBonusesList));
 					}
@@ -426,11 +420,11 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 				View.DragShadowBuilder myShadow = new RMUDragShadowBuilder(checkedViews);
 
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					view.startDragAndDrop(dragData, myShadow, null, 0);
+					view.startDragAndDrop(dragData, myShadow, skillList, 0);
 				}
 				else {
 					//noinspection deprecation
-					view.startDrag(dragData, myShadow, null, 0);
+					view.startDrag(dragData, myShadow, skillList, 0);
 				}
 				return false;
 			}
@@ -457,66 +451,63 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 	}
 
 	protected class SkillBonusDragListener implements View.OnDragListener {
-		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
-		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
+		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_target_background, null);
+		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
+																   R.drawable.drag_hover_background, null);
 		private Drawable normalShape = skillBonusesList.getBackground();
 
 		@Override
 		public boolean onDrag(View v, DragEvent event) {
 			final int action = event.getAction();
+			boolean result = false;
 
 			switch(action) {
 				case DragEvent.ACTION_DRAG_STARTED:
 					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(targetShape);
 						v.invalidate();
-						break;
+						result = true;
 					}
-					return false;
+					break;
 				case DragEvent.ACTION_DRAG_ENTERED:
 					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(hoverShape);
 						v.invalidate();
-					}
-					else {
-						return false;
+						result = true;
 					}
 					break;
 				case DragEvent.ACTION_DRAG_LOCATION:
+					result = true;
 					break;
 				case DragEvent.ACTION_DRAG_EXITED:
 					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
 						v.setBackground(targetShape);
 						v.invalidate();
-					}
-					else {
-						return false;
+						result = true;
 					}
 					break;
 				case DragEvent.ACTION_DROP:
 					if(event.getClipDescription() != null && DRAG_ADD_SKILL.equals(event.getClipDescription().getLabel())) {
 						boolean changed = false;
-						for(int i = 0; i < event.getClipData().getItemCount(); i += 2) {
-							String type = event.getClipData().getItemAt(i).getText().toString();
-							int id = Integer.valueOf(event.getClipData().getItemAt(i+1).getText().toString());
+						//noinspection unchecked
+						for(DatabaseObject databaseObject : (List<DatabaseObject>)event.getLocalState()) {
 							SkillBonus skillBonus = new SkillBonus();
-							if(SKILL_TYPE_STRING.equals(type)) {
-								skillBonus.setSkill(new Skill(id));
+							if(databaseObject instanceof Skill) {
+								skillBonus.setSkill((Skill)databaseObject);
 							}
-							else if (SPECIALIZATION_TYPE_STRING.equals(type)) {
-								skillBonus.setSpecialization(new Specialization(id));
+							else if(databaseObject instanceof Specialization) {
+								skillBonus.setSpecialization((Specialization)databaseObject);
 							}
-							else if (SPELL_LIST_TYPE_STRING.equals(type)) {
-								skillBonus.setSpellList(new SpellList(id));
+							else if(databaseObject instanceof SpellList) {
+								skillBonus.setSpellList((SpellList)databaseObject);
 							}
 							int position = skillsListAdapter.getPosition(skillBonus);
 							if(position != AdapterView.INVALID_POSITION) {
 								skillBonus = skillsListAdapter.getItem(position);
-								if (skillBonusesListAdapter.getPosition(skillBonus) == AdapterView.INVALID_POSITION) {
-									skillBonusesListAdapter.add(skillBonus);
-									varietiesFragment.getCurrentInstance().getSkillBonusesList().add(new SkillBonus(skillBonus));
-									changed = true;
-								}
+								skillBonusesListAdapter.add(skillBonus);
+								varietiesFragment.getCurrentInstance().getSkillBonusesList().add(new SkillBonus(skillBonus));
+								changed = true;
 							}
 						}
 						if(changed) {
@@ -526,18 +517,17 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 						}
 						v.setBackground(normalShape);
 						v.invalidate();
-					}
-					else {
-						return false;
+						result = true;
 					}
 					break;
 				case DragEvent.ACTION_DRAG_ENDED:
 					v.setBackground(normalShape);
 					v.invalidate();
+					result = true;
 					break;
 			}
 
-			return true;
+			return result;
 		}
 	}
 
@@ -582,22 +572,17 @@ public class CreatureVarietyStatsAndSkillsPageFragment extends Fragment implemen
 					break;
 				case DragEvent.ACTION_DROP:
 					if(event.getClipDescription() != null && DRAG_REMOVE_SKILL.equals(event.getClipDescription().getLabel())) {
-						for (int i = 0; i < event.getClipData().getItemCount(); i+=2) {
-							// We just send skill ID but since that is the only field used in the Skill.equals method and skill is the
-							// only field used in the SkillBonus.equals method we can create a temporary Skill and set its id field then
-							// create a new SkillBonus and set its skill field then use the new SkillBonus to find the position of the
-							// complete SkillBonus instance in the adapter
-							String type = event.getClipData().getItemAt(i).getText().toString();
-							int id = Integer.valueOf(event.getClipData().getItemAt(i+1).getText().toString());
+						//noinspection unchecked
+						for(DatabaseObject databaseObject : (List<DatabaseObject>)event.getLocalState()) {
 							SkillBonus skillBonus = new SkillBonus();
-							if(SKILL_TYPE_STRING.equals(type)) {
-								skillBonus.setSkill(new Skill(id));
+							if(databaseObject instanceof Skill) {
+								skillBonus.setSkill((Skill)databaseObject);
 							}
-							else if (SPECIALIZATION_TYPE_STRING.equals(type)) {
-								skillBonus.setSpecialization(new Specialization(id));
+							else if(databaseObject instanceof Specialization) {
+								skillBonus.setSpecialization((Specialization)databaseObject);
 							}
-							else if (SPELL_LIST_TYPE_STRING.equals(type)) {
-								skillBonus.setSpellList(new SpellList(id));
+							else if(databaseObject instanceof SpellList) {
+								skillBonus.setSpellList((SpellList)databaseObject);
 							}
 							int position = skillBonusesListAdapter.getPosition(skillBonus);
 							if(position != AdapterView.INVALID_POSITION) {

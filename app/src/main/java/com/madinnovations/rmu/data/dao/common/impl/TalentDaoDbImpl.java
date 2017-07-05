@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.common.impl;
 
@@ -34,6 +34,7 @@ import com.madinnovations.rmu.data.entities.common.TalentCategory;
 import com.madinnovations.rmu.data.entities.common.TalentParameterRow;
 import com.madinnovations.rmu.data.entities.common.UnitType;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -278,7 +279,8 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 		contentValues.put(TalentParametersPerUnitSchema.COLUMN_TALENT_ID, talentId);
 		contentValues.put(TalentParametersPerUnitSchema.COLUMN_PARAMETER_ROW_INDEX, rowIndex);
 		contentValues.put(TalentParametersPerUnitSchema.COLUMN_PER_UNIT_INDEX, unitIndex);
-		contentValues.put(TalentParametersPerUnitSchema.COLUMN_PER_VALUE, talentParameterRow.getPerValues()[unitIndex]);
+		contentValues.put(TalentParametersPerUnitSchema.COLUMN_PER_VALUE,
+						  talentParameterRow.getPerValues()[unitIndex].doubleValue());
 		contentValues.put(TalentParametersPerUnitSchema.COLUMN_UNIT_TYPE_NAME,
 						  talentParameterRow.getUnitTypes()[unitIndex].name());
 
@@ -292,18 +294,19 @@ public class TalentDaoDbImpl extends BaseDaoDbImpl<Talent> implements TalentDao,
 
 		Cursor cursor = super.query(TalentParametersPerUnitSchema.TABLE_NAME, TalentParametersPerUnitSchema.COLUMNS, selection,
 									selectionArgs, TalentParametersPerUnitSchema.COLUMN_PER_UNIT_INDEX);
-		List<Integer> valuesList = new ArrayList<>(cursor.getCount());
+		List<BigDecimal> valuesList = new ArrayList<>(cursor.getCount());
 		List<UnitType> unitTypesList = new ArrayList<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			valuesList.add(cursor.getInt(cursor.getColumnIndexOrThrow(TalentParametersPerUnitSchema.COLUMN_PER_VALUE)));
+			valuesList.add(BigDecimal.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(
+					TalentParametersPerUnitSchema.COLUMN_PER_VALUE))));
 			unitTypesList.add(UnitType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
 					TalentParametersPerUnitSchema.COLUMN_UNIT_TYPE_NAME))));
 			cursor.moveToNext();
 		}
 		cursor.close();
 
-		Integer[] perValues = new Integer[valuesList.size()];
+		BigDecimal[] perValues = new BigDecimal[valuesList.size()];
 		valuesList.toArray(perValues);
 		talentParameterRow.setPerValues(perValues);
 		UnitType[] unitTypes = new UnitType[unitTypesList.size()];

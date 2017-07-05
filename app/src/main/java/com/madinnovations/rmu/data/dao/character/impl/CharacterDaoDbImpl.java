@@ -243,12 +243,12 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setRace(raceDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RACE_ID))));
 		instance.setCulture(cultureDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CULTURE_ID))));
 		instance.setProfession(professionDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PROFESSION_ID))));
-		instance.setRealm(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
+		instance.setRealmDBO(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM_ID))));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-			instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+			instance.setRealmDBO2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
 		}
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))) {
-			instance.setRealm3(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))));
+			instance.setRealmDBO3(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM3_ID))));
 		}
 		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEIGHT)));
 		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
@@ -388,18 +388,18 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_RACE_ID, instance.getRace().getId());
 		values.put(COLUMN_CULTURE_ID, instance.getCulture().getId());
 		values.put(COLUMN_PROFESSION_ID, instance.getProfession().getId());
-		values.put(COLUMN_REALM_ID, instance.getRealm().getId());
-		if(instance.getRealm2() == null) {
+		values.put(COLUMN_REALM_ID, instance.getRealmDBO().getId());
+		if(instance.getRealmDBO2() == null) {
 			values.putNull(COLUMN_REALM2_ID);
 		}
 		else {
-			values.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
+			values.put(COLUMN_REALM2_ID, instance.getRealmDBO2().getId());
 		}
-		if(instance.getRealm3() == null) {
+		if(instance.getRealmDBO3() == null) {
 			values.putNull(COLUMN_REALM3_ID);
 		}
 		else {
-			values.put(COLUMN_REALM3_ID, instance.getRealm3().getId());
+			values.put(COLUMN_REALM3_ID, instance.getRealmDBO3().getId());
 		}
 		values.put(COLUMN_HEIGHT, instance.getHeight());
 		values.put(COLUMN_WEIGHT, instance.getWeight());

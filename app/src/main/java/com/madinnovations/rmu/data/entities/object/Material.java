@@ -17,7 +17,7 @@
  *
  */
 
-package com.madinnovations.rmu.data.entities.spells;
+package com.madinnovations.rmu.data.entities.object;
 
 import android.support.annotation.StringRes;
 
@@ -25,12 +25,16 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * Enumeration of all magical realms.
+ * Enumeration of all material types.
  */
-public enum Realm {
-	CHANNELING(R.string.enum_realm_channeling),
-	ESSENCE(R.string.enum_realm_essence),
-	MENTALISM(R.string.enum_realm_mentalism);
+public enum Material {
+	BRITTLE_EARTH(R.string.enum_material_brittle_earth),
+	FLESH(R.string.enum_material_flesh),
+	METAL(R.string.enum_material_metal),
+	ORGANIC(R.string.enum_material_organic),
+	PRECIOUS_METAL(R.string.enum_material_precious_metal),
+	STONE(R.string.enum_material_stone),
+	WOOD(R.string.enum_material_wood);
 
 	private @StringRes int textResourceId;
 
@@ -39,28 +43,13 @@ public enum Realm {
 	 *
 	 * @param textResourceId  the string resource ID for the material's name
 	 */
-	Realm(int textResourceId) {
+	Material(int textResourceId) {
 		this.textResourceId = textResourceId;
 	}
 
 	@Override
 	public String toString() {
 		return RMUApp.getResourceUtils().getString(textResourceId);
-	}
-
-	/**
-	 * Gets the Realm with the given text value.
-	 *
-	 * @param textValue  the textValue of the desired Realm instance
-	 * @return the Realm instance with the given textValue or null if not found.
-	 */
-	public static Realm getRealmWithName(String textValue) {
-		for(Realm realm : Realm.values()) {
-			if(realm.toString().equals(textValue)) {
-				return realm;
-			}
-		}
-		return null;
 	}
 
 	/**

@@ -104,7 +104,7 @@ import com.madinnovations.rmu.data.entities.object.ItemTemplate;
 import com.madinnovations.rmu.data.entities.object.PoisonTemplate;
 import com.madinnovations.rmu.data.entities.object.SubstanceTemplate;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.data.entities.spells.Spell;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellSubType;
@@ -265,7 +265,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(ItemTemplate.class, itemTemplateSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
 							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
-							gsonBuilder.registerTypeAdapter(Realm.class, realmSerializer);
+							gsonBuilder.registerTypeAdapter(RealmDBO.class, realmSerializer);
 							gsonBuilder.registerTypeAdapter(Skill.class, skillSerializer);
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, skillCategorySerializer);
 							gsonBuilder.registerTypeAdapter(Specialization.class, specializationSerializer);
@@ -290,6 +290,7 @@ public class ImportExportRxHandler {
 
 							try {
 								db = helper.getWritableDatabase();
+								db.setForeignKeyConstraintsEnabled(false);
 								db.beginTransaction();
 								helper.clearDatabase();
 								int numTypesRead = 0;
@@ -485,17 +486,17 @@ public class ImportExportRxHandler {
 											Log.i(TAG, "Loaded " + outlooks.size() + " outlooks.");
 											outlooks = null;
 											break;
-										case Realm.JSON_NAME:
-											List<Realm> realms = new ArrayList<>();
+										case RealmDBO.JSON_NAME:
+											List<RealmDBO> realmDBOs = new ArrayList<>();
 											jsonReader.beginArray();
 											while (jsonReader.hasNext()) {
-												Realm realm = gson.fromJson(jsonReader, Realm.class);
-												realms.add(realm);
+												RealmDBO realmDBO = gson.fromJson(jsonReader, RealmDBO.class);
+												realmDBOs.add(realmDBO);
 											}
 											jsonReader.endArray();
-											realmDao.save(realms, true);
-											Log.i(TAG, "Loaded " + realms.size() + " realms.");
-											realms = null;
+											realmDao.save(realmDBOs, true);
+											Log.i(TAG, "Loaded " + realmDBOs.size() + " realms.");
+											realmDBOs = null;
 											break;
 										case Profession.JSON_NAME:
 											List<Profession> professions = new ArrayList<>();
@@ -644,6 +645,7 @@ public class ImportExportRxHandler {
 							finally {
 								if(db != null) {
 									db.endTransaction();
+									db.setForeignKeyConstraintsEnabled(true);
 								}
 							}
 
@@ -693,7 +695,7 @@ public class ImportExportRxHandler {
 							gsonBuilder.registerTypeAdapter(WeaponTemplate.class, itemTemplateSerializer);
 							gsonBuilder.registerTypeAdapter(Profession.class, professionSerializer);
 							gsonBuilder.registerTypeAdapter(Race.class, raceSerializer);
-							gsonBuilder.registerTypeAdapter(Realm.class, realmSerializer);
+							gsonBuilder.registerTypeAdapter(RealmDBO.class, realmSerializer);
 							gsonBuilder.registerTypeAdapter(Skill.class, skillSerializer);
 							gsonBuilder.registerTypeAdapter(SkillCategory.class, skillCategorySerializer);
 							gsonBuilder.registerTypeAdapter(Specialization.class, specializationSerializer);
@@ -751,7 +753,7 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(creatureTypeDao.getAll()))
 									.name(Outlook.JSON_NAME)
 									.jsonValue(gson.toJson(outlookDao.getAll()))
-									.name(Realm.JSON_NAME)
+									.name(RealmDBO.JSON_NAME)
 									.jsonValue(gson.toJson(realmDao.getAll()))
 							;
 							subscriber.onNext(60);

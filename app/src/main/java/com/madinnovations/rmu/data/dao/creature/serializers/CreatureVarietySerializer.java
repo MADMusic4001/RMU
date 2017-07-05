@@ -41,7 +41,7 @@ import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.io.IOException;
@@ -88,9 +88,9 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		out.name(COLUMN_ATTACK_SEQUENCE).value(value.getAttackSequence());
 		out.name(COLUMN_TYPE_ID).value(value.getType().getId());
 		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
-		out.name(COLUMN_REALM1_ID).value(value.getRealm1().getId());
-		if (value.getRealm2() != null) {
-			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
+		out.name(COLUMN_REALM1_ID).value(value.getRealmDBO1().getId());
+		if (value.getRealmDBO2() != null) {
+			out.name(COLUMN_REALM2_ID).value(value.getRealmDBO2().getId());
 		}
 		out.name(COLUMN_OUTLOOK_ID).value(value.getOutlook().getId());
 
@@ -120,8 +120,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			out.beginArray();
 			for (TalentInstance talentInstance : value.getTalentInstancesList()) {
 				out.beginObject();
-				out.name(VarietyTalentTiersSchema.COLUMN_TALENT_ID).value(talentInstance.getId());
-				out.name(VarietyTalentTiersSchema.COLUMN_VARIETY_ID).value(value.getId());
+				out.name(VarietyTalentTiersSchema.COLUMN_ID).value(talentInstance.getId());
 				out.name(VarietyTalentTiersSchema.COLUMN_TALENT_ID).value(talentInstance.getTalent().getId());
 				out.name(VarietyTalentTiersSchema.COLUMN_TIERS).value(talentInstance.getTiers());
 				if(!talentInstance.getParameterValues().isEmpty()) {
@@ -264,10 +263,10 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 					creatureVariety.setSize(new Size(in.nextInt()));
 					break;
 				case COLUMN_REALM1_ID:
-					creatureVariety.setRealm1(new Realm(in.nextInt()));
+					creatureVariety.setRealmDBO1(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_REALM2_ID:
-					creatureVariety.setRealm2(new Realm(in.nextInt()));
+					creatureVariety.setRealmDBO2(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_OUTLOOK_ID:
 					creatureVariety.setOutlook(new Outlook(in.nextInt()));

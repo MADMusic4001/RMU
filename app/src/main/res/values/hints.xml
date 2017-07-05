@@ -200,17 +200,19 @@
   <!-- Spell -->
   <string name="hint_realm_description">Realm Description</string>
   <string name="hint_realm_name">Realm Name</string>
-  <string name="hint_spell_aoe_param1">Spell Area of Effect Param1</string>
-  <string name="hint_spell_aoe_param2">Spell Area of Effect Param2</string>
-  <string name="hint_spell_aoe_param3">Spell Area of Effect Param3</string>
-  <string name="hint_spell_aoe_param4">Spell Area of Effect Param4</string>
+  <string name="hint_spell_aoe_param1">Spell AoE Param1</string>
+  <string name="hint_spell_aoe_param2">Spell AoE Param2</string>
+  <string name="hint_spell_aoe_param3">Spell AoE Param3</string>
+  <string name="hint_spell_aoe_param4">Spell AoE Param4</string>
   <string name="hint_spell_description">Spell Description</string>
   <string name="hint_spell_range_param">Spell Range Param</string>
   <string name="hint_spell_duration_param1">Spell Duration Param1</string>
   <string name="hint_spell_duration_param2">Spell Duration Param2</string>
+  <string name="hint_spell_level">Spell Level</string>
   <string name="hint_spell_name">Spell Name</string>
   <string name="hint_spell_list_notes">Spell List Notes</string>
   <string name="hint_spell_list_name">Spell List Name</string>
+  <string name="hint_spell_rr_mod">Resistance Roll Mod</string>
   <string name="hint_spell_sub_type_code">Spell Sub Type Code</string>
   <string name="hint_spell_sub_type_description">Spell Sub Type Description</string>
   <string name="hint_spell_sub_type_name">Spell Sub Type Name</string>

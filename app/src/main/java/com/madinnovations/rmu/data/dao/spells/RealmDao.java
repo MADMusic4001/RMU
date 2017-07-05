@@ -15,13 +15,13 @@
  */
 package com.madinnovations.rmu.data.dao.spells;
 
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Methods to manage {@link Realm} objects in persistent storage.
+ * Methods to manage {@link RealmDBO} objects in persistent storage.
  */
 public interface RealmDao {
 	/**
@@ -30,14 +30,14 @@ public interface RealmDao {
 	 * @param id  the id of the Realm object to retrieve
 	 * @return the Realm instance with the given id or null if not found.
 	 */
-	public Realm getById(int id);
+	public RealmDBO getById(int id);
 
 	/**
 	 * Retrieves all Realm objects from persistent storage.
 	 *
 	 * @return  a List containing all Realm objects currently in persistent storage.
 	 */
-	public List<Realm> getAll();
+	public List<RealmDBO> getAll();
 
 	/**
 	 * Saves a collection of Realm instances to persistent storage.
@@ -46,7 +46,7 @@ public interface RealmDao {
 	 * @param isNew  set to true if the instances have valid IDs but should be inserted instead of updated.
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(Collection<Realm> instance, boolean isNew);
+	public boolean save(Collection<RealmDBO> instance, boolean isNew);
 
 	/**
 	 * Saves a collection of Realm instances to persistent storage.
@@ -54,7 +54,7 @@ public interface RealmDao {
 	 * @param instance  the collection of Realm instances to be saved
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(Collection<Realm> instance);
+	public boolean save(Collection<RealmDBO> instance);
 
 	/**
 	 * Saves a Realm object to persistent storage.
@@ -62,7 +62,7 @@ public interface RealmDao {
 	 * @param instance  the Realm object to be saved
 	 * @return true if successful, otherwise false.
 	 */
-	public boolean save(Realm instance);
+	public boolean save(RealmDBO instance);
 
 	/**
 	 * Delete the Realm object with the given id from persistent storage.

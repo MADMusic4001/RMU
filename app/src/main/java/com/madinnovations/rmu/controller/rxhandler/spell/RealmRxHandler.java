@@ -16,7 +16,7 @@
 package com.madinnovations.rmu.controller.rxhandler.spell;
 
 import com.madinnovations.rmu.data.dao.spells.RealmDao;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Creates reactive observable for requesting operations on {@link Realm} instances with persistent storage.
+ * Creates reactive observable for requesting operations on {@link RealmDBO} instances with persistent storage.
  */
 public class RealmRxHandler {
 	private RealmDao dao;
@@ -49,11 +49,11 @@ public class RealmRxHandler {
 	 * @param id  the id of the Realm to retrieve from persistent storage
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Realm instance.
 	 */
-	public Observable<Realm> getById(final int id) {
+	public Observable<RealmDBO> getById(final int id) {
 		return Observable.create(
-				new Observable.OnSubscribe<Realm>() {
+				new Observable.OnSubscribe<RealmDBO>() {
 					@Override
-					public void call(Subscriber<? super Realm> subscriber) {
+					public void call(Subscriber<? super RealmDBO> subscriber) {
 						try {
 							subscriber.onNext(dao.getById(id));
 							subscriber.onCompleted();
@@ -73,11 +73,11 @@ public class RealmRxHandler {
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Realm
 	 * instances.
 	 */
-	public Observable<Collection<Realm>> getAll() {
+	public Observable<Collection<RealmDBO>> getAll() {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<Realm>>() {
+				new Observable.OnSubscribe<Collection<RealmDBO>>() {
 					@Override
-					public void call(Subscriber<? super Collection<Realm>> subscriber) {
+					public void call(Subscriber<? super Collection<RealmDBO>> subscriber) {
 						try {
 							subscriber.onNext(dao.getAll());
 							subscriber.onCompleted();
@@ -97,11 +97,11 @@ public class RealmRxHandler {
 	 * @param stat  the Realm instance to be saved
 	 * @return an {@link Observable} instance that can be subscribed to in order to save the Realm instance.
 	 */
-	public Observable<Realm> save(final Realm stat) {
+	public Observable<RealmDBO> save(final RealmDBO stat) {
 		return Observable.create(
-				new Observable.OnSubscribe<Realm>() {
+				new Observable.OnSubscribe<RealmDBO>() {
 					@Override
-					public void call(Subscriber<? super Realm> subscriber) {
+					public void call(Subscriber<? super RealmDBO> subscriber) {
 						try {
 							dao.save(stat);
 							subscriber.onNext(stat);
@@ -144,13 +144,13 @@ public class RealmRxHandler {
 	 *
 	 * @return an {@link Observable} instance that can be subscribed to in order to delete the Realm instances.
 	 */
-	public Observable<Collection<Realm>> deleteAll() {
+	public Observable<Collection<RealmDBO>> deleteAll() {
 		return Observable.create(
-				new Observable.OnSubscribe<Collection<Realm>>() {
+				new Observable.OnSubscribe<Collection<RealmDBO>>() {
 					@Override
-					public void call(Subscriber<? super Collection<Realm>> subscriber) {
+					public void call(Subscriber<? super Collection<RealmDBO>> subscriber) {
 						try {
-							Collection<Realm> RealmsDeleted = dao.getAll();
+							Collection<RealmDBO> RealmsDeleted = dao.getAll();
 							dao.deleteAll();
 							subscriber.onNext(RealmsDeleted);
 							subscriber.onCompleted();

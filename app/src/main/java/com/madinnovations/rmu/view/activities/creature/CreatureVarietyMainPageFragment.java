@@ -45,7 +45,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
@@ -88,8 +88,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
 	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
 	private   ArrayAdapter<Character>    levelSpreadSpinnerAdapter;
-	private   ArrayAdapter<Realm>        realm1SpinnerAdapter;
-	private   ArrayAdapter<Realm>        realm2SpinnerAdapter;
+	private   ArrayAdapter<RealmDBO>     realm1SpinnerAdapter;
+	private   ArrayAdapter<RealmDBO>     realm2SpinnerAdapter;
 	private   ArrayAdapter<Outlook>      outlookSpinnerAdapter;
 	private   EditText                   nameEdit;
 	private   EditText                   descriptionEdit;
@@ -343,7 +343,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		Size newSize;
 		short newShort;
 		char newLevelSpread;
-		Realm newRealm;
+		RealmDBO newRealmDBO;
 		Outlook newOutlook;
 
 		if(this.getView() != null) {
@@ -506,22 +506,22 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 
 			position = realm1Spinner.getSelectedItemPosition();
 			if (position != -1) {
-				newRealm = realm1SpinnerAdapter.getItem(position);
-				if (newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
-					varietiesFragment.getCurrentInstance().setRealm1(newRealm);
+				newRealmDBO = realm1SpinnerAdapter.getItem(position);
+				if (newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO1())) {
+					varietiesFragment.getCurrentInstance().setRealmDBO1(newRealmDBO);
 					changed = true;
 				}
 			}
 
 			position = realm2Spinner.getSelectedItemPosition();
 			if (position != -1) {
-				newRealm = realm2SpinnerAdapter.getItem(position);
-				if (newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
-					if (newRealm.getId() == -1) {
-						varietiesFragment.getCurrentInstance().setRealm2(null);
+				newRealmDBO = realm2SpinnerAdapter.getItem(position);
+				if (newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO2())) {
+					if (newRealmDBO.getId() == -1) {
+						varietiesFragment.getCurrentInstance().setRealmDBO2(null);
 					}
 					else {
-						varietiesFragment.getCurrentInstance().setRealm2(newRealm);
+						varietiesFragment.getCurrentInstance().setRealmDBO2(newRealmDBO);
 					}
 					changed = true;
 				}
@@ -561,13 +561,13 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		mentalismRREdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getBaseMentalismRR()));
 		physicalRREdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getBasePhysicalRR()));
 		fearRREdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getBaseFearRR()));
-		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealm1()));
-		if(varietiesFragment.getCurrentInstance().getRealm2() == null) {
-			Realm noRealm = new Realm();
-			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealm));
+		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealmDBO1()));
+		if(varietiesFragment.getCurrentInstance().getRealmDBO2() == null) {
+			RealmDBO noRealmDBO = new RealmDBO();
+			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealmDBO));
 		}
 		else {
-			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealm2()));
+			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealmDBO2()));
 		}
 		outlookSpinner.setSelection(outlookSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getOutlook()));
 
@@ -1141,7 +1141,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		realmRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Realm>>() {
+				.subscribe(new Subscriber<Collection<RealmDBO>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
@@ -1149,25 +1149,25 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 						Log.e(TAG, "Exception caught getting all Realm instances in initRealm1Spinner", e);
 					}
 					@Override
-					public void onNext(Collection<Realm> realms) {
+					public void onNext(Collection<RealmDBO> realmDBOs) {
 						realm1SpinnerAdapter.clear();
-						realm1SpinnerAdapter.addAll(realms);
+						realm1SpinnerAdapter.addAll(realmDBOs);
 						realm1SpinnerAdapter.notifyDataSetChanged();
 					}
 				});
 		realm1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Realm newRealm = realm1SpinnerAdapter.getItem(position);
-				if(newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
-					varietiesFragment.getCurrentInstance().setRealm1(realm1SpinnerAdapter.getItem(position));
+				RealmDBO newRealmDBO = realm1SpinnerAdapter.getItem(position);
+				if(newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO1())) {
+					varietiesFragment.getCurrentInstance().setRealmDBO1(realm1SpinnerAdapter.getItem(position));
 					varietiesFragment.saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(varietiesFragment.getCurrentInstance().getRealm1() != null) {
-					varietiesFragment.getCurrentInstance().setRealm1(null);
+				if(varietiesFragment.getCurrentInstance().getRealmDBO1() != null) {
+					varietiesFragment.getCurrentInstance().setRealmDBO1(null);
 					varietiesFragment.saveItem();
 				}
 			}
@@ -1182,7 +1182,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		realmRxHandler.getAll()
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<Realm>>() {
+				.subscribe(new Subscriber<Collection<RealmDBO>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
@@ -1190,33 +1190,33 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 						Log.e(TAG, "Exception caught getting all Realm instances in initRealm2Spinner", e);
 					}
 					@Override
-					public void onNext(Collection<Realm> realms) {
-						Realm noRealm = new Realm();
-						noRealm.setName(getActivity().getString(R.string.label_no_realm));
+					public void onNext(Collection<RealmDBO> realmDBOs) {
+						RealmDBO noRealmDBO = new RealmDBO();
+						noRealmDBO.setName(getActivity().getString(R.string.label_no_realm));
 						realm2SpinnerAdapter.clear();
-						realm2SpinnerAdapter.add(noRealm);
-						realm2SpinnerAdapter.addAll(realms);
+						realm2SpinnerAdapter.add(noRealmDBO);
+						realm2SpinnerAdapter.addAll(realmDBOs);
 						realm2SpinnerAdapter.notifyDataSetChanged();
 					}
 				});
 		realm2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Realm newRealm = realm2SpinnerAdapter.getItem(position);
-				if(newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
-					if(newRealm.getId() == -1) {
-						varietiesFragment.getCurrentInstance().setRealm2(null);
+				RealmDBO newRealmDBO = realm2SpinnerAdapter.getItem(position);
+				if(newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO2())) {
+					if(newRealmDBO.getId() == -1) {
+						varietiesFragment.getCurrentInstance().setRealmDBO2(null);
 					}
 					else {
-						varietiesFragment.getCurrentInstance().setRealm1(realm2SpinnerAdapter.getItem(position));
+						varietiesFragment.getCurrentInstance().setRealmDBO1(realm2SpinnerAdapter.getItem(position));
 					}
 					varietiesFragment.saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(varietiesFragment.getCurrentInstance().getRealm2() != null) {
-					varietiesFragment.getCurrentInstance().setRealm2(null);
+				if(varietiesFragment.getCurrentInstance().getRealmDBO2() != null) {
+					varietiesFragment.getCurrentInstance().setRealmDBO2(null);
 					varietiesFragment.saveItem();
 				}
 			}

@@ -25,7 +25,8 @@ public enum Range {
 	DISTANCE_SHORT_RANGE ("Distance [Directed Spell Short Range] (feet)", (short)1),
 	DISTANCE_SHORT_RANGE_PER_LEVEL ("Distance [Directed Spell Short Range] (feet/lvl)", (short)1),
 	SELF ("Self", (short)0),
-	TOUCH ("Touch", (short)0);
+	TOUCH ("Touch", (short)0),
+	VARIES("Varies", (short)0);
 
 	private String text;
 	private short parameterCount;

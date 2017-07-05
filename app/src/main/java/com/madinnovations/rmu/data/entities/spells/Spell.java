@@ -1,28 +1,36 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.spells;
 
+import android.util.Log;
+
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.view.RMUAppException;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Spell attributes
  */
 public class Spell extends DatabaseObject {
+	private static final String TAG = "Spell";
 	public static final String JSON_NAME = "Spells";
 	private SpellList spellList = null;
+	private short spellLevel = 1;
 	private String name = null;
 	private String description = null;
 	private AreaOfEffect areaOfEffect = null;
@@ -33,6 +41,7 @@ public class Spell extends DatabaseObject {
 	private Integer rangeParam = null;
 	private SpellType spellType = null;
 	private SpellSubType spellSubType = null;
+	private short resistanceRollMod = 0;
 
 	/**
 	 * Checks the validity of the Spell instance.
@@ -46,7 +55,31 @@ public class Spell extends DatabaseObject {
 
 	@Override
 	public String toString() {
-		return name;
+		return String.valueOf(spellLevel) + " - " + name;
+	}
+
+	/**
+	 * Creates a String with this instances field values.
+	 *
+	 * @return a String with this instances field values.
+	 */
+	public String print() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+				.append("id", getId())
+				.append("spellList", spellList)
+				.append("spellLevel", spellLevel)
+				.append("name", name)
+				.append("description", description)
+				.append("areaOfEffect", areaOfEffect)
+				.append("areaOfEffectParams", areaOfEffectParams)
+				.append("duration", duration)
+				.append("durationParams", durationParams)
+				.append("range", range)
+				.append("rangeParam", rangeParam)
+				.append("spellType", spellType)
+				.append("spellSubType", spellSubType)
+				.append("resistanceRollMod", resistanceRollMod)
+				.toString();
 	}
 
 	// Getters and setters
@@ -55,6 +88,12 @@ public class Spell extends DatabaseObject {
 	}
 	public void setSpellList(SpellList spellList) {
 		this.spellList = spellList;
+	}
+	public short getSpellLevel() {
+		return spellLevel;
+	}
+	public void setSpellLevel(short spellLevel) {
+		this.spellLevel = spellLevel;
 	}
 	public String getName() {
 		return name;
@@ -114,6 +153,20 @@ public class Spell extends DatabaseObject {
 		return spellSubType;
 	}
 	public void setSpellSubType(SpellSubType spellSubType) {
+		if(spellSubType != null && spellSubType.getId() == -1) {
+			try {
+				throw new RMUAppException();
+			}
+			catch(RMUAppException e) {
+				Log.e(TAG, "setSpellSubType: Stack trace for setting spellSubType to noSpellSubType", e);
+			}
+		}
 		this.spellSubType = spellSubType;
+	}
+	public short getResistanceRollMod() {
+		return resistanceRollMod;
+	}
+	public void setResistanceRollMod(short resistanceRollMod) {
+		this.resistanceRollMod = resistanceRollMod;
 	}
 }

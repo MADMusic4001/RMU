@@ -16,39 +16,39 @@
 package com.madinnovations.rmu.data.entities.spells;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 
 /**
- * Spell sub type attributes
+ * Realm attributes
  */
-public class SpellSubType extends DatabaseObject {
-	public static final String JSON_NAME = "SpellListSubTypes";
-	private String name = null;
-	private Character code = null;
-	private String description = null;
+public class RealmDBO extends DatabaseObject {
+	public static final String JSON_NAME = "Realms";
+	private String    name;
+	private String    description;
+	private Statistic stat;
 
 	/**
-	 * Creates a new SpellSubType instance with default values.
+	 * Creates a new Realm instance
 	 */
-	public SpellSubType() {
-		super();
+	public RealmDBO() {
 	}
 
 	/**
-	 * Creates a new SpellSubType instance with the given id.
+	 * Creates a new CreatureCategory instance with the given id
 	 *
-	 * @param id  the id to use for the new instance.
+	 * @param id  the id for the new instance
 	 */
-	public SpellSubType(int id) {
+	public RealmDBO(int id) {
 		super(id);
 	}
 
 	/**
-	 * Checks the validity of the SpellSubType instance.
+	 * Checks the validity of the Realm instance.
 	 *
-	 * @return true if the SpellSubType instance is valid, otherwise false.
+	 * @return true if the Realm instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && code != null && description != null && !description.isEmpty();
+		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && stat != null;
 	}
 
 	@Override
@@ -63,16 +63,16 @@ public class SpellSubType extends DatabaseObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Character getCode() {
-		return code;
-	}
-	public void setCode(Character code) {
-		this.code = code;
-	}
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public Statistic getStat() {
+		return stat;
+	}
+	public void setStat(Statistic stat) {
+		this.stat = stat;
 	}
 }

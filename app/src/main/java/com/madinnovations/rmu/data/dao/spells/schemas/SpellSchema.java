@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.spells.schemas;
 
@@ -24,6 +24,7 @@ public interface SpellSchema {
 	String COLUMN_ID = "id";
 	String COLUMN_SPELL_LIST_ID = "spellListId";
 	String COLUMN_NAME = "name";
+	String COLUMN_SPELL_LEVEL = "spellLevel";
 	String COLUMN_DESCRIPTION = "description";
 	String COLUMN_SPELL_TYPE_ID = "spellTypeId";
 	String COLUMN_SPELL_SUB_TYPE_ID = "spellSubTypeId";
@@ -31,6 +32,7 @@ public interface SpellSchema {
 	String COLUMN_DURATION = "duration";
 	String COLUMN_RANGE = "range";
 	String COLUMN_RANGE_PARAM = "rangeParam";
+	String COLUMN_RR_MOD = "resistanceRollMod";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -38,6 +40,7 @@ public interface SpellSchema {
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_SPELL_LIST_ID + " INTEGER NOT NULL, "
 			+ COLUMN_NAME + " TEXT NOT NULL, "
+			+ COLUMN_SPELL_LEVEL + " INTEGER NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL, "
 			+ COLUMN_SPELL_TYPE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SPELL_SUB_TYPE_ID + " INTEGER, "
@@ -45,6 +48,7 @@ public interface SpellSchema {
 			+ COLUMN_DURATION + " TEXT NOT NULL, "
 			+ COLUMN_RANGE + " TEXT NOT NULL, "
 			+ COLUMN_RANGE_PARAM + " INTEGER, "
+			+ COLUMN_RR_MOD + " INTEGER NOT NULL, "
 			+ "FOREIGN KEY (" + COLUMN_SPELL_LIST_ID + ") REFERENCES " + SpellListSchema.TABLE_NAME
 			+ "(" + SpellListSchema.COLUMN_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_SPELL_TYPE_ID + ") REFERENCES " + SpellTypeSchema.TABLE_NAME
@@ -53,6 +57,7 @@ public interface SpellSchema {
 			+ "(" + SpellSubTypeSchema.COLUMN_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_SPELL_LIST_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_SPELL_TYPE_ID,
-			COLUMN_SPELL_SUB_TYPE_ID, COLUMN_AREA_OF_EFFECT, COLUMN_DURATION, COLUMN_RANGE, COLUMN_RANGE_PARAM};
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_SPELL_LIST_ID, COLUMN_NAME, COLUMN_SPELL_LEVEL, COLUMN_DESCRIPTION,
+			COLUMN_SPELL_TYPE_ID, COLUMN_SPELL_SUB_TYPE_ID, COLUMN_AREA_OF_EFFECT, COLUMN_DURATION, COLUMN_RANGE,
+			COLUMN_RANGE_PARAM, COLUMN_RR_MOD};
 }

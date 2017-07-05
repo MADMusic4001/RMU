@@ -17,7 +17,7 @@
  *
  */
 
-package com.madinnovations.rmu.data.entities.spells;
+package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.StringRes;
 
@@ -25,42 +25,34 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * Enumeration of all magical realms.
+ * Enumeration of all dice sizes.
  */
-public enum Realm {
-	CHANNELING(R.string.enum_realm_channeling),
-	ESSENCE(R.string.enum_realm_essence),
-	MENTALISM(R.string.enum_realm_mentalism);
+public enum Dice {
+	D2(R.string.enum_dice_d2, (short)2),
+	D4(R.string.enum_dice_d4, (short)4),
+	D5(R.string.enum_dice_d5, (short)5),
+	D6(R.string.enum_dice_d6, (short)6),
+	D8(R.string.enum_dice_d8, (short)8),
+	D10(R.string.enum_dice_d10, (short)10),
+	D12(R.string.enum_dice_d12, (short)12),
+	D20(R.string.enum_dice_d20, (short)20);
 
 	private @StringRes int textResourceId;
+	private short sides;
 
 	/**
 	 * Creates a new Material instance
 	 *
 	 * @param textResourceId  the string resource ID for the material's name
 	 */
-	Realm(int textResourceId) {
+	Dice(int textResourceId, short sides) {
 		this.textResourceId = textResourceId;
+		this.sides = sides;
 	}
 
 	@Override
 	public String toString() {
 		return RMUApp.getResourceUtils().getString(textResourceId);
-	}
-
-	/**
-	 * Gets the Realm with the given text value.
-	 *
-	 * @param textValue  the textValue of the desired Realm instance
-	 * @return the Realm instance with the given textValue or null if not found.
-	 */
-	public static Realm getRealmWithName(String textValue) {
-		for(Realm realm : Realm.values()) {
-			if(realm.toString().equals(textValue)) {
-				return realm;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -70,5 +62,9 @@ public enum Realm {
 	 */
 	public int getTextResourceId() {
 		return textResourceId;
+	}
+
+	public short getSides() {
+		return sides;
 	}
 }

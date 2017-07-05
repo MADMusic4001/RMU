@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.impl;
 
@@ -30,11 +30,11 @@ import com.madinnovations.rmu.data.dao.character.schemas.ProfessionSkillCostSche
 import com.madinnovations.rmu.data.dao.character.schemas.ProfessionalSkillCategoriesSchema;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,6 @@ import javax.inject.Singleton;
 public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements ProfessionDao, ProfessionSchema {
 	private SkillCategoryDao skillCategoryDao;
 	private SkillDao skillDao;
-	private RealmDao realmDao;
 
     /**
      * Creates a new instance of ProfessionDaoDbImpl
@@ -59,10 +58,9 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public ProfessionDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao, RealmDao realmDao, SkillDao skillDao) {
+    public ProfessionDaoDbImpl(SQLiteOpenHelper helper, SkillCategoryDao skillCategoryDao, SkillDao skillDao) {
         super(helper);
 		this.skillCategoryDao = skillCategoryDao;
-		this.realmDao = realmDao;
 		this.skillDao = skillDao;
     }
 
@@ -99,10 +97,10 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM1_ID))) {
-			instance.setRealm1(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM1_ID))));
-			if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-				instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM1))) {
+			instance.setRealm1(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM1))));
+			if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2))) {
+				instance.setRealm2(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM2))));
 			}
 		}
 		instance.setSkillCategoryCosts(getSkillCategoryCostMap(instance));
@@ -127,16 +125,16 @@ public class ProfessionDaoDbImpl extends BaseDaoDbImpl<Profession> implements Pr
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_DESCRIPTION, instance.getDescription());
 		if(instance.getRealm1() != null) {
-			values.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
+			values.put(COLUMN_REALM1, instance.getRealm1().name());
 		}
 		else {
-			values.putNull(COLUMN_REALM1_ID);
+			values.putNull(COLUMN_REALM1);
 		}
 		if(instance.getRealm2() != null) {
-			values.put(COLUMN_REALM2_ID, instance.getRealm2().getId());
+			values.put(COLUMN_REALM2, instance.getRealm2().name());
 		}
 		else {
-			values.putNull(COLUMN_REALM2_ID);
+			values.putNull(COLUMN_REALM2);
 		}
 
 		return values;

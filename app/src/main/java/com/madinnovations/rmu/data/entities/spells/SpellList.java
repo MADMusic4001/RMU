@@ -28,14 +28,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Spell list attributes
  */
 public class SpellList extends DatabaseObject {
-	public static final String JSON_NAME = "SpellLists";
-	private String        name          = null;
-	private String        notes         = null;
-	private Realm         realm         = null;
-	private Realm         realm2        = null;
-	private Profession    profession    = null;
-	private SpellListType spellListType = null;
-	private Skill         skill         = null;
+	public static final String        JSON_NAME     = "SpellLists";
+	private             String        name          = null;
+	private             String        notes         = null;
+	private             RealmDBO      realmDBO      = null;
+	private             RealmDBO      realmDBO2     = null;
+	private             Profession    profession    = null;
+	private             SpellListType spellListType = null;
+	private             Skill         skill         = null;
 
 	/**
 	 * Creates a new SpellList instance
@@ -58,7 +58,7 @@ public class SpellList extends DatabaseObject {
 	 * @return true if the SpellList instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return name != null && !name.isEmpty() && realm != null && spellListType != null;
+		return name != null && !name.isEmpty() && realmDBO != null && spellListType != null;
 	}
 
 	/**
@@ -71,8 +71,8 @@ public class SpellList extends DatabaseObject {
 								   ToStringStyle.MULTI_LINE_STYLE)
 				.append("name", name)
 				.append("notes", notes)
-				.append("realm", realm)
-				.append("realm2", realm2)
+				.append("realm", realmDBO)
+				.append("realm2", realmDBO2)
 				.append("professionId", profession != null ? profession.getId() : null)
 				.append("spellListType", spellListType)
 				.append("skill", skill)
@@ -92,12 +92,12 @@ public class SpellList extends DatabaseObject {
 				result = String.format(formatString, name, profession.getName(), "");
 			}
 		}
-		else if (realm != null) {
+		else if (realmDBO != null) {
 			if(spellListType != null) {
-				result = String.format(formatString, name, getSpellListType(), realm.getName());
+				result = String.format(formatString, name, getSpellListType(), realmDBO.getName());
 			}
 			else {
-				result = String.format(formatString, name, realm.getName(), "");
+				result = String.format(formatString, name, realmDBO.getName(), "");
 			}
 		}
 		else {
@@ -120,17 +120,17 @@ public class SpellList extends DatabaseObject {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	public Realm getRealm() {
-		return realm;
+	public RealmDBO getRealmDBO() {
+		return realmDBO;
 	}
-	public void setRealm(Realm realm) {
-		this.realm = realm;
+	public void setRealmDBO(RealmDBO realmDBO) {
+		this.realmDBO = realmDBO;
 	}
-	public Realm getRealm2() {
-		return realm2;
+	public RealmDBO getRealmDBO2() {
+		return realmDBO2;
 	}
-	public void setRealm2(Realm realm2) {
-		this.realm2 = realm2;
+	public void setRealmDBO2(RealmDBO realmDBO2) {
+		this.realmDBO2 = realmDBO2;
 	}
 	public Profession getProfession() {
 		return profession;

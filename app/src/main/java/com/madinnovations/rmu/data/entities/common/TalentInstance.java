@@ -31,8 +31,12 @@ public class TalentInstance extends DatabaseObject {
 	private short                  tiers = 0;
 	private Map<Parameter, Object> parameterValues = new HashMap<>();
 
-	@Override
-	public String toString() {
+	/**
+	 * Creates a formatted String of the instances field values.
+	 *
+	 * @return  a formatted String of the instances field values.
+	 */
+	public String print() {
 		return new ToStringBuilder(this,
 								   ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", getId())

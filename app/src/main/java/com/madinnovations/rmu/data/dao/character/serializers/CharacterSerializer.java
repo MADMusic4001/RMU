@@ -46,7 +46,7 @@ import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_RACE_ID).value(value.getRace().getId());
 		out.name(COLUMN_CULTURE_ID).value(value.getCulture().getId());
 		out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
-		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
+		out.name(COLUMN_REALM_ID).value(value.getRealmDBO().getId());
 		out.name(COLUMN_HEIGHT).value(value.getHeight());
 		out.name(COLUMN_WEIGHT).value(value.getWeight());
 		out.name(COLUMN_CURRENT_HP_LOSS).value(value.getHitPointLoss());
@@ -347,13 +347,13 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					character.setProfession(new Profession(in.nextInt()));
 					break;
 				case COLUMN_REALM_ID:
-					character.setRealm(new Realm(in.nextInt()));
+					character.setRealmDBO(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_REALM2_ID:
-					character.setRealm2(new Realm(in.nextInt()));
+					character.setRealmDBO2(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_REALM3_ID:
-					character.setRealm3(new Realm(in.nextInt()));
+					character.setRealmDBO3(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_HEIGHT:
 					character.setHeight((short) in.nextInt());

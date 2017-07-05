@@ -48,6 +48,7 @@ import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
+import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.RMUAppException;
 
@@ -142,6 +143,39 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	}
 
 	@Override
+	public List<CreatureVariety> getVarietiesForType(CreatureType creatureType) {
+		final String selectionArgs[] = { String.valueOf(creatureType.getId()) };
+		final String selection = COLUMN_TYPE_ID + " = ?";
+		List<CreatureVariety> list = new ArrayList<>();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getSortString());
+
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					CreatureVariety instance = cursorToEntity(cursor);
+					list.add(instance);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
 	protected CreatureVariety cursorToEntity(@NonNull Cursor cursor) {
 		CreatureVariety instance = new CreatureVariety();
 		instance.setAttackRxHandler(attackRxHandler);
@@ -169,12 +203,12 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setBaseMentalismRR(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_MENTALISM_RR)));
 		instance.setBasePhysicalRR(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_PHYSICAL_RR)));
 		instance.setBaseFearRR(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_FEAR_RR)));
-		instance.setRealm1(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM1_ID))));
+		instance.setRealmDBO1(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM1_ID))));
 		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-			instance.setRealm2(null);
+			instance.setRealmDBO2(null);
 		}
 		else {
-			instance.setRealm2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+			instance.setRealmDBO2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
 		}
 		instance.setBaseStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_STRIDE)));
 		instance.setLeftoverDP(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_LEFTOVER_DP)));
@@ -222,8 +256,8 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		values.put(COLUMN_BASE_MENTALISM_RR, instance.getBaseMentalismRR());
 		values.put(COLUMN_BASE_PHYSICAL_RR, instance.getBasePhysicalRR());
 		values.put(COLUMN_BASE_FEAR_RR, instance.getBaseFearRR());
-		values.put(COLUMN_REALM1_ID, instance.getRealm1().getId());
-		values.put(COLUMN_REALM2_ID, instance.getRealm2() != null ? instance.getRealm2().getId() : null);
+		values.put(COLUMN_REALM1_ID, instance.getRealmDBO1().getId());
+		values.put(COLUMN_REALM2_ID, instance.getRealmDBO2() != null ? instance.getRealmDBO2().getId() : null);
 		values.put(COLUMN_BASE_STRIDE, instance.getBaseStride());
 		values.put(COLUMN_LEFTOVER_DP, instance.getLeftoverDP());
 		values.put(COLUMN_OUTLOOK_ID, instance.getOutlook().getId());

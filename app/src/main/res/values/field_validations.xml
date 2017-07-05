@@ -153,8 +153,10 @@
   <string name="validation_spell_aoe_param4_required">Please enter a initialValue for AreaOfEffect Parameter 4.</string>
   <string name="validation_spell_duration_param1_required">Please enter a initialValue for Duration Parameter 1.</string>
   <string name="validation_spell_duration_param2_required">Please enter a initialValue for Duration Parameter 2.</string>
+  <string name="validation_spell_level_required">Please enter a spell level.</string>
   <string name="validation_spell_name_required">Please enter a spell name.</string>
   <string name="validation_spell_range_param_required">Please enter a Range Parameter.</string>
+  <string name="validation_spell_rr_mod_required">Please enter a spell resistance roll modification value.</string>
   <string name="validation_spell_list_description_required">Please enter a notes for the spell list.</string>
   <string name="validation_spell_list_name_required">Please enter a spell list name.</string>
   <string name="validation_spell_list_type_description_required">Please enter a notes for the spell list type.</string>

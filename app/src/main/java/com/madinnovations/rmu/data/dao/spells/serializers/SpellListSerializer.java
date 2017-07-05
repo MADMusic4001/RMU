@@ -21,7 +21,7 @@ import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.data.entities.spells.SpellListType;
 
@@ -37,9 +37,9 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_NAME).value(value.getName());
 		out.name(COLUMN_NOTES).value(value.getNotes());
-		out.name(COLUMN_REALM_ID).value(value.getRealm().getId());
-		if(value.getRealm2() != null) {
-			out.name(COLUMN_REALM2_ID).value(value.getRealm2().getId());
+		out.name(COLUMN_REALM_ID).value(value.getRealmDBO().getId());
+		if(value.getRealmDBO2() != null) {
+			out.name(COLUMN_REALM2_ID).value(value.getRealmDBO2().getId());
 		}
 		if(value.getProfession() != null) {
 			out.name(COLUMN_PROFESSION_ID).value(value.getProfession().getId());
@@ -66,10 +66,10 @@ public class SpellListSerializer extends TypeAdapter<SpellList> implements Spell
 					spellList.setNotes(in.nextString());
 					break;
 				case COLUMN_REALM_ID:
-					spellList.setRealm(new Realm(in.nextInt()));
+					spellList.setRealmDBO(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_REALM2_ID:
-					spellList.setRealm2(new Realm(in.nextInt()));
+					spellList.setRealmDBO2(new RealmDBO(in.nextInt()));
 					break;
 				case COLUMN_PROFESSION_ID:
 					spellList.setProfession(new Profession(in.nextInt()));

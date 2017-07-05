@@ -50,7 +50,7 @@ import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
@@ -97,8 +97,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   SpinnerUtils<Race>       raceSpinnerUtils;
 	private   SpinnerUtils<Culture>    cultureSpinnerUtils;
 	private   SpinnerUtils<Profession> professionSpinnerUtils;
-	private   SpinnerUtils<Realm>      realmSpinnerUtils;
-	private   SpinnerUtils<Realm>      realm2SpinnerUtils;
+	private   SpinnerUtils<RealmDBO>   realmSpinnerUtils;
+	private   SpinnerUtils<RealmDBO>   realm2SpinnerUtils;
 	private   Button                   generateStatsButton;
 	private   EditText                 heightEdit;
 	private   EditText                 weightEdit;
@@ -106,7 +106,7 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	private   EditText                 statPointsView;
 //	private   LinearLayout             newCharacterRow;
 	private Map<Statistic, ViewHolder> viewHolderMap = new HashMap<>(Statistic.NUM_STATS);
-	private   Realm                    noRealm = null;
+	private RealmDBO                   noRealmDBO    = null;
 
 	/**
 	 * Creates new CharacterMainPageFragment instance.
@@ -162,10 +162,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 		professionSpinnerUtils.initSpinner(layout, getActivity(), professionRxHandler.getAll(), this, R.id.profession_spinner, null);
 		realmSpinnerUtils = new SpinnerUtils<>();
 		realmSpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm_spinner, null);
-		noRealm = new Realm();
-		noRealm.setName(getString(R.string.label_no_realm));
+		noRealmDBO = new RealmDBO();
+		noRealmDBO.setName(getString(R.string.label_no_realm));
 		realm2SpinnerUtils = new SpinnerUtils<>();
-		realm2SpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm2_spinner, noRealm);
+		realm2SpinnerUtils.initSpinner(layout, getActivity(), realmRxHandler.getAll(), this, R.id.realm2_spinner, noRealmDBO);
 		heightEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.height_textInputLayout, R.id.height_edit,
 											R.string.validation_character_height_required);
 		weightEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.weight_textInputLayout, R.id.weight_edit,
@@ -307,10 +307,10 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				result = charactersFragment.getCurrentInstance().getProfession();
 				break;
 			case R.id.realm_spinner:
-				result = charactersFragment.getCurrentInstance().getRealm();
+				result = charactersFragment.getCurrentInstance().getRealmDBO();
 				break;
 			case R.id.realm2_spinner:
-				result = charactersFragment.getCurrentInstance().getRealm2();
+				result = charactersFragment.getCurrentInstance().getRealmDBO2();
 				break;
 		}
 
@@ -406,15 +406,15 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				charactersFragment.saveItem();
 				break;
 			case R.id.realm_spinner:
-				character.setRealm((Realm)newItem);
+				character.setRealmDBO((RealmDBO)newItem);
 				charactersFragment.saveItem();
 				break;
 			case R.id.realm2_spinner:
-				if(noRealm.equals(newItem)) {
-					character.setRealm2(null);
+				if(noRealmDBO.equals(newItem)) {
+					character.setRealmDBO2(null);
 				}
 				else {
-					character.setRealm2((Realm) newItem);
+					character.setRealmDBO2((RealmDBO) newItem);
 				}
 				charactersFragment.saveItem();
 				break;
@@ -525,23 +525,25 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 				character.setProfession(newProfession);
 				changed = true;
 			}
-			Realm newRealm = realmSpinnerUtils.getSelectedItem();
-			Realm oldRealm = character.getRealm();
-			if ((newRealm != null && !newRealm.equals(oldRealm)) || (oldRealm != null && !oldRealm.equals(newRealm))) {
-				character.setRealm(newRealm);
+			RealmDBO newRealmDBO = realmSpinnerUtils.getSelectedItem();
+			RealmDBO oldRealmDBO = character.getRealmDBO();
+			if ((newRealmDBO != null && !newRealmDBO.equals(oldRealmDBO)) || (oldRealmDBO != null && !oldRealmDBO.equals(
+					newRealmDBO))) {
+				character.setRealmDBO(newRealmDBO);
 				changed = true;
 			}
-			newRealm = realm2SpinnerUtils.getSelectedItem();
-			oldRealm = character.getRealm2();
-			if(noRealm.equals(newRealm)) {
-				newRealm = null;
+			newRealmDBO = realm2SpinnerUtils.getSelectedItem();
+			oldRealmDBO = character.getRealmDBO2();
+			if(noRealmDBO.equals(newRealmDBO)) {
+				newRealmDBO = null;
 			}
-			if ((newRealm != null && !newRealm.equals(oldRealm)) || (oldRealm != null && !oldRealm.equals(newRealm))) {
-				character.setRealm2(newRealm);
+			if ((newRealmDBO != null && !newRealmDBO.equals(oldRealmDBO)) || (oldRealmDBO != null && !oldRealmDBO.equals(
+					newRealmDBO))) {
+				character.setRealmDBO2(newRealmDBO);
 				changed = true;
 			}
-			else if(newRealm == null && oldRealm != null) {
-				character.setRealm2(null);
+			else if(newRealmDBO == null && oldRealmDBO != null) {
+				character.setRealmDBO2(null);
 				changed = true;
 			}
 			if (heightEdit.getText().length() > 0) {
@@ -580,8 +582,8 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 			raceSpinnerUtils.setSelection(character.getRace());
 			cultureSpinnerUtils.setSelection(character.getCulture());
 			professionSpinnerUtils.setSelection(character.getProfession());
-			realmSpinnerUtils.setSelection(character.getRealm());
-			realm2SpinnerUtils.setSelection(character.getRealm2());
+			realmSpinnerUtils.setSelection(character.getRealmDBO());
+			realm2SpinnerUtils.setSelection(character.getRealmDBO2());
 			heightEdit.setText(String.valueOf(character.getHeight()));
 			weightEdit.setText(String.valueOf(character.getWeight()));
 

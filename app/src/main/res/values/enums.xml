@@ -4,6 +4,124 @@
   <string name="enum_all">All</string>
   <string name="enum_choice">Choice</string>
 
+  <!-- AreaOfEffect enum strings -->
+  <string name="enum_aoe_animal">Animal (quantity)</string>
+  <string name="enum_aoe_animal_per_level">Animal/lvl (quantity, levels)</string>
+  <string name="enum_aoe_armor">Armor (quantity)</string>
+  <string name="enum_aoe_attack">Attack (quantity)</string>
+  <string name="enum_aoe_attack_per_level">Attack/lvl (quantity, levels)</string>
+  <string name="enum_aoe_attack_per_round">Attack/rnd (quantity, rounds)</string>
+  <string name="enum_aoe_attacks_or_missiles">Attack or Missile (quantity)</string>
+  <string name="enum_aoe_attacks_or_missiles_per_level">Attacks or Missiles / level (quantity, level)</string>
+  <string name="enum_aoe_beam">Beam (length)</string>
+  <string name="enum_aoe_being">Being (quantity)</string>
+  <string name="enum_aoe_body_of_water">Body of Water (quantity)</string>
+  <string name="enum_aoe_cabin">Cabin (quantity)</string>
+  <string name="enum_aoe_caster">Caster</string>
+  <string name="enum_aoe_caster_plus_demon">Caster + Demon</string>
+  <string name="enum_aoe_caster_plus_target">Caster + Target (number of targets)</string>
+  <string name="enum_aoe_channel">Channel (quantity)</string>
+  <string name="enum_aoe_condition">Condition (quantity, levels)</string>
+  <string name="enum_aoe_cone_diameter">Cone (inner diameter, outer diameter, length)</string>
+  <string name="enum_aoe_cone_radius">Cone (inner radius, outer radius, length)</string>
+  <string name="enum_aoe_corpse">Corpse (quantity)</string>
+  <string name="enum_aoe_creature">Creature (quantity)</string>
+  <string name="enum_aoe_cube">Cube (width, height, depth)</string>
+  <string name="enum_aoe_cube_per_level_depth">Cube (width, height, depth/lvl)</string>
+  <string name="enum_aoe_cubic_feet_per_level">Cu\'/lvl (cubic feet, levels)</string>
+  <string name="enum_aoe_curse">Curse (quantity)</string>
+  <string name="enum_aoe_cylinder">Cylinder (diameter, length)</string>
+  <string name="enum_aoe_cylinder_per_level">Cylinder (diameter, length/lvl)</string>
+  <string name="enum_aoe_deity">Deity (quantity)</string>
+  <string name="enum_aoe_demon">Demon (quantity)</string>
+  <string name="enum_aoe_door">Door (quantity)</string>
+  <string name="enum_aoe_earth_cubic_feet">Earth (cubic feet)</string>
+  <string name="enum_aoe_elemental">Elemental (quantity)</string>
+  <string name="enum_aoe_emblem">Emblem (quantity)</string>
+  <string name="enum_aoe_entity">Entity (quantity)</string>
+  <string name="enum_aoe_familiar">Familiar (quantity)</string>
+  <string name="enum_aoe_foot">Foot (length)</string>
+  <string name="enum_aoe_foot_per_level">Foot/lvl (length, levels)</string>
+  <string name="enum_aoe_fungus">Fungus (quantity)</string>
+  <string name="enum_aoe_garment">Garment (quantity)</string>
+  <string name="enum_aoe_gateway">Gateway (quantity)</string>
+  <string name="enum_aoe_herb">Herb (quantity)</string>
+  <string name="enum_aoe_herb_per_level">Herb/lvl (quantity, levels)</string>
+  <string name="enum_aoe_illusion">Illusion (quantity)</string>
+  <string name="enum_aoe_inanimate_solid">Inanimate Solid (cubic feet)</string>
+  <string name="enum_aoe_inorganic_object">Inorganic Object (cubic feet)</string>
+  <string name="enum_aoe_instrument">Instrument (quantity)</string>
+  <string name="enum_aoe_item">Item (quantity)</string>
+  <string name="enum_aoe_limb">Limb (quantity)</string>
+  <string name="enum_aoe_location">Location (quantity)</string>
+  <string name="enum_aoe_lock">Lock (quantity)</string>
+  <string name="enum_aoe_machine">Machine (quantity)</string>
+  <string name="enum_aoe_mechanism">Mechanism (quantity)</string>
+  <string name="enum_aoe_metal">Metal (max diameter)</string>
+  <string name="enum_aoe_metal_cu_ft">Metal (cubic feet)</string>
+  <string name="enum_aoe_mile">Mile (distance)</string>
+  <string name="enum_aoe_miles_per_level">Mile/lvl (distance, levels)</string>
+  <string name="enum_aoe_missile">Missile (quantity)</string>
+  <string name="enum_aoe_missiles_per_level">Missile/lvl (quantity, levels)</string>
+  <string name="enum_aoe_mount">Mount (quantity)</string>
+  <string name="enum_aoe_mount_per_caster">Mount/caster (quantity)</string>
+  <string name="enum_aoe_object">Object (quantity)</string>
+  <string name="enum_aoe_objects_per_level">Object/lvl (quantity, levels)</string>
+  <string name="enum_aoe_objects_Per_round">Object/rnd (quantity, rounds)</string>
+  <string name="enum_aoe_parry_per_round">Parry/rnd (quantity, rounds)</string>
+  <string name="enum_aoe_plane">Plane (width, height)</string>
+  <string name="enum_aoe_plane_sq_ft">Plane (square feet)</string>
+  <string name="enum_aoe_plant">Plant (quantity)</string>
+  <string name="enum_aoe_plants_per_level">Plant/lvl (quantity, levels)</string>
+  <string name="enum_aoe_pool">Pool (quantity)</string>
+  <string name="enum_aoe_point">Point (quantity)</string>
+  <string name="enum_aoe_poison">Poison (quantity)</string>
+  <string name="enum_aoe_possessor">Possessor (quantity)</string>
+  <string name="enum_aoe_pound">Pound (weight)</string>
+  <string name="enum_aoe_pounds_per_level">Pound/lvl (weight, levels)</string>
+  <string name="enum_aoe_radius_feet">Radius (feet)</string>
+  <string name="enum_aoe_radius_feet_per_level">Radius (feet/level)</string>
+  <string name="enum_aoe_rune">Rune (quantity)</string>
+  <string name="enum_aoe_seed">Seed (quantity)</string>
+  <string name="enum_aoe_shadow_per_level">Shadow/lvl (quantity, levels)</string>
+  <string name="enum_aoe_shield">Shield (quantity)</string>
+  <string name="enum_aoe_shields_per_level">Shield/lvl (quantity, levels)</string>
+  <string name="enum_aoe_special">Special</string>
+  <string name="enum_aoe_species">Species (quantity)</string>
+  <string name="enum_aoe_spell">Spell (quantity)</string>
+  <string name="enum_aoe_spell_area_effect">Spell [Area Effect] (quantity)</string>
+  <string name="enum_aoe_spell_directed">Spell [Directed] (quantity)</string>
+  <string name="enum_aoe_spell_per_target">Spell/target (quantity, targets)</string>
+  <string name="enum_aoe_stone">Stone (quantity)</string>
+  <string name="enum_aoe_stone_cubic_feet">Stone (cubic feet)</string>
+  <string name="enum_aoe_stone_cubic_feet_per_level">Stone (cubic feet, levels)</string>
+  <string name="enum_aoe_symbol">Symbol (quantity)</string>
+  <string name="enum_aoe_target">Target (quantity)</string>
+  <string name="enum_aoe_targets_per_level">Target/lvl (quantity, levels)</string>
+  <string name="enum_aoe_targets_per_round">Target/rnd (quantity, rounds)</string>
+  <string name="enum_aoe_target_plus_radius">Target + Radius (quantity, radius)</string>
+  <string name="enum_aoe_targets_unlimited">Targets (Unlimited)</string>
+  <string name="enum_aoe_tent">Tent (quantity)</string>
+  <string name="enum_aoe_text">Text (quantity)</string>
+  <string name="enum_aoe_tower">Tower (quantity)</string>
+  <string name="enum_aoe_tracks">Tracks (quantity)</string>
+  <string name="enum_aoe_transference">Transference (quantity)</string>
+  <string name="enum_aoe_trap">Trap (quantity)</string>
+  <string name="enum_aoe_tree">Tree (quantity)</string>
+  <string name="enum_aoe_undead">Undead (quantity)</string>
+  <string name="enum_aoe_varies">Varies</string>
+  <string name="enum_aoe_wall_wedge">Wall [Wedge] (width, height, base depth, top depth)</string>
+  <string name="enum_aoe_water_corridor">Water corridor (diameter, length, max depth)</string>
+  <string name="enum_aoe_water_corridor_per_level">Water corridor (diameter, length/lvl, max depth)</string>
+  <string name="enum_aoe_water_cubic_feet">Water (cubic feet)</string>
+  <string name="enum_aoe_water_fluid_ounces">Water (fluid ounces)</string>
+  <string name="enum_aoe_water_gallons">Water (gallons)</string>
+  <string name="enum_aoe_wave_per_level">Wave (height/lvl, width/lvl)</string>
+  <string name="enum_aoe_weapon">Weapon (quantity)</string>
+  <string name="enum_aoe_wood">Wood (max diameter)</string>
+  <string name="enum_aoe_wood_object">Wood Object (quantity)</string>
+  <string name="enum_aoe_na">NA</string>
+
   <!-- Conditional enum strings -->
   <string name="enum_condition_type_all_ob_to_parry">All OB used to parry</string>
   <string name="enum_condition_type_critical_achieved">Critical Achieved</string>
@@ -57,6 +175,16 @@
   <string name="enum_destiny_sense_direction">Direction Sense</string>
   <string name="enum_destiny_sense_direction_and_distance">Direction and Distance Sense</string>
 
+  <!-- Dice enum strings -->
+  <string name="enum_dice_d2">d2</string>
+  <string name="enum_dice_d4">d4</string>
+  <string name="enum_dice_d5">d5</string>
+  <string name="enum_dice_d6">d6</string>
+  <string name="enum_dice_d8">d8</string>
+  <string name="enum_dice_d10">d10</string>
+  <string name="enum_dice_d12">d12</string>
+  <string name="enum_dice_d20">d20</string>
+
   <!-- Element enum strings -->
   <string name="enum_element_earth">Earth</string>
   <string name="enum_element_fire">Fire</string>
@@ -64,6 +192,14 @@
   <string name="enum_element_light">Light/Electricity</string>
   <string name="enum_element_water">Water</string>
   <string name="enum_element_wind">Wind</string>
+
+  <!-- Extension enum strings -->
+  <string name="enum_extension_stinger">Stinger</string>
+  <string name="enum_extension_tail">Tail</string>
+  <string name="enum_extension_tentacles">Tentacles</string>
+  <string name="enum_extension_tongue">Tongue</string>
+  <string name="enum_extension_trunk">Trunk</string>
+  <string name="enum_extension_upper_lip">Upper Lip</string>
 
   <!-- Form enum strings -->
   <string name="enum_form_algae">Algae</string>
@@ -106,6 +242,26 @@
   <string name="enum_form_spine">Spine</string>
   <string name="enum_form_stalk">Stalk</string>
   <string name="enum_form_stem">Stem</string>
+
+  <!-- Materials enum strings -->
+  <string name="enum_material_brittle_earth">Brittle/Earth</string>
+  <string name="enum_material_flesh">Flesh</string>
+  <string name="enum_material_metal">Metal</string>
+  <string name="enum_material_organic">Organic</string>
+  <string name="enum_material_precious_metal">Precious Metal</string>
+  <string name="enum_material_stone">Stone</string>
+  <string name="enum_material_wood">Wood</string>
+
+  <!-- Poison enum strings -->
+  <string name="enum_poison_circulatory">Circulatory</string>
+  <string name="enum_poison_muscle">Muscle</string>
+  <string name="enum_poison_nerve">Nerve</string>
+  <string name="enum_poison_respiratory">Respiratory</string>
+
+  <!-- Realm enum strings -->
+  <string name="enum_realm_channeling">Channeling</string>
+  <string name="enum_realm_essence">Essence</string>
+  <string name="enum_realm_mentalism">Mentalism</string>
 
   <!-- Senses enum strings -->
   <string name="enum_hearing">Hearing</string>
@@ -167,6 +323,7 @@
   <string name="enum_parameter_defensive_bonus">Defensive Bonus</string>
   <string name="enum_parameter_defensive_size">Defensive Size</string>
   <string name="enum_parameter_destiny_sense">Destiny Sense</string>
+  <string name="enum_parameter_dice">Dice</string>
   <string name="enum_parameter_disease">Disease</string>
   <string name="enum_parameter_duration">Duration</string>
   <string name="enum_parameter_effect">Effect</string>
@@ -178,19 +335,25 @@
   <string name="enum_parameter_encumbrance_penalty">Encumbrance Penalty</string>
   <string name="enum_parameter_endurance">Endurance</string>
   <string name="enum_parameter_enter_state">Enter State</string>
+  <string name="enum_parameter_extension">Extension</string>
   <string name="enum_parameter_fatigue_penalty">Fatigue Penalty</string>
   <string name="enum_parameter_fear_rr">Fear Resistance Roll</string>
   <string name="enum_parameter_follower_fear_rr">Followers Fear Resistance Roll</string>
   <string name="enum_parameter_fumble_range">Fumble Range</string>
+  <string name="enum_parameter_height">Height</string>
+  <string name="enum_parameter_hit_points">Hit Points</string>
   <string name="enum_parameter_hours_rest">Hours Rest for PP Recovery</string>
   <string name="enum_parameter_initiative">Initiative</string>
   <string name="enum_parameter_injury_penalty">Injury Penalty</string>
   <string name="enum_parameter_interval">Interval</string>
+  <string name="enum_parameter_level">Level</string>
   <string name="enum_parameter_lighting_penalty">Lighting Penalty (Vision)</string>
   <string name="enum_parameter_magical_rr">Magical Resistance Roll</string>
   <string name="enum_parameter_maneuver_roll">Maneuver Roll</string>
+  <string name="enum_parameter_material">Material</string>
   <string name="enum_parameter_melee_attack">Melee Attack</string>
   <string name="enum_parameter_move">Move</string>
+  <string name="enum_parameter_multiplier">Multiplier</string>
   <string name="enum_parameter_number">Number</string>
   <string name="enum_parameter_offensive_bonus">Offensive Bonus</string>
   <string name="enum_parameter_off_hand_usage_penalty">Off-hand Usage Penalty</string>
@@ -201,7 +364,8 @@
   <string name="enum_parameter_percent">Percent</string>
   <string name="enum_parameter_physical_rr">Physical Resistance Roll</string>
   <string name="enum_parameter_poison">Poison</string>
-  <string name="enum_parameter_radius">Radius</string>
+  <string name="enum_parameter_power_points">Power Points</string>
+  <string name="enum_parameter_radius_feet">Radius (\')</string>
   <string name="enum_parameter_range">Range</string>
   <string name="enum_parameter_range_attack">Range Attack</string>
   <string name="enum_parameter_range_penalty">Range Penalty</string>
@@ -209,6 +373,7 @@
   <string name="enum_parameter_recovery_rate">HP Recovery Rate</string>
   <string name="enum_parameter_recovery_rate_mult">HP Recovery Rate Multiplier</string>
   <string name="enum_parameter_re_roll_critical">Re-roll Critical roll</string>
+  <string name="enum_parameter_realm">Realm</string>
   <string name="enum_parameter_rr_mod">RR Mod</string>
   <string name="enum_parameter_sense">Sense</string>
   <string name="enum_parameter_size_difference">Size Difference</string>
@@ -229,9 +394,13 @@
   <string name="enum_parameter_stat">Stat</string>
   <string name="enum_parameter_state">State</string>
   <string name="enum_parameter_terrain">Terrain</string>
+  <string name="enum_parameter_time_days">Time (days)</string>
+  <string name="enum_parameter_time_minutes">Time (minutes)</string>
+  <string name="enum_parameter_time_rounds">Time (rounds)</string>
   <string name="enum_parameter_touch_range">Touch Range</string>
   <string name="enum_parameter_uses">Uses</string>
   <string name="enum_parameter_vision_range">Vision Range</string>
+  <string name="enum_parameter_volume">Volume (cu\')</string>
 
   <!-- Prep enum strings -->
   <string name="enum_prep_apply">Apply</string>

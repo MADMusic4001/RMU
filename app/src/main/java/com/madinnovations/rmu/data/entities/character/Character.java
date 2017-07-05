@@ -183,9 +183,9 @@ public class Character extends Being implements Serializable {
 				.append("race", race)
 				.append("culture", culture)
 				.append("profession", profession)
-				.append("realm", realm)
-				.append("realm2", realm2)
-				.append("realm3", realm3)
+				.append("realm", realmDBO)
+				.append("realm2", realmDBO2)
+				.append("realm3", realmDBO3)
 				.append("height", height)
 				.append("weight", weight)
 				.append("hitPointLoss", hitPointLoss)
@@ -460,7 +460,7 @@ public class Character extends Being implements Serializable {
 	public boolean isValid() {
 		return campaign != null && firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()
 				&& description != null && !description.isEmpty() && race != null && profession != null && culture != null
-				&& (profession.getRealm1() != null || realm != null);
+				&& (profession.getRealm1() != null || realmDBO != null);
 	}
 
 	/**

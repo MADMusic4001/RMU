@@ -15,7 +15,9 @@
  */
 package com.madinnovations.rmu.data.dao;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -108,6 +110,11 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.spells.Realm;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -120,7 +127,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 1;
+	public static final  int    DATABASE_VERSION = 2;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -247,6 +254,79 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
                 case 1:
+                	sqLiteDatabase.beginTransaction();
+					Cursor cursor = null;
+					try {
+						cursor = sqLiteDatabase.rawQuery("SELECT id, name, description, realm1Id, realm2Id FROM professions",
+														 null);
+						if(cursor != null) {
+							cursor.moveToFirst();
+							List<Profession> professions = new ArrayList<>(cursor.getCount());
+							while (!cursor.isAfterLast()) {
+								Profession profession = new Profession(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+								profession.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+								profession.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+								if (!cursor.isNull(cursor.getColumnIndexOrThrow("realm1Id"))) {
+									int realmId = cursor.getInt(cursor.getColumnIndexOrThrow("realm1Id"));
+									switch (realmId) {
+										case 1:
+											profession.setRealm1(Realm.CHANNELING);
+											break;
+										case 2:
+											profession.setRealm1(Realm.ESSENCE);
+											break;
+										case 3:
+											profession.setRealm1(Realm.MENTALISM);
+											break;
+									}
+								}
+								if (!cursor.isNull(cursor.getColumnIndexOrThrow("realm2Id"))) {
+									int realmId = cursor.getInt(cursor.getColumnIndexOrThrow("realm2Id"));
+									switch (realmId) {
+										case 1:
+											profession.setRealm2(Realm.CHANNELING);
+											break;
+										case 2:
+											profession.setRealm2(Realm.ESSENCE);
+											break;
+										case 3:
+											profession.setRealm2(Realm.MENTALISM);
+											break;
+									}
+								}
+								professions.add(profession);
+								cursor.moveToNext();
+							}
+							sqLiteDatabase.execSQL("DROP TABLE professions");
+							sqLiteDatabase.execSQL(ProfessionSchema.TABLE_CREATE);
+							for (Profession profession : professions) {
+								ContentValues values = new ContentValues(5);
+								values.put(ProfessionSchema.COLUMN_ID, profession.getId());
+								values.put(ProfessionSchema.COLUMN_NAME, profession.getName());
+								values.put(ProfessionSchema.COLUMN_DESCRIPTION, profession.getDescription());
+								if (profession.getRealm1() == null) {
+									values.putNull(ProfessionSchema.COLUMN_REALM1);
+								}
+								else {
+									values.put(ProfessionSchema.COLUMN_REALM1, profession.getRealm1().name());
+								}
+								if (profession.getRealm2() == null) {
+									values.putNull(ProfessionSchema.COLUMN_REALM2);
+								}
+								else {
+									values.put(ProfessionSchema.COLUMN_REALM2, profession.getRealm2().name());
+								}
+								sqLiteDatabase.insert(ProfessionSchema.TABLE_NAME, null, values);
+							}
+							sqLiteDatabase.setTransactionSuccessful();
+						}
+					}
+					finally {
+						if(cursor != null) {
+							cursor.close();
+						}
+						sqLiteDatabase.endTransaction();
+					}
 					break;
 				case 2:
 					break;

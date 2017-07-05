@@ -29,7 +29,7 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 
@@ -48,9 +48,9 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	protected SkillRxHandler   skillRxHandler;
 	@Inject
 	protected RealmRxHandler   realmRxHandler;
-	private Skill              bodyDevelopmentSkill = null;
-	private Skill              powerDevelopmentSkill = null;
-	private Collection<Realm>  realms = null;
+	private Skill                bodyDevelopmentSkill  = null;
+	private Skill                powerDevelopmentSkill = null;
+	private Collection<RealmDBO> realmDBOs             = null;
 	private CharactersFragment charactersFragment;
 	private EditText           currentLevelText;
 	private EditText           experiencePointsText;
@@ -213,7 +213,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 
 	private void initRealms() {
 		realmRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Realm>>() {
+				.subscribe(new Subscriber<Collection<RealmDBO>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
@@ -221,8 +221,8 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 						Log.e(TAG, "Exception caught loading Realm instances.", e);
 					}
 					@Override
-					public void onNext(Collection<Realm> realmCollection) {
-						realms = realmCollection;
+					public void onNext(Collection<RealmDBO> realmDBOCollection) {
+						realmDBOs = realmDBOCollection;
 						setStatAndRealmViews();
 					}
 				});
@@ -309,17 +309,17 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 	}
 
 	private void setStatAndRealmViews() {
-		if(realms != null) {
-			for(Realm realm : realms) {
-				switch (realm.getStat()) {
+		if(realmDBOs != null) {
+			for(RealmDBO realmDBO : realmDBOs) {
+				switch (realmDBO.getStat()) {
 					case INTUITION:
-						channelingRRText.setText(String.valueOf(getRRBonus(Statistic.INTUITION, "Channeling", realm)));
+						channelingRRText.setText(String.valueOf(getRRBonus(Statistic.INTUITION, "Channeling", realmDBO)));
 						break;
 					case EMPATHY:
-						essenceRRText.setText(String.valueOf(getRRBonus(Statistic.EMPATHY, "Essence", realm)));
+						essenceRRText.setText(String.valueOf(getRRBonus(Statistic.EMPATHY, "Essence", realmDBO)));
 						break;
 					case PRESENCE:
-						mentalismRRText.setText(String.valueOf(getRRBonus(Statistic.PRESENCE, "Mentalism", realm)));
+						mentalismRRText.setText(String.valueOf(getRRBonus(Statistic.PRESENCE, "Mentalism", realmDBO)));
 						break;
 					default:
 						physicalRRText.setText(String.valueOf(getRRBonus(Statistic.CONSTITUTION, "Physical", null)));
@@ -330,7 +330,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		}
 	}
 
-	private short getRRBonus(Statistic statistic, String realmName, Realm realm) {
+	private short getRRBonus(Statistic statistic, String realmName, RealmDBO realmDBO) {
 		Character character = charactersFragment.getCurrentInstance();
 		Short temp = character.getStatTemps().get(statistic);
 		if(temp == null) {
@@ -343,7 +343,7 @@ public class CharacterGeneratedValuesFragment extends Fragment {
 		}
 		short rrBonus = (short) (statBonus + raceBonus);
 
-		if (realm.equals(character.getRealm()) || realm.equals(character.getRealm2()) || realm.equals(character.getRealm3())) {
+		if (realmDBO.equals(character.getRealmDBO()) || realmDBO.equals(character.getRealmDBO2()) || realmDBO.equals(character.getRealmDBO3())) {
 			rrBonus += 10;
 		}
 

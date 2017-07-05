@@ -1,21 +1,22 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.creature;
 
 import com.madinnovations.rmu.data.dao.creature.CreatureTypeDao;
+import com.madinnovations.rmu.data.entities.creature.CreatureCategory;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 
 import java.util.Collection;
@@ -156,6 +157,30 @@ public class CreatureTypeRxHandler {
 							subscriber.onCompleted();
 						}
 						catch(Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a collection of all CreatureType instances.
+	 *
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of CreatureType
+	 * instances.
+	 */
+	public Observable<Collection<CreatureType>> getTypesForCategory(final CreatureCategory creatureCategory) {
+		return Observable.create(
+				new Observable.OnSubscribe<Collection<CreatureType>>() {
+					@Override
+					public void call(Subscriber<? super Collection<CreatureType>> subscriber) {
+						try {
+							subscriber.onNext(dao.getTypesForCategory(creatureCategory));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
 							subscriber.onError(e);
 						}
 					}

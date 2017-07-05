@@ -39,7 +39,7 @@ import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.RealmDBO;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
@@ -75,7 +75,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 	private   EditText                 averageWeightEdit;
 	private   EditText                 poundsPerInchEdit;
 	private   Map<Statistic, EditText> statEditViews = new HashMap<>();
-	private   Map<Realm, EditText>     rrEditViews = new HashMap<>();
+	private   Map<RealmDBO, EditText>  rrEditViews   = new HashMap<>();
 	private   EditText                 physicalRREdit;
 	private   RacesFragment            racesFragment;
 
@@ -362,7 +362,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 				}
 			}
 
-			for (Map.Entry<Realm, EditText> entry : rrEditViews.entrySet()) {
+			for (Map.Entry<RealmDBO, EditText> entry : rrEditViews.entrySet()) {
 				EditText editText = entry.getValue();
 				oldShort = currentInstance.getRealmResistancesModifiers().get(entry.getKey());
 				if (editText.getText().length() > 0) {
@@ -439,7 +439,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 			}
 		}
 
-		for(Map.Entry<Realm, EditText> entry : rrEditViews.entrySet()) {
+		for(Map.Entry<RealmDBO, EditText> entry : rrEditViews.entrySet()) {
 			if(currentInstance.getRealmResistancesModifiers().get(entry.getKey()) == null) {
 				entry.getValue().setText(null);
 			}
@@ -541,7 +541,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		physicalRREdit.setHint(getString(R.string.hint_race_physical_rr));
 
 		realmRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Realm>>() {
+				.subscribe(new Subscriber<Collection<RealmDBO>>() {
 					@Override
 					public void onCompleted() {}
 					@Override
@@ -549,11 +549,11 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 						Log.e(TAG, "Exception caught getting all Realm instances", e);
 					}
 					@Override
-					public void onNext(Collection<Realm> realms) {
-						rrEditViews = new HashMap<>(realms.size());
+					public void onNext(Collection<RealmDBO> realmDBOs) {
+						rrEditViews = new HashMap<>(realmDBOs.size());
 						TextView textView;
-						for(Realm realm : realms) {
-							initRealmViews(realm, params, rrModLabels, rrModEdits);
+						for(RealmDBO realmDBO : realmDBOs) {
+							initRealmViews(realmDBO, params, rrModLabels, rrModEdits);
 						}
 						rrModEdits.addView(physicalRREdit);
 						textView = new TextView(getActivity());
@@ -590,11 +590,11 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		});
 	}
 
-	private void initRealmViews(final Realm realm, LinearLayout.LayoutParams params, LinearLayout labelsRow,
+	private void initRealmViews(final RealmDBO realmDBO, LinearLayout.LayoutParams params, LinearLayout labelsRow,
 								LinearLayout editsRow) {
 		TextView textView = new TextView(getActivity());
 		textView.setLayoutParams(params);
-		textView.setText(realm.getName());
+		textView.setText(realmDBO.getName());
 
 		final EditText editText = new EditText(getActivity());
 		editText.setHint(getString(R.string.hint_race_rr_mod));
@@ -605,19 +605,19 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 				Race currentInstance = racesFragment.getCurrentInstance();
 				if(editText.getText().length() > 0) {
 					short newShort = Short.valueOf(editText.getText().toString());
-					if(currentInstance.getRealmResistancesModifiers().get(realm) == null ||
-							newShort != currentInstance.getRealmResistancesModifiers().get(realm)) {
-						currentInstance.getRealmResistancesModifiers().put(realm, newShort);
+					if(currentInstance.getRealmResistancesModifiers().get(realmDBO) == null ||
+							newShort != currentInstance.getRealmResistancesModifiers().get(realmDBO)) {
+						currentInstance.getRealmResistancesModifiers().put(realmDBO, newShort);
 						racesFragment.saveItem();
 					}
 				}
-				else if(currentInstance.getRealmResistancesModifiers().get(realm) != null) {
-					currentInstance.getRealmResistancesModifiers().remove(realm);
+				else if(currentInstance.getRealmResistancesModifiers().get(realmDBO) != null) {
+					currentInstance.getRealmResistancesModifiers().remove(realmDBO);
 					racesFragment.saveItem();
 				}
 			}
 		});
-		rrEditViews.put(realm, editText);
+		rrEditViews.put(realmDBO, editText);
 		labelsRow.addView(textView);
 		editsRow.addView(editText);
 	}

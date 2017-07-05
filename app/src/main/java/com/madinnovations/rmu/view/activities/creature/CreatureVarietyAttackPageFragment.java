@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.creature;
 
@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -50,8 +51,8 @@ import com.madinnovations.rmu.view.adapters.combat.AttackBonusListAdapter;
 import com.madinnovations.rmu.view.adapters.combat.AttacksAdapter;
 import com.madinnovations.rmu.view.adapters.combat.CriticalCodesListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
-import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +70,7 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietyAttackPageFragment extends Fragment implements AttackBonusListAdapter.SetAttackBonus,
-		EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+		TextInputLayoutUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
 	private static final String TAG = "CVAttackPageFragment";
 	private static final String DRAG_ADD_ATTACK = "add-attack";
 	private static final String DRAG_REMOVE_ATTACK = "remove-attack";
@@ -87,6 +88,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	private   ListView                  attacksList;
 	private   ListView                  attackBonusesList;
 	private   Spinner                   criticalSizeSpinner;
+	private   TextInputLayout           attackSequenceLayout;
 	private   EditText                  attackSequenceEdit;
 	private   ListView                  criticalCodesList;
 	private   CreatureVarietiesFragment varietiesFragment;
@@ -117,8 +119,9 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		noSizeModifier.setName(getString(R.string.no_size_modifier));
 		criticalSizeSpinner = new SpinnerUtils<Size>().initSpinner(layout, getActivity(), sizeRxHandler.getAll(), this,
 																   R.id.critical_size_spinner, noSizeModifier);
-		attackSequenceEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.attack_sequence_edit,
-													R.string.validation_creature_variety_attack_sequence_required);
+		attackSequenceEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.attack_sequence_view,
+														   R.id.attack_sequence_edit,
+														   R.string.validation_creature_variety_attack_sequence_required);
 		initCriticalCodesList(layout);
 		initCriticalCodesList(layout);
 
@@ -144,10 +147,13 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	@Override
 	public String getValueForEditText(@IdRes int editTextId) {
 		String result = null;
+		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
 
 		switch (editTextId) {
 			case R.id.attack_sequence_edit:
-				result = varietiesFragment.getCurrentInstance().getAttackSequence();
+				result = creatureVariety.getAttackSequence();
+				((TextInputLayout)getActivity().findViewById(R.id.attack_sequence_view)).setErrorEnabled(
+						result == null || result.isEmpty());
 				break;
 		}
 
@@ -267,8 +273,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 
 		newSize = (Size)criticalSizeSpinner.getSelectedItem();
-		Log.d(TAG, "copyViewsToItems: newSize = " + newSize);
-		Log.d(TAG, "copyViewsToItems: newSize.equals(noSizeModifier) " + noSizeModifier.equals(newSize));
 		if((newSize == null || noSizeModifier.equals(newSize)) && creatureVariety.getCriticalSizeModifier() != null) {
 			creatureVariety.setCriticalSizeModifier(null);
 			changed = true;
@@ -278,7 +282,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			creatureVariety.setCriticalSizeModifier(newSize);
 			changed = true;
 		}
-		Log.d(TAG, "copyViewsToItems: criticalSizeModifier = " + creatureVariety.getCriticalSizeModifier());
 
 		return changed;
 	}
@@ -301,6 +304,12 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 
 		attackSequenceEdit.setText(creatureVariety.getAttackSequence());
+		((TextInputLayout)getActivity().findViewById(R.id.attack_sequence_view)).setErrorEnabled(
+				creatureVariety.getAttackSequence() == null || creatureVariety.getAttackSequence().isEmpty());
+		Log.d(TAG, "copyItemToViews: attackSequence = " + creatureVariety.getAttackSequence());
+		Log.d(TAG, "copyItemToViews: isErrorEnabled = " +
+				((TextInputLayout)getActivity().findViewById(R.id.attack_sequence_view)).isErrorEnabled());
+
 		if(creatureVariety.getCriticalSizeModifier() == null) {
 			criticalSizeSpinner.setSelection(((ArrayAdapter)criticalSizeSpinner.getAdapter()).getPosition(noSizeModifier));
 		}
