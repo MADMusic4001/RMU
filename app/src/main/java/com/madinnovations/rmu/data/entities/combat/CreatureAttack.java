@@ -6,13 +6,13 @@ import com.madinnovations.rmu.data.entities.common.Size;
  * Additional attack information for creatures.
  */
 public class CreatureAttack {
-	private Attack baseAttack;
-	private short offensiveBonus;
-	private Size  size;
+	private Attack  baseAttack;
+	private short   offensiveBonus;
+	private Size    size;
 	private boolean criticalFollowUp = false;
 	private boolean sameRoundFollowUp = false;
-	private short coopNumber = 0;
-	private short kataCount = 0;
+	private short   coopNumber = 0;
+	private short   kataCount = 0;
 
 	// Getters and setters
 	public Attack getBaseAttack() {

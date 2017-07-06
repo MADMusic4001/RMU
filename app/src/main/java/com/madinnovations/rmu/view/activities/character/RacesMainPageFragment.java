@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.character;
 
@@ -22,7 +22,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,48 +33,37 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CharacterFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
-
-import rx.Subscriber;
 
 /**
  * Handles interactions with the UI for Race general attributes.
  */
 public class RacesMainPageFragment extends Fragment implements EditTextUtils.ValuesCallback {
+	@SuppressWarnings("unused")
 	private static final String TAG = "RacesMainPageFragment";
-
-	@Inject
-	protected RealmRxHandler           realmRxHandler;
-	@Inject
-	protected SizeRxHandler            sizeRxHandler;
-	private   ArrayAdapter<Size>       sizeSpinnerAdapter;
-	private   EditText                 nameEdit;
-	private   EditText                 descriptionEdit;
-	private   EditText                 devPointsEdit;
-	private   EditText                 enduranceModEdit;
-	private   EditText                 baseHitsEdit;
-	private   EditText                 recoveryMultEdit;
-	private   Spinner                  sizeSpinner;
-	private   EditText                 strideModEdit;
-	private   EditText                 averageHeightEdit;
-	private   EditText                 averageWeightEdit;
+	private   ArrayAdapter<String>  sizeSpinnerAdapter;
+	private   EditText              nameEdit;
+	private   EditText              descriptionEdit;
+	private   EditText              devPointsEdit;
+	private   EditText              enduranceModEdit;
+	private   EditText              baseHitsEdit;
+	private   EditText              recoveryMultEdit;
+	private   Spinner               sizeSpinner;
+	private   EditText              strideModEdit;
+	private   EditText              averageHeightEdit;
+	private   EditText              averageWeightEdit;
 	private   EditText                 poundsPerInchEdit;
 	private   Map<Statistic, EditText> statEditViews = new HashMap<>();
-	private   Map<RealmDBO, EditText>  rrEditViews   = new HashMap<>();
+	private   Map<Realm, EditText>     rrEditViews   = new HashMap<>();
 	private   EditText                 physicalRREdit;
 	private   RacesFragment            racesFragment;
 
@@ -246,7 +234,6 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		short newShort;
 		Short oldShort;
 		float newFloat;
-		Size newSize;
 
 		if(getActivity() != null) {
 			View currentFocusView = getActivity().getCurrentFocus();
@@ -307,7 +294,8 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 			}
 
 			if (sizeSpinner.getSelectedItemPosition() >= 0) {
-				newSize = sizeSpinnerAdapter.getItem(sizeSpinner.getSelectedItemPosition());
+				newString = sizeSpinnerAdapter.getItem(sizeSpinner.getSelectedItemPosition());
+				Size newSize = Size.getSizeWithName(newString);
 				if (newSize != null && !newSize.equals(currentInstance.getSize())) {
 					currentInstance.setSize(newSize);
 					changed = true;
@@ -362,7 +350,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 				}
 			}
 
-			for (Map.Entry<RealmDBO, EditText> entry : rrEditViews.entrySet()) {
+			for (Map.Entry<Realm, EditText> entry : rrEditViews.entrySet()) {
 				EditText editText = entry.getValue();
 				oldShort = currentInstance.getRealmResistancesModifiers().get(entry.getKey());
 				if (editText.getText().length() > 0) {
@@ -415,7 +403,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		recoveryMultEdit.setError(null);
 
 		if(currentInstance.getSize() != null) {
-			sizeSpinner.setSelection(sizeSpinnerAdapter.getPosition(currentInstance.getSize()));
+			sizeSpinner.setSelection(sizeSpinnerAdapter.getPosition(currentInstance.getSize().toString()));
 		}
 
 		strideModEdit.setText(String.valueOf(currentInstance.getStrideModifier()));
@@ -439,7 +427,7 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 			}
 		}
 
-		for(Map.Entry<RealmDBO, EditText> entry : rrEditViews.entrySet()) {
+		for(Map.Entry<Realm, EditText> entry : rrEditViews.entrySet()) {
 			if(currentInstance.getRealmResistancesModifiers().get(entry.getKey()) == null) {
 				entry.getValue().setText(null);
 			}
@@ -460,26 +448,16 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		sizeSpinner.setAdapter(sizeSpinnerAdapter);
 
-		sizeRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<Size>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Size instances", e);
-					}
-					@Override
-					public void onNext(Collection<Size> sizes) {
-						sizeSpinnerAdapter.clear();
-						sizeSpinnerAdapter.addAll(sizes);
-						sizeSpinnerAdapter.notifyDataSetChanged();
-					}
-				});
+		sizeSpinnerAdapter.clear();
+		sizeSpinnerAdapter.addAll(Size.getSizeStrings());
+		sizeSpinnerAdapter.notifyDataSetChanged();
+
 		sizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Race currentInstance = racesFragment.getCurrentInstance();
-				Size newSize = sizeSpinnerAdapter.getItem(position);
+				String newSizeName = sizeSpinnerAdapter.getItem(position);
+				Size newSize = Size.getSizeWithName(newSizeName);
 				if(newSize != null && !newSize.equals(currentInstance.getSize())) {
 					currentInstance.setSize(newSize);
 					racesFragment.saveItem();
@@ -540,28 +518,16 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		physicalRREdit.setLayoutParams(params);
 		physicalRREdit.setHint(getString(R.string.hint_race_physical_rr));
 
-		realmRxHandler.getAll()
-				.subscribe(new Subscriber<Collection<RealmDBO>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Realm instances", e);
-					}
-					@Override
-					public void onNext(Collection<RealmDBO> realmDBOs) {
-						rrEditViews = new HashMap<>(realmDBOs.size());
-						TextView textView;
-						for(RealmDBO realmDBO : realmDBOs) {
-							initRealmViews(realmDBO, params, rrModLabels, rrModEdits);
-						}
-						rrModEdits.addView(physicalRREdit);
-						textView = new TextView(getActivity());
-						textView.setLayoutParams(params);
-						textView.setText(getString(R.string.label_physical_rr));
-						rrModLabels.addView(textView);
-					}
-				});
+		rrEditViews = new HashMap<>(3);
+		TextView textView;
+		initRealmViews(Realm.CHANNELING, params, rrModLabels, rrModEdits);
+		initRealmViews(Realm.ESSENCE, params, rrModLabels, rrModEdits);
+		initRealmViews(Realm.MENTALISM, params, rrModLabels, rrModEdits);
+		rrModEdits.addView(physicalRREdit);
+		textView = new TextView(getActivity());
+		textView.setLayoutParams(params);
+		textView.setText(getString(R.string.label_physical_rr));
+		rrModLabels.addView(textView);
 
 		physicalRREdit.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -590,11 +556,11 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 		});
 	}
 
-	private void initRealmViews(final RealmDBO realmDBO, LinearLayout.LayoutParams params, LinearLayout labelsRow,
+	private void initRealmViews(final Realm realm, LinearLayout.LayoutParams params, LinearLayout labelsRow,
 								LinearLayout editsRow) {
 		TextView textView = new TextView(getActivity());
 		textView.setLayoutParams(params);
-		textView.setText(realmDBO.getName());
+		textView.setText(realm.toString());
 
 		final EditText editText = new EditText(getActivity());
 		editText.setHint(getString(R.string.hint_race_rr_mod));
@@ -605,19 +571,20 @@ public class RacesMainPageFragment extends Fragment implements EditTextUtils.Val
 				Race currentInstance = racesFragment.getCurrentInstance();
 				if(editText.getText().length() > 0) {
 					short newShort = Short.valueOf(editText.getText().toString());
-					if(currentInstance.getRealmResistancesModifiers().get(realmDBO) == null ||
-							newShort != currentInstance.getRealmResistancesModifiers().get(realmDBO)) {
-						currentInstance.getRealmResistancesModifiers().put(realmDBO, newShort);
+					if(currentInstance.getRealmResistancesModifiers().get(realm) == null ||
+							newShort != currentInstance.getRealmResistancesModifiers().get(realm)) {
+						currentInstance.getRealmResistancesModifiers().put(realm, newShort);
 						racesFragment.saveItem();
 					}
 				}
-				else if(currentInstance.getRealmResistancesModifiers().get(realmDBO) != null) {
-					currentInstance.getRealmResistancesModifiers().remove(realmDBO);
+				else if(currentInstance.getRealmResistancesModifiers().get(realm) != null) {
+					currentInstance.getRealmResistancesModifiers().remove(realm);
 					racesFragment.saveItem();
 				}
 			}
 		});
-		rrEditViews.put(realmDBO, editText);
+
+		rrEditViews.put(realm, editText);
 		labelsRow.addView(textView);
 		editsRow.addView(editText);
 	}

@@ -19,7 +19,6 @@ import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
@@ -41,8 +40,8 @@ import dagger.Provides;
 @Module(includes = ApplicationModule.class)
 public class ItemDaoSqlModule {
 	@Provides @Singleton
-	ItemDao provideItemDao(RMUDatabaseHelper helper, CampaignDao campaignDao, ItemTemplateDao itemTemplateDao, SizeDao sizeDao) {
-		return new ItemDaoDbImpl(helper, campaignDao, itemTemplateDao, sizeDao);
+	ItemDao provideItemDao(RMUDatabaseHelper helper, CampaignDao campaignDao, ItemTemplateDao itemTemplateDao) {
+		return new ItemDaoDbImpl(helper, campaignDao, itemTemplateDao);
 	}
 
 	@Provides @Singleton

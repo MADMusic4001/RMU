@@ -22,10 +22,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
@@ -39,17 +37,18 @@ import com.madinnovations.rmu.data.dao.creature.schemas.VarietySkillsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyStatsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyTalentTiersSchema;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Parameter;
+import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.RMUAppException;
 
 import java.util.ArrayList;
@@ -69,8 +68,6 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	@SuppressWarnings("unused")
 	private static final String TAG = "CreatureVarietyDaoDbImp";
 	private CreatureTypeDao creatureTypeDao;
-	private SizeDao sizeDao;
-	private RealmDao realmDao;
 	private OutlookDao outlookDao;
 	private SkillDao skillDao;
 	private SpecializationDao specializationDao;
@@ -78,15 +75,12 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	private TalentDao talentDao;
 	private AttackDao attackDao;
 	private AttackRxHandler attackRxHandler;
-	private SizeRxHandler sizeRxHandler;
 
 	/**
 	 * Creates a new instance of CreatureVarietyDaoDbImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
 	 * @param creatureTypeDao  a {@link CreatureTypeDao} instance
-	 * @param sizeDao  a {@link SizeDao} instance
-	 * @param realmDao  a {@link RealmDao} instance
 	 * @param outlookDao  an {@link OutlookDao} instance
 	 * @param skillDao  a {@link SkillDao} instance
 	 * @param specializationDao  a {@link SpecializationDao} instance
@@ -94,19 +88,15 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	 * @param talentDao  a {@link TalentDao} instance
 	 * @param attackDao  an {@link AttackDao} instance
 	 * @param attackRxHandler  an {@link AttackRxHandler} instance
-	 * @param sizeRxHandler  a {@link SizeRxHandler} instance
 	 */
 	@Inject
 	public CreatureVarietyDaoDbImpl(@NonNull SQLiteOpenHelper helper, @NonNull CreatureTypeDao creatureTypeDao,
-									@NonNull SizeDao sizeDao, @NonNull RealmDao realmDao, @NonNull OutlookDao outlookDao,
-									@NonNull SkillDao skillDao, @NonNull SpecializationDao specializationDao,
-									@NonNull SpellListDao spellListDao, @NonNull TalentDao talentDao,
-									@NonNull AttackDao attackDao, @NonNull AttackRxHandler attackRxHandler,
-									@NonNull SizeRxHandler sizeRxHandler) {
+									@NonNull OutlookDao outlookDao, @NonNull SkillDao skillDao,
+									@NonNull SpecializationDao specializationDao, @NonNull SpellListDao spellListDao,
+									@NonNull TalentDao talentDao, @NonNull AttackDao attackDao,
+									@NonNull AttackRxHandler attackRxHandler) {
 		super(helper);
 		this.creatureTypeDao = creatureTypeDao;
-		this.sizeDao = sizeDao;
-		this.realmDao = realmDao;
 		this.outlookDao = outlookDao;
 		this.skillDao = skillDao;
 		this.specializationDao = specializationDao;
@@ -114,7 +104,6 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		this.talentDao = talentDao;
 		this.attackDao = attackDao;
 		this.attackRxHandler = attackRxHandler;
-		this.sizeRxHandler = sizeRxHandler;
 	}
 
 	@Override
@@ -179,7 +168,6 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 	protected CreatureVariety cursorToEntity(@NonNull Cursor cursor) {
 		CreatureVariety instance = new CreatureVariety();
 		instance.setAttackRxHandler(attackRxHandler);
-		instance.setSizeRxHandler(sizeRxHandler);
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
@@ -194,7 +182,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setHealingRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HEALING_RATE)));
 		instance.setBaseHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_HITS)));
 		instance.setBaseEndurance(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_ENDURANCE)));
-		instance.setSize(sizeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
+		instance.setSize(Size.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SIZE))));
 		instance.setArmorType(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ARMOR_TYPE)));
 		instance.setCriticalCodes(getCriticalCodes(instance.getId()));
 		instance.setBaseMovementRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_MOVEMENT_RATE)));
@@ -203,22 +191,18 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setBaseMentalismRR(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_MENTALISM_RR)));
 		instance.setBasePhysicalRR(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_PHYSICAL_RR)));
 		instance.setBaseFearRR(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_FEAR_RR)));
-		instance.setRealmDBO1(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM1_ID))));
-		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))) {
-			instance.setRealmDBO2(null);
+		instance.setRealm1(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM1))));
+		if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_REALM2))) {
+			instance.setRealm2(null);
 		}
 		else {
-			instance.setRealmDBO2(realmDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REALM2_ID))));
+			instance.setRealm2(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REALM2))));
 		}
 		instance.setBaseStride(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_STRIDE)));
 		instance.setLeftoverDP(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_LEFTOVER_DP)));
 		instance.setOutlook(outlookDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_OUTLOOK_ID))));
 		instance.setTalentInstancesList(getTalentInstances(instance.getId()));
 		instance.setAttackSequence(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ATTACK_SEQUENCE)));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SIZE_MODIFIER_ID))) {
-			instance.setCriticalSizeModifier(sizeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
-					COLUMN_CRITICAL_SIZE_MODIFIER_ID))));
-		}
 		instance.setAttackBonusesMap(getAttackBonuses(instance.getId()));
 		instance.setSkillBonusesList(getSkillBonuses(instance.getId()));
 		instance.parseAttackSequence();
@@ -248,7 +232,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		values.put(COLUMN_HEALING_RATE, instance.getHealingRate());
 		values.put(COLUMN_BASE_HITS, instance.getBaseHits());
 		values.put(COLUMN_BASE_ENDURANCE, instance.getBaseEndurance());
-		values.put(COLUMN_SIZE_ID, instance.getSize().getId());
+		values.put(COLUMN_SIZE, instance.getSize().name());
 		values.put(COLUMN_ARMOR_TYPE, instance.getArmorType());
 		values.put(COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
 		values.put(COLUMN_BASE_CHANNELING_RR, instance.getBaseChannellingRR());
@@ -256,17 +240,16 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		values.put(COLUMN_BASE_MENTALISM_RR, instance.getBaseMentalismRR());
 		values.put(COLUMN_BASE_PHYSICAL_RR, instance.getBasePhysicalRR());
 		values.put(COLUMN_BASE_FEAR_RR, instance.getBaseFearRR());
-		values.put(COLUMN_REALM1_ID, instance.getRealmDBO1().getId());
-		values.put(COLUMN_REALM2_ID, instance.getRealmDBO2() != null ? instance.getRealmDBO2().getId() : null);
+		values.put(COLUMN_REALM1, instance.getRealm1().name());
+		if(instance.getRealm2() == null) {
+			values.putNull(COLUMN_REALM2);
+		}
+		else {
+			values.put(COLUMN_REALM2, instance.getRealm2().name());
+		}
 		values.put(COLUMN_BASE_STRIDE, instance.getBaseStride());
 		values.put(COLUMN_LEFTOVER_DP, instance.getLeftoverDP());
 		values.put(COLUMN_OUTLOOK_ID, instance.getOutlook().getId());
-		if(instance.getCriticalSizeModifier() == null) {
-			values.putNull(COLUMN_CRITICAL_SIZE_MODIFIER_ID);
-		}
-		else {
-			values.put(COLUMN_CRITICAL_SIZE_MODIFIER_ID, instance.getCriticalSizeModifier().getId());
-		}
 		values.put(COLUMN_ATTACK_SEQUENCE, instance.getAttackSequence());
 		return values;
 	}

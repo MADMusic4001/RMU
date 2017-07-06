@@ -1,133 +1,162 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ *
+ *   Copyright (C) 2017 MadInnovations
+ *   <p/>
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *   <p/>
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p/>
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ *
  */
+
 package com.madinnovations.rmu.data.entities.common;
 
+import android.support.annotation.StringRes;
+
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * Creature size class
+ * Enumeration of all the Size categories
  */
-public class Size extends DatabaseObject {
-	public static final String JSON_NAME = "Sizes";
-	private String  code = null;
-	private String  name = null;
-	private String  examples=  null;
-	private Integer minWeight = null;
-	private Integer maxWeight = null;
-	private Integer minHeight = null;
-	private Integer maxHeight = null;
+public enum Size {
+	MINUSCULE(1, R.string.enum_size_minuscule, "I", 0,
+			  Double.valueOf("0"), Double.valueOf("1"),
+			  Double.valueOf("0"), Double.valueOf("0.25")),
+	DIMINUTIVE(2, R.string.enum_size_diminutive, "II", 0,
+			   Double.valueOf("1"), Double.valueOf("4"),
+			   Double.valueOf("0.25"), Double.valueOf("0.5")),
+	TINY(3, R.string.enum_size_tiny, "II", 0,
+		 Double.valueOf("4"), Double.valueOf("16"),
+		 Double.valueOf("0.5"), Double.valueOf("1")),
+	SMALL(4, R.string.enum_size_small, "IV", 0,
+		  Double.valueOf("16"), Double.valueOf("64"),
+		  Double.valueOf("1"), Double.valueOf("4")),
+	MEDIUM(5, R.string.enum_size_medium, "V", 0,
+		   Double.valueOf("64"), Double.valueOf("256"),
+		   Double.valueOf("4"), Double.valueOf("8")),
+	BIG(6, R.string.enum_size_big, "VI", 0,
+		Double.valueOf("256"), Double.valueOf("1000"),
+		Double.valueOf("8"), Double.valueOf("15")),
+	LARGE(7, R.string.enum_size_large, "VII", 0,
+		  Double.valueOf("1000"), Double.valueOf("4000"),
+		  Double.valueOf("15"), Double.valueOf("25")),
+	HUGE(8, R.string.enum_size_huge, "VIII", 0,
+		 Double.valueOf("4000"), Double.valueOf("16000"),
+		 Double.valueOf("25"), Double.valueOf("50")),
+	GIGANTIC(9, R.string.enum_size_gigantic, "IX", 0,
+			 Double.valueOf("16000"), Double.valueOf("64000"),
+			 Double.valueOf("50"), Double.valueOf("100")),
+	ENORMOUS(10, R.string.enum_size_enormous, "X", 0,
+			 Double.valueOf("64000"), Double.valueOf("262000"),
+			 Double.valueOf("100"), Double.valueOf("200")),
+	IMMENSE(11, R.string.enum_size_immense, "XI", 0,
+			Double.valueOf("262000"), Double.valueOf("1000000"),
+			Double.valueOf("200"), Double.valueOf("400")),
+	BEHEMOTH(12, R.string.enum_size_behemoth, "XII", 0,
+			 Double.valueOf("1000000"), Double.valueOf("4000000"),
+			 Double.valueOf("400"), Double.valueOf("800")),
+	LEVIATHAN(13, R.string.enum_size_leviathan, "XIII", 0,
+			  Double.valueOf("4000000"), Double.MAX_VALUE,
+			  Double.valueOf("800"), Double.MAX_VALUE);
 
-	/**
-	 * Creates a new Size instance
-	 */
-	public Size() {}
+	private static final String[] sizeStrings;
+	private            int    ordinal;
+	private @StringRes int    textResourceId;
+	private            String code;
+	private @StringRes int    examplesResourceId;
+	private            Double minWeight;
+	private            Double maxWeight;
+	private            Double minHeight;
+	private            Double maxHeight;
 
-	/**
-	 * Creates a new Size instance with the given id
-	 *
-	 * @param id  the id for the new instance
-	 */
-	public Size(int id) {
-		super(id);
+	static {
+		sizeStrings = new String[Size.values().length];
+		int i = 0;
+		for(Size size : Size.values()) {
+			sizeStrings[i++] = size.toString();
+		}
 	}
 
-	/**
-	 * Checks the validity of the Size instance.
-	 *
-	 * @return true if the Size instance is valid, otherwise false.
-	 */
-	public boolean isValid() {
-		boolean isValid = code != null && !code.isEmpty() && name != null && !name.isEmpty() && examples != null && !examples.isEmpty();
-		isValid &= minHeight == null || maxHeight == null || minHeight <= maxHeight;
-		isValid &= minWeight == null || maxWeight == null || minWeight <= maxWeight;
-		return isValid;
+	Size(int ordinal, int textResourceId, String code, int examplesResourceId, Double minWeight, Double maxWeight,
+		 Double minHeight, Double maxHeight) {
+		this.ordinal = ordinal;
+		this.textResourceId = textResourceId;
+		this.code = code;
+		this.examplesResourceId = examplesResourceId;
+		this.minWeight = minWeight;
+		this.maxWeight = maxWeight;
+		this.minHeight = minHeight;
+		this.maxHeight = maxHeight;
 	}
 
 	@Override
 	public String toString() {
-		return String.format(RMUApp.getResourceUtils().getString(R.string.code_name_format_string), code, name);
+		return RMUApp.getResourceUtils().getString(textResourceId);
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
+	/**
+	 * Gets the Size with the given text value.
+	 *
+	 * @param textValue  the textValue of the desired Size instance
+	 * @return the Realm instance with the given textValue or null if not found.
+	 */
+	public static Size getSizeWithName(String textValue) {
+		for(Size size : Size.values()) {
+			if(size.toString().equals(textValue)) {
+				return size;
+			}
 		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-
-		Size size = (Size) o;
-
-		return getCode() != null ? getCode().equals(size.getCode()) : size.getCode() == null;
+		return null;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = super.hashCode();
-		result = 31 * result + (getCode() != null ? getCode().hashCode() : 0);
+	/**
+	 * Gets the examples string from the application string resources
+	 *
+	 * @return  a string with examples of creatures in this size category or an empty string if not defined.
+	 */
+	public String getExamples() {
+		String result = "";
+		if(examplesResourceId > 0) {
+			result = RMUApp.getResourceUtils().getString(examplesResourceId);
+		}
 		return result;
 	}
 
-	// Getters and setters
+	// Getters
+	public static String[] getSizeStrings() {
+		return sizeStrings;
+	}
+	public int getOrdinal() {
+		return ordinal;
+	}
+	public int getTextResourceId() {
+		return textResourceId;
+	}
 	public String getCode() {
 		return code;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public int getExamplesResourceId() {
+		return examplesResourceId;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getExamples() {
-		return examples;
-	}
-	public void setExamples(String examples) {
-		this.examples = examples;
-	}
-	public Integer getMinWeight() {
+	public Double getMinWeight() {
 		return minWeight;
 	}
-	public void setMinWeight(Integer minWeight) {
-		this.minWeight = minWeight;
-	}
-	public Integer getMaxWeight() {
+	public Double getMaxWeight() {
 		return maxWeight;
 	}
-	public void setMaxWeight(Integer maxWeight) {
-		this.maxWeight = maxWeight;
-	}
-	public Integer getMinHeight() {
+	public Double getMinHeight() {
 		return minHeight;
 	}
-	public void setMinHeight(Integer minHeight) {
-		this.minHeight = minHeight;
-	}
-	public Integer getMaxHeight() {
+	public Double getMaxHeight() {
 		return maxHeight;
-	}
-	public void setMaxHeight(Integer maxHeight) {
-		this.maxHeight = maxHeight;
 	}
 }

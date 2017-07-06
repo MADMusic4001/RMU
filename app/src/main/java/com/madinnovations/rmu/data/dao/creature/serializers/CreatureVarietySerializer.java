@@ -19,7 +19,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.VarietyAttacksSchema;
@@ -41,7 +40,7 @@ import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.io.IOException;
@@ -57,7 +56,6 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	@SuppressWarnings("unused")
 	private static final String TAG = "CreatureVarietySerializ";
 	private AttackRxHandler attackRxHandler;
-	private SizeRxHandler sizeRxHandler;
 
 	@Override
 	public void write(JsonWriter out, CreatureVariety value) throws IOException {
@@ -82,15 +80,12 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		out.name(COLUMN_BASE_FEAR_RR).value(value.getBaseFearRR());
 		out.name(COLUMN_BASE_STRIDE).value(value.getBaseStride());
 		out.name(COLUMN_LEFTOVER_DP).value(value.getLeftoverDP());
-		if(value.getCriticalSizeModifier() != null) {
-			out.name(COLUMN_CRITICAL_SIZE_MODIFIER_ID).value(value.getCriticalSizeModifier().getId());
-		}
 		out.name(COLUMN_ATTACK_SEQUENCE).value(value.getAttackSequence());
 		out.name(COLUMN_TYPE_ID).value(value.getType().getId());
-		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
-		out.name(COLUMN_REALM1_ID).value(value.getRealmDBO1().getId());
-		if (value.getRealmDBO2() != null) {
-			out.name(COLUMN_REALM2_ID).value(value.getRealmDBO2().getId());
+		out.name(COLUMN_SIZE).value(value.getSize().name());
+		out.name(COLUMN_REALM1).value(value.getRealm1().name());
+		if (value.getRealm2() != null) {
+			out.name(COLUMN_REALM2).value(value.getRealm2().name());
 		}
 		out.name(COLUMN_OUTLOOK_ID).value(value.getOutlook().getId());
 
@@ -185,7 +180,6 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	public CreatureVariety read(JsonReader in) throws IOException {
 		CreatureVariety creatureVariety = new CreatureVariety();
 		creatureVariety.setAttackRxHandler(attackRxHandler);
-		creatureVariety.setSizeRxHandler(sizeRxHandler);
 
 		in.beginObject();
 		while (in.hasNext()) {
@@ -250,23 +244,20 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 				case COLUMN_LEFTOVER_DP:
 					creatureVariety.setLeftoverDP((short) in.nextInt());
 					break;
-				case COLUMN_CRITICAL_SIZE_MODIFIER_ID:
-					creatureVariety.setCriticalSizeModifier(new Size(in.nextInt()));
-					break;
 				case COLUMN_ATTACK_SEQUENCE:
 					creatureVariety.setAttackSequence(in.nextString());
 					break;
 				case COLUMN_TYPE_ID:
 					creatureVariety.setType(new CreatureType(in.nextInt()));
 					break;
-				case COLUMN_SIZE_ID:
-					creatureVariety.setSize(new Size(in.nextInt()));
+				case COLUMN_SIZE:
+					creatureVariety.setSize(Size.valueOf(in.nextString()));
 					break;
-				case COLUMN_REALM1_ID:
-					creatureVariety.setRealmDBO1(new RealmDBO(in.nextInt()));
+				case COLUMN_REALM1:
+					creatureVariety.setRealm1(Realm.valueOf(in.nextString()));
 					break;
-				case COLUMN_REALM2_ID:
-					creatureVariety.setRealmDBO2(new RealmDBO(in.nextInt()));
+				case COLUMN_REALM2:
+					creatureVariety.setRealm2(Realm.valueOf(in.nextString()));
 					break;
 				case COLUMN_OUTLOOK_ID:
 					creatureVariety.setOutlook(new Outlook(in.nextInt()));
@@ -437,8 +428,5 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 	// Getters and setters
 	public void setAttackRxHandler(AttackRxHandler attackRxHandler) {
 		this.attackRxHandler = attackRxHandler;
-	}
-	public void setSizeRxHandler(SizeRxHandler sizeRxHandler) {
-		this.sizeRxHandler = sizeRxHandler;
 	}
 }

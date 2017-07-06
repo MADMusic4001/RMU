@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.campaign;
 
@@ -158,21 +158,18 @@ public class MainMenuFragment extends Fragment {
 					case 3:
 						switch (childPosition) {
 							case 0:
-								((CampaignActivity)getActivity()).showSizes();
-								break;
-							case 1:
 								((CampaignActivity)getActivity()).showSkillCategories();
 								break;
-							case 2:
+							case 1:
 								((CampaignActivity)getActivity()).showSkills();
 								break;
-							case 3:
+							case 2:
 								((CampaignActivity)getActivity()).showSpecializations();
 								break;
-							case 4:
+							case 3:
 								((CampaignActivity)getActivity()).showTalentCategories();
 								break;
-							case 5:
+							case 4:
 								((CampaignActivity)getActivity()).showTalents();
 								break;
 						}
@@ -220,18 +217,15 @@ public class MainMenuFragment extends Fragment {
 					case 5:
 						switch (childPosition) {
 							case 0:
-								((CampaignActivity)getActivity()).showRealms();
-								break;
-							case 1:
 								((CampaignActivity)getActivity()).showSpells();
 								break;
-							case 2:
+							case 1:
 								((CampaignActivity)getActivity()).showSpellLists();
 								break;
-							case 3:
+							case 2:
 								((CampaignActivity)getActivity()).showSpellSubTypes();
 								break;
-							case 4:
+							case 3:
 								((CampaignActivity)getActivity()).showSpellTypes();
 								break;
 						}
@@ -302,8 +296,7 @@ public class MainMenuFragment extends Fragment {
 		combatItems.add(getString(R.string.manage_damage_tables));
 		combatItems.add(getString(R.string.manage_diseases));
 
-		List<String> commonDataItems = new ArrayList<>(6);
-		commonDataItems.add(getString(R.string.manage_sizes));
+		List<String> commonDataItems = new ArrayList<>(5);
 		commonDataItems.add(getString(R.string.manage_skill_categories));
 		commonDataItems.add(getString(R.string.manage_skills));
 		commonDataItems.add(getString(R.string.manage_specializations));
@@ -324,8 +317,7 @@ public class MainMenuFragment extends Fragment {
 		itemItems.add(getString(R.string.create_poisons));
 		itemItems.add(getString(R.string.create_weapons));
 
-		List<String> spellItems = new ArrayList<>(5);
-		spellItems.add(getString(R.string.manage_realms));
+		List<String> spellItems = new ArrayList<>(4);
 		spellItems.add(getString(R.string.manage_spells));
 		spellItems.add(getString(R.string.manage_spell_lists));
 		spellItems.add(getString(R.string.manage_spell_sub_types));

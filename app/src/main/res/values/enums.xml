@@ -436,6 +436,21 @@
   <string name="enum_severity_severe">Severe</string>
   <string name="enum_severity_extreme">Extreme</string>
 
+  <!-- Size enum strings -->
+  <string name="enum_size_minuscule">Minuscule</string>
+  <string name="enum_size_diminutive">Diminutive</string>
+  <string name="enum_size_tiny">Tiny</string>
+  <string name="enum_size_small">Small</string>
+  <string name="enum_size_medium">Medium</string>
+  <string name="enum_size_big">Big</string>
+  <string name="enum_size_large">Large</string>
+  <string name="enum_size_huge">Huge</string>
+  <string name="enum_size_gigantic">Gigantic</string>
+  <string name="enum_size_enormous">Enormous</string>
+  <string name="enum_size_immense">Immense</string>
+  <string name="enum_size_behemoth">Behemoth</string>
+  <string name="enum_size_leviathan">Leviathan</string>
+
   <!-- Spell List Type enum strings -->
   <string name="enum_open">Open</string>
   <string name="enum_closed">Closed</string>

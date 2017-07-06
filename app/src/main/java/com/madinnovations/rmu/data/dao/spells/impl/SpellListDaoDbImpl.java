@@ -38,9 +38,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static com.madinnovations.rmu.data.dao.character.schemas.RaceRealmRRModSchema.COLUMN_REALM_ID;
-import static com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema.COLUMN_REALM2_ID;
-
 /**
  * Methods for managing {@link SpellList} objects in a SQLite database.
  */
@@ -132,12 +129,12 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 		else {
 			values.put(COLUMN_NOTES, instance.getNotes());
 		}
-		values.put(COLUMN_REALM_ID, instance.getRealm().name());
+		values.put(COLUMN_REALM, instance.getRealm().name());
 		if(instance.getRealm2() == null ) {
-			values.putNull(COLUMN_REALM2_ID);
+			values.putNull(COLUMN_REALM2);
 		}
 		else {
-			values.put(COLUMN_REALM2_ID, instance.getRealm2().name());
+			values.put(COLUMN_REALM2, instance.getRealm2().name());
 		}
 		if(instance.getProfession() == null) {
 			values.putNull(COLUMN_PROFESSION_ID);
@@ -160,7 +157,7 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 			selectionArgs[0] = String.valueOf(character.getRealm().name());
 			selectionArgs[1] = String.valueOf(character.getRealm2().name());
 			selectionArgs[2] = String.valueOf(character.getProfession().getId());
-			selection = COLUMN_REALM_ID + " in (?, ?) and (" + COLUMN_PROFESSION_ID + " is null or "
+			selection = COLUMN_REALM + " in (?, ?) and (" + COLUMN_PROFESSION_ID + " is null or "
 					+ COLUMN_PROFESSION_ID + " = ?)";
 		}
 		else {
@@ -173,11 +170,11 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 			}
 			if(character.getProfession() != null) {
 				selectionArgs[1] = String.valueOf(character.getProfession().getId());
-				selection = COLUMN_REALM_ID + " = ? and (" + COLUMN_PROFESSION_ID + " is null or "
+				selection = COLUMN_REALM + " = ? and (" + COLUMN_PROFESSION_ID + " is null or "
 						+ COLUMN_PROFESSION_ID + " = ?)";
 			}
 			else {
-				selection = COLUMN_REALM_ID + " = ? and " + COLUMN_PROFESSION_ID + " is null";
+				selection = COLUMN_REALM + " = ? and " + COLUMN_PROFESSION_ID + " is null";
 			}
 		}
 		List<SpellList> list = new ArrayList<>();

@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.data.dao.item.schemas;
 
 import com.madinnovations.rmu.data.dao.campaign.schemas.CampaignSchema;
-import com.madinnovations.rmu.data.dao.common.schemas.SizeSchema;
 
 /**
  * Database schema data for the items table
@@ -29,7 +28,7 @@ public interface ItemSchema {
     String COLUMN_ITEM_TEMPLATE_ID = "itemTemplateId";
     String COLUMN_NAME = "name";
 	String COLUMN_HISTORY = "history";
-	String COLUMN_SIZE_ID = "sizeId";
+	String COLUMN_SIZE = "size";
 	String COLUMN_LEVEL = "level";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
@@ -42,8 +41,7 @@ public interface ItemSchema {
             	+ ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
 			+ COLUMN_NAME + " TEXT, "
 			+ COLUMN_HISTORY + " TEXT, "
-			+ COLUMN_SIZE_ID + " INTEGER NOT NULL REFERENCES "
-				+ SizeSchema.TABLE_NAME + "(" + SizeSchema.COLUMN_ID + "), "
+			+ COLUMN_SIZE + " TEXT NOT NULL, "
 			+ COLUMN_LEVEL + " INTEGER NOT NULL"
             + ")";
 
@@ -53,7 +51,7 @@ public interface ItemSchema {
 		+ ", ITEM." + COLUMN_ITEM_TEMPLATE_ID
 		+ ", ITEM." + COLUMN_NAME
 		+ ", ITEM." + COLUMN_HISTORY
-		+ ", ITEM." + COLUMN_SIZE_ID
+		+ ", ITEM." + COLUMN_SIZE
 		+ ", ITEM." + COLUMN_LEVEL
 		+ ", WEAPON." + WeaponSchema.COLUMN_BONUS
 		+ ", WEAPON." + WeaponSchema.COLUMN_TWO_HANDED
@@ -70,5 +68,5 @@ public interface ItemSchema {
 	String QUERY_NO_SUBCLASS = QUERY_ALL + " WHERE WEAPON." + WeaponSchema.COLUMN_ID + " IS NULL";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CAMPAIGN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_NAME, COLUMN_HISTORY,
-			COLUMN_SIZE_ID, COLUMN_LEVEL};
+			COLUMN_SIZE, COLUMN_LEVEL};
 }

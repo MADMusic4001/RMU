@@ -23,12 +23,12 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Slot;
 import com.madinnovations.rmu.data.entities.object.Weapon;
@@ -47,19 +47,19 @@ import javax.inject.Singleton;
 public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemSchema {
 	private CampaignDao     campaignDao;
 	private ItemTemplateDao itemTemplateDao;
-	private SizeDao         sizeDao;
 
     /**
      * Creates a new instance of ItemDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
+	 * @param campaignDao  a CampaignDao instance
+	 * @param itemTemplateDao  an ItemTemplateDao instance
      */
     @Inject
-    public ItemDaoDbImpl(SQLiteOpenHelper helper, CampaignDao campaignDao, ItemTemplateDao itemTemplateDao, SizeDao sizeDao) {
+    public ItemDaoDbImpl(SQLiteOpenHelper helper, CampaignDao campaignDao, ItemTemplateDao itemTemplateDao) {
         super(helper);
 		this.campaignDao = campaignDao;
 		this.itemTemplateDao = itemTemplateDao;
-		this.sizeDao = sizeDao;
     }
 
 	@Override
@@ -315,7 +315,6 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 		}
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setCampaign(campaignDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CAMPAIGN_ID))));
-		instance.setCampaign(new Campaign(1));
 		instance.setItemTemplate(itemTemplateDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ITEM_TEMPLATE_ID))));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_NAME))) {
 			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
@@ -323,7 +322,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_HISTORY))) {
 			instance.setHistory(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HISTORY)));
 		}
-		instance.setSize(sizeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
+		instance.setSize(Size.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SIZE))));
 		instance.setLevel(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_LEVEL)));
 
 		return instance;
@@ -354,7 +353,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 		else {
 			values.put(COLUMN_HISTORY, instance.getHistory());
 		}
-		values.put(COLUMN_SIZE_ID, instance.getSize().getId());
+		values.put(COLUMN_SIZE, instance.getSize().name());
 		values.put(COLUMN_LEVEL, instance.getLevel());
 
 		return values;

@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Slot;
@@ -43,8 +42,6 @@ public class CharacterEquipmentPageFragment extends Fragment implements SpinnerU
 	private static final String TAG = "CharacterEquipmentPageF";
 	@Inject
 	protected SkillRxHandler     skillRxHandler;
-	@Inject
-	protected RealmRxHandler     realmRxHandler;
 	@Inject
 	protected ItemRxHandler      itemRxHandler;
 	private   CharactersFragment charactersFragment;

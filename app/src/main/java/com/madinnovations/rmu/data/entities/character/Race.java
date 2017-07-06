@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.character;
 
@@ -19,7 +19,7 @@ import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,23 +30,23 @@ import java.util.Map;
  * Racial attributes
  */
 public class Race extends DatabaseObject {
-	public static final String    JSON_NAME                  = "Races";
-	private String                name                       = null;
-	private String                description                = null;
-	private short                 bonusDevelopmentPoints     = 0;
-	private Map<Statistic, Short> statModifiers              = new HashMap<>();
-	private Map<RealmDBO, Short>  realmResistancesModifiers  = new HashMap<>();
-	private short                 physicalResistanceModifier = 0;
-	private short                 enduranceModifier          = 0;
-	private short                 baseHits                   = 0;
-	private float                 recoveryMultiplier         = 1.0f;
-	private List<TalentInstance>  talentsAndFlawsList        = new ArrayList<>();
-	private Size                  size                       = null;
-	private short                 strideModifier             = 0;
-	private short                 averageHeight              = 0;
-	private short                 averageWeight              = 0;
-	private short                 poundsPerInch              = 0;
-	private List<Culture>         allowedCultures            = new ArrayList<>();
+	public static final String                JSON_NAME                  = "Races";
+	private             String                name                       = null;
+	private             String                description                = null;
+	private             short                 bonusDevelopmentPoints     = 0;
+	private             Map<Statistic, Short> statModifiers              = new HashMap<>();
+	private             Map<Realm, Short>    realmResistancesModifiers  = new HashMap<>();
+	private             short                physicalResistanceModifier = 0;
+	private             short                enduranceModifier          = 0;
+	private             short                baseHits                   = 0;
+	private             float                recoveryMultiplier         = 1.0f;
+	private             List<TalentInstance> talentsAndFlawsList        = new ArrayList<>();
+	private             Size                 size                       = null;
+	private             short                strideModifier             = 0;
+	private             short                averageHeight              = 0;
+	private             short                averageWeight              = 0;
+	private             short                poundsPerInch              = 0;
+	private             List<Culture>        allowedCultures            = new ArrayList<>();
 
 	/**
 	 * Default constructor
@@ -103,11 +103,11 @@ public class Race extends DatabaseObject {
 	public void setStatModifiers(Map<Statistic, Short> statModifiers) {
 		this.statModifiers = statModifiers;
 	}
-	public Map<RealmDBO, Short> getRealmResistancesModifiers() {
+	public Map<Realm, Short> getRealmResistancesModifiers() {
 		return realmResistancesModifiers;
 	}
 	public void setRealmResistancesModifiers(
-			Map<RealmDBO, Short> realmResistancesModifiers) {
+			Map<Realm, Short> realmResistancesModifiers) {
 		this.realmResistancesModifiers = realmResistancesModifiers;
 	}
 	public short getPhysicalResistanceModifier() {

@@ -17,14 +17,12 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentCategoryDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.common.impl.BiomesDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.impl.SizeDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SkillCategoryDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SkillDaoDbImpl;
 import com.madinnovations.rmu.data.dao.common.impl.SpecializationDaoDbImpl;
@@ -44,11 +42,6 @@ public class CommonDaoSqlModule {
 	@Provides @Singleton
 	BiomeDao provideBiomeDao(RMUDatabaseHelper helper) {
 		return new BiomesDaoDbImpl(helper);
-	}
-
-	@Provides @Singleton
-	SizeDao provideSizeDao(RMUDatabaseHelper helper) {
-		return new SizeDaoDbImpl(helper);
 	}
 
 	@Provides @Singleton

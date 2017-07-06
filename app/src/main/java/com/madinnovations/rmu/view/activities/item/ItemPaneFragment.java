@@ -19,7 +19,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import android.widget.EditText;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.object.Item;
@@ -35,6 +33,8 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -46,11 +46,9 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 	private static final String TAG = "ItemPaneFragment";
 	@Inject
 	protected CampaignRxHandler      campaignRxHandler;
-	@Inject
-	protected SizeRxHandler          sizeRxHandler;
 	private   EditText               nameEdit;
 	private   SpinnerUtils<Campaign> campaignSpinnerUtils;
-	private   SpinnerUtils<Size>     sizeSpinnerUtils;
+	private   SpinnerUtils<String>   sizeSpinnerUtils;
 	private   EditText               levelEdit;
 	private   EditText               historyEdit;
 	private   DataAccessInterface    dataAccessInterface;
@@ -68,7 +66,7 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 		campaignSpinnerUtils = new SpinnerUtils<>();
 		campaignSpinnerUtils.initSpinner(layout, getActivity(), campaignRxHandler.getAll(), this, R.id.campaign_spinner, null);
 		sizeSpinnerUtils = new SpinnerUtils<>();
-		sizeSpinnerUtils.initSpinner(layout, getActivity(), sizeRxHandler.getAll(), this, R.id.size_spinner, null);
+		sizeSpinnerUtils.initSpinner(layout, getActivity(), Arrays.asList(Size.getSizeStrings()), this, R.id.size_spinner, null);
 		levelEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.level_edit, R.string.validation_item_level_required);
 		historyEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.history_edit, 0);
 
@@ -131,7 +129,9 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 					result = dataAccessInterface.getItem().getCampaign();
 					break;
 				case R.id.size_spinner:
-					result = dataAccessInterface.getItem().getSize();
+					if(dataAccessInterface.getItem().getSize() != null) {
+						result = dataAccessInterface.getItem().getSize().toString();
+					}
 					break;
 			}
 		}
@@ -148,7 +148,7 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 					dataAccessInterface.saveItem();
 					break;
 				case R.id.size_spinner:
-					dataAccessInterface.getItem().setSize((Size) newItem);
+					dataAccessInterface.getItem().setSize(Size.getSizeWithName((String)newItem));
 					dataAccessInterface.saveItem();
 					break;
 			}
@@ -161,16 +161,6 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 			case R.id.campaign_spinner:
 				break;
 			case R.id.size_spinner:
-				if(dataAccessInterface.getItem().getSize() == null) {
-					for (Size size : sizeSpinnerUtils.getAllItems()) {
-						if (size.getCode().equals("V")) {
-							dataAccessInterface.getItem().setSize(size);
-							dataAccessInterface.saveItem();
-							sizeSpinnerUtils.setSelection(size);
-							break;
-						}
-					}
-				}
 				break;
 		}
 	}
@@ -191,11 +181,13 @@ public class ItemPaneFragment extends Fragment implements EditTextUtils.ValuesCa
 
 		if(currentInstance.getSize() == null) {
 			if(sizeSpinnerUtils.getSelectedItem() != null) {
-				currentInstance.setSize(sizeSpinnerUtils.getSelectedItem());
+				String newString = sizeSpinnerUtils.getSelectedItem();
+				Size newSize = Size.getSizeWithName(newString);
+				currentInstance.setSize(newSize);
 			}
 		}
 		else {
-			sizeSpinnerUtils.setSelection(currentInstance.getSize());
+			sizeSpinnerUtils.setSelection(currentInstance.getSize().toString());
 		}
 
 		levelEdit.setText(String.valueOf(currentInstance.getLevel()));

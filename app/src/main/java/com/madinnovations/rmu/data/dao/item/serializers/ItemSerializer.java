@@ -74,8 +74,8 @@ public class ItemSerializer extends TypeAdapter<Item> implements ItemSchema {
 				case COLUMN_HISTORY:
 					item.setHistory(in.nextString());
 					break;
-				case COLUMN_SIZE_ID:
-					item.setSize(new Size(in.nextInt()));
+				case COLUMN_SIZE:
+					item.setSize(Size.valueOf(in.nextString()));
 					break;
 				case COLUMN_LEVEL:
 					item.setLevel((short)in.nextInt());

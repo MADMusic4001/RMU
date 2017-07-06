@@ -42,7 +42,6 @@ import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.CultureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.character.Culture;
@@ -82,8 +81,6 @@ public class CharacterMainPageFragment extends Fragment implements EditTextUtils
 	protected ProfessionRxHandler      professionRxHandler;
 	@Inject
 	protected RaceRxHandler            raceRxHandler;
-	@Inject
-	protected RealmRxHandler           realmRxHandler;
 	private   CharactersFragment       charactersFragment;
 	private   EditText                 currentLevelView;
 	private   EditText                 experiencePointsView;

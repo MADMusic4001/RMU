@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureVarietyRxHandler;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
@@ -68,8 +67,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 	protected CreatureVarietyRxHandler           creatureVarietyRxHandler;
 	@Inject
 	protected AttackRxHandler                    attackRxHandler;
-	@Inject
-	protected SizeRxHandler                      sizeRxHandler;
 	private TwoFieldListAdapter<CreatureVariety> listAdapter;
 	private ListView                             listView;
 	private ViewPagerAdapter                     pagerAdapter    = null;
@@ -81,7 +78,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
 		currentInstance.setAttackRxHandler(attackRxHandler);
-		currentInstance.setSizeRxHandler(sizeRxHandler);
 
 		View layout = inflater.inflate(R.layout.creature_varieties_fragment, container, false);
 
@@ -131,7 +127,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 			}
 			currentInstance = new CreatureVariety();
 			currentInstance.setAttackRxHandler(attackRxHandler);
-			currentInstance.setSizeRxHandler(sizeRxHandler);
 			currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 			isNew = true;
 			copyItemToViews();
@@ -162,7 +157,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				}
 				currentInstance = new CreatureVariety();
 				currentInstance.setAttackRxHandler(attackRxHandler);
-				currentInstance.setSizeRxHandler(sizeRxHandler);
 				currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 				isNew = true;
 				copyItemToViews();
@@ -332,7 +326,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 							else {
 								currentInstance = new CreatureVariety();
 								currentInstance.setAttackRxHandler(attackRxHandler);
-								currentInstance.setSizeRxHandler(sizeRxHandler);
 								isNew = true;
 							}
 							copyItemToViews();
@@ -400,7 +393,6 @@ public class CreatureVarietiesFragment extends Fragment implements TwoFieldListA
 				if (currentInstance == null) {
 					currentInstance = new CreatureVariety();
 					currentInstance.setAttackRxHandler(attackRxHandler);
-					currentInstance.setSizeRxHandler(sizeRxHandler);
 					currentInstance.initRacialStatBonusList(Arrays.asList(Statistic.getAllStats()));
 					isNew = true;
 				}

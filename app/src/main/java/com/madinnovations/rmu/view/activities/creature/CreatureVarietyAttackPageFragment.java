@@ -31,19 +31,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.AttackBonus;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
-import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.view.RMUDragShadowBuilder;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -51,7 +47,6 @@ import com.madinnovations.rmu.view.adapters.combat.AttackBonusListAdapter;
 import com.madinnovations.rmu.view.adapters.combat.AttacksAdapter;
 import com.madinnovations.rmu.view.adapters.combat.CriticalCodesListAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
-import com.madinnovations.rmu.view.utils.SpinnerUtils;
 import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
 
 import java.util.ArrayList;
@@ -70,14 +65,12 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature varieties.
  */
 public class CreatureVarietyAttackPageFragment extends Fragment implements AttackBonusListAdapter.SetAttackBonus,
-		TextInputLayoutUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+		TextInputLayoutUtils.ValuesCallback {
 	private static final String TAG = "CVAttackPageFragment";
 	private static final String DRAG_ADD_ATTACK = "add-attack";
 	private static final String DRAG_REMOVE_ATTACK = "remove-attack";
 	@Inject
 	protected AttackRxHandler           attackRxHandler;
-	@Inject
-	protected SizeRxHandler             sizeRxHandler;
 	@Inject
 	protected SkillRxHandler            skillRxHandler;
 	@Inject
@@ -87,12 +80,9 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	protected AttackBonusListAdapter    attackBonusesListAdapter;
 	private   ListView                  attacksList;
 	private   ListView                  attackBonusesList;
-	private   Spinner                   criticalSizeSpinner;
-	private   TextInputLayout           attackSequenceLayout;
 	private   EditText                  attackSequenceEdit;
 	private   ListView                  criticalCodesList;
 	private   CreatureVarietiesFragment varietiesFragment;
-	private   Size                      noSizeModifier = new Size();
 
 	/**
 	 * Creates a new CreatureVarietyAttackPageFragment instance.
@@ -115,10 +105,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 		initAttacksList(layout);
 		initAttackBonusesList(layout);
-		noSizeModifier.setCode("-");
-		noSizeModifier.setName(getString(R.string.no_size_modifier));
-		criticalSizeSpinner = new SpinnerUtils<Size>().initSpinner(layout, getActivity(), sizeRxHandler.getAll(), this,
-																   R.id.critical_size_spinner, noSizeModifier);
 		attackSequenceEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.attack_sequence_view,
 														   R.id.attack_sequence_edit,
 														   R.string.validation_creature_variety_attack_sequence_required);
@@ -175,39 +161,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		return false;
 	}
 
-	@Override
-	public Object getValueForSpinner(@IdRes int spinnerId) {
-		Size result = null;
-
-		switch (spinnerId) {
-			case R.id.critical_size_spinner:
-				result = varietiesFragment.getCurrentInstance().getCriticalSizeModifier();
-				if(result == null) {
-					result = noSizeModifier;
-				}
-				break;
-		}
-
-		return result;
-	}
-
-	@Override
-	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
-		switch (spinnerId) {
-			case R.id.critical_size_spinner:
-				if(noSizeModifier.equals(newItem)) {
-					varietiesFragment.getCurrentInstance().setCriticalSizeModifier(null);
-				}
-				else {
-					varietiesFragment.getCurrentInstance().setCriticalSizeModifier((Size)newItem);
-				}
-				break;
-		}
-	}
-
-	@Override
-	public void observerCompleted(@IdRes int spinnerId) {}
-
 	public boolean copyViewsToItem() {
 		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
 		boolean changed = false;
@@ -217,7 +170,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		Map<Attack, Short> newAttackMap;
 		AttackBonus newAttackBonus;
 		String newString;
-		Size newSize;
 
 		if(this.getView() != null) {
 			newAttackMap = new HashMap<>(attackBonusesListAdapter.getCount());
@@ -272,17 +224,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			changed = true;
 		}
 
-		newSize = (Size)criticalSizeSpinner.getSelectedItem();
-		if((newSize == null || noSizeModifier.equals(newSize)) && creatureVariety.getCriticalSizeModifier() != null) {
-			creatureVariety.setCriticalSizeModifier(null);
-			changed = true;
-		}
-		else if(newSize != null && !noSizeModifier.equals(newSize)
-				&& !newSize.equals(creatureVariety.getCriticalSizeModifier())) {
-			creatureVariety.setCriticalSizeModifier(newSize);
-			changed = true;
-		}
-
 		return changed;
 	}
 
@@ -309,14 +250,6 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		Log.d(TAG, "copyItemToViews: attackSequence = " + creatureVariety.getAttackSequence());
 		Log.d(TAG, "copyItemToViews: isErrorEnabled = " +
 				((TextInputLayout)getActivity().findViewById(R.id.attack_sequence_view)).isErrorEnabled());
-
-		if(creatureVariety.getCriticalSizeModifier() == null) {
-			criticalSizeSpinner.setSelection(((ArrayAdapter)criticalSizeSpinner.getAdapter()).getPosition(noSizeModifier));
-		}
-		else {
-			criticalSizeSpinner.setSelection(((ArrayAdapter)criticalSizeSpinner.getAdapter()).getPosition(
-					creatureVariety.getCriticalSizeModifier()));
-		}
 	}
 
 	private void initAttacksList(View layout) {

@@ -25,13 +25,11 @@ import com.madinnovations.rmu.data.dao.character.impl.CharacterDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.impl.CultureDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.impl.ProfessionDaoDbImpl;
 import com.madinnovations.rmu.data.dao.character.impl.RaceDaoDbImpl;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 
 import javax.inject.Singleton;
@@ -63,8 +61,7 @@ public class CharacterDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	RaceDao provideRaceDao(RMUDatabaseHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao,
-						   CultureDao cultureDao) {
-		return new RaceDaoDbImpl(helper, talentDao, realmDao, sizeDao, cultureDao);
+	RaceDao provideRaceDao(RMUDatabaseHelper helper, TalentDao talentDao, CultureDao cultureDao) {
+		return new RaceDaoDbImpl(helper, talentDao, cultureDao);
 	}
 }

@@ -44,7 +44,6 @@ import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.activities.combat.DamageResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.DiseasesFragment;
-import com.madinnovations.rmu.view.activities.common.SizesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillsFragment;
 import com.madinnovations.rmu.view.activities.common.SpecializationsFragment;
@@ -62,7 +61,6 @@ import com.madinnovations.rmu.view.activities.item.WeaponTemplatesFragment;
 import com.madinnovations.rmu.view.activities.item.WeaponsFragment;
 import com.madinnovations.rmu.view.activities.play.CampaignsFragment;
 import com.madinnovations.rmu.view.activities.play.StartEncounterFragment;
-import com.madinnovations.rmu.view.activities.spell.RealmsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellListsFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellSubTypesFragment;
 import com.madinnovations.rmu.view.activities.spell.SpellTypesFragment;
@@ -111,21 +109,19 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 	private OutlooksFragment           outlooksFragment;
 	private ProfessionsFragment        professionsFragment;
 	private RacesFragment              racesFragment;
-	private RealmsFragment           realmsFragment;
-	private SizesFragment            sizesFragment;
-	private SkillCategoriesFragment  skillCategoriesFragment;
-	private SkillsFragment           skillsFragment;
-	private SpecializationsFragment  specializationsFragment;
-	private SpellListsFragment       spellListsFragment;
-	private SpellsFragment           spellsFragment;
-	private SpellSubTypesFragment    spellSubTypesFragment;
-	private SpellTypesFragment       spellTypesFragment;
-	private StartEncounterFragment   startEncounterFragment;
-	private TalentCategoriesFragment talentCategoriesFragment;
-	private TalentsFragment          talentsFragment;
-	private WeaponsFragment          weaponsFragment;
-	private WeaponTemplatesFragment  weaponTemplatesFragment;
-	private ItemFragment             itemFragment;
+	private SkillCategoriesFragment    skillCategoriesFragment;
+	private SkillsFragment             skillsFragment;
+	private SpecializationsFragment    specializationsFragment;
+	private SpellListsFragment         spellListsFragment;
+	private SpellsFragment             spellsFragment;
+	private SpellSubTypesFragment      spellSubTypesFragment;
+	private SpellTypesFragment         spellTypesFragment;
+	private StartEncounterFragment     startEncounterFragment;
+	private TalentCategoriesFragment   talentCategoriesFragment;
+	private TalentsFragment            talentsFragment;
+	private WeaponsFragment            weaponsFragment;
+	private WeaponTemplatesFragment    weaponTemplatesFragment;
+	private ItemFragment               itemFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -486,20 +482,6 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 			racesFragment = new RacesFragment();
 		}
 		replaceDetailFragment(racesFragment);
-	}
-
-	public void showRealms() {
-		if(realmsFragment == null) {
-			realmsFragment = new RealmsFragment();
-		}
-		replaceDetailFragment(realmsFragment);
-	}
-
-	public void showSizes() {
-		if(sizesFragment == null) {
-			sizesFragment = new SizesFragment();
-		}
-		replaceDetailFragment(sizesFragment);
 	}
 
 	public void showSkillCategories() {

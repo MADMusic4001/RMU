@@ -98,7 +98,7 @@ public class Item extends DatabaseObject {
 		out.name(ItemSchema.COLUMN_ITEM_TEMPLATE_ID).value(getItemTemplate().getId());
 		out.name(ItemSchema.COLUMN_NAME).value(getName());
 		out.name(ItemSchema.COLUMN_HISTORY).value(getHistory());
-		out.name(ItemSchema.COLUMN_SIZE_ID).value(getSize().getId());
+		out.name(ItemSchema.COLUMN_SIZE).value(getSize().name());
 		out.name(ItemSchema.COLUMN_LEVEL).value(getLevel());
 	}
 

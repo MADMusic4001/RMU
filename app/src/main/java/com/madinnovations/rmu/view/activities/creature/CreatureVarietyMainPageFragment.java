@@ -32,12 +32,10 @@ import android.widget.Spinner;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
@@ -45,7 +43,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.creature.CreatureLevelSpreadTable;
 import com.madinnovations.rmu.data.entities.creature.CreatureType;
 import com.madinnovations.rmu.data.entities.creature.Outlook;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.utils.TextInputLayoutUtils;
@@ -72,10 +70,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 	@Inject
 	protected OutlookRxHandler           outlookRxHandler;
 	@Inject
-	protected RealmRxHandler             realmRxHandler;
-	@Inject
-	protected SizeRxHandler              sizeRxHandler;
-	@Inject
 	protected SkillRxHandler             skillRxHandler;
 	@Inject
 	protected SpecializationRxHandler    specializationRxHandler;
@@ -86,10 +80,10 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 	@Inject
 	protected ReactiveUtils              reactiveUtils;
 	private   ArrayAdapter<CreatureType> creatureTypeSpinnerAdapter;
-	private   ArrayAdapter<Size>         sizeSpinnerAdapter;
+	private   ArrayAdapter<String>       sizeSpinnerAdapter;
 	private   ArrayAdapter<Character>    levelSpreadSpinnerAdapter;
-	private   ArrayAdapter<RealmDBO>     realm1SpinnerAdapter;
-	private   ArrayAdapter<RealmDBO>     realm2SpinnerAdapter;
+	private   ArrayAdapter<String>       realm1SpinnerAdapter;
+	private   ArrayAdapter<String>       realm2SpinnerAdapter;
 	private   ArrayAdapter<Outlook>      outlookSpinnerAdapter;
 	private   EditText                   nameEdit;
 	private   EditText                   descriptionEdit;
@@ -114,6 +108,7 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 	private   Spinner                    outlookSpinner;
 	private   CreatureVarietiesFragment  varietiesFragment;
 	private   CreatureTypeComparator     creatureTypeComparator = new CreatureTypeComparator();
+	private   String                     noRealmName = null;
 
 	/**
 	 * Creates a new CreatureVarietyMainPageFragment instance.
@@ -131,6 +126,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((CampaignActivity)getActivity()).getActivityComponent().
 				newCreatureFragmentComponent(new CreatureFragmentModule(this)).injectInto(this);
+
+		noRealmName = getString(R.string.label_no_realm);
 
 		View layout = inflater.inflate(R.layout.creature_variety_main_page, container, false);
 
@@ -340,10 +337,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		String newString;
 		int position;
 		CreatureType newType;
-		Size newSize;
 		short newShort;
 		char newLevelSpread;
-		RealmDBO newRealmDBO;
 		Outlook newOutlook;
 
 		if(this.getView() != null) {
@@ -401,7 +396,8 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 
 			position = sizeSpinner.getSelectedItemPosition();
 			if (position != -1) {
-				newSize = sizeSpinnerAdapter.getItem(position);
+				newString = sizeSpinnerAdapter.getItem(position);
+				Size newSize = Size.getSizeWithName(newString);
 				if (newSize != null && !newSize.equals(varietiesFragment.getCurrentInstance().getSize())) {
 					varietiesFragment.getCurrentInstance().setSize(newSize);
 					changed = true;
@@ -506,23 +502,24 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 
 			position = realm1Spinner.getSelectedItemPosition();
 			if (position != -1) {
-				newRealmDBO = realm1SpinnerAdapter.getItem(position);
-				if (newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO1())) {
-					varietiesFragment.getCurrentInstance().setRealmDBO1(newRealmDBO);
+				newString = realm1SpinnerAdapter.getItem(position);
+				Realm newRealm = Realm.getRealmWithName(newString);
+				if (newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
+					varietiesFragment.getCurrentInstance().setRealm1(newRealm);
 					changed = true;
 				}
 			}
 
 			position = realm2Spinner.getSelectedItemPosition();
 			if (position != -1) {
-				newRealmDBO = realm2SpinnerAdapter.getItem(position);
-				if (newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO2())) {
-					if (newRealmDBO.getId() == -1) {
-						varietiesFragment.getCurrentInstance().setRealmDBO2(null);
-					}
-					else {
-						varietiesFragment.getCurrentInstance().setRealmDBO2(newRealmDBO);
-					}
+				newString = realm2SpinnerAdapter.getItem(position);
+				Realm newRealm = Realm.getRealmWithName(newString);
+				if (newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
+					varietiesFragment.getCurrentInstance().setRealm2(newRealm);
+					changed = true;
+				}
+				else if (newRealm == null && varietiesFragment.getCurrentInstance().getRealm2() != null) {
+					varietiesFragment.getCurrentInstance().setRealm2(null);
 					changed = true;
 				}
 			}
@@ -548,7 +545,10 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		levelSpreadSpinner.setSelection(levelSpreadSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance()
 																					  .getLevelSpread()));
 		descriptionEdit.setText(varietiesFragment.getCurrentInstance().getDescription());
-		sizeSpinner.setSelection(sizeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getSize()));
+		if(varietiesFragment.getCurrentInstance().getSize() != null) {
+			sizeSpinner.setSelection(sizeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getSize().toString()));
+
+		}
 		heightEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getHeight()));
 		lengthEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getLength()));
 		weightEdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getWeight()));
@@ -561,13 +561,16 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		mentalismRREdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getBaseMentalismRR()));
 		physicalRREdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getBasePhysicalRR()));
 		fearRREdit.setText(String.valueOf(varietiesFragment.getCurrentInstance().getBaseFearRR()));
-		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealmDBO1()));
-		if(varietiesFragment.getCurrentInstance().getRealmDBO2() == null) {
-			RealmDBO noRealmDBO = new RealmDBO();
-			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealmDBO));
+		if(varietiesFragment.getCurrentInstance().getRealm1() != null) {
+			realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(
+					varietiesFragment.getCurrentInstance().getRealm1().toString()));
+		}
+		if(varietiesFragment.getCurrentInstance().getRealm2() == null) {
+			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(noRealmName));
 		}
 		else {
-			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getRealmDBO2()));
+			realm2Spinner.setSelection(realm2SpinnerAdapter.getPosition(
+					varietiesFragment.getCurrentInstance().getRealm2().toString()));
 		}
 		outlookSpinner.setSelection(outlookSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getOutlook()));
 
@@ -577,64 +580,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		if(varietiesFragment.getCurrentInstance().getDescription() != null && !varietiesFragment.getCurrentInstance().getDescription().isEmpty()) {
 			descriptionEdit.setError(null);
 		}
-	}
-
-	private void initNameEdit(View layout) {
-		nameEdit = TextInputLayoutUtils.initEdit(layout, this.getActivity(), this, R.id.name_textInputLayout, R.id.name_edit,
-												 R.string.validation_creature_variety_name_required);
-		nameEdit = (EditText)layout.findViewById(R.id.name_edit);
-		nameEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && nameEdit != null) {
-					nameEdit.setError(getString(R.string.validation_creature_variety_name_required));
-				}
-			}
-		});
-		nameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newName = nameEdit.getText().toString();
-					if (!newName.equals(varietiesFragment.getCurrentInstance().getName())) {
-						varietiesFragment.getCurrentInstance().setName(newName);
-						varietiesFragment.saveItem();
-					}
-				}
-			}
-		});
-	}
-
-	private void initDescriptionEdit(View layout) {
-		descriptionEdit = (EditText)layout.findViewById(R.id.notes_edit);
-		descriptionEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0 && descriptionEdit != null) {
-					descriptionEdit.setError(getString(R.string.validation_creature_variety_description_required));
-				}
-			}
-		});
-		descriptionEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					final String newDescription = descriptionEdit.getText().toString();
-					if (!newDescription.equals(varietiesFragment.getCurrentInstance().getDescription())) {
-						varietiesFragment.getCurrentInstance().setDescription(newDescription);
-						varietiesFragment.saveItem();
-					}
-				}
-			}
-		});
 	}
 
 	private void initCreatureTypeSpinner(View layout) {
@@ -678,36 +623,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		});
 	}
 
-	private void initTypicalLevelEdit(View layout) {
-		typicalLevelEdit = (EditText)layout.findViewById(R.id.typical_level_edit);
-		typicalLevelEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					typicalLevelEdit.setError(getString(R.string.validation_creature_variety_typical_level_required));
-				}
-			}
-		});
-		typicalLevelEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(typicalLevelEdit.length() > 0) {
-						final short newTypicalLevel = Short.valueOf(typicalLevelEdit.getText().toString());
-						if (newTypicalLevel != varietiesFragment.getCurrentInstance().getTypicalLevel()) {
-							varietiesFragment.getCurrentInstance().setTypicalLevel(newTypicalLevel);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
 	private void initLevelSpreadSpinner(View layout) {
 		levelSpreadSpinner = (Spinner)layout.findViewById(R.id.level_spread_spinner);
 		levelSpreadSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
@@ -737,29 +652,16 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		sizeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		sizeSpinner.setAdapter(sizeSpinnerAdapter);
 
-		sizeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Subscriber<Collection<Size>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Size instances", e);
-					}
-					@Override
-					public void onNext(Collection<Size> items) {
-						sizeSpinnerAdapter.clear();
-						sizeSpinnerAdapter.addAll(items);
-						sizeSpinnerAdapter.notifyDataSetChanged();
-					}
-				});
+		sizeSpinnerAdapter.addAll(Size.getSizeStrings());
+		sizeSpinnerAdapter.notifyDataSetChanged();
 
 		sizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(varietiesFragment.getCurrentInstance().getSize() == null
-						|| sizeSpinnerAdapter.getPosition(varietiesFragment.getCurrentInstance().getSize()) != position) {
-					varietiesFragment.getCurrentInstance().setSize(sizeSpinnerAdapter.getItem(position));
+				String newSizeName = sizeSpinnerAdapter.getItem(position);
+				Size newSize = Size.getSizeWithName(newSizeName);
+				if(newSize != null && !newSize.equals(varietiesFragment.getCurrentInstance().getSize())) {
+					varietiesFragment.getCurrentInstance().setSize(newSize);
 					varietiesFragment.saveItem();
 				}
 			}
@@ -768,336 +670,6 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 				if(varietiesFragment.getCurrentInstance().getSize() != null) {
 					varietiesFragment.getCurrentInstance().setSize(null);
 					varietiesFragment.saveItem();
-				}
-			}
-		});
-	}
-
-	private void initHeightEdit(View layout) {
-		heightEdit = (EditText)layout.findViewById(R.id.height_edit);
-		heightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					heightEdit.setError(getString(R.string.validation_creature_variety_height_required));
-				}
-			}
-		});
-		typicalLevelEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(heightEdit.length() > 0) {
-						final short newShort = Short.valueOf(heightEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getHeight()) {
-							varietiesFragment.getCurrentInstance().setHeight(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initLengthEdit(View layout) {
-		lengthEdit = (EditText)layout.findViewById(R.id.length_edit);
-		lengthEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					lengthEdit.setError(getString(R.string.validation_creature_variety_length_required));
-				}
-			}
-		});
-		lengthEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(lengthEdit.length() > 0) {
-						final short newShort = Short.valueOf(lengthEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getLength()) {
-							varietiesFragment.getCurrentInstance().setLength(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initWeightEdit(View layout) {
-		weightEdit = (EditText)layout.findViewById(R.id.weight_edit);
-		weightEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					weightEdit.setError(getString(R.string.validation_creature_variety_weight_required));
-				}
-			}
-		});
-		weightEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(weightEdit.length() > 0) {
-						final short newShort = Short.valueOf(weightEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getLength()) {
-							varietiesFragment.getCurrentInstance().setLength(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initHealingRateEdit(View layout) {
-		healingRateEdit = (EditText)layout.findViewById(R.id.healing_rate_edit);
-		healingRateEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					healingRateEdit.setError(getString(R.string.validation_creature_variety_healing_rate_required));
-				}
-			}
-		});
-		healingRateEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(healingRateEdit.length() > 0) {
-						final short newShort = Short.valueOf(healingRateEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getHealingRate()) {
-							varietiesFragment.getCurrentInstance().setHealingRate(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initBaseHitsEdit(View layout) {
-		baseHitsEdit = (EditText)layout.findViewById(R.id.base_hits_edit);
-		baseHitsEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					baseHitsEdit.setError(getString(R.string.validation_creature_variety_base_hits_required));
-				}
-			}
-		});
-		baseHitsEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(baseHitsEdit.length() > 0) {
-						final short newShort = Short.valueOf(baseHitsEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getBaseHits()) {
-							varietiesFragment.getCurrentInstance().setBaseHits(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initBaseEnduranceEdit(View layout) {
-		baseEnduranceEdit = (EditText)layout.findViewById(R.id.base_endurance_edit);
-		baseEnduranceEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					baseEnduranceEdit.setError(getString(R.string.validation_creature_variety_base_endurance_required));
-				}
-			}
-		});
-		baseEnduranceEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(baseEnduranceEdit.length() > 0) {
-						final short newShort = Short.valueOf(baseEnduranceEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getBaseEndurance()) {
-							varietiesFragment.getCurrentInstance().setBaseEndurance(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initArmorTypeEdit(View layout) {
-		armorTypeEdit = (EditText)layout.findViewById(R.id.armor_type_edit);
-		armorTypeEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					armorTypeEdit.setError(getString(R.string.validation_creature_variety_armor_type_required));
-				}
-			}
-		});
-		armorTypeEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(armorTypeEdit.length() > 0) {
-						final short newShort = Short.valueOf(armorTypeEdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getArmorType()) {
-							varietiesFragment.getCurrentInstance().setArmorType(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initChannelingRREdit(View layout) {
-		channelingRREdit = (EditText)layout.findViewById(R.id.base_channeling_rr_edit);
-		channelingRREdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					channelingRREdit.setError(getString(R.string.validation_creature_variety_channeling_rr_required));
-				}
-			}
-		});
-		channelingRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(channelingRREdit.length() > 0) {
-						final short newShort = Short.valueOf(channelingRREdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getBaseChannellingRR()) {
-							varietiesFragment.getCurrentInstance().setBaseChannellingRR(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initEssenceRREdit(View layout) {
-		essenceRREdit = (EditText)layout.findViewById(R.id.base_essence_rr_edit);
-		essenceRREdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					essenceRREdit.setError(getString(R.string.validation_creature_variety_essence_rr_required));
-				}
-			}
-		});
-		essenceRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(essenceRREdit.length() > 0) {
-						final short newShort = Short.valueOf(essenceRREdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getBaseEssenceRR()) {
-							varietiesFragment.getCurrentInstance().setBaseEssenceRR(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initMentalismRREdit(View layout) {
-		mentalismRREdit = (EditText)layout.findViewById(R.id.base_mentalism_rr_edit);
-		mentalismRREdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					mentalismRREdit.setError(getString(R.string.validation_creature_variety_mentalism_rr_required));
-				}
-			}
-		});
-		mentalismRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(mentalismRREdit.length() > 0) {
-						final short newShort = Short.valueOf(mentalismRREdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getBaseMentalismRR()) {
-							varietiesFragment.getCurrentInstance().setBaseMentalismRR(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private void initPhysicalRREdit(View layout) {
-		physicalRREdit = (EditText)layout.findViewById(R.id.base_physical_rr_edit);
-		physicalRREdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() == 0) {
-					physicalRREdit.setError(getString(R.string.validation_creature_variety_physical_rr_required));
-				}
-			}
-		});
-		physicalRREdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if(!hasFocus) {
-					if(physicalRREdit.length() > 0) {
-						final short newShort = Short.valueOf(physicalRREdit.getText().toString());
-						if (newShort != varietiesFragment.getCurrentInstance().getBasePhysicalRR()) {
-							varietiesFragment.getCurrentInstance().setBasePhysicalRR(newShort);
-							varietiesFragment.saveItem();
-						}
-					}
 				}
 			}
 		});
@@ -1138,36 +710,25 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		realm1SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm1Spinner.setAdapter(realm1SpinnerAdapter);
 
-		realmRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<RealmDBO>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Realm instances in initRealm1Spinner", e);
-					}
-					@Override
-					public void onNext(Collection<RealmDBO> realmDBOs) {
-						realm1SpinnerAdapter.clear();
-						realm1SpinnerAdapter.addAll(realmDBOs);
-						realm1SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
+		realm1SpinnerAdapter.add(Realm.CHANNELING.toString());
+		realm1SpinnerAdapter.add(Realm.ESSENCE.toString());
+		realm1SpinnerAdapter.add(Realm.MENTALISM.toString());
+		realm1SpinnerAdapter.notifyDataSetChanged();
+
 		realm1Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				RealmDBO newRealmDBO = realm1SpinnerAdapter.getItem(position);
-				if(newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO1())) {
-					varietiesFragment.getCurrentInstance().setRealmDBO1(realm1SpinnerAdapter.getItem(position));
+				String newRealmName = realm1SpinnerAdapter.getItem(position);
+				Realm newRealm = Realm.getRealmWithName(newRealmName);
+				if(newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm1())) {
+					varietiesFragment.getCurrentInstance().setRealm1(newRealm);
 					varietiesFragment.saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(varietiesFragment.getCurrentInstance().getRealmDBO1() != null) {
-					varietiesFragment.getCurrentInstance().setRealmDBO1(null);
+				if(varietiesFragment.getCurrentInstance().getRealm1() != null) {
+					varietiesFragment.getCurrentInstance().setRealm1(null);
 					varietiesFragment.saveItem();
 				}
 			}
@@ -1179,44 +740,30 @@ public class CreatureVarietyMainPageFragment extends Fragment implements TextInp
 		realm2SpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		realm2Spinner.setAdapter(realm2SpinnerAdapter);
 
-		realmRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<RealmDBO>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all Realm instances in initRealm2Spinner", e);
-					}
-					@Override
-					public void onNext(Collection<RealmDBO> realmDBOs) {
-						RealmDBO noRealmDBO = new RealmDBO();
-						noRealmDBO.setName(getActivity().getString(R.string.label_no_realm));
-						realm2SpinnerAdapter.clear();
-						realm2SpinnerAdapter.add(noRealmDBO);
-						realm2SpinnerAdapter.addAll(realmDBOs);
-						realm2SpinnerAdapter.notifyDataSetChanged();
-					}
-				});
+		realm2SpinnerAdapter.add(noRealmName);
+		realm2SpinnerAdapter.add(Realm.CHANNELING.toString());
+		realm2SpinnerAdapter.add(Realm.ESSENCE.toString());
+		realm2SpinnerAdapter.add(Realm.MENTALISM.toString());
+		realm2SpinnerAdapter.notifyDataSetChanged();
+
 		realm2Spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				RealmDBO newRealmDBO = realm2SpinnerAdapter.getItem(position);
-				if(newRealmDBO != null && !newRealmDBO.equals(varietiesFragment.getCurrentInstance().getRealmDBO2())) {
-					if(newRealmDBO.getId() == -1) {
-						varietiesFragment.getCurrentInstance().setRealmDBO2(null);
-					}
-					else {
-						varietiesFragment.getCurrentInstance().setRealmDBO1(realm2SpinnerAdapter.getItem(position));
-					}
+				String newRealmName = realm2SpinnerAdapter.getItem(position);
+				Realm newRealm = Realm.getRealmWithName(newRealmName);
+				if(newRealm != null && !newRealm.equals(varietiesFragment.getCurrentInstance().getRealm2())) {
+					varietiesFragment.getCurrentInstance().setRealm1(newRealm);
+					varietiesFragment.saveItem();
+				}
+				else if(newRealm == null && varietiesFragment.getCurrentInstance().getRealm2() != null) {
+					varietiesFragment.getCurrentInstance().setRealm2(null);
 					varietiesFragment.saveItem();
 				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if(varietiesFragment.getCurrentInstance().getRealmDBO2() != null) {
-					varietiesFragment.getCurrentInstance().setRealmDBO2(null);
+				if(varietiesFragment.getCurrentInstance().getRealm2() != null) {
+					varietiesFragment.getCurrentInstance().setRealm2(null);
 					varietiesFragment.saveItem();
 				}
 			}

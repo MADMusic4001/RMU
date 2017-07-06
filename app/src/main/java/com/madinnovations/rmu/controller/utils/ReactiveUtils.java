@@ -30,7 +30,6 @@ import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandl
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DiseaseRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillCategoryRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
@@ -45,7 +44,6 @@ import com.madinnovations.rmu.controller.rxhandler.creature.OutlookRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.WeaponTemplateRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellSubTypeRxHandler;
@@ -89,8 +87,6 @@ public class ReactiveUtils {
 		PROFESSION_RX_HANDLER,
 		RACE_RX_HANDLER,
 		RANGE_ATTACK_RX_HANDLER,
-		REALM_RX_HANDLER,
-		SIZE_RX_HANDLER,
 		SKILL_RX_HANDLER,
 		SKILL_CATEGORY_RX_HANDLER,
 		SPECIALIZATION_RX_HANDLER,
@@ -148,10 +144,6 @@ public class ReactiveUtils {
 	protected ProfessionRxHandler        professionRxHandler;
 	@Inject
 	protected RaceRxHandler              raceRxHandler;
-	@Inject
-	protected RealmRxHandler             realmRxHandler;
-	@Inject
-	protected SizeRxHandler              sizeRxHandler;
 	@Inject
 	protected SkillRxHandler             skillRxHandler;
 	@Inject
@@ -257,12 +249,6 @@ public class ReactiveUtils {
 				break;
 			case RANGE_ATTACK_RX_HANDLER:
 				result = attackRxHandler.getRangedAttacks();
-				break;
-			case REALM_RX_HANDLER:
-				result = realmRxHandler.getAll();
-				break;
-			case SIZE_RX_HANDLER:
-				result = sizeRxHandler.getAll();
 				break;
 			case SKILL_RX_HANDLER:
 				result = skillRxHandler.getAll();

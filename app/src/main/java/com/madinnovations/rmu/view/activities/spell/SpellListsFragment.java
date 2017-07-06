@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.spell.RealmRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.spell.SpellListRxHandler;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.common.Skill;
@@ -68,8 +67,6 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	private static final String TAG = "SpellListsFragment";
 	@Inject
 	protected ProfessionRxHandler            professionRxHandler;
-	@Inject
-	protected RealmRxHandler                 realmRxHandler;
 	@Inject
 	protected SpellListRxHandler             spellListRxHandler;
 	@Inject
@@ -277,7 +274,6 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 	}
 
 	private void copyItemToViews() {
-		Log.d(TAG, "copyItemToViews: currentInstance = " + currentInstance.print());
 		nameEdit.setText(currentInstance.getName());
 		notesEdit.setText(currentInstance.getNotes());
 		realm1Spinner.setSelection(realm1SpinnerAdapter.getPosition(currentInstance.getRealm().toString()));
@@ -350,7 +346,6 @@ public class SpellListsFragment extends Fragment implements TwoFieldListAdapter.
 
 	private void saveItem() {
 		if(currentInstance.isValid()) {
-			Log.d(TAG, "saveItem: currentInstance = " + currentInstance.print());
 			final boolean wasNew = isNew;
 			isNew = false;
 			spellTypeRxHandler.save(currentInstance)

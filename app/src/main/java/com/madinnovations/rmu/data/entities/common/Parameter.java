@@ -37,8 +37,6 @@ import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CRIT
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.DISEASE_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.MELEE_ATTACK_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.RANGE_ATTACK_RX_HANDLER;
-import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.REALM_RX_HANDLER;
-import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SIZE_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SKILL_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SPECIALIZATION_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.SPELL_LIST_RX_HANDLER;
@@ -51,11 +49,11 @@ public enum Parameter {
 	ACTION_POINT_COST(R.string.enum_parameter_action_point_cost, null, null),
 	ACTION_POINT_DIFFERENCE(R.string.enum_parameter_action_point_difference, null, null),
 	ADDITIONAL_ATTACK(R.string.enum_parameter_additional_attack, null, null),
-	ADDITIONAL_REALM(R.string.enum_parameter_additional_realm, REALM_RX_HANDLER, null),
+	ADDITIONAL_REALM(R.string.enum_parameter_additional_realm, null, Realm.values()),
 	ARMOR_PENALTY(R.string.enum_parameter_armor_penalty, null, null),
 	ARMOR_TYPE(R.string.enum_parameter_armor_type, null, null),
 	ATTACK(R.string.enum_parameter_attack, ATTACK_RX_HANDLER, null),
-	ATTACK_SIZE(R.string.enum_parameter_attack_size, SIZE_RX_HANDLER, null),
+	ATTACK_SIZE(R.string.enum_parameter_attack_size, null, Size.values()),
 	ATTACK_SIZE_MODIFIER(R.string.enum_parameter_attack_size_modifier, null, null),
 	BASE_HITS(R.string.enum_parameter_base_hits, null, null),
 	BASE_MOVEMENT_RATE(R.string.enum_parameter_base_movement_rate, null, null),
@@ -74,7 +72,7 @@ public enum Parameter {
 	CRITICAL_SEVERITY(R.string.enum_parameter_critical_severity, null, null),
 	CRITICAL_TYPE(R.string.enum_parameter_critical_type, CRITICAL_TYPE_RX_HANDLER, null),
 	DEFENSIVE_BONUS(R.string.enum_parameter_defensive_bonus, null, null),
-	DEFENSIVE_SIZE(R.string.enum_parameter_defensive_size, SIZE_RX_HANDLER, null),
+	DEFENSIVE_SIZE(R.string.enum_parameter_defensive_size, null, Size.values()),
 	DESTINY_SENSE(R.string.enum_parameter_destiny_sense, null, DestinySense.values()),
 	DICE(R.string.enum_parameter_dice, null, Dice.values()),
 	DISEASE(R.string.enum_parameter_disease, DISEASE_RX_HANDLER, null),

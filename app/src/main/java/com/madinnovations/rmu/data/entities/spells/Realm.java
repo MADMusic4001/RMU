@@ -22,25 +22,29 @@ package com.madinnovations.rmu.data.entities.spells;
 import android.support.annotation.StringRes;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.view.RMUApp;
 
 /**
  * Enumeration of all magical realms.
  */
 public enum Realm {
-	CHANNELING(R.string.enum_realm_channeling),
-	ESSENCE(R.string.enum_realm_essence),
-	MENTALISM(R.string.enum_realm_mentalism);
+	CHANNELING(R.string.enum_realm_channeling, Statistic.INTUITION),
+	ESSENCE(R.string.enum_realm_essence, Statistic.EMPATHY),
+	MENTALISM(R.string.enum_realm_mentalism, Statistic.PRESENCE);
 
 	private @StringRes int textResourceId;
+	private Statistic statistic;
 
 	/**
 	 * Creates a new Material instance
 	 *
 	 * @param textResourceId  the string resource ID for the material's name
+	 * @param statistic  the statistic associated with this realm of magic
 	 */
-	Realm(int textResourceId) {
+	Realm(int textResourceId, Statistic statistic) {
 		this.textResourceId = textResourceId;
+		this.statistic = statistic;
 	}
 
 	@Override
@@ -63,12 +67,11 @@ public enum Realm {
 		return null;
 	}
 
-	/**
-	 * Gets the string resource ID for the name of this instance
-	 *
-	 * @return  the string resource ID for the name of this instance
-	 */
+	// Getters
 	public int getTextResourceId() {
 		return textResourceId;
+	}
+	public Statistic getStatistic() {
+		return statistic;
 	}
 }

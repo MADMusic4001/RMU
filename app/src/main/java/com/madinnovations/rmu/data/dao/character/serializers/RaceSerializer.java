@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.serializers;
 
@@ -31,7 +31,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.io.IOException;
 import java.util.Map;
@@ -57,12 +57,12 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 		out.name(COLUMN_AVERAGE_HEIGHT).value(value.getAverageHeight());
 		out.name(COLUMN_AVERAGE_WEIGHT).value(value.getAverageWeight());
 		out.name(COLUMN_POUNDS_PER_INCH).value(value.getPoundsPerInch());
-		out.name(COLUMN_SIZE_ID).value(value.getSize().getId());
+		out.name(COLUMN_SIZE).value(value.getSize().name());
 
 		out.name(RaceRealmRRModSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<RealmDBO, Short> entry : value.getRealmResistancesModifiers().entrySet()) {
+		for(Map.Entry<Realm, Short> entry : value.getRealmResistancesModifiers().entrySet()) {
 			out.beginObject();
-			out.name(RaceRealmRRModSchema.COLUMN_REALM_ID).value(entry.getKey().getId());
+			out.name(RaceRealmRRModSchema.COLUMN_REALM).value(entry.getKey().name());
 			out.name(RaceRealmRRModSchema.COLUMN_MODIFIER).value(entry.getValue());
 			out.endObject();
 		}
@@ -156,8 +156,8 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				case COLUMN_POUNDS_PER_INCH:
 					race.setPoundsPerInch((short)in.nextInt());
 					break;
-				case COLUMN_SIZE_ID:
-					race.setSize(new Size(in.nextInt()));
+				case COLUMN_SIZE:
+					race.setSize(Size.valueOf(in.nextString()));
 					break;
 				case RaceRealmRRModSchema.TABLE_NAME:
 					readRaceRealmRRMods(in, race);
@@ -184,13 +184,13 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 	private void readRaceRealmRRMods(JsonReader in, Race race) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
-			RealmDBO newRealmDBO = null;
+			Realm newRealm = null;
 			Short mods = null;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case RaceRealmRRModSchema.COLUMN_REALM_ID:
-						newRealmDBO = new RealmDBO(in.nextInt());
+					case RaceRealmRRModSchema.COLUMN_REALM:
+						newRealm = Realm.getRealmWithName(in.nextString());
 						break;
 					case RaceRealmRRModSchema.COLUMN_MODIFIER:
 						mods = (short)in.nextInt();
@@ -198,8 +198,8 @@ public class RaceSerializer extends TypeAdapter<Race> implements RaceSchema {
 				}
 			}
 			in.endObject();
-			if(newRealmDBO != null) {
-				race.getRealmResistancesModifiers().put(newRealmDBO, mods);
+			if(newRealm != null) {
+				race.getRealmResistancesModifiers().put(newRealm, mods);
 			}
 		}
 		in.endArray();

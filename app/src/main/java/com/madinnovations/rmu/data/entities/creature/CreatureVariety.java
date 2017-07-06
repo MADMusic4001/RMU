@@ -18,7 +18,6 @@ package com.madinnovations.rmu.data.entities.creature;
 import android.util.Log;
 
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SizeRxHandler;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
@@ -27,7 +26,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -45,7 +44,7 @@ import rx.Subscriber;
  * Class containing Creature Variety attributes.
  */
 public class CreatureVariety extends DatabaseObject {
-	public static final  String                    JSON_NAME            = "CreatureVarieties";
+	public static final String               JSON_NAME            = "CreatureVarieties";
 	private static final String                    TAG                  = "CreatureVariety";
 	private static final String BONUS_REG_EX               = "(-?\\d+)";
 	private static final String SIZE_REG_EX                = "(Mi\\(1\\)|D\\(2\\)|T\\(3\\)|S\\(4\\)|M\\(5\\)|B\\(6\\)|L\\(7\\)|H\\(8\\)|"
@@ -59,7 +58,6 @@ public class CreatureVariety extends DatabaseObject {
 	private static final String KATA_INDICATOR_REG_EX      = "(WF)?";
 	private static final String ATTACK_SEPARATOR_REG_EX    = "\\s*;*";
 	private AttackRxHandler           attackRxHandler = null;
-	private SizeRxHandler             sizeRxHandler = null;
 	private CreatureType              type                 = null;
 	private String                    name                 = null;
 	private String                    description          = null;
@@ -73,25 +71,24 @@ public class CreatureVariety extends DatabaseObject {
 	private short                     baseHits             = 25;
 	private short                     baseEndurance        = 0;
 	private Size                      size                 = null;
-	private              short                     armorType            = 1;
-	private              List<CriticalCode>        criticalCodes        = new ArrayList<>();
-	private              short                     baseMovementRate     = 15;
-	private              short                     baseChannellingRR    = 0;
-	private              short                     baseEssenceRR        = 0;
-	private              short                     baseMentalismRR      = 0;
-	private              short                     basePhysicalRR       = 0;
-	private              short                     baseFearRR           = 0;
-	private              RealmDBO                  realmDBO1            = null;
-	private              RealmDBO                  realmDBO2            = null;
-	private              short                     baseStride           = 0;
-	private              short                     leftoverDP           = 200;
-	private              Outlook                   outlook              = null;
-	private              List<TalentInstance>      talentInstancesList  = new ArrayList<>();
-	private              Map<Attack, Short>        attackBonusesMap     = new HashMap<>();
-	private              Size                      criticalSizeModifier = null;
-	private              String                    attackSequence       = null;
-	private              List<SkillBonus>          skillBonusesList     = new ArrayList<>();
-	private              ArrayList<CreatureAttack> attackList           = null;
+	private short                     armorType            = 1;
+	private List<CriticalCode>        criticalCodes        = new ArrayList<>();
+	private short                     baseMovementRate     = 15;
+	private short                     baseChannellingRR    = 0;
+	private short                     baseEssenceRR        = 0;
+	private short                     baseMentalismRR      = 0;
+	private short                     basePhysicalRR       = 0;
+	private short                     baseFearRR           = 0;
+	private Realm                     realm1               = null;
+	private Realm                     realm2               = null;
+	private short                     baseStride           = 0;
+	private short                     leftoverDP           = 200;
+	private Outlook                   outlook              = null;
+	private List<TalentInstance>      talentInstancesList  = new ArrayList<>();
+	private Map<Attack, Short>        attackBonusesMap     = new HashMap<>();
+	private String                    attackSequence       = null;
+	private List<SkillBonus>          skillBonusesList     = new ArrayList<>();
+	private ArrayList<CreatureAttack> attackList           = null;
 
 	/**
 	 * Checks the validity of the CreatureVariety instance.
@@ -100,7 +97,7 @@ public class CreatureVariety extends DatabaseObject {
 	 */
 	public boolean isValid() {
 		return name != null && !name.isEmpty() && description != null && !description.isEmpty() && type != null && size != null &&
-				attackSequence != null && realmDBO1 != null && outlook != null;
+				attackSequence != null && realm1 != null && outlook != null;
 	}
 
 	/**
@@ -145,62 +142,46 @@ public class CreatureVariety extends DatabaseObject {
 							creatureAttack.setOffensiveBonus(Short.valueOf(matcher.group(1)));
 							break;
 						case 2:
-							String romanNumeralCode = null;
 							switch (matcher.group(2)) {
 								case "Mi(1)":
-									romanNumeralCode = "I";
+									creatureAttack.setSize(Size.MINUSCULE);
 									break;
 								case "D(2)":
-									romanNumeralCode ="II";
+									creatureAttack.setSize(Size.DIMINUTIVE);
 									break;
 								case "T(3)":
-									romanNumeralCode = "III";
+									creatureAttack.setSize(Size.TINY);
 									break;
 								case "S(4)":
-									romanNumeralCode = "IV";
+									creatureAttack.setSize(Size.SMALL);
 									break;
 								case "M(5)":
-									romanNumeralCode = "V";
+									creatureAttack.setSize(Size.MEDIUM);
 									break;
 								case "B(6)":
-									romanNumeralCode = "VI";
+									creatureAttack.setSize(Size.BIG);
 									break;
 								case "L(7)":
-									romanNumeralCode = "VII";
+									creatureAttack.setSize(Size.LARGE);
 									break;
 								case "H(8)":
-									romanNumeralCode = "VIII";
+									creatureAttack.setSize(Size.HUGE);
 									break;
 								case "G(9)":
-									romanNumeralCode = "IX";
+									creatureAttack.setSize(Size.GIGANTIC);
 									break;
 								case "E(10)":
-									romanNumeralCode = "X";
+									creatureAttack.setSize(Size.ENORMOUS);
 									break;
 								case "I(11)":
-									romanNumeralCode = "XI";
+									creatureAttack.setSize(Size.IMMENSE);
 									break;
 								case "O(12)":
-									romanNumeralCode = "XII";
+									creatureAttack.setSize(Size.BEHEMOTH);
 									break;
 								case "V(13)":
-									romanNumeralCode = "XIII";
+									creatureAttack.setSize(Size.LEVIATHAN);
 									break;
-							}
-							if(romanNumeralCode != null) {
-								sizeRxHandler.getByCode(romanNumeralCode)
-										.subscribe(new Subscriber<Size>() {
-											@Override
-											public void onCompleted() {}
-											@Override
-											public void onError(Throwable e) {
-												Log.e(TAG, "onError: Exception when loading Size " + matcher.group(2), e);
-											}
-											@Override
-											public void onNext(Size size) {
-												creatureAttack.setSize(size);
-											}
-										});
 							}
 							break;
 						case 3:
@@ -375,14 +356,13 @@ public class CreatureVariety extends DatabaseObject {
 				.append("baseMentalismRR", baseMentalismRR)
 				.append("basePhysicalRR", basePhysicalRR)
 				.append("baseFearRR", baseFearRR)
-				.append("realm1", realmDBO1)
-				.append("realm2", realmDBO2)
+				.append("realm1", realm1)
+				.append("realm2", realm2)
 				.append("baseStride", baseStride)
 				.append("leftoverDP", leftoverDP)
 				.append("outlook", outlook)
 				.append("talentInstancesList", talentInstancesList)
 				.append("attackBonusesMap", attackBonusesMap)
-				.append("criticalSizeModifier", criticalSizeModifier)
 				.append("attackSequence", attackSequence)
 				.append("skillBonusesList", skillBonusesList)
 				.toString();
@@ -391,9 +371,6 @@ public class CreatureVariety extends DatabaseObject {
 	// Getters and setters
 	public void setAttackRxHandler(AttackRxHandler attackRxHandler) {
 		this.attackRxHandler = attackRxHandler;
-	}
-	public void setSizeRxHandler(SizeRxHandler sizeRxHandler) {
-		this.sizeRxHandler = sizeRxHandler;
 	}
 	public CreatureType getType() {
 		return type;
@@ -521,17 +498,17 @@ public class CreatureVariety extends DatabaseObject {
 	public void setBaseFearRR(short baseFearRR) {
 		this.baseFearRR = baseFearRR;
 	}
-	public RealmDBO getRealmDBO1() {
-		return realmDBO1;
+	public Realm getRealm1() {
+		return realm1;
 	}
-	public void setRealmDBO1(RealmDBO realmDBO1) {
-		this.realmDBO1 = realmDBO1;
+	public void setRealm1(Realm realm1) {
+		this.realm1 = realm1;
 	}
-	public RealmDBO getRealmDBO2() {
-		return realmDBO2;
+	public Realm getRealm2() {
+		return realm2;
 	}
-	public void setRealmDBO2(RealmDBO realmDBO2) {
-		this.realmDBO2 = realmDBO2;
+	public void setRealm2(Realm realm2) {
+		this.realm2 = realm2;
 	}
 	public short getBaseStride() {
 		return baseStride;
@@ -562,12 +539,6 @@ public class CreatureVariety extends DatabaseObject {
 	}
 	public void setAttackBonusesMap(Map<Attack, Short> attackBonusesMap) {
 		this.attackBonusesMap = attackBonusesMap;
-	}
-	public Size getCriticalSizeModifier() {
-		return criticalSizeModifier;
-	}
-	public void setCriticalSizeModifier(Size criticalSizeModifier) {
-		this.criticalSizeModifier = criticalSizeModifier;
 	}
 	public String getAttackSequence() {
 		return attackSequence;

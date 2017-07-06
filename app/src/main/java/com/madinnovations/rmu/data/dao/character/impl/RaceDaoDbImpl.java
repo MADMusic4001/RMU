@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.character.impl;
 
@@ -30,16 +30,15 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
-import com.madinnovations.rmu.data.dao.common.SizeDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
-import com.madinnovations.rmu.data.dao.spells.RealmDao;
 import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.common.Parameter;
+import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.spells.RealmDBO;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,8 +56,6 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 	@SuppressWarnings("unused")
 	private static final String TAG = "RaceDaoDbImpl";
 	private TalentDao talentDao;
-	private RealmDao realmDao;
-	private SizeDao sizeDao;
 	private CultureDao cultureDao;
 
     /**
@@ -66,17 +63,12 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
      *
      * @param helper  an SQLiteOpenHelper instance
 	 * @param talentDao  a {@link TalentDao} instance
-	 * @param realmDao  a {@link RealmDao} instance
-	 * @param sizeDao  a {@link SizeDao} instance
 	 * @param cultureDao  a {@link CultureDao} instance
      */
     @Inject
-    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, RealmDao realmDao, SizeDao sizeDao,
-						 CultureDao cultureDao) {
+    public RaceDaoDbImpl(SQLiteOpenHelper helper, TalentDao talentDao, CultureDao cultureDao) {
         super(helper);
         this.talentDao = talentDao;
- 		this.realmDao = realmDao;
-		this.sizeDao = sizeDao;
 		this.cultureDao = cultureDao;
     }
 
@@ -144,7 +136,7 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		instance.setAverageHeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_HEIGHT)));
 		instance.setAverageWeight(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_WEIGHT)));
 		instance.setPoundsPerInch(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_POUNDS_PER_INCH)));
-		instance.setSize(sizeDao.getById(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_SIZE_ID))));
+		instance.setSize(Size.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SIZE))));
 		instance.setRealmResistancesModifiers(getRealmResistanceModifiers(instance.getId()));
 		instance.setStatModifiers(getStatModifiers(instance.getId()));
 		instance.setTalentsAndFlawsList(getTalentsAndFlaws(instance.getId()));
@@ -171,7 +163,7 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		values.put(COLUMN_ENDURANCE_MODIFIER, instance.getEnduranceModifier());
 		values.put(COLUMN_BASE_HITS, instance.getBaseHits());
 		values.put(COLUMN_RECOVERY_MULTIPLIER, instance.getRecoveryMultiplier());
-		values.put(COLUMN_SIZE_ID, instance.getSize().getId());
+		values.put(COLUMN_SIZE, instance.getSize().name());
 		values.put(COLUMN_STRIDE_MODIFIER, instance.getStrideModifier());
 		values.put(COLUMN_AVERAGE_HEIGHT, instance.getAverageHeight());
 		values.put(COLUMN_AVERAGE_WEIGHT, instance.getAverageWeight());
@@ -369,20 +361,17 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return values;
 	}
 
-	private Map<RealmDBO, Short> getRealmResistanceModifiers(int id) {
+	private Map<Realm, Short> getRealmResistanceModifiers(int id) {
 		final String selectionArgs[] = { String.valueOf(id) };
 		final String selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
 
 		Cursor cursor = super.query(RaceRealmRRModSchema.TABLE_NAME, RaceRealmRRModSchema.COLUMNS, selection,
-									selectionArgs, RaceRealmRRModSchema.COLUMN_REALM_ID);
-		Map<RealmDBO, Short> map = new HashMap<>(cursor.getCount());
+									selectionArgs, RaceRealmRRModSchema.COLUMN_REALM);
+		Map<Realm, Short> map = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_REALM_ID));
-			RealmDBO instance = realmDao.getById(mappedId);
-			if(instance != null) {
-				map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_MODIFIER)));
-			}
+			Realm instance = Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_REALM)));
+			map.put(instance, cursor.getShort(cursor.getColumnIndexOrThrow(RaceRealmRRModSchema.COLUMN_MODIFIER)));
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -390,24 +379,24 @@ public class RaceDaoDbImpl extends BaseDaoDbImpl<Race> implements RaceDao, RaceS
 		return map;
 	}
 
-	private boolean saveRealmRRMods(SQLiteDatabase db, int raceId, Map<RealmDBO, Short> realmRRMods) {
+	private boolean saveRealmRRMods(SQLiteDatabase db, int raceId, Map<Realm, Short> realmRRMods) {
 		boolean result = true;
 		final String selectionArgs[] = {String.valueOf(raceId) };
 		final String selection = RaceRealmRRModSchema.COLUMN_RACE_ID + " = ?";
 
 		db.delete(RaceRealmRRModSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<RealmDBO, Short> entry : realmRRMods.entrySet()) {
+		for(Map.Entry<Realm, Short> entry : realmRRMods.entrySet()) {
 			result &= (db.insertWithOnConflict(RaceRealmRRModSchema.TABLE_NAME, null, getRaceRealmRRModValues(raceId, entry),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
 
-	private ContentValues getRaceRealmRRModValues(int raceId, Map.Entry<RealmDBO, Short> realmModEntry) {
+	private ContentValues getRaceRealmRRModValues(int raceId, Map.Entry<Realm, Short> realmModEntry) {
 		ContentValues values = new ContentValues(3);
 		values.put(RaceRealmRRModSchema.COLUMN_RACE_ID, raceId);
-		values.put(RaceRealmRRModSchema.COLUMN_REALM_ID, realmModEntry.getKey().getId());
+		values.put(RaceRealmRRModSchema.COLUMN_REALM, realmModEntry.getKey().name());
 		values.put(RaceRealmRRModSchema.COLUMN_MODIFIER, realmModEntry.getValue());
 		return values;
 	}
