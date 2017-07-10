@@ -45,7 +45,7 @@
       app:layout_constraintHorizontal_weight="1"
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toRightOf="@id/name_textInputLayout"
-      app:layout_constraintRight_toLeftOf="@+id/base_cost_textInputLayout"
+      app:layout_constraintRight_toLeftOf="@+id/strength_textInputLayout"
       app:layout_constraintTop_toTopOf="parent"
       android:layout_marginTop="8dp"
       android:layout_marginLeft="8dp"
@@ -59,31 +59,12 @@
         android:hint="@string/hint_item_weight"/>
   </android.support.design.widget.TextInputLayout>
   <android.support.design.widget.TextInputLayout
-      android:id="@id/base_cost_textInputLayout"
-      android:layout_width="0dp"
-      app:layout_constraintHorizontal_weight="1"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/weight_textInputLayout"
-      app:layout_constraintRight_toLeftOf="@+id/strength_textInputLayout"
-      app:layout_constraintTop_toTopOf="parent"
-      android:layout_marginTop="8dp"
-      android:layout_marginLeft="8dp"
-      android:layout_marginStart="8dp">
-    <android.support.design.widget.TextInputEditText
-        android:id="@+id/base_cost_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:maxLength="8"
-        android:hint="@string/hint_item_base_cost"/>
-  </android.support.design.widget.TextInputLayout>
-  <android.support.design.widget.TextInputLayout
       android:id="@id/strength_textInputLayout"
       android:layout_width="0dp"
       app:layout_constraintHorizontal_weight="1"
       android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/base_cost_textInputLayout"
-      app:layout_constraintRight_toLeftOf="@+id/construction_time_textInputLayout"
+      app:layout_constraintLeft_toRightOf="@id/weight_textInputLayout"
+      app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       android:layout_marginTop="8dp"
       android:layout_marginLeft="8dp"
@@ -96,14 +77,53 @@
         android:maxLength="3"
         android:hint="@string/hint_item_strength"/>
   </android.support.design.widget.TextInputLayout>
+
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/base_cost_textInputLayout"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/monetary_unit_layout"
+      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout"
+      android:layout_marginTop="8dp"
+      android:layout_marginLeft="8dp"
+      android:layout_marginStart="8dp">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/base_cost_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="8"
+        android:hint="@string/hint_item_base_cost"/>
+  </android.support.design.widget.TextInputLayout>
+  <LinearLayout
+      android:id="@id/monetary_unit_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/base_cost_textInputLayout"
+      app:layout_constraintRight_toLeftOf="@+id/construction_time_textInputLayout"
+      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/label_monetary_unit"/>
+    <Spinner
+        android:id="@+id/monetary_unit_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
   <android.support.design.widget.TextInputLayout
       android:id="@id/construction_time_textInputLayout"
       android:layout_width="0dp"
       app:layout_constraintHorizontal_weight="1"
       android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/strength_textInputLayout"
+      app:layout_constraintLeft_toRightOf="@id/monetary_unit_layout"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout"
       android:layout_marginTop="8dp"
       android:layout_marginLeft="8dp"
       android:layout_marginStart="8dp">
@@ -123,7 +143,7 @@
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toLeftOf="@+id/primary_slot_textView"
-      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout"
+      app:layout_constraintTop_toBottomOf="@id/monetary_unit_layout"
       app:layout_constraintHorizontal_chainStyle="spread_inside"
       android:layout_marginTop="8dp"
       android:layout_marginLeft="8dp"
@@ -143,7 +163,7 @@
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toRightOf="@id/maneuver_difficulty_textView"
       app:layout_constraintRight_toLeftOf="@+id/secondary_slot_textView"
-      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout"
+      app:layout_constraintTop_toBottomOf="@id/monetary_unit_layout"
       android:layout_marginTop="8dp"
       android:layout_marginLeft="8dp"
       android:layout_marginStart="8dp"
@@ -162,7 +182,7 @@
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toRightOf="@id/primary_slot_textView"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout"
+      app:layout_constraintTop_toBottomOf="@id/monetary_unit_layout"
       android:layout_marginTop="8dp"
       android:layout_marginLeft="8dp"
       android:layout_marginStart="8dp"

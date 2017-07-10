@@ -1,25 +1,27 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.combat.serializers;
+
+import android.util.Log;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
+import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
@@ -29,6 +31,7 @@ import java.io.IOException;
  * Json serializer and deserializer for the {@link CriticalResult} entities
  */
 public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implements CriticalResultSchema {
+	private static final String TAG = "CriticalResultSerialize";
 
 	@Override
 	public void write(JsonWriter out, CriticalResult value) throws IOException {
@@ -55,8 +58,12 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 		if(value.getDeath() != null) {
 			out.name(COLUMN_DEATH).value(value.getDeath());
 		}
-		out.name(COLUMN_BODY_PART_ID).value(value.getBodyPart().getId());
-		out.name(COLUMN_CRITICAL_TYPE_ID).value(value.getCriticalType().getId());
+		if(value.getBodyLocation() != null) {
+			out.name(COLUMN_BODY_LOCATION).value(value.getBodyLocation().name());
+		}
+		if(value.getCriticalType() != null) {
+			out.name(COLUMN_CRITICAL_TYPE).value(value.getCriticalType().name());
+		}
 		out.endObject();
 		out.flush();
 	}
@@ -75,6 +82,7 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 					break;
 				case COLUMN_RESULT_TEXT:
 					criticalResult.setResultText(in.nextString());
+					Log.d(TAG, "read: resultText = " + criticalResult.getResultText());
 					break;
 				case COLUMN_MIN_ROLL:
 					criticalResult.setMinRoll((short)in.nextInt());
@@ -121,15 +129,67 @@ public class CriticalResultSerializer extends TypeAdapter<CriticalResult> implem
 				case COLUMN_DEATH:
 					criticalResult.setDeath((short)in.nextInt());
 					break;
-				case COLUMN_BODY_PART_ID:
-					criticalResult.setBodyPart(new BodyPart(in.nextInt()));
+				case COLUMN_BODY_LOCATION:
+					criticalResult.setBodyLocation(BodyLocation.valueOf(in.nextString()));
 					break;
-				case COLUMN_CRITICAL_TYPE_ID:
-					criticalResult.setCriticalType(new CriticalType(in.nextInt()));
+				case "bodyPartId":
+					criticalResult.setBodyLocation(getBodyLocation(in.nextInt()));
+					break;
+				case COLUMN_CRITICAL_TYPE:
+					criticalResult.setCriticalType(CriticalType.valueOf(in.nextString()));
+					break;
+				case "criticalTypeId":
+					criticalResult.setCriticalType(getCriticalType(in.nextInt()));
 					break;
 			}
 		}
 		in.endObject();
 		return criticalResult;
+	}
+
+	private BodyLocation getBodyLocation(int bodyPartId) {
+		switch (bodyPartId) {
+			case 1:
+				return BodyLocation.ARM;
+			case 2:
+				return BodyLocation.CHEST;
+			case 3:
+				return BodyLocation.GROIN;
+			case 4:
+				return BodyLocation.HEAD;
+			case 5:
+				return BodyLocation.LEG;
+			default:
+				return BodyLocation.ARM;
+		}
+	}
+
+	private CriticalType getCriticalType(int criticalTypeId) {
+		switch (criticalTypeId) {
+			case 1:
+				return CriticalType.ACID;
+			case 2:
+				return CriticalType.GRAPPLE;
+			case 3:
+				return CriticalType.HEAT;
+			case 4:
+				return CriticalType.IMPACT;
+			case 5:
+				return CriticalType.CRUSH;
+			case 6:
+				return CriticalType.ELECTRICITY;
+			case 7:
+				return CriticalType.COLD;
+			case 8:
+				return CriticalType.PUNCTURE;
+			case 9:
+				return CriticalType.SLASH;
+			case 10:
+				return CriticalType.STRIKE;
+			case 11:
+				return CriticalType.UNBALANCE;
+			default:
+				return CriticalType.CRUSH;
+		}
 	}
 }

@@ -50,11 +50,11 @@ public class ResolveAttackDialog extends DialogFragment {
 		}
 
 		TextView targetView = (TextView)contentView.findViewById(R.id.target_view);
-		if(encounterRoundInfo.getTarget() != null && encounterRoundInfo.getTarget() instanceof Character) {
-			targetView.setText(((Character) encounterRoundInfo.getTarget()).getKnownAs());
+		if(encounterRoundInfo.getSelectedOpponent() != null && encounterRoundInfo.getSelectedOpponent() instanceof Character) {
+			targetView.setText(((Character) encounterRoundInfo.getSelectedOpponent()).getKnownAs());
 		}
-		else if(encounterRoundInfo.getTarget() != null && encounterRoundInfo.getTarget() instanceof Creature) {
-			targetView.setText(((Creature) encounterRoundInfo.getTarget()).getCreatureVariety().getName());
+		else if(encounterRoundInfo.getSelectedOpponent() != null && encounterRoundInfo.getSelectedOpponent() instanceof Creature) {
+			targetView.setText(((Creature) encounterRoundInfo.getSelectedOpponent()).getCreatureVariety().getName());
 		}
 
 		EditText attackRollEdit = (EditText)contentView.findViewById((R.id.attack_roll_edit));

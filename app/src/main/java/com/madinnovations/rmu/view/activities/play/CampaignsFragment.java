@@ -109,6 +109,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 	private   CheckBox                     allowTalentsBeyondFirstCheckBox;
 	private   CheckBox                     openRoundsCheckBox;
 	private   CheckBox                     grittyPoisonsCheckBox;
+	private   CheckBox                     multipleSpellsInARoundCheckBox;
 	private   ListView                     specializationsListView;
 	private   ListView                     restrictionsListView;
 	private   boolean                      isNew = true;
@@ -141,6 +142,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		allowTalentsBeyondFirstCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.allow_talents_beyond_first_check_box);
 		openRoundsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.open_rounds_check_box);
 		grittyPoisonsCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.gritty_check_box);
+		multipleSpellsInARoundCheckBox = CheckBoxUtils.initCheckBox(layout, this, R.id.multiple_spells_in_a_round_check_box);
 		initSpecializationsViews(layout);
 		initListView(layout);
 
@@ -285,6 +287,9 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 			case R.id.gritty_check_box:
 				result = currentInstance.isGrittyPoisonAndDisease();
 				break;
+			case R.id.multiple_spells_in_a_round_check_box:
+				result = currentInstance.isMultipleSpellsInARound();
+				break;
 		}
 
 		return result;
@@ -323,6 +328,10 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 				break;
 			case R.id.gritty_check_box:
 				currentInstance.setGrittyPoisonAndDisease(newBoolean);
+				saveItem();
+				break;
+			case R.id.multiple_spells_in_a_round_check_box:
+				currentInstance.setMultipleSpellsInARound(newBoolean);
 				saveItem();
 				break;
 		}
@@ -448,6 +457,12 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 			changed = true;
 		}
 
+		newBoolean = multipleSpellsInARoundCheckBox.isChecked();
+		if(newBoolean != currentInstance.isMultipleSpellsInARound()) {
+			currentInstance.setMultipleSpellsInARound(newBoolean);
+			changed = true;
+		}
+
 		List<Specialization> restrictions = new ArrayList<>();
 		restrictions.addAll(currentInstance.getRestrictedSpecializations());
 		for(int i = 0; i < restrictionsAdapter.getCount(); i++) {
@@ -488,6 +503,7 @@ public class CampaignsFragment extends Fragment implements TwoFieldListAdapter.G
 		allowTalentsBeyondFirstCheckBox.setChecked(currentInstance.isAllowTalentsBeyondFirst());
 		openRoundsCheckBox.setChecked(currentInstance.isOpenRounds());
 		grittyPoisonsCheckBox.setChecked(currentInstance.isGrittyPoisonAndDisease());
+		multipleSpellsInARoundCheckBox.setChecked(currentInstance.isMultipleSpellsInARound());
 		restrictionsAdapter.clear();
 		restrictionsAdapter.addAll(currentInstance.getRestrictedSpecializations());
 		restrictionsAdapter.notifyDataSetChanged();

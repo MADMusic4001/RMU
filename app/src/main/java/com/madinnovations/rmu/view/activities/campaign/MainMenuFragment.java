@@ -139,18 +139,12 @@ public class MainMenuFragment extends Fragment {
 								((CampaignActivity)getActivity()).showAttacks();
 								break;
 							case 1:
-								((CampaignActivity)getActivity()).showBodyParts();
-								break;
-							case 2:
 								((CampaignActivity)getActivity()).showCriticalResults();
 								break;
-							case 3:
-								((CampaignActivity)getActivity()).showCriticalTypes();
-								break;
-							case 4:
+							case 2:
 								((CampaignActivity)getActivity()).showDamageResults();
 								break;
-							case 5:
+							case 3:
 								((CampaignActivity)getActivity()).showDiseases();
 								break;
 						}
@@ -288,11 +282,9 @@ public class MainMenuFragment extends Fragment {
 		creatureItems.add(getString(R.string.manage_varieties));
 		creatureItems.add(getString(R.string.manage_outlooks));
 
-		List<String> combatItems = new ArrayList<>(6);
+		List<String> combatItems = new ArrayList<>(4);
 		combatItems.add(getString(R.string.manage_attacks));
-		combatItems.add(getString(R.string.manage_body_parts));
 		combatItems.add(getString(R.string.manage_critical_results));
-		combatItems.add(getString(R.string.manage_critical_types));
 		combatItems.add(getString(R.string.manage_damage_tables));
 		combatItems.add(getString(R.string.manage_diseases));
 

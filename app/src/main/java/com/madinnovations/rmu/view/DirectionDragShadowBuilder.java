@@ -30,7 +30,7 @@ import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 
 /**
- * A DragShadowBuilder that draws a hex shaped drag shadow.
+ * A DragShadowBuilder that draws a line between the combatant's location to the touch point.
  */
 public class DirectionDragShadowBuilder extends View.DragShadowBuilder {
 	private static final String TAG = "DirectionDragShadowBuil";
@@ -58,8 +58,11 @@ public class DirectionDragShadowBuilder extends View.DragShadowBuilder {
 		Log.d(TAG, "onDrawShadow: sourceY = " + encounterRoundInfo.getPosition().getY());
 		Log.d(TAG, "onDrawShadow: dragX = " + terrainView.getLastX());
 		Log.d(TAG, "onDrawShadow: dragY = " + terrainView.getLastY());
-		canvas.drawLine(encounterRoundInfo.getPosition().getX(), encounterRoundInfo.getPosition().getY(), terrainView.getLastX(),
-						terrainView.getLastY(), linePaint);
+		canvas.drawLine(encounterRoundInfo.getPosition().getX()*terrainView.getScaleFactor() - terrainView.getOffsetX(),
+						encounterRoundInfo.getPosition().getY()*terrainView.getScaleFactor() - terrainView.getOffsetY(),
+						terrainView.getLastX(),
+						terrainView.getLastY(),
+						linePaint);
 	}
 
 	@Override

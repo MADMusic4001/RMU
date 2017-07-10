@@ -39,9 +39,7 @@ import com.madinnovations.rmu.view.activities.character.CulturesFragment;
 import com.madinnovations.rmu.view.activities.character.ProfessionsFragment;
 import com.madinnovations.rmu.view.activities.character.RacesFragment;
 import com.madinnovations.rmu.view.activities.combat.AttacksFragment;
-import com.madinnovations.rmu.view.activities.combat.BodyPartsFragment;
 import com.madinnovations.rmu.view.activities.combat.CriticalResultsFragment;
-import com.madinnovations.rmu.view.activities.combat.CriticalTypesFragment;
 import com.madinnovations.rmu.view.activities.combat.DamageResultsFragment;
 import com.madinnovations.rmu.view.activities.combat.DiseasesFragment;
 import com.madinnovations.rmu.view.activities.common.SkillCategoriesFragment;
@@ -92,7 +90,6 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 	private ActivityComponent          activityComponent;
 	private AboutFragment              aboutFragment;
 	private AttacksFragment            attacksFragment;
-	private BodyPartsFragment          bodyPartsFragment;
 	private CampaignsFragment          campaignsFragment;
 	private CharactersFragment         charactersFragment;
 	private CreatureArchetypesFragment creatureArchetypesFragment;
@@ -101,7 +98,6 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 	private CreatureTypesFragment      creatureTypesFragment;
 	private CreatureVarietiesFragment  creatureVarietiesFragment;
 	private CriticalResultsFragment    criticalResultsFragment;
-	private CriticalTypesFragment      criticalTypesFragment;
 	private CulturesFragment           culturesFragment;
 	private DamageResultsFragment      damageResultsFragment;
 	private DiseasesFragment           diseasesFragment;
@@ -365,13 +361,6 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 		replaceDetailFragment(attacksFragment);
 	}
 
-	public void showBodyParts() {
-		if(bodyPartsFragment == null) {
-			bodyPartsFragment = new BodyPartsFragment();
-		}
-		replaceDetailFragment(bodyPartsFragment);
-	}
-
 	public void showCampaigns() {
 		if(campaignsFragment == null) {
 			campaignsFragment = new CampaignsFragment();
@@ -426,13 +415,6 @@ public class CampaignActivity extends AppCompatActivity implements FileSelectorD
 			criticalResultsFragment = new CriticalResultsFragment();
 		}
 		replaceDetailFragment(criticalResultsFragment);
-	}
-
-	public void showCriticalTypes() {
-		if(criticalTypesFragment == null) {
-			criticalTypesFragment = new CriticalTypesFragment();
-		}
-		replaceDetailFragment(criticalTypesFragment);
 	}
 
 	public void showCultures() {

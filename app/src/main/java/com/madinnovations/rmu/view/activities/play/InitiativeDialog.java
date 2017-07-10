@@ -57,7 +57,7 @@ public class InitiativeDialog extends DialogFragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		View contentView = inflater.inflate(R.layout.initiative_dialog, null);
 		ListView combatantsListView = (ListView)contentView.findViewById(R.id.combatants_list_view);
-		initiativeListAdapter = new InitiativeListAdapter(getActivity());
+		initiativeListAdapter = new InitiativeListAdapter(getActivity(), encounterSetup);
 		initInitiativeList();
 		combatantsListView.setAdapter(initiativeListAdapter);
 		builder.setTitle(R.string.title_initiative)
@@ -85,7 +85,7 @@ public class InitiativeDialog extends DialogFragment {
 			listItem.setEncounterRoundInfo(entry.getValue());
 			total = listItem.getEncounterRoundInfo().getInitiativeRoll();
 			total += entry.getKey().getTotalStatBonus(Statistic.QUICKNESS);
-			total += entry.getKey().getInitiativePenalty();
+			total += entry.getKey().getInitiativeModifications();
 			entry.getValue().setBaseInitiative(total);
 			listItems.add(listItem);
 		}

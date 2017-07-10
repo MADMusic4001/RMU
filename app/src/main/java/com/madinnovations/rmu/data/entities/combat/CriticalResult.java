@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.entities.combat;
 
@@ -29,13 +29,14 @@ import java.util.Collection;
  * Critical result attributes
  */
 public class CriticalResult extends DatabaseObject {
-    public static final String JSON_NAME = "CriticalResults";
-    private static short[] rangeStarts = {1, 2, 4, 6, 11, 16, 21, 26, 36, 46, 56, 66, 67, 76, 81, 86, 91, 96, 98, 100, 101};
+    public static final  String  JSON_NAME    = "CriticalResults";
+    private static       short[] rangeStarts  = {1, 2, 4, 6, 11, 16, 21, 26, 36, 46, 56, 66, 67, 76, 81, 86, 91, 96, 98,
+            100, 101};
     private char         severityCode = 'A';
-    private String       resultText   = null;
+    private String       resultText   = "";
     private short        minRoll      = 0;
     private short        maxRoll      = 1;
-    private BodyPart     bodyPart     = null;
+    private BodyLocation bodyLocation = BodyLocation.CHEST;
     private short        hits         = 0;
     private short        bleeding     = 0;
     private short        fatigue      = 0;
@@ -49,7 +50,7 @@ public class CriticalResult extends DatabaseObject {
     private short        prone        = 0;
     private short        grappled     = 0;
 	private Short        death        = null;
-    private CriticalType criticalType = null;
+    private CriticalType criticalType = CriticalType.CRUSH;
 
 	/**
      * Creates a new CriticalResult instance with all values set to defaults.
@@ -58,21 +59,22 @@ public class CriticalResult extends DatabaseObject {
     }
 
 	/**
-     * Creates a new CriticalResult instance with the given criticalType, severityCode. minRoll, maxRoll, and bodyPart values and all others
+     * Creates a new CriticalResult instance with the given criticalType, severityCode. minRoll, maxRoll, and bodyLocation values and all others
      * set to defaults.
      *
      * @param criticalType  a CriticalType instance to use for the initial criticalType value
      * @param severityCode  a character to use for the initial severityCode value
      * @param minRoll  a short to use for the initial minRoll value
      * @param maxRoll  a short to use for the initial maxRoll value
-     * @param bodyPart  a BodyPart instance to use for the initial bodyPart value
+     * @param bodyLocation  a BodyLocation instance to use for the initial bodyLocation value
      */
-    private CriticalResult(CriticalType criticalType, char severityCode, short minRoll, short maxRoll, BodyPart bodyPart) {
+    private CriticalResult(CriticalType criticalType, char severityCode, short minRoll, short maxRoll,
+						   BodyLocation bodyLocation) {
         this.criticalType = criticalType;
         this.severityCode = severityCode;
         this.minRoll = minRoll;
         this.maxRoll = maxRoll;
-        this.bodyPart = bodyPart;
+        this.bodyLocation = bodyLocation;
     }
 
     public static Collection<CriticalResult> generateMissingCriticalResultRows(Collection<CriticalResult> currentRows,
@@ -98,7 +100,7 @@ public class CriticalResult extends DatabaseObject {
                 }
                 if(currentRow == null) {
                     currentRow = new CriticalResult(criticalType, severityCode, rangeStarts[i], (short)(rangeStarts[i+1] - 1),
-                                                    null);
+													null);
                 }
                 allRows.add(currentRow);
             }
@@ -113,7 +115,7 @@ public class CriticalResult extends DatabaseObject {
      * @return true if the CriticalResult instance is valid, otherwise false.
      */
     public boolean isValid() {
-        return resultText != null && !resultText.isEmpty() && bodyPart != null && minRoll <= maxRoll && criticalType != null;
+        return resultText != null && !resultText.isEmpty() && bodyLocation != null && minRoll <= maxRoll && criticalType != null;
     }
 
     @Override
@@ -124,7 +126,7 @@ public class CriticalResult extends DatabaseObject {
                 .append("resultText", resultText)
                 .append("minRoll", minRoll)
                 .append("maxRoll", maxRoll)
-                .append("bodyPart", bodyPart)
+                .append("bodyLocation", bodyLocation)
                 .append("hits", hits)
                 .append("bleeding", bleeding)
                 .append("fatigue", fatigue)
@@ -167,11 +169,11 @@ public class CriticalResult extends DatabaseObject {
     public void setMaxRoll(short maxRoll) {
         this.maxRoll = maxRoll;
     }
-    public BodyPart getBodyPart() {
-        return bodyPart;
+    public BodyLocation getBodyLocation() {
+        return bodyLocation;
     }
-    public void setBodyPart(BodyPart bodyPart) {
-        this.bodyPart = bodyPart;
+    public void setBodyLocation(BodyLocation bodyLocation) {
+        this.bodyLocation = bodyLocation;
     }
     public short getHits() {
         return hits;

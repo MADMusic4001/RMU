@@ -26,7 +26,9 @@ import android.widget.EditText;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
+import com.madinnovations.rmu.data.entities.object.Cost;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.MoneyUnit;
 import com.madinnovations.rmu.data.entities.object.Slot;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
@@ -42,16 +44,17 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		TextInputLayoutUtils.ValuesCallback {
 	@SuppressWarnings("unused")
 	private static final String TAG = "ItemTemplatePaneFrag";
-	private   EditText                          nameEdit;
-	private   EditText                          notesEdit;
-	private   EditText                          weightEdit;
-	private   EditText                          strengthEdit;
-	private   EditText                          baseCostEdit;
-	private   EditText                          constructionTimeEdit;
-	private   SpinnerUtils<ManeuverDifficulty>  maneuverDifficultySpinnerUtil;
-	private   SpinnerUtils<Slot>                primarySlotSpinnerUtil;
-	private   SpinnerUtils<Slot>                secondarySlotSpinnerUtil;
-	private   DataAccessInterface               dataAccessInterface;
+	private   EditText                         nameEdit;
+	private   EditText                         notesEdit;
+	private   EditText                         weightEdit;
+	private   EditText                         strengthEdit;
+	private   EditText                         baseCostEdit;
+	private   SpinnerUtils<MoneyUnit>          monetaryUnitSpinnerUtil;
+	private   EditText                         constructionTimeEdit;
+	private   SpinnerUtils<ManeuverDifficulty> maneuverDifficultySpinnerUtil;
+	private   SpinnerUtils<Slot>               primarySlotSpinnerUtil;
+	private   SpinnerUtils<Slot>               secondarySlotSpinnerUtil;
+	private   DataAccessInterface              dataAccessInterface;
 
 	@Nullable
 	@Override
@@ -75,6 +78,9 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 															 R.id.construction_time_edit,
 															 R.string.validation_item_construction_time_required);
 
+		monetaryUnitSpinnerUtil = new SpinnerUtils<>();
+		monetaryUnitSpinnerUtil.initSpinner(layout, getActivity(), Arrays.asList(MoneyUnit.values()), this,
+											R.id.monetary_unit_spinner, null);
 		maneuverDifficultySpinnerUtil = new SpinnerUtils<>();
 		maneuverDifficultySpinnerUtil.initSpinner(layout, getActivity(), Arrays.asList(ManeuverDifficulty.values()), this,
 										   R.id.maneuver_difficulty_spinner, null);
@@ -93,6 +99,14 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		Object result = null;
 
 		switch (spinnerId) {
+			case R.id.monetary_unit_spinner:
+				if(dataAccessInterface.getItemTemplate() != null && dataAccessInterface.getItemTemplate().getBaseCost() != null) {
+					result = dataAccessInterface.getItemTemplate().getBaseCost().getUnit();
+				}
+				else {
+					result = MoneyUnit.BRONZE_COIN;
+				}
+				break;
 			case R.id.maneuver_difficulty_spinner:
 				if(dataAccessInterface.getItemTemplate() != null) {
 					result = dataAccessInterface.getItemTemplate().getManeuverDifficulty();
@@ -122,6 +136,14 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 	@Override
 	public void setValueFromSpinner(@IdRes int spinnerId, Object newItem) {
 		switch (spinnerId) {
+			case R.id.monetary_unit_spinner:
+				if(dataAccessInterface.getItemTemplate().getBaseCost() != null) {
+					dataAccessInterface.getItemTemplate().getBaseCost().setUnit((MoneyUnit) newItem);
+				}
+				else {
+					dataAccessInterface.getItemTemplate().setBaseCost(new Cost((short)0, (MoneyUnit)newItem));
+				}
+				break;
 			case R.id.maneuver_difficulty_spinner:
 				dataAccessInterface.getItemTemplate().setManeuverDifficulty((ManeuverDifficulty) newItem);
 				dataAccessInterface.saveItem();
@@ -185,7 +207,13 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 				dataAccessInterface.saveItem();
 				break;
 			case R.id.base_cost_edit:
-				dataAccessInterface.getItemTemplate().setBaseCost(Integer.valueOf(newString));
+				if(dataAccessInterface.getItemTemplate().getBaseCost() != null) {
+					dataAccessInterface.getItemTemplate().getBaseCost().setValue(Short.valueOf(newString));
+				}
+				else {
+					dataAccessInterface.getItemTemplate().setBaseCost(new Cost(Short.valueOf(newString), MoneyUnit.SILVER_COIN));
+					monetaryUnitSpinnerUtil.setSelection(MoneyUnit.SILVER_COIN);
+				}
 				dataAccessInterface.saveItem();
 				break;
 			case R.id.strength_edit:
@@ -228,21 +256,31 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		}
 
 		newString = baseCostEdit.getText().toString();
-		int newInt = Integer.valueOf(newString);
-		if(newInt != currentInstance.getBaseCost()) {
-			currentInstance.setBaseCost(newInt);
+		short newShort= Short.valueOf(newString);
+		if(currentInstance.getBaseCost() == null) {
+			currentInstance.setBaseCost(new Cost(newShort, MoneyUnit.SILVER_COIN));
+			changed = true;
+		}
+		else if(newShort != currentInstance.getBaseCost().getValue()) {
+			currentInstance.getBaseCost().setValue(newShort);
+			changed = true;
+		}
+
+		MoneyUnit newMoneyUnit = monetaryUnitSpinnerUtil.getSelectedItem();
+		if(!newMoneyUnit.equals(currentInstance.getBaseCost().getUnit())) {
+			currentInstance.getBaseCost().setUnit(newMoneyUnit);
 			changed = true;
 		}
 
 		newString = strengthEdit.getText().toString();
-		short newShort = Short.valueOf(newString);
+		newShort = Short.valueOf(newString);
 		if(newShort != currentInstance.getStrength()) {
 			currentInstance.setStrength(newShort);
 			changed = true;
 		}
 
 		newString = constructionTimeEdit.getText().toString();
-		newInt = Integer.valueOf(newString);
+		int newInt = Integer.valueOf(newString);
 		if(newInt != currentInstance.getConstructionTime()) {
 			currentInstance.setConstructionTime(newInt);
 			changed = true;
@@ -274,7 +312,13 @@ public class ItemTemplatePaneFragment extends Fragment implements SpinnerUtils.V
 		nameEdit.setText(currentInstance.getName());
 		notesEdit.setText(currentInstance.getNotes());
 		weightEdit.setText(String.valueOf(currentInstance.getWeight()));
-		baseCostEdit.setText(String.valueOf(currentInstance.getBaseCost()));
+		if(currentInstance.getBaseCost() != null) {
+			baseCostEdit.setText(String.valueOf(currentInstance.getBaseCost().getValue()));
+			monetaryUnitSpinnerUtil.setSelection(currentInstance.getBaseCost().getUnit());
+		}
+		else {
+			baseCostEdit.setText("");
+		}
 		strengthEdit.setText(String.valueOf(currentInstance.getStrength()));
 		constructionTimeEdit.setText(String.valueOf(currentInstance.getConstructionTime()));
 		if(currentInstance.getManeuverDifficulty() == null) {

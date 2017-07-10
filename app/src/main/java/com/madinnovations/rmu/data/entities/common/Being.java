@@ -108,6 +108,21 @@ public abstract class Being extends DatabaseObject {
 		return result;
 	}
 
+	/**
+	 * Gets the stat bonus for the given statistic
+	 *
+	 * @param statistic  the Statistic whose bonus is needed
+	 * @return  the total bonus for the given Statistic.
+	 */
+	public abstract short getTotalStatBonus(Statistic statistic);
+
+	/**
+	 * Gets the total modifications that need to be applied to the initiative roll for this Being.
+	 *
+	 * @return  the total initiative roll modifications
+	 */
+	public abstract short getInitiativeModifications();
+
 	// Getters and setters
 	public Campaign getCampaign() {
 		return campaign;

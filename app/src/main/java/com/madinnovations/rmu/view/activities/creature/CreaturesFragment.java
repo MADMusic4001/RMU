@@ -356,9 +356,10 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 								creatureListView.setItemChecked(position, true);
 								currentInstance = creatureListAdapter.getItem(position);
 							}
-							else {
-								currentInstance = new Creature();
-								isNew = true;
+							else if(creatureListAdapter.getCount() > 0){
+								creatureListView.setSelection(0);
+								creatureListView.setItemChecked(0, true);
+								currentInstance = creatureListAdapter.getItem(0);
 							}
 							copyItemToViews();
 							Boast.showText(getActivity(), R.string.toast_creature_deleted, Toast.LENGTH_SHORT);

@@ -215,7 +215,9 @@
   <string name="label_item_template_description">Item Template Description</string>
   <string name="label_item_template_name">Item Template Name</string>
   <string name="label_knacks">Knacks</string>
+  <string name="label_monetary_unit">Monetary Unit</string>
   <string name="label_offensive_bonus">Offensive Bonus</string>
+  <string name="label_opponent">Opponent</string>
   <string name="label_opponents">Opponents</string>
   <string name="label_other_penalties">Other Penalties</string>
   <string name="label_outlook_description">Outlook Description</string>
@@ -289,6 +291,7 @@
   <string name="label_intense_training">Allow Intense Training</string>
   <string name="label_is_lore">Lore Skill</string>
   <string name="label_is_two_handed">Two Handed</string>
+  <string name="label_multiple_spells_in_a_round">Multiple Spells in a Round</string>
   <string name="label_no_professions">No Professions</string>
   <string name="label_open_round">Open Ended Combat Rounds</string>
   <string name="label_per_level">Per Level</string>

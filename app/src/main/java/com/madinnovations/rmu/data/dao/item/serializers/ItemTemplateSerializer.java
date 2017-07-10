@@ -28,10 +28,12 @@ import com.madinnovations.rmu.data.entities.common.Biome;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.object.ArmorTemplate;
+import com.madinnovations.rmu.data.entities.object.Cost;
 import com.madinnovations.rmu.data.entities.object.Form;
 import com.madinnovations.rmu.data.entities.object.HerbTemplate;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.MoneyUnit;
 import com.madinnovations.rmu.data.entities.object.NaturalsTemplate;
 import com.madinnovations.rmu.data.entities.object.PoisonTemplate;
 import com.madinnovations.rmu.data.entities.object.Prep;
@@ -66,6 +68,7 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 		boolean poisonTemplate = false;
 		boolean substanceTemplate = false;
 		boolean weaponTemplate = false;
+		Cost baseCost = new Cost();
 		in.beginObject();
 		while (in.hasNext()) {
 			switch (in.nextName()) {
@@ -104,8 +107,11 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 				case COLUMN_WEIGHT:
 					itemTemplate.setWeight((float)in.nextDouble());
 					break;
-				case COLUMN_BASE_COST:
-					itemTemplate.setBaseCost(in.nextInt());
+				case COLUMN_BASE_COST_VALUE:
+					baseCost.setValue((short)in.nextInt());
+					break;
+				case COLUMN_BASE_COST_UNIT:
+					baseCost.setUnit(MoneyUnit.valueOf(in.nextString()));
 					break;
 				case COLUMN_STRENGTH:
 					itemTemplate.setStrength((short)in.nextInt());
@@ -228,6 +234,7 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 					}
 					break;
 			}
+			itemTemplate.setBaseCost(baseCost);
 		}
 		in.endObject();
 		return itemTemplate;

@@ -32,18 +32,21 @@ import com.madinnovations.rmu.data.entities.Position;
  * A DragShadowBuilder that draws a hex shaped drag shadow.
  */
 public class TerrainDragShadowBuilder extends View.DragShadowBuilder {
+	@SuppressWarnings("unused")
 	private static final String TAG = "TerrainDragShadowBuilde";
-	private Paint    linePaint;
-	private Position position;
-	private Being    being;
+	private TerrainView terrainView;
+	private Paint       linePaint;
+	private Position    position;
+	private Being       being;
 
 	/**
 	 * Creates a new TerrainDragShadowBuilder instance.
 	 *
-	 * @param view  the view that this TerrainDragShadowBuilder will be associated with
+	 * @param terrainView  the view that this TerrainDragShadowBuilder will be associated with
 	 */
-	public TerrainDragShadowBuilder(TerrainView view, Position position, Being being) {
-		super(view);
+	public TerrainDragShadowBuilder(TerrainView terrainView, Position position, Being being) {
+		super(terrainView);
+		this.terrainView = terrainView;
 		this.position = position;
 		this.being = being;
 		init();
@@ -51,13 +54,17 @@ public class TerrainDragShadowBuilder extends View.DragShadowBuilder {
 
 	@Override
 	public void onDrawShadow(Canvas canvas) {
+		canvas.save();
+		canvas.translate(terrainView.getOffsetX(), terrainView.getOffsetY());
+		canvas.scale(terrainView.getScaleFactor(), terrainView.getScaleFactor());
 		float radius = being.getHeight() / 2 + being.getWeaponLength();
 		canvas.drawCircle(position.getX() + radius, position.getY() + radius, radius, linePaint);
+		canvas.restore();
 	}
 
 	@Override
 	public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
-		float radius = being.getHeight() / 2 + being.getWeaponLength();
+		float radius = (being.getHeight() / 2 + being.getWeaponLength()*12) * terrainView.getScaleFactor();
 		float width = radius * 2;
 		outShadowSize.set((int)width, (int) width);
 		outShadowTouchPoint.set((int) radius, (int) radius);

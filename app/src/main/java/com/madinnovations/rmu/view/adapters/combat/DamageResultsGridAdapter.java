@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.adapters.combat;
 
@@ -32,7 +32,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
@@ -41,7 +40,6 @@ import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.widgets.MultiPasteEditText;
 
-import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,56 +54,41 @@ import rx.schedulers.Schedulers;
  */
 public class DamageResultsGridAdapter extends BaseAdapter {
 	private static final String TAG = "DamageResultsGridAdapt";
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_damage_result_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.damage_results_list_row;
 	private SparseArray<DamageResultRow> data;
-	private Context context;
-	private DamageResultRxHandler damageResultRxHandler;
-	private DamageResultRowRxHandler damageResultRowRxHandler;
-	private LayoutInflater layoutInflater;
-	private InputFilter inputFilter;
-	private Collection<CriticalType> criticalTypes;
-	private Pattern pattern;
-	private Toast toast = null;
+	private Context                      context;
+	private DamageResultRxHandler        damageResultRxHandler;
+	private DamageResultRowRxHandler     damageResultRowRxHandler;
+	private LayoutInflater               layoutInflater;
+	private InputFilter                  inputFilter;
+	private Pattern                      pattern;
+	private Toast                        toast = null;
 
 	/**
 	 * Creates a new DamageResultListAdapter instance.
 	 *
 	 * @param context the view {@link Context} the adapter will be attached to.
+	 * @param damageResultRxHandler  a DamageResultRxHandler instance
+	 * @param damageResultRowRxHandler  a DamageResultRowRxHandler instance
 	 */
 	@Inject
 	DamageResultsGridAdapter(CampaignActivity context, DamageResultRxHandler damageResultRxHandler,
-									DamageResultRowRxHandler damageResultRowRxHandler,
-									CriticalTypeRxHandler criticalTypeRxHandler) {
+									DamageResultRowRxHandler damageResultRowRxHandler) {
 		this.context = context;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.damageResultRxHandler = damageResultRxHandler;
 		this.damageResultRowRxHandler = damageResultRowRxHandler;
 		this.inputFilter = new DamageResultInputFilter();
-		criticalTypeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<CriticalType>>() {
-					@Override
-					public void onCompleted() {
-						StringBuilder builder = new StringBuilder(20 + criticalTypes.size()*2);
-						builder.append("(\\d*)");
-						if(!criticalTypes.isEmpty()) {
-							builder.append("([A-J])?([");
-							for (CriticalType criticalType : criticalTypes) {
-								builder.append(criticalType.getCode()).append(",");
-							}
-							builder.deleteCharAt(builder.length() - 1);
-							builder.append("])?");
-						}
-						pattern = Pattern.compile(builder.toString());
-					}
-					@Override
-					public void onError(Throwable e) {}
-					@Override
-					public void onNext(Collection<CriticalType> criticalTypes) {
-						DamageResultsGridAdapter.this.criticalTypes = criticalTypes;
-					}
-				});
+
+		StringBuilder builder = new StringBuilder(20 + CriticalType.values().length*2);
+		builder.append("(\\d*)");
+		builder.append("([A-J])?([");
+		for (CriticalType criticalType : CriticalType.values()) {
+			builder.append(criticalType.getCode()).append(",");
+		}
+		builder.deleteCharAt(builder.length() - 1);
+		builder.append("])?");
+		pattern = Pattern.compile(builder.toString());
 	}
 
 	@Override
@@ -201,17 +184,6 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 		if(data != null) {
 			data.clear();
 		}
-	}
-
-	private CriticalType getTypeForCode(char code) {
-		CriticalType result = null;
-		for(CriticalType criticalType : criticalTypes) {
-			if(criticalType.getCode() == code) {
-				result = criticalType;
-				break;
-			}
-		}
-		return result;
 	}
 
 	private void deleteDamageResult(int id) {
@@ -356,7 +328,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 								matches = false;
 							}
 							else {
-								type = getTypeForCode(typeString.charAt(0));
+								type = CriticalType.getTypeForCode(typeString.charAt(0));
 							}
 						}
 					}
@@ -433,8 +405,7 @@ public class DamageResultsGridAdapter extends BaseAdapter {
 					.subscribeOn(Schedulers.io())
 					.subscribe(new Subscriber<DamageResult>() {
 						@Override
-						public void onCompleted() {
-						}
+						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "Exception saving DamageResult", e);

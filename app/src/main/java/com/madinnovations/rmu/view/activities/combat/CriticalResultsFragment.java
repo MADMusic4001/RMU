@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.activities.combat;
 
@@ -35,9 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
@@ -58,21 +56,17 @@ import rx.schedulers.Schedulers;
 public class CriticalResultsFragment extends Fragment {
 	private static final String TAG = "CriticalResultsFragment";
 	@Inject
-	protected BodyPartRxHandler          bodyPartRxHandler;
+	protected CriticalResultRxHandler   criticalResultRxHandler;
 	@Inject
-	protected CriticalResultRxHandler    criticalResultRxHandler;
-	@Inject
-	protected CriticalTypeRxHandler      criticalTypeRxHandler;
-	@Inject
-	protected CriticalResultListAdapter  listAdapter;
-	private   ArrayAdapter<CriticalType> criticalTypeFilterSpinnerAdapter;
-	private   ArrayAdapter<Character>    criticalSeverityFilterSpinnerAdapter;
-	private   Spinner                    criticalTypeFilterSpinner;
-	private   ListView                   listView;
-	private CriticalType criticalTypeFilter = null;
-	private char criticalSeverityFilter = 'A';
-	private CriticalResult currentInstance = new CriticalResult();
-	private boolean isNew = true;
+	protected CriticalResultListAdapter listAdapter;
+	private   ArrayAdapter<String>      criticalTypeFilterSpinnerAdapter;
+	private   ArrayAdapter<Character>   criticalSeverityFilterSpinnerAdapter;
+	private   Spinner                   criticalTypeFilterSpinner;
+	private   ListView                  listView;
+	private   CriticalType              criticalTypeFilter     = null;
+	private   char                      criticalSeverityFilter = 'A';
+	private   CriticalResult            currentInstance        = new CriticalResult();
+	private   boolean                   isNew                  = true;
 
 	// <editor-fold desc="method overrides/implementations">
 	@Nullable
@@ -83,8 +77,8 @@ public class CriticalResultsFragment extends Fragment {
 
 		View layout = inflater.inflate(R.layout.critical_results_fragment, container, false);
 
-		initCriticalTypeFilterSpinner(layout);
 		initCriticalSeverityFilterSpinner(layout);
+		initCriticalTypeFilterSpinner(layout);
 		initListView(layout);
 
 		copyItemToViews();
@@ -125,7 +119,8 @@ public class CriticalResultsFragment extends Fragment {
 
 		position = criticalTypeFilterSpinner.getSelectedItemPosition();
 		if(position >= 0) {
-			newCriticalType = criticalTypeFilterSpinnerAdapter.getItem(position);
+			String newCriticalTypeName = criticalTypeFilterSpinnerAdapter.getItem(position);
+			newCriticalType = CriticalType.getCriticalTypeWithName(newCriticalTypeName);
 		}
 		if((newCriticalType == null && currentInstance.getCriticalType() != null) ||
 				(newCriticalType != null && !newCriticalType.equals(currentInstance.getCriticalType()))) {
@@ -224,30 +219,15 @@ public class CriticalResultsFragment extends Fragment {
 		criticalTypeFilterSpinner = (Spinner)layout.findViewById(R.id.critical_type_filter_spinner);
 		criticalTypeFilterSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		criticalTypeFilterSpinner.setAdapter(criticalTypeFilterSpinnerAdapter);
-
-		criticalTypeRxHandler.getAll()
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.io())
-				.subscribe(new Subscriber<Collection<CriticalType>>() {
-					@Override
-					public void onCompleted() {}
-					@Override
-					public void onError(Throwable e) {
-						Log.e(TAG, "Exception caught getting all CriticalType instances", e);
-					}
-					@Override
-					public void onNext(Collection<CriticalType> criticalTypes) {
-						criticalTypeFilterSpinnerAdapter.addAll(criticalTypes);
-						criticalTypeFilterSpinnerAdapter.notifyDataSetChanged();
-						criticalTypeFilter = currentInstance.getCriticalType();
-						criticalTypeFilterSpinner.setSelection(criticalTypeFilterSpinnerAdapter.getPosition(criticalTypeFilter));
-					}
-				});
+		criticalTypeFilterSpinnerAdapter.addAll(CriticalType.getCriticalTypeNames());
+		criticalTypeFilter = currentInstance.getCriticalType();
+		criticalTypeFilterSpinner.setSelection(criticalTypeFilterSpinnerAdapter.getPosition(criticalTypeFilter.toString()));
 
 		criticalTypeFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				criticalTypeFilter = criticalTypeFilterSpinnerAdapter.getItem(position);
+				String criticalTypeName = criticalTypeFilterSpinnerAdapter.getItem(position);
+				criticalTypeFilter = CriticalType.getCriticalTypeWithName(criticalTypeName);
 				loadCriticalResults();
 			}
 			@Override
@@ -305,7 +285,7 @@ public class CriticalResultsFragment extends Fragment {
 	}
 
 	private void loadCriticalResults() {
-		if(criticalTypeFilter == null || criticalTypeFilter.getId() == -1) {
+		if(criticalTypeFilter == null) {
 			listAdapter.clear();
 			listAdapter.notifyDataSetChanged();
 		}

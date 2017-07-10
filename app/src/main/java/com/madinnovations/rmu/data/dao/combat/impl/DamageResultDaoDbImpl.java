@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.combat.impl;
 
@@ -22,10 +22,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 
@@ -41,7 +41,6 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implements DamageResultDao, DamageResultSchema {
-    private CriticalTypeDao criticalTypeDao;
 	private DamageResultRowDao damageResultRowDao;
 
     /**
@@ -50,10 +49,8 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public DamageResultDaoDbImpl(SQLiteOpenHelper helper, CriticalTypeDao criticalTypeDao,
-								 DamageResultRowDao damageResultRowDao) {
+    public DamageResultDaoDbImpl(SQLiteOpenHelper helper, DamageResultRowDao damageResultRowDao) {
         super(helper);
-        this.criticalTypeDao = criticalTypeDao;
 		this.damageResultRowDao = damageResultRowDao;
     }
 
@@ -92,13 +89,13 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
 		instance.setArmorType(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ARMOR_TYPE)));
         instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
         if(cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SEVERITY)) ||
-                cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))) {
+                cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE))) {
             instance.setCriticalSeverity(null);
             instance.setCriticalType(null);
         }
         else {
             instance.setCriticalSeverity(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_SEVERITY)).charAt(0));
-            instance.setCriticalType(criticalTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))));
+            instance.setCriticalType(CriticalType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE))));
         }
 
         return instance;
@@ -120,11 +117,11 @@ public class DamageResultDaoDbImpl extends BaseDaoDbImpl<DamageResult> implement
         values.put(COLUMN_HITS, instance.getHits());
         if(instance.getCriticalSeverity() == null || instance.getCriticalType() == null) {
             values.putNull(COLUMN_CRITICAL_SEVERITY);
-            values.putNull(COLUMN_CRITICAL_TYPE_ID);
+            values.putNull(COLUMN_CRITICAL_TYPE);
         }
         else {
             values.put(COLUMN_CRITICAL_SEVERITY, String.valueOf((char)instance.getCriticalSeverity()));
-            values.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
+            values.put(COLUMN_CRITICAL_TYPE, instance.getCriticalType().name());
         }
 
 		return values;

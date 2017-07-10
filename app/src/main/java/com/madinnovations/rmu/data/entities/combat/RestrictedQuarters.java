@@ -20,6 +20,9 @@ import android.support.annotation.StringRes;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.view.RMUApp;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Enumeration of the 4 possible restricted quarters.
  */
@@ -41,6 +44,19 @@ public enum RestrictedQuarters {
 	@Override
 	public String toString() {
 		return RMUApp.getResourceUtils().getString(nameResourceId);
+	}
+
+	/**
+	 * Returns a string containing the field names and values for this instance.
+	 *
+	 * @return a string containing the field names and values for this instance.
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("nameResourceId", nameResourceId)
+				.append("modifier", modifier)
+				.toString();
 	}
 
 	// Getters

@@ -15,11 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.character;
 
-import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.DatabaseObject;
-import com.madinnovations.rmu.data.entities.Position;
-import com.madinnovations.rmu.data.entities.combat.CombatPosition;
-import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
+import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
@@ -27,11 +24,7 @@ import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
-import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -43,11 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import static com.madinnovations.rmu.data.entities.Modifiers.DAZED;
-import static com.madinnovations.rmu.data.entities.Modifiers.OFF_HAND_PENALTY;
-import static com.madinnovations.rmu.data.entities.Modifiers.PRONE;
-import static com.madinnovations.rmu.data.entities.Modifiers.STAGGERED;
 
 /**
  * Character attributes
@@ -312,100 +300,7 @@ public class Character extends Being implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets the offensive bonus for the currently equipped weapon
-	 *
-	 * @return the character's offensive bonus.
-	 */
-	public short[] getOffensiveBonuses(Position position, Map<Creature, EncounterRoundInfo> opponentsInfo, RestrictedQuarters
-			restrictedQuarters) {
-		short baseOB = -25;
-		WeaponTemplate weaponTemplate = null;
-		short[] results = new short[opponentsInfo.size() + 1];
-
-		if (mainHandItem != null && mainHandItem instanceof Weapon && mainHandItem.getItemTemplate() instanceof WeaponTemplate) {
-			weaponTemplate = (WeaponTemplate) mainHandItem.getItemTemplate();
-			baseOB = 0;
-		}
-		else if (offhandItem != null && offhandItem instanceof Weapon
-				&& offhandItem.getItemTemplate() instanceof WeaponTemplate) {
-			weaponTemplate = (WeaponTemplate) offhandItem.getItemTemplate();
-			baseOB = OFF_HAND_PENALTY;
-		}
-		if (weaponTemplate != null) {
-			Specialization specialization = weaponTemplate.getCombatSpecialization();
-			Short ranks = getSpecializationRanks().get(specialization);
-			if (ranks == null) {
-				ranks = 0;
-			}
-			baseOB = Skill.getRankBonus(ranks);
-		}
-		for (State state : currentStates) {
-			switch (state.getStateType()) {
-				case STAGGERED:
-					baseOB += STAGGERED;
-					break;
-				case DAZED:
-					baseOB += DAZED;
-					break;
-				case PRONE:
-					baseOB += PRONE;
-					break;
-			}
-		}
-		baseOB += restrictedQuarters.getModifier();
-		results[0] = baseOB;
-
-		int i = 1;
-		for(Map.Entry<Creature, EncounterRoundInfo> entry : opponentsInfo.entrySet()) {
-			Creature creature = entry.getKey();
-			short ob = baseOB;
-			for(State state : creature.getCurrentStates()) {
-				switch (state.getStateType()) {
-					case STUNNED:
-						ob += 20;
-						break;
-					case SURPRISED:
-						ob += 25;
-						break;
-					case FLATFOOTED:
-						ob += 60;
-						break;
-					case PRONE:
-						ob += 30;
-						break;
-				}
-			}
-			if(position != null && entry.getValue().getPosition() != null) {
-				CombatPosition defendPosition = position.canAttack(entry.getValue().getPosition(),
-																   creature.getCreatureVariety().getHeight(),
-																   getHeight(), getWeaponLength());
-				switch (defendPosition) {
-					case RIGHT_FLANK:
-					case LEFT_FLANK:
-						ob += 15;
-						break;
-					case REAR:
-						ob += 35;
-						break;
-				}
-				CombatPosition attackPosition = position.getAttackPosition(entry.getValue().getPosition());
-				switch (attackPosition) {
-					case RIGHT_FLANK:
-					case LEFT_FLANK:
-						ob -= 30;
-						break;
-					case REAR:
-						ob -= 30;
-						break;
-				}
-			}
-			results[i++] = ob;
-		}
-
-		return results;
-	}
-// </editor-fold> Public methods
+	// </editor-fold> Public methods
 
 // <editor-fold desc="Implementation (private) methods">
 	private void generateRandomStat(Statistic statistic) {
@@ -478,12 +373,8 @@ public class Character extends Being implements Serializable {
 		return builder.toString();
 	}
 
-	/**
-	 * Calculates the initiative penalty
-	 *
-	 * @return the initiative penalty
-	 */
-	public short getInitiativePenalty() {
+	@Override
+	public short getInitiativeModifications() {
 		int totalPenalty = 0;
 		for (State state : currentStates) {
 			switch (state.getStateType()) {

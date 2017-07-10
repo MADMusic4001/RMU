@@ -214,8 +214,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			}
 		}
 		if(encounterRoundInfo != null) {
-			Log.d(TAG, "nextAction: combatRoundInfo = " + encounterRoundInfo);
-			Log.d(TAG, "nextAction: currentInitiative = " + currentInitiative);
 			if(encounterRoundInfo.getActionInProgress() != null) {
 				resolveAttackDialog = new ResolveAttackDialog();
 				selectActionDialog = null;

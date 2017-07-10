@@ -17,6 +17,7 @@ package com.madinnovations.rmu.data.entities.object;
 
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
@@ -31,6 +32,7 @@ import java.io.IOException;
 public class WeaponTemplate extends ItemTemplate {
 	public static final String         JSON_NAME   = "WeaponTemplate";
     private Specialization combatSpecialization = null;
+	private Attack         attack;
     private DamageTable    damageTable = null;
     private boolean        braceable   = false;
 	private short	       fumble = 3;
@@ -113,6 +115,12 @@ public class WeaponTemplate extends ItemTemplate {
 	}
 	public void setCombatSpecialization(Specialization combatSpecialization) {
 		this.combatSpecialization = combatSpecialization;
+	}
+	public Attack getAttack() {
+		return attack;
+	}
+	public void setAttack(Attack attack) {
+		this.attack = attack;
 	}
 	public DamageTable getDamageTable() {
         return damageTable;

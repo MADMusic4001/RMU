@@ -82,6 +82,8 @@ public class TerrainView extends View {
 	private   Position             sourcePoint;
 	private   float                lastX;
 	private   float                lastY;
+	private   float                offsetX = 0.0f;
+	private   float                offsetY = 0.0f;
 	private   boolean              directionDragging = false;
 
 	/**
@@ -363,9 +365,9 @@ public class TerrainView extends View {
 		Position position;
 		EncounterRoundInfo encounterRoundInfo = null;
 		if (being instanceof Character) {
-			encounterRoundInfo = callbacks.getEncounterSetup().getCharacterCombatInfo().get((Character) being);
+			encounterRoundInfo = callbacks.getEncounterSetup().getCharacterCombatInfo().get(being);
 		} else if (being instanceof Creature) {
-			encounterRoundInfo = callbacks.getEncounterSetup().getEnemyCombatInfo().get((Creature) being);
+			encounterRoundInfo = callbacks.getEncounterSetup().getEnemyCombatInfo().get(being);
 		}
 		if (encounterRoundInfo != null) {
 			position = encounterRoundInfo.getPosition();
@@ -380,8 +382,8 @@ public class TerrainView extends View {
 		if (callbacks != null) {
 			EncounterSetup encounterSetup = callbacks.getEncounterSetup();
 			if (encounterSetup != null) {
-				Character          character          = null;
-				Creature           creature           = null;
+				Character character;
+				Creature creature;
 				EncounterRoundInfo encounterRoundInfo = null;
 				if (being instanceof Character) {
 					character = (Character) being;
@@ -389,6 +391,7 @@ public class TerrainView extends View {
 					if (encounterRoundInfo == null) {
 						encounterRoundInfo = new EncounterRoundInfo();
 					}
+					encounterRoundInfo.setCombatant(character);
 					encounterSetup.getCharacterCombatInfo().put(character, encounterRoundInfo);
 				} else if (being instanceof Creature) {
 					creature = (Creature) being;
@@ -396,6 +399,7 @@ public class TerrainView extends View {
 					if (encounterRoundInfo == null) {
 						encounterRoundInfo = new EncounterRoundInfo();
 					}
+					encounterRoundInfo.setCombatant(creature);
 					encounterSetup.getEnemyCombatInfo().put(creature, encounterRoundInfo);
 				}
 				if (encounterRoundInfo != null) {
@@ -403,11 +407,16 @@ public class TerrainView extends View {
 					if (position == null) {
 						position = new Position();
 					}
-					position.setX(pointf.x);
-					position.setY(pointf.y);
+					Log.d(TAG, "updateLocation: pointf.x = " + pointf.x);
+					Log.d(TAG, "updateLocation: pointf.y = " + pointf.y);
+					Log.d(TAG, "updateLocation: lastX = " + lastX);
+					Log.d(TAG, "updateLocation: kastY = " + lastY);
+					position.setX(pointf.x/scaleFactor - offsetX);
+					position.setY(pointf.y/scaleFactor - offsetY);
 					encounterRoundInfo.setPosition(position);
 					callbacks.enableEncounterButton(encounterSetup.getCharacterCombatInfo().size() > 0 &&
 							encounterSetup.getEnemyCombatInfo().size() > 0);
+					Log.d(TAG, "updateLocation: position = " + encounterRoundInfo.getPosition().print());
 				}
 			}
 		}
@@ -416,9 +425,9 @@ public class TerrainView extends View {
 	private void updateDirection(Being being, PointF pointf) {
 		EncounterRoundInfo encounterRoundInfo = null;
 		if (being instanceof Character) {
-			encounterRoundInfo = callbacks.getEncounterSetup().getCharacterCombatInfo().get((Character) being);
+			encounterRoundInfo = callbacks.getEncounterSetup().getCharacterCombatInfo().get(being);
 		} else if (being instanceof Creature) {
-			encounterRoundInfo = callbacks.getEncounterSetup().getEnemyCombatInfo().get((Creature) being);
+			encounterRoundInfo = callbacks.getEncounterSetup().getEnemyCombatInfo().get(being);
 		}
 		if (encounterRoundInfo != null) {
 			Position position = encounterRoundInfo.getPosition();
@@ -431,20 +440,34 @@ public class TerrainView extends View {
 
 	private void drawCombatant(Canvas canvas, Position position, float height, float weaponLength, String name, int maxHitPoints,
 							   int currentHitPoints, int bodyDevSkillBonus ) {
-		float innerRadius = (height / 2) * scaleFactor;
-		float outerRadius = (innerRadius + weaponLength * 12) * scaleFactor;
-		RectF oval = new RectF(position.getX() - outerRadius, position.getY() - outerRadius,
-				position.getX() + outerRadius, position.getY() + outerRadius);
+		canvas.save();
+		canvas.translate(offsetX, offsetY);
+		canvas.scale(scaleFactor,scaleFactor);
+		float innerRadius = (height / 2);
+		float outerRadius = innerRadius + (weaponLength * 12);
+		RectF oval = new RectF(position.getX() - outerRadius,
+							   position.getY() - outerRadius,
+							   position.getX() + outerRadius,
+							   position.getY() + outerRadius);
 		float directionDegrees = (float) Math.toDegrees(position.getDirection());
 		canvas.drawArc(oval, directionDegrees - 90, 180, true, frontPaint);
 		canvas.drawArc(oval, directionDegrees - 150, 60, true, flankPaint);
 		canvas.drawArc(oval, directionDegrees + 90, 60, true, flankPaint);
 		canvas.drawArc(oval, directionDegrees + 150, 60, true, rearPaint);
-		canvas.drawCircle(position.getX(), position.getY(), innerRadius, linePaint);
+		canvas.drawCircle(position.getX(),
+						  position.getY(),
+						  innerRadius,
+						  linePaint);
 		if (weaponLength > 0) {
-			canvas.drawCircle(position.getX(), position.getY(), outerRadius, linePaint);
+			canvas.drawCircle(position.getX(),
+							  position.getY(),
+							  outerRadius,
+							  linePaint);
 		}
-		canvas.drawText(name.substring(0, 3), position.getX(), position.getY() + textSize / 2, fontPaint);
+		canvas.drawText(name.substring(0, 3),
+						position.getX(),
+						position.getY() + textSize / 2,
+						fontPaint);
 
 		RectF healthRect = new RectF(oval);
 		healthRect.top = oval.bottom + SPACING;
@@ -470,17 +493,28 @@ public class TerrainView extends View {
 
 		canvas.drawText(String.valueOf(currentHitPoints) + "/" + String.valueOf(maxHitPoints),
 						oval.left + oval.width()/2, healthRect.bottom - 2, fontPaint);
+		canvas.restore();
 	}
 
 	// Getters and setters
 	public float getScaleFactor() {
 		return scaleFactor;
 	}
-
+	public float getOffsetX() {
+		return offsetX;
+	}
+	public void setOffsetX(float offsetX) {
+		this.offsetX = offsetX;
+	}
+	public float getOffsetY() {
+		return offsetY;
+	}
+	public void setOffsetY(float offsetY) {
+		this.offsetY = offsetY;
+	}
 	public float getLastX() {
 		return lastX;
 	}
-
 	public float getLastY() {
 		return lastY;
 	}
@@ -515,7 +549,15 @@ public class TerrainView extends View {
 	private class TerrainViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public void onLongPress(MotionEvent e) {
+			Log.d(TAG, "onLongPress: ");
 			super.onLongPress(e);
+			Log.d(TAG, "onLongPress: scaleFactor = " + scaleFactor);
+			Log.d(TAG, "onLongPress: offsetX = " + offsetX);
+			Log.d(TAG, "onLongPress: offsetY = " + offsetY);
+			float x = e.getX()/scaleFactor - offsetX;
+			float y = e.getY()/scaleFactor - offsetY;
+			Log.d(TAG, "onLongPress: x = " + x);
+			Log.d(TAG, "onLongPress: y = " + y);
 			if (callbacks != null) {
 				ClipData dragData = null;
 				for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
@@ -524,7 +566,8 @@ public class TerrainView extends View {
 					if (entry.getValue().getPosition() != null) {
 						float weaponLength = entry.getKey().getWeaponLength();
 						CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-								lastX, lastY, entry.getKey().getHeight(), weaponLength);
+								x, y, entry.getKey().getHeight(), weaponLength);
+						Log.d(TAG, "onLongPress: combatPosition = " + combatPosition.toString());
 						String            characterIdString = String.valueOf(entry.getKey().getId());
 						ClipData.Item     clipDataItem      = new ClipData.Item(characterIdString);
 						DragShadowBuilder myShadowBuilder   = null;
@@ -544,13 +587,15 @@ public class TerrainView extends View {
 										TerrainView.this, entry.getValue().getPosition(), entry.getKey());
 								break;
 						}
-						if (dragData != null) {
+						if(myShadowBuilder != null) {
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 								TerrainView.this.startDragAndDrop(dragData, myShadowBuilder, entry.getKey(), 0);
-							} else {
+							}
+							else {
 								//noinspection deprecation
 								TerrainView.this.startDrag(dragData, myShadowBuilder, entry.getKey(), 0);
 							}
+							break;
 						}
 					}
 				}
@@ -581,13 +626,15 @@ public class TerrainView extends View {
 											TerrainView.this, entry.getValue().getPosition(), entry.getKey());
 									break;
 							}
-							if (dragData != null) {
+							if(myShadowBuilder != null) {
 								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 									TerrainView.this.startDragAndDrop(dragData, myShadowBuilder, entry.getKey(), 0);
-								} else {
+								}
+								else {
 									//noinspection deprecation
 									TerrainView.this.startDrag(dragData, myShadowBuilder, entry.getKey(), 0);
 								}
+								break;
 							}
 						}
 					}
@@ -596,7 +643,16 @@ public class TerrainView extends View {
 		}
 
 		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			offsetX -= distanceX*scaleFactor;
+			offsetY -= distanceY*scaleFactor;
+			invalidate();
+			return true;
+		}
+
+		@Override
 		public boolean onDown(MotionEvent e) {
+			Log.d(TAG, "onDown: ");
 			lastX = e.getX();
 			lastY = e.getY();
 			return super.onDown(e);

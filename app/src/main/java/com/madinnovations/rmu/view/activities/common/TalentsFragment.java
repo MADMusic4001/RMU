@@ -44,7 +44,6 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.TalentCategoryRxHandler;
@@ -96,8 +95,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 	private static final String TAG = "TalentsFragment";
 	@Inject
 	protected AttackRxHandler                          attackRxHandler;
-	@Inject
-	protected CriticalTypeRxHandler                    criticalTypeRxHandler;
 	@Inject
 	protected SkillRxHandler                           skillRxHandler;
 	@Inject
@@ -1208,7 +1205,6 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 		if(talentParameterRow.getParameter().getHandler() != null) {
 			Collection<DatabaseObject> spinnerValues = parameterCollectionsCache.get(talentParameterRow.getParameter());
-			Integer spellListId = null;
 			DatabaseObject databaseObject = null;
 			switch (talentParameterRow.getParameter().getHandler()) {
 				case SPELL_RX_HANDLER:

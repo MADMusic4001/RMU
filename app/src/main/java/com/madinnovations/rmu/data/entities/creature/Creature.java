@@ -16,9 +16,12 @@
 package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
+import com.madinnovations.rmu.data.entities.common.Being;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.State;
+import com.madinnovations.rmu.data.entities.common.Statistic;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.view.RMUApp;
@@ -67,6 +70,57 @@ public class Creature extends Being implements Serializable {
 	public String toString() {
 		return String.format(RMUApp.getResourceUtils().getString(R.string.creature_name_format_string), currentLevel,
 							 creatureVariety.getName());
+	}
+
+	@Override
+	public short getTotalStatBonus(Statistic statistic) {
+		return getCreatureVariety().getRacialStatBonuses().get(statistic);
+	}
+
+	@Override
+	public short getInitiativeModifications() {
+		int totalPenalty = 0;
+		for (State state : currentStates) {
+			switch (state.getStateType()) {
+				case ENCUMBERED:
+					totalPenalty += state.getConstant();
+					break;
+				case FATIGUED:
+					totalPenalty += state.getConstant();
+					break;
+				case HASTED:
+					totalPenalty += state.getConstant();
+					break;
+				case HP_LOSS:
+					int maxHits = getCreatureVariety().getBaseHits()
+							+ getCreatureVariety().getRacialStatBonuses().get(Statistic.CONSTITUTION) * 2
+							+ getCreatureVariety().getRacialStatBonuses().get(Statistic.SELF_DISCIPLINE)
+							+ getCreatureVariety().getSkillBonus(new Skill("BodyDevelopment"));
+					for (TalentInstance talentInstance : getCreatureVariety().getTalentInstancesList()) {
+						if (talentInstance.getTalent().getName().equals("Tough")) {
+							maxHits += talentInstance.getTiers() * 5;
+						}
+						if (talentInstance.getTalent().getName().equals("Fragile")) {
+							maxHits -= talentInstance.getTiers() * 5;
+						}
+					}
+					float hpLossPercent = state.getConstant() / maxHits;
+					if (hpLossPercent >= 0.76) {
+						totalPenalty += -30;
+					}
+					else if (hpLossPercent >= 0.51) {
+						totalPenalty += -20;
+					}
+					else if (hpLossPercent >= 0.26) {
+						totalPenalty += -10;
+					}
+					break;
+				case INJURED:
+					totalPenalty += state.getConstant();
+					break;
+			}
+		}
+		return (short) (totalPenalty / 10);
 	}
 
 	/**

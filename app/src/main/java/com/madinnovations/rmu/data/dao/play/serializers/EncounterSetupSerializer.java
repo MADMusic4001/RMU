@@ -18,11 +18,13 @@ package com.madinnovations.rmu.data.dao.play.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCharacterEncounterInfoSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCreatureEncounterInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
 import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.combat.Action;
+import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
+import com.madinnovations.rmu.data.entities.common.Pace;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
@@ -40,32 +42,12 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
 		out.name(COLUMN_ENCOUNTER_START_TIME).value(value.getEncounterStartTime().getTimeInMillis());
-		out.name(EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME).beginArray();
+		out.name(EncounterSetupEncounterInfoSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Character, EncounterRoundInfo> entry : value.getCharacterCombatInfo().entrySet()) {
-			out.beginObject();
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID).value(entry.getKey().getId());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getPosition().getX());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getPosition().getY());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_DIRECTION).value(
-					entry.getValue().getPosition().getDirection());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
-			out.name(EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
-					entry.getValue().getActionPointsRemaining());
-			out.endObject();
+			writeEncounterRoundInfo(out, entry.getValue());
 		}
-		out.endArray();
-		out.name(EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Creature, EncounterRoundInfo> entry : value.getEnemyCombatInfo().entrySet()) {
-			out.beginObject();
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID).value(entry.getKey().getId());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X).value(entry.getValue().getPosition().getX());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y).value(entry.getValue().getPosition().getY());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_DIRECTION).value(
-					entry.getValue().getPosition().getDirection());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(entry.getValue().getInitiativeRoll());
-			out.name(EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING).value(
-					entry.getValue().getActionPointsRemaining());
-			out.endObject();
+			writeEncounterRoundInfo(out, entry.getValue());
 		}
 		out.endArray();
 		out.endObject().flush();
@@ -85,11 +67,8 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 					calendar.setTimeInMillis(in.nextLong());
 					encounterSetup.setEncounterStartTime(calendar);
 					break;
-				case EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME:
-					readCharacterLocations(in, encounterSetup);
-					break;
-				case EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME:
-					readCreatureLocations(in, encounterSetup);
+				case EncounterSetupEncounterInfoSchema.TABLE_NAME:
+					readEncounterInfo(in, encounterSetup);
 					break;
 			}
 		}
@@ -97,73 +76,124 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 		return encounterSetup;
 	}
 
-	private void readCharacterLocations(JsonReader in, EncounterSetup encounterSetup) throws IOException {
-		in.beginArray();
-		while (in.hasNext()) {
-			in.beginObject();
-			Character character = new Character();
-			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			float x = 0, y = 0, direction = 0;
-			while(in.hasNext()) {
-				switch (in.nextName()) {
-					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_CHARACTER_ID:
-						character.setId(in.nextInt());
-						break;
-					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_X:
-						x = (float)in.nextDouble();
-						break;
-					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_LOCATION_Y:
-						y = (float)in.nextDouble();
-						break;
-					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_DIRECTION:
-						direction = (float)in.nextDouble();
-						break;
-					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
-						encounterRoundInfo.setInitiativeRoll((short)in.nextInt());
-						break;
-					case EncounterSetupCharacterEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
-						encounterRoundInfo.setActionPointsRemaining((short)in.nextInt());
-						break;
-				}
-			}
-			encounterRoundInfo.setPosition(new Position(x, y, direction));
-			encounterSetup.getCharacterCombatInfo().put(character, encounterRoundInfo);
-			in.endObject();
+	private void writeEncounterRoundInfo(JsonWriter out, EncounterRoundInfo encounterRoundInfo) throws IOException {
+		out.beginObject();
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_BEING_ID).value(encounterRoundInfo.getCombatant().getId());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_IS_CHARACTER)
+				.value(encounterRoundInfo.getCombatant() instanceof Character);
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_LOCATION_X).value(encounterRoundInfo.getPosition().getX());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_LOCATION_Y).value(encounterRoundInfo.getPosition().getY());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_DIRECTION).value(encounterRoundInfo.getPosition().getDirection());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_INITIATIVE_ROLL).value(encounterRoundInfo.getInitiativeRoll());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_BASE_INITIATIVE).value(encounterRoundInfo.getBaseInitiative());
+		if(encounterRoundInfo.getSelectedOpponent() != null) {
+			out.name(EncounterSetupEncounterInfoSchema.COLUMN_SELECTED_OPPONENT_ID)
+					.value(encounterRoundInfo.getSelectedOpponent().getId());
+			out.name(EncounterSetupEncounterInfoSchema.COLUMN_OPPONENT_IS_CHARACTER)
+					.value(encounterRoundInfo.getSelectedOpponent() instanceof Character);
 		}
-		in.endArray();
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_PARRY).value(encounterRoundInfo.getParry());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING)
+				.value(encounterRoundInfo.getActionPointsRemaining());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_ACTION_POINTS_SPENT).value(encounterRoundInfo.getActionPointsSpent());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_INSTANTANEOUS_USED).value(encounterRoundInfo.isInstantaneousUsed());
+		out.name(EncounterSetupEncounterInfoSchema.COLUMN_IS_CONCENTRATING).value(encounterRoundInfo.isConcentrating());
+		if(encounterRoundInfo.getPace() != null) {
+			out.name(EncounterSetupEncounterInfoSchema.COLUMN_PACE).value(encounterRoundInfo.getPace().name());
+			out.name(EncounterSetupEncounterInfoSchema.COLUMN_IS_MOVING_BACKWARDS)
+					.value(encounterRoundInfo.isMovingBackwards());
+		}
+		if(encounterRoundInfo.getRestrictedQuarters() != null) {
+			out.name(EncounterSetupEncounterInfoSchema.COLUMN_RESTRICTED_QUARTERS)
+					.value(encounterRoundInfo.getRestrictedQuarters().name());
+		}
+		if(encounterRoundInfo.getActionInProgress() != null) {
+			out.name(EncounterSetupEncounterInfoSchema.COLUMN_ACTION_IN_PROGRESS)
+					.value(encounterRoundInfo.getActionInProgress().name());
+		}
+		out.endObject();
 	}
 
-	private void readCreatureLocations(JsonReader in, EncounterSetup encounterSetup) throws IOException {
+	private void readEncounterInfo(JsonReader in, EncounterSetup encounterSetup) throws IOException {
 		in.beginArray();
 		while (in.hasNext()) {
 			in.beginObject();
-			Creature creature = new Creature();
+			int beingId = -1;
+			boolean combatantIsCharacter = true;
+			int opponentId = -1;
+			boolean opponentIsCharacter = false;
 			EncounterRoundInfo encounterRoundInfo = new EncounterRoundInfo();
-			float x = 0, y = 0, direction = 0;
+			encounterRoundInfo.setPosition(new Position());
 			while(in.hasNext()) {
 				switch (in.nextName()) {
-					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_CREATURE_ID:
-						creature.setId(in.nextInt());
+					case EncounterSetupEncounterInfoSchema.COLUMN_BEING_ID:
+						beingId = in.nextInt();
 						break;
-					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_X:
-						x = (float)in.nextDouble();
+					case EncounterSetupEncounterInfoSchema.COLUMN_IS_CHARACTER:
+						combatantIsCharacter = in.nextBoolean();
 						break;
-					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_LOCATION_Y:
-						y = (float)in.nextDouble();
+					case EncounterSetupEncounterInfoSchema.COLUMN_LOCATION_X:
+						encounterRoundInfo.getPosition().setX((float)in.nextDouble());
 						break;
-					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_DIRECTION:
-						direction = (float)in.nextDouble();
+					case EncounterSetupEncounterInfoSchema.COLUMN_LOCATION_Y:
+						encounterRoundInfo.getPosition().setY((float)in.nextDouble());
 						break;
-					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
+					case EncounterSetupEncounterInfoSchema.COLUMN_DIRECTION:
+						encounterRoundInfo.getPosition().setDirection((float)in.nextDouble());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_INITIATIVE_ROLL:
 						encounterRoundInfo.setInitiativeRoll((short)in.nextInt());
 						break;
-					case EncounterSetupCreatureEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
+					case EncounterSetupEncounterInfoSchema.COLUMN_BASE_INITIATIVE:
+						encounterRoundInfo.setBaseInitiative((short)in.nextInt());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_SELECTED_OPPONENT_ID:
+						opponentId = in.nextInt();
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_OPPONENT_IS_CHARACTER:
+						opponentIsCharacter = in.nextBoolean();
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_PARRY:
+						encounterRoundInfo.setParry((short)in.nextInt());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_ACTION_POINTS_REMAINING:
 						encounterRoundInfo.setActionPointsRemaining((short)in.nextInt());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_ACTION_POINTS_SPENT:
+						encounterRoundInfo.setActionPointsSpent((short)in.nextInt());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_INSTANTANEOUS_USED:
+						encounterRoundInfo.setInstantaneousUsed(in.nextBoolean());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_IS_CONCENTRATING:
+						encounterRoundInfo.setConcentrating(in.nextBoolean());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_PACE:
+						encounterRoundInfo.setPace(Pace.valueOf(in.nextString()));
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_IS_MOVING_BACKWARDS:
+						encounterRoundInfo.setMovingBackwards(in.nextBoolean());
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_RESTRICTED_QUARTERS:
+						encounterRoundInfo.setRestrictedQuarters(RestrictedQuarters.valueOf(in.nextString()));
+						break;
+					case EncounterSetupEncounterInfoSchema.COLUMN_ACTION_IN_PROGRESS:
+						encounterRoundInfo.setActionInProgress(Action.valueOf(in.nextString()));
 						break;
 				}
 			}
-			encounterRoundInfo.setPosition(new Position(x, y, direction));
-			encounterSetup.getEnemyCombatInfo().put(creature, encounterRoundInfo);
+			if(opponentIsCharacter) {
+				encounterRoundInfo.setSelectedOpponent(new Character(opponentId));
+			}
+			else {
+				encounterRoundInfo.setSelectedOpponent(new Creature(opponentId));
+			}
+			if(combatantIsCharacter) {
+				encounterSetup.getCharacterCombatInfo().put(new Character(beingId), encounterRoundInfo);
+			}
+			else {
+				encounterSetup.getEnemyCombatInfo().put(new Creature(beingId), encounterRoundInfo);
+			}
 			in.endObject();
 		}
 		in.endArray();

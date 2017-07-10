@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.campaign.schemas;
 
@@ -33,6 +33,7 @@ public interface CampaignSchema {
 	String COLUMN_ALLOW_TALENTS = "allowTalentsBeyondFirst";
 	String COLUMN_OPEN_ROUNDS = "openRounds";
 	String COLUMN_GRITTY_POISON_AND_DISEASE = "grittyPoisonAndDisease";
+	String COLUMN_MULTIPLE_SPELLS_IN_A_ROUND = "multipleSpellsInARound";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME + "("
@@ -47,10 +48,11 @@ public interface CampaignSchema {
 			+ COLUMN_BUY_STATS + " INTEGER NOT NULL, "
 			+ COLUMN_ALLOW_TALENTS + " INTEGER NOT NULL, "
 			+ COLUMN_OPEN_ROUNDS + " INTEGER NOT NULL, "
-			+ COLUMN_GRITTY_POISON_AND_DISEASE + " INTEGER NOT NULL"
+			+ COLUMN_GRITTY_POISON_AND_DISEASE + " INTEGER NOT NULL, "
+			+ COLUMN_MULTIPLE_SPELLS_IN_A_ROUND + " INTEGER NOT NULL"
 			+ ")";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_CREATE_DATE, COLUMN_POWER_LEVEL, COLUMN_AWARD_DP,
 			COLUMN_INTENSE_TRAINING_ALLOWED, COLUMN_INDIVIDUAL_STRIDE, COLUMN_NO_PROFESSIONS, COLUMN_BUY_STATS,
-			COLUMN_ALLOW_TALENTS, COLUMN_OPEN_ROUNDS, COLUMN_GRITTY_POISON_AND_DISEASE};
+			COLUMN_ALLOW_TALENTS, COLUMN_OPEN_ROUNDS, COLUMN_GRITTY_POISON_AND_DISEASE, COLUMN_MULTIPLE_SPELLS_IN_A_ROUND};
 }

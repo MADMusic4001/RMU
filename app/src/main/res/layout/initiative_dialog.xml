@@ -35,6 +35,16 @@
         android:text="@string/label_base_initiative"/>
     <TextView
         android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="wrap_content"
+        android:text="@string/label_attack"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="wrap_content"
+        android:text="@string/label_opponent"/>
+    <TextView
+        android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="@string/label_offensive_bonus"/>
@@ -53,5 +63,6 @@
   <ListView
       android:id="@+id/combatants_list_view"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"/>
+      android:layout_height="wrap_content"
+      android:minHeight="400dp"/>
 </LinearLayout>

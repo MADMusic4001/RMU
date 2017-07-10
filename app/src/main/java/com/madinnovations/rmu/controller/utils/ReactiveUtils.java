@@ -23,9 +23,7 @@ import com.madinnovations.rmu.controller.rxhandler.character.CultureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.ProfessionRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.RaceRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.combat.CriticalTypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRowRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageResultRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
@@ -62,7 +60,6 @@ import rx.Observable;
 public class ReactiveUtils {
 	public enum Handler {
 		ATTACK_RX_HANDLER,
-		BODY_PART_RX_HANDLER,
 		CAMPAIGN_RX_HANDLER,
 		CHARACTER_RX_HANDLER,
 		COMBAT_TRAINING_SKILL_RX_HANDLER,
@@ -72,7 +69,6 @@ public class ReactiveUtils {
 		CREATURE_TYPE_RX_HANDLER,
 		CREATURE_VARIETY_RX_HANDLER,
 		CRITICAL_RESULT_RX_HANDLER,
-		CRITICAL_TYPE_RX_HANDLER,
 		CULTURE_RX_HANDLER,
 		DAMAGE_RESULT_RX_HANDLER,
 		DAMAGE_RESULT_ROW_RX_HANDLER,
@@ -101,8 +97,6 @@ public class ReactiveUtils {
 	@Inject
 	protected AttackRxHandler            attackRxHandler;
 	@Inject
-	protected BodyPartRxHandler          bodyPartRxHandler;
-	@Inject
 	protected CampaignRxHandler          campaignRxHandler;
 	@Inject
 	protected CharacterRxHandler         characterRxHandler;
@@ -118,8 +112,6 @@ public class ReactiveUtils {
 	protected CreatureVarietyRxHandler   creatureVarietyRxHandler;
 	@Inject
 	protected CriticalResultRxHandler    criticalResultRxHandler;
-	@Inject
-	protected CriticalTypeRxHandler      criticalTypeRxHandler;
 	@Inject
 	protected CultureRxHandler           cultureRxHandler;
 	@Inject
@@ -175,9 +167,6 @@ public class ReactiveUtils {
 			case ATTACK_RX_HANDLER:
 				result = attackRxHandler.getAll();
 				break;
-			case BODY_PART_RX_HANDLER:
-				result = bodyPartRxHandler.getAll();
-				break;
 			case CAMPAIGN_RX_HANDLER:
 				result = campaignRxHandler.getAll();
 				break;
@@ -204,9 +193,6 @@ public class ReactiveUtils {
 				break;
 			case CRITICAL_RESULT_RX_HANDLER:
 				result = criticalResultRxHandler.getAll();
-				break;
-			case CRITICAL_TYPE_RX_HANDLER:
-				result = criticalTypeRxHandler.getAll();
 				break;
 			case CULTURE_RX_HANDLER:
 				result = cultureRxHandler.getAll();

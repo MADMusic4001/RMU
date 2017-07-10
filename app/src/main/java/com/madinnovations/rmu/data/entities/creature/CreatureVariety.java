@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.combat.CriticalCode;
 import com.madinnovations.rmu.data.entities.common.Size;
+import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -200,7 +201,8 @@ public class CreatureVariety extends DatabaseObject {
 											public void onCompleted() {}
 											@Override
 											public void onError(Throwable e) {
-												Log.e(TAG, "Exception caught getting Attack " + attackString, e);
+												Log.e(TAG, "Exception caught getting Attack "
+														+ attackString, e);
 											}
 											@Override
 											public void onNext(Attack attack) {
@@ -325,6 +327,15 @@ public class CreatureVariety extends DatabaseObject {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	public short getSkillBonus(Skill skill) {
+		for(SkillBonus skillBonus : skillBonusesList) {
+			if(skillBonus.getSkill().equals(skill)) {
+				return skillBonus.getBonus();
+			}
+		}
+		return (short)-25;
 	}
 
 	/**

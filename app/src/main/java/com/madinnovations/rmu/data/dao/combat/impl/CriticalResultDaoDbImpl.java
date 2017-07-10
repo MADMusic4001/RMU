@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.combat.impl;
 
@@ -22,10 +22,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
-import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
-import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
+import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
@@ -41,19 +40,17 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> implements CriticalResultDao, CriticalResultSchema {
-    private BodyPartDao bodyPartDao;
-    private CriticalTypeDao criticalTypeDao;
+	@SuppressWarnings("unused")
+	private static final String TAG = "CriticalResultDaoDbImpl";
 
-    /**
+	/**
      * Creates a new instance of CriticalResultDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public CriticalResultDaoDbImpl(SQLiteOpenHelper helper, BodyPartDao bodyPartDao, CriticalTypeDao criticalTypeDao) {
+    public CriticalResultDaoDbImpl(SQLiteOpenHelper helper) {
         super(helper);
-        this.bodyPartDao = bodyPartDao;
-        this.criticalTypeDao = criticalTypeDao;
     }
 
     @Override
@@ -103,7 +100,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 
     @Override
     protected CriticalResult cursorToEntity(@NonNull Cursor cursor) {
-        return cursorToEntity(cursor, criticalTypeDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE_ID))));
+        return cursorToEntity(cursor, CriticalType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CRITICAL_TYPE))));
     }
 
 	@Override
@@ -121,7 +118,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         values.put(COLUMN_RESULT_TEXT, instance.getResultText());
         values.put(COLUMN_MIN_ROLL, instance.getMinRoll());
         values.put(COLUMN_MAX_ROLL, instance.getMaxRoll());
-        values.put(COLUMN_BODY_PART_ID, instance.getBodyPart().getId());
+        values.put(COLUMN_BODY_LOCATION, instance.getBodyLocation().name());
         values.put(COLUMN_HITS, instance.getHits());
         values.put(COLUMN_BLEEDING, instance.getBleeding());
         values.put(COLUMN_FATIGUE, instance.getFatigue());
@@ -145,15 +142,15 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 		else {
 			values.put(COLUMN_DEATH, instance.getDeath());
 		}
-        values.put(COLUMN_CRITICAL_TYPE_ID, instance.getCriticalType().getId());
+        values.put(COLUMN_CRITICAL_TYPE, instance.getCriticalType().name());
 
         return values;
 	}
 
     @Override
     public List<CriticalResult> getCriticalResultsForCriticalType(CriticalType filter) {
-        final String selectionArgs[] = { String.valueOf(filter.getId()) };
-        final String selection = COLUMN_CRITICAL_TYPE_ID + " = ?";
+        final String selectionArgs[] = { String.valueOf(filter.name()) };
+        final String selection = COLUMN_CRITICAL_TYPE + " = ?";
         List<CriticalResult> list = new ArrayList<>();
 
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -186,8 +183,8 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
 
     @Override
     public Collection<CriticalResult> getCriticalResultTableRows(CriticalType criticalType, char severityCode) {
-        final String selectionArgs[] = { String.valueOf(criticalType.getId()), String.valueOf(severityCode) };
-        final String selection = COLUMN_CRITICAL_TYPE_ID + " = ? AND " + COLUMN_SEVERITY_CODE + " = ?";
+		final String selectionArgs[] = { criticalType.name(), String.valueOf(severityCode) };
+		final String selection = COLUMN_CRITICAL_TYPE + " = ? AND " + COLUMN_SEVERITY_CODE + " = ?";
         List<CriticalResult> list = new ArrayList<>();
 
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -202,8 +199,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
                     CriticalResult instance = cursorToEntity(cursor, criticalType, severityCode);
-
-                    list.add(instance);
+					list.add(instance);
                     cursor.moveToNext();
                 }
                 cursor.close();
@@ -230,7 +226,7 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         instance.setResultText(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESULT_TEXT)));
         instance.setMinRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MIN_ROLL)));
         instance.setMaxRoll(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MAX_ROLL)));
-        instance.setBodyPart(bodyPartDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BODY_PART_ID))));
+        instance.setBodyLocation(BodyLocation.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BODY_LOCATION))));
         instance.setHits(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_HITS)));
         instance.setBleeding(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BLEEDING)));
         instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_FATIGUE)));

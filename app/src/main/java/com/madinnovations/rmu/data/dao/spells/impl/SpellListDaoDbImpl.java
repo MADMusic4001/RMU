@@ -43,6 +43,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements SpellListDao, SpellListSchema {
+	@SuppressWarnings("unused")
+	private static final String TAG = "SpellListDaoDbImpl";
 	private ProfessionDao professionDao;
 	private SkillDao skillDao;
 
@@ -151,31 +153,40 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 	@Override
 	public Collection<SpellList> getAllListsForCharacter(Character character) {
 		String selectionArgs[];
-		final String selection;
+		final StringBuilder selection = new StringBuilder();
+		int index = 0;
 		if(character.getRealm2() != null) {
-			selectionArgs = new String[3];
-			selectionArgs[0] = String.valueOf(character.getRealm().name());
-			selectionArgs[1] = String.valueOf(character.getRealm2().name());
-			selectionArgs[2] = String.valueOf(character.getProfession().getId());
-			selection = COLUMN_REALM + " in (?, ?) and (" + COLUMN_PROFESSION_ID + " is null or "
-					+ COLUMN_PROFESSION_ID + " = ?)";
+			if(character.getProfession() != null) {
+				selectionArgs = new String[3];
+			}
+			else {
+				selectionArgs = new String[2];
+			}
+			selectionArgs[index++] = character.getRealm().name();
+			selectionArgs[index++] = character.getRealm2().name();
+			selection.append(COLUMN_REALM + " in (?, ?)");
 		}
 		else {
-			selectionArgs = new String[2];
-			if(character.getRealm() != null) {
-				selectionArgs[0] = String.valueOf(character.getRealm().name());
-			}
-			else {
-				selectionArgs[0] = "1";
-			}
 			if(character.getProfession() != null) {
-				selectionArgs[1] = String.valueOf(character.getProfession().getId());
-				selection = COLUMN_REALM + " = ? and (" + COLUMN_PROFESSION_ID + " is null or "
-						+ COLUMN_PROFESSION_ID + " = ?)";
+				selectionArgs = new String[2];
 			}
 			else {
-				selection = COLUMN_REALM + " = ? and " + COLUMN_PROFESSION_ID + " is null";
+				selectionArgs = new String[1];
 			}
+			if(character.getRealm() != null) {
+				selectionArgs[index++] = character.getRealm().name();
+			}
+			else {
+				selectionArgs[index++] = "1";
+			}
+			selection.append(COLUMN_REALM + " = ?");
+		}
+		if(character.getProfession() != null) {
+			selectionArgs[index] = String.valueOf(character.getProfession().getId());
+			selection.append(" and (" + COLUMN_PROFESSION_ID + " is null or " + COLUMN_PROFESSION_ID + " = ?)");
+		}
+		else {
+			selection.append(" and " + COLUMN_PROFESSION_ID + " is null");
 		}
 		List<SpellList> list = new ArrayList<>();
 
@@ -185,7 +196,7 @@ public class SpellListDaoDbImpl extends BaseDaoDbImpl<SpellList> implements Spel
 			db.beginTransaction();
 		}
 		try {
-			Cursor cursor = query(getTableName(), getColumns(), selection, selectionArgs, getIdColumnName());
+			Cursor cursor = query(getTableName(), getColumns(), selection.toString(), selectionArgs, getIdColumnName());
 
 			if (cursor != null) {
 				cursor.moveToFirst();

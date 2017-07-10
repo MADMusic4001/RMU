@@ -33,9 +33,7 @@ import com.madinnovations.rmu.data.dao.character.serializers.CultureSerializer;
 import com.madinnovations.rmu.data.dao.character.serializers.ProfessionSerializer;
 import com.madinnovations.rmu.data.dao.character.serializers.RaceSerializer;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
-import com.madinnovations.rmu.data.dao.combat.BodyPartDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
-import com.madinnovations.rmu.data.dao.combat.CriticalTypeDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
@@ -76,9 +74,7 @@ import com.madinnovations.rmu.data.entities.character.Culture;
 import com.madinnovations.rmu.data.entities.character.Profession;
 import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.combat.Attack;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
-import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
@@ -129,7 +125,6 @@ public class ImportExportRxHandler {
 	private static final String VERSION = "version";
 	private AttackDao                   attackDao;
 	private AttackSerializer            attackSerializer = new AttackSerializer();
-	private BodyPartDao                 bodyPartDao;
 	private CharacterSerializer         characterSerializer = new CharacterSerializer();
 	private CreatureArchetypeDao        creatureArchetypeDao;
 	private CreatureArchetypeSerializer creatureArchetypeSerializer = new CreatureArchetypeSerializer();
@@ -141,7 +136,6 @@ public class ImportExportRxHandler {
 	private CreatureVarietySerializer   creatureVarietySerializer = new CreatureVarietySerializer();
 	private CriticalResultDao           criticalResultDao;
 	private CriticalResultSerializer    criticalResultSerializer = new CriticalResultSerializer();
-	private CriticalTypeDao             criticalTypeDao;
 	private CultureDao                  cultureDao;
 	private CultureSerializer           cultureSerializer= new CultureSerializer();
 	private DamageResultDao             damageResultDao;
@@ -179,10 +173,9 @@ public class ImportExportRxHandler {
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	ImportExportRxHandler(AttackDao attackDao, BodyPartDao bodyPartDao,  CreatureArchetypeDao creatureArchetypeDao,
-						  CreatureCategoryDao creatureCategoryDao, CreatureTypeDao creatureTypeDao,
-						  CreatureVarietyDao creatureVarietyDao, CriticalResultDao criticalResultDao,
-						  CriticalTypeDao criticalTypeDao, CultureDao cultureDao, DamageResultDao damageResultDao,
+	ImportExportRxHandler(AttackDao attackDao, CreatureArchetypeDao creatureArchetypeDao, CreatureCategoryDao creatureCategoryDao,
+						  CreatureTypeDao creatureTypeDao, CreatureVarietyDao creatureVarietyDao,
+						  CriticalResultDao criticalResultDao, CultureDao cultureDao, DamageResultDao damageResultDao,
 						  DamageResultRowDao damageResultRowDao, DamageTableDao damageTableDao, DiseaseDao diseaseDao,
 						  ItemTemplateDao itemTemplateDao, OutlookDao outlookDao, ProfessionDao professionDao, RaceDao raceDao,
 						  SkillDao skillDao, SkillCategoryDao skillCategoryDao, SpecializationDao specializationDao,
@@ -190,13 +183,11 @@ public class ImportExportRxHandler {
 						  SpellTypeDao spellTypeDao, TalentDao talentDao, TalentCategoryDao talentCategoryDao,
 						  RMUDatabaseHelper helper, AttackRxHandler attackRxHandler) {
 		this.attackDao = attackDao;
-		this.bodyPartDao = bodyPartDao;
 		this.creatureArchetypeDao = creatureArchetypeDao;
 		this.creatureCategoryDao = creatureCategoryDao;
 		this.creatureTypeDao = creatureTypeDao;
 		this.creatureVarietyDao = creatureVarietyDao;
 		this.criticalResultDao = criticalResultDao;
-		this.criticalTypeDao = criticalTypeDao;
 		this.cultureDao = cultureDao;
 		this.damageResultDao = damageResultDao;
 		this.damageResultRowDao = damageResultRowDao;
@@ -352,30 +343,6 @@ public class ImportExportRxHandler {
 											itemTemplateDao.save(itemTemplates, true);
 											Log.i(TAG, "Loaded " + itemTemplates.size() + " itemTemplates.");
 											itemTemplates = null;
-											break;
-										case BodyPart.JSON_NAME:
-											List<BodyPart> bodyParts = new ArrayList<>();
-											jsonReader.beginArray();
-											while (jsonReader.hasNext()) {
-												BodyPart bodyPart = gson.fromJson(jsonReader, BodyPart.class);
-												bodyParts.add(bodyPart);
-											}
-											jsonReader.endArray();
-											bodyPartDao.save(bodyParts, true);
-											Log.i(TAG, "Loaded " + bodyParts.size() + " bodyParts.");
-											bodyParts = null;
-											break;
-										case CriticalType.JSON_NAME:
-											List<CriticalType> criticalTypes = new ArrayList<>();
-											jsonReader.beginArray();
-											while (jsonReader.hasNext()) {
-												CriticalType criticalType = gson.fromJson(jsonReader, CriticalType.class);
-												criticalTypes.add(criticalType);
-											}
-											jsonReader.endArray();
-											criticalTypeDao.save(criticalTypes, true);
-											Log.i(TAG, "Loaded " + criticalTypes.size() + " criticalTypes.");
-											criticalTypes = null;
 											break;
 										case CriticalResult.JSON_NAME:
 											List<CriticalResult> criticalResults = new ArrayList<>();
@@ -685,14 +652,8 @@ public class ImportExportRxHandler {
 									.jsonValue(gson.toJson(talentDao.getAll()))
 							;
 							subscriber.onNext(20);
-							jsonWriter
-									.name(BodyPart.JSON_NAME)
-									.jsonValue(gson.toJson(bodyPartDao.getAll()))
-							;
 							subscriber.onNext(30);
 							jsonWriter
-									.name(CriticalType.JSON_NAME)
-									.jsonValue(gson.toJson(criticalTypeDao.getAll()))
 									.name(CriticalResult.JSON_NAME)
 									.jsonValue(gson.toJson(criticalResultDao.getAll()))
 									.name(DamageTable.JSON_NAME)

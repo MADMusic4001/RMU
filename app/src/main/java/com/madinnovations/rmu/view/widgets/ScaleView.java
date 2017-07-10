@@ -35,10 +35,11 @@ import com.madinnovations.rmu.view.TerrainView;
  * View that displays the current scale of the TerrainView
  */
 public class ScaleView extends View {
-	private static final String TAG = "ScaleView";
-	private static final int HORIZONTAL_PADDING = 2;
-	private static final int VERICAL_PADDING = 4;
-	private static final int TEN_FEET_IN_INCHES = 120;
+	@SuppressWarnings("unused")
+	private static final String TAG                = "ScaleView";
+	private static final int    HORIZONTAL_PADDING = 2;
+	private static final int    VERTICAL_PADDING   = 4;
+	private static final int    TEN_FEET_IN_INCHES = 120;
 	private TerrainView terrainView;
 	private Paint       linePaint;
 	private Paint       fontPaint;
@@ -85,7 +86,7 @@ public class ScaleView extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int desiredWidth = textBounds.width() + HORIZONTAL_PADDING * 2;
-		int desiredHeight = textSize * 2 + VERICAL_PADDING * 4;
+		int desiredHeight = textSize * 2 + VERTICAL_PADDING * 4;
 
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -117,27 +118,24 @@ public class ScaleView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		canvas.drawLine(HORIZONTAL_PADDING,
-				textSize + VERICAL_PADDING * 3,
+				textSize + VERTICAL_PADDING * 3,
 				HORIZONTAL_PADDING,
-				textSize*2 + VERICAL_PADDING * 3,
+				textSize*2 + VERTICAL_PADDING * 3,
 				linePaint);
 		canvas.drawLine(HORIZONTAL_PADDING,
-				(float)(textSize * 1.5 + VERICAL_PADDING * 3),
-				terrainView.getScaleFactor() * 120 + HORIZONTAL_PADDING,
-				(float)(textSize * 1.5 + VERICAL_PADDING * 3),
+				(float)(textSize * 1.5 + VERTICAL_PADDING * 3),
+				terrainView.getScaleFactor() * TEN_FEET_IN_INCHES + HORIZONTAL_PADDING,
+				(float)(textSize * 1.5 + VERTICAL_PADDING * 3),
 				linePaint);
 		canvas.drawLine(TEN_FEET_IN_INCHES * terrainView.getScaleFactor() + HORIZONTAL_PADDING,
-				textSize + VERICAL_PADDING * 3,
+				textSize + VERTICAL_PADDING * 3,
 				TEN_FEET_IN_INCHES * terrainView.getScaleFactor() + HORIZONTAL_PADDING,
-				textSize * 2 + VERICAL_PADDING * 3,
+				textSize * 2 + VERTICAL_PADDING * 3,
 				linePaint);
-		canvas.drawText(text, HORIZONTAL_PADDING, textSize + VERICAL_PADDING, fontPaint);
+		canvas.drawText(text, HORIZONTAL_PADDING, textSize + VERTICAL_PADDING, fontPaint);
 	}
 
 	// Getters and setters
-	public TerrainView getTerrainView() {
-		return terrainView;
-	}
 	public void setTerrainView(TerrainView terrainView) {
 		this.terrainView = terrainView;
 	}

@@ -112,6 +112,7 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
         instance.setAllowTalentsBeyondFirst(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_ALLOW_TALENTS)) == 1);
         instance.setOpenRounds(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_OPEN_ROUNDS)) == 1);
         instance.setGrittyPoisonAndDisease(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_GRITTY_POISON_AND_DISEASE)) == 1);
+        instance.setMultipleSpellsInARound(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_MULTIPLE_SPELLS_IN_A_ROUND)) == 1);
         instance.setRestrictedSpecializations(getAttackRestrictions(instance.getId()));
 
         return instance;
@@ -122,11 +123,11 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
         ContentValues values;
 
         if(instance.getId() != -1) {
-            values = new ContentValues(12);
+            values = new ContentValues(13);
             values.put(COLUMN_ID, instance.getId());
         }
         else {
-            values = new ContentValues(11);
+            values = new ContentValues(12);
         }
         values.put(COLUMN_NAME, instance.getName());
         values.put(COLUMN_CREATE_DATE, instance.getCreateDate().getTimeInMillis());
@@ -139,6 +140,7 @@ public class CampaignDaoDbImpl extends BaseDaoDbImpl<Campaign> implements Campai
 		values.put(COLUMN_ALLOW_TALENTS, instance.isAllowTalentsBeyondFirst());
         values.put(COLUMN_OPEN_ROUNDS, instance.isOpenRounds());
         values.put(COLUMN_GRITTY_POISON_AND_DISEASE, instance.isGrittyPoisonAndDisease());
+		values.put(COLUMN_MULTIPLE_SPELLS_IN_A_ROUND, instance.isMultipleSpellsInARound());
 
         return values;
 	}

@@ -19,6 +19,7 @@ import android.support.annotation.StringRes;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.utils.ReactiveUtils;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.Resistance;
 import com.madinnovations.rmu.data.entities.creature.Extension;
 import com.madinnovations.rmu.data.entities.object.Material;
@@ -33,7 +34,6 @@ import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREA
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_CATEGORY_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_TYPE_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CREATURE_VARIETY_RX_HANDLER;
-import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.CRITICAL_TYPE_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.DISEASE_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.MELEE_ATTACK_RX_HANDLER;
 import static com.madinnovations.rmu.controller.utils.ReactiveUtils.Handler.RANGE_ATTACK_RX_HANDLER;
@@ -70,7 +70,7 @@ public enum Parameter {
 	CREATURE_VARIETY(R.string.enum_parameter_creature_variety, CREATURE_VARIETY_RX_HANDLER, null),
 	CRITICAL_ROLL(R.string.enum_parameter_critical_roll, null, null),
 	CRITICAL_SEVERITY(R.string.enum_parameter_critical_severity, null, null),
-	CRITICAL_TYPE(R.string.enum_parameter_critical_type, CRITICAL_TYPE_RX_HANDLER, null),
+	CRITICAL_TYPE(R.string.enum_parameter_critical_type, null, CriticalType.values()),
 	DEFENSIVE_BONUS(R.string.enum_parameter_defensive_bonus, null, null),
 	DEFENSIVE_SIZE(R.string.enum_parameter_defensive_size, null, Size.values()),
 	DESTINY_SENSE(R.string.enum_parameter_destiny_sense, null, DestinySense.values()),

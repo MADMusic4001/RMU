@@ -35,7 +35,7 @@ public class ItemTemplate extends DatabaseObject {
 	public static final String             JSON_NAME          = "ItemTemplate";
 	private             String             name               = null;
 	private             float              weight             = 0.5f;
-	private             int                baseCost           = 1;
+	private             Cost               baseCost           = null;
 	private             short              strength           = 70;
 	private             int                constructionTime   = 1;
 	private             ManeuverDifficulty maneuverDifficulty = ManeuverDifficulty.MEDIUM;
@@ -98,7 +98,10 @@ public class ItemTemplate extends DatabaseObject {
 		out.name(ItemTemplateSchema.COLUMN_ID).value(getId());
 		out.name(ItemTemplateSchema.COLUMN_NAME).value(getName());
 		out.name(ItemTemplateSchema.COLUMN_WEIGHT).value(getWeight());
-		out.name(ItemTemplateSchema.COLUMN_BASE_COST).value(getBaseCost());
+		if(baseCost != null) {
+			out.name(ItemTemplateSchema.COLUMN_BASE_COST_VALUE).value(getBaseCost().getValue());
+			out.name(ItemTemplateSchema.COLUMN_BASE_COST_UNIT).value(getBaseCost().getUnit().name());
+		}
 		out.name(ItemTemplateSchema.COLUMN_STRENGTH).value(getStrength());
 		out.name(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME).value(getConstructionTime());
 		if (getManeuverDifficulty() != null) {
@@ -143,11 +146,11 @@ public class ItemTemplate extends DatabaseObject {
 		this.weight = weight;
 	}
 
-	public int getBaseCost() {
+	public Cost getBaseCost() {
 		return baseCost;
 	}
 
-	public void setBaseCost(int baseCost) {
+	public void setBaseCost(Cost baseCost) {
 		this.baseCost = baseCost;
 	}
 

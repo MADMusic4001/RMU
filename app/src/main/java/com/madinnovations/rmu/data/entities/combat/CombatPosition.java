@@ -19,16 +19,58 @@
 
 package com.madinnovations.rmu.data.entities.combat;
 
+import android.support.annotation.StringRes;
+
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
+
 /**
- * ${CLASS_DESCRIPTION}
- *
- * @author Mark
- *         Created 6/18/2017.
+ * Enumeration of all positions of a combatant to it's opponent.
  */
 public enum CombatPosition {
-	OUT_OF_RANGE,
-	FRONT,
-	LEFT_FLANK,
-	RIGHT_FLANK,
-	REAR;
+	OUT_OF_RANGE(R.string.enum_combat_position_out_of_range),
+	FRONT(R.string.enum_combat_position_front),
+	LEFT_FLANK(R.string.enum_combat_position_left_flank),
+	RIGHT_FLANK(R.string.enum_combat_position_right_flank),
+	REAR(R.string.enum_combat_position_rear);
+
+	private static final String[] combatPositionNames;
+	private @StringRes int      textResourceId;
+
+	static {
+		combatPositionNames = new String[CombatPosition.values().length];
+		int i = 0;
+		for(CombatPosition combatPosition: CombatPosition.values()) {
+			combatPositionNames[i] = combatPosition.toString();
+		}
+	}
+
+	CombatPosition(int textResourceId) {
+		this.textResourceId = textResourceId;
+	}
+
+	@Override
+	public String toString() {
+		return RMUApp.getResourceUtils().getString(textResourceId);
+	}
+
+	/**
+	 * Gets the CombatPosition with the given text value.
+	 *
+	 * @param textValue  the textValue of the desired CombatPosition instance
+	 * @return the CombatPosition instance with the given textValue or null if not found.
+	 */
+	public static CombatPosition getCombatPositionWithName(String textValue) {
+		for(CombatPosition combatPosition : CombatPosition.values()) {
+			if(combatPosition.toString().equals(textValue)) {
+				return combatPosition;
+			}
+		}
+		return null;
+	}
+
+	// Getters
+	public static String[] getBodyLocationNames() {
+		return combatPositionNames;
+	}
 }

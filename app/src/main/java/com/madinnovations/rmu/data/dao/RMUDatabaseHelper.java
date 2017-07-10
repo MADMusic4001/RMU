@@ -53,10 +53,8 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.BodyPartSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
-import com.madinnovations.rmu.data.dao.combat.schemas.CriticalTypeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
@@ -98,8 +96,7 @@ import com.madinnovations.rmu.data.dao.item.schemas.PoisonTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCharacterEncounterInfoSchema;
-import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupCreatureEncounterInfoSchema;
+import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellAreaOfEffectParamSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellDurationParamSchema;
@@ -108,12 +105,13 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.combat.BodyLocation;
+import com.madinnovations.rmu.data.entities.combat.CriticalType;
+import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
+import com.madinnovations.rmu.data.entities.object.Cost;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.madinnovations.rmu.data.entities.object.MoneyUnit;
+import com.madinnovations.rmu.data.entities.object.Slot;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -126,7 +124,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 9;
+	public static final  int    DATABASE_VERSION = 14;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -160,17 +158,14 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(ItemSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(DamageTableSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CultureSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(CriticalTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CriticalCodeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureCategorySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(BodyPartSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(BiomeSchema.TABLE_CREATE);
 
 			sqLiteDatabase.execSQL(EncounterSetupSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(EncounterSetupCharacterEncounterInfoSchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(EncounterSetupCreatureEncounterInfoSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(EncounterSetupEncounterInfoSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureVarietySchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyStatsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyCriticalCodesSchema.TABLE_CREATE);
@@ -250,7 +245,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
-				case 8:
+				case 13:
 					upgrade(sqLiteDatabase);
 					break;
             }
@@ -341,17 +336,14 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(VarietyStatsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureVarietySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellTypeSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(EncounterSetupCreatureEncounterInfoSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(EncounterSetupCharacterEncounterInfoSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(EncounterSetupEncounterInfoSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(EncounterSetupSchema.TABLE_NAME, null, null);
 
 		sqLiteDatabase.delete(BiomeSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(BodyPartSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureCategorySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CriticalCodeSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(CriticalTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CultureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageTableSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(OutlookSchema.TABLE_NAME, null, null);
@@ -383,114 +375,171 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CampaignSchema.TABLE_NAME, selection, selectionArgs);
 	}
 
-	private Size getSize(int sizeId) {
-		switch (sizeId) {
+	private BodyLocation getBodyLocation(int bodyPartId) {
+		switch (bodyPartId) {
 			case 1:
-				return Size.MINUSCULE;
+				return BodyLocation.ARM;
 			case 2:
-				return Size.DIMINUTIVE;
+				return BodyLocation.CHEST;
 			case 3:
-				return Size.TINY;
+				return BodyLocation.GROIN;
 			case 4:
-				return Size.SMALL;
+				return BodyLocation.HEAD;
 			case 5:
-				return Size.MEDIUM;
-			case 6:
-				return Size.BIG;
-			case 7:
-				return Size.LARGE;
-			case 8:
-				return Size.HUGE;
-			case 9:
-				return Size.GIGANTIC;
-			case 10:
-				return Size.ENORMOUS;
-			case 11:
-				return Size.IMMENSE;
-			case 12:
-				return Size.BEHEMOTH;
-			case 13:
-				return Size.LEVIATHAN;
+				return BodyLocation.LEG;
 			default:
-				return Size.MEDIUM;
+				return BodyLocation.ARM;
+		}
+	}
+
+	private CriticalType getCriticalType(int criticalTypeId) {
+		switch (criticalTypeId) {
+			case 1:
+				return CriticalType.ACID;
+			case 2:
+				return CriticalType.GRAPPLE;
+			case 3:
+				return CriticalType.HEAT;
+			case 4:
+				return CriticalType.IMPACT;
+			case 5:
+				return CriticalType.CRUSH;
+			case 6:
+				return CriticalType.ELECTRICITY;
+			case 7:
+				return CriticalType.COLD;
+			case 8:
+				return CriticalType.PUNCTURE;
+			case 9:
+				return CriticalType.SLASH;
+			case 10:
+				return CriticalType.STRIKE;
+			case 11:
+				return CriticalType.UNBALANCE;
+			default:
+				return CriticalType.CRUSH;
 		}
 	}
 
 	private void upgrade(SQLiteDatabase sqLiteDatabase) {
 		sqLiteDatabase.beginTransaction();
-		Cursor cursor = null;
+//		Cursor cursor = null;
 		try {
-			cursor = sqLiteDatabase.rawQuery("SELECT id,campaignId,itemTemplateId,name,history,sizeId,level "
-					+ " FROM " + ItemSchema.TABLE_NAME, null);
+//			cursor = sqLiteDatabase.rawQuery("SELECT id,name,weight,baseCost,strength,constructionTime,"
+//					+ "maneuverDifficulty,notes,primarySlot,secondarySlot"
+//													 + " FROM " + ItemTemplateSchema.TABLE_NAME, null);
 
 
-			if(cursor != null) {
-				cursor.moveToFirst();
-				List<Item> creatureVarieties = new ArrayList<>(cursor.getCount());
-				while (!cursor.isAfterLast()) {
-					Item creatureVariety = cursorToEntity(cursor);
-					creatureVarieties.add(creatureVariety);
-					cursor.moveToNext();
-				}
-				sqLiteDatabase.execSQL("DROP TABLE " + ItemSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL(ItemSchema.TABLE_CREATE);
-				for (Item creatureVariety : creatureVarieties) {
-					ContentValues values = getContentValues(creatureVariety);
-					sqLiteDatabase.insert(ItemSchema.TABLE_NAME, null, values);
-				}
+//			if(cursor != null) {
+//				cursor.moveToFirst();
+//				List<ItemTemplate> itemTemplates = new ArrayList<>(cursor.getCount());
+//				while (!cursor.isAfterLast()) {
+//					ItemTemplate itemTemplate = cursorToEntity(cursor);
+//					itemTemplates.add(itemTemplate);
+//					cursor.moveToNext();
+//				}
+				sqLiteDatabase.execSQL("DROP TABLE encounter_setup_character_encounter_info");
+				sqLiteDatabase.execSQL("DROP TABLE encounter_setup_creature_encounter_info");
+				sqLiteDatabase.execSQL("DROP TABLE " + EncounterSetupSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL(EncounterSetupSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(EncounterSetupEncounterInfoSchema.TABLE_CREATE);
+//				for (ItemTemplate itemTemplate : itemTemplates) {
+//					ContentValues values = getContentValues(itemTemplate);
+//					sqLiteDatabase.insert(ItemTemplateSchema.TABLE_NAME, null, values);
+//				}
 
 				sqLiteDatabase.setTransactionSuccessful();
-			}
+//			}
 		}
 		finally {
-			if(cursor != null) {
-				cursor.close();
-			}
+//			if(cursor != null) {
+//				cursor.close();
+//			}
 			sqLiteDatabase.endTransaction();
 		}
 	}
 
-	private Item cursorToEntity(Cursor cursor) {
-		Item instance;
+	private ItemTemplate cursorToEntity(Cursor cursor) {
+		ItemTemplate instance = new ItemTemplate();
 
-		instance = new Item();
-
-		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_ID)));
-		instance.setCampaign(new Campaign(cursor.getInt(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_CAMPAIGN_ID))));
-		instance.setItemTemplate(new ItemTemplate(cursor.getInt(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_ITEM_TEMPLATE_ID))));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_NAME))) {
-			instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_NAME)));
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_ID)));
+		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_NAME)));
+		instance.setWeight(cursor.getFloat(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_WEIGHT)));
+		Cost baseCost = new Cost();
+		baseCost.setUnit(MoneyUnit.COPPER_COIN);
+		int costValue = cursor.getInt(cursor.getColumnIndexOrThrow("baseCost"));
+		while(costValue > Short.MAX_VALUE) {
+			costValue = costValue / 10;
+			switch (baseCost.getUnit()) {
+				case COPPER_COIN:
+					baseCost.setUnit(MoneyUnit.BRONZE_COIN);
+					break;
+				case BRONZE_COIN:
+					baseCost.setUnit(MoneyUnit.SILVER_COIN);
+					break;
+				case SILVER_COIN:
+					baseCost.setUnit(MoneyUnit.LESSER_GOLD);
+					break;
+				case LESSER_GOLD:
+					baseCost.setUnit(MoneyUnit.GREATER_GOLD);
+					break;
+			}
 		}
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_HISTORY))) {
-			instance.setHistory(cursor.getString(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_HISTORY)));
+		instance.setBaseCost(baseCost);
+		instance.setStrength(cursor.getShort(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_STRENGTH)));
+		instance.setConstructionTime(cursor.getInt(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY))) {
+			instance.setManeuverDifficulty(ManeuverDifficulty.valueOf(cursor.getString(
+					cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY))));
 		}
-		instance.setSize(getSize(cursor.getInt(cursor.getColumnIndexOrThrow("sizeId"))));
-		instance.setLevel(cursor.getShort(cursor.getColumnIndexOrThrow(ItemSchema.COLUMN_LEVEL)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_NOTES))) {
+			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_NOTES)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_PRIMARY_SLOT))) {
+			instance.setPrimarySlot(Slot.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_PRIMARY_SLOT))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_SECONDARY_SLOT))) {
+			instance.setSecondarySlot(Slot.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_SECONDARY_SLOT))));
+		}
 
 		return instance;
 	}
 
-	private ContentValues getContentValues(Item instance) {
+	private ContentValues getContentValues(ItemTemplate instance) {
 		ContentValues values;
 
-		values = new ContentValues(7);
-		values.put(ItemSchema.COLUMN_ID, instance.getId());
-		values.put(ItemSchema.COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
-		values.put(ItemSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getItemTemplate().getId());
-		if(instance.getName() == null) {
-			values.putNull(ItemSchema.COLUMN_NAME);
+		values = new ContentValues(11);
+		values.put(ItemTemplateSchema.COLUMN_ID, instance.getId());
+		values.put(ItemTemplateSchema.COLUMN_NAME, instance.getName());
+		values.put(ItemTemplateSchema.COLUMN_WEIGHT, instance.getWeight());
+		values.put(ItemTemplateSchema.COLUMN_BASE_COST_VALUE, instance.getBaseCost().getValue());
+		values.put(ItemTemplateSchema.COLUMN_BASE_COST_UNIT, instance.getBaseCost().getUnit().name());
+		values.put(ItemTemplateSchema.COLUMN_STRENGTH, instance.getStrength());
+		values.put(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME, instance.getConstructionTime());
+		if(instance.getManeuverDifficulty() == null || ManeuverDifficulty.MEDIUM.equals(instance.getManeuverDifficulty())) {
+			values.putNull(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY);
 		}
 		else {
-			values.put(ItemSchema.COLUMN_NAME, instance.getName());
+			values.put(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY, instance.getManeuverDifficulty().name());
 		}
-		if(instance.getHistory() == null) {
-			values.putNull(ItemSchema.COLUMN_HISTORY);
+		if(instance.getNotes() == null) {
+			values.putNull(ItemTemplateSchema.COLUMN_NOTES);
 		}
 		else {
-			values.put(ItemSchema.COLUMN_HISTORY, instance.getHistory());
+			values.put(ItemTemplateSchema.COLUMN_NOTES, instance.getNotes());
 		}
-		values.put(ItemSchema.COLUMN_SIZE, instance.getSize().name());
-		values.put(ItemSchema.COLUMN_LEVEL, instance.getLevel());
+		if(instance.getPrimarySlot() == null) {
+			values.putNull(ItemTemplateSchema.COLUMN_PRIMARY_SLOT);
+		}
+		else {
+			values.put(ItemTemplateSchema.COLUMN_PRIMARY_SLOT, instance.getPrimarySlot().name());
+		}
+		if(instance.getSecondarySlot() == null) {
+			values.putNull(ItemTemplateSchema.COLUMN_SECONDARY_SLOT);
+		}
+		else {
+			values.put(ItemTemplateSchema.COLUMN_SECONDARY_SLOT, instance.getSecondarySlot().name());
+		}
 
 		return values;
 	}

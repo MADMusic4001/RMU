@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.view.adapters.combat;
 
@@ -29,14 +29,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.combat.BodyPartRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
-import com.madinnovations.rmu.data.entities.combat.BodyPart;
+import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.widgets.NoPasteBreakEditText;
-
-import java.util.Collection;
 
 import javax.inject.Inject;
 
@@ -49,14 +46,11 @@ import rx.schedulers.Schedulers;
  */
 public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 	private static final String TAG = "CriticalResultListAdapt";
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_critical_result_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.critical_results_list_row;
 	@Inject
-	BodyPartRxHandler              bodyPartRxHandler;
-	@Inject
-	CriticalResultRxHandler        criticalResultRxHandler;
-	private ArrayAdapter<BodyPart> bodyPartSpinnerAdapter;
-	private Collection<BodyPart>   bodyParts = null;
-	private LayoutInflater         layoutInflater;
+	CriticalResultRxHandler          criticalResultRxHandler;
+	private ArrayAdapter<String>     bodyPartSpinnerAdapter;
+	private LayoutInflater           layoutInflater;
 
 	/**
 	 * Creates a new CriticalResultListAdapter instance.
@@ -113,17 +107,20 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 						criticalResult.getMaxRoll());
 			}
 			holder.leftRollView.setText(rollString);
-			if(criticalResult.getBodyPart() == null) {
+			if(criticalResult.getBodyLocation() == null) {
 				if(holder.bodyPartSpinner.getSelectedItem() != null) {
-					criticalResult.setBodyPart((BodyPart)holder.bodyPartSpinner.getSelectedItem());
+					criticalResult.setBodyLocation(BodyLocation.getBodyLocationWithName(
+							(String)holder.bodyPartSpinner.getSelectedItem()));
 				}
 				else if(holder.bodyPartSpinner.getCount() > 0) {
 					holder.bodyPartSpinner.setSelection(0);
-					criticalResult.setBodyPart((BodyPart)holder.bodyPartSpinner.getSelectedItem());
+					criticalResult.setBodyLocation(BodyLocation.getBodyLocationWithName(
+							(String)holder.bodyPartSpinner.getSelectedItem()));
 				}
 			}
 			else {
-				holder.bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(criticalResult.getBodyPart()));
+				holder.bodyPartSpinner.setSelection(bodyPartSpinnerAdapter.getPosition(
+						criticalResult.getBodyLocation().toString()));
 			}
 			holder.hitsEdit.setText(String.valueOf(criticalResult.getHits()));
 			holder.bleedingEdit.setText(String.valueOf(criticalResult.getBleeding()));
@@ -391,46 +388,26 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 
 		private void initBodyPartSpinner() {
 			bodyPartSpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.single_field_row);
-			if(bodyParts != null) {
-				bodyPartSpinnerAdapter.clear();
-				bodyPartSpinnerAdapter.addAll(bodyParts);
-				bodyPartSpinnerAdapter.notifyDataSetChanged();
-				bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
-			}
-			else {
-				bodyPartRxHandler.getAll()
-						.observeOn(AndroidSchedulers.mainThread())
-						.subscribeOn(Schedulers.io())
-						.subscribe(new Subscriber<Collection<BodyPart>>() {
-							@Override
-							public void onCompleted() {}
-							@Override
-							public void onError(Throwable e) {
-								Log.e(TAG, "Exception caught getting all BodyPart instances in initBodyPartSpinner", e);
-							}
-							@Override
-							public void onNext(Collection<BodyPart> bodyPartsResults) {
-								bodyParts = bodyPartsResults;
-								bodyPartSpinnerAdapter.clear();
-								bodyPartSpinnerAdapter.addAll(bodyPartsResults);
-								bodyPartSpinnerAdapter.notifyDataSetChanged();
-								bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
-							}
-						});
-			}
+			bodyPartSpinnerAdapter.clear();
+			bodyPartSpinnerAdapter.addAll(BodyLocation.getBodyLocationNames());
+			bodyPartSpinnerAdapter.notifyDataSetChanged();
+			bodyPartSpinner.setAdapter(bodyPartSpinnerAdapter);
 
 			bodyPartSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					if(currentInstance.getBodyPart() == null || bodyPartSpinnerAdapter.getPosition(currentInstance.getBodyPart()) != position) {
-						currentInstance.setBodyPart(bodyPartSpinnerAdapter.getItem(position));
+					String newBodyLocationName = bodyPartSpinnerAdapter.getItem(position);
+					BodyLocation newBodyLocation = BodyLocation.getBodyLocationWithName(newBodyLocationName);
+					if((newBodyLocation == null && currentInstance.getBodyLocation() != null) ||
+							(newBodyLocation != null && !newBodyLocation.equals(currentInstance.getBodyLocation()))) {
+						currentInstance.setBodyLocation(newBodyLocation);
 						saveItem();
 					}
 				}
 				@Override
 				public void onNothingSelected(AdapterView<?> parent) {
-					if(currentInstance.getBodyPart() != null) {
-						currentInstance.setBodyPart(null);
+					if(currentInstance.getBodyLocation() != null) {
+						currentInstance.setBodyLocation(null);
 						saveItem();
 					}
 				}

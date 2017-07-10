@@ -35,7 +35,7 @@ import com.madinnovations.rmu.data.entities.common.SkillBonus;
  * Populates a ListView with {@link SkillBonus} information
  */
 public class SkillBonusListAdapter extends ArrayAdapter<SkillBonus> {
-	private static final int LAYOUT_RESOURCE_ID = R.layout.list_skill_bonuses_row;
+	private static final int LAYOUT_RESOURCE_ID = R.layout.creature_variety_skill_bonuses_list_row;
 	private ListView listView = null;
 	private LayoutInflater layoutInflater;
 	private SetSkillBonus setSkillBonusHandler;

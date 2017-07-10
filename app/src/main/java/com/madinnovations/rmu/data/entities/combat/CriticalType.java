@@ -1,69 +1,104 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ *
+ *   Copyright (C) 2017 MadInnovations
+ *   <p/>
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *   <p/>
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p/>
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ *
  */
+
 package com.madinnovations.rmu.data.entities.combat;
 
-import com.madinnovations.rmu.data.entities.DatabaseObject;
+import android.support.annotation.StringRes;
+
+import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * Critical Type attributes
+ * Enumeration of all types of criticals that can be dealt.
  */
-public class CriticalType extends DatabaseObject {
-    public static final String JSON_NAME = "CriticalTypes";
-    private char   code = 'A';
-    private String name = null;
+public enum CriticalType {
+	ACID(R.string.enum_critical_type_acid, 'A'),
+	GRAPPLE(R.string.enum_critical_type_grapple, 'G'),
+	HEAT(R.string.enum_critical_type_heat, 'H'),
+	IMPACT(R.string.enum_critical_type_impact, 'I'),
+	CRUSH(R.string.enum_critical_type_crush, 'K'),
+	ELECTRICITY(R.string.enum_critical_type_electricity, 'L'),
+	COLD(R.string.enum_critical_type_cold, 'O'),
+	PUNCTURE(R.string.enum_critical_type_puncture, 'P'),
+	SLASH(R.string.enum_critical_type_slash, 'S'),
+	STRIKE(R.string.enum_critical_type_strike, 'T'),
+	UNBALANCE(R.string.enum_critical_type_unbalance, 'U');
+
+	private static String[] criticalTypeNames;
+
+	private @StringRes int  textResourceId;
+	private            char code;
+
+	static {
+		criticalTypeNames = new String[CriticalType.values().length];
+		int i = 0;
+		for(CriticalType criticalType : CriticalType.values()) {
+			criticalTypeNames[i++] = criticalType.toString();
+		}
+	}
+	CriticalType(int textResourceId, char code) {
+		this.textResourceId = textResourceId;
+		this.code = code;
+	}
+
+	@Override
+	public String toString() {
+		return RMUApp.getResourceUtils().getString(textResourceId);
+	}
 
 	/**
-	 * Creates a new CriticalType instance
-	 */
-	public CriticalType() {}
-
-	/**
-	 * Creates a new CriticalType instance with the given id
+	 * Gets the CriticalType with the given text value.
 	 *
-	 * @param id  the id for the new instance
+	 * @param textValue  the textValue of the desired CriticalType instance
+	 * @return the CriticalType instance with the given textValue or null if not found.
 	 */
-    public CriticalType(int id) {
-        super(id);
-    }
+	public static CriticalType getCriticalTypeWithName(String textValue) {
+		for(CriticalType criticalType : CriticalType.values()) {
+			if(criticalType.toString().equals(textValue)) {
+				return criticalType;
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Checks the validity of the CriticalType instance.
-     *
-     * @return true if the CriticalType instance is valid, otherwise false.
-     */
-    public boolean isValid() {
-        return name != null && !name.isEmpty();
-    }
+	/**
+	 * Gets the CriticalType instance with the given code.
+	 *
+	 * @param code  the code for which the CriticalType must match
+	 * @return the CriticalType instance whose code matches the given code
+	 */
+	public static CriticalType getTypeForCode(char code) {
+		CriticalType result = null;
+		for(CriticalType criticalType : CriticalType.values()) {
+			if(criticalType.getCode() == code) {
+				result = criticalType;
+				break;
+			}
+		}
+		return result;
+	}
 
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    // Getters and setters
-    public char getCode() {
-        return code;
-    }
-    public void setCode(char code) {
-        this.code = code;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+	// Getters
+	public static String[] getCriticalTypeNames() {
+		return criticalTypeNames;
+	}
+	public char getCode() {
+		return code;
+	}
 }

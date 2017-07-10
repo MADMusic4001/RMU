@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.data.dao.spells.serializers;
 
-import android.util.Log;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -37,7 +35,8 @@ import java.io.IOException;
  * Json serializer and deserializer for the {@link Spell} entities
  */
 public class SpellSerializer extends TypeAdapter<Spell> implements SpellSchema {
-	private static final String TAG = "SpellSerializer";
+	@SuppressWarnings("unused")
+	private static final String TAG    = "SpellSerializer";
 	private static final String LENGTH = "LENGTH";
 	private static final String VALUES = "VALUES";
 	@Override
@@ -73,9 +72,7 @@ public class SpellSerializer extends TypeAdapter<Spell> implements SpellSchema {
 		Spell spell = new Spell();
 		in.beginObject();
 		while (in.hasNext()) {
-			String nextName = in.nextName();
-			Log.d(TAG, "read: nextName = " + nextName);
-			switch (nextName) {
+			switch (in.nextName()) {
 				case COLUMN_ID:
 					spell.setId(in.nextInt());
 					break;

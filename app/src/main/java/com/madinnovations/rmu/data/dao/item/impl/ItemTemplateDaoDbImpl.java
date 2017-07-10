@@ -35,9 +35,11 @@ import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
 import com.madinnovations.rmu.data.entities.object.ArmorTemplate;
+import com.madinnovations.rmu.data.entities.object.Cost;
 import com.madinnovations.rmu.data.entities.object.Form;
 import com.madinnovations.rmu.data.entities.object.HerbTemplate;
 import com.madinnovations.rmu.data.entities.object.ItemTemplate;
+import com.madinnovations.rmu.data.entities.object.MoneyUnit;
 import com.madinnovations.rmu.data.entities.object.PoisonTemplate;
 import com.madinnovations.rmu.data.entities.object.Prep;
 import com.madinnovations.rmu.data.entities.object.Slot;
@@ -357,7 +359,10 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
 		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
 		instance.setWeight(cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)));
-		instance.setBaseCost(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BASE_COST)));
+		Cost baseCost = new Cost();
+		baseCost.setValue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_COST_VALUE)));
+		baseCost.setUnit(MoneyUnit.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BASE_COST_UNIT))));
+		instance.setBaseCost(baseCost);
 		instance.setStrength(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_STRENGTH)));
 		instance.setConstructionTime(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CONSTRUCTION_TIME)));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MANEUVER_DIFFICULTY))) {
@@ -382,15 +387,16 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(10);
+			values = new ContentValues(11);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(9);
+			values = new ContentValues(10);
 		}
 		values.put(COLUMN_NAME, instance.getName());
 		values.put(COLUMN_WEIGHT, instance.getWeight());
-		values.put(COLUMN_BASE_COST, instance.getBaseCost());
+		values.put(COLUMN_BASE_COST_VALUE, instance.getBaseCost().getValue());
+		values.put(COLUMN_BASE_COST_UNIT, instance.getBaseCost().getUnit().name());
 		values.put(COLUMN_STRENGTH, instance.getStrength());
 		values.put(COLUMN_CONSTRUCTION_TIME, instance.getConstructionTime());
 		if(instance.getManeuverDifficulty() == null || ManeuverDifficulty.MEDIUM.equals(instance.getManeuverDifficulty())) {

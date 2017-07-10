@@ -139,6 +139,20 @@
   <string name="enum_condition_type_parry_effective">Parry Effective (no hits delivered)</string>
   <string name="enum_condition_type_successful_perception">Successful Perception roll</string>
 
+  <!-- Body location enum strings -->
+  <string name="enum_body_location_arm">Arm</string>
+  <string name="enum_body_location_chest">Chest</string>
+  <string name="enum_body_location_groin">Groin</string>
+  <string name="enum_body_location_head">Head</string>
+  <string name="enum_body_location_leg">Leg</string>
+
+  <!-- CombatPosition enum strings -->
+  <string name="enum_combat_position_out_of_range">Out of Range</string>
+  <string name="enum_combat_position_front">Front</string>
+  <string name="enum_combat_position_left_flank">Left Flank</string>
+  <string name="enum_combat_position_right_flank">Right Flank</string>
+  <string name="enum_combat_position_rear">Rear</string>
+
   <!-- ConditionType enum strings -->
   <string name="enum_state_type_action_point_loss">Action point loss</string>
   <string name="enum_state_type_bleeding">Bleeding</string>
@@ -170,6 +184,19 @@
   <string name="enum_state_type_unconscious">Unconscious</string>
   <string name="enum_state_type_used_instantaneous">Used instantaneous</string>
   <string name="enum_state_type_wounded">Wounded</string>
+
+  <!-- CriticalType enum strings -->
+  <string name="enum_critical_type_acid">Acid</string>
+  <string name="enum_critical_type_grapple">Grapple</string>
+  <string name="enum_critical_type_heat">Heat</string>
+  <string name="enum_critical_type_impact">Impact</string>
+  <string name="enum_critical_type_crush">Crush</string>
+  <string name="enum_critical_type_electricity">Electricity</string>
+  <string name="enum_critical_type_cold">Cold</string>
+  <string name="enum_critical_type_puncture">Puncture</string>
+  <string name="enum_critical_type_slash">Slash</string>
+  <string name="enum_critical_type_strike">Strike</string>
+  <string name="enum_critical_type_unbalance">Unbalance</string>
 
   <!-- DestinySense enum strings -->
   <string name="enum_destiny_sense_direction">Direction Sense</string>
@@ -251,6 +278,14 @@
   <string name="enum_material_precious_metal">Precious Metal</string>
   <string name="enum_material_stone">Stone</string>
   <string name="enum_material_wood">Wood</string>
+
+  <!-- Money Unit enum strings -->
+  <string name="enum_money_unit_trade_bead">Trade Bead</string>
+  <string name="enum_money_unit_copper_coin">Copper Coin</string>
+  <string name="enum_money_unit_bronze_coin">Bronze Coin</string>
+  <string name="enum_money_unit_silver_coin">Silver Coin</string>
+  <string name="enum_money_unit_lesser_gold">Lesser Gold</string>
+  <string name="enum_money_unit_greater_gold">Greater Gold</string>
 
   <!-- Poison enum strings -->
   <string name="enum_poison_circulatory">Circulatory</string>
