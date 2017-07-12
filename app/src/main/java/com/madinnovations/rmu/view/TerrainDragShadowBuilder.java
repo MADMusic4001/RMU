@@ -23,6 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 
 import com.madinnovations.rmu.data.entities.common.Being;
@@ -54,16 +55,18 @@ public class TerrainDragShadowBuilder extends View.DragShadowBuilder {
 
 	@Override
 	public void onDrawShadow(Canvas canvas) {
+		Log.d(TAG, "onDrawShadow: ");
 		canvas.save();
 		canvas.translate(terrainView.getOffsetX(), terrainView.getOffsetY());
 		canvas.scale(terrainView.getScaleFactor(), terrainView.getScaleFactor());
-		float radius = being.getHeight() / 2 + being.getWeaponLength();
+		float radius = being.getHeight() / 2 + being.getWeaponLength()*12;
 		canvas.drawCircle(position.getX() + radius, position.getY() + radius, radius, linePaint);
 		canvas.restore();
 	}
 
 	@Override
 	public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
+		Log.d(TAG, "onProvideShadowMetrics: ");
 		float radius = (being.getHeight() / 2 + being.getWeaponLength()*12) * terrainView.getScaleFactor();
 		float width = radius * 2;
 		outShadowSize.set((int)width, (int) width);

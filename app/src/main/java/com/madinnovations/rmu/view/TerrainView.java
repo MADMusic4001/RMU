@@ -62,6 +62,7 @@ import rx.Subscriber;
 public class TerrainView extends View {
 	private static final String TAG            = "TerrainView";
 	public static final  String DRAG_DIRECTION = "drag-direction";
+	public static final  String DRAG_ADD_COMBATANT = "drag-add-combatant";
 	public static final  String DRAG_LOCATION  = "drag-location";
 	private static final int    SPACING        = 4;
 	@Inject
@@ -69,6 +70,7 @@ public class TerrainView extends View {
 	private   Skill                bodyDevelopmentSkill = null;
 	private   Callbacks            callbacks;
 	private   Paint                linePaint;
+	private   Paint                dragPaint;
 	private   Paint                fontPaint;
 	private   Paint                frontPaint;
 	private   Paint                flankPaint;
@@ -80,11 +82,13 @@ public class TerrainView extends View {
 	private   float                scaleFactor = 1.0f;
 	private   int                  textSize;
 	private   Position             sourcePoint;
-	private   float                lastX;
-	private   float                lastY;
+	private   float                touchX;
+	private   float                touchY;
 	private   float                offsetX = 0.0f;
 	private   float                offsetY = 0.0f;
 	private   boolean              directionDragging = false;
+	private   boolean              locationDragging = false;
+	private   Being                dragBeing = null;
 
 	/**
 	 * Creates a new TerrainView instance
@@ -122,6 +126,9 @@ public class TerrainView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		canvas.save();
+		canvas.translate(offsetX, offsetY);
+		canvas.scale(scaleFactor,scaleFactor);
 		canvas.drawColor(Color.WHITE);
 		if (callbacks != null) {
 			for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
@@ -149,7 +156,6 @@ public class TerrainView extends View {
 							maxHitPoints = currentHitPoints;
 						}
 					}
-
 					drawCombatant(canvas, entry.getValue().getPosition(), entry.getKey().getHeight(),
 							entry.getKey().getWeaponLength(), entry.getKey().getKnownAs(), maxHitPoints,
 							currentHitPoints, bodyDevSkillBonus);
@@ -170,7 +176,6 @@ public class TerrainView extends View {
 							}
 						}
 					}
-
 					if(maxHitPoints == 0) {
 						if(currentHitPoints == 0) {
 							if(bodyDevSkillBonus == 0) {
@@ -185,15 +190,20 @@ public class TerrainView extends View {
 							maxHitPoints = currentHitPoints;
 						}
 					}
-
 					drawCombatant(canvas, entry.getValue().getPosition(), entry.getKey().getCreatureVariety().getHeight(),
 							entry.getKey().getWeaponLength(), entry.getKey().getCreatureVariety().getName(), maxHitPoints,
 							currentHitPoints, bodyDevSkillBonus);
 				}
 			}
 		}
+		canvas.restore();
 		if (directionDragging && sourcePoint != null) {
-			canvas.drawLine(sourcePoint.getX(), sourcePoint.getY(), lastX, lastY, linePaint);
+			canvas.drawLine(sourcePoint.getX()*scaleFactor + offsetX, sourcePoint.getY()*scaleFactor + offsetY,
+							touchX, touchY, dragPaint);
+		}
+		else if(locationDragging && dragBeing != null) {
+			float radius = (dragBeing.getHeight() / 2 + dragBeing.getWeaponLength()*12)*scaleFactor;
+			canvas.drawCircle(touchX, touchY, radius, dragPaint);
 		}
 	}
 
@@ -224,6 +234,12 @@ public class TerrainView extends View {
 		linePaint.setColor(Color.BLACK);
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeJoin(Paint.Join.ROUND);
+		dragPaint = new Paint();
+		dragPaint.setAntiAlias(true);
+		dragPaint.setStrokeWidth(2f);
+		dragPaint.setColor(Color.RED);
+		dragPaint.setStyle(Paint.Style.STROKE);
+		dragPaint.setStrokeJoin(Paint.Join.ROUND);
 		textSize = getContext().getResources().getDimensionPixelSize(R.dimen.textSizeInSp);
 		fontPaint = new Paint();
 //		Typeface raleway = Typeface.createFromAsset(getContext().getAssets(), "fonts/raleway-bold.ttf");
@@ -269,9 +285,9 @@ public class TerrainView extends View {
 			@Override
 			public boolean onDrag(View v, DragEvent event) {
 				final int action = event.getAction();
-				PointF    pointf = new PointF(event.getX(), event.getY());
-				TerrainView.this.lastX = event.getX();
-				TerrainView.this.lastY = event.getY();
+				TerrainView.this.touchX = event.getX();
+				TerrainView.this.touchY = event.getY();
+				PointF    pointf = new PointF(touchX, touchY);
 				boolean result = false;
 
 				switch (action) {
@@ -280,10 +296,15 @@ public class TerrainView extends View {
 							Being being = (Being)event.getLocalState();
 							sourcePoint = getSourcePoint(being, pointf);
 							if(DRAG_LOCATION.equals(event.getClipDescription().getLabel())) {
+								locationDragging = true;
+								dragBeing = being;
 								result = true;
 							}
 							else if(DRAG_DIRECTION.equals(event.getClipDescription().getLabel())) {
 								directionDragging = true;
+								result = true;
+							}
+							else if(DRAG_ADD_COMBATANT.equals(event.getClipDescription().getLabel())) {
 								result = true;
 							}
 						}
@@ -293,60 +314,66 @@ public class TerrainView extends View {
 							Being being = (Being)event.getLocalState();
 							sourcePoint = getSourcePoint(being, pointf);
 							if (DRAG_LOCATION.equals(event.getClipDescription().getLabel())) {
+								locationDragging = true;
+								dragBeing = being;
 								v.invalidate();
-								result = true;
 							} else if (DRAG_DIRECTION.equals(event.getClipDescription().getLabel())) {
 								directionDragging = true;
 								updateDirection(being, pointf);
 								v.invalidate();
-								result = true;
 							}
+							result = true;
 						}
 						break;
 					case DragEvent.ACTION_DRAG_LOCATION:
 						if (event.getClipDescription() != null) {
 							if (DRAG_LOCATION.equals(event.getClipDescription().getLabel())) {
 								v.invalidate();
-								result = true;
 							} else if (DRAG_DIRECTION.equals(event.getClipDescription().getLabel())) {
 								directionDragging = true;
 								Being being = (Being) event.getLocalState();
 								updateDirection(being, pointf);
 								v.invalidate();
-								result = true;
 							}
+							result = true;
 						}
 						break;
 					case DragEvent.ACTION_DRAG_EXITED:
 						if (event.getClipDescription() != null) {
 							if (DRAG_LOCATION.equals(event.getClipDescription().getLabel())) {
+								locationDragging = false;
+								dragBeing = null;
 								v.invalidate();
-								result = true;
 							} else if (DRAG_DIRECTION.equals(event.getClipDescription().getLabel())) {
 								directionDragging = false;
 								sourcePoint = null;
 								v.invalidate();
-								result = true;
 							}
+							result = true;
 						}
 						break;
 					case DragEvent.ACTION_DROP:
 						if (event.getClipDescription() != null) {
-							if (DRAG_LOCATION.equals(event.getClipDescription().getLabel())) {
+							if (DRAG_LOCATION.equals(event.getClipDescription().getLabel()) ||
+									DRAG_ADD_COMBATANT.equals(event.getClipDescription().getLabel())) {
 								Being being = (Being) event.getLocalState();
+								locationDragging = false;
+								dragBeing = null;
 								updateLocation(being, pointf);
-								result = true;
 							} else if (DRAG_DIRECTION.equals(event.getClipDescription().getLabel())) {
 								Being being = (Being) event.getLocalState();
 								updateDirection(being, pointf);
 								directionDragging = false;
-								result = true;
 							}
+							result = true;
 							v.invalidate();
 						}
 						break;
 					case DragEvent.ACTION_DRAG_ENDED:
+						locationDragging = false;
+						dragBeing = null;
 						directionDragging = false;
+						sourcePoint = null;
 						result = true;
 						v.invalidate();
 						break;
@@ -407,10 +434,6 @@ public class TerrainView extends View {
 					if (position == null) {
 						position = new Position();
 					}
-					Log.d(TAG, "updateLocation: pointf.x = " + pointf.x);
-					Log.d(TAG, "updateLocation: pointf.y = " + pointf.y);
-					Log.d(TAG, "updateLocation: lastX = " + lastX);
-					Log.d(TAG, "updateLocation: kastY = " + lastY);
 					position.setX(pointf.x/scaleFactor - offsetX);
 					position.setY(pointf.y/scaleFactor - offsetY);
 					encounterRoundInfo.setPosition(position);
@@ -431,8 +454,8 @@ public class TerrainView extends View {
 		}
 		if (encounterRoundInfo != null) {
 			Position position = encounterRoundInfo.getPosition();
-			float angle = (float) Math.atan2(pointf.y - position.getY(),
-					pointf.x - position.getX());
+			float angle = (float) Math.atan2(pointf.y/scaleFactor - offsetY - position.getY(),
+					pointf.x/scaleFactor - offsetX - position.getX());
 			position.setDirection(angle);
 			invalidate();
 		}
@@ -440,9 +463,6 @@ public class TerrainView extends View {
 
 	private void drawCombatant(Canvas canvas, Position position, float height, float weaponLength, String name, int maxHitPoints,
 							   int currentHitPoints, int bodyDevSkillBonus ) {
-		canvas.save();
-		canvas.translate(offsetX, offsetY);
-		canvas.scale(scaleFactor,scaleFactor);
 		float innerRadius = (height / 2);
 		float outerRadius = innerRadius + (weaponLength * 12);
 		RectF oval = new RectF(position.getX() - outerRadius,
@@ -493,7 +513,6 @@ public class TerrainView extends View {
 
 		canvas.drawText(String.valueOf(currentHitPoints) + "/" + String.valueOf(maxHitPoints),
 						oval.left + oval.width()/2, healthRect.bottom - 2, fontPaint);
-		canvas.restore();
 	}
 
 	// Getters and setters
@@ -503,20 +522,8 @@ public class TerrainView extends View {
 	public float getOffsetX() {
 		return offsetX;
 	}
-	public void setOffsetX(float offsetX) {
-		this.offsetX = offsetX;
-	}
 	public float getOffsetY() {
 		return offsetY;
-	}
-	public void setOffsetY(float offsetY) {
-		this.offsetY = offsetY;
-	}
-	public float getLastX() {
-		return lastX;
-	}
-	public float getLastY() {
-		return lastY;
 	}
 
 	public interface Callbacks {
@@ -535,11 +542,14 @@ public class TerrainView extends View {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
+			offsetX /= scaleFactor;
+			offsetY /= scaleFactor;
 			scaleFactor *= detector.getScaleFactor();
 
 			// Don't let the object get too small or too large.
 			scaleFactor = Math.max(0.25f, Math.min(scaleFactor, 5.0f));
-
+			offsetX *= scaleFactor;
+			offsetY *= scaleFactor;
 			callbacks.scaleChanged(scaleFactor);
 			invalidate();
 			return true;
@@ -551,6 +561,8 @@ public class TerrainView extends View {
 		public void onLongPress(MotionEvent e) {
 			Log.d(TAG, "onLongPress: ");
 			super.onLongPress(e);
+			Log.d(TAG, "onLongPress: touchX = " + e.getX());
+			Log.d(TAG, "onLongPress: touchY = " + e.getY());
 			Log.d(TAG, "onLongPress: scaleFactor = " + scaleFactor);
 			Log.d(TAG, "onLongPress: offsetX = " + offsetX);
 			Log.d(TAG, "onLongPress: offsetY = " + offsetY);
@@ -606,7 +618,7 @@ public class TerrainView extends View {
 						if (entry.getValue().getPosition() != null) {
 							float weaponLength = entry.getKey().getWeaponLength();
 							CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-									lastX, lastY, entry.getKey().getHeight(), weaponLength);
+									touchX, touchY, entry.getKey().getHeight(), weaponLength);
 							String            creatureIdString = String.valueOf(entry.getKey().getId());
 							ClipData.Item     clipDataItem     = new ClipData.Item(creatureIdString);
 							DragShadowBuilder myShadowBuilder  = null;
@@ -650,12 +662,5 @@ public class TerrainView extends View {
 			return true;
 		}
 
-		@Override
-		public boolean onDown(MotionEvent e) {
-			Log.d(TAG, "onDown: ");
-			lastX = e.getX();
-			lastY = e.getY();
-			return super.onDown(e);
-		}
 	}
 }

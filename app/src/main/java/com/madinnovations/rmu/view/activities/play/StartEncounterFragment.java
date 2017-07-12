@@ -451,7 +451,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				if(character != null) {
 					String characterIdString = String.valueOf(character.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
-					dragData = new ClipData(TerrainView.DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+					dragData = new ClipData(TerrainView.DRAG_ADD_COMBATANT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
 											clipDataItem);
 				}
 				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(
@@ -515,7 +515,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				if(creature != null) {
 					String creatureIdString = String.valueOf(creature.getId());
 					ClipData.Item clipDataItem = new ClipData.Item(creatureIdString);
-					dragData = new ClipData(TerrainView.DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+					dragData = new ClipData(TerrainView.DRAG_ADD_COMBATANT, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
 											clipDataItem);
 				}
 				TerrainDragShadowBuilder myShadow = new TerrainDragShadowBuilder(terrainView, new Position(0, 0, 0), creature);
