@@ -475,8 +475,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			characterRxHandler.getAllForCampaign(campaign)
 					.subscribe(new Subscriber<Collection<Character>>() {
 						@Override
-						public void onCompleted() {
-						}
+						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "onError: Exception caught getting all Character instances", e);
@@ -484,6 +483,9 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 						@Override
 						public void onNext(Collection<Character> charactersCollection) {
 							characters = charactersCollection;
+							if(terrainView != null) {
+								terrainView.setCallbacks(StartEncounterFragment.this);
+							}
 							charactersListAdapter.clear();
 							charactersListAdapter.addAll(charactersCollection);
 							charactersListAdapter.notifyDataSetChanged();
@@ -538,17 +540,17 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			creatureRxHandler.getAllForCampaign(campaign)
 					.subscribe(new Subscriber<Collection<Creature>>() {
 						@Override
-						public void onCompleted() {
-						}
-
+						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "onError: Exception caught getting all Creature instances", e);
 						}
-
 						@Override
 						public void onNext(Collection<Creature> creaturesCollection) {
 							creatures = creaturesCollection;
+							if(terrainView != null) {
+								terrainView.setCallbacks(StartEncounterFragment.this);
+							}
 							creaturesListAdapter.clear();
 							creaturesListAdapter.addAll(creaturesCollection);
 							creaturesListAdapter.notifyDataSetChanged();

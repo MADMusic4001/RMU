@@ -49,7 +49,9 @@ import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.di.modules.ViewsModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -75,6 +77,9 @@ public class TerrainView extends View {
 	private   Paint                frontPaint;
 	private   Paint                flankPaint;
 	private   Paint                rearPaint;
+	private   Paint                selectionFrontPaint;
+	private   Paint                selectionFlankPaint;
+	private   Paint                selectionRearPaint;
 	private   Paint                healthPaint;
 	private   Paint                unconsciousPaint;
 	private   ScaleGestureDetector scaleGestureDetector;
@@ -89,6 +94,8 @@ public class TerrainView extends View {
 	private   boolean              directionDragging = false;
 	private   boolean              locationDragging = false;
 	private   Being                dragBeing = null;
+	private   EncounterRoundInfo   selectedCombatantInfo = null;
+	private   List<EncounterRoundInfo> previousSelections = new ArrayList<>();
 
 	/**
 	 * Creates a new TerrainView instance
@@ -158,7 +165,7 @@ public class TerrainView extends View {
 					}
 					drawCombatant(canvas, entry.getValue().getPosition(), entry.getKey().getHeight(),
 							entry.getKey().getWeaponLength(), entry.getKey().getKnownAs(), maxHitPoints,
-							currentHitPoints, bodyDevSkillBonus);
+							currentHitPoints, bodyDevSkillBonus, entry.getValue().equals(selectedCombatantInfo));
 				}
 			}
 			for (Map.Entry<Creature, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
@@ -192,14 +199,14 @@ public class TerrainView extends View {
 					}
 					drawCombatant(canvas, entry.getValue().getPosition(), entry.getKey().getCreatureVariety().getHeight(),
 							entry.getKey().getWeaponLength(), entry.getKey().getCreatureVariety().getName(), maxHitPoints,
-							currentHitPoints, bodyDevSkillBonus);
+							currentHitPoints, bodyDevSkillBonus, entry.getValue().equals(selectedCombatantInfo));
 				}
 			}
 		}
 		canvas.restore();
 		if (directionDragging && sourcePoint != null) {
-			canvas.drawLine(sourcePoint.getX()*scaleFactor + offsetX, sourcePoint.getY()*scaleFactor + offsetY,
-							touchX, touchY, dragPaint);
+			PointF screenCoords = worldToScreen(sourcePoint.getX(), sourcePoint.getY());
+			canvas.drawLine(screenCoords.x, screenCoords.y, touchX, touchY, dragPaint);
 		}
 		else if(locationDragging && dragBeing != null) {
 			float radius = (dragBeing.getHeight() / 2 + dragBeing.getWeaponLength()*12)*scaleFactor;
@@ -266,6 +273,30 @@ public class TerrainView extends View {
 		rearPaint.setColor(Color.RED);
 		rearPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		rearPaint.setStrokeJoin(Paint.Join.ROUND);
+		selectionFrontPaint = new Paint();
+		selectionFrontPaint.setAntiAlias(true);
+		selectionFrontPaint.setStrokeWidth(2f);
+		selectionFrontPaint.setColor(Color.rgb(Color.red(Color.GREEN) >> 1,
+											   Color.green(Color.GREEN) >> 1,
+											   Color.blue(Color.GREEN) >> 1));
+		selectionFrontPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		selectionFrontPaint.setStrokeJoin(Paint.Join.ROUND);
+		selectionFlankPaint = new Paint();
+		selectionFlankPaint.setAntiAlias(true);
+		selectionFlankPaint.setStrokeWidth(2f);
+		selectionFlankPaint.setColor(Color.rgb(Color.red(Color.YELLOW) >> 1,
+											   Color.green(Color.YELLOW) >> 1,
+											   Color.blue(Color.YELLOW) >> 1));
+		selectionFlankPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		selectionFlankPaint.setStrokeJoin(Paint.Join.ROUND);
+		selectionRearPaint = new Paint();
+		selectionRearPaint.setAntiAlias(true);
+		selectionRearPaint.setStrokeWidth(2f);
+		selectionRearPaint.setColor(Color.rgb(Color.red(Color.RED) >> 1,
+											  Color.green(Color.RED) >> 1,
+											  Color.blue(Color.RED) >> 1));
+		selectionRearPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		selectionRearPaint.setStrokeJoin(Paint.Join.ROUND);
 		healthPaint = new Paint();
 		healthPaint.setAntiAlias(true);
 		healthPaint.setStrokeWidth(2f);
@@ -386,6 +417,10 @@ public class TerrainView extends View {
 
 	public void setCallbacks(Callbacks callbacks) {
 		this.callbacks = callbacks;
+		if(callbacks != null && callbacks.getCharacters() != null && callbacks.getCreatures() != null) {
+			this.previousSelections = new ArrayList<>(callbacks.getCharacters().size() +
+					callbacks.getCreatures().size());
+		}
 	}
 
 	private Position getSourcePoint(Being being, PointF pointf) {
@@ -462,7 +497,8 @@ public class TerrainView extends View {
 	}
 
 	private void drawCombatant(Canvas canvas, Position position, float height, float weaponLength, String name, int maxHitPoints,
-							   int currentHitPoints, int bodyDevSkillBonus ) {
+							   int currentHitPoints, int bodyDevSkillBonus, boolean isSelected ) {
+		Log.d(TAG, "drawCombatant: isSelected = " + isSelected);
 		float innerRadius = (height / 2);
 		float outerRadius = innerRadius + (weaponLength * 12);
 		RectF oval = new RectF(position.getX() - outerRadius,
@@ -470,10 +506,10 @@ public class TerrainView extends View {
 							   position.getX() + outerRadius,
 							   position.getY() + outerRadius);
 		float directionDegrees = (float) Math.toDegrees(position.getDirection());
-		canvas.drawArc(oval, directionDegrees - 90, 180, true, frontPaint);
-		canvas.drawArc(oval, directionDegrees - 150, 60, true, flankPaint);
-		canvas.drawArc(oval, directionDegrees + 90, 60, true, flankPaint);
-		canvas.drawArc(oval, directionDegrees + 150, 60, true, rearPaint);
+		canvas.drawArc(oval, directionDegrees - 90, 180, true, isSelected ? selectionFrontPaint : frontPaint);
+		canvas.drawArc(oval, directionDegrees - 150, 60, true, isSelected ? selectionFlankPaint : flankPaint);
+		canvas.drawArc(oval, directionDegrees + 90, 60, true, isSelected ? selectionFlankPaint : flankPaint);
+		canvas.drawArc(oval, directionDegrees + 150, 60, true, isSelected ? selectionRearPaint: rearPaint);
 		canvas.drawCircle(position.getX(),
 						  position.getY(),
 						  innerRadius,
@@ -513,6 +549,20 @@ public class TerrainView extends View {
 
 		canvas.drawText(String.valueOf(currentHitPoints) + "/" + String.valueOf(maxHitPoints),
 						oval.left + oval.width()/2, healthRect.bottom - 2, fontPaint);
+	}
+
+	public PointF screenToWorld(float screenX, float screenY) {
+		PointF result = new PointF();
+		result.x = screenX/scaleFactor - offsetX;
+		result.y = screenY/scaleFactor - offsetY;
+		return result;
+	}
+
+	public PointF worldToScreen(float worldX, float worldY) {
+		PointF result = new PointF();
+		result.x = (worldX + offsetX)*scaleFactor ;
+		result.y = (worldY + offsetY)*scaleFactor;
+		return result;
 	}
 
 	// Getters and setters
@@ -559,17 +609,8 @@ public class TerrainView extends View {
 	private class TerrainViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public void onLongPress(MotionEvent e) {
-			Log.d(TAG, "onLongPress: ");
 			super.onLongPress(e);
-			Log.d(TAG, "onLongPress: touchX = " + e.getX());
-			Log.d(TAG, "onLongPress: touchY = " + e.getY());
-			Log.d(TAG, "onLongPress: scaleFactor = " + scaleFactor);
-			Log.d(TAG, "onLongPress: offsetX = " + offsetX);
-			Log.d(TAG, "onLongPress: offsetY = " + offsetY);
-			float x = e.getX()/scaleFactor - offsetX;
-			float y = e.getY()/scaleFactor - offsetY;
-			Log.d(TAG, "onLongPress: x = " + x);
-			Log.d(TAG, "onLongPress: y = " + y);
+			PointF worldCoords = screenToWorld(e.getX(), e.getY());
 			if (callbacks != null) {
 				ClipData dragData = null;
 				for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
@@ -578,7 +619,7 @@ public class TerrainView extends View {
 					if (entry.getValue().getPosition() != null) {
 						float weaponLength = entry.getKey().getWeaponLength();
 						CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-								x, y, entry.getKey().getHeight(), weaponLength);
+								worldCoords.x, worldCoords.y, entry.getKey().getHeight(), weaponLength);
 						Log.d(TAG, "onLongPress: combatPosition = " + combatPosition.toString());
 						String            characterIdString = String.valueOf(entry.getKey().getId());
 						ClipData.Item     clipDataItem      = new ClipData.Item(characterIdString);
@@ -618,7 +659,7 @@ public class TerrainView extends View {
 						if (entry.getValue().getPosition() != null) {
 							float weaponLength = entry.getKey().getWeaponLength();
 							CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-									touchX, touchY, entry.getKey().getHeight(), weaponLength);
+									worldCoords.x, worldCoords.y, entry.getKey().getHeight(), weaponLength);
 							String            creatureIdString = String.valueOf(entry.getKey().getId());
 							ClipData.Item     clipDataItem     = new ClipData.Item(creatureIdString);
 							DragShadowBuilder myShadowBuilder  = null;
@@ -662,5 +703,56 @@ public class TerrainView extends View {
 			return true;
 		}
 
+		@Override
+		public boolean onSingleTapConfirmed(MotionEvent e) {
+			PointF worldCoords = screenToWorld(e.getX(), e.getY());
+			EncounterSetup encounterSetup = callbacks.getEncounterSetup();
+			EncounterRoundInfo newSelection = selectCombatant(null, encounterSetup.getCharacterCombatInfo(), worldCoords);
+			newSelection = selectCombatant(newSelection, encounterSetup.getEnemyCombatInfo(), worldCoords);
+			selectedCombatantInfo = newSelection;
+			invalidate();
+
+			return true;
+		}
+
+		private EncounterRoundInfo selectCombatant(EncounterRoundInfo newSelection,
+												   Map<? extends Being, EncounterRoundInfo> combatants,
+												   PointF worldCoords) {
+			EncounterRoundInfo result = newSelection;
+
+			for(Map.Entry<? extends Being, EncounterRoundInfo> entry : combatants.entrySet()) {
+				CombatPosition facing = entry.getValue().getPosition().getPointIn(worldCoords.x, worldCoords.y,
+																				  entry.getValue().getCombatant().getHeight(),
+																				  entry.getValue().getCombatant().getWeaponLength());
+				if(facing.equals(CombatPosition.OUT_OF_RANGE)) {
+					if(selectedCombatantInfo != null && selectedCombatantInfo.equals(entry.getValue())) {
+						previousSelections.add(selectedCombatantInfo);
+						selectedCombatantInfo = null;
+					}
+				}
+				else {
+					if(selectedCombatantInfo != null && selectedCombatantInfo.equals(entry.getValue())) {
+						previousSelections.remove(selectedCombatantInfo);
+						previousSelections.add(selectedCombatantInfo);
+						selectedCombatantInfo = null;
+					}
+					else if(result == null) {
+						result = entry.getValue();
+					}
+					else if(previousSelections.contains(entry.getValue())) {
+						if(previousSelections.contains(result)) {
+							if (previousSelections.indexOf(entry.getValue()) > previousSelections.indexOf(newSelection)) {
+								result = entry.getValue();
+							}
+						}
+					}
+					else if (previousSelections.contains(result)) {
+						result = entry.getValue();
+					}
+				}
+			}
+
+			return result;
+		}
 	}
 }

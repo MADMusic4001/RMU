@@ -80,6 +80,7 @@ public class Position {
 	 */
 	public CombatPosition getPointIn(float x, float y, float height, float weaponLength) {
 		CombatPosition result = CombatPosition.OUT_OF_RANGE;
+		Log.d(TAG, "getPointIn: this = " + this.print());
 		float distance = (float)Math.sqrt(((x - this.x)*(x - this.x)) + ((y - this.y)*(y - this.y)));
 		Log.d(TAG, "getPointIn: distance = " + distance);
 		if(distance <= (height + weaponLength*12)) {
