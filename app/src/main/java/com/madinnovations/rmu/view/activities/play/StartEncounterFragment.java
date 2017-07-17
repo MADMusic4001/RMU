@@ -354,12 +354,10 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		encounterInProgress = !currentInstance.getEnemyCombatInfo().isEmpty();
 		if(encounterInProgress) {
 			for (Map.Entry<Character, EncounterRoundInfo> entry : currentInstance.getCharacterCombatInfo().entrySet()) {
-				short initiativeRoll = RandomUtils.roll2d10();
-				entry.getValue().setInitiativeRoll(initiativeRoll);
+				entry.getValue().setInitiativeRoll(RandomUtils.roll2d10());
 			}
 			for (Map.Entry<Creature, EncounterRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-				short initiativeRoll = RandomUtils.roll2d10();
-				entry.getValue().setInitiativeRoll(initiativeRoll);
+				entry.getValue().setInitiativeRoll(RandomUtils.roll2d10());
 			}
 			InitiativeDialog dialog = new InitiativeDialog();
 			Bundle bundle = new Bundle();

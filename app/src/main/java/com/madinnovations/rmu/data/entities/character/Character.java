@@ -43,7 +43,6 @@ import java.util.Random;
 @SuppressWarnings("unused")
 public class Character extends Being implements Serializable {
 	public static final  String                           JSON_NAME                       = "Characters";
-	public static final  short                            INITIAL_DP                      = 50;
 	private static final long                             serialVersionUID                = 5800697497948561223L;
 	private static final String                           TAG                             = "Character";
 	private              int                              experiencePoints                = 0;
@@ -65,12 +64,7 @@ public class Character extends Being implements Serializable {
 	private              Race                             race                            = null;
 	private              Culture                          culture                         = null;
 	private              Profession                       profession                      = null;
-	private              short                            currentDevelopmentPoints        = INITIAL_DP;
 	private              Map<Skill, DevelopmentCostGroup> skillCosts                      = new HashMap<>();
-	private              Map<Skill, Short>                skillRanks                      = new HashMap<>();
-	private              Map<Specialization, Short>       specializationRanks             = new HashMap<>();
-	private              Map<SpellList, Short>            spellListRanks                  = new HashMap<>();
-	private              List<TalentInstance>             talentInstances                 = new ArrayList<>();
 	private              Map<Statistic, Short>            statTemps                       = new HashMap<>();
 	private              Map<Statistic, Short>            statPotentials                  = new HashMap<>();
 	private              List<Item>                       items                           = new ArrayList<>();
@@ -181,7 +175,7 @@ public class Character extends Being implements Serializable {
 				.append("fatigue", fatigue)
 				.append("powerPointLoss", powerPointLoss)
 				.append("skillCosts", skillCosts)
-				.append("skillRanks", skillRanks)
+				.append("skillRanks", getSkillRanks())
 				.append("specializationRanks", specializationRanks)
 				.append("spellListRanks", spellListRanks)
 				.append("talentInstances", talentInstances)
@@ -353,7 +347,7 @@ public class Character extends Being implements Serializable {
 	 * @return true if the Character instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return campaign != null && firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()
+		return super.isValid() && firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()
 				&& description != null && !description.isEmpty() && race != null && profession != null && culture != null
 				&& (profession.getRealm1() != null || realm != null);
 	}
@@ -571,14 +565,6 @@ public class Character extends Being implements Serializable {
 		this.profession = profession;
 	}
 
-	public short getCurrentDevelopmentPoints() {
-		return currentDevelopmentPoints;
-	}
-
-	public void setCurrentDevelopmentPoints(short currentDevelopmentPoints) {
-		this.currentDevelopmentPoints = currentDevelopmentPoints;
-	}
-
 	public Map<Skill, DevelopmentCostGroup> getSkillCosts() {
 		return skillCosts;
 	}
@@ -586,39 +572,6 @@ public class Character extends Being implements Serializable {
 	public void setSkillCosts(
 			Map<Skill, DevelopmentCostGroup> skillCosts) {
 		this.skillCosts = skillCosts;
-	}
-
-	public Map<Skill, Short> getSkillRanks() {
-		return skillRanks;
-	}
-
-	public void setSkillRanks(Map<Skill, Short> skillRanks) {
-		this.skillRanks = skillRanks;
-	}
-
-	public Map<Specialization, Short> getSpecializationRanks() {
-		return specializationRanks;
-	}
-
-	public void setSpecializationRanks(
-			Map<Specialization, Short> specializationRanks) {
-		this.specializationRanks = specializationRanks;
-	}
-
-	public Map<SpellList, Short> getSpellListRanks() {
-		return spellListRanks;
-	}
-
-	public void setSpellListRanks(Map<SpellList, Short> spellListRanks) {
-		this.spellListRanks = spellListRanks;
-	}
-
-	public List<TalentInstance> getTalentInstances() {
-		return talentInstances;
-	}
-
-	public void setTalentInstances(List<TalentInstance> talentInstances) {
-		this.talentInstances = talentInstances;
 	}
 
 	public Map<Statistic, Short> getStatTemps() {

@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.State;
@@ -39,7 +38,6 @@ public class Creature extends Being implements Serializable {
 	public static final  String            JSON_NAME        = "Creatures";
 	private              CreatureVariety   creatureVariety  = null;
 	private              CreatureArchetype archetype        = null;
-	private              CreatureAttack    lastAttack       = null;
 	private              short             numCreatures     = 1;
 
 	/**
@@ -63,7 +61,7 @@ public class Creature extends Being implements Serializable {
 	 * @return true if the Creature instance is valid, otherwise false.
 	 */
 	public boolean isValid() {
-		return creatureVariety != null;
+		return super.isValid() && creatureVariety != null && archetype != null;
 	}
 
 	@Override
@@ -227,12 +225,6 @@ public class Creature extends Being implements Serializable {
 	}
 	public void setArchetype(CreatureArchetype archetype) {
 		this.archetype = archetype;
-	}
-	public CreatureAttack getLastAttack() {
-		return lastAttack;
-	}
-	public void setLastAttack(CreatureAttack lastAttack) {
-		this.lastAttack = lastAttack;
 	}
 	public short getNumCreatures() {
 		return numCreatures;

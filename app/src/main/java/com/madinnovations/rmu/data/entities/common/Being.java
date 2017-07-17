@@ -25,40 +25,49 @@ import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.spells.Realm;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class with attributes common to player characters and non-player characters / creatures.
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class Being extends DatabaseObject {
-	protected Campaign    campaign       = null;
-	protected short       currentLevel   = 0;
-	protected int         maxHits        = 0;
-	protected int         currentHits    = 0;
-	protected Realm       realm          = null;
-	protected Realm       realm2         = null;
-	protected Realm       realm3         = null;
-	protected short       height         = 70;
-	protected short       weight         = 185;
-	protected int         hitPointLoss   = 0;
-	protected short       fatigue        = 0;
-	protected short       powerPointLoss = 0;
-	protected List<State> currentStates  = new ArrayList<>();
-	protected Item        mainHandItem   = null;
-	protected Item        offhandItem    = null;
-	protected Item        shirtItem      = null;
-	protected Item        pantsItem      = null;
-	protected Item        headItem       = null;
-	protected Item             chestItem      = null;
-	protected Item             armsItem       = null;
-	protected Item             handsItem      = null;
-	protected Item             legsItem       = null;
-	protected Item             feetItem       = null;
-	protected Item             backItem       = null;
-	protected Item             backpackItem   = null;
+	public static final short                      INITIAL_DP               = 50;
+	protected           Campaign                   campaign                 = null;
+	protected           short                      currentLevel             = 0;
+	protected           int                        maxHits                  = 0;
+	protected           int                        currentHits              = 0;
+	protected           Realm                      realm                    = null;
+	protected           Realm                      realm2                   = null;
+	protected           Realm                      realm3                   = null;
+	protected           short                      height                   = 70;
+	protected           short                      weight                   = 185;
+	protected           int                        hitPointLoss             = 0;
+	protected           short                      fatigue                  = 0;
+	protected           short                      powerPointLoss           = 0;
+	protected           short                      currentDevelopmentPoints = INITIAL_DP;
+	protected           List<State>                currentStates            = new ArrayList<>();
+	protected           Map<Skill, Short>          skillRanks               = new HashMap<>();
+	protected           Map<Specialization, Short> specializationRanks      = new HashMap<>();
+	protected           Map<SpellList, Short>      spellListRanks           = new HashMap<>();
+	protected           List<TalentInstance>       talentInstances          = new ArrayList<>();
+	protected           Item                       mainHandItem             = null;
+	protected           Item                       offhandItem              = null;
+	protected           Item                       shirtItem                = null;
+	protected           Item                       pantsItem                = null;
+	protected           Item                       headItem                 = null;
+	protected           Item                       chestItem                = null;
+	protected           Item                       armsItem                 = null;
+	protected           Item                       handsItem                = null;
+	protected           Item                       legsItem                 = null;
+	protected           Item                       feetItem                 = null;
+	protected           Item                       backItem                 = null;
+	protected           Item                       backpackItem             = null;
 
 	/**
 	 * Creates a new Being instance
@@ -75,6 +84,28 @@ public abstract class Being extends DatabaseObject {
 		super(id);
 	}
 
+// <editor-fold desc="Public methods">
+
+	/**
+	 * Gets the stat bonus for the given statistic
+	 *
+	 * @param statistic the Statistic whose bonus is needed
+	 * @return the total bonus for the given Statistic.
+	 */
+	public abstract short getTotalStatBonus(Statistic statistic);
+// </editor-fold> Public methods
+
+// <editor-fold desc="Getters and setters">
+
+	/**
+	 * Checks the validity of the Creature instance.
+	 *
+	 * @return true if the Creature instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return campaign != null;
+	}
+
 	/**
 	 * Gets the current primary weapon in use by this character or null if no weapon is equipped.
 	 *
@@ -85,7 +116,8 @@ public abstract class Being extends DatabaseObject {
 
 		if (mainHandItem != null && mainHandItem instanceof Weapon) {
 			result = (Weapon) mainHandItem;
-		} else if (offhandItem != null && offhandItem instanceof Weapon) {
+		}
+		else if (offhandItem != null && offhandItem instanceof Weapon) {
 			result = (Weapon) offhandItem;
 		}
 
@@ -109,17 +141,9 @@ public abstract class Being extends DatabaseObject {
 	}
 
 	/**
-	 * Gets the stat bonus for the given statistic
-	 *
-	 * @param statistic  the Statistic whose bonus is needed
-	 * @return  the total bonus for the given Statistic.
-	 */
-	public abstract short getTotalStatBonus(Statistic statistic);
-
-	/**
 	 * Gets the total modifications that need to be applied to the initiative roll for this Being.
 	 *
-	 * @return  the total initiative roll modifications
+	 * @return the total initiative roll modifications
 	 */
 	public abstract short getInitiativeModifications();
 
@@ -220,8 +244,49 @@ public abstract class Being extends DatabaseObject {
 		this.powerPointLoss = powerPointLoss;
 	}
 
+	public short getCurrentDevelopmentPoints() {
+		return currentDevelopmentPoints;
+	}
+
+	public void setCurrentDevelopmentPoints(short currentDevelopmentPoints) {
+		this.currentDevelopmentPoints = currentDevelopmentPoints;
+	}
+
 	public List<State> getCurrentStates() {
 		return currentStates;
+	}
+
+	public Map<Skill, Short> getSkillRanks() {
+		return skillRanks;
+	}
+
+	public void setSkillRanks(Map<Skill, Short> skillRanks) {
+		this.skillRanks = skillRanks;
+	}
+
+	public Map<Specialization, Short> getSpecializationRanks() {
+		return specializationRanks;
+	}
+
+	public void setSpecializationRanks(
+			Map<Specialization, Short> specializationRanks) {
+		this.specializationRanks = specializationRanks;
+	}
+
+	public Map<SpellList, Short> getSpellListRanks() {
+		return spellListRanks;
+	}
+
+	public void setSpellListRanks(Map<SpellList, Short> spellListRanks) {
+		this.spellListRanks = spellListRanks;
+	}
+
+	public List<TalentInstance> getTalentInstances() {
+		return talentInstances;
+	}
+
+	public void setTalentInstances(List<TalentInstance> talentInstances) {
+		this.talentInstances = talentInstances;
 	}
 
 	public Item getMainHandItem() {
@@ -319,4 +384,5 @@ public abstract class Being extends DatabaseObject {
 	public void setBackpackItem(Item backpackItem) {
 		this.backpackItem = backpackItem;
 	}
+// </editor-fold> Getters and setters
 }

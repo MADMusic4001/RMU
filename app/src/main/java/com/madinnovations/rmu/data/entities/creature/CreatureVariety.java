@@ -92,6 +92,21 @@ public class CreatureVariety extends DatabaseObject {
 	private ArrayList<CreatureAttack> attackList           = null;
 
 	/**
+	 * Creates a new CreatureVariety instance with default values
+	 */
+	public CreatureVariety() {
+	}
+
+	/**
+	 * Creates a new CreatureVariety instance with the given id
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public CreatureVariety(int id) {
+		super(id);
+	}
+
+	/**
 	 * Checks the validity of the CreatureVariety instance.
 	 *
 	 * @return true if the CreatureVariety instance is valid, otherwise false.

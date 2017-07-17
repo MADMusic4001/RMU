@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.view.activities.creature;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -30,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,22 +40,38 @@ import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureVarietyRxHandler;
+import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
+import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillRanks;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
+import com.madinnovations.rmu.data.entities.creature.LevelSpread;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
+import com.madinnovations.rmu.view.adapters.common.SkillRanksAdapter;
 import com.madinnovations.rmu.view.di.modules.CreatureFragmentModule;
 import com.madinnovations.rmu.view.utils.Boast;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
+import com.madinnovations.rmu.view.utils.RandomUtils;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;
+import com.madinnovations.rmu.view.widgets.TooltipDialogFragment;
 import com.nhaarman.supertooltips.ToolTip;
 import com.nhaarman.supertooltips.ToolTipRelativeLayout;
 import com.nhaarman.supertooltips.ToolTipView;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -65,23 +83,32 @@ import rx.schedulers.Schedulers;
  * Handles interactions with the UI for creature types.
  */
 public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.GetValues<Creature>,
-		EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback {
+		EditTextUtils.ValuesCallback, SpinnerUtils.ValuesCallback, SkillRanksAdapter.SkillRanksAdapterCallbacks,
+		TooltipDialogFragment.TooltipDialogListener {
 	private static final String TAG = "CreaturesFragment";
 	@Inject
-	protected CampaignRxHandler             campaignRxHandler;
+	protected CampaignRxHandler               campaignRxHandler;
 	@Inject
-	protected CreatureRxHandler             creatureRxHandler;
+	protected CreatureRxHandler               creatureRxHandler;
 	@Inject
-	protected CreatureVarietyRxHandler      creatureVarietyRxHandler;
-	private   SpinnerUtils<Campaign>        campaignSpinnerUtils;
-	private   TwoFieldListAdapter<Creature> creatureListAdapter;
-	private   SpinnerUtils<CreatureVariety> creatureVarietySpinnerUtils;
-	private   ListView                      creatureListView;
-	private   EditText                      levelEdit;
-	private   Creature                      currentInstance = new Creature();
-	private   boolean                       isNew           = true;
-	private   ToolTipView                   toolTipView;
-	private   ToolTipRelativeLayout         toolTipFrameLayout;
+	protected CreatureArchetypeRxHandler      creatureArchetypeRxHandler;
+	@Inject
+	protected CreatureVarietyRxHandler        creatureVarietyRxHandler;
+	@Inject
+	protected SkillRxHandler                  skillRxHandler;
+	private   TwoFieldListAdapter<Creature>   creatureListAdapter;
+	private   SkillRanksAdapter               skillRanksAdapter;
+	private   SpinnerUtils<Campaign>          campaignSpinnerUtils;
+	private   SpinnerUtils<CreatureVariety>   creatureVarietySpinnerUtils;
+	private   SpinnerUtils<CreatureArchetype> creatureArchetypeSpinnerUtils;
+	private   ListView                        creatureListView;
+	private   EditText                        levelEdit;
+	private   List<Skill>                     skillList = null;
+	private   Creature                        currentInstance = new Creature();
+	private   boolean                         isNew           = true;
+	private   ToolTipView                     toolTipView;
+	private   ToolTipRelativeLayout           toolTipFrameLayout;
+	private TooltipDialogFragment tooltipDialogFragment = null;
 
 	@Nullable
 	@Override
@@ -101,6 +128,10 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 		creatureVarietySpinnerUtils = new SpinnerUtils<>();
 		creatureVarietySpinnerUtils.initSpinner(layout, getActivity(), creatureVarietyRxHandler.getAll(), this,
 												R.id.creature_variety_spinner, null);
+		creatureArchetypeSpinnerUtils = new SpinnerUtils<>();
+		creatureArchetypeSpinnerUtils.initSpinner(layout, getActivity(), creatureArchetypeRxHandler.getAll(), this,
+												R.id.archetype_spinner, null);
+		initRandomButton(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -222,6 +253,9 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 			case R.id.creature_variety_spinner:
 				result = currentInstance.getCreatureVariety();
 				break;
+			case R.id.archetype_spinner:
+				result = currentInstance.getArchetype();
+				break;
 		}
 
 		return result;
@@ -242,11 +276,47 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 					saveItem();
 				}
 				break;
+			case R.id.archetype_spinner:
+				if(newItem instanceof CreatureArchetype) {
+					currentInstance.setArchetype((CreatureArchetype)newItem);
+					saveItem();
+				}
+				break;
 		}
 	}
 
 	@Override
 	public void observerCompleted(@IdRes int spinnerId) {}
+
+	@Override
+	public short purchaseRank(SkillRanks skillRanks) {
+		return 0;
+	}
+
+	@Override
+	public short sellRank(SkillRanks skillRanks) {
+		return 0;
+	}
+
+	@Override
+	public DevelopmentCostGroup getSkillCost(SkillRanks skillRanks) {
+		return null;
+	}
+
+	@Override
+	public short getRanks(SkillRanks skillRanks) {
+		return 0;
+	}
+
+	@Override
+	public short getCultureRanks(SkillRanks skillRanks) {
+		return 0;
+	}
+
+	@Override
+	public void onOk(DialogFragment dialog) {
+		tooltipDialogFragment = null;
+	}
 
 	private boolean copyViewsToItem() {
 		boolean changed = false;
@@ -277,6 +347,12 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 			changed = true;
 		}
 
+		CreatureArchetype newArchetype = creatureArchetypeSpinnerUtils.getSelectedItem();
+		if(newArchetype != null && !newArchetype.equals(currentInstance.getArchetype())) {
+			currentInstance.setArchetype(newArchetype);
+			changed = true;
+		}
+
 		return changed;
 	}
 
@@ -284,6 +360,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 		levelEdit.setText(String.valueOf(currentInstance.getCurrentLevel()));
 		campaignSpinnerUtils.setSelection(currentInstance.getCampaign());
 		creatureVarietySpinnerUtils.setSelection(currentInstance.getCreatureVariety());
+		creatureArchetypeSpinnerUtils.setSelection(currentInstance.getArchetype());
 
 		levelEdit.setError(null);
 	}
@@ -371,7 +448,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 	private void initLevelEdit(View layout) {
 		levelEdit = EditTextUtils.initEdit(layout, getActivity(), this, R.id.creature_level_edit,
 										   R.string.validation_creature_level_required);
-		toolTipFrameLayout = (ToolTipRelativeLayout) layout.findViewById(R.id.activity_main_tooltipframelayout);
+		toolTipFrameLayout = (ToolTipRelativeLayout) layout.findViewById(R.id.tooltipRelativeLayout);
 
 		levelEdit.setOnHoverListener(new View.OnHoverListener() {
 			@Override
@@ -392,6 +469,73 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 				return false;
 			}
 		});
+	}
+
+	private void initRandomButton(View layout) {
+		Button randomButton = (Button)layout.findViewById(R.id.random_level_button);
+
+		randomButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(currentInstance.getCreatureVariety() != null) {
+					short typicalLevel = currentInstance.getCreatureVariety().getTypicalLevel();
+					char levelSpread = currentInstance.getCreatureVariety().getLevelSpread();
+					short level;
+					short offset = LevelSpread.valueOf(String.valueOf(levelSpread)).getOffset(RandomUtils.roll1d100OE());
+					if (offset == Short.MIN_VALUE) {
+						level = 0;
+					}
+					else {
+						level = (short) (typicalLevel + offset);
+						if (level <= 0) {
+							level = 1;
+						}
+					}
+					currentInstance.setCurrentLevel(level);
+					levelEdit.setText(String.valueOf(level));
+					saveItem();
+				}
+			}
+		});
+	}
+
+	private void initSkillRanksListView(final View layout) {
+		ListView skillRanksListView = (ListView) layout.findViewById(R.id.skill_ranks_list);
+		skillRanksAdapter = new SkillRanksAdapter(getActivity(), this);
+		skillRanksListView.setAdapter(skillRanksAdapter);
+
+		loadSkills();
+
+		skillRanksListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if(position != AdapterView.INVALID_POSITION) {
+					SkillRanks skillRanks = skillRanksAdapter.getItem(position);
+					if (skillRanks != null) {
+						String content = null;
+						if(skillRanks.getSkill() != null) {
+							content = skillRanks.getSkill().getDescription();
+						}
+						else if(skillRanks.getSpecialization() != null) {
+							content = skillRanks.getSpecialization().getDescription();
+						}
+						else if(skillRanks.getSpellList() != null) {
+							content = skillRanks.getSpellList().getName() + System.getProperty("line.separator")
+									+ skillRanks.getSpellList().getNotes();
+						}
+						if(content != null && tooltipDialogFragment == null) {
+							tooltipDialogFragment = new TooltipDialogFragment();
+							tooltipDialogFragment.setListener(CreaturesFragment.this);
+							tooltipDialogFragment.setMessage(content);
+							tooltipDialogFragment.show(getChildFragmentManager(), "tooltip");
+						}
+					}
+				}
+				return false;
+			}
+		});
+
+		registerForContextMenu(skillRanksListView);
 	}
 
 	private void initListView(View layout) {
@@ -448,5 +592,52 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 			}
 		});
 		registerForContextMenu(creatureListView);
+	}
+
+	private void loadSkills() {
+		skillRxHandler.getAll()
+				.subscribe(new Subscriber<Collection<Skill>>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "Exception caught getting all Skill instances.", e);
+					}
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onNext(Collection<Skill> skillCollection) {
+						if (skillCollection instanceof List) {
+							skillList = (List) skillCollection;
+						}
+						else {
+							skillList = new ArrayList<>(skillCollection);
+						}
+						copySkillRanksToView();
+					}
+				});
+	}
+
+	private void copySkillRanksToView() {
+		List<SkillRanks> ranksList = new ArrayList<>();
+		for (Skill skill : skillList) {
+			SkillRanks skillRanks;
+			if (!skill.isRequiresSpecialization()) {
+				skillRanks = new SkillRanks();
+				skillRanks.setSkill(skill);
+				ranksList.add(skillRanks);
+			}
+			else {
+				for (Specialization specialization : skill.getSpecializations()) {
+					skillRanks = new SkillRanks();
+					skillRanks.setSpecialization(specialization);
+					ranksList.add(skillRanks);
+				}
+			}
+		}
+		//noinspection unchecked
+		Collections.sort(ranksList);
+		skillRanksAdapter.clear();
+		skillRanksAdapter.addAll(ranksList);
+		skillRanksAdapter.notifyDataSetChanged();
 	}
 }

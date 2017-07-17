@@ -436,6 +436,7 @@
   <string name="input_label_combat_skill">Combat Skill</string>
   <string name="input_label_constitution_bonus">Constitution Bonus</string>
   <string name="input_label_cost_per_tier">Cost per tier</string>
+  <string name="input_label_creature_archetype">Creature Archetype</string>
   <string name="input_label_creature_variety">Creature Variety</string>
   <string name="input_label_critical">Critical</string>
   <string name="input_label_critical_codes">Critical Codes</string>

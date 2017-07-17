@@ -27,12 +27,15 @@ import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
 import com.madinnovations.rmu.data.dao.character.serializers.CharacterSerializer;
+import com.madinnovations.rmu.data.dao.creature.CreatureDao;
+import com.madinnovations.rmu.data.dao.creature.serializers.CreatureSerializer;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.serializers.ItemSerializer;
 import com.madinnovations.rmu.data.dao.play.EncounterSetupDao;
 import com.madinnovations.rmu.data.dao.play.serializers.EncounterSetupSerializer;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.object.Item;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
@@ -63,6 +66,8 @@ public class ImportExportCampaignRxHandler {
 	private CampaignDao              campaignDao;
 	private CharacterDao             characterDao;
 	private CharacterSerializer      characterSerializer = new CharacterSerializer();
+	private CreatureDao              creatureDao;
+	private CreatureSerializer       creatureSerializer = new CreatureSerializer();
 	private EncounterSetupDao        encounterSetupDao;
 	private EncounterSetupSerializer encounterSetupSerializer = new EncounterSetupSerializer();
 	private ItemDao                  itemDao;
@@ -73,10 +78,12 @@ public class ImportExportCampaignRxHandler {
 	 * Creates a new ImportExportRxHandler instance
 	 */
 	@Inject
-	ImportExportCampaignRxHandler(CampaignDao campaignDao, CharacterDao characterDao, EncounterSetupDao encounterSetupDao,
+	ImportExportCampaignRxHandler(CampaignDao campaignDao, CharacterDao characterDao, CreatureDao creatureDao,
+								  EncounterSetupDao encounterSetupDao,
 								  ItemDao itemDao, RMUDatabaseHelper helper) {
 		this.campaignDao = campaignDao;
 		this.characterDao = characterDao;
+		this.creatureDao = creatureDao;
 		this.encounterSetupDao = encounterSetupDao;
 		this.itemDao = itemDao;
 		this.helper = helper;
@@ -102,6 +109,7 @@ public class ImportExportCampaignRxHandler {
 							BufferedReader reader = new BufferedReader(new FileReader(fileName));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
+							gsonBuilder.registerTypeAdapter(Creature.class, creatureSerializer);
 							gsonBuilder.registerTypeAdapter(EncounterSetup.class, encounterSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
 							gsonBuilder.registerTypeAdapter(Weapon.class, itemSerializer);
@@ -144,7 +152,19 @@ public class ImportExportCampaignRxHandler {
 											Log.i(TAG, "Loaded " + characters.size() + " characters.");
 											characters = null;
 											break;
-										case "CombatSetups":
+										case Creature.JSON_NAME:
+											List<Creature> creatures = new ArrayList<>();
+											jsonReader.beginArray();
+											while (jsonReader.hasNext()) {
+												Creature creature = gson.fromJson(jsonReader, Creature.class);
+												creatures.add(creature);
+											}
+											jsonReader.endArray();
+											creatureDao.deleteAll();
+											creatureDao.save(creatures, true);
+											Log.i(TAG, "Loaded " + creatures.size() + " creatures.");
+											creatures = null;
+											break;
 										case EncounterSetup.JSON_NAME:
 											List<EncounterSetup> encounterSetups = new ArrayList<>();
 											jsonReader.beginArray();
@@ -216,6 +236,7 @@ public class ImportExportCampaignRxHandler {
 							BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile));
 							final GsonBuilder gsonBuilder = new GsonBuilder();
 							gsonBuilder.registerTypeAdapter(Character.class, characterSerializer);
+							gsonBuilder.registerTypeAdapter(Creature.class, creatureSerializer);
 							gsonBuilder.registerTypeAdapter(EncounterSetup.class, encounterSetupSerializer);
 							gsonBuilder.registerTypeAdapter(Item.class, itemSerializer);
 							gsonBuilder.registerTypeAdapter(Weapon.class, itemSerializer);
@@ -237,6 +258,8 @@ public class ImportExportCampaignRxHandler {
 							subscriber.onNext(80);
 							jsonWriter.name(Character.JSON_NAME)
 									.jsonValue(gson.toJson(characterDao.getAllForCampaign(campaign)))
+									.name(Creature.JSON_NAME)
+									.jsonValue(gson.toJson(creatureDao.getAllForCampaign(campaign)))
 									.endObject()
 									.flush();
 							subscriber.onNext(100);

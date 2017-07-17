@@ -59,6 +59,7 @@ import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
 import com.madinnovations.rmu.data.dao.creature.OutlookDao;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureArchetypeSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureCategorySerializer;
+import com.madinnovations.rmu.data.dao.creature.serializers.CreatureSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureTypeSerializer;
 import com.madinnovations.rmu.data.dao.creature.serializers.CreatureVarietySerializer;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;

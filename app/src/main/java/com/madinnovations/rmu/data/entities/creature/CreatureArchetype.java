@@ -46,6 +46,21 @@ public class CreatureArchetype extends DatabaseObject {
 	private SparseArray<CreatureArchetypeLevel> levels      = new SparseArray<>();
 
 	/**
+	 * Create a new CreatureArchetype instance with default values
+	 */
+	public CreatureArchetype() {
+	}
+
+	/**
+	 * Create a new CreatureArchetype instance with the given id
+	 *
+	 * @param id  the id of the new instance
+	 */
+	public CreatureArchetype(int id) {
+		super(id);
+	}
+
+	/**
 	 * Checks the validity of the CreatureArchetype instance.
 	 *
 	 * @return true if the CreatureArchetype instance is valid, otherwise false.
@@ -76,6 +91,15 @@ public class CreatureArchetype extends DatabaseObject {
 
 	@Override
 	public String toString() {
+		return name;
+	}
+
+	/**
+	 * Generates a debug string of all fields for this instance.
+	 *
+	 * @return a debug string of all fields for this instance.
+	 */
+	public String print() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
 				.append("id", getId())
 				.append("name", name)

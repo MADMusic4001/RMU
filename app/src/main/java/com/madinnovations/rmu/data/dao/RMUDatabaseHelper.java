@@ -77,6 +77,11 @@ import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategorySchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureCategoryTalentsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSkillRanksSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpecializationRanksSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpellListRanksSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTalentParametersSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTalentsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTypeTalentsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureVarietySchema;
@@ -107,11 +112,12 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
-import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
-import com.madinnovations.rmu.data.entities.object.Cost;
-import com.madinnovations.rmu.data.entities.object.ItemTemplate;
-import com.madinnovations.rmu.data.entities.object.MoneyUnit;
-import com.madinnovations.rmu.data.entities.object.Slot;
+import com.madinnovations.rmu.data.entities.creature.Creature;
+import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
+import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -124,7 +130,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 14;
+	public static final  int    DATABASE_VERSION = 18;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -161,7 +167,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(CriticalCodeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureTypeSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CreatureCategorySchema.TABLE_CREATE);
-			sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(BiomeSchema.TABLE_CREATE);
 
 			sqLiteDatabase.execSQL(EncounterSetupSchema.TABLE_CREATE);
@@ -216,7 +221,13 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(SpellDurationParamSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(SpellAreaOfEffectParamSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CultureSkillRanksSchema.TABLE_CREATE);
-            sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureSkillRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureSpecializationRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureSpellListRanksSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureTalentsSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CreatureTalentParametersSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterTalentsSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterTalentParametersSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CharacterStatsSchema.TABLE_CREATE);
@@ -245,7 +256,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
-				case 13:
+				case 17:
 					upgrade(sqLiteDatabase);
 					break;
             }
@@ -276,6 +287,12 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(CharacterTalentParametersSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CharacterSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureTalentParametersSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureTalentsSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureSpellListRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureSpecializationRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureSkillRanksSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(CreatureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CultureSkillRanksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellAreaOfEffectParamSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(SpellDurationParamSchema.TABLE_NAME, null, null);
@@ -340,7 +357,6 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(EncounterSetupSchema.TABLE_NAME, null, null);
 
 		sqLiteDatabase.delete(BiomeSchema.TABLE_NAME, null, null);
-		sqLiteDatabase.delete(CreatureSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureCategorySchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CreatureTypeSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CriticalCodeSchema.TABLE_NAME, null, null);
@@ -423,123 +439,76 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 
 	private void upgrade(SQLiteDatabase sqLiteDatabase) {
 		sqLiteDatabase.beginTransaction();
-//		Cursor cursor = null;
+		Cursor cursor = null;
 		try {
-//			cursor = sqLiteDatabase.rawQuery("SELECT id,name,weight,baseCost,strength,constructionTime,"
-//					+ "maneuverDifficulty,notes,primarySlot,secondarySlot"
-//													 + " FROM " + ItemTemplateSchema.TABLE_NAME, null);
+			cursor = sqLiteDatabase.rawQuery("SELECT id,campaignId,creatureVarietyId,level,maxHits,currentHits,creatureArchetypeId"
+												 + " FROM " + CreatureSchema.TABLE_NAME, null);
 
 
-//			if(cursor != null) {
-//				cursor.moveToFirst();
-//				List<ItemTemplate> itemTemplates = new ArrayList<>(cursor.getCount());
-//				while (!cursor.isAfterLast()) {
-//					ItemTemplate itemTemplate = cursorToEntity(cursor);
-//					itemTemplates.add(itemTemplate);
-//					cursor.moveToNext();
-//				}
-				sqLiteDatabase.execSQL("DROP TABLE encounter_setup_character_encounter_info");
-				sqLiteDatabase.execSQL("DROP TABLE encounter_setup_creature_encounter_info");
-				sqLiteDatabase.execSQL("DROP TABLE " + EncounterSetupSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL(EncounterSetupSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(EncounterSetupEncounterInfoSchema.TABLE_CREATE);
-//				for (ItemTemplate itemTemplate : itemTemplates) {
-//					ContentValues values = getContentValues(itemTemplate);
-//					sqLiteDatabase.insert(ItemTemplateSchema.TABLE_NAME, null, values);
-//				}
+			if(cursor != null) {
+				cursor.moveToFirst();
+				List<Creature> creatures = new ArrayList<>(cursor.getCount());
+				while (!cursor.isAfterLast()) {
+					Creature creature = cursorToEntity(cursor);
+					creatures.add(creature);
+					cursor.moveToNext();
+				}
+				sqLiteDatabase.execSQL("DROP TABLE " + CreatureTalentParametersSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL("DROP TABLE " + CreatureTalentsSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSpellListRanksSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSpecializationRanksSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSkillRanksSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(CreatureSkillRanksSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(CreatureSpecializationRanksSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(CreatureSpellListRanksSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(CreatureTalentsSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(CreatureTalentParametersSchema.TABLE_CREATE);
+				for (Creature creature : creatures) {
+					ContentValues values = getContentValues(creature);
+					sqLiteDatabase.insert(CreatureSchema.TABLE_NAME, null, values);
+				}
 
 				sqLiteDatabase.setTransactionSuccessful();
-//			}
+			}
 		}
 		finally {
-//			if(cursor != null) {
-//				cursor.close();
-//			}
+			if(cursor != null) {
+				cursor.close();
+			}
 			sqLiteDatabase.endTransaction();
 		}
 	}
 
-	private ItemTemplate cursorToEntity(Cursor cursor) {
-		ItemTemplate instance = new ItemTemplate();
+	private Creature cursorToEntity(Cursor cursor) {
+		Creature instance = new Creature();
 
-		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_ID)));
-		instance.setName(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_NAME)));
-		instance.setWeight(cursor.getFloat(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_WEIGHT)));
-		Cost baseCost = new Cost();
-		baseCost.setUnit(MoneyUnit.COPPER_COIN);
-		int costValue = cursor.getInt(cursor.getColumnIndexOrThrow("baseCost"));
-		while(costValue > Short.MAX_VALUE) {
-			costValue = costValue / 10;
-			switch (baseCost.getUnit()) {
-				case COPPER_COIN:
-					baseCost.setUnit(MoneyUnit.BRONZE_COIN);
-					break;
-				case BRONZE_COIN:
-					baseCost.setUnit(MoneyUnit.SILVER_COIN);
-					break;
-				case SILVER_COIN:
-					baseCost.setUnit(MoneyUnit.LESSER_GOLD);
-					break;
-				case LESSER_GOLD:
-					baseCost.setUnit(MoneyUnit.GREATER_GOLD);
-					break;
-			}
-		}
-		instance.setBaseCost(baseCost);
-		instance.setStrength(cursor.getShort(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_STRENGTH)));
-		instance.setConstructionTime(cursor.getInt(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME)));
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY))) {
-			instance.setManeuverDifficulty(ManeuverDifficulty.valueOf(cursor.getString(
-					cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY))));
-		}
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_NOTES))) {
-			instance.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_NOTES)));
-		}
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_PRIMARY_SLOT))) {
-			instance.setPrimarySlot(Slot.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_PRIMARY_SLOT))));
-		}
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_SECONDARY_SLOT))) {
-			instance.setSecondarySlot(Slot.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ItemTemplateSchema.COLUMN_SECONDARY_SLOT))));
-		}
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_ID)));
+		instance.setCampaign(new Campaign(cursor.getInt(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_CAMPAIGN_ID))));
+		instance.setCreatureVariety(new CreatureVariety(cursor.getInt(cursor.getColumnIndexOrThrow(
+				CreatureSchema.COLUMN_CREATURE_VARIETY_ID))));
+		instance.setCurrentLevel(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_LEVEL)));
+		instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_MAX_HITS)));
+		instance.setCurrentHits(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_CURRENT_HITS)));
+		instance.setArchetype(new CreatureArchetype(cursor.getInt(cursor.getColumnIndexOrThrow(
+				CreatureSchema.COLUMN_CREATURE_ARCHETYPE_ID))));
 
 		return instance;
 	}
 
-	private ContentValues getContentValues(ItemTemplate instance) {
+	private ContentValues getContentValues(Creature instance) {
 		ContentValues values;
 
-		values = new ContentValues(11);
-		values.put(ItemTemplateSchema.COLUMN_ID, instance.getId());
-		values.put(ItemTemplateSchema.COLUMN_NAME, instance.getName());
-		values.put(ItemTemplateSchema.COLUMN_WEIGHT, instance.getWeight());
-		values.put(ItemTemplateSchema.COLUMN_BASE_COST_VALUE, instance.getBaseCost().getValue());
-		values.put(ItemTemplateSchema.COLUMN_BASE_COST_UNIT, instance.getBaseCost().getUnit().name());
-		values.put(ItemTemplateSchema.COLUMN_STRENGTH, instance.getStrength());
-		values.put(ItemTemplateSchema.COLUMN_CONSTRUCTION_TIME, instance.getConstructionTime());
-		if(instance.getManeuverDifficulty() == null || ManeuverDifficulty.MEDIUM.equals(instance.getManeuverDifficulty())) {
-			values.putNull(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY);
-		}
-		else {
-			values.put(ItemTemplateSchema.COLUMN_MANEUVER_DIFFICULTY, instance.getManeuverDifficulty().name());
-		}
-		if(instance.getNotes() == null) {
-			values.putNull(ItemTemplateSchema.COLUMN_NOTES);
-		}
-		else {
-			values.put(ItemTemplateSchema.COLUMN_NOTES, instance.getNotes());
-		}
-		if(instance.getPrimarySlot() == null) {
-			values.putNull(ItemTemplateSchema.COLUMN_PRIMARY_SLOT);
-		}
-		else {
-			values.put(ItemTemplateSchema.COLUMN_PRIMARY_SLOT, instance.getPrimarySlot().name());
-		}
-		if(instance.getSecondarySlot() == null) {
-			values.putNull(ItemTemplateSchema.COLUMN_SECONDARY_SLOT);
-		}
-		else {
-			values.put(ItemTemplateSchema.COLUMN_SECONDARY_SLOT, instance.getSecondarySlot().name());
-		}
+		values = new ContentValues(8);
+		values.put(CreatureSchema.COLUMN_ID, instance.getId());
+		values.put(CreatureSchema.COLUMN_CREATURE_VARIETY_ID, instance.getCreatureVariety().getId());
+		values.putNull(CreatureSchema.COLUMN_CREATURE_ARCHETYPE_ID);
+		values.put(CreatureSchema.COLUMN_MAX_HITS, instance.getMaxHits());
+		values.put(CreatureSchema.COLUMN_CURRENT_HITS, instance.getCurrentHits());
+		values.put(CreatureSchema.COLUMN_LEVEL, instance.getCurrentLevel());
+		values.put(CreatureSchema.COLUMN_CURRENT_DPS, instance.getCurrentDevelopmentPoints());
+		values.put(CreatureSchema.COLUMN_NUM_CREATURES, instance.getNumCreatures());
 
 		return values;
 	}

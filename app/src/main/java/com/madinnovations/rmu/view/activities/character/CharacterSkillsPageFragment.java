@@ -24,7 +24,6 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;

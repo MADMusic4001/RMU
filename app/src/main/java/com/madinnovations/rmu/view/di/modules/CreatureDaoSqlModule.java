@@ -56,8 +56,11 @@ public class CreatureDaoSqlModule {
 		return new CreatureCategoryDaoDbImpl(helper, talentDao);
 	}
 	@Provides @Singleton
-	CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CampaignDao campaignDao, CreatureVarietyDao creatureVarietyDao) {
-		return new CreatureDaoDbImpl(helper, campaignDao, creatureVarietyDao);
+	CreatureDao provideCreatureDao(RMUDatabaseHelper helper, CampaignDao campaignDao, CreatureVarietyDao creatureVarietyDao,
+								   CreatureArchetypeDao creatureArchetypeDao, SkillDao skillDao,
+								   SpecializationDao specializationDao, SpellListDao spellListDao, TalentDao talentDao) {
+		return new CreatureDaoDbImpl(helper, campaignDao, creatureVarietyDao, creatureArchetypeDao, skillDao, specializationDao,
+									 spellListDao, talentDao);
 	}
 	@Provides @Singleton
 	CreatureTypeDao provideCreatureTypeDao(RMUDatabaseHelper helper, CreatureCategoryDao creatureCategoryDao,

@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.data.dao.creature.impl;
 
@@ -27,6 +27,7 @@ import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeLevelsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSkillsSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.ArchetypeSpellsSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureArchetypeSchema;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -174,13 +175,32 @@ public class CreatureArchetypeDaoDbImpl extends BaseDaoDbImpl<CreatureArchetype>
 
 		selection = ArchetypeLevelsSchema.COLUMN_ARCHETYPE_ID + " = ?";
 		db.delete(ArchetypeLevelsSchema.TABLE_NAME, selection, selectionArgs);
-
 		for(int i = 0; i < instance.getLevels().size(); i++) {
 			CreatureArchetypeLevel level = instance.getLevels().valueAt(i);
 			result &= (db.insertWithOnConflict(ArchetypeLevelsSchema.TABLE_NAME, null,
 											   getArchetypeLevelValues(level, instance.getId()),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
+
+		selection = ArchetypeSpellsSchema.COLUMN_ARCHETYPE_ID + "= ?";
+		db.delete(ArchetypeSpellsSchema.TABLE_NAME, selection, selectionArgs);
+
+		return result;
+	}
+
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
+		final String selectionArgs[] = { String.valueOf(id) };
+
+		String selection = ArchetypeSkillsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+		result = (db.delete(ArchetypeSkillsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = ArchetypeLevelsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+		result &= (db.delete(ArchetypeLevelsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		selection = ArchetypeSpellsSchema.COLUMN_ARCHETYPE_ID + " = ?";
+		result &= (db.delete(ArchetypeSpellsSchema.TABLE_NAME, selection, selectionArgs) >= 0);
 
 		return result;
 	}
