@@ -7,16 +7,72 @@
 
   <android.support.design.widget.TextInputLayout
       android:id="@+id/name_textInputLayout"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="6"
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/stat1_is_realm_label"
       app:layout_constraintTop_toTopOf="parent">
     <android.support.design.widget.TextInputEditText
         android:id="@+id/name_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_creature_archetype_name"/>
   </android.support.design.widget.TextInputLayout>
+  <TextView
+      android:id="@id/stat1_is_realm_label"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="4"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/name_textInputLayout"
+      app:layout_constraintRight_toLeftOf="@+id/stat1_is_realm_check_box"
+      app:layout_constraintTop_toTopOf="parent"
+      android:text="@string/input_label_stat1_is_realm"/>
+  <CheckBox
+      android:id="@id/stat1_is_realm_check_box"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat1_is_realm_label"
+      app:layout_constraintRight_toLeftOf="@+id/stat1_spinner"
+      app:layout_constraintTop_toTopOf="parent"
+      android:button="@null"
+      android:background="?android:attr/listChoiceIndicatorMultiple"/>
+  <Spinner
+      android:id="@id/stat1_spinner"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="8"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat1_is_realm_check_box"
+      app:layout_constraintRight_toLeftOf="@+id/stat2_is_realm_label"
+      app:layout_constraintTop_toTopOf="parent"/>
+  <TextView
+      android:id="@id/stat2_is_realm_label"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="5"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat1_spinner"
+      app:layout_constraintRight_toLeftOf="@+id/stat2_is_realm_check_box"
+      app:layout_constraintTop_toTopOf="parent"
+      android:text="@string/input_label_stat2_is_realm"/>
+  <CheckBox
+      android:id="@id/stat2_is_realm_check_box"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat2_is_realm_label"
+      app:layout_constraintRight_toLeftOf="@+id/stat2_spinner"
+      app:layout_constraintTop_toTopOf="parent"
+      android:button="@null"
+      android:background="?android:attr/listChoiceIndicatorMultiple"/>
+  <Spinner
+      android:id="@id/stat2_spinner"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="8"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat2_is_realm_check_box"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
 
   <android.support.design.widget.TextInputLayout
       android:id="@+id/notes_textInputLayout"
@@ -32,55 +88,6 @@
         android:hint="@string/hint_creature_archetype_description"/>
   </android.support.design.widget.TextInputLayout>
 
-  <TextView
-      android:id="@+id/stat1_is_realm_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintRight_toLeftOf="@+id/stat1_is_realm_check_box"
-      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
-      android:text="@string/input_label_stat1_is_realm"/>
-  <CheckBox
-      android:id="@id/stat1_is_realm_check_box"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/stat1_is_realm_label"
-      app:layout_constraintRight_toLeftOf="@+id/stat1_spinner"
-      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
-      android:button="@null"
-      android:background="?android:attr/listChoiceIndicatorMultiple"/>
-  <Spinner
-      android:id="@id/stat1_spinner"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/stat1_is_realm_check_box"
-      app:layout_constraintRight_toLeftOf="@+id/stat2_is_realm_label"
-      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"/>
-  <TextView
-      android:id="@id/stat2_is_realm_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/stat1_spinner"
-      app:layout_constraintRight_toLeftOf="@+id/stat2_is_realm_check_box"
-      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
-      android:text="@string/input_label_stat2_is_realm"/>
-  <CheckBox
-      android:id="@id/stat2_is_realm_check_box"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/stat2_is_realm_label"
-      app:layout_constraintRight_toLeftOf="@+id/stat2_spinner"
-      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
-      android:button="@null"
-      android:background="?android:attr/listChoiceIndicatorMultiple"/>
-  <Spinner
-      android:id="@id/stat2_spinner"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintLeft_toRightOf="@id/stat2_is_realm_check_box"
-      app:layout_constraintRight_toLeftOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"/>
-
   <LinearLayout
       android:id="@+id/skills_header_layout"
       android:orientation="horizontal"
@@ -88,7 +95,7 @@
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/stat1_spinner">
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout">
     <TextView
         android:layout_width="0dp"
         android:layout_weight="1"
