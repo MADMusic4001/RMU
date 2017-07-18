@@ -1,102 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+              android:layout_height="wrap_content"
+              xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <EditText
-      android:id="@+id/name_edit"
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/name_textInputLayout"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:hint="@string/hint_creature_archetype_name"/>
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/name_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_creature_archetype_name"/>
+  </android.support.design.widget.TextInputLayout>
 
-  <EditText
-      android:id="@+id/notes_edit"
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/notes_textInputLayout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:inputType="textMultiLine"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/name_edit"
-      android:hint="@string/hint_creature_archetype_description"/>
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/name_textInputLayout">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/notes_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:hint="@string/hint_creature_archetype_description"/>
+  </android.support.design.widget.TextInputLayout>
 
-  <RelativeLayout
-      android:id="@+id/stat1_layout"
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
+  <TextView
+      android:id="@+id/stat1_is_realm_label"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/notes_edit">
-    <TextView
-        android:id="@+id/stat1_is_realm_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:text="@string/input_label_stat1_is_realm"/>
-    <CheckBox
-        android:id="@+id/stat1_is_realm_check_box"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/stat1_is_realm_label"
-        android:layout_toEndOf="@id/stat1_is_realm_label"
-        android:layout_centerVertical="true"
-        android:button="@null"
-        android:background="?android:attr/listChoiceIndicatorMultiple"/>
-    <Spinner
-        android:id="@+id/stat1_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/stat1_is_realm_check_box"
-        android:layout_toEndOf="@id/stat1_is_realm_check_box"
-        android:layout_centerVertical="true"/>
-  </RelativeLayout>
-
-  <RelativeLayout
-      android:id="@+id/stat2_layout"
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/stat1_is_realm_check_box"
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
+      android:text="@string/input_label_stat1_is_realm"/>
+  <CheckBox
+      android:id="@id/stat1_is_realm_check_box"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/stat1_layout">
-    <TextView
-        android:id="@+id/stat2_is_realm_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:text="@string/input_label_stat2_is_realm"/>
-    <CheckBox
-        android:id="@+id/stat2_is_realm_check_box"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/stat2_is_realm_label"
-        android:layout_toEndOf="@id/stat2_is_realm_label"
-        android:layout_centerVertical="true"
-        android:button="@null"
-        android:background="?android:attr/listChoiceIndicatorMultiple"/>
-    <Spinner
-        android:id="@+id/stat2_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/stat2_is_realm_check_box"
-        android:layout_toEndOf="@id/stat2_is_realm_check_box"
-        android:layout_centerVertical="true"/>
-  </RelativeLayout>
+      app:layout_constraintLeft_toRightOf="@id/stat1_is_realm_label"
+      app:layout_constraintRight_toLeftOf="@+id/stat1_spinner"
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
+      android:button="@null"
+      android:background="?android:attr/listChoiceIndicatorMultiple"/>
+  <Spinner
+      android:id="@id/stat1_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat1_is_realm_check_box"
+      app:layout_constraintRight_toLeftOf="@+id/stat2_is_realm_label"
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"/>
+  <TextView
+      android:id="@id/stat2_is_realm_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat1_spinner"
+      app:layout_constraintRight_toLeftOf="@+id/stat2_is_realm_check_box"
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
+      android:text="@string/input_label_stat2_is_realm"/>
+  <CheckBox
+      android:id="@id/stat2_is_realm_check_box"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat2_is_realm_label"
+      app:layout_constraintRight_toLeftOf="@+id/stat2_spinner"
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"
+      android:button="@null"
+      android:background="?android:attr/listChoiceIndicatorMultiple"/>
+  <Spinner
+      android:id="@id/stat2_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/stat2_is_realm_check_box"
+      app:layout_constraintRight_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/notes_textInputLayout"/>
 
   <LinearLayout
       android:id="@+id/skills_header_layout"
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/stat2_layout">
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/stat1_spinner">
     <TextView
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -113,14 +105,15 @@
         android:layout_height="wrap_content"
         android:text="@string/label_tertiary_skills"/>
   </LinearLayout>
+
   <LinearLayout
       android:id="@+id/skills_lists_layout"
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/skills_header_layout"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/skills_header_layout"
       android:baselineAligned="false">
     <ListView
         android:id="@+id/primary_skills_list"
@@ -145,40 +138,33 @@
         android:choiceMode="multipleChoice"/>
   </LinearLayout>
 
-  <TextView
+  <android.support.design.widget.TextInputLayout
       android:id="@+id/spells_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/skills_lists_layout"
-      android:text="@string/input_label_spells"/>
-  <EditText
-      android:id="@+id/spells_edit"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:inputType="textMultiLine"
-      android:layout_toLeftOf="@id/spells_label"
-      android:layout_toEndOf="@id/spells_label"
-      android:layout_alignBaseline="@id/spells_label"
-      android:hint="@string/hint_creature_archetype_spells"/>
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/skills_lists_layout">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/spells_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:hint="@string/hint_creature_archetype_spells"/>
+  </android.support.design.widget.TextInputLayout>
 
-  <TextView
+  <android.support.design.widget.TextInputLayout
       android:id="@+id/roles_label"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@id/spells_label"
-      android:labelFor="@+id/roles_edit"
-      android:text="@string/input_label_roles"/>
-  <EditText
-      android:id="@id/roles_edit"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:inputType="textMultiLine"
-      android:layout_toLeftOf="@id/roles_label"
-      android:layout_toEndOf="@id/roles_label"
-      android:layout_alignBaseline="@id/roles_label"
-      android:hint="@string/hint_creature_archetype_roles"/>
-</RelativeLayout>
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/spells_label">
+    <EditText
+        android:id="@+id/roles_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:hint="@string/hint_creature_archetype_roles"/>
+  </android.support.design.widget.TextInputLayout>
+</android.support.constraint.ConstraintLayout>
