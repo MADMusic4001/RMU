@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/experience_points_label"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/current_level_text"
           android:layout_width="match_parent"
@@ -29,7 +30,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/current_level_label"
         app:layout_constraintRight_toLeftOf="@+id/current_hits_label"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/experience_points_text"
           android:layout_width="match_parent"
@@ -43,7 +45,9 @@
         app:layout_constraintHorizontal_weight="1"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/experience_points_label"
-        app:layout_constraintRight_toLeftOf="@+id/max_hits_label">
+        app:layout_constraintRight_toLeftOf="@+id/max_hits_label"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/current_hits_text"
           android:layout_width="match_parent"
@@ -58,7 +62,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/current_hits_label"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/max_hits_text"
           android:layout_width="match_parent"
@@ -74,7 +79,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/max_power_points_label"
-        app:layout_constraintTop_toBottomOf="@id/current_level_label">
+        app:layout_constraintTop_toBottomOf="@id/current_level_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/current_power_points_text"
           android:layout_width="match_parent"
@@ -89,7 +95,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/current_power_points_label"
         app:layout_constraintRight_toLeftOf="@+id/base_movement_rate_label"
-        app:layout_constraintTop_toBottomOf="@id/current_level_label">
+        app:layout_constraintTop_toBottomOf="@id/current_level_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/max_power_points_text"
           android:layout_width="match_parent"
@@ -104,7 +111,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/max_power_points_label"
         app:layout_constraintRight_toLeftOf="@+id/defensive_bonus_label"
-        app:layout_constraintTop_toBottomOf="@id/current_level_label">
+        app:layout_constraintTop_toBottomOf="@id/current_level_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/base_movement_rate_text"
           android:layout_width="match_parent"
@@ -119,7 +127,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/base_movement_rate_label"
         app:layout_constraintRight_toLeftOf="@+id/initiative_label"
-        app:layout_constraintTop_toBottomOf="@id/current_level_label">
+        app:layout_constraintTop_toBottomOf="@id/current_level_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/defensive_bonus_text"
           android:layout_width="match_parent"
@@ -134,7 +143,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/defensive_bonus_label"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_level_label">
+        app:layout_constraintTop_toBottomOf="@id/current_level_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/initiative_text"
           android:layout_width="match_parent"
@@ -150,7 +160,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/fatigue_label"
-        app:layout_constraintTop_toBottomOf="@id/current_power_points_label">
+        app:layout_constraintTop_toBottomOf="@id/current_power_points_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/endurance_text"
           android:layout_width="match_parent"
@@ -165,7 +176,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/endurance_label"
         app:layout_constraintRight_toLeftOf="@+id/encumbrance_label"
-        app:layout_constraintTop_toBottomOf="@id/current_power_points_label">
+        app:layout_constraintTop_toBottomOf="@id/current_power_points_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/fatigue_text"
           android:layout_width="match_parent"
@@ -180,7 +192,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/fatigue_label"
         app:layout_constraintRight_toLeftOf="@+id/armor_type_label"
-        app:layout_constraintTop_toBottomOf="@id/current_power_points_label">
+        app:layout_constraintTop_toBottomOf="@id/current_power_points_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/encumbrance_text"
           android:layout_width="match_parent"
@@ -195,8 +208,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/encumbrance_label"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_power_points_label">
-      <EditText
+        app:layout_constraintTop_toBottomOf="@id/current_power_points_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
           android:id="@+id/armor_type_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -211,7 +225,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/essence_rr_label"
-        app:layout_constraintTop_toBottomOf="@id/endurance_label">
+        app:layout_constraintTop_toBottomOf="@id/endurance_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/channeling_rr_text"
           android:layout_width="match_parent"
@@ -226,7 +241,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/channeling_rr_label"
         app:layout_constraintRight_toLeftOf="@+id/mentalism_rr_label"
-        app:layout_constraintTop_toBottomOf="@id/endurance_label">
+        app:layout_constraintTop_toBottomOf="@id/endurance_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/essence_rr_text"
           android:layout_width="match_parent"
@@ -241,7 +257,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/essence_rr_label"
         app:layout_constraintRight_toLeftOf="@+id/physical_rr_label"
-        app:layout_constraintTop_toBottomOf="@id/endurance_label">
+        app:layout_constraintTop_toBottomOf="@id/endurance_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/mentalism_rr_text"
           android:layout_width="match_parent"
@@ -256,7 +273,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/mentalism_rr_label"
         app:layout_constraintRight_toLeftOf="@+id/fear_rr_label"
-        app:layout_constraintTop_toBottomOf="@id/endurance_label">
+        app:layout_constraintTop_toBottomOf="@id/endurance_label"
+        style="@style/ROTextInputLabel">
       <android.support.design.widget.TextInputEditText
           android:id="@+id/physical_rr_text"
           android:layout_width="match_parent"
@@ -271,8 +289,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/physical_rr_label"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/endurance_label">
-      <EditText
+        app:layout_constraintTop_toBottomOf="@id/endurance_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
           android:id="@+id/fear_rr_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -280,141 +299,166 @@
           style="@style/ReadOnlyEditText"/>
     </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
-        android:id="@+id/stat1_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/channeling_rr_label">
-    <TextView
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/agility_label"
         android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_agility_bonus"/>
-    <EditText
-        android:id="@+id/agility_text"
-        android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/constitution_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_constitution_bonus"/>
-    <EditText
-        android:id="@+id/constitution_text"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/empathy_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_empathy_bonus"/>
-    <EditText
-        android:id="@+id/empathy_text"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/intuition_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_intuition_bonus"/>
-    <EditText
-        android:id="@+id/intuition_text"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/memory_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_memory_bonus"/>
-    <EditText
-        android:id="@+id/memory_text"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/stat2_layout"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/constitution_label"
+        app:layout_constraintTop_toBottomOf="@id/channeling_rr_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/agility_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_agility_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/constitution_label"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/agility_label"
+        app:layout_constraintRight_toLeftOf="@+id/empathy_label"
+        app:layout_constraintTop_toBottomOf="@id/channeling_rr_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/constitution_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_constitution_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/empathy_label"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/constitution_label"
+        app:layout_constraintRight_toLeftOf="@+id/intuition_label"
+        app:layout_constraintTop_toBottomOf="@id/channeling_rr_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/empathy_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_empathy_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/intuition_label"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/empathy_label"
+        app:layout_constraintRight_toLeftOf="@+id/memory_label"
+        app:layout_constraintTop_toBottomOf="@id/channeling_rr_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/intuition_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_intuition_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/memory_label"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/intuition_label"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stat1_layout">
-    <TextView
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_presence_bonus"/>
-    <EditText
-        android:id="@+id/presence_text"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/quickness_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_quickness_bonus"/>
-    <EditText
-        android:id="@+id/quickness_text"
+        app:layout_constraintTop_toBottomOf="@id/channeling_rr_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/memory_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_memory_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/presence_label"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/reasoning_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/quickness_label"
+        app:layout_constraintTop_toBottomOf="@id/agility_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/presence_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_presence_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/quickness_label"
         android:layout_width="0dp"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:text="@string/input_label_reasoning_bonus"/>
-    <EditText
+        app:layout_constraintLeft_toRightOf="@id/presence_label"
+        app:layout_constraintRight_toLeftOf="@+id/reasoning_label"
+        app:layout_constraintTop_toBottomOf="@id/agility_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/quickness_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_quickness_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/reasoning_label"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/quickness_label"
+        app:layout_constraintRight_toLeftOf="@+id/self_discipline_label"
+        app:layout_constraintTop_toBottomOf="@id/agility_label"
+        style="@style/ROTextInputLabel">
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/reasoning_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/input_label_reasoning_bonus"
+        style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/self_discipline_label"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/self_discipline_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_self_discipline_bonus"/>
-    <EditText
-        android:id="@+id/self_discipline_text"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:id="@+id/strength_label"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_strength_bonus"/>
-    <EditText
-        android:id="@+id/strength_text"
+        app:layout_constraintLeft_toRightOf="@id/reasoning_label"
+        app:layout_constraintRight_toLeftOf="@+id/strength_label"
+        app:layout_constraintTop_toBottomOf="@id/agility_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/self_discipline_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_self_discipline_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@id/strength_label"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        style="@style/ReadOnlyEditText"/>
-    </LinearLayout>
+        app:layout_constraintLeft_toRightOf="@id/self_discipline_label"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/agility_label"
+        style="@style/ROTextInputLabel">
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/strength_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/input_label_strength_bonus"
+          style="@style/ReadOnlyEditText"/>
+    </android.support.design.widget.TextInputLayout>
   </android.support.constraint.ConstraintLayout>
 </ScrollView>

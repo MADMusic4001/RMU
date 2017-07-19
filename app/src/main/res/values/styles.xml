@@ -62,4 +62,9 @@
     <item name="android:paddingLeft">@dimen/input_label_horizontal_spacing</item>
     <item name="android:paddingRight">@dimen/input_label_horizontal_spacing</item>
   </style>
+  <style name="ROTextInputLabel" parent="TextAppearance.AppCompat">
+    <item name="android:textColorHint">?attr/colorControlActivated</item>
+    <item name="colorControlNormal">?attr/colorControlActivated</item>
+    <item name="colorControlActivated">?attr/colorControlActivated</item>
+  </style>
 </resources>
