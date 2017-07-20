@@ -19,8 +19,6 @@
 
 package com.madinnovations.rmu.data.entities;
 
-import android.util.Log;
-
 import com.madinnovations.rmu.data.entities.combat.CombatPosition;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -33,6 +31,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *         Created 6/18/2017.
  */
 public class Position {
+	@SuppressWarnings("unused")
 	private static final String TAG = "Position";
 	private static final float LEFT_FLANK;
 	private static final float RIGHT_FLANK;
@@ -80,10 +79,8 @@ public class Position {
 	 */
 	public CombatPosition getPointIn(float x, float y, float height, float weaponLength) {
 		CombatPosition result = CombatPosition.OUT_OF_RANGE;
-		Log.d(TAG, "getPointIn: this = " + this.print());
 		float distance = (float)Math.sqrt(((x - this.x)*(x - this.x)) + ((y - this.y)*(y - this.y)));
-		Log.d(TAG, "getPointIn: distance = " + distance);
-		if(distance <= (height + weaponLength*12)) {
+		if(distance <= (height/2 + weaponLength*12)) {
 			float angle = (float)Math.atan2(y - this.y, x - this.x) - direction;
 			if(angle >= -Math.PI/2 && angle <= Math.PI/2) {
 				result = CombatPosition.FRONT;

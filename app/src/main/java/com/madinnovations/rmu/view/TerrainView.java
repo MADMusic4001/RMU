@@ -474,7 +474,6 @@ public class TerrainView extends View {
 					encounterRoundInfo.setPosition(position);
 					callbacks.enableEncounterButton(encounterSetup.getCharacterCombatInfo().size() > 0 &&
 							encounterSetup.getEnemyCombatInfo().size() > 0);
-					Log.d(TAG, "updateLocation: position = " + encounterRoundInfo.getPosition().print());
 				}
 			}
 		}
@@ -489,8 +488,9 @@ public class TerrainView extends View {
 		}
 		if (encounterRoundInfo != null) {
 			Position position = encounterRoundInfo.getPosition();
-			float angle = (float) Math.atan2(pointf.y/scaleFactor - offsetY - position.getY(),
-					pointf.x/scaleFactor - offsetX - position.getX());
+			PointF touchWorldLoc = screenToWorld(pointf.x, pointf.y);
+			float angle = (float) Math.atan2(touchWorldLoc.y - position.getY(),
+					touchWorldLoc.x - position.getX());
 			position.setDirection(angle);
 			invalidate();
 		}
@@ -498,7 +498,6 @@ public class TerrainView extends View {
 
 	private void drawCombatant(Canvas canvas, Position position, float height, float weaponLength, String name, int maxHitPoints,
 							   int currentHitPoints, int bodyDevSkillBonus, boolean isSelected ) {
-		Log.d(TAG, "drawCombatant: isSelected = " + isSelected);
 		float innerRadius = (height / 2);
 		float outerRadius = innerRadius + (weaponLength * 12);
 		RectF oval = new RectF(position.getX() - outerRadius,
@@ -553,15 +552,15 @@ public class TerrainView extends View {
 
 	public PointF screenToWorld(float screenX, float screenY) {
 		PointF result = new PointF();
-		result.x = screenX/scaleFactor - offsetX;
-		result.y = screenY/scaleFactor - offsetY;
+		result.x = (screenX - offsetX)/scaleFactor;
+		result.y = (screenY - offsetY)/scaleFactor;
 		return result;
 	}
 
 	public PointF worldToScreen(float worldX, float worldY) {
 		PointF result = new PointF();
-		result.x = (worldX + offsetX)*scaleFactor ;
-		result.y = (worldY + offsetY)*scaleFactor;
+		result.x = worldX*scaleFactor + offsetX;
+		result.y = worldY*scaleFactor + offsetY;
 		return result;
 	}
 
@@ -620,7 +619,6 @@ public class TerrainView extends View {
 						float weaponLength = entry.getKey().getWeaponLength();
 						CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
 								worldCoords.x, worldCoords.y, entry.getKey().getHeight(), weaponLength);
-						Log.d(TAG, "onLongPress: combatPosition = " + combatPosition.toString());
 						String            characterIdString = String.valueOf(entry.getKey().getId());
 						ClipData.Item     clipDataItem      = new ClipData.Item(characterIdString);
 						DragShadowBuilder myShadowBuilder   = null;
