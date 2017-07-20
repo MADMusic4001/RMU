@@ -44,7 +44,7 @@ public class RMUDragShadowBuilder extends View.DragShadowBuilder {
 	@Override
 	public void onProvideShadowMetrics (Point size, Point touch) {
 		int topLeftX = Integer.MAX_VALUE, topLeftY = Integer.MAX_VALUE;
-		int bottomRightX = 0, bottomRightY = 0;
+		int bottomRightX = Integer.MIN_VALUE, bottomRightY = Integer.MIN_VALUE;
 		int width, height;
 
 		for(int i = 0; i < views.size(); i++) {
@@ -63,8 +63,8 @@ public class RMUDragShadowBuilder extends View.DragShadowBuilder {
 			}
 		}
 
-		width = bottomRightX - topLeftX;
-		height = bottomRightY - topLeftY;
+		width = Math.abs(bottomRightX - topLeftX);
+		height = Math.abs(bottomRightY - topLeftY);
 		size.set(width, height);
 		touch.set(width / 2, height / 2);
 	}
