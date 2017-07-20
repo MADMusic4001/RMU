@@ -34,6 +34,8 @@ import java.io.Serializable;
  * Creature attributes
  */
 public class Creature extends Being implements Serializable {
+	@SuppressWarnings("unused")
+	private static final String            TAG              = "Creature";
 	private static final long              serialVersionUID = 2106087301956452748L;
 	public static final  String            JSON_NAME        = "Creatures";
 	private              CreatureVariety   creatureVariety  = null;
@@ -211,6 +213,12 @@ public class Creature extends Being implements Serializable {
 		}
 
 		return result;
+	}
+
+	@Override
+	public short getHeight() {
+		return creatureVariety.getHeight() > creatureVariety.getLength() ? creatureVariety.getHeight() :
+			   creatureVariety.getLength();
 	}
 
 	// Getters and setters

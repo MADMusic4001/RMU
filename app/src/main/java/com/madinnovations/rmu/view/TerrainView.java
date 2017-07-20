@@ -177,7 +177,7 @@ public class TerrainView extends View {
 					int bodyDevSkillBonus = 0;
 					if(bodyDevelopmentSkill != null) {
 						for(SkillBonus skillBonus : entry.getKey().getCreatureVariety().getSkillBonusesList()) {
-							if(skillBonus.getSkill().equals(bodyDevelopmentSkill)) {
+							if(bodyDevelopmentSkill.equals(skillBonus.getSkill())) {
 								bodyDevSkillBonus = skillBonus.getBonus();
 								break;
 							}
@@ -197,7 +197,7 @@ public class TerrainView extends View {
 							maxHitPoints = currentHitPoints;
 						}
 					}
-					drawCombatant(canvas, entry.getValue().getPosition(), entry.getKey().getCreatureVariety().getHeight(),
+					drawCombatant(canvas, entry.getValue().getPosition(), entry.getKey().getHeight(),
 							entry.getKey().getWeaponLength(), entry.getKey().getCreatureVariety().getName(), maxHitPoints,
 							currentHitPoints, bodyDevSkillBonus, entry.getValue().equals(selectedCombatantInfo));
 				}
