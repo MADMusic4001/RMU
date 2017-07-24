@@ -34,8 +34,10 @@ import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Action;
+import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
+import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
@@ -53,6 +55,7 @@ import rx.Subscriber;
  */
 public class SelectActionDialog extends DialogFragment {
 	private static final String TAG = "SelectActionDialog";
+	public static final String ENCOUNTER_SETUP_ARG_KEY = "encounterSetup";
 	public static final String COMBAT_INFO_ARG_KEY = "combatInfo";
 	public static final String CHARACTER_ARG_KEY = "character";
 	public static final String CREATURE_ARG_KEY = "creature";
@@ -60,15 +63,16 @@ public class SelectActionDialog extends DialogFragment {
 	protected CharacterRxHandler characterRxHandler;
 	@Inject
 	protected CreatureRxHandler  creatureRxHandler;
+	private EncounterSetup encounterSetup;
 	private   EncounterRoundInfo encounterRoundInfo;
 	private Character                  character = null;
 	private Creature                   creature  = null;
 	private SelectActionDialogListener listener  = null;
 	private ArrayAdapter<Action> actionArrayAdapter;
-	private List<String> listItems = new ArrayList<>();
-	private ArrayAdapter<String> opponentsListAdapter;
-	private Spinner actionsSpinner;
-	private Spinner actionPointsSpinner;
+	private ArrayAdapter<Being> opponentsListAdapter;
+	private Spinner             actionsSpinner;
+	private Spinner             actionPointsSpinner;
+	private ListView            opponentsListView;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -77,6 +81,7 @@ public class SelectActionDialog extends DialogFragment {
 
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
+		encounterSetup = (EncounterSetup)getArguments().getSerializable(ENCOUNTER_SETUP_ARG_KEY);
 		encounterRoundInfo = (EncounterRoundInfo) getArguments().getSerializable(COMBAT_INFO_ARG_KEY);
 		character = (Character)getArguments().getSerializable(CHARACTER_ARG_KEY);
 		creature = (Creature)getArguments().getSerializable(CREATURE_ARG_KEY);
@@ -93,7 +98,7 @@ public class SelectActionDialog extends DialogFragment {
 		}
 
 		opponentsListAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
-		ListView opponentsListView = (ListView)contentView.findViewById(R.id.opponents_list_view);
+		opponentsListView = (ListView)contentView.findViewById(R.id.opponents_list_view);
 		opponentsListView.setAdapter(opponentsListAdapter);
 		initOpponentsList();
 
@@ -129,54 +134,38 @@ public class SelectActionDialog extends DialogFragment {
 			encounterRoundInfo.setActionPointsRemaining((short)(encounterRoundInfo.getActionPointsRemaining() - selectedActionPoints));
 		}
 
+		int position = opponentsListView.getCheckedItemPosition();
+		if(position != AdapterView.INVALID_POSITION) {
+			encounterRoundInfo.setSelectedOpponent((Being)opponentsListAdapter.getItem(position));
+		}
+		Log.d(TAG, "copyViewsToItems: encounterRoundInfo = " + encounterRoundInfo);
+
 		return result;
 	}
 
 	private void initOpponentsList() {
 		if(character != null) {
-			creatureRxHandler.getAllForCampaign(character.getCampaign())
-					.subscribe(new Subscriber<Collection<Creature>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception caught loading Creatures", e);
-						}
-						@Override
-						public void onNext(Collection<Creature> creatures) {
-							List<String> names = new ArrayList<>(creatures.size());
-							for(Creature creature : creatures) {
-								names.add(creature.getCreatureVariety().getName());
-							}
-							Collections.sort(names);
-							opponentsListAdapter.clear();
-							opponentsListAdapter.addAll(names);
-							opponentsListAdapter.notifyDataSetChanged();
-						}
-					});
+			opponentsListAdapter.clear();
+			opponentsListAdapter.addAll(encounterSetup.getEnemyCombatInfo().keySet());
+			opponentsListAdapter.notifyDataSetChanged();
 		}
 		else if(creature != null) {
-			characterRxHandler.getAllForCampaign(creature.getCampaign())
-					.subscribe(new Subscriber<Collection<Character>>() {
-						@Override
-						public void onCompleted() {}
-						@Override
-						public void onError(Throwable e) {
-							Log.e(TAG, "Exception caught loading Characters", e);
-						}
-						@Override
-						public void onNext(Collection<Character> characters) {
-							List<String> names = new ArrayList<>(characters.size());
-							for(Character character: characters) {
-								names.add(character.getFullName());
-							}
-							Collections.sort(names);
-							opponentsListAdapter.clear();
-							opponentsListAdapter.addAll(names);
-							opponentsListAdapter.notifyDataSetChanged();
-						}
-					});
+			opponentsListAdapter.clear();
+			opponentsListAdapter.addAll(encounterSetup.getCharacterCombatInfo().keySet());
+			opponentsListAdapter.notifyDataSetChanged();
 		}
+
+		opponentsListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Being being = opponentsListAdapter.getItem(position);
+				encounterRoundInfo.setSelectedOpponent(being);
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				encounterRoundInfo.setSelectedOpponent(null);
+			}
+		});
 	}
 
 	private void initActionsSpinner(View layout) {

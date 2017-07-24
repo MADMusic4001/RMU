@@ -104,7 +104,7 @@ public class Position {
 				((getY() - position.getY())*(getY() - position.getY()))));
 		float theta;
 		if(distance < defenderHeight/2 + attackerWeaponLength + attackerHeight / 2) {
-			theta = (float)Math.atan2((position.getY() - getY()), (position.getX() - getX()));
+			theta = (float)Math.atan2((getY() - position.getY()), (getX() - position.getX()));
 			theta = position.getDirection() - theta;
 			if(theta < 0) {
 				if(theta < LEFT_REAR) {
@@ -130,7 +130,7 @@ public class Position {
 	}
 
 	public CombatPosition getAttackPosition(Position defenderPosition) {
-		float theta = (float)Math.atan2((getY() - defenderPosition.getY()), (getX() - defenderPosition.getX()));
+		float theta = (float)Math.atan2((defenderPosition.getY() - getY()), (defenderPosition.getX() - getX()));
 		theta = getDirection() - theta;
 		if(theta < 0) {
 			if(theta < LEFT_REAR) {

@@ -96,7 +96,8 @@
   <string name="generate_encounter">Generate Encounter</string>
   <string name="generate_loot">Generate Loot</string>
   <string name="attempt_maneuver">Attempt Maneuver</string>
-  <string name="start_combat">Start Combat</string>
+  <string name="start_combat_round">Start Combat Round</string>
+  <string name="label_continue_combat">Continue Combat</string>
   <string name="advance_time">Advance Time</string>
 
   <!-- Menu labels -->
@@ -416,6 +417,7 @@
   <string name="input_label_attack_roll">Attack Roll</string>
   <string name="input_label_attack_sequence">Attack Sequence</string>
   <string name="input_label_attack_specialization">Attack Specialization</string>
+  <string name="label_attacking"> attacking </string>
   <string name="input_label_avg_height">Avg. Height</string>
   <string name="input_label_avg_weight">Avg. Weight</string>
   <string name="input_label_base_channeling_rr">Channeling RR</string>
@@ -511,6 +513,7 @@
   <string name="input_label_no_parry">No Parry(rnds)</string>
   <string name="input_label_notes">Notes</string>
   <string name="input_label_outlook">Outlook</string>
+  <string name="input_label_pace">Pace</string>
   <string name="input_label_parameter">Parameter</string>
   <string name="input_label_personality">Personality</string>
   <string name="input_label_physical_rr">Physical RR</string>
@@ -612,6 +615,7 @@
   <string name="title_race_main_page">General Attributes</string>
   <string name="title_race_talents_page">Talents and Flaws</string>
   <string name="title_race_cultures_page">Allowed Cultures</string>
+  <string name="title_resolve_attack">Resolve Attack</string>
 
   <!-- Adapter extra instance names -->
   <string name="no_specialization">No Specialization</string>

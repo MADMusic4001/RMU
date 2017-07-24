@@ -110,11 +110,17 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.character.Culture;
+import com.madinnovations.rmu.data.entities.character.Profession;
+import com.madinnovations.rmu.data.entities.character.Race;
 import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
+import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.spells.Realm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +136,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 18;
+	public static final  int    DATABASE_VERSION = 19;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -256,7 +262,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
-				case 17:
+				case 18:
 					upgrade(sqLiteDatabase);
 					break;
             }
@@ -441,10 +447,33 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.beginTransaction();
 		Cursor cursor = null;
 		try {
-			cursor = sqLiteDatabase.rawQuery("SELECT id,campaignId,creatureVarietyId,level,maxHits,currentHits,creatureArchetypeId"
-												 + " FROM " + CreatureSchema.TABLE_NAME, null);
+			cursor = sqLiteDatabase.rawQuery(
+			"SELECT id, campaignId, currentLevel, experiencePoints, firstName, lastName, knownAs, description, hairColor," +
+			"hairStyle, eyeColor, skinComplexion, facialFeatures, identifyingMarks, personality, mannerisms, hometown," +
+			"familyInfo, raceId, cultureId, professionId, realm, realm2, realm3, height, weight, currentHPLoss," +
+			"currentDevelopmentPoints, currentFatigue, currentPPLoss, statIncreases, mainHandItem, offhandItem, shirtItem," +
+			"pantsItem, headItem, chestItem, armsItem, legsItem, feetItem, backItem, backpackItem"
+					+ " FROM " + CharacterSchema.TABLE_NAME, null);
 
+			if(cursor != null) {
+				cursor.moveToFirst();
+				List<Character> characters = new ArrayList<>(cursor.getCount());
+				while (!cursor.isAfterLast()) {
+					Character character = cursorToCharacterEntity(cursor);
+					characters.add(character);
+					cursor.moveToNext();
+				}
+				sqLiteDatabase.execSQL("DROP TABLE " + CharacterSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL(CharacterSchema.TABLE_CREATE);
+				for (Character character : characters) {
+					ContentValues values = getCharacterContentValues(character);
+					sqLiteDatabase.insert(CharacterSchema.TABLE_NAME, null, values);
+				}
+			}
 
+			cursor = sqLiteDatabase.rawQuery("SELECT id,campaignId,creatureVarietyId,level,maxHits,currentHits," +
+											 "creatureArchetypeId,currentDevelopmentPoints,numCreatures"
+													 + " FROM " + CreatureSchema.TABLE_NAME, null);
 			if(cursor != null) {
 				cursor.moveToFirst();
 				List<Creature> creatures = new ArrayList<>(cursor.getCount());
@@ -453,18 +482,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 					creatures.add(creature);
 					cursor.moveToNext();
 				}
-				sqLiteDatabase.execSQL("DROP TABLE " + CreatureTalentParametersSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL("DROP TABLE " + CreatureTalentsSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSpellListRanksSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSpecializationRanksSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSkillRanksSchema.TABLE_NAME);
 				sqLiteDatabase.execSQL("DROP TABLE " + CreatureSchema.TABLE_NAME);
 				sqLiteDatabase.execSQL(CreatureSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(CreatureSkillRanksSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(CreatureSpecializationRanksSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(CreatureSpellListRanksSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(CreatureTalentsSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(CreatureTalentParametersSchema.TABLE_CREATE);
 				for (Creature creature : creatures) {
 					ContentValues values = getContentValues(creature);
 					sqLiteDatabase.insert(CreatureSchema.TABLE_NAME, null, values);
@@ -481,6 +500,101 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	private Character cursorToCharacterEntity(Cursor cursor) {
+		Character instance = new Character();
+
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_ID)));
+		instance.setCampaign(new Campaign(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CAMPAIGN_ID))));
+		instance.setCurrentLevel(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CURRENT_LEVEL)));
+		instance.setExperiencePoints(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_EXPERIENCE_POINTS)));
+		instance.setFirstName(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FIRST_NAME)));
+		instance.setLastName(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_LAST_NAME)));
+		instance.setKnownAs(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_KNOWN_AS)));
+		instance.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_DESCRIPTION)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HAIR_COLOR))) {
+			instance.setHairColor(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HAIR_COLOR)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HAIR_STYLE))) {
+			instance.setHairStyle(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HAIR_STYLE)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_EYE_COLOR))) {
+			instance.setEyeColor(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_EYE_COLOR)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_SKIN_COMPLEXION))) {
+			instance.setSkinComplexion(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_SKIN_COMPLEXION)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FACIAL_FEATURES))) {
+			instance.setFacialFeatures(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FACIAL_FEATURES)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_IDENTIFYING_MARKS))) {
+			instance.setIdentifyingMarks(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_IDENTIFYING_MARKS)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_PERSONALITY))) {
+			instance.setPersonality(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_PERSONALITY)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_MANNERISMS))) {
+			instance.setMannerisms(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_MANNERISMS)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HOMETOWN))) {
+			instance.setHometown(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HOMETOWN)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FAMILY_INFO))) {
+			instance.setFamilyInfo(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FAMILY_INFO)));
+		}
+		instance.setRace(new Race(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_RACE_ID))));
+		instance.setCulture(new Culture(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CULTURE_ID))));
+		instance.setProfession(new Profession(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_PROFESSION_ID))));
+		instance.setRealm(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_REALM))));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_REALM2))) {
+			instance.setRealm2(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_REALM2))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_REALM3))) {
+			instance.setRealm3(Realm.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_REALM3))));
+		}
+		instance.setHeight(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HEIGHT)));
+		instance.setWeight(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_WEIGHT)));
+		instance.setHitPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CURRENT_HP_LOSS)));
+		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CURRENT_DEVELOPMENT_POINTS)));
+		instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CURRENT_FATIGUE)));
+		instance.setPowerPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CURRENT_PP_LOSS)));
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_MAIN_HAND_ITEM_ID))) {
+			instance.setMainHandItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_MAIN_HAND_ITEM_ID)
+			)));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_OFFHAND_ITEM_ID))) {
+			instance.setOffhandItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_OFFHAND_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_SHIRT_ITEM_ID))) {
+			instance.setShirtItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_SHIRT_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_PANTS_ITEM_ID))) {
+			instance.setPantsItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_PANTS_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HEAD_ITEM_ID))) {
+			instance.setHeadItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_HEAD_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CHEST_ITEM_ID))) {
+			instance.setChestItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_CHEST_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_ARMS_ITEM_ID))) {
+			instance.setArmsItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_ARMS_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_LEGS_ITEM_ID))) {
+			instance.setLegsItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_LEGS_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FEET_ITEM_ID))) {
+			instance.setFeetItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_FEET_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_BACK_ITEM_ID))) {
+			instance.setBackItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_BACK_ITEM_ID))));
+		}
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_BACKPACK_ITEM_ID))) {
+			instance.setBackpackItem(new Item(cursor.getInt(cursor.getColumnIndexOrThrow(CharacterSchema.COLUMN_BACKPACK_ITEM_ID))));
+		}
+
+		return instance;
+	}
+
 	private Creature cursorToEntity(Cursor cursor) {
 		Creature instance = new Creature();
 
@@ -491,6 +605,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		instance.setCurrentLevel(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_LEVEL)));
 		instance.setMaxHits(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_MAX_HITS)));
 		instance.setCurrentHits(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_CURRENT_HITS)));
+		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_CURRENT_DPS)));
+		instance.setNumCreatures(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSchema.COLUMN_NUM_CREATURES)));
 		instance.setArchetype(new CreatureArchetype(cursor.getInt(cursor.getColumnIndexOrThrow(
 				CreatureSchema.COLUMN_CREATURE_ARCHETYPE_ID))));
 
@@ -502,13 +618,186 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 
 		values = new ContentValues(8);
 		values.put(CreatureSchema.COLUMN_ID, instance.getId());
+		values.put(CreatureSchema.COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(CreatureSchema.COLUMN_CREATURE_VARIETY_ID, instance.getCreatureVariety().getId());
 		values.putNull(CreatureSchema.COLUMN_CREATURE_ARCHETYPE_ID);
 		values.put(CreatureSchema.COLUMN_MAX_HITS, instance.getMaxHits());
 		values.put(CreatureSchema.COLUMN_CURRENT_HITS, instance.getCurrentHits());
 		values.put(CreatureSchema.COLUMN_LEVEL, instance.getCurrentLevel());
 		values.put(CreatureSchema.COLUMN_CURRENT_DPS, instance.getCurrentDevelopmentPoints());
+		values.put(CreatureSchema.COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
 		values.put(CreatureSchema.COLUMN_NUM_CREATURES, instance.getNumCreatures());
+
+		return values;
+	}
+
+	private ContentValues getCharacterContentValues(Character instance) {
+		ContentValues values;
+
+		if(instance.getId() != -1) {
+			values = new ContentValues(43);
+			values.put(CharacterSchema.COLUMN_ID, instance.getId());
+		}
+		else {
+			values = new ContentValues(42);
+		}
+		values.put(CharacterSchema.COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
+		values.put(CharacterSchema.COLUMN_CURRENT_LEVEL, instance.getCurrentLevel());
+		values.put(CharacterSchema.COLUMN_EXPERIENCE_POINTS, instance.getExperiencePoints());
+		values.put(CharacterSchema.COLUMN_FIRST_NAME, instance.getFirstName());
+		values.put(CharacterSchema.COLUMN_LAST_NAME, instance.getLastName());
+		values.put(CharacterSchema.COLUMN_KNOWN_AS, instance.getKnownAs());
+		values.put(CharacterSchema.COLUMN_DESCRIPTION, instance.getDescription());
+		if(instance.getHairColor() == null) {
+			values.putNull(CharacterSchema.COLUMN_HAIR_COLOR);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_HAIR_COLOR, instance.getHairColor());
+		}
+		if(instance.getHairStyle() == null) {
+			values.putNull(CharacterSchema.COLUMN_HAIR_STYLE);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_HAIR_STYLE, instance.getHairStyle());
+		}
+		if(instance.getEyeColor() == null) {
+			values.putNull(CharacterSchema.COLUMN_EYE_COLOR);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_EYE_COLOR, instance.getEyeColor());
+		}
+		if(instance.getSkinComplexion() == null) {
+			values.putNull(CharacterSchema.COLUMN_SKIN_COMPLEXION);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_SKIN_COMPLEXION, instance.getSkinComplexion());
+		}
+		if(instance.getFacialFeatures() == null) {
+			values.putNull(CharacterSchema.COLUMN_FACIAL_FEATURES);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_FACIAL_FEATURES, instance.getFacialFeatures());
+		}
+		if(instance.getIdentifyingMarks() == null) {
+			values.putNull(CharacterSchema.COLUMN_IDENTIFYING_MARKS);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_IDENTIFYING_MARKS, instance.getIdentifyingMarks());
+		}
+		if(instance.getPersonality() == null) {
+			values.putNull(CharacterSchema.COLUMN_PERSONALITY);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_PERSONALITY, instance.getPersonality());
+		}
+		if(instance.getMannerisms() == null) {
+			values.putNull(CharacterSchema.COLUMN_MANNERISMS);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_MANNERISMS, instance.getMannerisms());
+		}
+		if(instance.getFamilyInfo() == null) {
+			values.putNull(CharacterSchema.COLUMN_FAMILY_INFO);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_FAMILY_INFO, instance.getFamilyInfo());
+		}
+		if(instance.getHometown() == null) {
+			values.putNull(CharacterSchema.COLUMN_HOMETOWN);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_HOMETOWN, instance.getHometown());
+		}
+		values.put(CharacterSchema.COLUMN_RACE_ID, instance.getRace().getId());
+		values.put(CharacterSchema.COLUMN_CULTURE_ID, instance.getCulture().getId());
+		values.put(CharacterSchema.COLUMN_PROFESSION_ID, instance.getProfession().getId());
+		values.put(CharacterSchema.COLUMN_REALM, instance.getRealm().name());
+		if(instance.getRealm2() == null) {
+			values.putNull(CharacterSchema.COLUMN_REALM2);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_REALM2, instance.getRealm2().name());
+		}
+		if(instance.getRealm3() == null) {
+			values.putNull(CharacterSchema.COLUMN_REALM3);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_REALM3, instance.getRealm3().name());
+		}
+		values.put(CharacterSchema.COLUMN_HEIGHT, instance.getHeight());
+		values.put(CharacterSchema.COLUMN_WEIGHT, instance.getWeight());
+		values.put(CharacterSchema.COLUMN_CURRENT_HP_LOSS, instance.getHitPointLoss());
+		values.put(CharacterSchema.COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
+		values.put(CharacterSchema.COLUMN_CURRENT_FATIGUE, instance.getFatigue());
+		values.put(CharacterSchema.COLUMN_CURRENT_PP_LOSS, instance.getPowerPointLoss());
+		values.put(CharacterSchema.COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
+		values.put(CharacterSchema.COLUMN_STAT_INCREASES, instance.getStatIncreases());
+		if(instance.getMainHandItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_MAIN_HAND_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_MAIN_HAND_ITEM_ID, instance.getMainHandItem().getId());
+		}
+		if(instance.getOffhandItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_OFFHAND_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_OFFHAND_ITEM_ID, instance.getOffhandItem().getId());
+		}
+		if(instance.getShirtItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_SHIRT_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_SHIRT_ITEM_ID, instance.getShirtItem().getId());
+		}
+		if(instance.getPantsItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_PANTS_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_PANTS_ITEM_ID, instance.getPantsItem().getId());
+		}
+		if(instance.getHeadItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_HEAD_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_HEAD_ITEM_ID, instance.getHeadItem().getId());
+		}
+		if(instance.getChestItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_CHEST_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_CHEST_ITEM_ID, instance.getChestItem().getId());
+		}
+		if(instance.getArmsItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_ARMS_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_ARMS_ITEM_ID, instance.getArmsItem().getId());
+		}
+		if(instance.getLegsItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_LEGS_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_LEGS_ITEM_ID, instance.getLegsItem().getId());
+		}
+		if(instance.getFeetItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_FEET_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_FEET_ITEM_ID, instance.getFeetItem().getId());
+		}
+		if(instance.getBackItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_BACK_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_BACK_ITEM_ID, instance.getBackItem().getId());
+		}
+		if(instance.getBackpackItem() == null) {
+			values.putNull(CharacterSchema.COLUMN_BACKPACK_ITEM_ID);
+		}
+		else {
+			values.put(CharacterSchema.COLUMN_BACKPACK_ITEM_ID, instance.getBackpackItem().getId());
+		}
 
 		return values;
 	}

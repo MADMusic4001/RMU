@@ -29,17 +29,22 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.play.EncounterSetupRxHandler;
 import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.common.Pace;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
@@ -72,19 +77,27 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	@Inject
 	protected CreatureRxHandler       creatureRxHandler;
 	@Inject
+	protected CriticalResultRxHandler criticalResultRxHandler;
+	@Inject
+	protected SpecializationRxHandler specializationRxHandler;
+	@Inject
 	protected EncounterSetupRxHandler encounterSetupRxHandler;
 	private   TerrainView             terrainView;
 	private   Spinner                 campaignSpinner;
 	private   Button                  startEncounterButton;
 	private   ScaleView               scaleView;
+	private   TextView                movingTextView;
+	private   Spinner                 paceSpinner;
+	private   LinearLayout            movementLayout;
 	private ArrayAdapter<Character>   charactersListAdapter = null;
 	private ArrayAdapter<Creature>    creaturesListAdapter  = null;
+	private ArrayAdapter<Pace>        paceArrayAdapter      = null;
 	private Collection<Character>     characters            = null;
 	private Collection<Creature>      creatures             = null;
 	private EncounterSetup            currentInstance       = new EncounterSetup();
-	private boolean                   encounterInProgress;
-	private SelectActionDialog        selectActionDialog = null;
-	private ResolveAttackDialog       resolveAttackDialog = null;
+	private boolean                   encounterInProgress   = false;
+	private SelectActionDialog        selectActionDialog    = null;
+	private ResolveAttackDialog       resolveAttackDialog   = null;
 	// TODO: Re-roll critical option if player successfully used Sense Weakness talent at the beginning of combat.
 	// TODO: Add riposte option if player with Riposte talent uses all his OB to parry and parry is effective (no hits delivered). Riposte is weapon skill specific.
 	// TODO: Add Opportunistic Strike option when player has the talent and his opponent fumbles.
@@ -109,6 +122,10 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		initTerrainView(layout);
 		scaleView = (ScaleView)layout.findViewById(R.id.scale_view);
 		scaleView.setTerrainView(terrainView);
+		movementLayout = (LinearLayout)layout.findViewById(R.id.movement_layout);
+		movementLayout.setVisibility(View.INVISIBLE);
+		movingTextView = (TextView)layout.findViewById(R.id.moving_view);
+		initPaceSpinner(layout);
 		initCharactersListView(layout);
 		initCreaturesListView(layout);
 		return layout;
@@ -150,7 +167,14 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		if(!nextAction()) {
 			showInitiativeDialog();
 		}
-		startEncounterButton.setEnabled(false);
+		if(terrainView.isMovementInProgress()) {
+			startEncounterButton.setText(getString(R.string.label_continue_combat));
+			startEncounterButton.setEnabled(true);
+		}
+		else {
+			startEncounterButton.setText(getString(R.string.label_start_combat));
+			startEncounterButton.setEnabled(false);
+		}
 	}
 
 	@Override
@@ -185,6 +209,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	}
 
 	private boolean nextAction() {
+		Log.d(TAG, "nextAction: ");
 		EncounterRoundInfo encounterRoundInfo = null;
 		short currentInitiative = Short.MIN_VALUE;
 		short nextInitiative;
@@ -198,26 +223,46 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 					currentInitiative = nextInitiative;
 					encounterRoundInfo = entry.getValue();
 					character = entry.getKey();
+					Log.d(TAG, "nextAction: initiative = " + currentInitiative);
+					Log.d(TAG, "nextAction: character = " + character.getKnownAs());
 				}
 			}
 		}
 		for(Map.Entry<Creature, EncounterRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-			if(entry.getValue().getActionPointsRemaining() > 0 || entry.getValue().getActionInProgress() != null) {
-				nextInitiative = (short) (entry.getValue().getBaseInitiative() + (entry.getValue().getActionPointsRemaining()
-						* 5));
+			if (entry.getValue().getActionPointsRemaining() > 0 || entry.getValue().getActionInProgress() != null) {
+				nextInitiative = (short) (entry.getValue().getBaseInitiative() +
+						(entry.getValue().getActionPointsRemaining() * 5));
 				if (nextInitiative > currentInitiative) {
 					currentInitiative = nextInitiative;
 					encounterRoundInfo = entry.getValue();
 					character = null;
 					creature = entry.getKey();
+					Log.d(TAG, "nextAction: initiative = " + currentInitiative);
+					Log.d(TAG, "nextAction: creature = " + creature.getCreatureVariety().getName());
 				}
 			}
 		}
-		if(encounterRoundInfo != null) {
-			if(encounterRoundInfo.getActionInProgress() != null) {
+		if (encounterRoundInfo != null) {
+			if(encounterRoundInfo.getMovementRemaining() > 0) {
+				terrainView.setMovementInProgress(true);
+				terrainView.setBeingToMove(encounterRoundInfo.getCombatant());
+				String name;
+				if(encounterRoundInfo.getCombatant() instanceof  Character) {
+					name = ((Character)encounterRoundInfo.getCombatant()).getKnownAs();
+				}
+				else {
+					name = ((Creature)encounterRoundInfo.getCombatant()).getCreatureVariety().getName();
+				}
+				movingTextView.setText(String.format(getString(R.string.moving_combatant), name));
+				loadPaceSpinner(encounterRoundInfo);
+				movementLayout.setVisibility(View.VISIBLE);
+			}
+			else if (encounterRoundInfo.getActionInProgress() != null) {
 				resolveAttackDialog = new ResolveAttackDialog();
 				selectActionDialog = null;
 				Bundle bundle = new Bundle();
+				bundle.putSerializable(ResolveAttackDialog.CRITICAL_RESULT_RX_HANDLER_ARG_KEY, criticalResultRxHandler);
+				bundle.putSerializable(ResolveAttackDialog.ENCOUNTER_SETUP_ARG_KEY, currentInstance);
 				bundle.putSerializable(ResolveAttackDialog.COMBAT_INFO_ARG_KEY, encounterRoundInfo);
 				if (character != null) {
 					bundle.putSerializable(ResolveAttackDialog.CHARACTER_ARG_KEY, character);
@@ -233,6 +278,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				selectActionDialog = new SelectActionDialog();
 				resolveAttackDialog = null;
 				Bundle bundle = new Bundle();
+				bundle.putSerializable(SelectActionDialog.ENCOUNTER_SETUP_ARG_KEY, currentInstance);
 				bundle.putSerializable(SelectActionDialog.COMBAT_INFO_ARG_KEY, encounterRoundInfo);
 				if (character != null) {
 					bundle.putSerializable(SelectActionDialog.CHARACTER_ARG_KEY, character);
@@ -344,8 +390,17 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		startEncounterButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				encounterInProgress = true;
-				showInitiativeDialog();
+				if(terrainView.isMovementInProgress()) {
+					terrainView.setMovementInProgress(false);
+					terrainView.setBeingToMove(null);
+					movingTextView.setText(null);
+					movementLayout.setVisibility(View.INVISIBLE);
+					nextAction();
+				}
+				else {
+					encounterInProgress = true;
+					showInitiativeDialog();
+				}
 			}
 		});
 	}
@@ -362,6 +417,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			InitiativeDialog dialog = new InitiativeDialog();
 			Bundle bundle = new Bundle();
 			bundle.putSerializable(InitiativeDialog.ENCOUNTER_SETUP_ARG_KEY, currentInstance);
+			bundle.putSerializable(InitiativeDialog.SPEC_RX_HANDLER_ARG_KEY, specializationRxHandler);
 			dialog.setArguments(bundle);
 			dialog.setListener(StartEncounterFragment.this);
 			dialog.show(getFragmentManager(), "InitiativeDialogFragment");
@@ -374,34 +430,31 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		resetButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				terrainView.setMovementInProgress(false);
+				terrainView.setBeingToMove(null);
+				movementLayout.setVisibility(View.INVISIBLE);
 				if (currentInstance.getId() >= 0) {
 					encounterSetupRxHandler.deleteById(currentInstance.getId())
 							.subscribe(new Subscriber<Boolean>() {
 								@Override
-								public void onCompleted() {
-								}
-
+								public void onCompleted() {}
 								@Override
 								public void onError(Throwable e) {
 									Log.e(TAG, "Exception caught deleting CombatSetup instance", e);
 									Boast.showText(getActivity(), R.string.toast_combat_setup_delete_failed);
 								}
-
 								@Override
 								public void onNext(Boolean aBoolean) {
 									Boast.showText(getActivity(), R.string.toast_combat_setup_deleted);
 									encounterSetupRxHandler.getMostRecentForCampaign((Campaign) campaignSpinner.getSelectedItem())
 											.subscribe(new Subscriber<EncounterSetup>() {
 												@Override
-												public void onCompleted() {
-												}
-
+												public void onCompleted() {}
 												@Override
 												public void onError(Throwable e) {
 													Log.e(TAG, "Exception caught getting CombatSetup instance", e);
 													Boast.showText(getActivity(), R.string.toast_combat_setup_load_failed);
 												}
-
 												@Override
 												public void onNext(EncounterSetup encounterSetup) {
 													if (encounterSetup == null) {
@@ -424,6 +477,32 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	private void initTerrainView(View layout) {
 		terrainView = (TerrainView)layout.findViewById(R.id.terrain_view);
 		terrainView.setCallbacks(this);
+	}
+
+	private void initPaceSpinner(View layout) {
+		paceSpinner = (Spinner)layout.findViewById(R.id.pace_spinner);
+		paceArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
+		paceSpinner.setAdapter(paceArrayAdapter);
+
+		paceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(terrainView.isMovementInProgress() && terrainView.getBeingToMove() != null) {
+					//noinspection SuspiciousMethodCalls
+					EncounterRoundInfo encounterRoundInfo = currentInstance.getCharacterCombatInfo().get(
+							terrainView.getBeingToMove());
+					if(encounterRoundInfo == null) {
+						//noinspection SuspiciousMethodCalls
+						encounterRoundInfo = currentInstance.getEnemyCombatInfo().get(terrainView.getBeingToMove());
+					}
+					if(encounterRoundInfo != null) {
+						encounterRoundInfo.setPace((Pace)paceSpinner.getSelectedItem());
+					}
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
 	}
 
 	private void initCharactersListView(View layout) {
@@ -555,5 +634,20 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 						}
 					});
 		}
+	}
+
+	private void loadPaceSpinner(EncounterRoundInfo encounterRoundInfo) {
+		if(encounterRoundInfo.getPace() == null) {
+			encounterRoundInfo.setPace(Pace.WALK);
+		}
+		int maxPaceOrdinal = encounterRoundInfo.getPace().ordinal() + 3;
+		if(maxPaceOrdinal >= Pace.values().length) {
+			maxPaceOrdinal = Pace.values().length - 1;
+		}
+		paceArrayAdapter.clear();
+		for(int i = 0; i < maxPaceOrdinal; i++) {
+			paceArrayAdapter.add(Pace.values()[i]);
+		}
+		paceArrayAdapter.notifyDataSetChanged();
 	}
 }

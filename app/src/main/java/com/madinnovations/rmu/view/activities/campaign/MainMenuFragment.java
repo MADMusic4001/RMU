@@ -320,7 +320,7 @@ public class MainMenuFragment extends Fragment {
 		playItems.add(getString(R.string.generate_encounter));
 		playItems.add(getString(R.string.generate_loot));
 		playItems.add(getString(R.string.attempt_maneuver));
-		playItems.add(getString(R.string.start_combat));
+		playItems.add(getString(R.string.start_combat_round));
 		playItems.add(getString(R.string.advance_time));
 
 		List<String> aboutItems = new ArrayList<>(1);

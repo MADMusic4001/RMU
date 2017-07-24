@@ -27,6 +27,25 @@ public class State {
 	private UnitType   qtyUnitType      = null;
 	private UnitType[] divisorUnitTypes = null;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		State state = (State) o;
+
+		return getStateType() == state.getStateType();
+	}
+
+	@Override
+	public int hashCode() {
+		return getStateType() != null ? getStateType().hashCode() : 0;
+	}
+
 	// Getters amd Setters
 	public StateType getStateType() {
 		return stateType;

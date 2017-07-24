@@ -253,6 +253,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DEVELOPMENT_POINTS)));
 		instance.setFatigue(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_FATIGUE)));
 		instance.setPowerPointLoss(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_PP_LOSS)));
+		instance.setBaseMovementRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_MOVEMENT_RATE)));
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_MAIN_HAND_ITEM_ID))) {
 			instance.setMainHandItem(itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAIN_HAND_ITEM_ID))));
 		}
@@ -309,11 +310,11 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(42);
+			values = new ContentValues(43);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(41);
+			values = new ContentValues(42);
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CURRENT_LEVEL, instance.getCurrentLevel());
@@ -404,6 +405,7 @@ public class CharacterDaoDbImpl extends BaseDaoDbImpl<Character> implements Char
 		values.put(COLUMN_CURRENT_DEVELOPMENT_POINTS, instance.getCurrentDevelopmentPoints());
 		values.put(COLUMN_CURRENT_FATIGUE, instance.getFatigue());
 		values.put(COLUMN_CURRENT_PP_LOSS, instance.getPowerPointLoss());
+		values.put(COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
 		values.put(COLUMN_STAT_INCREASES, instance.getStatIncreases());
 		if(instance.getMainHandItem() == null) {
 			values.putNull(COLUMN_MAIN_HAND_ITEM_ID);

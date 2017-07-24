@@ -254,6 +254,7 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 		instance.setMaxHits(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAX_HITS)));
 		instance.setCurrentLevel(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_LEVEL)));
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DPS)));
+		instance.setBaseMovementRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_MOVEMENT_RATE)));
 		instance.setNumCreatures(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NUM_CREATURES)));
 		instance.setSkillRanks(getSkillRanks(instance.getId()));
 		instance.setSpecializationRanks(getSpecializationRanks(instance.getId()));
@@ -268,11 +269,11 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 		ContentValues values;
 
 		if(instance.getId() != -1) {
-			values = new ContentValues(9);
+			values = new ContentValues(10);
 			values.put(COLUMN_ID, instance.getId());
 		}
 		else {
-			values = new ContentValues(8);
+			values = new ContentValues(9);
 		}
 		values.put(COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(COLUMN_CREATURE_VARIETY_ID, instance.getCreatureVariety().getId());
@@ -281,6 +282,7 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 		values.put(COLUMN_MAX_HITS, instance.getMaxHits());
 		values.put(COLUMN_LEVEL, instance.getCurrentLevel());
 		values.put(COLUMN_CURRENT_DPS, instance.getCurrentDevelopmentPoints());
+		values.put(COLUMN_BASE_MOVEMENT_RATE, instance.getBaseMovementRate());
 		values.put(COLUMN_NUM_CREATURES, instance.getNumCreatures());
 
 		return values;

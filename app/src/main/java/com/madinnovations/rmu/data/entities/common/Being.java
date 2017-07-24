@@ -50,6 +50,7 @@ public abstract class Being extends DatabaseObject {
 	protected           int                        hitPointLoss             = 0;
 	protected           short                      fatigue                  = 0;
 	protected           short                      powerPointLoss           = 0;
+	protected           short                      baseMovementRate         = 20;
 	protected           short                      currentDevelopmentPoints = INITIAL_DP;
 	protected           List<State>                currentStates            = new ArrayList<>();
 	protected           Map<Skill, Short>          skillRanks               = new HashMap<>();
@@ -147,6 +148,13 @@ public abstract class Being extends DatabaseObject {
 	 */
 	public abstract short getInitiativeModifications();
 
+	/**
+	 * Gets the armor type for this being
+	 *
+	 * @return  the being's armor type.
+	 */
+	public abstract short getArmorType();
+
 	// Getters and setters
 	public Campaign getCampaign() {
 		return campaign;
@@ -242,6 +250,14 @@ public abstract class Being extends DatabaseObject {
 
 	public void setPowerPointLoss(short powerPointLoss) {
 		this.powerPointLoss = powerPointLoss;
+	}
+
+	public short getBaseMovementRate() {
+		return baseMovementRate;
+	}
+
+	public void setBaseMovementRate(short baseMovementRate) {
+		this.baseMovementRate = baseMovementRate;
 	}
 
 	public short getCurrentDevelopmentPoints() {

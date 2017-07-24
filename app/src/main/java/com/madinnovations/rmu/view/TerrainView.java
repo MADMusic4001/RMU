@@ -42,8 +42,11 @@ import com.madinnovations.rmu.data.entities.Position;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.CombatPosition;
 import com.madinnovations.rmu.data.entities.common.Being;
+import com.madinnovations.rmu.data.entities.common.Pace;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillBonus;
+import com.madinnovations.rmu.data.entities.common.State;
+import com.madinnovations.rmu.data.entities.common.StateType;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
@@ -68,34 +71,36 @@ public class TerrainView extends View {
 	public static final  String DRAG_LOCATION  = "drag-location";
 	private static final int    SPACING        = 4;
 	@Inject
-	protected SkillRxHandler       skillRxHandler;
-	private   Skill                bodyDevelopmentSkill = null;
-	private   Callbacks            callbacks;
-	private   Paint                linePaint;
-	private   Paint                dragPaint;
-	private   Paint                fontPaint;
-	private   Paint                frontPaint;
-	private   Paint                flankPaint;
-	private   Paint                rearPaint;
-	private   Paint                selectionFrontPaint;
-	private   Paint                selectionFlankPaint;
-	private   Paint                selectionRearPaint;
-	private   Paint                healthPaint;
-	private   Paint                unconsciousPaint;
-	private   ScaleGestureDetector scaleGestureDetector;
-	private   GestureDetector      gestureDetector;
-	private   float                scaleFactor = 1.0f;
-	private   int                  textSize;
-	private   Position             sourcePoint;
-	private   float                touchX;
-	private   float                touchY;
-	private   float                offsetX = 0.0f;
-	private   float                offsetY = 0.0f;
-	private   boolean              directionDragging = false;
-	private   boolean              locationDragging = false;
-	private   Being                dragBeing = null;
-	private   EncounterRoundInfo   selectedCombatantInfo = null;
+	protected SkillRxHandler           skillRxHandler;
+	private   Skill                    bodyDevelopmentSkill = null;
+	private   Callbacks                callbacks;
+	private   Paint                    linePaint;
+	private   Paint                    dragPaint;
+	private   Paint                    fontPaint;
+	private   Paint                    frontPaint;
+	private   Paint                    flankPaint;
+	private   Paint                    rearPaint;
+	private   Paint                    selectionFrontPaint;
+	private   Paint                    selectionFlankPaint;
+	private   Paint                    selectionRearPaint;
+	private   Paint                    healthPaint;
+	private   Paint                    unconsciousPaint;
+	private   ScaleGestureDetector     scaleGestureDetector;
+	private   GestureDetector          gestureDetector;
+	private   float                    scaleFactor = 1.0f;
+	private   int                      textSize;
+	private   Position                 sourcePoint;
+	private   float                    touchX;
+	private   float                    touchY;
+	private   float                    offsetX = 0.0f;
+	private   float                    offsetY = 0.0f;
+	private   boolean                  directionDragging = false;
+	private   boolean                  locationDragging = false;
+	private   Being                    dragBeing = null;
+	private   EncounterRoundInfo       selectedCombatantInfo = null;
 	private   List<EncounterRoundInfo> previousSelections = new ArrayList<>();
+	private   boolean                  movementInProgress;
+	private   Being                    beingToMove;
 
 	/**
 	 * Creates a new TerrainView instance
@@ -465,15 +470,57 @@ public class TerrainView extends View {
 					encounterSetup.getEnemyCombatInfo().put(creature, encounterRoundInfo);
 				}
 				if (encounterRoundInfo != null) {
-					Position position = encounterRoundInfo.getPosition();
-					if (position == null) {
-						position = new Position();
+					if(movementInProgress) {
+						PointF touchWorldLoc = screenToWorld(pointf.x, pointf.y);
+						Position position = encounterRoundInfo.getPosition();
+						float distance = (float)Math.sqrt(
+								((touchWorldLoc.x - position.getX()) * (touchWorldLoc.x - position.getX())) +
+								((touchWorldLoc.y - position.getY()) * (touchWorldLoc.y - position.getY())));
+						float angle = (float) Math.atan2(touchWorldLoc.y - position.getY(),
+														 touchWorldLoc.x - position.getX());
+						if(angle - position.getDirection() > Math.PI || angle - position.getDirection() < -Math.PI) {
+							encounterRoundInfo.setMovingBackwards(true);
+							if(encounterRoundInfo.getPace().ordinal() > Pace.BRISK.ordinal()) {
+								encounterRoundInfo.setPace(Pace.BRISK);
+							}
+						}
+						else {
+							encounterRoundInfo.setMovingBackwards(false);
+						}
+						float maxDistance = (encounterRoundInfo.getMovementRemaining() *
+								encounterRoundInfo.getPace().getBaseMovementRateMultiplier() *
+								encounterRoundInfo.getCombatant().getBaseMovementRate()*12)/4;
+						if(distance > maxDistance) {
+							position.setX(position.getX() + (float)(Math.cos(angle) * maxDistance));
+							position.setY(position.getY() + (float)(Math.sin(angle) * maxDistance));
+							encounterRoundInfo.setMovementRemaining((short)0);
+						}
+						else {
+							float distancePerAP = (encounterRoundInfo.getPace().getBaseMovementRateMultiplier() *
+									encounterRoundInfo.getCombatant().getBaseMovementRate()*12)/4;
+							encounterRoundInfo.setMovementRemaining((short)(encounterRoundInfo.getMovementRemaining() -
+									Math.ceil(distance/distancePerAP)));
+						}
 					}
-					position.setX(pointf.x/scaleFactor - offsetX);
-					position.setY(pointf.y/scaleFactor - offsetY);
-					encounterRoundInfo.setPosition(position);
-					callbacks.enableEncounterButton(encounterSetup.getCharacterCombatInfo().size() > 0 &&
-							encounterSetup.getEnemyCombatInfo().size() > 0);
+					else {
+						State hasted = new State();
+						hasted.setStateType(StateType.HASTED);
+						int index = encounterRoundInfo.getCombatant().getCurrentStates().indexOf(hasted);
+						if (index >= 0) {
+							hasted = encounterRoundInfo.getCombatant().getCurrentStates().get(index);
+							encounterRoundInfo.setMovementRemaining((short) (4 + hasted.getConstant()));
+						}
+						Position position = encounterRoundInfo.getPosition();
+						if (position == null) {
+							position = new Position();
+						}
+						PointF newLocation = screenToWorld(pointf.x, pointf.y);
+						position.setX(newLocation.x);
+						position.setY(newLocation.y);
+						encounterRoundInfo.setPosition(position);
+						callbacks.enableEncounterButton(encounterSetup.getCharacterCombatInfo().size() > 0 &&
+																encounterSetup.getEnemyCombatInfo().size() > 0);
+					}
 				}
 			}
 		}
@@ -574,6 +621,18 @@ public class TerrainView extends View {
 	public float getOffsetY() {
 		return offsetY;
 	}
+	public boolean isMovementInProgress() {
+		return movementInProgress;
+	}
+	public void setMovementInProgress(boolean movementInProgress) {
+		this.movementInProgress = movementInProgress;
+	}
+	public Being getBeingToMove() {
+		return beingToMove;
+	}
+	public void setBeingToMove(Being beingToMove) {
+		this.beingToMove = beingToMove;
+	}
 
 	public interface Callbacks {
 		Collection<Character> getCharacters();
@@ -611,80 +670,32 @@ public class TerrainView extends View {
 			super.onLongPress(e);
 			PointF worldCoords = screenToWorld(e.getX(), e.getY());
 			if (callbacks != null) {
-				ClipData dragData = null;
-				for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
-						.getCharacterCombatInfo()
-						.entrySet()) {
-					if (entry.getValue().getPosition() != null) {
-						float weaponLength = entry.getKey().getWeaponLength();
-						CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-								worldCoords.x, worldCoords.y, entry.getKey().getHeight(), weaponLength);
-						String            characterIdString = String.valueOf(entry.getKey().getId());
-						ClipData.Item     clipDataItem      = new ClipData.Item(characterIdString);
-						DragShadowBuilder myShadowBuilder   = null;
-						switch (combatPosition) {
-							case FRONT:
-								dragData = new ClipData(DRAG_DIRECTION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-										clipDataItem);
-								myShadowBuilder = new DirectionDragShadowBuilder(
-										TerrainView.this, entry.getValue(), entry.getKey());
-								break;
-							case LEFT_FLANK:
-							case RIGHT_FLANK:
-							case REAR:
-								dragData = new ClipData(DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-										clipDataItem);
-								myShadowBuilder = new TerrainDragShadowBuilder(
-										TerrainView.this, entry.getValue().getPosition(), entry.getKey());
-								break;
-						}
-						if(myShadowBuilder != null) {
-							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-								TerrainView.this.startDragAndDrop(dragData, myShadowBuilder, entry.getKey(), 0);
-							}
-							else {
-								//noinspection deprecation
-								TerrainView.this.startDrag(dragData, myShadowBuilder, entry.getKey(), 0);
-							}
+				boolean dragStarted = false;
+				EncounterSetup encounterSetup = callbacks.getEncounterSetup();
+				if(movementInProgress) {
+					EncounterRoundInfo encounterRoundInfo = encounterSetup.getCharacterCombatInfo().get(beingToMove);
+					if(encounterRoundInfo == null) {
+						encounterRoundInfo = encounterSetup.getEnemyCombatInfo().get(beingToMove);
+					}
+					if(encounterRoundInfo != null) {
+						dragStarted = checkDrag(beingToMove, encounterRoundInfo, worldCoords);
+					}
+				}
+				else {
+					for (Map.Entry<Character, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
+							.getCharacterCombatInfo()
+							.entrySet()) {
+						dragStarted = checkDrag(entry.getKey(), entry.getValue(), worldCoords);
+						if(dragStarted) {
 							break;
 						}
 					}
-				}
-				if (dragData == null) {
-					for (Map.Entry<Creature, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
-							.getEnemyCombatInfo()
-							.entrySet()) {
-						if (entry.getValue().getPosition() != null) {
-							float weaponLength = entry.getKey().getWeaponLength();
-							CombatPosition combatPosition = entry.getValue().getPosition().getPointIn(
-									worldCoords.x, worldCoords.y, entry.getKey().getHeight(), weaponLength);
-							String            creatureIdString = String.valueOf(entry.getKey().getId());
-							ClipData.Item     clipDataItem     = new ClipData.Item(creatureIdString);
-							DragShadowBuilder myShadowBuilder  = null;
-							switch (combatPosition) {
-								case FRONT:
-									dragData = new ClipData(DRAG_DIRECTION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-											clipDataItem);
-									myShadowBuilder = new DirectionDragShadowBuilder(
-											TerrainView.this, entry.getValue(), entry.getKey());
-									break;
-								case LEFT_FLANK:
-								case RIGHT_FLANK:
-								case REAR:
-									dragData = new ClipData(DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-											clipDataItem);
-									myShadowBuilder = new TerrainDragShadowBuilder(
-											TerrainView.this, entry.getValue().getPosition(), entry.getKey());
-									break;
-							}
-							if(myShadowBuilder != null) {
-								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-									TerrainView.this.startDragAndDrop(dragData, myShadowBuilder, entry.getKey(), 0);
-								}
-								else {
-									//noinspection deprecation
-									TerrainView.this.startDrag(dragData, myShadowBuilder, entry.getKey(), 0);
-								}
+					if (!dragStarted) {
+						for (Map.Entry<Creature, EncounterRoundInfo> entry : callbacks.getEncounterSetup()
+								.getEnemyCombatInfo()
+								.entrySet()) {
+							dragStarted = checkDrag(entry.getKey(), entry.getValue(), worldCoords);
+							if(dragStarted) {
 								break;
 							}
 						}
@@ -751,6 +762,44 @@ public class TerrainView extends View {
 			}
 
 			return result;
+		}
+
+		private boolean checkDrag(Being being, EncounterRoundInfo encounterRoundInfo, PointF worldCoords) {
+			ClipData dragData = null;
+			if (encounterRoundInfo.getPosition() != null) {
+				float weaponLength = being.getWeaponLength();
+				CombatPosition combatPosition = encounterRoundInfo.getPosition().getPointIn(
+						worldCoords.x, worldCoords.y, being.getHeight(), weaponLength);
+				String characterIdString = String.valueOf(being.getId());
+				ClipData.Item clipDataItem = new ClipData.Item(characterIdString);
+				DragShadowBuilder myShadowBuilder = null;
+				switch (combatPosition) {
+					case FRONT:
+						dragData = new ClipData(DRAG_DIRECTION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+												clipDataItem);
+						myShadowBuilder = new DirectionDragShadowBuilder(
+								TerrainView.this, encounterRoundInfo, being);
+						break;
+					case LEFT_FLANK:
+					case RIGHT_FLANK:
+					case REAR:
+						dragData = new ClipData(DRAG_LOCATION, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+												clipDataItem);
+						myShadowBuilder = new TerrainDragShadowBuilder(
+								TerrainView.this, encounterRoundInfo.getPosition(), being);
+						break;
+				}
+				if (myShadowBuilder != null) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+						TerrainView.this.startDragAndDrop(dragData, myShadowBuilder, being, 0);
+					}
+					else {
+						//noinspection deprecation
+						TerrainView.this.startDrag(dragData, myShadowBuilder, being, 0);
+					}
+				}
+			}
+			return dragData != null;
 		}
 	}
 }

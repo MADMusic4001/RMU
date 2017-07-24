@@ -123,6 +123,11 @@ public class Creature extends Being implements Serializable {
 		return (short) (totalPenalty / 10);
 	}
 
+	@Override
+	public short getArmorType() {
+		return creatureVariety.getArmorType();
+	}
+
 	/**
 	 * Generates a debug String containing all of the member variables for this instance.
 	 *

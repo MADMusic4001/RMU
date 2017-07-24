@@ -90,6 +90,38 @@ public class SpecializationDaoDbImpl extends BaseDaoDbImpl<Specialization> imple
     }
 
 	@Override
+	public Specialization getByName(String name) {
+		final String selectionArgs[] = { name };
+		final String selection = COLUMN_NAME + " = ?";
+		Specialization instance = null;
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+		boolean newTransaction = !db.inTransaction();
+		if(newTransaction) {
+			db.beginTransaction();
+		}
+		try {
+			Cursor cursor = query(getTableName(), getColumns(), selection,
+								  selectionArgs, getSortString());
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					instance = cursorToEntity(cursor);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+		}
+		finally {
+			if(newTransaction) {
+				db.endTransaction();
+			}
+		}
+
+		return instance;
+	}
+
+	@Override
     protected ContentValues getContentValues(Specialization instance) {
         ContentValues values;
 

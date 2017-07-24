@@ -1,90 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/name_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/target_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-  </LinearLayout>
+  <TextView
+      android:id="@+id/name_view"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/attacking_view"
+      app:layout_constraintTop_toTopOf="parent"/>
+  <TextView
+      android:id="@id/attacking_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/name_view"
+      app:layout_constraintRight_toLeftOf="@+id/target_view"
+      app:layout_constraintTop_toTopOf="parent"
+      android:text="@string/label_attacking"/>
+  <TextView
+      android:id="@id/target_view"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/attacking_view"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
 
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_attack_roll"/>
-    <EditText
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/attack_roll_layout"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/spacer"
+      app:layout_constraintTop_toBottomOf="@id/name_view">
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/attack_roll_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:maxLength="3"/>
-  </LinearLayout>
+        android:maxLength="3"
+        android:hint="@string/input_label_attack_roll"/>
+  </android.support.design.widget.TextInputLayout>
+  <TextView
+      android:id="@id/spacer"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/attack_roll_layout"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/name_view"/>
 
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_hits"/>
-    <EditText
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/hits_layout"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/critical_layout"
+      app:layout_constraintTop_toBottomOf="@id/attack_roll_layout"
+      style="@style/InputLabel">
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/hits_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:maxLength="6"
-        style="@style/ReadOnlyEditText"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_critical"/>
-    <EditText
+        style="@style/ReadOnlyEditText"
+        android:hint="@string/input_label_hits"/>
+  </android.support.design.widget.TextInputLayout>
+  <android.support.design.widget.TextInputLayout
+      android:id="@id/critical_layout"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/hits_layout"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/attack_roll_layout"
+      style="@style/InputLabel">
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/critical_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textNoSuggestions"
         android:maxLength="1"
-        style="@style/ReadOnlyEditText"/>
-  </LinearLayout>
+        style="@style/ReadOnlyEditText"
+        android:hint="@string/input_label_critical"/>
+  </android.support.design.widget.TextInputLayout>
 
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_critical_roll"/>
-    <EditText
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/critical_roll_layout"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/critical_result_layout"
+      app:layout_constraintTop_toBottomOf="@id/hits_layout">
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/critical_roll_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:maxLength="3"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_label_critical_result"/>
-    <EditText
+        android:maxLength="3"
+        android:hint="@string/input_label_critical_roll"/>
+  </android.support.design.widget.TextInputLayout>
+  <android.support.design.widget.TextInputLayout
+      android:id="@id/critical_result_layout"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="4"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/critical_roll_layout"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/hits_layout"
+      style="@style/InputLabel">
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/critical_result_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
-        style="@style/ReadOnlyEditText"/>
-  </LinearLayout>
-</LinearLayout>
+        style="@style/ReadOnlyEditText"
+        android:hint="@string/input_label_critical_result"/>
+  </android.support.design.widget.TextInputLayout>
+</android.support.constraint.ConstraintLayout>

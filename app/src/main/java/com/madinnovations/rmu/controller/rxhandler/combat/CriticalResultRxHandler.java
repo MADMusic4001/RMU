@@ -19,6 +19,7 @@ import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -31,7 +32,8 @@ import rx.schedulers.Schedulers;
 /**
  * Creates reactive observable for requesting operations on {@link CriticalResult} instances with persistent storage.
  */
-public class CriticalResultRxHandler {
+public class CriticalResultRxHandler implements Serializable{
+	private static final long serialVersionUID = 6654310690959624389L;
 	private CriticalResultDao dao;
 
 	/**

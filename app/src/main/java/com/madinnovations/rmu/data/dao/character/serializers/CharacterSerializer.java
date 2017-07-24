@@ -96,6 +96,7 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 		out.name(COLUMN_CURRENT_DEVELOPMENT_POINTS).value(value.getCurrentDevelopmentPoints());
 		out.name(COLUMN_CURRENT_FATIGUE).value(value.getFatigue());
 		out.name(COLUMN_CURRENT_PP_LOSS).value(value.getPowerPointLoss());
+		out.name(COLUMN_BASE_MOVEMENT_RATE).value(value.getBaseMovementRate());
 		out.name(COLUMN_STAT_INCREASES).value(value.getStatIncreases());
 		if(value.getMainHandItem() != null) {
 			out.name(COLUMN_MAIN_HAND_ITEM_ID).value(value.getMainHandItem().getId());
@@ -406,6 +407,9 @@ public class CharacterSerializer extends TypeAdapter<Character> implements Chara
 					break;
 				case COLUMN_CURRENT_PP_LOSS:
 					character.setPowerPointLoss((short) in.nextInt());
+					break;
+				case COLUMN_BASE_MOVEMENT_RATE:
+					character.setBaseMovementRate((short)in.nextInt());
 					break;
 				case COLUMN_STAT_INCREASES:
 					character.setStatIncreases((short) in.nextInt());

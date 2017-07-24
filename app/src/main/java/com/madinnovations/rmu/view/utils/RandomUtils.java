@@ -90,4 +90,21 @@ public class RandomUtils {
 		}
 		return result;
 	}
+
+	/**
+	 * Generates a random number with no maximum {@see roll1d100OE}.
+	 *
+	 * @return a random number with no maximum.
+	 */
+	public static short roll1d100UOE() {
+		short result = roll1d100();
+		if(result >= 96) {
+			short temp;
+			do {
+				temp = roll1d100();
+				result += temp;
+			}while(temp >= 96);
+		}
+		return result;
+	}
 }

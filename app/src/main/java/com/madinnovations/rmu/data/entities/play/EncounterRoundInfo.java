@@ -15,7 +15,10 @@
  */
 package com.madinnovations.rmu.data.entities.play;
 
+import android.support.annotation.NonNull;
+
 import com.madinnovations.rmu.data.entities.Position;
+import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.AttackResult;
@@ -23,9 +26,12 @@ import com.madinnovations.rmu.data.entities.combat.CombatPosition;
 import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
 import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.common.Pace;
+import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -42,8 +48,10 @@ import static com.madinnovations.rmu.data.entities.Modifiers.STAGGERED;
 /**
  * Per round encounter information
  */
-public class EncounterRoundInfo implements Serializable {
-	private static final long serialVersionUID = 7312314437576720214L;
+public class EncounterRoundInfo implements Serializable, Comparable<EncounterRoundInfo> {
+	private static final long   serialVersionUID = 7312314437576720214L;
+	@SuppressWarnings("unused")
+	private static final String TAG              = "EncounterRoundInfo";
 	private Being              combatant;
 	private Position           position;
 	private short              initiativeRoll;
@@ -59,6 +67,8 @@ public class EncounterRoundInfo implements Serializable {
 	private RestrictedQuarters restrictedQuarters    = RestrictedQuarters.NORMAL;
 	private Action             actionInProgress      = null;
 	private AttackResult       attackResult          = null;
+	private short              movementRemaining     = 4;
+	private Object             selectedAttack        = null;
 
 	/**
 	 * Creates a new EncounterRoundInfo instance
@@ -98,12 +108,20 @@ public class EncounterRoundInfo implements Serializable {
 				.append("movingBackwards", movingBackwards)
 				.append("restrictedQuarters", restrictedQuarters)
 				.append("actionInProgress", actionInProgress)
+				.append("attackResult", attackResult)
+				.append("movementRemaining", movementRemaining)
+				.append("selectedAttack", selectedAttack)
 				.toString();
 	}
 
+	@Override
+	public int compareTo(@NonNull EncounterRoundInfo o) {
+		return o.getBaseInitiative() - getBaseInitiative();
+	}
+
 	public Map<Being, Short> getOffensiveBonuses(Map<? extends Being, EncounterRoundInfo> opponentsInfo, Weapon weapon,
-												 Attack attack) {
-		short baseOB = getBaseOffensiveBonus(weapon, attack);
+												 Attack attack, Specialization specialization) {
+		short baseOB = getBaseOffensiveBonus(weapon, attack, specialization);
 
 		Map<Being, Short> bonuses = new HashMap<>(opponentsInfo.size());
 		for(Map.Entry<? extends Being, EncounterRoundInfo> entry : opponentsInfo.entrySet()) {
@@ -122,14 +140,14 @@ public class EncounterRoundInfo implements Serializable {
 	 * @param attack  the attack to be used. Can be null if a Weapon is used instead
 	 * @return  the offensive bonus
 	 */
-	public short getOffensiveBonus(EncounterRoundInfo opponentInfo, Weapon weapon, Attack attack) {
-		short baseOB = getBaseOffensiveBonus(weapon, attack);
+	public short getOffensiveBonus(EncounterRoundInfo opponentInfo, Weapon weapon, Attack attack, Specialization specialization) {
+		short baseOB = getBaseOffensiveBonus(weapon, attack, specialization);
 		baseOB += getOpponentModsToOffensiveBonus(opponentInfo);
 
 		return baseOB;
 	}
 
-	private short getBaseOffensiveBonus(Weapon weapon, Attack attack) {
+	private short getBaseOffensiveBonus(Weapon weapon, Attack attack, Specialization specialization) {
 		short baseOB = -25;
 
 		if(weapon != null) {
@@ -139,8 +157,13 @@ public class EncounterRoundInfo implements Serializable {
 			else if (weapon == combatant.getOffhandItem()) {
 				baseOB = OFF_HAND_PENALTY;
 			}
+			Short ranks = combatant.getSpecializationRanks().get(((WeaponTemplate)weapon.getItemTemplate())
+																		 .getCombatSpecialization());
+			if(ranks == null) {
+				baseOB -= 25;
+			}
 			else {
-				return baseOB;
+				baseOB += Skill.getRankBonus(ranks);
 			}
 		}
 		if(attack != null && combatant instanceof Creature) {
@@ -150,6 +173,12 @@ public class EncounterRoundInfo implements Serializable {
 			Short attackBonus = ((Creature)combatant).getCreatureVariety().getAttackBonusesMap().get(attack);
 			if(attackBonus != null) {
 				baseOB += attackBonus;
+			}
+		}
+		if(specialization != null && combatant instanceof Character) {
+			Short ranks = combatant.getSpecializationRanks().get(specialization);
+			if(ranks != null) {
+				baseOB = Skill.getRankBonus(ranks);
 			}
 		}
 		for (State state : combatant.getCurrentStates()) {
@@ -320,5 +349,17 @@ public class EncounterRoundInfo implements Serializable {
 	}
 	public void setAttackResult(AttackResult attackResult) {
 		this.attackResult = attackResult;
+	}
+	public short getMovementRemaining() {
+		return movementRemaining;
+	}
+	public void setMovementRemaining(short movementRemaining) {
+		this.movementRemaining = movementRemaining;
+	}
+	public Object getSelectedAttack() {
+		return selectedAttack;
+	}
+	public void setSelectedAttack(Object selectedAttack) {
+		this.selectedAttack = selectedAttack;
 	}
 }

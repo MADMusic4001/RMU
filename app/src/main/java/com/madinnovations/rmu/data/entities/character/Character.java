@@ -96,6 +96,11 @@ public class Character extends Being implements Serializable {
 	public String toString() {
 		return knownAs;
 	}
+
+	@Override
+	public short getArmorType() {
+		return 1;
+	}
 // </editor-fold> Overridden methods
 
 // <editor-fold desc="Public methods">

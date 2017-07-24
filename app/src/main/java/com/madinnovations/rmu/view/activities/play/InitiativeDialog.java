@@ -20,23 +20,26 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
-import com.madinnovations.rmu.data.entities.play.InitiativeListItem;
 import com.madinnovations.rmu.view.adapters.play.InitiativeListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * Fragment to handle interaction with the Initiative dialog.
@@ -45,19 +48,22 @@ import java.util.Map;
 public class InitiativeDialog extends DialogFragment {
 	private static final String TAG                     = "InitiativeDialog";
 	public static final String  ENCOUNTER_SETUP_ARG_KEY = "encounterSetup";
+	public static final String  SPEC_RX_HANDLER_ARG_KEY = "specializationRxHandler";
+	private SpecializationRxHandler specializationRxHandler;
 	private EncounterSetup encounterSetup;
 	private InitiativeDialogListener listener = null;
 	private InitiativeListAdapter initiativeListAdapter;
-	private List<InitiativeListItem> listItems = new ArrayList<>();
+	private List<EncounterRoundInfo> listItems = new ArrayList<>();
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		encounterSetup = (EncounterSetup) getArguments().getSerializable(ENCOUNTER_SETUP_ARG_KEY);
+		specializationRxHandler = (SpecializationRxHandler)getArguments().getSerializable(SPEC_RX_HANDLER_ARG_KEY);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		View contentView = inflater.inflate(R.layout.initiative_dialog, null);
 		ListView combatantsListView = (ListView)contentView.findViewById(R.id.combatants_list_view);
-		initiativeListAdapter = new InitiativeListAdapter(getActivity(), encounterSetup);
+		initiativeListAdapter = new InitiativeListAdapter(getActivity(), encounterSetup, specializationRxHandler);
 		initInitiativeList();
 		combatantsListView.setAdapter(initiativeListAdapter);
 		builder.setTitle(R.string.title_initiative)
@@ -79,28 +85,24 @@ public class InitiativeDialog extends DialogFragment {
 
 	private void initInitiativeList() {
 		for(Map.Entry<Character, EncounterRoundInfo> entry : encounterSetup.getCharacterCombatInfo().entrySet()) {
-			InitiativeListItem listItem = new InitiativeListItem();
+			EncounterRoundInfo listItem = entry.getValue();
 			short total;
-			listItem.setCharacter(entry.getKey());
-			listItem.setEncounterRoundInfo(entry.getValue());
-			total = listItem.getEncounterRoundInfo().getInitiativeRoll();
+			total = listItem.getInitiativeRoll();
 			total += entry.getKey().getTotalStatBonus(Statistic.QUICKNESS);
 			total += entry.getKey().getInitiativeModifications();
-			entry.getValue().setBaseInitiative(total);
+			listItem.setBaseInitiative(total);
 			listItems.add(listItem);
 		}
 		for(Map.Entry<Creature, EncounterRoundInfo> entry : encounterSetup.getEnemyCombatInfo().entrySet()) {
-			InitiativeListItem listItem = new InitiativeListItem();
+			EncounterRoundInfo listItem = entry.getValue();
 			short total;
-			listItem.setCreature(entry.getKey());
-			listItem.setEncounterRoundInfo(entry.getValue());
-			total = listItem.getEncounterRoundInfo().getInitiativeRoll();
+			total = listItem.getInitiativeRoll();
 			Short quickness = entry.getKey().getCreatureVariety().getRacialStatBonuses().get(Statistic.QUICKNESS);
 			if(quickness != null) {
 				total += quickness;
 			}
 			total += entry.getKey().getInitiativePenalty();
-			entry.getValue().setBaseInitiative(total);
+			listItem.setBaseInitiative(total);
 			listItems.add(listItem);
 		}
 		Collections.sort(listItems);

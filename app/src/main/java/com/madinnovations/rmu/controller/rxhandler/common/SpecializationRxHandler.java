@@ -15,8 +15,6 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.common;
 
-import android.util.Log;
-
 import com.madinnovations.rmu.data.dao.common.SkillCategoryDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
@@ -24,6 +22,7 @@ import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.SkillCategory;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +40,8 @@ import rx.schedulers.Schedulers;
 /**
  * Creates reactive observable for requesting operations on {@link Specialization} instances with persistent storage.
  */
-public class SpecializationRxHandler {
+public class SpecializationRxHandler implements Serializable {
+	private static final long serialVersionUID = -4267200313963472989L;
 	private SpecializationDao dao;
 	private SkillDao skillDao;
 	private SkillCategoryDao skillCategoryDao;
@@ -72,6 +72,32 @@ public class SpecializationRxHandler {
 					public void call(Subscriber<? super Specialization> subscriber) {
 						try {
 							subscriber.onNext(dao.getById(id));
+							subscriber.onCompleted();
+						}
+						catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				}
+		).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	/**
+	 * Creates an Observable that, when subscribed to, will query persistent storage for a Specialization instance with the given
+	 * name.
+	 *
+	 * @param name  the name of the Specialization to retrieve from persistent storage
+	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a Specialization instance.
+	 */
+	public Observable<Specialization> getByName(final String name) {
+		return Observable.create(
+				new Observable.OnSubscribe<Specialization>() {
+					@Override
+					public void call(Subscriber<? super Specialization> subscriber) {
+						try {
+							Specialization instance = dao.getByName(name);
+							subscriber.onNext(instance);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

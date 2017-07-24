@@ -61,6 +61,7 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 		out.name(COLUMN_MAX_HITS).value(value.getMaxHits());
 		out.name(COLUMN_CURRENT_HITS).value(value.getCurrentHits());
 		out.name(COLUMN_CURRENT_DPS).value(value.getCurrentDevelopmentPoints());
+		out.name(COLUMN_BASE_MOVEMENT_RATE).value(value.getBaseMovementRate());
 		out.name(COLUMN_NUM_CREATURES).value(value.getNumCreatures());
 		if(value.getSkillRanks().size() > 0) {
 			writeSkillRanks(out, value);
@@ -106,6 +107,9 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 					break;
 				case COLUMN_CURRENT_DPS:
 					creature.setCurrentDevelopmentPoints((short) in.nextInt());
+					break;
+				case COLUMN_BASE_MOVEMENT_RATE:
+					creature.setBaseMovementRate((short)in.nextInt());
 					break;
 				case COLUMN_NUM_CREATURES:
 					creature.setNumCreatures((short) in.nextInt());

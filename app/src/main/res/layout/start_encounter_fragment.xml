@@ -62,6 +62,25 @@
         android:layout_height="120dp"
         android:minHeight="20dp"/>
   </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/movement_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_label_pace"/>
+    <Spinner
+        android:id="@+id/pace_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/moving_view"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
   <com.madinnovations.rmu.view.widgets.ScaleView
       android:id="@+id/scale_view"
       android:layout_width="match_parent"

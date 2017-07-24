@@ -40,4 +40,6 @@
   <string name="creature_level_content_description">The level this specific creature will be.</string>
 
   <string name="ten_feet">10 Feet</string>
+  <string name="moving_combatant">%1$s can move now… Click Continue Combat when finished.</string>
+  <string name="fumbled">%1$d (Fumble)</string>
 </resources>
