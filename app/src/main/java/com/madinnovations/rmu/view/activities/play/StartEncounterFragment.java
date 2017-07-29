@@ -229,7 +229,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			}
 		}
 		for(Map.Entry<Creature, EncounterRoundInfo> entry : currentInstance.getEnemyCombatInfo().entrySet()) {
-			if (entry.getValue().getActionPointsRemaining() > 0 || entry.getValue().getActionInProgress() != null) {
+			if (entry.getValue().getMovementRemaining() > 0 || entry.getValue().getActionPointsRemaining() > 0 ||
+					entry.getValue().getActionInProgress() != null) {
 				nextInitiative = (short) (entry.getValue().getBaseInitiative() +
 						(entry.getValue().getActionPointsRemaining() * 5));
 				if (nextInitiative > currentInitiative) {
@@ -243,7 +244,9 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			}
 		}
 		if (encounterRoundInfo != null) {
-			if(encounterRoundInfo.getMovementRemaining() > 0) {
+			if((!terrainView.isMovementInProgress() || (terrainView.isMovementInProgress() &&
+					terrainView.getBeingToMove() != encounterRoundInfo.getCombatant())) &&
+					encounterRoundInfo.getMovementRemaining() > 0) {
 				terrainView.setMovementInProgress(true);
 				terrainView.setBeingToMove(encounterRoundInfo.getCombatant());
 				String name;
@@ -258,6 +261,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				movementLayout.setVisibility(View.VISIBLE);
 			}
 			else if (encounterRoundInfo.getActionInProgress() != null) {
+				terrainView.setMovementInProgress(false);
+				terrainView.setBeingToMove(null);
 				resolveAttackDialog = new ResolveAttackDialog();
 				selectActionDialog = null;
 				Bundle bundle = new Bundle();
@@ -391,6 +396,17 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			@Override
 			public void onClick(View v) {
 				if(terrainView.isMovementInProgress()) {
+					//noinspection SuspiciousMethodCalls
+					EncounterRoundInfo encounterRoundInfo = currentInstance.getCharacterCombatInfo()
+							.get(terrainView.getBeingToMove());
+					if(encounterRoundInfo == null) {
+						//noinspection SuspiciousMethodCalls
+						encounterRoundInfo = currentInstance.getEnemyCombatInfo().get(terrainView.getBeingToMove());
+					}
+					if(encounterRoundInfo != null) {
+						encounterRoundInfo.setMovementRemaining((short)(encounterRoundInfo.getMovementRemaining() -
+																		terrainView.getMovementUsed()));
+					}
 					terrainView.setMovementInProgress(false);
 					terrainView.setBeingToMove(null);
 					movingTextView.setText(null);

@@ -101,6 +101,7 @@ public class TerrainView extends View {
 	private   List<EncounterRoundInfo> previousSelections = new ArrayList<>();
 	private   boolean                  movementInProgress;
 	private   Being                    beingToMove;
+	private   short                    movementUsed = 1;
 
 	/**
 	 * Creates a new TerrainView instance
@@ -472,8 +473,7 @@ public class TerrainView extends View {
 				if (encounterRoundInfo != null) {
 					if(movementInProgress) {
 						PointF touchWorldLoc = screenToWorld(pointf.x, pointf.y);
-						Position position = encounterRoundInfo.getPosition();
-						float distance = (float)Math.sqrt(
+						Position position = encounterRoundInfo.getPosition();float distance = (float)Math.sqrt(
 								((touchWorldLoc.x - position.getX()) * (touchWorldLoc.x - position.getX())) +
 								((touchWorldLoc.y - position.getY()) * (touchWorldLoc.y - position.getY())));
 						float angle = (float) Math.atan2(touchWorldLoc.y - position.getY(),
@@ -493,13 +493,20 @@ public class TerrainView extends View {
 						if(distance > maxDistance) {
 							position.setX(position.getX() + (float)(Math.cos(angle) * maxDistance));
 							position.setY(position.getY() + (float)(Math.sin(angle) * maxDistance));
-							encounterRoundInfo.setMovementRemaining((short)0);
+							movementUsed = encounterRoundInfo.getMovementRemaining();
 						}
 						else {
 							float distancePerAP = (encounterRoundInfo.getPace().getBaseMovementRateMultiplier() *
 									encounterRoundInfo.getCombatant().getBaseMovementRate()*12)/4;
-							encounterRoundInfo.setMovementRemaining((short)(encounterRoundInfo.getMovementRemaining() -
-									Math.ceil(distance/distancePerAP)));
+							movementUsed = (short)Math.ceil(distance/distancePerAP);
+							if(movementUsed == 0) {
+								movementUsed = 1;
+							}
+							if(movementUsed > encounterRoundInfo.getMovementRemaining()) {
+								movementUsed = encounterRoundInfo.getMovementRemaining();
+							}
+							position.setX(touchWorldLoc.x);
+							position.setY(touchWorldLoc.y);
 						}
 					}
 					else {
@@ -632,6 +639,12 @@ public class TerrainView extends View {
 	}
 	public void setBeingToMove(Being beingToMove) {
 		this.beingToMove = beingToMove;
+	}
+	public short getMovementUsed() {
+		return movementUsed;
+	}
+	public void setMovementUsed(short movementUsed) {
+		this.movementUsed = movementUsed;
 	}
 
 	public interface Callbacks {

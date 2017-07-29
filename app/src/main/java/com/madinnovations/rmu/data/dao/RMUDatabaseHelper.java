@@ -492,6 +492,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 				sqLiteDatabase.setTransactionSuccessful();
 			}
 		}
+		catch (Exception ignored) {
+		}
 		finally {
 			if(cursor != null) {
 				cursor.close();
@@ -620,7 +622,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		values.put(CreatureSchema.COLUMN_ID, instance.getId());
 		values.put(CreatureSchema.COLUMN_CAMPAIGN_ID, instance.getCampaign().getId());
 		values.put(CreatureSchema.COLUMN_CREATURE_VARIETY_ID, instance.getCreatureVariety().getId());
-		values.putNull(CreatureSchema.COLUMN_CREATURE_ARCHETYPE_ID);
+		values.put(CreatureSchema.COLUMN_CREATURE_ARCHETYPE_ID, instance.getArchetype().getId());
 		values.put(CreatureSchema.COLUMN_MAX_HITS, instance.getMaxHits());
 		values.put(CreatureSchema.COLUMN_CURRENT_HITS, instance.getCurrentHits());
 		values.put(CreatureSchema.COLUMN_LEVEL, instance.getCurrentLevel());

@@ -1,17 +1,17 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.combat;
 
@@ -20,6 +20,7 @@ import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 
@@ -66,7 +67,17 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super DamageTable> subscriber) {
 						try {
-							subscriber.onNext(damageTableDao.getById(id));
+							DamageTable damageTable = damageTableDao.getById(id);
+							Collection<DamageResultRow> resultRows = damageResultRowDao.
+									getDamageResultRowsForDamageTable(damageTable);
+							for(DamageResultRow damageResultRow : resultRows) {
+								Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+								for(DamageResult damageResult : results) {
+									damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+								}
+								damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+							}
+							subscriber.onNext(damageTable);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -90,7 +101,19 @@ public class DamageTableRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<DamageTable>> subscriber) {
 						try {
-							subscriber.onNext(damageTableDao.getAll());
+							Collection<DamageTable> tables = damageTableDao.getAll();
+							for(DamageTable damageTable : tables) {
+								Collection<DamageResultRow> resultRows = damageResultRowDao.
+										getDamageResultRowsForDamageTable(damageTable);
+								for (DamageResultRow damageResultRow : resultRows) {
+									Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+									for (DamageResult damageResult : results) {
+										damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+									}
+									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+								}
+							}
+							subscriber.onNext(tables);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

@@ -44,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:maxLength="3"
+        android:maxLength="11"
         android:hint="@string/input_label_attack_roll"/>
   </android.support.design.widget.TextInputLayout>
   <TextView
@@ -88,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textNoSuggestions"
-        android:maxLength="1"
+        android:maxLength="3"
         style="@style/ReadOnlyEditText"
         android:hint="@string/input_label_critical"/>
   </android.support.design.widget.TextInputLayout>

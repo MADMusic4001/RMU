@@ -16,6 +16,7 @@
 package com.madinnovations.rmu.data.dao.combat;
 
 import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 
 import java.util.Collection;
 import java.util.List;
@@ -86,4 +87,12 @@ public interface AttackDao {
 	 * @return the number of instances that were deleted.
 	 */
 	int deleteAll();
+
+	/**
+	 * Queries persistent storage for an Attack instance that uses the given Specialization.
+	 *
+	 * @param specialization  the specialization of the Attack to retrieve from persistent storage
+	 * @return an Attack instance that uses the given Specialization or null if not found.
+	 */
+	Attack getForSpecialization(Specialization specialization);
 }

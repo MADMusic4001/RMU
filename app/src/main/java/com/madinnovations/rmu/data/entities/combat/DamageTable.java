@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.data.entities.combat;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
@@ -23,6 +24,7 @@ import com.madinnovations.rmu.data.entities.DatabaseObject;
  * Damage table attributes
  */
 public class DamageTable extends DatabaseObject {
+	private static final String TAG = "DamageTable";
 	private static final int ROW_COUNT = 37;
 	private static final short NON_BALL_HIGH = 175;
 	private static final short NON_BALL_LOW = 65;
@@ -71,12 +73,14 @@ public class DamageTable extends DatabaseObject {
 	 */
     public DamageResult getResult(short armorType, short roll) {
 		DamageResult result = null;
+		Log.d(TAG, "getResult: resultRows.size() + " + resultRows.size());
 		if(roll > 175) {
 			roll = 175;
 		}
 		else if(roll > 65) {
 			for (int i = 0; i < resultRows.size(); i++) {
 				DamageResultRow damageResultRow = resultRows.valueAt(i);
+				Log.d(TAG, "getResult: damageResultRow = " + damageResultRow);
 				if (roll >= damageResultRow.getRangeLowValue() && roll <= damageResultRow.getRangeHighValue()) {
 					result = damageResultRow.getResults().valueAt(armorType);
 					break;

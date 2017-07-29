@@ -175,6 +175,7 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 
 	private void setDamageResults(short attackRoll, EncounterRoundInfo opponentInfo) {
 		Object attack = encounterRoundInfo.getSelectedAttack();
+		Log.d(TAG, "setDamageResults: attack = " + attack);
 		Weapon weapon = null;
 		Attack creatureAttack = null;
 		Specialization specialization = null;
@@ -195,9 +196,13 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 				specialization = (Specialization)attack;
 				// TODO: Get DamageTable for attack specialization and fumble range
 			}
+			Log.d(TAG, "setDamageResults: damageTable = " + damageTable);
+			Log.d(TAG, "setDamageResults: fumbleRange = " + fumbleRange);
 		}
 		short offensiveBonus = encounterRoundInfo.getOffensiveBonus(opponentInfo, weapon, creatureAttack, specialization);
+		Log.d(TAG, "setDamageResults: offensiveBonus = " + offensiveBonus);
 		short defensiveBonus = opponentInfo.getDefensiveBonus(encounterRoundInfo);
+		Log.d(TAG, "setDamageResults: defensiveBonus = " + defensiveBonus);
 		if(attackRoll >= 1 && attackRoll <= fumbleRange) {
 			attackRollEdit.setText(String.format(getString(R.string.fumbled), attackRoll));
 		}
@@ -206,6 +211,7 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 			if(damageTable != null) {
 				damageResult = damageTable.getResult(opponentInfo.getCombatant().getArmorType(),
 																		(short)(attackRoll + offensiveBonus - defensiveBonus));
+				Log.d(TAG, "setDamageResults: damageResult = " + damageResult);
 				if(damageResult != null) {
 					hitsEdit.setText(String.valueOf(damageResult.getHits()));
 					if (damageResult.getCriticalType() != null && damageResult.getCriticalSeverity() != null) {
@@ -231,14 +237,11 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 			criticalResultRxHandler.getCriticalResultsForCriticalType(damageResult.getCriticalType())
 					.subscribe(new Subscriber<Collection<CriticalResult>>() {
 						@Override
-						public void onCompleted() {
-						}
-
+						public void onCompleted() {}
 						@Override
 						public void onError(Throwable e) {
 							Log.e(TAG, "onError: Exception caught getting CriticalResult instances", e);
 						}
-
 						@Override
 						public void onNext(Collection<CriticalResult> criticalResults) {
 							for (CriticalResult criticalResult : criticalResults) {

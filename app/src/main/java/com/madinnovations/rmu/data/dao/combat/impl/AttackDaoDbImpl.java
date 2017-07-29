@@ -27,6 +27,7 @@ import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -150,4 +151,36 @@ public class AttackDaoDbImpl extends BaseDaoDbImpl<Attack> implements AttackDao,
 
 		return values;
 	}
+
+    @Override
+    public Attack getForSpecialization(Specialization specialization) {
+        final String selectionArgs[] = { String.valueOf(specialization.getId()) };
+        final String selection = COLUMN_SPECIALIZATION_ID + " = ?";
+        Attack instance = null;
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        boolean newTransaction = !db.inTransaction();
+        if(newTransaction) {
+            db.beginTransaction();
+        }
+        try {
+            Cursor cursor = query(getTableName(), getColumns(), selection,
+                                  selectionArgs, getSortString());
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    instance = cursorToEntity(cursor);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+            }
+        }
+        finally {
+            if(newTransaction) {
+                db.endTransaction();
+            }
+        }
+
+        return instance;
+    }
 }

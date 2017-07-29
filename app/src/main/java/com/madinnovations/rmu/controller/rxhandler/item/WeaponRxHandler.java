@@ -1,25 +1,31 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.item;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.item.WeaponDao;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.object.Slot;
 import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import java.util.Collection;
 
@@ -35,15 +41,21 @@ import rx.schedulers.Schedulers;
  */
 public class WeaponRxHandler {
 	private WeaponDao dao;
+	private DamageResultDao damageResultDao;
+	private DamageResultRowDao damageResultRowDao;
 
 	/**
 	 * Creates a new WeaponRxHandler
 	 *
-	 * @param dao  a WeaponDao instance
+	 * @param dao  a {@link WeaponDao} instance
+	 * @param damageResultDao  a {@link DamageResultDao} instance
+	 * @param damageResultRowDao  a {@link DamageResultRowDao} instance
 	 */
 	@Inject
-	public WeaponRxHandler(WeaponDao dao) {
+	public WeaponRxHandler(WeaponDao dao, DamageResultDao damageResultDao, DamageResultRowDao damageResultRowDao) {
 		this.dao = dao;
+		this.damageResultDao = damageResultDao;
+		this.damageResultRowDao = damageResultRowDao;
 	}
 
 	/**
@@ -58,7 +70,21 @@ public class WeaponRxHandler {
 					@Override
 					public void call(Subscriber<? super Weapon> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							Weapon weapon = dao.getById(id);
+							if(weapon != null && weapon.getItemTemplate() != null &&
+									weapon.getItemTemplate() instanceof WeaponTemplate) {
+								DamageTable damageTable = ((WeaponTemplate) weapon.getItemTemplate()).getDamageTable();
+								Collection<DamageResultRow> resultRows = damageResultRowDao.
+										getDamageResultRowsForDamageTable(damageTable);
+								for (DamageResultRow damageResultRow : resultRows) {
+									Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+									for (DamageResult damageResult : results) {
+										damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+									}
+									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+								}
+							}
+							subscriber.onNext(weapon);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -82,7 +108,20 @@ public class WeaponRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Weapon>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							Collection<Weapon> weapons = dao.getAll();
+							for(Weapon weapon : weapons) {
+								DamageTable damageTable = ((WeaponTemplate)weapon.getItemTemplate()).getDamageTable();
+								Collection<DamageResultRow> resultRows = damageResultRowDao.
+										getDamageResultRowsForDamageTable(damageTable);
+								for(DamageResultRow damageResultRow : resultRows) {
+									Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+									for(DamageResult damageResult : results) {
+										damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+									}
+									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+								}
+							}
+							subscriber.onNext(weapons);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -181,6 +220,18 @@ public class WeaponRxHandler {
 			public void call(Subscriber<? super Collection<Weapon>> subscriber) {
 				try {
 					Collection<Weapon> weapons = dao.getAllForSlot(slot);
+					for(Weapon weapon : weapons) {
+						DamageTable damageTable = ((WeaponTemplate)weapon.getItemTemplate()).getDamageTable();
+						Collection<DamageResultRow> resultRows = damageResultRowDao.
+								getDamageResultRowsForDamageTable(damageTable);
+						for(DamageResultRow damageResultRow : resultRows) {
+							Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+							for(DamageResult damageResult : results) {
+								damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+							}
+							damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+						}
+					}
 					subscriber.onNext(weapons);
 					subscriber.onCompleted();
 				}

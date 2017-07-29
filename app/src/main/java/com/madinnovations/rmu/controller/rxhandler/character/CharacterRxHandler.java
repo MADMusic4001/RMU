@@ -1,23 +1,32 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.character;
 
+import android.support.annotation.NonNull;
+
 import com.madinnovations.rmu.data.dao.character.CharacterDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
+import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
+import com.madinnovations.rmu.data.entities.combat.DamageResult;
+import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
+import com.madinnovations.rmu.data.entities.combat.DamageTable;
+import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
 
 import java.util.Collection;
 
@@ -32,16 +41,22 @@ import rx.schedulers.Schedulers;
  * Creates reactive observable for requesting operations on {@link Character} instances with persistent storage.
  */
 public class CharacterRxHandler {
-	private CharacterDao dao;
+	private CharacterDao       dao;
+	private DamageResultDao    damageResultDao;
+	private DamageResultRowDao damageResultRowDao;
 
 	/**
 	 * Creates a new CharacterRxHandler
 	 *
-	 * @param dao  a CharacterDao instance
+	 * @param dao  a {@link CharacterDao} instance
+	 * @param damageResultDao  a {@link DamageResultDao} instance
+	 * @param damageResultRowDao  a {@link DamageResultRowDao} instance
 	 */
 	@Inject
-	public CharacterRxHandler(CharacterDao dao) {
+	public CharacterRxHandler(CharacterDao dao, DamageResultDao damageResultDao, DamageResultRowDao damageResultRowDao) {
 		this.dao = dao;
+		this.damageResultDao = damageResultDao;
+		this.damageResultRowDao = damageResultRowDao;
 	}
 
 	/**
@@ -56,7 +71,16 @@ public class CharacterRxHandler {
 					@Override
 					public void call(Subscriber<? super Character> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							Character character = dao.getById(id);
+							if(character != null) {
+								if (character.getMainHandItem() != null && character.getMainHandItem() instanceof Weapon) {
+									loadDamageResults((Weapon) character.getMainHandItem());
+								}
+								if (character.getOffhandItem() != null && character.getOffhandItem() instanceof Weapon) {
+									loadDamageResults((Weapon) character.getOffhandItem());
+								}
+							}
+							subscriber.onNext(character);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -80,7 +104,16 @@ public class CharacterRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Character>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							Collection<Character> characters = dao.getAll();
+							for(Character character : characters) {
+								if(character.getMainHandItem() != null && character.getMainHandItem() instanceof Weapon) {
+									loadDamageResults((Weapon)character.getMainHandItem());
+								}
+								if(character.getOffhandItem() != null && character.getOffhandItem() instanceof Weapon) {
+									loadDamageResults((Weapon)character.getOffhandItem());
+								}
+							}
+							subscriber.onNext(characters);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -178,7 +211,16 @@ public class CharacterRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<Character>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAllForCampaign(campaign));
+							Collection<Character> characters = dao.getAllForCampaign(campaign);
+							for(Character character : characters) {
+								if(character.getMainHandItem() != null && character.getMainHandItem() instanceof Weapon) {
+									loadDamageResults((Weapon)character.getMainHandItem());
+								}
+								if(character.getOffhandItem() != null && character.getOffhandItem() instanceof Weapon) {
+									loadDamageResults((Weapon)character.getOffhandItem());
+								}
+							}
+							subscriber.onNext(characters);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -188,5 +230,20 @@ public class CharacterRxHandler {
 				}
 		).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	private void loadDamageResults(@NonNull Weapon weapon) {
+		if(weapon.getItemTemplate() != null && weapon.getItemTemplate() instanceof WeaponTemplate) {
+			DamageTable damageTable = ((WeaponTemplate) weapon.getItemTemplate()).getDamageTable();
+			Collection<DamageResultRow> resultRows = damageResultRowDao.
+					getDamageResultRowsForDamageTable(damageTable);
+			for (DamageResultRow damageResultRow : resultRows) {
+				Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+				for (DamageResult damageResult : results) {
+					damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+				}
+				damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+			}
+		}
 	}
 }
