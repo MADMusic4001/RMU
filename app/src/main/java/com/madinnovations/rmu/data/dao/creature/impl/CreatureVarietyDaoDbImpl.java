@@ -203,7 +203,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setOutlook(outlookDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_OUTLOOK_ID))));
 		instance.setTalentInstancesList(getTalentInstances(instance.getId()));
 		instance.setAttackSequence(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ATTACK_SEQUENCE)));
-		instance.setAttackBonusesMap(getAttackBonuses(instance.getId()));
+		setAttackBonuses(instance);
 		instance.setSkillBonusesList(getSkillBonuses(instance.getId()));
 		instance.parseAttackSequence();
 
@@ -259,7 +259,7 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		boolean result = saveRacialStatBonuses(db, instance.getId(), instance.getRacialStatBonuses());
 		result &= saveCriticalCodes(db, instance.getId(), instance.getCriticalCodes());
 		result &= saveTalentInstancesList(db, instance.getId(), instance.getTalentInstancesList());
-		result &= saveAttackBonusesMap(db, instance.getId(), instance.getAttackBonusesMap());
+		result &= saveAttackBonusesMap(db, instance);
 		result &= saveSkillBonusesList(db, instance.getId(), instance.getSkillBonusesList());
 		return result;
 	}
@@ -354,20 +354,30 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return result;
 	}
 
-	private boolean saveAttackBonusesMap(SQLiteDatabase db, int creatureVarietyId, Map<Attack, Short> attackBonusesMap) {
+	private boolean saveAttackBonusesMap(SQLiteDatabase db, CreatureVariety creatureVariety) {
 		boolean result = true;
-		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
+		final String selectionArgs[] = { String.valueOf(creatureVariety.getId()) };
 		final String selection = VarietyAttacksSchema.COLUMN_VARIETY_ID + " = ?";
 
 		db.delete(VarietyAttacksSchema.TABLE_NAME, selection, selectionArgs);
 
-		ContentValues values = new ContentValues(3);
-		for(Map.Entry<Attack, Short> entry : attackBonusesMap.entrySet()) {
-			values.put(VarietyAttacksSchema.COLUMN_VARIETY_ID, creatureVarietyId);
+		ContentValues values = new ContentValues(4);
+		for(Map.Entry<Attack, Short> entry : creatureVariety.getPrimaryAttackBonuses().entrySet()) {
+			values.put(VarietyAttacksSchema.COLUMN_VARIETY_ID, creatureVariety.getId());
 			values.put(VarietyAttacksSchema.COLUMN_ATTACK_ID, entry.getKey().getId());
 			values.put(VarietyAttacksSchema.COLUMN_ATTACK_BONUS, entry.getValue());
+			values.put(VarietyAttacksSchema.COLUMN_IS_PRIMARY, true);
 			result &= (db.insertWithOnConflict(VarietyAttacksSchema.TABLE_NAME, null, values,
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
+
+		for(Map.Entry<Attack, Short> entry : creatureVariety.getSecondaryAttackBonuses().entrySet()) {
+			values.put(VarietyAttacksSchema.COLUMN_VARIETY_ID, creatureVariety.getId());
+			values.put(VarietyAttacksSchema.COLUMN_ATTACK_ID, entry.getKey().getId());
+			values.put(VarietyAttacksSchema.COLUMN_ATTACK_BONUS, entry.getValue());
+			values.put(VarietyAttacksSchema.COLUMN_IS_PRIMARY, false);
+			result &= (db.insertWithOnConflict(VarietyAttacksSchema.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 		return result;
 	}
@@ -476,26 +486,29 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		return list;
 	}
 
-	private Map<Attack, Short> getAttackBonuses(int creatureVarietyId) {
-		final String selectionArgs[] = { String.valueOf(creatureVarietyId) };
+	private void setAttackBonuses(CreatureVariety creatureVariety) {
+		final String selectionArgs[] = { String.valueOf(creatureVariety.getId()) };
 		final String selection = VarietyTalentTiersSchema.COLUMN_VARIETY_ID + " = ?";
 
 		Cursor cursor = super.query(VarietyAttacksSchema.TABLE_NAME, VarietyAttacksSchema.COLUMNS, selection,
 				selectionArgs, VarietyAttacksSchema.COLUMN_ATTACK_ID);
-		Map<Attack, Short> attackBonusesMap = new HashMap<>(cursor.getCount());
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(VarietyAttacksSchema.COLUMN_ATTACK_ID));
 			short bonuses = cursor.getShort(cursor.getColumnIndexOrThrow(VarietyAttacksSchema.COLUMN_ATTACK_BONUS));
+			boolean primary = cursor.getInt(cursor.getColumnIndexOrThrow(VarietyAttacksSchema.COLUMN_IS_PRIMARY)) != 0;
 			Attack attack = attackDao.getById(mappedId);
 			if(attack != null) {
-				attackBonusesMap.put(attack, bonuses);
+				if(primary) {
+					creatureVariety.getPrimaryAttackBonuses().put(attack, bonuses);
+				}
+				else {
+					creatureVariety.getSecondaryAttackBonuses().put(attack, bonuses);
+				}
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
-
-		return attackBonusesMap;
 	}
 
 	private List<SkillBonus> getSkillBonuses(int creatureVarietyId) {

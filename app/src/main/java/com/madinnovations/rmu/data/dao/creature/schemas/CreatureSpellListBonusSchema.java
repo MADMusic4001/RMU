@@ -18,27 +18,27 @@
  */
 package com.madinnovations.rmu.data.dao.creature.schemas;
 
-import com.madinnovations.rmu.data.dao.common.schemas.SkillSchema;
+import com.madinnovations.rmu.data.dao.spells.schemas.SpellListSchema;
 
 /**
- * Database schema data for the creature_skill_ranks table
+ * Database schema data for the creature_spell_list_bonus table
  */
-public interface CreatureSkillRanksSchema {
-    String TABLE_NAME = "creature_skill_ranks";
+public interface CreatureSpellListBonusSchema {
+    String TABLE_NAME = "creature_spell_list_bonus";
 
-    String COLUMN_CREATURE_ID = "creatureId";
-    String COLUMN_SKILL_ID = "skillId";
-    String COLUMN_RANKS = "ranks";
+    String COLUMN_CREATURE_ID   = "creatureId";
+    String COLUMN_SPELL_LIST_ID = "spellListId";
+    String COLUMN_BONUS         = "bonus";
 
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME + "("
             + COLUMN_CREATURE_ID + " INTEGER NOT NULL REFERENCES "
                 + CreatureSchema.TABLE_NAME + "(" + CreatureSchema.COLUMN_ID + ") ON DELETE CASCADE, "
-            + COLUMN_SKILL_ID + " INTEGER NOT NULL REFERENCES "
-				+ SkillSchema.TABLE_NAME + "(" + SkillSchema.COLUMN_ID + "), "
-            + COLUMN_RANKS  + " INTEGER NOT NULL, "
-            + "PRIMARY KEY(" + COLUMN_CREATURE_ID + "," + COLUMN_SKILL_ID + ")"
+            + COLUMN_SPELL_LIST_ID + " INTEGER NOT NULL REFERENCES "
+				+ SpellListSchema.TABLE_NAME + "(" + SpellListSchema.COLUMN_ID + ") ON DELETE CASCADE, "
+            + COLUMN_BONUS + " INTEGER NOT NULL, "
+            + "PRIMARY KEY(" + COLUMN_CREATURE_ID + "," + COLUMN_SPELL_LIST_ID + ")"
             + ")";
 
-    String[] COLUMNS = new String[] {COLUMN_CREATURE_ID, COLUMN_SKILL_ID, COLUMN_RANKS};
+    String[] COLUMNS = new String[] {COLUMN_CREATURE_ID, COLUMN_SPELL_LIST_ID, COLUMN_BONUS};
 }

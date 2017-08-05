@@ -21,6 +21,7 @@ import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.State;
+import com.madinnovations.rmu.data.entities.common.StateType;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -36,6 +37,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import static com.madinnovations.rmu.data.entities.common.StateType.ENCUMBERED;
+import static com.madinnovations.rmu.data.entities.common.StateType.FATIGUED;
+import static com.madinnovations.rmu.data.entities.common.StateType.HASTED;
+import static com.madinnovations.rmu.data.entities.common.StateType.HP_LOSS;
 
 /**
  * Character attributes
@@ -375,16 +381,16 @@ public class Character extends Being implements Serializable {
 	@Override
 	public short getInitiativeModifications() {
 		int totalPenalty = 0;
-		for (State state : currentStates) {
-			switch (state.getStateType()) {
+		for (Map.Entry<StateType, State> entry : currentStates.entrySet()) {
+			switch (entry.getKey()) {
 				case ENCUMBERED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case FATIGUED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case HASTED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case HP_LOSS:
 					int maxHits = race.getBaseHits()
@@ -399,7 +405,7 @@ public class Character extends Being implements Serializable {
 							maxHits -= talentInstance.getTiers() * 5;
 						}
 					}
-					float hpLossPercent = state.getConstant() / maxHits;
+					float hpLossPercent = entry.getValue().getConstant() / maxHits;
 					if (hpLossPercent >= 0.76) {
 						totalPenalty += -30;
 					}
@@ -411,7 +417,7 @@ public class Character extends Being implements Serializable {
 					}
 					break;
 				case INJURED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 			}
 		}

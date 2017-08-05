@@ -44,17 +44,20 @@ import com.madinnovations.rmu.controller.rxhandler.common.SkillRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureArchetypeRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureVarietyRxHandler;
-import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.common.DevelopmentCostGroup;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.SkillRanks;
 import com.madinnovations.rmu.data.entities.common.Specialization;
+import com.madinnovations.rmu.data.entities.common.Statistic;
+import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.creature.CreatureArchetype;
+import com.madinnovations.rmu.data.entities.creature.CreatureArchetypeLevel;
 import com.madinnovations.rmu.data.entities.creature.CreatureVariety;
 import com.madinnovations.rmu.data.entities.creature.LevelSpread;
-import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.adapters.common.SkillRanksAdapter;
@@ -72,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -132,6 +136,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 		creatureArchetypeSpinnerUtils.initSpinner(layout, getActivity(), creatureArchetypeRxHandler.getAll(), this,
 												R.id.archetype_spinner, null);
 		initRandomButton(layout);
+		initSkillRanksListView(layout);
 		initListView(layout);
 
 		setHasOptionsMenu(true);
@@ -272,7 +277,7 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 				break;
 			case R.id.creature_variety_spinner:
 				if(newItem instanceof CreatureVariety) {
-					currentInstance.setCreatureVariety((CreatureVariety)newItem);
+					setVariety((CreatureVariety)newItem);
 					saveItem();
 				}
 				break;
@@ -491,16 +496,16 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 							level = 1;
 						}
 					}
-					currentInstance.setCurrentLevel(level);
-					levelEdit.setText(String.valueOf(level));
-					saveItem();
+					if(currentInstance.getCurrentLevel() != level) {
+						setCurrentLevel(level);
+					}
 				}
 			}
 		});
 	}
 
 	private void initSkillRanksListView(final View layout) {
-		ListView skillRanksListView = (ListView) layout.findViewById(R.id.skill_ranks_list);
+		ListView skillRanksListView = (ListView) layout.findViewById(R.id.skill_bonus_list);
 		skillRanksAdapter = new SkillRanksAdapter(getActivity(), this);
 		skillRanksListView.setAdapter(skillRanksAdapter);
 
@@ -639,5 +644,92 @@ public class CreaturesFragment extends Fragment implements TwoFieldListAdapter.G
 		skillRanksAdapter.clear();
 		skillRanksAdapter.addAll(ranksList);
 		skillRanksAdapter.notifyDataSetChanged();
+	}
+
+	private void setVariety(CreatureVariety variety) {
+		currentInstance.setCreatureVariety(variety);
+		currentInstance.setCurrentLevel(variety.getTypicalLevel());
+		currentInstance.setBaseMovementRate(variety.getBaseMovementRate());
+		currentInstance.setCurrentDevelopmentPoints(variety.getLeftoverDP());
+		currentInstance.setCurrentHits(variety.getBaseHits());
+		currentInstance.setHeight(variety.getHeight());
+		currentInstance.setMaxHits(variety.getBaseHits());
+		currentInstance.setRealm(variety.getRealm1());
+		currentInstance.setRealm2(variety.getRealm2());
+		currentInstance.setWeight(variety.getWeight());
+		for(SkillBonus skillBonus : variety.getSkillBonusesList()) {
+			currentInstance.getPrimarySkillBonusesList().add(skillBonus.clone());
+		}
+		for(TalentInstance talentInstance : variety.getTalentInstancesList()) {
+			currentInstance.getTalentInstancesList().add(talentInstance.clone());
+		}
+	}
+
+	private void setCurrentLevel(short level) {
+		CreatureArchetypeLevel currentArchetypeLevel = currentInstance.getArchetype().getLevels().get(
+				currentInstance.getCurrentLevel());
+		CreatureArchetypeLevel newArchetypeLevel = currentInstance.getArchetype().getLevels().get(level);
+		for(Map.Entry<Attack, Short> entry : currentInstance.getPrimaryAttackBonusesMap().entrySet()) {
+			short bonusDiff = (short) (currentArchetypeLevel.getAttack() - newArchetypeLevel.getAttack());
+			currentInstance.getPrimaryAttackBonusesMap().put(entry.getKey(), (short)(entry.getValue() - bonusDiff));
+		}
+		for(Map.Entry<Attack, Short> entry : currentInstance.getSecondaryAttackBonusesMap().entrySet()) {
+			short bonusDiff = (short) (currentArchetypeLevel.getAttack2() - newArchetypeLevel.getAttack2());
+			currentInstance.getSecondaryAttackBonusesMap().put(entry.getKey(), (short)(entry.getValue() - bonusDiff));
+		}
+
+		for(SkillBonus skillBonus : currentInstance.getPrimarySkillBonusesList()) {
+			if(currentInstance.getArchetype().getPrimarySkills().contains(skillBonus.getSkill().getCategory())) {
+				short bonusDiff = (short)(currentArchetypeLevel.getPrimeSkill() - newArchetypeLevel.getPrimeSkill());
+				skillBonus.setBonus((short)(skillBonus.getBonus() + bonusDiff));
+			}
+			else {
+				short bonusDiff = (short)(currentArchetypeLevel.getSecondarySkill() - newArchetypeLevel.getSecondarySkill());
+				skillBonus.setBonus((short)(skillBonus.getBonus() + bonusDiff));
+			}
+			adjustStat(currentArchetypeLevel, newArchetypeLevel, skillBonus);
+		}
+		currentInstance.setCurrentLevel(level);
+		levelEdit.setText(String.valueOf(level));
+		saveItem();
+	}
+
+	private void adjustStat(CreatureArchetypeLevel oldLevel, CreatureArchetypeLevel newLevel, SkillBonus skillBonus) {
+		for(Statistic statistic : skillBonus.getSkill().getStats()) {
+			short diff = 0;
+			switch (statistic) {
+				case AGILITY:
+					diff = (short) (oldLevel.getAgility() - newLevel.getAgility());
+					break;
+				case CONSTITUTION:
+					diff = (short) (oldLevel.getConstitution() - newLevel.getConstitution());
+					break;
+				case EMPATHY:
+					diff = (short) (oldLevel.getEmpathy() - newLevel.getEmpathy());
+					break;
+				case INTUITION:
+					diff = (short) (oldLevel.getIntuition() - newLevel.getIntuition());
+					break;
+				case MEMORY:
+					diff = (short) (oldLevel.getMemory() - newLevel.getMemory());
+					break;
+				case PRESENCE:
+					diff = (short) (oldLevel.getPresence() - newLevel.getPresence());
+					break;
+				case QUICKNESS:
+					diff = (short) (oldLevel.getQuickness() - newLevel.getQuickness());
+					break;
+				case REASONING:
+					diff = (short) (oldLevel.getReasoning() - newLevel.getReasoning());
+					break;
+				case SELF_DISCIPLINE:
+					diff = (short) (oldLevel.getSelfDiscipline() - newLevel.getSelfDiscipline());
+					break;
+				case STRENGTH:
+					diff = (short) (oldLevel.getStrength() - newLevel.getStrength());
+					break;
+			}
+			skillBonus.setBonus((short) (skillBonus.getBonus() - diff));
+		}
 	}
 }

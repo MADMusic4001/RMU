@@ -29,6 +29,7 @@ import com.madinnovations.rmu.data.entities.common.Pace;
 import com.madinnovations.rmu.data.entities.common.Skill;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.State;
+import com.madinnovations.rmu.data.entities.common.StateType;
 import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
@@ -170,7 +171,10 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 			if(baseOB == -25) {
 				baseOB = 0;
 			}
-			Short attackBonus = ((Creature)combatant).getCreatureVariety().getAttackBonusesMap().get(attack);
+			Short attackBonus = ((Creature)combatant).getCreatureVariety().getPrimaryAttackBonuses().get(attack);
+			if(attackBonus == null) {
+				attackBonus = ((Creature)combatant).getCreatureVariety().getSecondaryAttackBonuses().get(attack);
+			}
 			if(attackBonus != null) {
 				baseOB += attackBonus;
 			}
@@ -181,8 +185,8 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 				baseOB = Skill.getRankBonus(ranks);
 			}
 		}
-		for (State state : combatant.getCurrentStates()) {
-			switch (state.getStateType()) {
+		for (Map.Entry<StateType, State> entry : combatant.getCurrentStates().entrySet()) {
+			switch (entry.getKey()) {
 				case STAGGERED:
 					baseOB += STAGGERED;
 					break;
@@ -205,8 +209,8 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 
 	private short getOpponentModsToOffensiveBonus(EncounterRoundInfo opponentInfo) {
 		short ob = 0;
-		for(State state : opponentInfo.getCombatant().getCurrentStates()) {
-			switch (state.getStateType()) {
+		for(Map.Entry<StateType, State> entry : opponentInfo.getCombatant().getCurrentStates().entrySet()) {
+			switch (entry.getKey()) {
 				case STUNNED:
 					ob += 20;
 					break;

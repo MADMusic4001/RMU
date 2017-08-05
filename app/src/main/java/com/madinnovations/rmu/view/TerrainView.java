@@ -512,10 +512,9 @@ public class TerrainView extends View {
 					else {
 						State hasted = new State();
 						hasted.setStateType(StateType.HASTED);
-						int index = encounterRoundInfo.getCombatant().getCurrentStates().indexOf(hasted);
-						if (index >= 0) {
-							hasted = encounterRoundInfo.getCombatant().getCurrentStates().get(index);
-							encounterRoundInfo.setMovementRemaining((short) (4 + hasted.getConstant()));
+						State currentHasted = encounterRoundInfo.getCombatant().getCurrentStates().get(hasted);
+						if (currentHasted != null) {
+							encounterRoundInfo.setMovementRemaining((short) (4 + currentHasted.getConstant()));
 						}
 						Position position = encounterRoundInfo.getPosition();
 						if (position == null) {

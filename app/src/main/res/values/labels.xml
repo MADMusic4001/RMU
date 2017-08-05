@@ -380,6 +380,7 @@
   <string name="label_physical_rr">Physical</string>
   <string name="label_power_dev_short">Power dev</string>
   <string name="label_power_dev">Power Dev</string>
+  <string name="label_primary">Primary</string>
   <string name="label_primary_skills">Primary Skills</string>
   <string name="label_prime_skill">Prime skill</string>
   <string name="label_prone">Prone</string>

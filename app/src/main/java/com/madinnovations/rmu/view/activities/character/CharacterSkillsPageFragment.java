@@ -399,7 +399,7 @@ public class CharacterSkillsPageFragment extends Fragment implements SkillRanksA
 	}
 
 	private void initSkillRanksListView(final View layout) {
-		ListView skillRanksListView = (ListView) layout.findViewById(R.id.skill_ranks_list);
+		ListView skillRanksListView = (ListView) layout.findViewById(R.id.skill_bonus_list);
 		skillRanksAdapter = new SkillRanksAdapter(getActivity(), this);
 		skillRanksListView.setAdapter(skillRanksAdapter);
 

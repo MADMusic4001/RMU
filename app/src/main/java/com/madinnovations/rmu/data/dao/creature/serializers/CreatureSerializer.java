@@ -22,15 +22,18 @@ package com.madinnovations.rmu.data.dao.creature.serializers;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureAttackBonusSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSkillRanksSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpecializationRanksSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpellListRanksSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSkillBonusSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpecializationBonusSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpellListBonusSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTalentsSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.common.Parameter;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -63,17 +66,20 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 		out.name(COLUMN_CURRENT_DPS).value(value.getCurrentDevelopmentPoints());
 		out.name(COLUMN_BASE_MOVEMENT_RATE).value(value.getBaseMovementRate());
 		out.name(COLUMN_NUM_CREATURES).value(value.getNumCreatures());
-		if(value.getSkillRanks().size() > 0) {
-			writeSkillRanks(out, value);
+		if(value.getPrimarySkillBonusesList().size() > 0 || value.getSecondarySkillBonusesList().size() > 0) {
+			writeSkillBonuses(out, value);
 		}
-		if(value.getSpecializationRanks().size() > 0) {
-			writeSpecializationRanks(out, value);
+		if(value.getSpecializationBonuses().size() > 0) {
+			writeSpecializationBonuses(out, value);
 		}
-		if(value.getSpellListRanks().size() > 0) {
-			writeSpellListRanks(out, value);
+		if(value.getSpellListBonuses().size() > 0) {
+			writeSpellListBonuses(out, value);
 		}
 		if(value.getTalentInstances().size() > 0) {
 			writeTalents(out, value);
+		}
+		if(value.getPrimaryAttackBonusesMap().size() > 0 || value.getSecondaryAttackBonusesMap().size() > 0) {
+			writeAttackBonuses(out, value);
 		}
 		out.endObject();
 	}
@@ -114,17 +120,20 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 				case COLUMN_NUM_CREATURES:
 					creature.setNumCreatures((short) in.nextInt());
 					break;
-				case CreatureSkillRanksSchema.TABLE_NAME:
-					readSkillRanks(in, creature);
+				case CreatureSkillBonusSchema.TABLE_NAME:
+					readSkillBonuses(in, creature);
 					break;
-				case CreatureSpecializationRanksSchema.TABLE_NAME:
-					readSpecializationRanks(in, creature);
+				case CreatureSpecializationBonusSchema.TABLE_NAME:
+					readSpecializationBonuses(in, creature);
 					break;
-				case CreatureSpellListRanksSchema.TABLE_NAME:
-					readSpellListRanks(in, creature);
+				case CreatureSpellListBonusSchema.TABLE_NAME:
+					readSpellListBonuses(in, creature);
 					break;
 				case CreatureTalentsSchema.TABLE_NAME:
 					readTalents(in, creature);
+					break;
+				case CreatureAttackBonusSchema.TABLE_NAME:
+					readAttackBonuses(in, creature);
 					break;
 			}
 		}
@@ -133,40 +142,48 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 		return creature;
 	}
 
-	public void writeSkillRanks(JsonWriter out, Creature value) throws IOException {
-		out.name(CreatureSkillRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Skill, Short> entry : value.getSkillRanks().entrySet()) {
+	private void writeSkillBonuses(JsonWriter out, Creature value) throws IOException {
+		out.name(CreatureSkillBonusSchema.TABLE_NAME).beginArray();
+		for(SkillBonus skillBonus : value.getPrimarySkillBonusesList()) {
 			out.beginObject();
-			out.name(CreatureSkillRanksSchema.COLUMN_SKILL_ID).value(entry.getKey().getId());
-			out.name(CreatureSkillRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.name(CreatureSkillBonusSchema.COLUMN_SKILL_ID).value(skillBonus.getSkill().getId());
+			out.name(CreatureSkillBonusSchema.COLUMN_BONUS).value(skillBonus.getBonus());
+			out.name(CreatureSkillBonusSchema.COLUMN_IS_PRIMARY).value(true);
+			out.endObject();
+		}
+		for (SkillBonus skillBonus : value.getSecondarySkillBonusesList()) {
+			out.beginObject();
+			out.name(CreatureSkillBonusSchema.COLUMN_SKILL_ID).value(skillBonus.getSkill().getId());
+			out.name(CreatureSkillBonusSchema.COLUMN_BONUS).value(skillBonus.getBonus());
+			out.name(CreatureSkillBonusSchema.COLUMN_IS_PRIMARY).value(false);
 			out.endObject();
 		}
 		out.endArray();
 	}
 
-	public void writeSpecializationRanks(JsonWriter out, Creature value) throws IOException {
-		out.name(CreatureSpecializationRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<Specialization, Short> entry : value.getSpecializationRanks().entrySet()) {
+	private void writeSpecializationBonuses(JsonWriter out, Creature value) throws IOException {
+		out.name(CreatureSpecializationBonusSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Specialization, Short> entry : value.getSpecializationBonuses().entrySet()) {
 			out.beginObject();
-			out.name(CreatureSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
-			out.name(CreatureSpecializationRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.name(CreatureSpecializationBonusSchema.COLUMN_SPECIALIZATION_ID).value(entry.getKey().getId());
+			out.name(CreatureSpecializationBonusSchema.COLUMN_BONUS).value(entry.getValue());
 			out.endObject();
 		}
 		out.endArray();
 	}
 
-	public void writeSpellListRanks(JsonWriter out, Creature value) throws IOException {
-		out.name(CreatureSpellListRanksSchema.TABLE_NAME).beginArray();
-		for(Map.Entry<SpellList, Short> entry : value.getSpellListRanks().entrySet()) {
+	private void writeSpellListBonuses(JsonWriter out, Creature value) throws IOException {
+		out.name(CreatureSpellListBonusSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<SpellList, Short> entry : value.getSpellListBonuses().entrySet()) {
 			out.beginObject();
-			out.name(CreatureSpellListRanksSchema.COLUMN_SPELL_LIST_ID).value(entry.getKey().getId());
-			out.name(CreatureSpellListRanksSchema.COLUMN_RANKS).value(entry.getValue());
+			out.name(CreatureSpellListBonusSchema.COLUMN_SPELL_LIST_ID).value(entry.getKey().getId());
+			out.name(CreatureSpellListBonusSchema.COLUMN_BONUS).value(entry.getValue());
 			out.endObject();
 		}
 		out.endArray();
 	}
 
-	public void writeTalents(JsonWriter out, Creature value) throws IOException {
+	private void writeTalents(JsonWriter out, Creature value) throws IOException {
 		out.name(CreatureTalentsSchema.TABLE_NAME).beginArray();
 		for(TalentInstance talentInstance : value.getTalentInstances()) {
 			out.beginObject();
@@ -194,67 +211,94 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 		out.endArray();
 	}
 
-	private void readSkillRanks(JsonReader in, Creature creature) throws IOException {
+	private void writeAttackBonuses(JsonWriter out, Creature value) throws IOException {
+		out.name(CreatureAttackBonusSchema.TABLE_NAME).beginArray();
+		for(Map.Entry<Attack, Short> entry : value.getPrimaryAttackBonusesMap().entrySet()) {
+			out.beginObject();
+			out.name(CreatureAttackBonusSchema.COLUMN_ATTACK_ID).value(entry.getKey().getId());
+			out.name(CreatureAttackBonusSchema.COLUMN_BONUS).value(entry.getValue());
+			out.name(CreatureAttackBonusSchema.COLUMN_IS_PRIMARY).value(true);
+			out.endObject();
+		}
+		for(Map.Entry<Attack, Short> entry : value.getSecondaryAttackBonusesMap().entrySet()) {
+			out.beginObject();
+			out.name(CreatureAttackBonusSchema.COLUMN_ATTACK_ID).value(entry.getKey().getId());
+			out.name(CreatureAttackBonusSchema.COLUMN_BONUS).value(entry.getValue());
+			out.name(CreatureAttackBonusSchema.COLUMN_IS_PRIMARY).value(false);
+			out.endObject();
+		}
+		out.endArray();
+	}
+
+	private void readSkillBonuses(JsonReader in, Creature creature) throws IOException {
 		in.beginArray();
 		while(in.hasNext()) {
-			Skill skill = null;
-			Short ranks = 0;
+			SkillBonus skillBonus = new SkillBonus();
+			boolean primary = false;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case CreatureSkillRanksSchema.COLUMN_SKILL_ID:
-						skill = new Skill(in.nextInt());
+					case CreatureSkillBonusSchema.COLUMN_SKILL_ID:
+						skillBonus.setSkill(new Skill(in.nextInt()));
 						break;
-					case CreatureSkillRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+					case CreatureSkillBonusSchema.COLUMN_BONUS:
+						skillBonus.setBonus((short)in.nextInt());
+						break;
+					case CreatureSkillBonusSchema.COLUMN_IS_PRIMARY:
+						primary = in.nextBoolean();
 						break;
 				}
 			}
-			creature.getSkillRanks().put(skill, ranks);
+			if(primary) {
+				creature.getPrimarySkillBonusesList().add(skillBonus);
+			}
+			else {
+				creature.getSecondarySkillBonusesList().add(skillBonus);
+			}
 			in.endObject();
 		}
 		in.endArray();
 	}
 
-	private void readSpecializationRanks(JsonReader in, Creature creature) throws IOException {
+	private void readSpecializationBonuses(JsonReader in, Creature creature) throws IOException {
 		in.beginArray();
 		while(in.hasNext()) {
 			Specialization specialization = null;
-			Short ranks = 0;
+			short bonus = 0;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case CreatureSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID:
+					case CreatureSpecializationBonusSchema.COLUMN_SPECIALIZATION_ID:
 						specialization = new Specialization(in.nextInt());
 						break;
-					case CreatureSpecializationRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+					case CreatureSpecializationBonusSchema.COLUMN_BONUS:
+						bonus = (short)in.nextInt();
 						break;
 				}
 			}
-			creature.getSpecializationRanks().put(specialization, ranks);
+			creature.getSpecializationBonuses().put(specialization, bonus);
 			in.endObject();
 		}
 		in.endArray();
 	}
 
-	private void readSpellListRanks(JsonReader in, Creature creature) throws IOException {
+	private void readSpellListBonuses(JsonReader in, Creature creature) throws IOException {
 		in.beginArray();
 		while(in.hasNext()) {
 			SpellList spellList = null;
-			Short ranks = 0;
+			short bonus = 0;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
-					case CreatureSpellListRanksSchema.COLUMN_SPELL_LIST_ID:
+					case CreatureSpellListBonusSchema.COLUMN_SPELL_LIST_ID:
 						spellList = new SpellList(in.nextInt());
 						break;
-					case CreatureSpellListRanksSchema.COLUMN_RANKS:
-						ranks = (short)in.nextInt();
+					case CreatureSpellListBonusSchema.COLUMN_BONUS:
+						bonus = (short)in.nextInt();
 						break;
 				}
 			}
-			creature.getSpellListRanks().put(spellList, ranks);
+			creature.getSpellListBonuses().put(spellList, bonus);
 			in.endObject();
 		}
 		in.endArray();
@@ -301,6 +345,37 @@ public class CreatureSerializer extends TypeAdapter<Creature> implements Creatur
 				}
 			}
 			creature.getTalentInstances().add(talentInstance);
+			in.endObject();
+		}
+		in.endArray();
+	}
+
+	private void readAttackBonuses(JsonReader in, Creature creature) throws IOException {
+		in.beginArray();
+		while(in.hasNext()) {
+			Attack attack = null;
+			short bonus = 0;
+			boolean primary = false;
+			in.beginObject();
+			while (in.hasNext()) {
+				switch (in.nextName()) {
+					case CreatureAttackBonusSchema.COLUMN_ATTACK_ID:
+						attack = new Attack(in.nextInt());
+						break;
+					case CreatureAttackBonusSchema.COLUMN_BONUS:
+						bonus = (short)in.nextInt();
+						break;
+					case CreatureAttackBonusSchema.COLUMN_IS_PRIMARY:
+						primary = in.nextBoolean();
+						break;
+				}
+			}
+			if(primary) {
+				creature.getPrimaryAttackBonusesMap().put(attack, bonus);
+			}
+			else {
+				creature.getSecondaryAttackBonusesMap().put(attack, bonus);
+			}
 			in.endObject();
 		}
 		in.endArray();

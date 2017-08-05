@@ -104,7 +104,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		View layout = inflater.inflate(R.layout.creature_variety_attacks_page, container, false);
 
 		initAttacksList(layout);
-		initAttackBonusesList(layout);
+		initSelectedAttacksList(layout);
 		attackSequenceEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.attack_sequence_view,
 														   R.id.attack_sequence_edit,
 														   R.string.validation_creature_variety_attack_sequence_required);
@@ -176,24 +176,25 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 			for (int i = 0; i < attackBonusesListAdapter.getCount(); i++) {
 				newAttackBonus = attackBonusesListAdapter.getItem(i);
 				if(newAttackBonus != null) {
-					if (creatureVariety.getAttackBonusesMap().containsKey(newAttackBonus.getAttack())) {
+					if (creatureVariety.getPrimaryAttackBonuses().containsKey(newAttackBonus.getAttack())) {
 						if (!creatureVariety
-								.getAttackBonusesMap()
+								.getPrimaryAttackBonuses()
 								.get(newAttackBonus.getAttack())
 								.equals(newAttackBonus.getBonus())) {
 							changed = true;
 						}
-						creatureVariety.getAttackBonusesMap().remove(newAttackBonus.getAttack());
-					} else {
+						creatureVariety.getPrimaryAttackBonuses().remove(newAttackBonus.getAttack());
+					}
+					else {
 						changed = true;
 					}
 					newAttackMap.put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
 				}
 			}
-			if (!creatureVariety.getAttackBonusesMap().isEmpty() && !newAttackMap.isEmpty()) {
+			if (!creatureVariety.getPrimaryAttackBonuses().isEmpty() && !newAttackMap.isEmpty()) {
 				changed = true;
 			}
-			creatureVariety.setAttackBonusesMap(newAttackMap);
+			creatureVariety.setPrimaryAttackBonuses(newAttackMap);
 
 			checkedItemPositions = criticalCodesList.getCheckedItemPositions();
 			if (checkedItemPositions != null) {
@@ -233,8 +234,12 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 
 		attackBonusesList.clearChoices();
 		attackBonusesListAdapter.clear();
-		for(Map.Entry<Attack, Short> entry : creatureVariety.getAttackBonusesMap().entrySet()) {
-			AttackBonus attackBonus = new AttackBonus(entry.getKey(), entry.getValue());
+		for(Map.Entry<Attack, Short> entry : creatureVariety.getPrimaryAttackBonuses().entrySet()) {
+			AttackBonus attackBonus = new AttackBonus(entry.getKey(), entry.getValue(), true);
+			attackBonusesListAdapter.add(attackBonus);
+		}
+		for(Map.Entry<Attack, Short> entry : creatureVariety.getSecondaryAttackBonuses().entrySet()) {
+			AttackBonus attackBonus = new AttackBonus(entry.getKey(), entry.getValue(), false);
 			attackBonusesListAdapter.add(attackBonus);
 		}
 		attackBonusesListAdapter.notifyDataSetChanged();
@@ -318,14 +323,17 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		attacksList.setOnDragListener(new AttackDragListener());
 	}
 
-	private void initAttackBonusesList(View layout) {
+	private void initSelectedAttacksList(View layout) {
 		attackBonusesList = (ListView) layout.findViewById(R.id.attack_bonuses_list);
 		attackBonusesListAdapter = new AttackBonusListAdapter(this.getActivity(), this, attackBonusesList);
 		attackBonusesList.setAdapter(attackBonusesListAdapter);
 
 		attackBonusesListAdapter.clear();
-		for(Map.Entry<Attack, Short> entry : varietiesFragment.getCurrentInstance().getAttackBonusesMap().entrySet()) {
-			attackBonusesListAdapter.add(new AttackBonus(entry.getKey(), entry.getValue()));
+		for(Map.Entry<Attack, Short> entry : varietiesFragment.getCurrentInstance().getPrimaryAttackBonuses().entrySet()) {
+			attackBonusesListAdapter.add(new AttackBonus(entry.getKey(), entry.getValue(), true));
+		}
+		for(Map.Entry<Attack, Short> entry : varietiesFragment.getCurrentInstance().getSecondaryAttackBonuses().entrySet()) {
+			attackBonusesListAdapter.add(new AttackBonus(entry.getKey(), entry.getValue(), true));
 		}
 		attackBonusesListAdapter.notifyDataSetChanged();
 
@@ -402,25 +410,41 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 	}
 
 	@Override
-	public void setAttackBonus(AttackBonus attackBonus) {
+	public void setAttackBonus(AttackBonus newAttackBonus) {
 		boolean changed = false;
-
-		if(varietiesFragment.getCurrentInstance().getAttackBonusesMap().containsKey(attackBonus.getAttack())) {
-			if(varietiesFragment.getCurrentInstance().getAttackBonusesMap().get(attackBonus.getAttack()) != attackBonus.getBonus()) {
-				varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attackBonus.getAttack(), attackBonus.getBonus());
+		CreatureVariety creatureVariety = varietiesFragment.getCurrentInstance();
+		if(creatureVariety.getPrimaryAttackBonuses().containsKey(newAttackBonus.getAttack())) {
+			Short oldAttackBonus = creatureVariety.getPrimaryAttackBonuses().get(newAttackBonus.getAttack());
+			if((oldAttackBonus != null && !oldAttackBonus.equals(newAttackBonus.getBonus()))) {
+				varietiesFragment.getCurrentInstance().getPrimaryAttackBonuses().put(newAttackBonus.getAttack(),
+						newAttackBonus.getBonus());
+				changed = true;
+			}
+			else if(!newAttackBonus.isPrimary()) {
+				creatureVariety.getPrimaryAttackBonuses().remove(newAttackBonus.getAttack());
+				creatureVariety.getSecondaryAttackBonuses().put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
 				changed = true;
 			}
 		}
-		else {
-			varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attackBonus.getAttack(), attackBonus.getBonus());
-			changed = true;
+		else if(creatureVariety.getSecondaryAttackBonuses().containsKey(newAttackBonus.getAttack())) {
+			Short oldAttackBonus = creatureVariety.getSecondaryAttackBonuses().get(newAttackBonus.getAttack());
+			if((oldAttackBonus != null && !oldAttackBonus.equals(newAttackBonus.getBonus()))) {
+				varietiesFragment.getCurrentInstance().getSecondaryAttackBonuses().put(newAttackBonus.getAttack(),
+						newAttackBonus.getBonus());
+				changed = true;
+			}
+			else if(newAttackBonus.isPrimary()) {
+				creatureVariety.getSecondaryAttackBonuses().remove(newAttackBonus.getAttack());
+				creatureVariety.getPrimaryAttackBonuses().put(newAttackBonus.getAttack(), newAttackBonus.getBonus());
+				changed = true;
+			}
 		}
 		if(changed) {
 			varietiesFragment.saveItem();
 		}
 	}
 
-	protected class AttackBonusDragListener implements View.OnDragListener {
+	private class AttackBonusDragListener implements View.OnDragListener {
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(),
 																   R.drawable.drag_target_background, null);
 		private Drawable hoverShape  = ResourcesCompat.getDrawable(getActivity().getResources(),
@@ -472,10 +496,10 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							int position = attacksListAdapter.getPosition(newAttack);
 							if(position != -1) {
 								Attack attack = attacksListAdapter.getItem(position);
-								AttackBonus attackBonus = new AttackBonus(attack, (short) 0);
+								AttackBonus attackBonus = new AttackBonus(attack, (short) 0, true);
 								if (attackBonusesListAdapter.getPosition(attackBonus) == -1) {
 									attackBonusesListAdapter.add(attackBonus);
-									varietiesFragment.getCurrentInstance().getAttackBonusesMap().put(attack, (short) 0);
+									varietiesFragment.getCurrentInstance().getPrimaryAttackBonuses().put(attack, (short) 0);
 									changed = true;
 								}
 							}
@@ -501,7 +525,7 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 		}
 	}
 
-	protected class AttackDragListener implements View.OnDragListener {
+	private class AttackDragListener implements View.OnDragListener {
 		private Drawable targetShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_target_background, null);
 		private Drawable hoverShape = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.drag_hover_background, null);
 		private Drawable normalShape = attacksList.getBackground();
@@ -547,12 +571,12 @@ public class CreatureVarietyAttackPageFragment extends Fragment implements Attac
 							int attackId = Integer.valueOf(item.getText().toString());
 							Attack newAttack = new Attack();
 							newAttack.setId(attackId);
-							AttackBonus newAttackBonus = new AttackBonus(newAttack, (short)0);
+							AttackBonus newAttackBonus = new AttackBonus(newAttack, (short)0, true);
 							int position = attackBonusesListAdapter.getPosition(newAttackBonus);
 							if(position != -1) {
 								AttackBonus attackBonus = attackBonusesListAdapter.getItem(position);
 								if(attackBonus != null) {
-									varietiesFragment.getCurrentInstance().getAttackBonusesMap().remove(attackBonus.getAttack());
+									varietiesFragment.getCurrentInstance().getPrimaryAttackBonuses().remove(attackBonus.getAttack());
 									attackBonusesListAdapter.remove(attackBonus);
 								}
 							}

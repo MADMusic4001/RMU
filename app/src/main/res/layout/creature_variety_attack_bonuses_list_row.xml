@@ -25,11 +25,10 @@
         android:layout_weight="5"
         style="@style/TextViewListRow"
         android:layout_height="wrap_content"/>
-    <EditText
-        android:id="@+id/attack_bonuses_edit"
+    <CheckBox
+        android:id="@+id/primary_checkbox"
         android:layout_width="0dp"
         android:layout_weight="3"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:background="@null"/>
+        android:text="@string/label_primary"/>
 </LinearLayout>

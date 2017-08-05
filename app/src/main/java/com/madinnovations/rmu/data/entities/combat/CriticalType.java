@@ -31,13 +31,17 @@ public enum CriticalType {
 	ACID(R.string.enum_critical_type_acid, 'A'),
 	GRAPPLE(R.string.enum_critical_type_grapple, 'G'),
 	HEAT(R.string.enum_critical_type_heat, 'H'),
+	HOLY(R.string.enum_critical_type_holy, 'Y'),
 	IMPACT(R.string.enum_critical_type_impact, 'I'),
 	CRUSH(R.string.enum_critical_type_crush, 'K'),
 	ELECTRICITY(R.string.enum_critical_type_electricity, 'L'),
 	COLD(R.string.enum_critical_type_cold, 'O'),
 	PUNCTURE(R.string.enum_critical_type_puncture, 'P'),
 	SLASH(R.string.enum_critical_type_slash, 'S'),
+	STEAM(R.string.enum_critical_type_steam, 'M'),
 	STRIKE(R.string.enum_critical_type_strike, 'T'),
+	SWEEPS(R.string.enum_critical_type_sweeps, 'W'),
+	SUBDUAL(R.string.enum_critical_type_subdual, 'B'),
 	UNBALANCE(R.string.enum_critical_type_unbalance, 'U');
 
 	private static String[] criticalTypeNames;

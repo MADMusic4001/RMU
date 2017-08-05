@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.common;
 
+import android.util.Log;
+
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -23,13 +25,27 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Talent parameter instance attributes
  */
-public class TalentInstance extends DatabaseObject {
+public class TalentInstance extends DatabaseObject implements Cloneable {
 	private Talent                 talent;
 	private short                  tiers = 0;
 	private Map<Parameter, Object> parameterValues = new HashMap<>();
+
+	@Override
+	public TalentInstance clone() {
+		TalentInstance talentInstance = null;
+		try {
+			talentInstance = (TalentInstance)super.clone();
+		}
+		catch (CloneNotSupportedException ex) {
+			Log.e(TAG, "clone: CloneNotSupportedException caught: ", ex);
+		}
+		return talentInstance;
+	}
 
 	/**
 	 * Creates a formatted String of the instances field values.

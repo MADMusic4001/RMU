@@ -16,16 +16,19 @@
 package com.madinnovations.rmu.data.entities.common;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Skill bonus attributes
  */
-public class SkillBonus implements Comparable {
+public class SkillBonus implements Comparable, Cloneable {
 	public static final String         JSON_NAME      = "SkillBonuses";
 	private             Skill          skill          = null;
 	private             Specialization specialization = null;
@@ -36,6 +39,22 @@ public class SkillBonus implements Comparable {
 	 * Creates a new SkillBonus instance
 	 */
 	public SkillBonus() {
+	}
+
+	/**
+	 * Creates a new SkillBonus instance that is a copy of this instance.
+	 *
+	 * @return  a new SkillBonus instance
+	 */
+	public SkillBonus clone() {
+		SkillBonus skillBonus = null;
+		try {
+			skillBonus = (SkillBonus)super.clone();
+		}
+		catch (CloneNotSupportedException ex) {
+			Log.e(TAG, "clone: CloneNotSupportedException caught", ex);
+		}
+		return skillBonus;
 	}
 
 	/**

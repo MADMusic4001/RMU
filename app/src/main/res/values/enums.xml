@@ -189,13 +189,17 @@
   <string name="enum_critical_type_acid">Acid</string>
   <string name="enum_critical_type_grapple">Grapple</string>
   <string name="enum_critical_type_heat">Heat</string>
+  <string name="enum_critical_type_holy">Holy</string>
   <string name="enum_critical_type_impact">Impact</string>
   <string name="enum_critical_type_crush">Crush</string>
   <string name="enum_critical_type_electricity">Electricity</string>
   <string name="enum_critical_type_cold">Cold</string>
   <string name="enum_critical_type_puncture">Puncture</string>
   <string name="enum_critical_type_slash">Slash</string>
+  <string name="enum_critical_type_steam">Steam</string>
   <string name="enum_critical_type_strike">Strike</string>
+  <string name="enum_critical_type_sweeps">Sweeps</string>
+  <string name="enum_critical_type_subdual">Subdual</string>
   <string name="enum_critical_type_unbalance">Unbalance</string>
 
   <!-- DestinySense enum strings -->

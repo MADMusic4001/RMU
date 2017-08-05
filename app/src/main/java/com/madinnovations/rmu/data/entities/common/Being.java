@@ -52,7 +52,7 @@ public abstract class Being extends DatabaseObject {
 	protected           short                      powerPointLoss           = 0;
 	protected           short                      baseMovementRate         = 20;
 	protected           short                      currentDevelopmentPoints = INITIAL_DP;
-	protected           List<State>                currentStates            = new ArrayList<>();
+	protected           Map<StateType, State>      currentStates            = new HashMap<>();
 	protected           Map<Skill, Short>          skillRanks               = new HashMap<>();
 	protected           Map<Specialization, Short> specializationRanks      = new HashMap<>();
 	protected           Map<SpellList, Short>      spellListRanks           = new HashMap<>();
@@ -268,7 +268,7 @@ public abstract class Being extends DatabaseObject {
 		this.currentDevelopmentPoints = currentDevelopmentPoints;
 	}
 
-	public List<State> getCurrentStates() {
+	public Map<StateType, State> getCurrentStates() {
 		return currentStates;
 	}
 

@@ -31,8 +31,6 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Attack;
-import com.madinnovations.rmu.data.entities.combat.AttackResult;
-import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
@@ -103,19 +101,19 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 	}
 
 	private class ViewHolder {
-		public EncounterRoundInfo   encounterRoundInfo;
-		public TextView             nameView;
-		public EditText             initiativeRollEdit;
-		public TextView             quicknessBonusView;
-		public TextView             otherPenaltiesView;
-		public TextView             baseInitiativeView;
-		public Spinner              attacksSpinner;
-		public Spinner              opponentsSpinner;
-		public TextView             offensiveBonusView;
-		public EditText             parryEdit;
-		public ArrayAdapter<Object> attacksSpinnerAdapter;
-		public ArrayAdapter<Being>  opponentsSpinnerAdapter;
-		public TextView             defensiveBonusView;
+		EncounterRoundInfo   encounterRoundInfo;
+		TextView             nameView;
+		EditText             initiativeRollEdit;
+		TextView             quicknessBonusView;
+		TextView             otherPenaltiesView;
+		TextView             baseInitiativeView;
+		Spinner              attacksSpinner;
+		Spinner              opponentsSpinner;
+		TextView             offensiveBonusView;
+		EditText             parryEdit;
+		ArrayAdapter<Object> attacksSpinnerAdapter;
+		ArrayAdapter<Being>  opponentsSpinnerAdapter;
+		TextView             defensiveBonusView;
 
 		public ViewHolder(EncounterRoundInfo encounterRoundInfo, TextView nameView, EditText initiativeRollEdit,
 						  TextView quicknessBonusView, TextView otherPenaltiesView, TextView baseInitiativeView,
@@ -248,7 +246,7 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 			}
 			else {
 				opponent = (Being)opponentsSpinner.getSelectedItem();
-				if(opponent == null && opponentsSpinnerAdapter.getCount() > 0) {
+				if(opponent == null && opponentsSpinnerAdapter != null && opponentsSpinnerAdapter.getCount() > 0) {
 					opponent = opponentsSpinnerAdapter.getItem(0);
 				}
 			}
@@ -290,27 +288,11 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 				if(creature.getOffhandItem() instanceof Weapon) {
 					attacksSpinnerAdapter.add(creature.getOffhandItem());
 				}
-				for(CreatureAttack creatureAttack : creature.getCreatureVariety().getAttackList()) {
-					if(encounterRoundInfo.getAttackResult() != null) {
-						AttackResult attackResult = encounterRoundInfo.getAttackResult();
-						if(!creatureAttack.getBaseAttack().equals(attackResult.getAttack())) {
-							if(creatureAttack.isCriticalFollowUp() && attackResult.getCriticalResult() != null &&
-									creatureAttack.isSameRoundFollowUp()) {
-								attacksSpinnerAdapter.add(creatureAttack.getBaseAttack());
-							}
-							else if(!creatureAttack.isCriticalFollowUp()) {
-								attacksSpinnerAdapter.add(creatureAttack.getBaseAttack());
-							}
-						}
-						else {
-							attacksSpinnerAdapter.add(creatureAttack.getBaseAttack());
-						}
-					}
-					else {
-						if(!creatureAttack.isCriticalFollowUp() && creatureAttack.getBaseAttack() != null) {
-							attacksSpinnerAdapter.add(creatureAttack.getBaseAttack());
-						}
-					}
+				EncounterRoundInfo opponentEncounterRoundInfo = getSelectedOpponentEncounterRoundInfo(encounterRoundInfo);
+				Attack nextCreatureAttack = creature.getNextAttack(encounterRoundInfo.getAttackResult(), opponentEncounterRoundInfo,
+						false);
+				if(nextCreatureAttack != null) {
+					attacksSpinnerAdapter.add(nextCreatureAttack);
 				}
 			}
 			attacksSpinnerAdapter.notifyDataSetChanged();

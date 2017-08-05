@@ -86,7 +86,8 @@ public class CreatureVariety extends DatabaseObject {
 	private short                     leftoverDP           = 200;
 	private Outlook                   outlook              = null;
 	private List<TalentInstance>      talentInstancesList  = new ArrayList<>();
-	private Map<Attack, Short>        attackBonusesMap     = new HashMap<>();
+	private Map<Attack, Short>        primaryAttackBonuses = new HashMap<>();
+	private Map<Attack, Short>        secondaryAttackBonuses  = new HashMap<>();
 	private String                    attackSequence       = null;
 	private List<SkillBonus>          skillBonusesList     = new ArrayList<>();
 	private ArrayList<CreatureAttack> attackList           = null;
@@ -127,7 +128,7 @@ public class CreatureVariety extends DatabaseObject {
 		}
 	}
 
-	public void parseAttackSequence() {
+	private void parseAttackSequence() {
 		if(attackList == null) {
 			String patternString = BONUS_REG_EX
 					+ SIZE_REG_EX
@@ -322,29 +323,12 @@ public class CreatureVariety extends DatabaseObject {
 		return result;
 	}
 
-	/**
-	 * Gets the offensive bonus for the given attack for the creature.
-	 *
-	 * @param attack  the attack for which to get the bonus
-	 * @return  the attack bonus
-	 */
-	public short getOffensiveBonus(Attack attack) {
-		short result = -25;
-
-		Short bonus = attackBonusesMap.get(attack);
-		if(bonus != null) {
-			result = bonus;
-		}
-
-		return result;
-	}
-
 	@Override
 	public String toString() {
 		return getName();
 	}
 
-	public short getSkillBonus(Skill skill) {
+	short getSkillBonus(Skill skill) {
 		for(SkillBonus skillBonus : skillBonusesList) {
 			if(skillBonus.getSkill().equals(skill)) {
 				return skillBonus.getBonus();
@@ -388,7 +372,8 @@ public class CreatureVariety extends DatabaseObject {
 				.append("leftoverDP", leftoverDP)
 				.append("outlook", outlook)
 				.append("talentInstancesList", talentInstancesList)
-				.append("attackBonusesMap", attackBonusesMap)
+				.append("primaryAttackBonuses", primaryAttackBonuses)
+				.append("secondaryAttackBonuses", secondaryAttackBonuses)
 				.append("attackSequence", attackSequence)
 				.append("skillBonusesList", skillBonusesList)
 				.toString();
@@ -560,11 +545,17 @@ public class CreatureVariety extends DatabaseObject {
 	public void setTalentInstancesList(List<TalentInstance> talentInstancesList) {
 		this.talentInstancesList = talentInstancesList;
 	}
-	public Map<Attack, Short> getAttackBonusesMap() {
-		return attackBonusesMap;
+	public Map<Attack, Short> getPrimaryAttackBonuses() {
+		return primaryAttackBonuses;
 	}
-	public void setAttackBonusesMap(Map<Attack, Short> attackBonusesMap) {
-		this.attackBonusesMap = attackBonusesMap;
+	public void setPrimaryAttackBonuses(Map<Attack, Short> primaryAttackBonuses) {
+		this.primaryAttackBonuses = primaryAttackBonuses;
+	}
+	public Map<Attack, Short> getSecondaryAttackBonuses() {
+		return secondaryAttackBonuses;
+	}
+	public void setSecondaryAttackBonuses(Map<Attack, Short> secondaryAttackBonuses) {
+		this.secondaryAttackBonuses = secondaryAttackBonuses;
 	}
 	public String getAttackSequence() {
 		return attackSequence;
@@ -579,6 +570,9 @@ public class CreatureVariety extends DatabaseObject {
 		this.skillBonusesList = skillBonusesList;
 	}
 	public ArrayList<CreatureAttack> getAttackList() {
+		if((attackList == null || attackList.isEmpty()) && attackSequence != null && !attackSequence.isEmpty()) {
+			parseAttackSequence();
+		}
 		return attackList;
 	}
 }

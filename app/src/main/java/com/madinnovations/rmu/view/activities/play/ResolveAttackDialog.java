@@ -244,7 +244,9 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 						}
 						@Override
 						public void onNext(Collection<CriticalResult> criticalResults) {
+							Log.d(TAG, "onNext: criticalResults.size = " + criticalResults.size());
 							for (CriticalResult criticalResult : criticalResults) {
+								Log.d(TAG, "onNext: criticalResult = " + criticalResult);
 								if (criticalResult.getSeverityCode() == damageResult.getCriticalSeverity() &&
 										criticalRoll >= criticalResult.getMinRoll() &&
 										criticalRoll <= criticalResult.getMaxRoll()) {

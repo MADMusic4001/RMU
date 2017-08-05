@@ -16,31 +16,50 @@
 package com.madinnovations.rmu.data.entities.creature;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.data.entities.combat.Attack;
+import com.madinnovations.rmu.data.entities.combat.AttackResult;
+import com.madinnovations.rmu.data.entities.combat.CreatureAttack;
 import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
+import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.State;
+import com.madinnovations.rmu.data.entities.common.StateType;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
 import com.madinnovations.rmu.data.entities.object.Weapon;
 import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
+import com.madinnovations.rmu.data.entities.spells.SpellList;
 import com.madinnovations.rmu.view.RMUApp;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Creature attributes
  */
 public class Creature extends Being implements Serializable {
 	@SuppressWarnings("unused")
-	private static final String            TAG              = "Creature";
-	private static final long              serialVersionUID = 2106087301956452748L;
-	public static final  String            JSON_NAME        = "Creatures";
-	private              CreatureVariety   creatureVariety  = null;
-	private              CreatureArchetype archetype        = null;
-	private              short             numCreatures     = 1;
+	private static final String                     TAG                       = "Creature";
+	private static final long                       serialVersionUID          = 2106087301956452748L;
+	public static final  String                     JSON_NAME                 = "Creatures";
+	private              CreatureVariety            creatureVariety           = null;
+	private              CreatureArchetype          archetype                 = null;
+	private              short                      numCreatures              = 1;
+	private              List<SkillBonus>           primarySkillBonusesList   = new ArrayList<>();
+	private              List<SkillBonus>           secondarySkillBonusesList = new ArrayList<>();
+	private              Map<Specialization, Short> specializationBonuses     = new HashMap<>();
+	private              Map<SpellList, Short>      spellListBonuses          = new HashMap<>();
+	private              List<TalentInstance>       talentInstancesList       = new ArrayList<>();
+	private              Map<Attack, Short>         primaryAttackBonusesMap   = new HashMap<>();
+	private              Map<Attack, Short>         secondaryAttackBonusesMap = new HashMap<>();
 
 	/**
 	 * Creates a new Creature instance with default values
@@ -80,16 +99,16 @@ public class Creature extends Being implements Serializable {
 	@Override
 	public short getInitiativeModifications() {
 		int totalPenalty = 0;
-		for (State state : currentStates) {
-			switch (state.getStateType()) {
+		for(Map.Entry<StateType, State> entry : currentStates.entrySet()) {
+			switch (entry.getKey()) {
 				case ENCUMBERED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case FATIGUED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case HASTED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case HP_LOSS:
 					int maxHits = getCreatureVariety().getBaseHits()
@@ -104,7 +123,7 @@ public class Creature extends Being implements Serializable {
 							maxHits -= talentInstance.getTiers() * 5;
 						}
 					}
-					float hpLossPercent = state.getConstant() / maxHits;
+					float hpLossPercent = entry.getValue().getConstant() / maxHits;
 					if (hpLossPercent >= 0.76) {
 						totalPenalty += -30;
 					}
@@ -116,7 +135,7 @@ public class Creature extends Being implements Serializable {
 					}
 					break;
 				case INJURED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 			}
 		}
@@ -155,19 +174,19 @@ public class Creature extends Being implements Serializable {
 	 */
 	public short getInitiativePenalty() {
 		int totalPenalty = 0;
-		for(State state : currentStates) {
-			switch (state.getStateType()) {
+		for(Map.Entry<StateType, State> entry : currentStates.entrySet()) {
+			switch (entry.getKey()) {
 				case ENCUMBERED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case FATIGUED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case HASTED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 				case HP_LOSS:
-					float hpLossPercent = state.getConstant()/maxHits;
+					float hpLossPercent = entry.getValue().getConstant()/maxHits;
 					if(hpLossPercent >= 0.76) {
 						totalPenalty += -30;
 					}
@@ -179,7 +198,7 @@ public class Creature extends Being implements Serializable {
 					}
 					break;
 				case INJURED:
-					totalPenalty += state.getConstant();
+					totalPenalty += entry.getValue().getConstant();
 					break;
 			}
 		}
@@ -226,6 +245,54 @@ public class Creature extends Being implements Serializable {
 			   creatureVariety.getLength();
 	}
 
+	/**
+	 * Gets the next attack the creature should use based on its attack sequence and the result of any previous attack.
+	 *
+	 * @param attackResult  the previous attack result
+	 * @param opponentInfo  the opponnents infor
+	 * @param sameRound  true if this request is to get a next attack in the same round
+	 * @return  the next attack to use or null if none found
+	 */
+	public Attack getNextAttack(AttackResult attackResult, EncounterRoundInfo opponentInfo, boolean sameRound) {
+		Attack result = null;
+
+		for(CreatureAttack creatureAttack : getCreatureVariety().getAttackList()) {
+			// Not first attack
+			if(attackResult != null) {
+				// Critical followup
+				if(creatureAttack.isCriticalFollowUp() && attackResult.getCriticalResult() != null) {
+					if(sameRound && creatureAttack.isSameRoundFollowUp()) {
+						result = creatureAttack.getBaseAttack();
+						break;
+					}
+					else if(!sameRound) {
+						result = creatureAttack.getBaseAttack();
+						break;
+					}
+				}
+				Attack grappleAttack = new Attack();
+				grappleAttack.setCode("gr");
+				if(creatureAttack.getBaseAttack().equals(grappleAttack)) {
+					State grappledState = opponentInfo.getCombatant().getCurrentStates().get(StateType.GRAPPLED);
+					if(grappledState.getConstant() >= 100) {
+
+					}
+				}
+				// same
+				else if(!creatureAttack.isCriticalFollowUp()) {
+					result = creatureAttack.getBaseAttack();
+					break;
+				}
+			}
+			else if(!creatureAttack.isCriticalFollowUp() && creatureAttack.getBaseAttack() != null) {
+				result = creatureAttack.getBaseAttack();
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	// Getters and setters
 	public CreatureVariety getCreatureVariety() {
 		return creatureVariety;
@@ -244,5 +311,47 @@ public class Creature extends Being implements Serializable {
 	}
 	public void setNumCreatures(short numCreatures) {
 		this.numCreatures = numCreatures;
+	}
+	public List<SkillBonus> getPrimarySkillBonusesList() {
+		return primarySkillBonusesList;
+	}
+	public void setPrimarySkillBonusesList(List<SkillBonus> primarySkillBonusesList) {
+		this.primarySkillBonusesList = primarySkillBonusesList;
+	}
+	public List<SkillBonus> getSecondarySkillBonusesList() {
+		return secondarySkillBonusesList;
+	}
+	public void setSecondarySkillBonusesList(List<SkillBonus> secondarySkillBonusesList) {
+		this.secondarySkillBonusesList = secondarySkillBonusesList;
+	}
+	public Map<Specialization, Short> getSpecializationBonuses() {
+		return specializationBonuses;
+	}
+	public void setSpecializationBonuses(Map<Specialization, Short> specializationBonuses) {
+		this.specializationBonuses = specializationBonuses;
+	}
+	public Map<SpellList, Short> getSpellListBonuses() {
+		return spellListBonuses;
+	}
+	public void setSpellListBonuses(Map<SpellList, Short> spellListBonuses) {
+		this.spellListBonuses = spellListBonuses;
+	}
+	public List<TalentInstance> getTalentInstancesList() {
+		return talentInstancesList;
+	}
+	public void setTalentInstancesList(List<TalentInstance> talentInstancesList) {
+		this.talentInstancesList = talentInstancesList;
+	}
+	public Map<Attack, Short> getPrimaryAttackBonusesMap() {
+		return primaryAttackBonusesMap;
+	}
+	public void setPrimaryAttackBonusesMap(Map<Attack, Short> primaryAttackBonusesMap) {
+		this.primaryAttackBonusesMap = primaryAttackBonusesMap;
+	}
+	public Map<Attack, Short> getSecondaryAttackBonusesMap() {
+		return secondaryAttackBonusesMap;
+	}
+	public void setSecondaryAttackBonusesMap(Map<Attack, Short> secondaryAttackBonusesMap) {
+		this.secondaryAttackBonusesMap = secondaryAttackBonusesMap;
 	}
 }

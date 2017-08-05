@@ -54,7 +54,7 @@
       android:layout_height="wrap_content"
       android:baselineAligned="false">
     <ListView
-        android:id="@+id/skill_ranks_list"
+        android:id="@+id/skill_bonus_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
   </LinearLayout>

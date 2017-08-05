@@ -41,7 +41,7 @@ public enum BodyLocation {
 		bodyLocationNames = new String[BodyLocation.values().length];
 		int i = 0;
 		for(BodyLocation bodyLocation : BodyLocation.values()) {
-			bodyLocationNames[i] = bodyLocation.toString();
+			bodyLocationNames[i++] = bodyLocation.toString();
 		}
 	}
 

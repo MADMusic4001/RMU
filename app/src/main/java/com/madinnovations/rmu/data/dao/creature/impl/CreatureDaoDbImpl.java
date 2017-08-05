@@ -23,22 +23,25 @@ import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
+import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.common.TalentDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureArchetypeDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureDao;
 import com.madinnovations.rmu.data.dao.creature.CreatureVarietyDao;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureAttackBonusSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSkillRanksSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpecializationRanksSchema;
-import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpellListRanksSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSkillBonusSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpecializationBonusSchema;
+import com.madinnovations.rmu.data.dao.creature.schemas.CreatureSpellListBonusSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.creature.schemas.CreatureTalentsSchema;
 import com.madinnovations.rmu.data.dao.spells.SpellListDao;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.common.Parameter;
-import com.madinnovations.rmu.data.entities.common.Skill;
+import com.madinnovations.rmu.data.entities.common.SkillBonus;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
@@ -46,7 +49,6 @@ import com.madinnovations.rmu.data.entities.creature.Creature;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +60,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements CreatureDao, CreatureSchema {
+	private AttackDao            attackDao;
 	private CampaignDao          campaignDao;
 	private CreatureVarietyDao   creatureVarietyDao;
 	private CreatureArchetypeDao creatureArchetypeDao;
@@ -70,6 +73,7 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	 * Creates a new instance of CreatureDaoDbImpl
 	 *
 	 * @param helper  an SQLiteOpenHelper instance
+	 * @param attackDao  a {@link AttackDao} instance
 	 * @param campaignDao  a {@link CampaignDao} instance
 	 * @param creatureVarietyDao  a {@link CreatureVarietyDao} instance
 	 * @param creatureArchetypeDao  a {@link CreatureArchetypeDao} instance
@@ -79,10 +83,11 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	 * @param talentDao  a {@link TalentDao} instance
 	 */
 	@Inject
-	public CreatureDaoDbImpl(SQLiteOpenHelper helper, CampaignDao campaignDao, CreatureVarietyDao creatureVarietyDao,
-							 CreatureArchetypeDao creatureArchetypeDao, SkillDao skillDao, SpecializationDao specializationDao,
-							 SpellListDao spellListDao, TalentDao talentDao) {
+	public CreatureDaoDbImpl(SQLiteOpenHelper helper, AttackDao attackDao, CampaignDao campaignDao,
+							 CreatureVarietyDao creatureVarietyDao, CreatureArchetypeDao creatureArchetypeDao, SkillDao skillDao,
+							 SpecializationDao specializationDao, SpellListDao spellListDao, TalentDao talentDao) {
 		super(helper);
+		this.attackDao = attackDao;
 		this.campaignDao = campaignDao;
 		this.creatureVarietyDao = creatureVarietyDao;
 		this.creatureArchetypeDao = creatureArchetypeDao;
@@ -174,26 +179,30 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	protected boolean saveRelationships(SQLiteDatabase db, Creature instance) {
 		boolean result = true;
 		String selectionArgs[] = { String.valueOf(instance.getId()) };
-		String selection = CreatureSkillRanksSchema.COLUMN_CREATURE_ID + " = ?";
+		String selection = CreatureSkillBonusSchema.COLUMN_CREATURE_ID + " = ?";
 
-		db.delete(CreatureSkillRanksSchema.TABLE_NAME, selection, selectionArgs);
+		db.delete(CreatureSkillBonusSchema.TABLE_NAME, selection, selectionArgs);
 
-		for(Map.Entry<Skill, Short> entry : instance.getSkillRanks().entrySet()) {
-			result &= (db.insertWithOnConflict(CreatureSkillRanksSchema.TABLE_NAME, null,
-											   getSkillRankValues(instance.getId(), entry.getKey().getId(),
-																  entry.getValue()),
+		for(SkillBonus skillBonus : instance.getPrimarySkillBonusesList()) {
+			result &= (db.insertWithOnConflict(CreatureSkillBonusSchema.TABLE_NAME, null,
+											   getSkillBonusValues(instance.getId(), skillBonus, true),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
+		for(SkillBonus skillBonus : instance.getSecondarySkillBonusesList()) {
+			result &= (db.insertWithOnConflict(CreatureSkillBonusSchema.TABLE_NAME, null,
+					getSkillBonusValues(instance.getId(), skillBonus, false),
+					SQLiteDatabase.CONFLICT_NONE) != -1);
+		}
 
-		for(Map.Entry<Specialization, Short> entry : instance.getSpecializationRanks().entrySet()) {
-				result &= (db.insertWithOnConflict(CreatureSpecializationRanksSchema.TABLE_NAME, null,
+		for(Map.Entry<Specialization, Short> entry : instance.getSpecializationBonuses().entrySet()) {
+				result &= (db.insertWithOnConflict(CreatureSpecializationBonusSchema.TABLE_NAME, null,
 												   getSpecializationRanksValues(instance.getId(), entry.getKey().getId(),
 																				entry.getValue()),
 												   SQLiteDatabase.CONFLICT_NONE) != -1);
 		}
 
-		for(Map.Entry<SpellList, Short> entry : instance.getSpellListRanks().entrySet()) {
-			result &= (db.insertWithOnConflict(CreatureSpellListRanksSchema.TABLE_NAME, null,
+		for(Map.Entry<SpellList, Short> entry : instance.getSpellListBonuses().entrySet()) {
+			result &= (db.insertWithOnConflict(CreatureSpellListBonusSchema.TABLE_NAME, null,
 											   getSpellListRanksValues(instance.getId(), entry.getKey().getId(),
 																	   entry.getValue()),
 											   SQLiteDatabase.CONFLICT_NONE) != -1);
@@ -223,14 +232,14 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 		boolean result;
 		final String selectionArgs[] = { String.valueOf(id) };
 
-		String selection = CreatureSkillRanksSchema.COLUMN_CREATURE_ID + " = ?";
-		result = (db.delete(CreatureSkillRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+		String selection = CreatureSkillBonusSchema.COLUMN_CREATURE_ID + " = ?";
+		result = (db.delete(CreatureSkillBonusSchema.TABLE_NAME, selection, selectionArgs) >= 0);
 
-		selection = CreatureSpecializationRanksSchema.COLUMN_CREATURE_ID + " = ?";
-		result &= (db.delete(CreatureSpecializationRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+		selection = CreatureSpecializationBonusSchema.COLUMN_CREATURE_ID + " = ?";
+		result &= (db.delete(CreatureSpecializationBonusSchema.TABLE_NAME, selection, selectionArgs) >= 0);
 
-		selection = CreatureSpellListRanksSchema.COLUMN_CREATURE_ID + " = ?";
-		result &= (db.delete(CreatureSpellListRanksSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+		selection = CreatureSpellListBonusSchema.COLUMN_CREATURE_ID + " = ?";
+		result &= (db.delete(CreatureSpellListBonusSchema.TABLE_NAME, selection, selectionArgs) >= 0);
 
 		selection = CreatureTalentParametersSchema.COLUMN_CREATURE_ID + " = ?";
 		result &= (db.delete(CreatureTalentParametersSchema.TABLE_NAME, selection, selectionArgs) >= 0);
@@ -256,10 +265,11 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 		instance.setCurrentDevelopmentPoints(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_CURRENT_DPS)));
 		instance.setBaseMovementRate(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BASE_MOVEMENT_RATE)));
 		instance.setNumCreatures(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_NUM_CREATURES)));
-		instance.setSkillRanks(getSkillRanks(instance.getId()));
-		instance.setSpecializationRanks(getSpecializationRanks(instance.getId()));
-		instance.setSpellListRanks(getSpellListRanks(instance.getId()));
-		instance.setTalentInstances(getTalents(instance.getId()));
+		setSkillBonuses(instance);
+		setSpecializationBonuses(instance);
+		setSpellListBonuses(instance);
+		setTalents(instance);
+		setAttackBonuses(instance);
 
 		return instance;
 	}
@@ -288,85 +298,82 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 		return values;
 	}
 
-	private Map<Skill, Short> getSkillRanks(int creatureId) {
-		final String selectionArgs[] = { String.valueOf(creatureId) };
-		final String selection = CreatureSkillRanksSchema.COLUMN_CREATURE_ID + " = ?";
+	private void setSkillBonuses(Creature creature) {
+		final String selectionArgs[] = { String.valueOf(creature.getId()) };
+		final String selection = CreatureSkillBonusSchema.COLUMN_CREATURE_ID + " = ?";
 
-		Cursor cursor = super.query(CreatureSkillRanksSchema.TABLE_NAME,
-									CreatureSkillRanksSchema.COLUMNS, selection, selectionArgs,
-									CreatureSkillRanksSchema.COLUMN_RANKS);
-		Map<Skill, Short> map = new HashMap<>(cursor.getCount());
+		Cursor cursor = super.query(CreatureSkillBonusSchema.TABLE_NAME,
+									CreatureSkillBonusSchema.COLUMNS, selection, selectionArgs,
+									CreatureSkillBonusSchema.COLUMN_BONUS);
+
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			short ranks = cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSkillRanksSchema.COLUMN_RANKS));
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CreatureSkillRanksSchema.COLUMN_SKILL_ID));
-			Skill instance = skillDao.getById(mappedId);
-			if(instance != null) {
-				map.put(instance, ranks);
+			SkillBonus skillBonus = new SkillBonus();
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CreatureSkillBonusSchema.COLUMN_SKILL_ID));
+			skillBonus.setSkill(skillDao.getById(mappedId));
+			skillBonus.setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSkillBonusSchema.COLUMN_BONUS)));
+			boolean primary = cursor.getInt(cursor.getColumnIndexOrThrow(CreatureSkillBonusSchema.COLUMN_IS_PRIMARY)) != 0;
+			if(primary) {
+				creature.getPrimarySkillBonusesList().add(skillBonus);
+			}
+			else {
+				creature.getSecondarySkillBonusesList().add(skillBonus);
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
-
-		return map;
 	}
 
-	private Map<Specialization, Short> getSpecializationRanks(int creatureId) {
-		final String selectionArgs[] = { String.valueOf(creatureId) };
-		final String selection = CreatureSpecializationRanksSchema.COLUMN_CREATURE_ID + " = ?";
+	private void setSpecializationBonuses(Creature creature) {
+		final String selectionArgs[] = { String.valueOf(creature.getId()) };
+		final String selection = CreatureSpecializationBonusSchema.COLUMN_CREATURE_ID + " = ?";
 
-		Cursor cursor = super.query(CreatureSpecializationRanksSchema.TABLE_NAME,
-									CreatureSpecializationRanksSchema.COLUMNS, selection, selectionArgs,
-									CreatureSpecializationRanksSchema.COLUMN_RANKS);
-		Map<Specialization, Short> map = new HashMap<>(cursor.getCount());
+		Cursor cursor = super.query(CreatureSpecializationBonusSchema.TABLE_NAME,
+									CreatureSpecializationBonusSchema.COLUMNS, selection, selectionArgs,
+									CreatureSpecializationBonusSchema.COLUMN_BONUS);
+
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			short ranks = cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSpecializationRanksSchema.COLUMN_RANKS));
+			short bonus = cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSpecializationBonusSchema.COLUMN_BONUS));
 			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(
-					CreatureSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID));
+					CreatureSpecializationBonusSchema.COLUMN_SPECIALIZATION_ID));
 			Specialization instance = specializationDao.getById(mappedId);
 			if(instance != null) {
-				map.put(instance, ranks);
+				creature.getSpecializationBonuses().put(instance, bonus);
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
-
-		return map;
 	}
 
-	private Map<SpellList, Short> getSpellListRanks(int creatureId) {
-		final String selectionArgs[] = { String.valueOf(creatureId) };
-		final String selection = CreatureSpellListRanksSchema.COLUMN_CREATURE_ID + " = ?";
+	private void setSpellListBonuses(Creature creature) {
+		final String selectionArgs[] = { String.valueOf(creature.getId()) };
+		final String selection = CreatureSpellListBonusSchema.COLUMN_CREATURE_ID + " = ?";
 
-		Cursor cursor = super.query(CreatureSpellListRanksSchema.TABLE_NAME,
-									CreatureSpellListRanksSchema.COLUMNS, selection, selectionArgs,
-									CreatureSpellListRanksSchema.COLUMN_RANKS);
-		Map<SpellList, Short> map = new HashMap<>(cursor.getCount());
+		Cursor cursor = super.query(CreatureSpellListBonusSchema.TABLE_NAME,
+									CreatureSpellListBonusSchema.COLUMNS, selection, selectionArgs,
+									CreatureSpellListBonusSchema.COLUMN_BONUS);
+
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			short ranks = cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSpellListRanksSchema.COLUMN_RANKS));
-			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(
-					CreatureSpellListRanksSchema.COLUMN_SPELL_LIST_ID));
+			short bonus = cursor.getShort(cursor.getColumnIndexOrThrow(CreatureSpellListBonusSchema.COLUMN_BONUS));
+			int mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CreatureSpellListBonusSchema.COLUMN_SPELL_LIST_ID));
 			SpellList instance = spellListDao.getById(mappedId);
 			if(instance != null) {
-				map.put(instance, ranks);
+				creature.getSpellListBonuses().put(instance, bonus);
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
-
-		return map;
 	}
 
-	private List<TalentInstance> getTalents(int creatureId) {
-		final String selectionArgs[] = { String.valueOf(creatureId) };
-		final String selection = CreatureSpellListRanksSchema.COLUMN_CREATURE_ID + " = ?";
+	private void setTalents(Creature creature) {
+		final String selectionArgs[] = { String.valueOf(creature) };
+		final String selection = CreatureSpellListBonusSchema.COLUMN_CREATURE_ID + " = ?";
 
 		Cursor cursor = super.query(CreatureTalentsSchema.TABLE_NAME,
 									CreatureTalentsSchema.COLUMNS, selection, selectionArgs,
 									CreatureTalentsSchema.COLUMN_ID);
-		List<TalentInstance> list = new ArrayList<>(cursor.getCount());
 
 		Cursor parametersCursor = super.query(CreatureTalentParametersSchema.TABLE_NAME,
 											  CreatureTalentParametersSchema.COLUMNS, selection, selectionArgs,
@@ -403,21 +410,45 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 					}
 					parametersCursor.moveToNext();
 				}
-				list.add(talentInstance);
+				creature.getTalentInstancesList().add(talentInstance);
 			}
 			cursor.moveToNext();
 		}
 		cursor.close();
-
-		return list;
 	}
 
-	private ContentValues getSkillRankValues(int creatureId, int skillId, short ranks) {
-		ContentValues values = new ContentValues(3);
+	private void setAttackBonuses(Creature creature) {
+		final String selectionArgs[] = { String.valueOf(creature.getId()) };
+		final String selection = CreatureAttackBonusSchema.COLUMN_CREATURE_ID + " = ?";
 
-		values.put(CreatureSkillRanksSchema.COLUMN_CREATURE_ID, creatureId);
-		values.put(CreatureSkillRanksSchema.COLUMN_SKILL_ID, skillId);
-		values.put(CreatureSkillRanksSchema.COLUMN_RANKS, ranks);
+		Cursor cursor = super.query(CreatureAttackBonusSchema.TABLE_NAME,
+				CreatureAttackBonusSchema.COLUMNS, selection, selectionArgs,
+				CreatureAttackBonusSchema.COLUMN_BONUS);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			int    mappedId = cursor.getInt(cursor.getColumnIndexOrThrow(CreatureAttackBonusSchema.COLUMN_ATTACK_ID));
+			Attack attack = attackDao.getById(mappedId);
+			short bonus = cursor.getShort(cursor.getColumnIndexOrThrow(CreatureAttackBonusSchema.COLUMN_BONUS));
+			boolean primary = cursor.getInt(cursor.getColumnIndexOrThrow(CreatureAttackBonusSchema.COLUMN_IS_PRIMARY)) != 0;
+			if(primary) {
+				creature.getPrimaryAttackBonusesMap().put(attack, bonus);
+			}
+			else {
+				creature.getSecondaryAttackBonusesMap().put(attack, bonus);
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+	}
+
+	private ContentValues getSkillBonusValues(int creatureId, SkillBonus  skillBonus, boolean primary) {
+		ContentValues values = new ContentValues(4);
+
+		values.put(CreatureSkillBonusSchema.COLUMN_CREATURE_ID, creatureId);
+		values.put(CreatureSkillBonusSchema.COLUMN_SKILL_ID, skillBonus.getSkill().getId());
+		values.put(CreatureSkillBonusSchema.COLUMN_BONUS, skillBonus.getBonus());
+		values.put(CreatureSkillBonusSchema.COLUMN_IS_PRIMARY, primary);
 
 		return values;
 	}
@@ -425,9 +456,9 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	private ContentValues getSpecializationRanksValues(int creatureId, int specializationId, short ranks) {
 		ContentValues values = new ContentValues(3);
 
-		values.put(CreatureSpecializationRanksSchema.COLUMN_CREATURE_ID, creatureId);
-		values.put(CreatureSpecializationRanksSchema.COLUMN_SPECIALIZATION_ID, specializationId);
-		values.put(CreatureSpecializationRanksSchema.COLUMN_RANKS, ranks);
+		values.put(CreatureSpecializationBonusSchema.COLUMN_CREATURE_ID, creatureId);
+		values.put(CreatureSpecializationBonusSchema.COLUMN_SPECIALIZATION_ID, specializationId);
+		values.put(CreatureSpecializationBonusSchema.COLUMN_BONUS, ranks);
 
 		return values;
 	}
@@ -435,9 +466,9 @@ public class CreatureDaoDbImpl extends BaseDaoDbImpl<Creature> implements Creatu
 	private ContentValues getSpellListRanksValues(int creatureId, int spellListId, short ranks) {
 		ContentValues values = new ContentValues(3);
 
-		values.put(CreatureSpellListRanksSchema.COLUMN_CREATURE_ID, creatureId);
-		values.put(CreatureSpellListRanksSchema.COLUMN_SPELL_LIST_ID, spellListId);
-		values.put(CreatureSpellListRanksSchema.COLUMN_RANKS, ranks);
+		values.put(CreatureSpellListBonusSchema.COLUMN_CREATURE_ID, creatureId);
+		values.put(CreatureSpellListBonusSchema.COLUMN_SPELL_LIST_ID, spellListId);
+		values.put(CreatureSpellListBonusSchema.COLUMN_BONUS, ranks);
 
 		return values;
 	}

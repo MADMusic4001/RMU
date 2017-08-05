@@ -141,13 +141,21 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 			out.endArray();
 		}
 
-		if (value.getAttackBonusesMap() != null && !value.getAttackBonusesMap().isEmpty()) {
+		if (!value.getPrimaryAttackBonuses().isEmpty() || !value.getSecondaryAttackBonuses().isEmpty()) {
 			out.name(VarietyAttacksSchema.TABLE_NAME);
 			out.beginArray();
-			for (Map.Entry<Attack, Short> entry : value.getAttackBonusesMap().entrySet()) {
+			for (Map.Entry<Attack, Short> entry : value.getPrimaryAttackBonuses().entrySet()) {
 				out.beginObject();
 				out.name(VarietyAttacksSchema.COLUMN_ATTACK_ID).value(entry.getKey().getId());
 				out.name(VarietyAttacksSchema.COLUMN_ATTACK_BONUS).value(entry.getValue());
+				out.name(VarietyAttacksSchema.COLUMN_IS_PRIMARY).value(true);
+				out.endObject();
+			}
+			for (Map.Entry<Attack, Short> entry : value.getPrimaryAttackBonuses().entrySet()) {
+				out.beginObject();
+				out.name(VarietyAttacksSchema.COLUMN_ATTACK_ID).value(entry.getKey().getId());
+				out.name(VarietyAttacksSchema.COLUMN_ATTACK_BONUS).value(entry.getValue());
+				out.name(VarietyAttacksSchema.COLUMN_IS_PRIMARY).value(false);
 				out.endObject();
 			}
 			out.endArray();
@@ -352,6 +360,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 		while(in.hasNext()) {
 			Attack newAttack = null;
 			short newBonus = 0;
+			boolean primary = true;
 			in.beginObject();
 			while (in.hasNext()) {
 				switch (in.nextName()) {
@@ -361,10 +370,18 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 					case VarietyAttacksSchema.COLUMN_ATTACK_BONUS:
 						newBonus = (short) in.nextInt();
 						break;
+					case VarietyAttacksSchema.COLUMN_IS_PRIMARY:
+						primary = in.nextBoolean();
+						break;
 				}
 			}
 			if (newAttack != null) {
-				creatureVariety.getAttackBonusesMap().put(newAttack, newBonus);
+				if(primary) {
+					creatureVariety.getPrimaryAttackBonuses().put(newAttack, newBonus);
+				}
+				else {
+					creatureVariety.getSecondaryAttackBonuses().put(newAttack, newBonus);
+				}
 			}
 			in.endObject();
 		}

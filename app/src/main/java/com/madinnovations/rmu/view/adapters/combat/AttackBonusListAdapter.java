@@ -17,14 +17,12 @@ package com.madinnovations.rmu.view.adapters.combat;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -62,7 +60,7 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 		if (convertView == null) {
 			rowView = layoutInflater.inflate(LAYOUT_RESOURCE_ID, parent, false);
 			holder = new ViewHolder((TextView) rowView.findViewById(R.id.attack_name_view),
-									(EditText) rowView.findViewById(R.id.attack_bonuses_edit));
+									(CheckBox) rowView.findViewById(R.id.primary_checkbox));
 			rowView.setTag(holder);
 		}
 		else {
@@ -74,7 +72,7 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 		holder.currentInstance = attackBonus;
 		if(attackBonus != null) {
 			holder.attackNameView.setText(attackBonus.getAttack().getName());
-			holder.bonusEdit.setText(String.valueOf(attackBonus.getBonus()));
+			holder.primaryCheckbox.setChecked(attackBonus.isPrimary());
 		}
 
 		return rowView;
@@ -82,14 +80,14 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 
 	private class ViewHolder {
 		private AttackBonus currentInstance;
-		private TextView attackNameView;
-		private EditText bonusEdit;
+		private TextView    attackNameView;
+		private CheckBox    primaryCheckbox;
 
-		ViewHolder(TextView attackNameView, EditText bonusEdit) {
+		ViewHolder(TextView attackNameView, CheckBox primaryCheckbox) {
 			this.attackNameView = attackNameView;
 			initAttackNameView();
-			this.bonusEdit = bonusEdit;
-			initBonusEdit();
+			this.primaryCheckbox = primaryCheckbox;
+			initPrimaryCheckbox();
 		}
 
 		private void initAttackNameView() {
@@ -109,66 +107,13 @@ public class AttackBonusListAdapter extends ArrayAdapter<AttackBonus> {
 			});
 		}
 
-		private void initBonusEdit() {
-			bonusEdit.setOnClickListener(new View.OnClickListener() {
+		private void initPrimaryCheckbox() {
+			primaryCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				@Override
-				public void onClick(View v) {
-					if(listView != null) {
-						int position = getPosition(currentInstance);
-						listView.setItemChecked(position, !listView.isItemChecked(position));
-					}
-				}
-				});
-
-			bonusEdit.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					return listView.performLongClick();
-				}
-			});
-			bonusEdit.setOnDragListener(new View.OnDragListener() {
-				@Override
-				public boolean onDrag(View v, DragEvent event) {
-					return true;
-				}
-			});
-			bonusEdit.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-				@Override
-				public void afterTextChanged(Editable editable) {
-					if (editable.length() == 0) {
-						bonusEdit.setError(getContext().getString(R.string.validation_creature_variety_bonus_required));
-					}
-					else {
-						try {
-							bonusEdit.setError(null);
-						}
-						catch (NumberFormatException ex) {
-							bonusEdit.setError(getContext().getString(R.string.validation_creature_variety_bonus_required));
-						}
-					}
-				}
-			});
-			bonusEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View view, boolean hasFocus) {
-					if(!hasFocus) {
-						if(bonusEdit.length() > 0) {
-							try {
-								short newBonus = Short.valueOf(bonusEdit.getText().toString());
-								if (newBonus != currentInstance.getBonus()) {
-									currentInstance.setBonus(newBonus);
-									setAttackBonusHandler.setAttackBonus(currentInstance);
-								}
-								bonusEdit.setError(null);
-							}
-							catch (NumberFormatException ex) {
-								bonusEdit.setError(getContext().getString(R.string.validation_creature_variety_bonus_required));
-							}
-						}
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(currentInstance.isPrimary() != isChecked) {
+						currentInstance.setPrimary(isChecked);
+						setAttackBonusHandler.setAttackBonus(currentInstance);
 					}
 				}
 			});

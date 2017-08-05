@@ -35,7 +35,7 @@
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       style="@style/InputLabel"
-      android:text="@string/label_attack_bonus"/>
+      android:text="@string/label_primary"/>
 
   <ListView
       android:id="@+id/attacks_list"
