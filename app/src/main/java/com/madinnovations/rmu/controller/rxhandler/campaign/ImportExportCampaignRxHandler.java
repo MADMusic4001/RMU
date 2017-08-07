@@ -36,8 +36,8 @@ import com.madinnovations.rmu.data.dao.play.serializers.EncounterSetupSerializer
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.item.Item;
+import com.madinnovations.rmu.data.entities.item.Weapon;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.RMUAppException;
 

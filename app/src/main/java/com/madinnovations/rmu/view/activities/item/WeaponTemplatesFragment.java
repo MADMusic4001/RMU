@@ -38,14 +38,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.DamageTableRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.ItemTemplateRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.item.WeaponTemplateRxHandler;
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.object.ItemTemplate;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.ItemTemplate;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.TwoFieldListAdapter;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
@@ -69,6 +71,8 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		TextInputLayoutUtils.ValuesCallback {
 	private static final String TAG = "WeaponTemplatesFragment";
 	@Inject
+	protected AttackRxHandler                     attackRxHandler;
+	@Inject
 	protected DamageTableRxHandler                damageTableRxHandler;
 	@Inject
 	protected ItemTemplateRxHandler               itemTemplateRxHandler;
@@ -80,6 +84,7 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 	private   ListView                            listView;
 	private   SpinnerUtils<Specialization>        combatSpecializationSpinnerUtils;
 	private   SpinnerUtils<DamageTable>           damageTableSpinnerUtils;
+	private   SpinnerUtils<Attack>                attackSpinnerUtils;
 	private   CheckBox                            braceableCheckbox;
 	private   EditText                            fumbleEdit;
 	private   EditText                            lengthEdit;
@@ -109,6 +114,8 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		damageTableSpinnerUtils = new SpinnerUtils<>();
 		damageTableSpinnerUtils.initSpinner(layout, getActivity(), damageTableRxHandler.getAll(), this,
 											R.id.damage_table_spinner, null);
+		attackSpinnerUtils = new SpinnerUtils<>();
+		attackSpinnerUtils.initSpinner(layout, getActivity(), attackRxHandler.getAll(), this, R.id.attack_spinner, null);
 		braceableCheckbox = CheckBoxUtils.initCheckBox(layout, this, R.id.braceable_checkbox);
 
 		fumbleEdit = TextInputLayoutUtils.initEdit(layout, getActivity(), this, R.id.fumble_textInputLayout,
@@ -197,6 +204,9 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 			case R.id.damage_table_spinner:
 				result = currentInstance.getDamageTable();
 				break;
+			case R.id.attack_spinner:
+				result = currentInstance.getAttack();
+				break;
 		}
 
 		return result;
@@ -211,6 +221,10 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 				break;
 			case R.id.damage_table_spinner:
 				currentInstance.setDamageTable((DamageTable)newItem);
+				saveItem();
+				break;
+			case R.id.attack_spinner:
+				currentInstance.setAttack((Attack)newItem);
 				saveItem();
 				break;
 		}
@@ -375,14 +389,20 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 		changed = itemTemplatePaneFragment.copyViewsToItem();
 
 		Specialization newSpecialization = combatSpecializationSpinnerUtils.getSelectedItem();
-		if(!newSpecialization.equals(currentInstance.getCombatSpecialization())) {
+		if(newSpecialization != null && !newSpecialization.equals(currentInstance.getCombatSpecialization())) {
 			currentInstance.setCombatSpecialization(newSpecialization);
 			changed = true;
 		}
 
 		DamageTable newDamageTable = damageTableSpinnerUtils.getSelectedItem();
-		if(!newDamageTable.equals(currentInstance.getDamageTable())) {
+		if(newDamageTable != null && !newDamageTable.equals(currentInstance.getDamageTable())) {
 			currentInstance.setDamageTable(newDamageTable);
+			changed = true;
+		}
+
+		Attack newAttack = attackSpinnerUtils.getSelectedItem();
+		if(newAttack != null && !newAttack.equals(currentInstance.getAttack())) {
+			currentInstance.setAttack(newAttack);
 			changed = true;
 		}
 
@@ -435,6 +455,10 @@ public class WeaponTemplatesFragment extends Fragment implements TwoFieldListAda
 
 		if(currentInstance.getDamageTable() != null) {
 			damageTableSpinnerUtils.setSelection(currentInstance.getDamageTable());
+		}
+
+		if(currentInstance.getAttack() != null) {
+			attackSpinnerUtils.setSelection(currentInstance.getAttack());
 		}
 
 		braceableCheckbox.setChecked(currentInstance.isBraceable());

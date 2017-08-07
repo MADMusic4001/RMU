@@ -18,8 +18,8 @@ package com.madinnovations.rmu.controller.rxhandler.item;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
-import com.madinnovations.rmu.data.entities.object.ItemTemplate;
-import com.madinnovations.rmu.data.entities.object.Slot;
+import com.madinnovations.rmu.data.entities.item.ItemTemplate;
+import com.madinnovations.rmu.data.entities.item.Slot;
 
 import java.util.Collection;
 

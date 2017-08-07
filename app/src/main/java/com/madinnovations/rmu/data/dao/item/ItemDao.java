@@ -18,8 +18,8 @@ package com.madinnovations.rmu.data.dao.item;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.object.Slot;
+import com.madinnovations.rmu.data.entities.item.Item;
+import com.madinnovations.rmu.data.entities.item.Slot;
 
 import java.util.Collection;
 import java.util.List;

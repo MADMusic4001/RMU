@@ -20,13 +20,12 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
@@ -39,8 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Fragment to handle interaction with the Initiative dialog.
  */
@@ -48,9 +45,8 @@ import javax.inject.Inject;
 public class InitiativeDialog extends DialogFragment {
 	private static final String TAG                     = "InitiativeDialog";
 	public static final String  ENCOUNTER_SETUP_ARG_KEY = "encounterSetup";
-	public static final String  SPEC_RX_HANDLER_ARG_KEY = "specializationRxHandler";
-	private SpecializationRxHandler specializationRxHandler;
-	private EncounterSetup encounterSetup;
+	public static final String  ATTACK_RX_HANDLER_ARG_KEY = "attackRxHandler";
+	private EncounterSetup  encounterSetup;
 	private InitiativeDialogListener listener = null;
 	private InitiativeListAdapter initiativeListAdapter;
 	private List<EncounterRoundInfo> listItems = new ArrayList<>();
@@ -59,11 +55,11 @@ public class InitiativeDialog extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		encounterSetup = (EncounterSetup) getArguments().getSerializable(ENCOUNTER_SETUP_ARG_KEY);
-		specializationRxHandler = (SpecializationRxHandler)getArguments().getSerializable(SPEC_RX_HANDLER_ARG_KEY);
+		AttackRxHandler attackRxHandler = (AttackRxHandler) getArguments().getSerializable(ATTACK_RX_HANDLER_ARG_KEY);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		View contentView = inflater.inflate(R.layout.initiative_dialog, null);
 		ListView combatantsListView = (ListView)contentView.findViewById(R.id.combatants_list_view);
-		initiativeListAdapter = new InitiativeListAdapter(getActivity(), encounterSetup, specializationRxHandler);
+		initiativeListAdapter = new InitiativeListAdapter(getActivity(), encounterSetup, attackRxHandler);
 		initInitiativeList();
 		combatantsListView.setAdapter(initiativeListAdapter);
 		builder.setTitle(R.string.title_initiative)

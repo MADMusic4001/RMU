@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package com.madinnovations.rmu.data.entities.object;
+package com.madinnovations.rmu.data.entities.item;
 
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;

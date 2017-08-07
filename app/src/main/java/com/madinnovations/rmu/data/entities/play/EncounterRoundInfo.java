@@ -17,22 +17,22 @@ package com.madinnovations.rmu.data.entities.play;
 
 import android.support.annotation.NonNull;
 
+import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.Position;
-import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.AttackResult;
 import com.madinnovations.rmu.data.entities.combat.CombatPosition;
+import com.madinnovations.rmu.data.entities.combat.OffensiveBonus;
 import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
 import com.madinnovations.rmu.data.entities.common.Being;
 import com.madinnovations.rmu.data.entities.common.Pace;
 import com.madinnovations.rmu.data.entities.common.Skill;
-import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.State;
 import com.madinnovations.rmu.data.entities.common.StateType;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -42,13 +42,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.madinnovations.rmu.data.entities.Modifiers.DAZED;
-import static com.madinnovations.rmu.data.entities.Modifiers.OFF_HAND_PENALTY;
 import static com.madinnovations.rmu.data.entities.Modifiers.PRONE;
 import static com.madinnovations.rmu.data.entities.Modifiers.STAGGERED;
 
 /**
  * Per round encounter information
  */
+@SuppressWarnings("unused")
 public class EncounterRoundInfo implements Serializable, Comparable<EncounterRoundInfo> {
 	private static final long   serialVersionUID = 7312314437576720214L;
 	@SuppressWarnings("unused")
@@ -69,7 +69,8 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 	private Action             actionInProgress      = null;
 	private AttackResult       attackResult          = null;
 	private short              movementRemaining     = 4;
-	private Object             selectedAttack        = null;
+	private Attack             selectedAttack        = null;
+	private OffensiveBonus     offensiveBonus        = new OffensiveBonus();
 
 	/**
 	 * Creates a new EncounterRoundInfo instance
@@ -121,13 +122,13 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 	}
 
 	public Map<Being, Short> getOffensiveBonuses(Map<? extends Being, EncounterRoundInfo> opponentsInfo, Weapon weapon,
-												 Attack attack, Specialization specialization) {
-		short baseOB = getBaseOffensiveBonus(weapon, attack, specialization);
+												 Attack attack) {
+		short baseOB = getBaseOffensiveBonus(attack);
 
 		Map<Being, Short> bonuses = new HashMap<>(opponentsInfo.size());
 		for(Map.Entry<? extends Being, EncounterRoundInfo> entry : opponentsInfo.entrySet()) {
 			bonuses.put(entry.getKey(),
-						(short)(getOpponentModsToOffensiveBonus(entry.getValue()) + baseOB));
+						(short)(getOpponentModsToOffensiveBonus(entry.getValue(), weapon) + baseOB));
 		}
 
 		return bonuses;
@@ -141,100 +142,109 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 	 * @param attack  the attack to be used. Can be null if a Weapon is used instead
 	 * @return  the offensive bonus
 	 */
-	public short getOffensiveBonus(EncounterRoundInfo opponentInfo, Weapon weapon, Attack attack, Specialization specialization) {
-		short baseOB = getBaseOffensiveBonus(weapon, attack, specialization);
-		baseOB += getOpponentModsToOffensiveBonus(opponentInfo);
+	public short getOffensiveBonus(EncounterRoundInfo opponentInfo, Weapon weapon, Attack attack) {
+		short baseOB = getBaseOffensiveBonus(attack);
+		baseOB += getOpponentModsToOffensiveBonus(opponentInfo, weapon);
 
 		return baseOB;
 	}
 
-	private short getBaseOffensiveBonus(Weapon weapon, Attack attack, Specialization specialization) {
+	private short getBaseOffensiveBonus(@NonNull Attack attack) {
 		short baseOB = -25;
 
-		if(weapon != null) {
-			if (weapon == combatant.getMainHandItem()) {
-				baseOB = 0;
-			}
-			else if (weapon == combatant.getOffhandItem()) {
-				baseOB = OFF_HAND_PENALTY;
-			}
-			Short ranks = combatant.getSpecializationRanks().get(((WeaponTemplate)weapon.getItemTemplate())
-																		 .getCombatSpecialization());
-			if(ranks == null) {
-				baseOB -= 25;
-			}
-			else {
-				baseOB += Skill.getRankBonus(ranks);
+		Short attackBonus;
+		if(combatant instanceof Creature) {
+			attackBonus = ((Creature) combatant).getCreatureVariety().getPrimaryAttackBonuses().get(attack);
+			if (attackBonus == null) {
+				attackBonus = ((Creature) combatant).getCreatureVariety().getSecondaryAttackBonuses().get(attack);
 			}
 		}
-		if(attack != null && combatant instanceof Creature) {
-			if(baseOB == -25) {
-				baseOB = 0;
-			}
-			Short attackBonus = ((Creature)combatant).getCreatureVariety().getPrimaryAttackBonuses().get(attack);
-			if(attackBonus == null) {
-				attackBonus = ((Creature)combatant).getCreatureVariety().getSecondaryAttackBonuses().get(attack);
-			}
-			if(attackBonus != null) {
-				baseOB += attackBonus;
-			}
+		else {
+			Short ranks = combatant.getSpecializationRanks().get(attack.getSpecialization());
+			attackBonus = Skill.getRankBonus(ranks);
 		}
-		if(specialization != null && combatant instanceof Character) {
-			Short ranks = combatant.getSpecializationRanks().get(specialization);
-			if(ranks != null) {
-				baseOB = Skill.getRankBonus(ranks);
-			}
+		if(attackBonus != null) {
+			baseOB += attackBonus;
 		}
+		offensiveBonus.getAttackerAdditions().put(R.string.ob_skill_ranks, baseOB);
 		for (Map.Entry<StateType, State> entry : combatant.getCurrentStates().entrySet()) {
 			switch (entry.getKey()) {
 				case STAGGERED:
+					offensiveBonus.getAttackerSubtractions().put(R.string.ob_attacker_staggered, (short)STAGGERED);
 					baseOB += STAGGERED;
 					break;
 				case DAZED:
+					offensiveBonus.getAttackerSubtractions().put(R.string.ob_attacker_dazed, (short)DAZED);
 					baseOB += DAZED;
 					break;
 				case PRONE:
+					offensiveBonus.getAttackerSubtractions().put(R.string.ob_attacker_prone, (short)PRONE);
 					baseOB += PRONE;
 					break;
 			}
 		}
 		if(getPace() != null) {
-			baseOB -= isMovingBackwards() ? getPace().getMoveBackwardsPenalty() : getPace().getPenalty();
+			int pacePenalty;
+			if(isMovingBackwards()) {
+				pacePenalty = getPace().getMoveBackwardsPenalty();
+				offensiveBonus.getAttackerSubtractions().put(R.string.ob_attacker_moving_backwards, (short)pacePenalty);
+			}
+			else {
+				pacePenalty = getPace().getPenalty();
+				if(pacePenalty != 0) {
+					offensiveBonus.getAttackerSubtractions().put(R.string.ob_attacker_moving_pace, (short) pacePenalty);
+				}
+			}
+			baseOB += pacePenalty;
 		}
 
-		baseOB += restrictedQuarters.getModifier();
+		if(restrictedQuarters != null && restrictedQuarters.getModifier() != 0) {
+			short restrictedQuartersModifier = (short)restrictedQuarters.getModifier();
+			offensiveBonus.getAttackerSubtractions().put(R.string.ob_attacker_restricted_quarters, restrictedQuartersModifier);
+			baseOB += restrictedQuartersModifier;
+		}
 
 		return baseOB;
 	}
 
-	private short getOpponentModsToOffensiveBonus(EncounterRoundInfo opponentInfo) {
+	private short getOpponentModsToOffensiveBonus(EncounterRoundInfo opponentInfo, Weapon weapon) {
 		short ob = 0;
 		for(Map.Entry<StateType, State> entry : opponentInfo.getCombatant().getCurrentStates().entrySet()) {
 			switch (entry.getKey()) {
 				case STUNNED:
+					offensiveBonus.getDefenderAdditions().put(R.string.ob_defender_stunned, (short)20);
 					ob += 20;
 					break;
 				case SURPRISED:
+					offensiveBonus.getDefenderAdditions().put(R.string.ob_defender_surprised, (short)25);
 					ob += 25;
 					break;
 				case FLATFOOTED:
+					offensiveBonus.getDefenderAdditions().put(R.string.ob_defender_flatfooted, (short)60);
 					ob += 60;
 					break;
 				case PRONE:
+					offensiveBonus.getDefenderAdditions().put(R.string.ob_defender_prone, (short)30);
 					ob += 30;
 					break;
 			}
 		}
 		if(getPosition() != null && opponentInfo.getPosition() != null) {
+			float weaponLength = 0;
+			if(weapon != null) {
+				weaponLength = ((WeaponTemplate)weapon.getItemTemplate()).getLength();
+			}
 			CombatPosition defendPosition = getPosition().canAttack(opponentInfo.getPosition(),
 																	opponentInfo.getCombatant().getHeight(),
-																	combatant.getHeight(), combatant.getWeaponLength());
+																	combatant.getHeight(), weaponLength);
 			switch (defendPosition) {
 				case RIGHT_FLANK:
 				case LEFT_FLANK:
+					offensiveBonus.getDefenderAdditions().put(R.string.ob_attacker_flanking_defender, (short)15);
 					ob += 15;
 					break;
 				case REAR:
+					offensiveBonus.getDefenderAdditions().put(R.string.ob_attacker_behind_defender, (short)35);
 					ob += 35;
 					break;
 			}
@@ -242,10 +252,12 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 			switch (attackPosition) {
 				case RIGHT_FLANK:
 				case LEFT_FLANK:
+					offensiveBonus.getDefenderSubtractions().put(R.string.ob_defender_flanking_attacker, (short)-30);
 					ob -= 30;
 					break;
 				case REAR:
-					ob -= 30;
+					offensiveBonus.getDefenderSubtractions().put(R.string.ob_defender_behind_attacker, (short)-70);
+					ob -= 70;
 					break;
 			}
 		}
@@ -360,10 +372,10 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 	public void setMovementRemaining(short movementRemaining) {
 		this.movementRemaining = movementRemaining;
 	}
-	public Object getSelectedAttack() {
+	public Attack getSelectedAttack() {
 		return selectedAttack;
 	}
-	public void setSelectedAttack(Object selectedAttack) {
+	public void setSelectedAttack(Attack selectedAttack) {
 		this.selectedAttack = selectedAttack;
 	}
 }

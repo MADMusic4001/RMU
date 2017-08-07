@@ -57,7 +57,7 @@ import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.item.Item;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 

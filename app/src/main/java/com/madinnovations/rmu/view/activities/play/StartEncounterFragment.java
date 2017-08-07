@@ -37,8 +37,8 @@ import android.widget.TextView;
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.character.CharacterRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
-import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.creature.CreatureRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.play.EncounterSetupRxHandler;
 import com.madinnovations.rmu.data.entities.Position;
@@ -71,6 +71,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 //	private static final short MAX_INITIATIVE = (short)55;
 	private static final String TAG = "StartEncounterFragment";
 	@Inject
+	protected AttackRxHandler         attackRxHandler;
+	@Inject
 	protected CampaignRxHandler       campaignRxHandler;
 	@Inject
 	protected CharacterRxHandler      characterRxHandler;
@@ -78,8 +80,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	protected CreatureRxHandler       creatureRxHandler;
 	@Inject
 	protected CriticalResultRxHandler criticalResultRxHandler;
-	@Inject
-	protected SpecializationRxHandler specializationRxHandler;
 	@Inject
 	protected EncounterSetupRxHandler encounterSetupRxHandler;
 	private   TerrainView             terrainView;
@@ -433,7 +433,7 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 			InitiativeDialog dialog = new InitiativeDialog();
 			Bundle bundle = new Bundle();
 			bundle.putSerializable(InitiativeDialog.ENCOUNTER_SETUP_ARG_KEY, currentInstance);
-			bundle.putSerializable(InitiativeDialog.SPEC_RX_HANDLER_ARG_KEY, specializationRxHandler);
+			bundle.putSerializable(InitiativeDialog.ATTACK_RX_HANDLER_ARG_KEY, attackRxHandler);
 			dialog.setArguments(bundle);
 			dialog.setListener(StartEncounterFragment.this);
 			dialog.show(getFragmentManager(), "InitiativeDialogFragment");

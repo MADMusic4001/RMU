@@ -17,9 +17,7 @@
  *
  */
 
-package com.madinnovations.rmu.data.entities.object;
-
-import com.madinnovations.rmu.data.entities.object.MoneyUnit;
+package com.madinnovations.rmu.data.entities.item;
 
 /**
  * Encapsulates a costs value and units

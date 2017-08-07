@@ -17,7 +17,7 @@
  *
  */
 
-package com.madinnovations.rmu.data.entities.object;
+package com.madinnovations.rmu.data.entities.item;
 
 import android.support.annotation.StringRes;
 

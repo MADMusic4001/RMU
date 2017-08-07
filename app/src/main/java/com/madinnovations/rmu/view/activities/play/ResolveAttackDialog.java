@@ -19,10 +19,9 @@ import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
@@ -174,35 +173,38 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 	}
 
 	private void setDamageResults(short attackRoll, EncounterRoundInfo opponentInfo) {
-		Object attack = encounterRoundInfo.getSelectedAttack();
+		Attack attack = encounterRoundInfo.getSelectedAttack();
 		Log.d(TAG, "setDamageResults: attack = " + attack);
 		Weapon weapon = null;
 		Attack creatureAttack = null;
-		Specialization specialization = null;
 		DamageTable damageTable = null;
 		short fumbleRange = 1;
 		if(attack != null) {
-			if(attack instanceof Weapon) {
-				weapon = (Weapon)attack;
+			if(encounterRoundInfo.getCombatant().getMainHandItem() instanceof  Weapon) {
+				weapon = (Weapon) encounterRoundInfo.getCombatant().getMainHandItem();
+				if (!attack.equals(((WeaponTemplate) weapon.getItemTemplate()).getAttack())) {
+					weapon = null;
+					if (encounterRoundInfo.getCombatant().getOffhandItem() instanceof Weapon) {
+						weapon = (Weapon) encounterRoundInfo.getCombatant().getOffhandItem();
+						if (!attack.equals(((WeaponTemplate) weapon.getItemTemplate()).getAttack())) {
+							weapon = null;
+						}
+					}
+				}
+			}
+			if(weapon != null) {
+				creatureAttack = ((WeaponTemplate)weapon.getItemTemplate()).getAttack();
 				damageTable = ((WeaponTemplate)weapon.getItemTemplate()).getDamageTable();
 				fumbleRange = ((WeaponTemplate)weapon.getItemTemplate()).getFumble();
 			}
-			else if(attack instanceof Attack) {
-				creatureAttack = (Attack)attack;
+			else {
+				creatureAttack = attack;
 				damageTable = creatureAttack.getDamageTable();
 				fumbleRange = creatureAttack.getFumble();
 			}
-			else if(attack instanceof Specialization) {
-				specialization = (Specialization)attack;
-				// TODO: Get DamageTable for attack specialization and fumble range
-			}
-			Log.d(TAG, "setDamageResults: damageTable = " + damageTable);
-			Log.d(TAG, "setDamageResults: fumbleRange = " + fumbleRange);
 		}
-		short offensiveBonus = encounterRoundInfo.getOffensiveBonus(opponentInfo, weapon, creatureAttack, specialization);
-		Log.d(TAG, "setDamageResults: offensiveBonus = " + offensiveBonus);
+		short offensiveBonus = encounterRoundInfo.getOffensiveBonus(opponentInfo, weapon, creatureAttack);
 		short defensiveBonus = opponentInfo.getDefensiveBonus(encounterRoundInfo);
-		Log.d(TAG, "setDamageResults: defensiveBonus = " + defensiveBonus);
 		if(attackRoll >= 1 && attackRoll <= fumbleRange) {
 			attackRollEdit.setText(String.format(getString(R.string.fumbled), attackRoll));
 		}
@@ -219,12 +221,12 @@ public class ResolveAttackDialog extends DialogFragment implements EditTextUtils
 						setCriticalResults(criticalRoll, damageResult);
 					}
 					else {
-						criticalEdit.setText("NA");
+						criticalEdit.setText(getString(R.string.not_applicable));
 					}
 				}
 				else {
 					hitsEdit.setText("0");
-					criticalEdit.setText("NA");
+					criticalEdit.setText(getString(R.string.not_applicable));
 				}
 			}
 		}

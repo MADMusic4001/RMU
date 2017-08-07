@@ -26,6 +26,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Pace values
  */
+@SuppressWarnings("unused")
 public enum Pace {
 	CREEP(R.string.enum_pace_creep, 0.5f, (short)0, (short)-5, (short)-150),
 	WALK(R.string.enum_pace_walk, 1.0f, (short)-10, (short)-20, (short)-100),

@@ -13,11 +13,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package com.madinnovations.rmu.data.entities.object;
+package com.madinnovations.rmu.data.entities.item;
 
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.item.schemas.ArmorTemplateSchema;
-import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -27,6 +26,7 @@ import java.io.IOException;
 /**
  * Armor Attributes
  */
+@SuppressWarnings("unused")
 public class ArmorTemplate extends ItemTemplate {
 	public static final String JSON_NAME = "ArmorTemplate";
 	private float              smallCost          = 0.0f;

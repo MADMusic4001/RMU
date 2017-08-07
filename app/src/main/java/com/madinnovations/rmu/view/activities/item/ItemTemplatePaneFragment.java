@@ -26,10 +26,10 @@ import android.widget.EditText;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
-import com.madinnovations.rmu.data.entities.object.Cost;
-import com.madinnovations.rmu.data.entities.object.ItemTemplate;
-import com.madinnovations.rmu.data.entities.object.MoneyUnit;
-import com.madinnovations.rmu.data.entities.object.Slot;
+import com.madinnovations.rmu.data.entities.item.Cost;
+import com.madinnovations.rmu.data.entities.item.ItemTemplate;
+import com.madinnovations.rmu.data.entities.item.MoneyUnit;
+import com.madinnovations.rmu.data.entities.item.Slot;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 import com.madinnovations.rmu.view.utils.SpinnerUtils;

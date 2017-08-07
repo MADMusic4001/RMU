@@ -23,9 +23,9 @@ import com.madinnovations.rmu.data.dao.item.WeaponDao;
 import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.data.entities.object.Slot;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.Slot;
+import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 
 import java.util.Collection;
 
@@ -71,6 +71,7 @@ public class WeaponRxHandler {
 					public void call(Subscriber<? super Weapon> subscriber) {
 						try {
 							Weapon weapon = dao.getById(id);
+							subscriber.onNext(weapon);
 							if(weapon != null && weapon.getItemTemplate() != null &&
 									weapon.getItemTemplate() instanceof WeaponTemplate) {
 								DamageTable damageTable = ((WeaponTemplate) weapon.getItemTemplate()).getDamageTable();
@@ -84,7 +85,6 @@ public class WeaponRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(weapon);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -109,6 +109,7 @@ public class WeaponRxHandler {
 					public void call(Subscriber<? super Collection<Weapon>> subscriber) {
 						try {
 							Collection<Weapon> weapons = dao.getAll();
+							subscriber.onNext(weapons);
 							for(Weapon weapon : weapons) {
 								DamageTable damageTable = ((WeaponTemplate)weapon.getItemTemplate()).getDamageTable();
 								Collection<DamageResultRow> resultRows = damageResultRowDao.
@@ -121,7 +122,6 @@ public class WeaponRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(weapons);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -214,12 +214,14 @@ public class WeaponRxHandler {
 	 * @return an {@link Observable} instance that can be subscribed to in order to retrieve a collection of Weapon
 	 * instances.
 	 */
+	@SuppressWarnings("unused")
 	public Observable<Collection<Weapon>> getAllForSlot(@NonNull final Slot slot) {
 		return Observable.create(new Observable.OnSubscribe<Collection<Weapon>>() {
 			@Override
 			public void call(Subscriber<? super Collection<Weapon>> subscriber) {
 				try {
 					Collection<Weapon> weapons = dao.getAllForSlot(slot);
+					subscriber.onNext(weapons);
 					for(Weapon weapon : weapons) {
 						DamageTable damageTable = ((WeaponTemplate)weapon.getItemTemplate()).getDamageTable();
 						Collection<DamageResultRow> resultRows = damageResultRowDao.
@@ -232,7 +234,6 @@ public class WeaponRxHandler {
 							damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 						}
 					}
-					subscriber.onNext(weapons);
 					subscriber.onCompleted();
 				}
 				catch(Exception e) {

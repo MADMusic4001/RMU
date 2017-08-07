@@ -622,4 +622,21 @@
   <string name="no_specialization">No Specialization</string>
   <string name="no_size_modifier">No Size Modifier</string>
   <string name="new_item_template">New Item Template</string>
+
+  <!-- Offensive bonus component strings -->
+  <string name="ob_skill_ranks">Skill rank bonus</string>
+  <string name="ob_attacker_staggered">Attacker staggered</string>
+  <string name="ob_attacker_dazed">Attacker dazed</string>
+  <string name="ob_attacker_prone">Attacker prone</string>
+  <string name="ob_attacker_moving_backwards">Attacker moving backwards</string>
+  <string name="ob_attacker_moving_pace">Attacker moving</string>
+  <string name="ob_attacker_restricted_quarters">Restricted quarters</string>
+  <string name="ob_defender_stunned">Defender stunned</string>
+  <string name="ob_defender_surprised">Defender surprised</string>
+  <string name="ob_defender_flatfooted">Defender flatfooted</string>
+  <string name="ob_defender_prone">Defender prone</string>
+  <string name="ob_attacker_flanking_defender">Attacker flanking defender</string>
+  <string name="ob_attacker_behind_defender">Attacker behind defender</string>
+  <string name="ob_defender_flanking_attacker">Defender flanking attacker</string>
+  <string name="ob_defender_behind_attacker">Defender flanking attacker</string>
 </resources>

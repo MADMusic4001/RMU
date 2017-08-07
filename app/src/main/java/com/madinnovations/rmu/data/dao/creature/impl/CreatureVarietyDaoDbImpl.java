@@ -205,7 +205,6 @@ public class CreatureVarietyDaoDbImpl extends BaseDaoDbImpl<CreatureVariety> imp
 		instance.setAttackSequence(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ATTACK_SEQUENCE)));
 		setAttackBonuses(instance);
 		instance.setSkillBonusesList(getSkillBonuses(instance.getId()));
-		instance.parseAttackSequence();
 
 		return instance;
 	}

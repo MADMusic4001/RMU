@@ -15,7 +15,7 @@
  */
 package com.madinnovations.rmu.data.dao.item;
 
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 
 import java.util.Collection;
 import java.util.List;

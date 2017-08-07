@@ -22,9 +22,9 @@ import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.object.ItemTemplate;
-import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.item.Item;
+import com.madinnovations.rmu.data.entities.item.ItemTemplate;
+import com.madinnovations.rmu.data.entities.item.Weapon;
 
 import java.io.IOException;
 

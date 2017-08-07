@@ -128,7 +128,7 @@ public class CreatureVariety extends DatabaseObject {
 		}
 	}
 
-	private void parseAttackSequence() {
+	private void  parseAttackSequence() {
 		if(attackList == null) {
 			String patternString = BONUS_REG_EX
 					+ SIZE_REG_EX

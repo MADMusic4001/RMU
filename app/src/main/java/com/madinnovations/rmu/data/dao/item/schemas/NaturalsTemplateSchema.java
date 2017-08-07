@@ -24,6 +24,7 @@ public interface NaturalsTemplateSchema {
 	String TABLE_NAME = "naturals_templates";
 	String NATURAL_ID = "naturalId";
 
+	String COLUMN_ID               = "id";
 	String COLUMN_ITEM_TEMPLATE_ID = "itemTemplateId";
 	String COLUMN_BIOME_ID         = "biomeId";
 	String COLUMN_FORM_NAME        = "formName";
@@ -44,6 +45,6 @@ public interface NaturalsTemplateSchema {
 			+ COLUMN_EFFECTS + " TEXT NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ITEM_TEMPLATE_ID, COLUMN_BIOME_ID, COLUMN_FORM_NAME, COLUMN_PREP_NAME,
+	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_BIOME_ID, COLUMN_FORM_NAME, COLUMN_PREP_NAME,
 			COLUMN_SEASON, COLUMN_EFFECTS};
 }

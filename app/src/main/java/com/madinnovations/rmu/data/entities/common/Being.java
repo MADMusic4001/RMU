@@ -21,9 +21,9 @@ package com.madinnovations.rmu.data.entities.common;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.object.Item;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.Item;
+import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.spells.Realm;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 

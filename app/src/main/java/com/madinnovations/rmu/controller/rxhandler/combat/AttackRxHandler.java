@@ -24,6 +24,7 @@ import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Specialization;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,8 +38,10 @@ import rx.schedulers.Schedulers;
 /**
  * Creates reactive observable for requesting operations on {@link Attack} instances with persistent storage.
  */
-public class AttackRxHandler {
-	private AttackDao          dao;
+@SuppressWarnings("unused")
+public class AttackRxHandler implements Serializable {
+	private static final long serialVersionUID = 3392013210046552200L;
+	private AttackDao dao;
 	private DamageResultDao    damageResultDao;
 	private DamageResultRowDao damageResultRowDao;
 
@@ -69,6 +72,7 @@ public class AttackRxHandler {
 					public void call(Subscriber<? super Attack> subscriber) {
 						try {
 							Attack attack = dao.getById(id);
+							subscriber.onNext(attack);
 							if(attack != null) {
 								DamageTable damageTable = attack.getDamageTable();
 								Collection<DamageResultRow> resultRows = damageResultRowDao.
@@ -81,7 +85,6 @@ public class AttackRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(dao.getById(id));
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -106,6 +109,7 @@ public class AttackRxHandler {
 					public void call(Subscriber<? super Attack> subscriber) {
 						try {
 							Attack attack = dao.getByCode(code);
+							subscriber.onNext(attack);
 							if(attack != null) {
 								DamageTable damageTable = attack.getDamageTable();
 								Collection<DamageResultRow> resultRows = damageResultRowDao.
@@ -118,7 +122,6 @@ public class AttackRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(attack);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -143,6 +146,7 @@ public class AttackRxHandler {
 					public void call(Subscriber<? super Collection<Attack>> subscriber) {
 						try {
 							Collection<Attack> attacks = dao.getAll();
+							subscriber.onNext(attacks);
 							for(Attack attack : attacks) {
 								DamageTable damageTable = attack.getDamageTable();
 								Collection<DamageResultRow> resultRows = damageResultRowDao.
@@ -155,7 +159,6 @@ public class AttackRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(attacks);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -256,22 +259,24 @@ public class AttackRxHandler {
 							Collection<Attack> rangedWeaponAttacks = new ArrayList<>();
 							Collection<Attack> attacks = dao.getAll();
 							for(Attack attack : attacks) {
-								if(attack.getSpecialization() != null &&
+								if (attack.getSpecialization() != null &&
 										attack.getSpecialization().getSkill().getName().equals("Ranged Weapons")) {
 									rangedWeaponAttacks.add(attack);
-									DamageTable damageTable = attack.getDamageTable();
-									Collection<DamageResultRow> resultRows = damageResultRowDao.
-											getDamageResultRowsForDamageTable(damageTable);
-									for(DamageResultRow damageResultRow : resultRows) {
-										Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
-										for(DamageResult damageResult : results) {
-											damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
-										}
-										damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
-									}
 								}
 							}
 							subscriber.onNext(rangedWeaponAttacks);
+							for(Attack attack : rangedWeaponAttacks) {
+								DamageTable damageTable = attack.getDamageTable();
+								Collection<DamageResultRow> resultRows = damageResultRowDao.
+										getDamageResultRowsForDamageTable(damageTable);
+								for(DamageResultRow damageResultRow : resultRows) {
+									Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+									for(DamageResult damageResult : results) {
+										damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+									}
+									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+								}
+							}
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -299,22 +304,24 @@ public class AttackRxHandler {
 							Collection<Attack> meleeWeaponAttacks = new ArrayList<>();
 							Collection<Attack> attacks = dao.getAll();
 							for(Attack attack : attacks) {
-								if(attack.getSpecialization() != null &&
+								if (attack.getSpecialization() != null &&
 										attack.getSpecialization().getSkill().getName().equals("Melee Weapons")) {
 									meleeWeaponAttacks.add(attack);
-									DamageTable damageTable = attack.getDamageTable();
-									Collection<DamageResultRow> resultRows = damageResultRowDao.
-											getDamageResultRowsForDamageTable(damageTable);
-									for(DamageResultRow damageResultRow : resultRows) {
-										Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
-										for(DamageResult damageResult : results) {
-											damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
-										}
-										damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
-									}
 								}
 							}
 							subscriber.onNext(meleeWeaponAttacks);
+							for(Attack attack : meleeWeaponAttacks) {
+								DamageTable damageTable = attack.getDamageTable();
+								Collection<DamageResultRow> resultRows = damageResultRowDao.
+										getDamageResultRowsForDamageTable(damageTable);
+								for(DamageResultRow damageResultRow : resultRows) {
+									Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+									for(DamageResult damageResult : results) {
+										damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
+									}
+									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+								}
+							}
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -340,6 +347,7 @@ public class AttackRxHandler {
 					public void call(Subscriber<? super Attack> subscriber) {
 						try {
 							Attack attack = dao.getForSpecialization(specialization);
+							subscriber.onNext(attack);
 							if(attack != null) {
 								DamageTable damageTable = attack.getDamageTable();
 								Collection<DamageResultRow> resultRows = damageResultRowDao.
@@ -352,7 +360,6 @@ public class AttackRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(attack);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

@@ -17,6 +17,7 @@ package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
+import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
@@ -57,7 +58,8 @@ public class ItemDaoSqlModule {
 
 	@Provides @Singleton
 	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao,
-											   SpecializationDao specializationDao, DamageTableDao damageTableDao) {
-		return new WeaponTemplateDaoDbImpl(helper, itemTemplateDao, specializationDao, damageTableDao);
+											   SpecializationDao specializationDao, DamageTableDao damageTableDao,
+											   AttackDao attackDao) {
+		return new WeaponTemplateDaoDbImpl(helper, itemTemplateDao, specializationDao, damageTableDao, attackDao);
 	}
 }

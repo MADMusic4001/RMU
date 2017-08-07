@@ -28,14 +28,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.madinnovations.rmu.R;
-import com.madinnovations.rmu.controller.rxhandler.common.SpecializationRxHandler;
+import com.madinnovations.rmu.controller.rxhandler.combat.AttackRxHandler;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.common.Being;
-import com.madinnovations.rmu.data.entities.common.Specialization;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Weapon;
+import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 import com.madinnovations.rmu.data.entities.play.EncounterRoundInfo;
 import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 
@@ -48,22 +48,49 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 	@SuppressWarnings("unused")
 	private static final String TAG                = "InitiativeListAdapter";
 	private static final int    LAYOUT_RESOURCE_ID = R.layout.initiative_list_row;
-	private SpecializationRxHandler specializationRxHandler;
-	private LayoutInflater          layoutInflater;
-	private EncounterSetup          encounterSetup;
+	private LayoutInflater  layoutInflater;
+	private EncounterSetup  encounterSetup;
+	private Attack          strikes;
+	private Attack          sweeps;
 
 	/**
 	 * Creates a new InitiativeListAdapter instance
 
 	 * @param context the view {@link Context} the adapter will be attached to
 	 * @param encounterSetup  the EncounterSetup instance for this encounter
+	 * @param attackRxHandler  an {@link AttackRxHandler} instance
 	 */
 	public InitiativeListAdapter(Context context, @NonNull EncounterSetup encounterSetup,
-								 SpecializationRxHandler specializationRxHandler) {
+								 AttackRxHandler attackRxHandler) {
 		super(context, LAYOUT_RESOURCE_ID);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.specializationRxHandler = specializationRxHandler;
 		this.encounterSetup = encounterSetup;
+		attackRxHandler.getByCode("st")
+				.subscribe(new Subscriber<Attack>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "onError: Exception caught getting strikes attack.", e);
+					}
+					@Override
+					public void onNext(Attack attack) {
+						strikes = attack;
+					}
+				});
+		attackRxHandler.getByCode("st")
+				.subscribe(new Subscriber<Attack>() {
+					@Override
+					public void onCompleted() {}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "onError: Exception caught getting sweeps attack.", e);
+					}
+					@Override
+					public void onNext(Attack attack) {
+						sweeps = attack;
+					}
+				});
 	}
 
 	@NonNull
@@ -111,7 +138,7 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 		Spinner              opponentsSpinner;
 		TextView             offensiveBonusView;
 		EditText             parryEdit;
-		ArrayAdapter<Object> attacksSpinnerAdapter;
+		ArrayAdapter<Attack> attacksSpinnerAdapter;
 		ArrayAdapter<Being>  opponentsSpinnerAdapter;
 		TextView             defensiveBonusView;
 
@@ -133,6 +160,7 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 			initAttacksSpinner();
 			initOpponentsSpinner();
 			initInitiativeRollEdit();
+			copyItemToAttackSpinner(encounterRoundInfo);
 		}
 
 		private void initInitiativeRollEdit() {
@@ -160,7 +188,6 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 		private void initAttacksSpinner() {
 			attacksSpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.single_field_row);
 			attacksSpinner.setAdapter(attacksSpinnerAdapter);
-			copyItemToAttackSpinner(encounterRoundInfo);
 
 			attacksSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
@@ -217,17 +244,27 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 			baseInitiativeView.setText(String.valueOf(encounterRoundInfo.getBaseInitiative()));
 			EncounterRoundInfo opponentEncounterRoundInfo = getSelectedOpponentEncounterRoundInfo(encounterRoundInfo);
 			copyItemToAttackSpinner(encounterRoundInfo);
-			Object attackObject = attacksSpinner.getSelectedItem();
-			Weapon weapon = null;
-			Attack attack = null;
-			if(attackObject instanceof Weapon) {
-				weapon = (Weapon)attackObject;
+			Attack attack = (Attack)attacksSpinner.getSelectedItem();
+			if(attack == null) {
+				attack = encounterRoundInfo.getSelectedAttack();
 			}
-			else {
-				attack = (Attack)attackObject;
+			if(attack != null) {
+				Weapon weapon = null;
+				if (combatant.getMainHandItem() instanceof Weapon) {
+					weapon = (Weapon) combatant.getMainHandItem();
+					if (!attack.equals(((WeaponTemplate) weapon.getItemTemplate()).getAttack())) {
+						weapon = null;
+					}
+				}
+				if (combatant.getOffhandItem() instanceof Weapon) {
+					weapon = (Weapon) combatant.getOffhandItem();
+					if (!attack.equals(((WeaponTemplate) weapon.getItemTemplate()).getAttack())) {
+						weapon = null;
+					}
+				}
+				short offensiveBonus = encounterRoundInfo.getOffensiveBonus(opponentEncounterRoundInfo, weapon, attack);
+				offensiveBonusView.setText(String.valueOf(offensiveBonus));
 			}
-			short offensiveBonus = encounterRoundInfo.getOffensiveBonus(opponentEncounterRoundInfo, weapon, attack, null);
-			offensiveBonusView.setText(String.valueOf(offensiveBonus));
 			parryEdit.setText(String.valueOf(encounterRoundInfo.getParry()));
 			defensiveBonusView.setText(String.valueOf(encounterRoundInfo.getDefensiveBonus(opponentEncounterRoundInfo)));
 		}
@@ -269,11 +306,13 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 			attacksSpinnerAdapter.clear();
 			if(encounterRoundInfo.getCombatant() instanceof Character) {
 				Character character = (Character)encounterRoundInfo.getCombatant();
-				if(character.getMainHandItem() instanceof Weapon) {
-					attacksSpinnerAdapter.add(character.getMainHandItem());
+				if(character.getMainHandItem() instanceof Weapon &&
+						((WeaponTemplate)character.getMainHandItem().getItemTemplate()).getAttack() != null) {
+					attacksSpinnerAdapter.add(((WeaponTemplate)character.getMainHandItem().getItemTemplate()).getAttack());
 				}
-				if(character.getOffhandItem() instanceof Weapon) {
-					attacksSpinnerAdapter.add(character.getOffhandItem());
+				if(character.getOffhandItem() instanceof Weapon &&
+						((WeaponTemplate)character.getOffhandItem().getItemTemplate()).getAttack() != null) {
+					attacksSpinnerAdapter.add(((WeaponTemplate)character.getOffhandItem().getItemTemplate()).getAttack());
 				}
 				if(attacksSpinnerAdapter.getCount() == 0) {
 					addStrikes();
@@ -282,11 +321,13 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 			}
 			else {
 				Creature creature = (Creature)encounterRoundInfo.getCombatant();
-				if(creature.getMainHandItem() instanceof Weapon) {
-					attacksSpinnerAdapter.add(creature.getMainHandItem());
+				if(creature.getMainHandItem() instanceof Weapon &&
+						((WeaponTemplate)creature.getMainHandItem().getItemTemplate()).getAttack() != null) {
+					attacksSpinnerAdapter.add(((WeaponTemplate)creature.getMainHandItem().getItemTemplate()).getAttack());
 				}
-				if(creature.getOffhandItem() instanceof Weapon) {
-					attacksSpinnerAdapter.add(creature.getOffhandItem());
+				if(creature.getOffhandItem() instanceof Weapon &&
+						((WeaponTemplate)creature.getOffhandItem().getItemTemplate()).getAttack() != null) {
+					attacksSpinnerAdapter.add(((WeaponTemplate)creature.getOffhandItem().getItemTemplate()).getAttack());
 				}
 				EncounterRoundInfo opponentEncounterRoundInfo = getSelectedOpponentEncounterRoundInfo(encounterRoundInfo);
 				Attack nextCreatureAttack = creature.getNextAttack(encounterRoundInfo.getAttackResult(), opponentEncounterRoundInfo,
@@ -300,69 +341,63 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 				attacksSpinner.setSelection(attacksSpinnerAdapter.getPosition(encounterRoundInfo.getSelectedAttack()));
 			}
 			else {
-				encounterRoundInfo.setSelectedAttack(attacksSpinner.getSelectedItem());
+				encounterRoundInfo.setSelectedAttack((Attack)attacksSpinner.getSelectedItem());
 			}
 		}
 
 		private void addStrikes() {
-			specializationRxHandler.getByName("Strikes").subscribe(new Subscriber<Specialization>() {
-				@Override
-				public void onCompleted() {}
-				@Override
-				public void onError(Throwable e) {
-					Log.e(TAG, "onError: Exception caught getting Strikes specialization", e);
+			if(strikes != null) {
+				if(attacksSpinnerAdapter.getPosition(strikes) == -1) {
+					Log.d(TAG, "copyItemToAttackSpinner: adding " + strikes);
+					attacksSpinnerAdapter.add(strikes);
+					attacksSpinnerAdapter.notifyDataSetChanged();
 				}
-				@Override
-				public void onNext(Specialization specialization) {
-					if(attacksSpinnerAdapter.getPosition(specialization) == -1) {
-						attacksSpinnerAdapter.add(specialization);
-						attacksSpinnerAdapter.notifyDataSetChanged();
-					}
-				}
-			});
+			}
 		}
 
 		private void addSweeps() {
-			specializationRxHandler.getByName("Sweeps & Throws").subscribe(new Subscriber<Specialization>() {
-				@Override
-				public void onCompleted() {}
-				@Override
-				public void onError(Throwable e) {
-					Log.e(TAG, "onError: Exception caught getting Sweeps & Throws specialization", e);
+			if(sweeps != null) {
+				if(attacksSpinnerAdapter.getPosition(sweeps) == -1) {
+					Log.d(TAG, "copyItemToAttackSpinner: adding " + sweeps);
+					attacksSpinnerAdapter.add(sweeps);
+					attacksSpinnerAdapter.notifyDataSetChanged();
 				}
-				@Override
-				public void onNext(Specialization specialization) {
-					if(attacksSpinnerAdapter.getPosition(specialization) == -1) {
-						attacksSpinnerAdapter.add(specialization);
-						attacksSpinnerAdapter.notifyDataSetChanged();
-					}
-				}
-			});
+			}
 		}
 
 		private short getOffensiveBonus() {
 			Being opponent = (Being)opponentsSpinner.getSelectedItem();
+			Attack attack = (Attack)attacksSpinner.getSelectedItem();
+
 			//noinspection SuspiciousMethodCalls
 			EncounterRoundInfo opponentInfo = encounterSetup.getEnemyCombatInfo().get(opponent);
 			if(opponentInfo == null) {
 				//noinspection SuspiciousMethodCalls
 				opponentInfo = encounterSetup.getCharacterCombatInfo().get(opponent);
 			}
+			if(attack == null) {
+				attack = encounterRoundInfo.getSelectedAttack();
+			}
 			Weapon weapon = null;
-			Attack attack = null;
-			Specialization specialization = null;
-			Object selection = attacksSpinner.getSelectedItem();
-			if(selection instanceof Specialization) {
-				specialization = (Specialization)selection;
-			}
-			if(selection instanceof Weapon) {
-				weapon = (Weapon)selection;
-			}
-			if(selection instanceof  Attack) {
-				attack = (Attack)selection;
+			if(attack != null) {
+				if(encounterRoundInfo.getCombatant().getMainHandItem() != null &&
+						encounterRoundInfo.getCombatant().getMainHandItem() instanceof Weapon) {
+					weapon = (Weapon)encounterRoundInfo.getCombatant().getMainHandItem();
+					if(!attack.equals(((WeaponTemplate)weapon.getItemTemplate()).getAttack())) {
+						weapon = null;
+						if(encounterRoundInfo.getCombatant().getOffhandItem() != null &&
+								encounterRoundInfo.getCombatant().getOffhandItem() instanceof Weapon) {
+							weapon = (Weapon) encounterRoundInfo.getCombatant().getOffhandItem();
+							if(!attack.equals(((WeaponTemplate)weapon.getItemTemplate()).getAttack())) {
+								weapon = null;
+							}
+						}
+					}
+				}
+				return encounterRoundInfo.getOffensiveBonus(opponentInfo, weapon, attack);
 			}
 
-			return encounterRoundInfo.getOffensiveBonus(opponentInfo, weapon, attack, specialization);
+			return -25;
 		}
 	}
 }

@@ -70,6 +70,7 @@ public class DamageTableRxHandler {
 							DamageTable damageTable = damageTableDao.getById(id);
 							Collection<DamageResultRow> resultRows = damageResultRowDao.
 									getDamageResultRowsForDamageTable(damageTable);
+							subscriber.onNext(damageTable);
 							for(DamageResultRow damageResultRow : resultRows) {
 								Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
 								for(DamageResult damageResult : results) {
@@ -77,7 +78,6 @@ public class DamageTableRxHandler {
 								}
 								damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 							}
-							subscriber.onNext(damageTable);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -102,6 +102,7 @@ public class DamageTableRxHandler {
 					public void call(Subscriber<? super Collection<DamageTable>> subscriber) {
 						try {
 							Collection<DamageTable> tables = damageTableDao.getAll();
+							subscriber.onNext(tables);
 							for(DamageTable damageTable : tables) {
 								Collection<DamageResultRow> resultRows = damageResultRowDao.
 										getDamageResultRowsForDamageTable(damageTable);
@@ -113,7 +114,6 @@ public class DamageTableRxHandler {
 									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 								}
 							}
-							subscriber.onNext(tables);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {

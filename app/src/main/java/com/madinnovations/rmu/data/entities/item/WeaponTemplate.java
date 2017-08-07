@@ -13,7 +13,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package com.madinnovations.rmu.data.entities.object;
+package com.madinnovations.rmu.data.entities.item;
+
+import android.util.Log;
 
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
@@ -30,6 +32,7 @@ import java.io.IOException;
  * Weapon attributes
  */
 public class WeaponTemplate extends ItemTemplate {
+	private static final String TAG = "WeaponTemplate";
 	public static final String         JSON_NAME   = "WeaponTemplate";
     private Specialization combatSpecialization = null;
 	private Attack         attack;
@@ -92,6 +95,9 @@ public class WeaponTemplate extends ItemTemplate {
 				.append("combatSpecialization", combatSpecialization)
 				.append("damageTable", damageTable)
 				.append("braceable", braceable)
+				.append("fumble", fumble)
+				.append("length", length)
+				.append("attack", attack)
 				.toString();
 	}
 
@@ -107,6 +113,17 @@ public class WeaponTemplate extends ItemTemplate {
 		out.name(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID).value(getCombatSpecialization().getId());
 		out.name(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID).value(getDamageTable().getId());
 		out.name(WeaponTemplateSchema.COLUMN_BRACEABLE).value(isBraceable());
+		out.name(WeaponTemplateSchema.COLUMN_FUMBLE).value(fumble);
+		out.name(WeaponTemplateSchema.COLUMN_LENGTH).value(length);
+		if(sizeAdjustment != null) {
+			out.name(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT).value(sizeAdjustment);
+		}
+		if(attack == null) {
+			Log.d(TAG, "serialize: this = " + print());
+		}
+		else {
+			out.name(WeaponTemplateSchema.COLUMN_ATTACK_ID).value(attack.getId());
+		}
 	}
 
 	// Getters and setters

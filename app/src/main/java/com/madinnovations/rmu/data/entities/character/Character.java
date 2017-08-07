@@ -25,7 +25,7 @@ import com.madinnovations.rmu.data.entities.common.StateType;
 import com.madinnovations.rmu.data.entities.common.Statistic;
 import com.madinnovations.rmu.data.entities.common.Talent;
 import com.madinnovations.rmu.data.entities.common.TalentInstance;
-import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.item.Item;
 import com.madinnovations.rmu.data.entities.spells.SpellList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -37,11 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import static com.madinnovations.rmu.data.entities.common.StateType.ENCUMBERED;
-import static com.madinnovations.rmu.data.entities.common.StateType.FATIGUED;
-import static com.madinnovations.rmu.data.entities.common.StateType.HASTED;
-import static com.madinnovations.rmu.data.entities.common.StateType.HP_LOSS;
 
 /**
  * Character attributes

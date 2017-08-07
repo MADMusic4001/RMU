@@ -28,7 +28,7 @@ import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.campaign.CampaignRxHandler;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.common.Size;
-import com.madinnovations.rmu.data.entities.object.Item;
+import com.madinnovations.rmu.data.entities.item.Item;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.ItemFragmentModule;
 import com.madinnovations.rmu.view.utils.EditTextUtils;

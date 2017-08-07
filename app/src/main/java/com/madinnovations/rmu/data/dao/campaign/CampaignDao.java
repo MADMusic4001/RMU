@@ -16,7 +16,6 @@
 package com.madinnovations.rmu.data.dao.campaign;
 
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.object.Item;
 
 import java.util.Collection;
 import java.util.List;

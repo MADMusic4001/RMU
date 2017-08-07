@@ -13,30 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.madinnovations.rmu.data.entities.object;
+package com.madinnovations.rmu.data.entities.item;
 
 import android.support.annotation.StringRes;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.view.RMUApp;
 
 /**
- * The various Substance types
+ * Prep types for poisons and herbs
  */
-public enum SubstanceType {
-	METALS(R.string.enum_substance_type_metals),
-	OTHERS(R.string.enum_substance_type_others),
-	PRECIOUS_STONES(R.string.enum_substance_type_precious_stones),
-	SEMI_PRECIOUS_STONES(R.string.enum_substance_type_semi_precious_stones),
-	STONES(R.string.enum_substance_type_stones);
+public enum Prep {
+	APPLY(R.string.enum_prep_apply),
+	BREW(R.string.enum_prep_brew),
+	INGEST(R.string.enum_prep_ingest),
+	INHALE(R.string.enum_prep_inhale),
+	LIQUID(R.string.enum_prep_liquid),
+	PASTE(R.string.enum_prep_paste),
+	POWDER(R.string.enum_prep_powder);
 
-	SubstanceType(int typeResourceId) {
-		this.typeResourceId = typeResourceId;
+	private @StringRes int nameResource;
+
+	Prep(int nameResource) {
+		this.nameResource = nameResource;
 	}
 
-	private @StringRes int typeResourceId;
+	@Override
+	public String toString() {
+		return RMUApp.getResourceUtils().getString(nameResource);
+	}
 
 	// Getters
-	public int getTypeResourceId() {
-		return typeResourceId;
+	public int getNameResource() {
+		return nameResource;
 	}
 }

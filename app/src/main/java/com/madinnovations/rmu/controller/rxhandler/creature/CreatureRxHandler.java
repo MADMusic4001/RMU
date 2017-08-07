@@ -25,8 +25,8 @@ import com.madinnovations.rmu.data.entities.combat.DamageResult;
 import com.madinnovations.rmu.data.entities.combat.DamageResultRow;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.creature.Creature;
-import com.madinnovations.rmu.data.entities.object.Weapon;
-import com.madinnovations.rmu.data.entities.object.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 
 import java.util.Collection;
 
@@ -72,6 +72,7 @@ public class CreatureRxHandler {
 					public void call(Subscriber<? super Creature> subscriber) {
 						try {
 							Creature creature = dao.getById(id);
+							subscriber.onNext(creature);
 							if(creature != null) {
 								if (creature.getMainHandItem() != null && creature.getMainHandItem() instanceof Weapon) {
 									loadDamageResults((Weapon) creature.getMainHandItem());
@@ -80,7 +81,6 @@ public class CreatureRxHandler {
 									loadDamageResults((Weapon) creature.getOffhandItem());
 								}
 							}
-							subscriber.onNext(creature);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -105,6 +105,7 @@ public class CreatureRxHandler {
 					public void call(Subscriber<? super Collection<Creature>> subscriber) {
 						try {
 							Collection<Creature> creatures = dao.getAll();
+							subscriber.onNext(creatures);
 							for(Creature creature : creatures) {
 								if (creature.getMainHandItem() != null && creature.getMainHandItem() instanceof Weapon) {
 									loadDamageResults((Weapon) creature.getMainHandItem());
@@ -113,7 +114,6 @@ public class CreatureRxHandler {
 									loadDamageResults((Weapon) creature.getOffhandItem());
 								}
 							}
-							subscriber.onNext(creatures);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -212,6 +212,7 @@ public class CreatureRxHandler {
 					public void call(Subscriber<? super Collection<Creature>> subscriber) {
 						try {
 							Collection<Creature> creatures = dao.getAllForCampaign(campaign);
+							subscriber.onNext(creatures);
 							for(Creature creature : creatures) {
 								if (creature.getMainHandItem() != null && creature.getMainHandItem() instanceof Weapon) {
 									loadDamageResults((Weapon) creature.getMainHandItem());
@@ -220,7 +221,6 @@ public class CreatureRxHandler {
 									loadDamageResults((Weapon) creature.getOffhandItem());
 								}
 							}
-							subscriber.onNext(creatures);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
