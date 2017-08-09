@@ -20,11 +20,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.WeaponDao;
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponSchema;
@@ -32,6 +33,7 @@ import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.item.Item;
 import com.madinnovations.rmu.data.entities.item.Slot;
 import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.view.RMUAppException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,21 +46,22 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao, WeaponSchema {
-	ItemDao           itemDao;
-	WeaponTemplateDao weaponTemplateDao;
+	private static final String TAG = "WeaponDaoDbImpl";
+	ItemDao         itemDao;
+	ItemTemplateDao itemTemplateDao;
 
     /**
      * Creates a new instance of WeaponDaoDbImpl
      *
      * @param helper  an {@link SQLiteOpenHelper} instance
 	 * @param itemDao  an {@link ItemDao} instance
-	 * @param weaponTemplateDao  a {@link WeaponTemplateDao} instance
+	 * @param itemTemplateDao  a {@link ItemTemplateDao} instance
      */
     @Inject
-    public WeaponDaoDbImpl(SQLiteOpenHelper helper, ItemDao itemDao, WeaponTemplateDao weaponTemplateDao) {
+    public WeaponDaoDbImpl(SQLiteOpenHelper helper, ItemDao itemDao, ItemTemplateDao itemTemplateDao) {
         super(helper);
 		this.itemDao = itemDao;
-		this.weaponTemplateDao = weaponTemplateDao;
+		this.itemTemplateDao = itemTemplateDao;
     }
 
     @Override
@@ -179,8 +182,15 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
 
 	@Override
     protected Weapon cursorToEntity(@NonNull Cursor cursor) {
+		try {
+			throw new RMUAppException("for stack trace");
+		}
+		catch (RMUAppException e) {
+			Log.e(TAG, "cursorToEntity: ", e);
+		}
 		Item item = itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-		item.setItemTemplate(weaponTemplateDao.getById(item.getItemTemplate().getId()));
+		Log.d(TAG, "cursorToEntity: loading weapon template with id " + item.getItemTemplate().getId());
+		item.setItemTemplate(itemTemplateDao.getById(item.getItemTemplate().getId()));
 		Weapon instance = new Weapon(item);
         instance.setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(COLUMN_BONUS)));
 		instance.setTwoHanded(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TWO_HANDED)) != 0);

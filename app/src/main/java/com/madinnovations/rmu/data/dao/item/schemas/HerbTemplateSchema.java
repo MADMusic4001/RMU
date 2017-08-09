@@ -22,7 +22,6 @@ public interface HerbTemplateSchema {
 	String TABLE_NAME = "herb_templates";
 	String HERB_ID = "herbId";
 
-	String COLUMN_ID = "id";
 	String COLUMN_NATURALS_TEMPLATE_ID = "naturalsTemplateId";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
@@ -32,5 +31,5 @@ public interface HerbTemplateSchema {
 				+ NaturalsTemplateSchema.TABLE_NAME + "(" + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + ")"
 			+ ")";
 
-	String[] COLUMNS = new String[] {COLUMN_ID, COLUMN_NATURALS_TEMPLATE_ID};
+	String[] COLUMNS = new String[] {COLUMN_NATURALS_TEMPLATE_ID};
 }

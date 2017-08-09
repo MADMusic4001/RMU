@@ -22,6 +22,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.common.BiomeDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
@@ -40,6 +41,7 @@ import com.madinnovations.rmu.data.entities.item.Form;
 import com.madinnovations.rmu.data.entities.item.HerbTemplate;
 import com.madinnovations.rmu.data.entities.item.ItemTemplate;
 import com.madinnovations.rmu.data.entities.item.MoneyUnit;
+import com.madinnovations.rmu.data.entities.item.NaturalsTemplate;
 import com.madinnovations.rmu.data.entities.item.PoisonTemplate;
 import com.madinnovations.rmu.data.entities.item.Prep;
 import com.madinnovations.rmu.data.entities.item.Slot;
@@ -57,11 +59,14 @@ import javax.inject.Singleton;
 /**
  * Methods for managing {@link ItemTemplate} objects in a SQLite database.
  */
+@SuppressWarnings("unused")
 @Singleton
 public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implements ItemTemplateDao, ItemTemplateSchema {
+	private static final String TAG = "ItemTemplateDaoDbImpl";
+	private AttackDao         attackDao;
 	private BiomeDao          biomeDao;
-	private SpecializationDao specializationDao;
 	private DamageTableDao    damageTableDao;
+	private SpecializationDao specializationDao;
 
     /**
      * Creates a new instance of ItemTemplateDaoDbImpl
@@ -69,9 +74,10 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
      * @param helper  an SQLiteOpenHelper instance
      */
     @Inject
-    public ItemTemplateDaoDbImpl(SQLiteOpenHelper helper, BiomeDao biomeDao, SpecializationDao specializationDao,
-								 DamageTableDao damageTableDao) {
+    public ItemTemplateDaoDbImpl(SQLiteOpenHelper helper, AttackDao attackDao, BiomeDao biomeDao,DamageTableDao damageTableDao,
+								 SpecializationDao specializationDao) {
         super(helper);
+		this.attackDao = attackDao;
 		this.biomeDao = biomeDao;
 		this.specializationDao = specializationDao;
 		this.damageTableDao = damageTableDao;
@@ -180,7 +186,8 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 	public boolean save(ItemTemplate instance, boolean isNew) {
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
-		final String weaponTemplateSelection = WeaponTemplateSchema.COLUMN_ID + " = ?";
+		final String childTemplateSelection = WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " = ?";
+		final String naturalsTemplateSelection = HerbTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " = ?";
 		ContentValues contentValues = getContentValues(instance);
 		boolean result;
 
@@ -193,19 +200,92 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 			if(getId(instance) == -1 || isNew) {
 				setId(instance, (int)db.insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_NONE));
 				result = (getId(instance) != -1);
+				if(instance instanceof ArmorTemplate) {
+					ContentValues childContentValues = getArmorContentValues((ArmorTemplate)instance);
+					db.insertWithOnConflict(ArmorTemplateSchema.TABLE_NAME, null, childContentValues,
+											SQLiteDatabase.CONFLICT_NONE);
+				}
+				if(instance instanceof NaturalsTemplate) {
+					ContentValues childContentValues = getNaturalsContentValues((NaturalsTemplate)instance);
+					db.insertWithOnConflict(NaturalsTemplateSchema.TABLE_NAME, null, childContentValues,
+											SQLiteDatabase.CONFLICT_NONE);
+					if(instance instanceof HerbTemplate) {
+						childContentValues = getHerbContentValues((HerbTemplate)instance);
+						db.insertWithOnConflict(HerbTemplateSchema.TABLE_NAME, null, childContentValues,
+												SQLiteDatabase.CONFLICT_NONE);
+					}
+					if(instance instanceof PoisonTemplate) {
+						childContentValues = getPoisonContentValues((PoisonTemplate)instance);
+						db.insertWithOnConflict(PoisonTemplateSchema.TABLE_NAME, null, childContentValues,
+												SQLiteDatabase.CONFLICT_NONE);
+					}
+				}
+				if(instance instanceof  SubstanceTemplate) {
+					ContentValues childContentValues = getSubstancesContentValues((SubstanceTemplate)instance);
+					db.insertWithOnConflict(SubstanceTemplateSchema.TABLE_NAME, null, childContentValues,
+											SQLiteDatabase.CONFLICT_NONE);
+				}
 				if(instance instanceof WeaponTemplate) {
 					ContentValues weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
-					db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
+					db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues,
+											SQLiteDatabase.CONFLICT_NONE);
 				}
 			}
 			else {
 				int count = db.update(getTableName(), contentValues, selection, selectionArgs);
 				result = (count == 1);
+				if(instance instanceof ArmorTemplate) {
+					ContentValues childContentValues = getArmorContentValues((ArmorTemplate) instance);
+					if(db.update(ArmorTemplateSchema.TABLE_NAME, childContentValues, childTemplateSelection, selectionArgs)
+							!= 1) {
+						childContentValues = getArmorContentValues((ArmorTemplate) instance);
+						db.insertWithOnConflict(ArmorTemplateSchema.TABLE_NAME, null, childContentValues,
+												SQLiteDatabase.CONFLICT_NONE);
+					}
+				}
+				if(instance instanceof NaturalsTemplate) {
+					ContentValues childContentValues = getNaturalsContentValues((NaturalsTemplate) instance);
+					if(db.update(NaturalsTemplateSchema.TABLE_NAME, childContentValues, childTemplateSelection, selectionArgs)
+							!= 1) {
+						childContentValues = getNaturalsContentValues((NaturalsTemplate) instance);
+						db.insertWithOnConflict(NaturalsTemplateSchema.TABLE_NAME, null, childContentValues,
+												SQLiteDatabase.CONFLICT_NONE);
+					}
+					if(instance instanceof HerbTemplate) {
+						childContentValues = getHerbContentValues((HerbTemplate) instance);
+						if(db.update(HerbTemplateSchema.TABLE_NAME, childContentValues, naturalsTemplateSelection, selectionArgs)
+								!= 1) {
+							childContentValues = getHerbContentValues((HerbTemplate) instance);
+							db.insertWithOnConflict(HerbTemplateSchema.TABLE_NAME, null, childContentValues,
+													SQLiteDatabase.CONFLICT_NONE);
+						}
+					}
+					if(instance instanceof PoisonTemplate) {
+						childContentValues = getPoisonContentValues((PoisonTemplate) instance);
+						if(db.update(PoisonTemplateSchema.TABLE_NAME, childContentValues, naturalsTemplateSelection,
+									 selectionArgs) != 1) {
+							childContentValues = getPoisonContentValues((PoisonTemplate) instance);
+							db.insertWithOnConflict(PoisonTemplateSchema.TABLE_NAME, null, childContentValues,
+													SQLiteDatabase.CONFLICT_NONE);
+						}
+					}
+				}
+				if(instance instanceof SubstanceTemplate) {
+					ContentValues childContentValues = getSubstancesContentValues((SubstanceTemplate) instance);
+					if(db.update(SubstanceTemplateSchema.TABLE_NAME, childContentValues, childTemplateSelection, selectionArgs)
+							!= 1) {
+						childContentValues = getSubstancesContentValues((SubstanceTemplate) instance);
+						db.insertWithOnConflict(SubstanceTemplateSchema.TABLE_NAME, null, childContentValues,
+												SQLiteDatabase.CONFLICT_NONE);
+					}
+				}
 				if(instance instanceof WeaponTemplate) {
 					ContentValues weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
-					if(db.update(WeaponTemplateSchema.TABLE_NAME, weaponContentValues, weaponTemplateSelection, selectionArgs) != 1) {
+					if(db.update(WeaponTemplateSchema.TABLE_NAME, weaponContentValues, childTemplateSelection, selectionArgs)
+							!= 1) {
 						weaponContentValues = getWeaponContentValues((WeaponTemplate)instance);
-						db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues, SQLiteDatabase.CONFLICT_NONE);
+						db.insertWithOnConflict(WeaponTemplateSchema.TABLE_NAME, null, weaponContentValues,
+												SQLiteDatabase.CONFLICT_NONE);
 					}
 				}
 			}
@@ -284,74 +364,73 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		return itemTemplates;
 	}
 
+	/*
+	 * This cursorToEntity implementation implements polymorphism for the ItemTemplate hierarchy. In order for this to work all
+	 * child tables id values must be the same as their parent item template records and the queries must left outer join each to
+	 * the child tables. For example {@link ItemTemplateSchema#SELECT_FROM}
+	 */
 	@Override
     protected ItemTemplate cursorToEntity(@NonNull Cursor cursor) {
-		ItemTemplate instance;
+		ItemTemplate instance = null;
 
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.ARMOR_ID))) {
-			instance = new ArmorTemplate();
-			((ArmorTemplate)instance).setSmallCost(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_SMALL_COST)));
-			((ArmorTemplate)instance).setMediumCost(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_MEDIUM_COST)));
-			((ArmorTemplate)instance).setBigCost(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_BIG_COST)));
-			((ArmorTemplate)instance).setLargeCost(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_LARGE_COST)));
-			((ArmorTemplate)instance).setWeightPercent(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_WEIGHT_PERCENT)));
-			((ArmorTemplate)instance).setArmorType(cursor.getShort(
-					cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_ARMOR_TYPE)));
+			ArmorTemplate armorTemplate = new ArmorTemplate();
+			armorTemplate.setSmallCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_SMALL_COST)));
+			armorTemplate.setMediumCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_MEDIUM_COST)));
+			armorTemplate.setBigCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_BIG_COST)));
+			armorTemplate.setLargeCost(cursor.getFloat(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_LARGE_COST)));
+			armorTemplate.setWeightPercent(cursor.getFloat(cursor.getColumnIndexOrThrow(
+					ArmorTemplateSchema.COLUMN_WEIGHT_PERCENT)));
+			armorTemplate.setArmorType(cursor.getShort(cursor.getColumnIndexOrThrow(ArmorTemplateSchema.COLUMN_ARMOR_TYPE)));
+			instance = armorTemplate;
 		}
-		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(HerbTemplateSchema.HERB_ID))) {
-			instance = new HerbTemplate();
-			((HerbTemplate)instance).setBiome(biomeDao.getById(cursor.getInt(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_BIOME_ID))));
-			((HerbTemplate)instance).setForm(Form.valueOf(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_FORM_NAME))));
-			((HerbTemplate)instance).setPrep(Prep.valueOf(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_PREP_NAME))));
-			((HerbTemplate)instance).setSeason(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_SEASON)));
-			((HerbTemplate)instance).setEffects(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_EFFECTS)));
-		}
-		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(PoisonTemplateSchema.POISON_ID))) {
-			instance = new PoisonTemplate();
-			((PoisonTemplate)instance).setBiome(biomeDao.getById(cursor.getInt(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_BIOME_ID))));
-			((PoisonTemplate)instance).setForm(Form.valueOf(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_FORM_NAME))));
-			((PoisonTemplate)instance).setPrep(Prep.valueOf(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_PREP_NAME))));
-			((PoisonTemplate)instance).setSeason(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_SEASON)));
-			((PoisonTemplate)instance).setEffects(cursor.getString(
-					cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_EFFECTS)));
+		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.NATURAL_ID))) {
+			if(!cursor.isNull(cursor.getColumnIndexOrThrow(HerbTemplateSchema.HERB_ID))) {
+				instance = new HerbTemplate();
+			}
+			else if(!cursor.isNull(cursor.getColumnIndexOrThrow(PoisonTemplateSchema.POISON_ID))) {
+				instance = new PoisonTemplate();
+			}
+			if(instance != null) {
+				NaturalsTemplate naturalsTemplate = (NaturalsTemplate)instance;
+				naturalsTemplate.setBiome(biomeDao.getById(cursor.getInt(
+						cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_BIOME_ID))));
+				naturalsTemplate.setForm(Form.valueOf(cursor.getString(
+						cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_FORM_NAME))));
+				naturalsTemplate.setPrep(Prep.valueOf(cursor.getString(
+						cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_PREP_NAME))));
+				naturalsTemplate.setSeason(cursor.getString(
+						cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_SEASON)));
+				naturalsTemplate.setEffects(cursor.getString(
+						cursor.getColumnIndexOrThrow(NaturalsTemplateSchema.COLUMN_EFFECTS)));
+			}
+			else {
+				instance = new ItemTemplate();
+			}
 		}
 		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.SUBSTANCE_ID))) {
-			instance = new SubstanceTemplate();
-			((SubstanceTemplate)instance).setSubstanceType(SubstanceType.valueOf(cursor.getString(
-					cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_SUBSTANCE_TYPE_NAME))));
-			((SubstanceTemplate)instance).setHardness(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_HARDNESS)));
-			((SubstanceTemplate)instance).setDescription(cursor.getString(
-					cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_DESCRIPTION)));
+			SubstanceTemplate substanceTemplate = new SubstanceTemplate();
+			substanceTemplate.setSubstanceType(SubstanceType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(
+					SubstanceTemplateSchema.COLUMN_SUBSTANCE_TYPE_NAME))));
+			substanceTemplate.setHardness(cursor.getFloat(cursor.getColumnIndexOrThrow(SubstanceTemplateSchema.COLUMN_HARDNESS)));
+			substanceTemplate.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(
+					SubstanceTemplateSchema.COLUMN_DESCRIPTION)));
+			instance = substanceTemplate;
 		}
 		else if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.WEAPON_ID))) {
-			instance = new WeaponTemplate();
-			((WeaponTemplate)instance).setBraceable(cursor.getInt(
-					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_BRACEABLE)) != 0);
-			((WeaponTemplate)instance).setFumble(cursor.getShort(
-					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_FUMBLE)));
-			((WeaponTemplate)instance).setLength(cursor.getFloat(
-					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_LENGTH)));
-			((WeaponTemplate)instance).setSizeAdjustment(cursor.getShort(
-					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT)));
-			((WeaponTemplate)instance).setCombatSpecialization(specializationDao.getById(cursor.getInt(
-					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID))));
-			((WeaponTemplate)instance).setDamageTable(damageTableDao.getById(cursor.getInt(
-					cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID))));
+			WeaponTemplate weaponTemplate = new WeaponTemplate();
+			weaponTemplate.setBraceable(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_BRACEABLE)) != 0);
+			weaponTemplate.setFumble(cursor.getShort(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_FUMBLE)));
+			weaponTemplate.setLength(cursor.getFloat(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_LENGTH)));
+			weaponTemplate.setSizeAdjustment(cursor.getShort(cursor.getColumnIndexOrThrow(
+					WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT)));
+			weaponTemplate.setCombatSpecialization(specializationDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
+					WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID))));
+			weaponTemplate.setDamageTable(damageTableDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
+					WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID))));
+			weaponTemplate.setAttack(attackDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(
+					WeaponTemplateSchema.COLUMN_ATTACK_ID))));
+			instance = weaponTemplate;
 		}
 		else {
 			instance = new ItemTemplate();
@@ -427,16 +506,74 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		return values;
     }
 
-	private ContentValues getWeaponContentValues(WeaponTemplate instance) {
+	private ContentValues getArmorContentValues(ArmorTemplate instance) {
 		ContentValues values;
 
-		if(instance.getId() != -1) {
-			values = new ContentValues(7);
-			values.put(WeaponTemplateSchema.COLUMN_ID, instance.getId());
+		values = new ContentValues(7);
+		values.put(ArmorTemplateSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getId());
+		values.put(ArmorTemplateSchema.COLUMN_SMALL_COST, instance.getSmallCost());
+		values.put(ArmorTemplateSchema.COLUMN_MEDIUM_COST, instance.getMediumCost());
+		values.put(ArmorTemplateSchema.COLUMN_BIG_COST, instance.getBigCost());
+		values.put(ArmorTemplateSchema.COLUMN_LARGE_COST, instance.getLargeCost());
+		values.put(ArmorTemplateSchema.COLUMN_WEIGHT_PERCENT, instance.getWeightPercent());
+		values.put(ArmorTemplateSchema.COLUMN_ARMOR_TYPE, instance.getArmorType());
+
+		return values;
+	}
+
+	private ContentValues getHerbContentValues(HerbTemplate instance) {
+		ContentValues values;
+
+		values = new ContentValues(1);
+		values.put(HerbTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID, instance.getId());
+
+		return values;
+	}
+
+	private ContentValues getNaturalsContentValues(NaturalsTemplate instance) {
+		ContentValues values;
+
+		values = new ContentValues(6);
+		values.put(NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getId());
+		values.put(NaturalsTemplateSchema.COLUMN_BIOME_ID, instance.getBiome().getId());
+		values.put(NaturalsTemplateSchema.COLUMN_FORM_NAME, instance.getForm().name());
+		values.put(NaturalsTemplateSchema.COLUMN_PREP_NAME, instance.getPrep().name());
+		if(instance.getSeason() != null) {
+			values.put(NaturalsTemplateSchema.COLUMN_SEASON, instance.getSeason());
 		}
 		else {
-			values = new ContentValues(6);
+			values.putNull(NaturalsTemplateSchema.COLUMN_SEASON);
 		}
+		values.put(NaturalsTemplateSchema.COLUMN_EFFECTS, instance.getEffects());
+
+		return values;
+	}
+
+	private ContentValues getPoisonContentValues(PoisonTemplate instance) {
+		ContentValues values;
+
+		values = new ContentValues(1);
+		values.put(PoisonTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID, instance.getId());
+
+		return values;
+	}
+
+	private ContentValues getSubstancesContentValues(SubstanceTemplate instance) {
+		ContentValues values;
+
+		values = new ContentValues(7);
+		values.put(SubstanceTemplateSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getId());
+		values.put(SubstanceTemplateSchema.COLUMN_SUBSTANCE_TYPE_NAME, instance.getSubstanceType().name());
+		values.put(SubstanceTemplateSchema.COLUMN_HARDNESS, instance.getHardness());
+		values.put(SubstanceTemplateSchema.COLUMN_DESCRIPTION, instance.getDescription());
+
+		return values;
+	}
+
+	private ContentValues getWeaponContentValues(WeaponTemplate instance) {
+		ContentValues values = new ContentValues(8);
+
+		values.put(WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getId());
 		values.put(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID, instance.getCombatSpecialization().getId());
 		values.put(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
 		values.put(WeaponTemplateSchema.COLUMN_BRACEABLE, instance.isBraceable());
@@ -448,6 +585,7 @@ public class ItemTemplateDaoDbImpl extends BaseDaoDbImpl<ItemTemplate> implement
 		else {
 			values.putNull(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT);
 		}
+		values.put(WeaponTemplateSchema.COLUMN_ATTACK_ID, instance.getAttack().getId());
 
 		return values;
 	}

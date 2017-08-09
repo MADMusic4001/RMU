@@ -78,7 +78,7 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 						strikes = attack;
 					}
 				});
-		attackRxHandler.getByCode("st")
+		attackRxHandler.getByCode("sw")
 				.subscribe(new Subscriber<Attack>() {
 					@Override
 					public void onCompleted() {}
@@ -306,6 +306,9 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 			attacksSpinnerAdapter.clear();
 			if(encounterRoundInfo.getCombatant() instanceof Character) {
 				Character character = (Character)encounterRoundInfo.getCombatant();
+				if(character.getMainHandItem() != null && character.getMainHandItem() instanceof Weapon &&
+						character.getMainHandItem().getItemTemplate() != null) {
+				}
 				if(character.getMainHandItem() instanceof Weapon &&
 						((WeaponTemplate)character.getMainHandItem().getItemTemplate()).getAttack() != null) {
 					attacksSpinnerAdapter.add(((WeaponTemplate)character.getMainHandItem().getItemTemplate()).getAttack());
@@ -348,7 +351,6 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 		private void addStrikes() {
 			if(strikes != null) {
 				if(attacksSpinnerAdapter.getPosition(strikes) == -1) {
-					Log.d(TAG, "copyItemToAttackSpinner: adding " + strikes);
 					attacksSpinnerAdapter.add(strikes);
 					attacksSpinnerAdapter.notifyDataSetChanged();
 				}
@@ -358,7 +360,6 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 		private void addSweeps() {
 			if(sweeps != null) {
 				if(attacksSpinnerAdapter.getPosition(sweeps) == -1) {
-					Log.d(TAG, "copyItemToAttackSpinner: adding " + sweeps);
 					attacksSpinnerAdapter.add(sweeps);
 					attacksSpinnerAdapter.notifyDataSetChanged();
 				}

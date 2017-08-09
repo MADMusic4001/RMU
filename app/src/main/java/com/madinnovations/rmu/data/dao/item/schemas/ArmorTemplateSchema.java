@@ -22,7 +22,7 @@ public interface ArmorTemplateSchema {
 	String TABLE_NAME = "armor_templates";
 	String ARMOR_ID = "armorId";
 
-	String COLUMN_ID = "id";
+	String COLUMN_ITEM_TEMPLATE_ID = "itemTemplateId";
 	String COLUMN_SMALL_COST = "smallCost";
 	String COLUMN_MEDIUM_COST = "mediumCost";
 	String COLUMN_BIG_COST = "bigCost";
@@ -33,7 +33,7 @@ public interface ArmorTemplateSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
+			+ COLUMN_ITEM_TEMPLATE_ID + " INTEGER PRIMARY KEY REFERENCES "
 				+ ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
 			+ COLUMN_SMALL_COST + " REAL NOT NULL, "
 			+ COLUMN_MEDIUM_COST + " REAL NOT NULL, "
@@ -43,6 +43,6 @@ public interface ArmorTemplateSchema {
 			+ COLUMN_ARMOR_TYPE + " INTEGER NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[]{COLUMN_ID, COLUMN_SMALL_COST, COLUMN_MEDIUM_COST, COLUMN_BIG_COST, COLUMN_LARGE_COST,
-			COLUMN_WEIGHT_PERCENT, COLUMN_ARMOR_TYPE};
+	String[] COLUMNS = new String[]{COLUMN_ITEM_TEMPLATE_ID, COLUMN_SMALL_COST, COLUMN_MEDIUM_COST, COLUMN_BIG_COST,
+			COLUMN_LARGE_COST, COLUMN_WEIGHT_PERCENT, COLUMN_ARMOR_TYPE};
 }

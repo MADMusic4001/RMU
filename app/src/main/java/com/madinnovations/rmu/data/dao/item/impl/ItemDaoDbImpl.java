@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
 import com.madinnovations.rmu.data.dao.campaign.CampaignDao;
@@ -32,6 +33,7 @@ import com.madinnovations.rmu.data.entities.common.Size;
 import com.madinnovations.rmu.data.entities.item.Item;
 import com.madinnovations.rmu.data.entities.item.Slot;
 import com.madinnovations.rmu.data.entities.item.Weapon;
+import com.madinnovations.rmu.view.RMUAppException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +47,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemSchema {
+	private static final String TAG = "ItemDaoDbImpl";
 	private CampaignDao     campaignDao;
 	private ItemTemplateDao itemTemplateDao;
 
@@ -304,6 +307,13 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	@Override
     protected Item cursorToEntity(@NonNull Cursor cursor) {
 		Item instance;
+
+		try {
+			throw new RMUAppException("for stack trace");
+		}
+		catch (RMUAppException e) {
+			Log.e(TAG, "cursorToEntity: ", e);
+		}
 
 		if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS))) {
 			instance = new Weapon();

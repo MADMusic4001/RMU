@@ -22,7 +22,7 @@ public interface SubstanceTemplateSchema {
 	String TABLE_NAME = "substance_templates";
 	String SUBSTANCE_ID = "substanceId";
 
-	String COLUMN_ID                  = "id";
+	String COLUMN_ITEM_TEMPLATE_ID    = "id";
 	String COLUMN_SUBSTANCE_TYPE_NAME = "substanceTypeName";
 	String COLUMN_HARDNESS            = "hardness";
 	String COLUMN_DESCRIPTION         = "description";
@@ -30,12 +30,12 @@ public interface SubstanceTemplateSchema {
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ("
-			+ COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
+			+ COLUMN_ITEM_TEMPLATE_ID + " INTEGER PRIMARY KEY REFERENCES "
 				+ ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
 			+ COLUMN_SUBSTANCE_TYPE_NAME  + " TEXT NOT NULL, "
 			+ COLUMN_HARDNESS + " REAL NOT NULL, "
 			+ COLUMN_DESCRIPTION + " TEXT NOT NULL"
 			+ ")";
 
-	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_SUBSTANCE_TYPE_NAME, COLUMN_HARDNESS, COLUMN_DESCRIPTION};
+	String[] COLUMNS = new String[] {COLUMN_ITEM_TEMPLATE_ID, COLUMN_SUBSTANCE_TYPE_NAME, COLUMN_HARDNESS, COLUMN_DESCRIPTION};
 }

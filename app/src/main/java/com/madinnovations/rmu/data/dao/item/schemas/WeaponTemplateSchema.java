@@ -25,7 +25,7 @@ public interface WeaponTemplateSchema {
     String TABLE_NAME = "weapon_templates";
 	String WEAPON_ID = "weaponId";
 
-    String COLUMN_ID = "id";
+	String COLUMN_ITEM_TEMPLATE_ID = "itemTemplateId";
     String COLUMN_SPECIALIZATION_ID = "specializationId";
     String COLUMN_DAMAGE_TABLE_ID = "damageTableId";
 	String COLUMN_BRACEABLE = "braceable";
@@ -37,7 +37,7 @@ public interface WeaponTemplateSchema {
     String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME
             + " ("
-            + COLUMN_ID + " INTEGER PRIMARY KEY REFERENCES "
+            + COLUMN_ITEM_TEMPLATE_ID + " INTEGER PRIMARY KEY REFERENCES "
                 + ItemTemplateSchema.TABLE_NAME + "(" + ItemTemplateSchema.COLUMN_ID + "), "
             + COLUMN_SPECIALIZATION_ID + " INTEGER NOT NULL REFERENCES "
 				+ SpecializationSchema.TABLE_NAME + "(" + SpecializationSchema.COLUMN_ID + "), "
@@ -50,6 +50,6 @@ public interface WeaponTemplateSchema {
 			+ COLUMN_ATTACK_ID + " INTEGER NOT NULL"
 			+ ")";
 
-    String[] COLUMNS = new String[]{COLUMN_ID, COLUMN_SPECIALIZATION_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_BRACEABLE,
+    String[] COLUMNS = new String[]{COLUMN_ITEM_TEMPLATE_ID, COLUMN_SPECIALIZATION_ID, COLUMN_DAMAGE_TABLE_ID, COLUMN_BRACEABLE,
 			COLUMN_FUMBLE, COLUMN_LENGTH, COLUMN_SIZE_ADJUSTMENT, COLUMN_ATTACK_ID};
 }

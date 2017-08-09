@@ -132,7 +132,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 22;
+	public static final  int    DATABASE_VERSION = 23;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -147,7 +147,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
-		db.setForeignKeyConstraintsEnabled(true);
+		db.setForeignKeyConstraintsEnabled(false);
     }
 
     @Override
@@ -259,7 +259,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
-				case 21:
+				case 22:
 					upgrade(sqLiteDatabase);
 					break;
             }
@@ -447,7 +447,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = null;
 		try {
 			cursor = sqLiteDatabase.rawQuery(
-			"SELECT id, specializationId, damageTableId, braceable, fumble, length, sizeAdjustment"
+			"SELECT id, specializationId, damageTableId, braceable, fumble, length, sizeAdjustment, attackId"
 					+ " FROM " + WeaponTemplateSchema.TABLE_NAME, null);
 
 			if(cursor != null) {
@@ -458,7 +458,11 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 					weaponTemplates.add(weaponTemplate);
 					cursor.moveToNext();
 				}
+				sqLiteDatabase.execSQL("DROP TABLE " + HerbTemplateSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL("DROP TABLE " + ArmorTemplateSchema.TABLE_NAME);
 				sqLiteDatabase.execSQL("DROP TABLE " + WeaponTemplateSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL(ArmorTemplateSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(HerbTemplateSchema.TABLE_CREATE);
 				sqLiteDatabase.execSQL(WeaponTemplateSchema.TABLE_CREATE);
 				for (WeaponTemplate weaponTemplate : weaponTemplates) {
 					ContentValues values = getContentValues(weaponTemplate);
@@ -469,7 +473,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 				sqLiteDatabase.setTransactionSuccessful();
 			}
 		}
-		catch (Exception ignored) {
+		catch (Exception e) {
+			Log.e(TAG, "upgrade: Upgrade failed.", e);
 		}
 		finally {
 			if(cursor != null) {
@@ -482,7 +487,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	private WeaponTemplate cursorToEntity(Cursor cursor) {
 		WeaponTemplate instance = new WeaponTemplate();
 
-		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_ID)));
+		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
 		instance.setCombatSpecialization(new Specialization(cursor.getInt(cursor.getColumnIndexOrThrow(
 				WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID))));
 		instance.setDamageTable(new DamageTable(cursor.getInt(cursor.getColumnIndexOrThrow(
@@ -497,7 +502,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			instance.setSizeAdjustment(cursor.getShort(cursor.getColumnIndexOrThrow(
 					WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT)));
 		}
-		instance.setAttack(new Attack(1));
+		instance.setAttack(new Attack(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_ATTACK_ID))));
 
 		return instance;
 	}
@@ -506,7 +511,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		ContentValues values;
 
 		values = new ContentValues(8);
-		values.put(WeaponTemplateSchema.COLUMN_ID, instance.getId());
+		values.put(WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getId());
 		values.put(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID, instance.getCombatSpecialization().getId());
 		values.put(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
 		values.put(WeaponTemplateSchema.COLUMN_BRACEABLE, instance.isBraceable());

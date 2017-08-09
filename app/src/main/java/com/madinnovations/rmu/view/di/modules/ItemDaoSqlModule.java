@@ -24,11 +24,9 @@ import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 import com.madinnovations.rmu.data.dao.item.ItemDao;
 import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.dao.item.WeaponDao;
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
 import com.madinnovations.rmu.data.dao.item.impl.ItemDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.impl.ItemTemplateDaoDbImpl;
 import com.madinnovations.rmu.data.dao.item.impl.WeaponDaoDbImpl;
-import com.madinnovations.rmu.data.dao.item.impl.WeaponTemplateDaoDbImpl;
 
 import javax.inject.Singleton;
 
@@ -46,20 +44,13 @@ public class ItemDaoSqlModule {
 	}
 
 	@Provides @Singleton
-	ItemTemplateDao provideItemTemplateDap(RMUDatabaseHelper helper, BiomeDao biomeDao, SpecializationDao specializationDao,
-										   DamageTableDao damageTableDao) {
-		return new ItemTemplateDaoDbImpl(helper, biomeDao, specializationDao, damageTableDao);
+	ItemTemplateDao provideItemTemplateDap(RMUDatabaseHelper helper, AttackDao attackDao, BiomeDao biomeDao,
+										   DamageTableDao damageTableDao, SpecializationDao specializationDao) {
+		return new ItemTemplateDaoDbImpl(helper, attackDao, biomeDao, damageTableDao, specializationDao);
 	}
 
 	@Provides @Singleton
-	WeaponDao provideWeaponDao(RMUDatabaseHelper helper, ItemDao itemDao, WeaponTemplateDao weaponTemplateDao) {
-		return new WeaponDaoDbImpl(helper, itemDao, weaponTemplateDao);
-	}
-
-	@Provides @Singleton
-	WeaponTemplateDao provideWeaponTemplateDao(RMUDatabaseHelper helper, ItemTemplateDao itemTemplateDao,
-											   SpecializationDao specializationDao, DamageTableDao damageTableDao,
-											   AttackDao attackDao) {
-		return new WeaponTemplateDaoDbImpl(helper, itemTemplateDao, specializationDao, damageTableDao, attackDao);
+	WeaponDao provideWeaponDao(RMUDatabaseHelper helper, ItemDao itemDao, ItemTemplateDao itemTemplateDao) {
+		return new WeaponDaoDbImpl(helper, itemDao, itemTemplateDao);
 	}
 }

@@ -49,7 +49,7 @@ public interface ItemTemplateSchema {
 			+ COLUMN_SECONDARY_SLOT + " TEXT"
 			+ ")";
 
-	String QUERY_ALL = "SELECT"
+	String SELECT_FROM = "SELECT"
 			+ " ITEM." + COLUMN_ID
 			+ ", ITEM." + COLUMN_NAME
 			+ ", ITEM." + COLUMN_WEIGHT
@@ -61,7 +61,7 @@ public interface ItemTemplateSchema {
 			+ ", ITEM." + COLUMN_NOTES
 			+ ", ITEM." + COLUMN_PRIMARY_SLOT
 			+ ", ITEM." + COLUMN_SECONDARY_SLOT
-			+ ", ARMOR." + ArmorTemplateSchema.COLUMN_ID + " AS " + ArmorTemplateSchema.ARMOR_ID
+			+ ", ARMOR." + ArmorTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " AS " + ArmorTemplateSchema.ARMOR_ID
 			+ ", ARMOR." + ArmorTemplateSchema.COLUMN_SMALL_COST
 			+ ", ARMOR." + ArmorTemplateSchema.COLUMN_MEDIUM_COST
 			+ ", ARMOR." + ArmorTemplateSchema.COLUMN_BIG_COST
@@ -76,41 +76,44 @@ public interface ItemTemplateSchema {
 			+ ", NATURALS." + NaturalsTemplateSchema.COLUMN_SEASON
 			+ ", NATURALS." + NaturalsTemplateSchema.COLUMN_EFFECTS
 			+ ", POISONS." + PoisonTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " AS " + PoisonTemplateSchema.POISON_ID
-			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ID + " AS " + SubstanceTemplateSchema.SUBSTANCE_ID
+			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " AS " + SubstanceTemplateSchema.SUBSTANCE_ID
 			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_SUBSTANCE_TYPE_NAME
 			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_HARDNESS
 			+ ", SUBSTANCES." + SubstanceTemplateSchema.COLUMN_DESCRIPTION
-			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_ID + " AS " + WeaponTemplateSchema.WEAPON_ID
+			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " AS " + WeaponTemplateSchema.WEAPON_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_BRACEABLE
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_FUMBLE
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_LENGTH
 			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT
+			+ ", WEAPON." + WeaponTemplateSchema.COLUMN_ATTACK_ID
 			+ " FROM " + TABLE_NAME + " ITEM"
 				+ " LEFT OUTER JOIN " + ArmorTemplateSchema.TABLE_NAME + " ARMOR"
-					+ " ON ARMOR." + ArmorTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID
-				+ " LEFT OUTER JOIN " + HerbTemplateSchema.TABLE_NAME + " HERBS"
-					+ " ON HERBS. " + HerbTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " = NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID
+					+ " ON ARMOR." + ArmorTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID
 				+ " LEFT OUTER JOIN " + NaturalsTemplateSchema.TABLE_NAME + " NATURALS"
 					+ " ON NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " = ITEM." +ItemTemplateSchema.COLUMN_ID
+				+ " LEFT OUTER JOIN " + HerbTemplateSchema.TABLE_NAME + " HERBS"
+					+ " ON HERBS." + HerbTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " = NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID
 				+ " LEFT OUTER JOIN " + PoisonTemplateSchema.TABLE_NAME + " POISONS"
-					+ " ON POISONS. " + PoisonTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " = NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID
+					+ " ON POISONS." + PoisonTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " = NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID
 				+ " LEFT OUTER JOIN " + SubstanceTemplateSchema.TABLE_NAME + " SUBSTANCES"
-					+ " ON SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID
+					+ " ON SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID
 				+ " LEFT OUTER JOIN " + WeaponTemplateSchema.TABLE_NAME + " WEAPON"
-					+ " ON WEAPON." + WeaponTemplateSchema.COLUMN_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID;
+					+ " ON WEAPON." + WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " = ITEM." + ItemTemplateSchema.COLUMN_ID;
 
-	String QUERY_BY_ID = QUERY_ALL + " WHERE ITEM." + ItemTemplateSchema.COLUMN_ID + " = ?";
+	String QUERY_ALL = SELECT_FROM;
 
-	String QUERY_NO_SUBCLASS = QUERY_ALL + " WHERE ARMOR." + ArmorTemplateSchema.COLUMN_ID + " IS NULL AND"
+	String QUERY_BY_ID = SELECT_FROM + " WHERE ITEM." + ItemTemplateSchema.COLUMN_ID + " = ?";
+
+	String QUERY_NO_SUBCLASS = SELECT_FROM + " WHERE ARMOR." + ArmorTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " IS NULL AND"
 			+ " HERBS." + HerbTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " IS NULL AND"
 			+ " NATURALS." + NaturalsTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " IS NULL AND"
 			+ " POISONS." + PoisonTemplateSchema.COLUMN_NATURALS_TEMPLATE_ID + " IS NULL AND"
-			+ " SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ID + " IS NULL AND"
-			+ " WEAPON." + WeaponTemplateSchema.COLUMN_ID + " IS NULL";
+			+ " SUBSTANCES." + SubstanceTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " IS NULL AND"
+			+ " WEAPON." + WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID + " IS NULL";
 
-	String QUERY_FOR_SLOT = QUERY_ALL + " WHERE " + COLUMN_PRIMARY_SLOT + " = ? OR " + COLUMN_SECONDARY_SLOT + " = ? OR "
+	String QUERY_FOR_SLOT = SELECT_FROM + " WHERE " + COLUMN_PRIMARY_SLOT + " = ? OR " + COLUMN_SECONDARY_SLOT + " = ? OR "
 			+ COLUMN_PRIMARY_SLOT + " = ?";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_WEIGHT, COLUMN_BASE_COST_VALUE, COLUMN_BASE_COST_UNIT,

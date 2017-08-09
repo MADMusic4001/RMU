@@ -1,21 +1,21 @@
-/**
- * Copyright (C) 2016 MadInnovations
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (C) 2016 MadInnovations
+  <p/>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p/>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p/>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.madinnovations.rmu.controller.rxhandler.item;
 
-import com.madinnovations.rmu.data.dao.item.WeaponTemplateDao;
+import com.madinnovations.rmu.data.dao.item.ItemTemplateDao;
 import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
 
 import java.util.Collection;
@@ -31,15 +31,15 @@ import rx.schedulers.Schedulers;
  * Creates reactive observable for requesting operations on {@link WeaponTemplate} instances with persistent storage.
  */
 public class WeaponTemplateRxHandler {
-	private WeaponTemplateDao dao;
+	private ItemTemplateDao dao;
 
 	/**
 	 * Creates a new WeaponRxHandler
 	 *
-	 * @param dao  a WeaponTemplateDao instance
+	 * @param dao  a {@link ItemTemplateDao} instance
 	 */
 	@Inject
-	public WeaponTemplateRxHandler(WeaponTemplateDao dao) {
+	public WeaponTemplateRxHandler(ItemTemplateDao dao) {
 		this.dao = dao;
 	}
 
@@ -55,7 +55,7 @@ public class WeaponTemplateRxHandler {
 					@Override
 					public void call(Subscriber<? super WeaponTemplate> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							subscriber.onNext((WeaponTemplate)dao.getById(id));
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -79,7 +79,9 @@ public class WeaponTemplateRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<WeaponTemplate>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							@SuppressWarnings("unchecked")
+							Collection<WeaponTemplate> results = (Collection)dao.getAll();
+							subscriber.onNext(results);
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -150,7 +152,8 @@ public class WeaponTemplateRxHandler {
 					@Override
 					public void call(Subscriber<? super Collection<WeaponTemplate>> subscriber) {
 						try {
-							Collection<WeaponTemplate> weaponsDeleted = dao.getAll();
+							@SuppressWarnings("unchecked")
+							Collection<WeaponTemplate> weaponsDeleted = (Collection)dao.getAll();
 							dao.deleteAll();
 							subscriber.onNext(weaponsDeleted);
 							subscriber.onCompleted();

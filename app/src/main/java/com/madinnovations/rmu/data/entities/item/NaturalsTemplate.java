@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * Attributes of items found in nature (herbs, poisons, etc.)
  */
-public abstract class NaturalsTemplate extends ItemTemplate {
+public class NaturalsTemplate extends ItemTemplate {
 	public static final String JSON_NAME = "NaturalsTemplate";
 	private Biome biome = null;
 	private Form form = null;
