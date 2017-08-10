@@ -45,7 +45,7 @@ public interface ItemSchema {
 			+ COLUMN_LEVEL + " INTEGER NOT NULL"
             + ")";
 
-	String SELECTION = "SELECT"
+	String SELECT_FROM = "SELECT"
 		+ " ITEM." + COLUMN_ID
 		+ ", ITEM." + COLUMN_CAMPAIGN_ID
 		+ ", ITEM." + COLUMN_ITEM_TEMPLATE_ID
@@ -53,19 +53,21 @@ public interface ItemSchema {
 		+ ", ITEM." + COLUMN_HISTORY
 		+ ", ITEM." + COLUMN_SIZE
 		+ ", ITEM." + COLUMN_LEVEL
+		+ ", WEAPON." + WeaponSchema.COLUMN_ITEM_ID + " AS " + WeaponSchema.WEAPON_ID
 		+ ", WEAPON." + WeaponSchema.COLUMN_BONUS
 		+ ", WEAPON." + WeaponSchema.COLUMN_TWO_HANDED
-		+ " FROM " + TABLE_NAME + " ITEM LEFT OUTER JOIN " + WeaponSchema.TABLE_NAME + " WEAPON "
-		+ " ON WEAPON.ID = ITEM.ID";
+		+ " FROM " + TABLE_NAME + " ITEM"
+			+ " LEFT OUTER JOIN " + WeaponSchema.TABLE_NAME + " WEAPON"
+			+ " ON WEAPON." + WeaponSchema.COLUMN_ITEM_ID+ " = ITEM." + ItemSchema.COLUMN_ID;
 
-	String QUERY_ALL = SELECTION;
-	String QUERY_BY_ID = SELECTION + " WHERE ITEM." + COLUMN_ID + " = ?";
-	String QUERY_BY_CAMPAIGN = SELECTION + " WHERE ITEM." + COLUMN_CAMPAIGN_ID + " = ?";
-	String QUERY_BY_SLOT = SELECTION + " WHERE EXISTS(SELECT NULL FROM " + ItemTemplateSchema.TABLE_NAME + " a WHERE a."
+	String QUERY_ALL = SELECT_FROM;
+	String QUERY_BY_ID = SELECT_FROM + " WHERE ITEM." + COLUMN_ID + " = ?";
+	String QUERY_BY_CAMPAIGN = SELECT_FROM + " WHERE ITEM." + COLUMN_CAMPAIGN_ID + " = ?";
+	String QUERY_BY_SLOT = SELECT_FROM + " WHERE EXISTS(SELECT NULL FROM " + ItemTemplateSchema.TABLE_NAME + " a WHERE a."
 			+ ItemTemplateSchema.COLUMN_ID + " = " + COLUMN_ITEM_TEMPLATE_ID + " AND a."
 			+ ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ? OR a." + ItemTemplateSchema.COLUMN_SECONDARY_SLOT
 			+ " = ? OR a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ?)";
-	String QUERY_NO_SUBCLASS = QUERY_ALL + " WHERE WEAPON." + WeaponSchema.COLUMN_ID + " IS NULL";
+	String QUERY_NO_SUBCLASS = SELECT_FROM + " WHERE WEAPON." + WeaponSchema.COLUMN_ITEM_ID + " IS NULL";
 
 	String[] COLUMNS = new String[] { COLUMN_ID, COLUMN_CAMPAIGN_ID, COLUMN_ITEM_TEMPLATE_ID, COLUMN_NAME, COLUMN_HISTORY,
 			COLUMN_SIZE, COLUMN_LEVEL};

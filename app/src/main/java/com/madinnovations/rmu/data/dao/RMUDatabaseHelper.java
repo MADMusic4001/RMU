@@ -111,12 +111,9 @@ import com.madinnovations.rmu.data.dao.spells.schemas.SpellSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellSubTypeSchema;
 import com.madinnovations.rmu.data.dao.spells.schemas.SpellTypeSchema;
 import com.madinnovations.rmu.data.entities.campaign.Campaign;
-import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
-import com.madinnovations.rmu.data.entities.combat.DamageTable;
-import com.madinnovations.rmu.data.entities.common.Specialization;
-import com.madinnovations.rmu.data.entities.item.WeaponTemplate;
+import com.madinnovations.rmu.data.entities.item.Weapon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +129,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 23;
+	public static final  int    DATABASE_VERSION = 24;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -259,7 +256,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
-				case 22:
+				case 23:
 					upgrade(sqLiteDatabase);
 					break;
             }
@@ -378,7 +375,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	public void clearCampaignTables(Campaign campaign) {
 		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
 		String selection = "EXISTS( SELECT NULL FROM " + ItemSchema.TABLE_NAME + " a WHERE a." + ItemSchema.COLUMN_ID + " = " +
-				WeaponSchema.COLUMN_ID + " AND a." + ItemSchema.COLUMN_CAMPAIGN_ID + " = ?)";
+				WeaponSchema.COLUMN_ITEM_ID + " AND a." + ItemSchema.COLUMN_CAMPAIGN_ID + " = ?)";
 
 		SQLiteDatabase sqLiteDatabase = getWritableDatabase();
 		sqLiteDatabase.delete(WeaponSchema.TABLE_NAME, selection, selectionArgs);
@@ -447,26 +444,22 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = null;
 		try {
 			cursor = sqLiteDatabase.rawQuery(
-			"SELECT id, specializationId, damageTableId, braceable, fumble, length, sizeAdjustment, attackId"
-					+ " FROM " + WeaponTemplateSchema.TABLE_NAME, null);
+			"SELECT id, bonus, twoHanded"
+					+ " FROM " + WeaponSchema.TABLE_NAME, null);
 
 			if(cursor != null) {
 				cursor.moveToFirst();
-				List<WeaponTemplate> weaponTemplates = new ArrayList<>(cursor.getCount());
+				List<Weapon> weapons = new ArrayList<>(cursor.getCount());
 				while (!cursor.isAfterLast()) {
-					WeaponTemplate weaponTemplate = cursorToEntity(cursor);
-					weaponTemplates.add(weaponTemplate);
+					Weapon weapon = cursorToEntity(cursor);
+					weapons.add(weapon);
 					cursor.moveToNext();
 				}
-				sqLiteDatabase.execSQL("DROP TABLE " + HerbTemplateSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL("DROP TABLE " + ArmorTemplateSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL("DROP TABLE " + WeaponTemplateSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL(ArmorTemplateSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(HerbTemplateSchema.TABLE_CREATE);
-				sqLiteDatabase.execSQL(WeaponTemplateSchema.TABLE_CREATE);
-				for (WeaponTemplate weaponTemplate : weaponTemplates) {
-					ContentValues values = getContentValues(weaponTemplate);
-					sqLiteDatabase.insert(WeaponTemplateSchema.TABLE_NAME, null, values);
+				sqLiteDatabase.execSQL("DROP TABLE " + WeaponSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL(WeaponSchema.TABLE_CREATE);
+				for (Weapon weapon : weapons) {
+					ContentValues values = getContentValues(weapon);
+					sqLiteDatabase.insert(WeaponSchema.TABLE_NAME, null, values);
 				}
 
 				Log.d(TAG, "upgrade: Upgrade completed successfully");
@@ -484,46 +477,24 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	private WeaponTemplate cursorToEntity(Cursor cursor) {
-		WeaponTemplate instance = new WeaponTemplate();
+	private Weapon cursorToEntity(Cursor cursor) {
+		Weapon instance = new Weapon();
 
 		instance.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-		instance.setCombatSpecialization(new Specialization(cursor.getInt(cursor.getColumnIndexOrThrow(
-				WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID))));
-		instance.setDamageTable(new DamageTable(cursor.getInt(cursor.getColumnIndexOrThrow(
-				WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID))));
-		instance.setBraceable(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_BRACEABLE)) != 0);
-		instance.setFumble(cursor.getShort(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_FUMBLE)));
-		instance.setLength(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_LENGTH)));
-		if(cursor.isNull(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT))) {
-			instance.setSizeAdjustment(null);
-		}
-		else {
-			instance.setSizeAdjustment(cursor.getShort(cursor.getColumnIndexOrThrow(
-					WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT)));
-		}
-		instance.setAttack(new Attack(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponTemplateSchema.COLUMN_ATTACK_ID))));
+		instance.setTwoHanded(cursor.getInt(cursor.getColumnIndexOrThrow(
+				WeaponSchema.COLUMN_TWO_HANDED)) != 0);
+		instance.setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS)));
 
 		return instance;
 	}
 
-	private ContentValues getContentValues(WeaponTemplate instance) {
+	private ContentValues getContentValues(Weapon instance) {
 		ContentValues values;
 
-		values = new ContentValues(8);
-		values.put(WeaponTemplateSchema.COLUMN_ITEM_TEMPLATE_ID, instance.getId());
-		values.put(WeaponTemplateSchema.COLUMN_SPECIALIZATION_ID, instance.getCombatSpecialization().getId());
-		values.put(WeaponTemplateSchema.COLUMN_DAMAGE_TABLE_ID, instance.getDamageTable().getId());
-		values.put(WeaponTemplateSchema.COLUMN_BRACEABLE, instance.isBraceable());
-		values.put(WeaponTemplateSchema.COLUMN_FUMBLE, instance.getFumble());
-		values.put(WeaponTemplateSchema.COLUMN_LENGTH, instance.getLength());
-		if(instance.getSizeAdjustment() != null) {
-			values.put(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT, instance.getSizeAdjustment());
-		}
-		else {
-			values.putNull(WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT);
-		}
-		values.put(WeaponTemplateSchema.COLUMN_ATTACK_ID, instance.getAttack().getId());
+		values = new ContentValues(3);
+		values.put(WeaponSchema.COLUMN_ITEM_ID, instance.getId());
+		values.put(WeaponSchema.COLUMN_BONUS, instance.getBonus());
+		values.put(WeaponSchema.COLUMN_TWO_HANDED, instance.isTwoHanded());
 
 		return values;
 	}

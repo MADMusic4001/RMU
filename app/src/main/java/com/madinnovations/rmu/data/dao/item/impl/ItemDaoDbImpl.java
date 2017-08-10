@@ -139,7 +139,7 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 	public boolean save(Item instance, boolean isNew) {
 		final String selectionArgs[] = { String.valueOf(instance.getId()) };
 		final String selection = COLUMN_ID + " = ?";
-		final String weaponSelection = WeaponSchema.COLUMN_ID + " = ?";
+		final String weaponSelection = WeaponSchema.COLUMN_ITEM_ID + " = ?";
 		ContentValues contentValues = getContentValues(instance);
 		boolean result;
 
@@ -315,10 +315,11 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
 			Log.e(TAG, "cursorToEntity: ", e);
 		}
 
-		if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS))) {
-			instance = new Weapon();
-			((Weapon)instance).setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS)));
-			((Weapon)instance).setTwoHanded(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_TWO_HANDED)) != 0);
+		if(!cursor.isNull(cursor.getColumnIndexOrThrow(WeaponSchema.WEAPON_ID))) {
+			Weapon weapon = new Weapon();
+			weapon.setBonus(cursor.getShort(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_BONUS)));
+			weapon.setTwoHanded(cursor.getInt(cursor.getColumnIndexOrThrow(WeaponSchema.COLUMN_TWO_HANDED)) != 0);
+			instance = weapon;
 		}
 		else {
 			instance = new Item();
@@ -370,17 +371,11 @@ public class ItemDaoDbImpl extends BaseDaoDbImpl<Item> implements ItemDao, ItemS
     }
 
 	private ContentValues getWeaponContentValues(Weapon instance) {
-		ContentValues values;
+		ContentValues values = new ContentValues(3);
 
-		if(instance.getId() != -1) {
-			values = new ContentValues(3);
-			values.put(WeaponSchema.COLUMN_ID, instance.getId());
-		}
-		else {
-			values = new ContentValues(2);
-		}
-		values.put(WeaponSchema.COLUMN_BONUS, instance.getBonus());
+		values.put(WeaponSchema.COLUMN_ITEM_ID, instance.getId());
 		values.put(WeaponSchema.COLUMN_TWO_HANDED, instance.isTwoHanded());
+		values.put(WeaponSchema.COLUMN_BONUS, instance.getBonus());
 
 		return values;
 	}

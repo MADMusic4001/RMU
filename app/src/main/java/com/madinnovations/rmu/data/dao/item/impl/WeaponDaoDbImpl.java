@@ -96,7 +96,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
 
     @Override
     protected String getIdColumnName() {
-        return COLUMN_ID;
+        return COLUMN_ITEM_ID;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
 	public Collection<Weapon> getAllForCampaign(Campaign campaign) {
 		final String selectionArgs[] = { String.valueOf(campaign.getId()) };
 		String selection = "EXISTS( SELECT NULL FROM " + ItemSchema.TABLE_NAME + " a WHERE a." + ItemSchema.COLUMN_ID + " = " +
-				WeaponSchema.COLUMN_ID + " AND a." + ItemSchema.COLUMN_CAMPAIGN_ID + " = ?)";
+				WeaponSchema.COLUMN_ITEM_ID + " AND a." + ItemSchema.COLUMN_CAMPAIGN_ID + " = ?)";
 		Collection<Weapon> collection = new ArrayList<>();
 
 		SQLiteDatabase db = helper.getReadableDatabase();
@@ -148,7 +148,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
 		final String selectionArgs[] = { slot.name(), slot.name(), Slot.ANY.name() };
 		final String selection = " EXISTS(SELECT NULL FROM " + ItemTemplateSchema.TABLE_NAME + " a, " + ItemSchema.TABLE_NAME
 				+ " b WHERE a." + ItemTemplateSchema.COLUMN_ID + " = b." + ItemSchema.COLUMN_ITEM_TEMPLATE_ID + " AND b."
-				+ ItemSchema.COLUMN_ID + " = " + COLUMN_ID + " AND a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ? OR a." +
+				+ ItemSchema.COLUMN_ID + " = " + COLUMN_ITEM_ID + " AND a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ? OR a." +
 				ItemTemplateSchema.COLUMN_SECONDARY_SLOT + " = ? OR a." + ItemTemplateSchema.COLUMN_PRIMARY_SLOT + " = ?)";
 		Collection<Weapon> weapons = null;
 
@@ -188,7 +188,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
 		catch (RMUAppException e) {
 			Log.e(TAG, "cursorToEntity: ", e);
 		}
-		Item item = itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+		Item item = itemDao.getById(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ITEM_ID)));
 		Log.d(TAG, "cursorToEntity: loading weapon template with id " + item.getItemTemplate().getId());
 		item.setItemTemplate(itemTemplateDao.getById(item.getItemTemplate().getId()));
 		Weapon instance = new Weapon(item);
@@ -202,7 +202,7 @@ public class WeaponDaoDbImpl extends BaseDaoDbImpl<Weapon> implements WeaponDao,
     protected ContentValues getContentValues(Weapon instance) {
 		ContentValues contentValues = new ContentValues(3);
 
-		contentValues.put(COLUMN_ID, instance.getId());
+		contentValues.put(COLUMN_ITEM_ID, instance.getId());
 		contentValues.put(COLUMN_BONUS, instance.getBonus());
 		contentValues.put(COLUMN_TWO_HANDED, instance.isTwoHanded());
 
