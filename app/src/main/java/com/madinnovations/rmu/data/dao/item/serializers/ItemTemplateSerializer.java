@@ -23,6 +23,7 @@ import com.madinnovations.rmu.data.dao.item.schemas.ItemTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.NaturalsTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.SubstanceTemplateSchema;
 import com.madinnovations.rmu.data.dao.item.schemas.WeaponTemplateSchema;
+import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.DamageTable;
 import com.madinnovations.rmu.data.entities.common.Biome;
 import com.madinnovations.rmu.data.entities.common.ManeuverDifficulty;
@@ -231,6 +232,11 @@ public class ItemTemplateSerializer extends TypeAdapter<ItemTemplate> implements
 				case WeaponTemplateSchema.COLUMN_SIZE_ADJUSTMENT:
 					if(weaponTemplate) {
 						((WeaponTemplate)itemTemplate).setSizeAdjustment((short)in.nextInt());
+					}
+					break;
+				case WeaponTemplateSchema.COLUMN_ATTACK_ID:
+					if(weaponTemplate) {
+						((WeaponTemplate)itemTemplate).setAttack(new Attack(in.nextInt()));
 					}
 					break;
 			}

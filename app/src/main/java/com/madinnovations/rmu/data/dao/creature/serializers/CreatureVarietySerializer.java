@@ -151,7 +151,7 @@ public class CreatureVarietySerializer extends TypeAdapter<CreatureVariety> impl
 				out.name(VarietyAttacksSchema.COLUMN_IS_PRIMARY).value(true);
 				out.endObject();
 			}
-			for (Map.Entry<Attack, Short> entry : value.getPrimaryAttackBonuses().entrySet()) {
+			for (Map.Entry<Attack, Short> entry : value.getSecondaryAttackBonuses().entrySet()) {
 				out.beginObject();
 				out.name(VarietyAttacksSchema.COLUMN_ATTACK_ID).value(entry.getKey().getId());
 				out.name(VarietyAttacksSchema.COLUMN_ATTACK_BONUS).value(entry.getValue());
