@@ -250,16 +250,17 @@ public class ImportExportCampaignRxHandler {
 							jsonWriter.name(Campaign.JSON_NAME)
 									.jsonValue(gson.toJson(campaignDao.getById(campaign.getId())));
 							subscriber.onNext(40);
-							jsonWriter.name(EncounterSetup.JSON_NAME)
-									.jsonValue(gson.toJson(encounterSetupDao.getAllForCampaign(campaign)));
+							jsonWriter.name(Character.JSON_NAME)
+									.jsonValue(gson.toJson(characterDao.getAllForCampaign(campaign)));
+							subscriber.onNext(50);
+							jsonWriter.name(Creature.JSON_NAME)
+									.jsonValue(gson.toJson(creatureDao.getAllForCampaign(campaign)));
 							subscriber.onNext(60);
 							jsonWriter.name(Item.JSON_NAME)
 									.jsonValue(gson.toJson(itemDao.getAllForCampaign(campaign)));
 							subscriber.onNext(80);
-							jsonWriter.name(Character.JSON_NAME)
-									.jsonValue(gson.toJson(characterDao.getAllForCampaign(campaign)))
-									.name(Creature.JSON_NAME)
-									.jsonValue(gson.toJson(creatureDao.getAllForCampaign(campaign)))
+							jsonWriter.name(EncounterSetup.JSON_NAME)
+									.jsonValue(gson.toJson(encounterSetupDao.getAllForCampaign(campaign)))
 									.endObject()
 									.flush();
 							subscriber.onNext(100);

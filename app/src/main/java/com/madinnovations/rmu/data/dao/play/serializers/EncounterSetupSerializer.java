@@ -191,11 +191,17 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 						break;
 				}
 			}
-			if(opponentIsCharacter) {
+			if(opponentIsCharacter && opponentId != -1) {
 				encounterRoundInfo.setSelectedOpponent(new Character(opponentId));
 			}
-			else {
+			else if(opponentId != -1){
 				encounterRoundInfo.setSelectedOpponent(new Creature(opponentId));
+			}
+			if(combatantIsCharacter && beingId != -1) {
+				encounterRoundInfo.setCombatant(new Character(beingId));
+			}
+			else {
+				encounterRoundInfo.setCombatant(new Creature(beingId));
 			}
 			if(combatantIsCharacter) {
 				encounterSetup.getCharacterCombatInfo().put(new Character(beingId), encounterRoundInfo);

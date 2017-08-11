@@ -350,8 +350,10 @@ public class EncounterSetupDaoDbImpl extends BaseDaoDbImpl<EncounterSetup> imple
 			}
 			else {
 				Creature creature = creatureDao.getById(mappedId);
-				encounterRoundInfo.setCombatant(creature);
-				encounterSetup.getEnemyCombatInfo().put(creature, encounterRoundInfo);
+				if(creature != null) {
+					encounterRoundInfo.setCombatant(creature);
+					encounterSetup.getEnemyCombatInfo().put(creature, encounterRoundInfo);
+				}
 			}
 			encounterRoundInfo.getPosition().setX(cursor.getFloat(cursor.getColumnIndexOrThrow(
 					EncounterSetupEncounterInfoSchema.COLUMN_LOCATION_X)));
