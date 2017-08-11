@@ -64,6 +64,7 @@ import rx.Subscriber;
 /**
  * View of the 'battlefield'
  */
+@SuppressWarnings("unused")
 public class TerrainView extends View {
 	private static final String TAG            = "TerrainView";
 	public static final  String DRAG_DIRECTION = "drag-direction";
@@ -510,9 +511,7 @@ public class TerrainView extends View {
 						}
 					}
 					else {
-						State hasted = new State();
-						hasted.setStateType(StateType.HASTED);
-						State currentHasted = encounterRoundInfo.getCombatant().getCurrentStates().get(hasted);
+						State currentHasted = encounterRoundInfo.getCombatant().getCurrentStates().get(StateType.HASTED);
 						if (currentHasted != null) {
 							encounterRoundInfo.setMovementRemaining((short) (4 + currentHasted.getConstant()));
 						}
@@ -685,12 +684,14 @@ public class TerrainView extends View {
 				boolean dragStarted = false;
 				EncounterSetup encounterSetup = callbacks.getEncounterSetup();
 				if(movementInProgress) {
+					//noinspection SuspiciousMethodCalls
 					EncounterRoundInfo encounterRoundInfo = encounterSetup.getCharacterCombatInfo().get(beingToMove);
 					if(encounterRoundInfo == null) {
+						//noinspection SuspiciousMethodCalls
 						encounterRoundInfo = encounterSetup.getEnemyCombatInfo().get(beingToMove);
 					}
 					if(encounterRoundInfo != null) {
-						dragStarted = checkDrag(beingToMove, encounterRoundInfo, worldCoords);
+						checkDrag(beingToMove, encounterRoundInfo, worldCoords);
 					}
 				}
 				else {
