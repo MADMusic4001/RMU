@@ -21,6 +21,7 @@ import com.google.gson.stream.JsonWriter;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupEncounterInfoSchema;
 import com.madinnovations.rmu.data.dao.play.schemas.EncounterSetupSchema;
 import com.madinnovations.rmu.data.entities.Position;
+import com.madinnovations.rmu.data.entities.campaign.Campaign;
 import com.madinnovations.rmu.data.entities.character.Character;
 import com.madinnovations.rmu.data.entities.combat.Action;
 import com.madinnovations.rmu.data.entities.combat.RestrictedQuarters;
@@ -41,6 +42,8 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 	public void write(JsonWriter out, EncounterSetup value) throws IOException {
 		out.beginObject();
 		out.name(COLUMN_ID).value(value.getId());
+		out.name(COLUMN_CAMPAIGN_ID).value(value.getCampaign().getId());
+		out.name(COLUMN_CURRENT_INITIATIVE).value(value.getCurrentInitiative());
 		out.name(COLUMN_ENCOUNTER_START_TIME).value(value.getEncounterStartTime().getTimeInMillis());
 		out.name(EncounterSetupEncounterInfoSchema.TABLE_NAME).beginArray();
 		for(Map.Entry<Character, EncounterRoundInfo> entry : value.getCharacterCombatInfo().entrySet()) {
@@ -61,6 +64,12 @@ public class EncounterSetupSerializer extends TypeAdapter<EncounterSetup> implem
 			switch (in.nextName()) {
 				case COLUMN_ID:
 					encounterSetup.setId(in.nextInt());
+					break;
+				case COLUMN_CAMPAIGN_ID:
+					encounterSetup.setCampaign(new Campaign(in.nextInt()));
+					break;
+				case COLUMN_CURRENT_INITIATIVE:
+					encounterSetup.setCurrentInitiative((short)in.nextInt());
 					break;
 				case COLUMN_ENCOUNTER_START_TIME:
 					Calendar calendar = Calendar.getInstance();
