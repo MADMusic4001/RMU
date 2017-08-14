@@ -333,8 +333,8 @@ public class InitiativeListAdapter extends ArrayAdapter<EncounterRoundInfo> {
 					attacksSpinnerAdapter.add(((WeaponTemplate)creature.getOffhandItem().getItemTemplate()).getAttack());
 				}
 				EncounterRoundInfo opponentEncounterRoundInfo = getSelectedOpponentEncounterRoundInfo(encounterRoundInfo);
-				Attack nextCreatureAttack = creature.getNextAttack(encounterRoundInfo.getAttackResult(), opponentEncounterRoundInfo,
-						false);
+				Attack nextCreatureAttack = creature.getNextAttack(encounterRoundInfo.getAttackResult(),
+																   opponentEncounterRoundInfo, false);
 				if(nextCreatureAttack != null) {
 					attacksSpinnerAdapter.add(nextCreatureAttack);
 				}

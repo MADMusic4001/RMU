@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.combat;
 
+import android.util.Log;
+
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
@@ -41,6 +43,7 @@ import rx.schedulers.Schedulers;
 @SuppressWarnings("unused")
 public class AttackRxHandler implements Serializable {
 	private static final long serialVersionUID = 3392013210046552200L;
+	private static final String TAG = "AttackRxHandler";
 	private AttackDao dao;
 	private DamageResultDao    damageResultDao;
 	private DamageResultRowDao damageResultRowDao;
@@ -110,17 +113,15 @@ public class AttackRxHandler implements Serializable {
 						try {
 							Attack attack = dao.getByCode(code);
 							subscriber.onNext(attack);
-							if(attack != null) {
-								DamageTable damageTable = attack.getDamageTable();
-								Collection<DamageResultRow> resultRows = damageResultRowDao.
-										getDamageResultRowsForDamageTable(damageTable);
-								for (DamageResultRow damageResultRow : resultRows) {
-									Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
-									for (DamageResult damageResult : results) {
-										damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
-									}
-									damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
+							DamageTable damageTable = attack.getDamageTable();
+							Collection<DamageResultRow> resultRows = damageResultRowDao.
+									getDamageResultRowsForDamageTable(damageTable);
+							for (DamageResultRow damageResultRow : resultRows) {
+								Collection<DamageResult> results = damageResultDao.getDamageResultsForRow(damageResultRow);
+								for (DamageResult damageResult : results) {
+									damageResultRow.getResults().put(damageResult.getArmorType(), damageResult);
 								}
+								damageTable.getResultRows().put(damageResultRow.getRangeHighValue(), damageResultRow);
 							}
 							subscriber.onCompleted();
 						}
@@ -130,7 +131,7 @@ public class AttackRxHandler implements Serializable {
 					}
 				}
 		).subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread());
+				.observeOn(Schedulers.immediate());
 	}
 
 	/**

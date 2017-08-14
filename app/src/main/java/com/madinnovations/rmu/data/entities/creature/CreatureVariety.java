@@ -44,6 +44,7 @@ import rx.Subscriber;
 /**
  * Class containing Creature Variety attributes.
  */
+@SuppressWarnings("unused")
 public class CreatureVariety extends DatabaseObject {
 	public static final String               JSON_NAME            = "CreatureVarieties";
 	private static final String                    TAG                  = "CreatureVariety";
@@ -261,6 +262,7 @@ public class CreatureVariety extends DatabaseObject {
 
 	/**
 	 * Gets the next attack for the creature to use
+	 *
 	 * @param lastAttack  the last attack the creature used or null if this is the first attack or when the attack sequence
 	 *                       needs to be restarted
 	 * @return  the next attack to use or null if no attacks are found.

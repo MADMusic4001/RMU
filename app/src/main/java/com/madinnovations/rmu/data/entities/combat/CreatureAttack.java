@@ -2,6 +2,9 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import com.madinnovations.rmu.data.entities.common.Size;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Additional attack information for creatures.
  */
@@ -13,6 +16,20 @@ public class CreatureAttack {
 	private boolean sameRoundFollowUp = false;
 	private short   coopNumber = 0;
 	private short   kataCount = 0;
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("baseAttack", baseAttack)
+				.append("offensiveBonus", offensiveBonus)
+				.append("size", size)
+				.append("criticalFollowUp", criticalFollowUp)
+				.append("sameRoundFollowUp", sameRoundFollowUp)
+				.append("coopNumber", coopNumber)
+				.append("kataCount", kataCount)
+				.toString();
+	}
 
 	// Getters and setters
 	public Attack getBaseAttack() {

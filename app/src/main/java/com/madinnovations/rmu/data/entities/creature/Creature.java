@@ -15,6 +15,8 @@
  */
 package com.madinnovations.rmu.data.entities.creature;
 
+import android.util.Log;
+
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.data.entities.combat.Attack;
 import com.madinnovations.rmu.data.entities.combat.AttackResult;
@@ -255,36 +257,32 @@ public class Creature extends Being implements Serializable {
 	 */
 	public Attack getNextAttack(AttackResult attackResult, EncounterRoundInfo opponentInfo, boolean sameRound) {
 		Attack result = null;
+		boolean useNextAttack = false;
 
 		for(CreatureAttack creatureAttack : getCreatureVariety().getAttackList()) {
+			Log.d(TAG, "getNextAttack: creatureAttack = " + creatureAttack);
 			// Not first attack
 			if(attackResult != null) {
-				// Critical followup
-				if(creatureAttack.isCriticalFollowUp() && attackResult.getCriticalResult() != null) {
-					if(sameRound && creatureAttack.isSameRoundFollowUp()) {
-						result = creatureAttack.getBaseAttack();
-						break;
-					}
-					else if(!sameRound) {
-						result = creatureAttack.getBaseAttack();
-						break;
-					}
-				}
-				Attack grappleAttack = new Attack();
-				grappleAttack.setCode("gr");
-				if(creatureAttack.getBaseAttack().equals(grappleAttack)) {
-					State grappledState = opponentInfo.getCombatant().getCurrentStates().get(StateType.GRAPPLED);
-					if(grappledState.getConstant() >= 100) {
-
-					}
-				}
-				// same
-				else if(!creatureAttack.isCriticalFollowUp()) {
+				if(useNextAttack) {
 					result = creatureAttack.getBaseAttack();
 					break;
 				}
+				else if(attackResult.getAttack().equals(creatureAttack.getBaseAttack()) &&
+						creatureAttack.isCriticalFollowUp() &&
+						attackResult.getCriticalResult() != null) {
+					if(attackResult.getAttack().getCode().equals("gr")) {
+						State grappledState = opponentInfo.getCombatant().getCurrentStates().get(StateType.GRAPPLED);
+						if(grappledState.getConstant() >= 100 &&
+								(!sameRound || creatureAttack.isSameRoundFollowUp())) {
+							useNextAttack = true;
+						}
+					}
+					else if(!sameRound || creatureAttack.isSameRoundFollowUp()) {
+						useNextAttack = true;
+					}
+				}
 			}
-			else if(!creatureAttack.isCriticalFollowUp() && creatureAttack.getBaseAttack() != null) {
+			else if(creatureAttack.getBaseAttack() != null) {
 				result = creatureAttack.getBaseAttack();
 				break;
 			}
