@@ -20,7 +20,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,18 +40,12 @@ import com.madinnovations.rmu.data.entities.play.EncounterSetup;
 import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.di.modules.PlayFragmentModule;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import javax.inject.Inject;
-
-import rx.Subscriber;
 
 /**
  * Fragment to handle interaction with the Initiative dialog.
  */
+@SuppressWarnings("unused")
 public class SelectActionDialog extends DialogFragment {
 	private static final String TAG = "SelectActionDialog";
 	public static final String ENCOUNTER_SETUP_ARG_KEY = "encounterSetup";
@@ -136,9 +129,8 @@ public class SelectActionDialog extends DialogFragment {
 
 		int position = opponentsListView.getCheckedItemPosition();
 		if(position != AdapterView.INVALID_POSITION) {
-			encounterRoundInfo.setSelectedOpponent((Being)opponentsListAdapter.getItem(position));
+			encounterRoundInfo.setSelectedOpponent(opponentsListAdapter.getItem(position));
 		}
-		Log.d(TAG, "copyViewsToItems: encounterRoundInfo = " + encounterRoundInfo);
 
 		return result;
 	}

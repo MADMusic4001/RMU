@@ -40,6 +40,10 @@ public interface EncounterSetupEncounterInfoSchema {
 	String COLUMN_IS_MOVING_BACKWARDS     = "isMovingBackwards";
 	String COLUMN_RESTRICTED_QUARTERS     = "restrictedQuarters";
 	String COLUMN_ACTION_IN_PROGRESS      = "actionInProgress";
+	String COLUMN_DAMAGE_RESULT_ID        = "damageResultId";
+	String COLUMN_CRITICAL_RESULT_ID      = "criticalResultId";
+	String COLUMN_SENSED_CREATURE         = "sensedCreature";
+	String COLUMN_SENSED_OPPONENT_ID      = "sensedOpponentId";
 
 	String TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
@@ -63,6 +67,10 @@ public interface EncounterSetupEncounterInfoSchema {
 			+ COLUMN_IS_MOVING_BACKWARDS + " INTEGER NOT NULL, "
 			+ COLUMN_RESTRICTED_QUARTERS + " TEXT, "
 			+ COLUMN_ACTION_IN_PROGRESS + " TEXT, "
+			+ COLUMN_DAMAGE_RESULT_ID + " INTEGER, "
+			+ COLUMN_CRITICAL_RESULT_ID + " INTEGER, "
+			+ COLUMN_SENSED_CREATURE + " INTEGER, "
+			+ COLUMN_SENSED_OPPONENT_ID + " INTEGER, "
 			+ "PRIMARY KEY(" + COLUMN_ENCOUNTER_SETUP_ID + "," + COLUMN_BEING_ID + "), "
 			+ "FOREIGN KEY (" + COLUMN_ENCOUNTER_SETUP_ID + ") "
 				+ " REFERENCES " + EncounterSetupSchema.TABLE_NAME + "(" + EncounterSetupSchema.COLUMN_ID + "));";

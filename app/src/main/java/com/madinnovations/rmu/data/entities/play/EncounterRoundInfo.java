@@ -71,6 +71,7 @@ public class EncounterRoundInfo implements Serializable, Comparable<EncounterRou
 	private short              movementRemaining     = 4;
 	private Attack             selectedAttack        = null;
 	private OffensiveBonus     offensiveBonus        = new OffensiveBonus();
+	private Being              sensedWeakness        = null;
 
 	/**
 	 * Creates a new EncounterRoundInfo instance

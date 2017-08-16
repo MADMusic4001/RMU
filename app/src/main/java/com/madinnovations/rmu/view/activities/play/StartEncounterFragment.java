@@ -99,7 +99,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	private SelectActionDialog        selectActionDialog    = null;
 	private ResolveAttackDialog       resolveAttackDialog   = null;
 	// TODO: Re-roll critical option if player successfully used Sense Weakness talent at the beginning of combat.
-	// TODO: Add riposte option if player with Riposte talent uses all his OB to parry and parry is effective (no hits delivered). Riposte is weapon skill specific.
+	// TODO: Add riposte option if player with Riposte talent uses all his OB to parry and parry is effective (no hits delivered).
+	// Riposte is weapon skill specific.
 	// TODO: Add Opportunistic Strike option when player has the talent and his opponent fumbles.
 	// TODO: Add Quickdraw/Quickload option to allow player with the skill for the weapon he is loading/drawing to do so using
 	// 0 AP. Track "Pressing the Advantage" talent +5 OB to next attack against the foe when player delivers a critical.
@@ -200,7 +201,19 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 		if(resolveAttackDialog.copyViewsToItems()) {
 			saveItem();
 		}
-		nextAction();
+		if(!nextAction()) {
+			for(EncounterRoundInfo encounterRoundInfo : currentInstance.getCharacterCombatInfo().values()) {
+				//TODO: account for any haste or slow effects
+				encounterRoundInfo.setActionPointsRemaining((short)4);
+				encounterRoundInfo.setMovementRemaining((short)4);
+			}
+			for(EncounterRoundInfo encounterRoundInfo : currentInstance.getEnemyCombatInfo().values()) {
+				//TODO: account for any haste or slow effects
+				encounterRoundInfo.setActionPointsRemaining((short)4);
+				encounterRoundInfo.setMovementRemaining((short)4);
+			}
+			startEncounterButton.setText(getString(R.string.start_combat_round));
+		}
 	}
 
 	@Override
@@ -209,7 +222,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 	}
 
 	private boolean nextAction() {
-		Log.d(TAG, "nextAction: ");
 		EncounterRoundInfo encounterRoundInfo = null;
 		short currentInitiative = Short.MIN_VALUE;
 		short nextInitiative;
@@ -223,8 +235,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 					currentInitiative = nextInitiative;
 					encounterRoundInfo = entry.getValue();
 					character = entry.getKey();
-					Log.d(TAG, "nextAction: initiative = " + currentInitiative);
-					Log.d(TAG, "nextAction: character = " + character.getKnownAs());
 				}
 			}
 		}
@@ -238,8 +248,6 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 					encounterRoundInfo = entry.getValue();
 					character = null;
 					creature = entry.getKey();
-					Log.d(TAG, "nextAction: initiative = " + currentInitiative);
-					Log.d(TAG, "nextAction: creature = " + creature.getCreatureVariety().getName());
 				}
 			}
 		}
@@ -256,7 +264,8 @@ public class StartEncounterFragment extends Fragment implements TerrainView.Call
 				else {
 					name = ((Creature)encounterRoundInfo.getCombatant()).getCreatureVariety().getName();
 				}
-				movingTextView.setText(String.format(getString(R.string.moving_combatant), name));
+				movingTextView.setText(String.format(getString(R.string.moving_combatant), name,
+													 encounterRoundInfo.getMovementRemaining()));
 				loadPaceSpinner(encounterRoundInfo);
 				movementLayout.setVisibility(View.VISIBLE);
 			}
