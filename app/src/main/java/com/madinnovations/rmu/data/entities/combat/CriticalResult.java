@@ -24,6 +24,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Critical result attributes
@@ -51,6 +52,7 @@ public class CriticalResult extends DatabaseObject {
     private short        grappled     = 0;
 	private Short        death        = null;
     private CriticalType criticalType = CriticalType.CRUSH;
+    private List<AdditionalEffect> additionalEffects = new ArrayList<>();
 
 	/**
      * Creates a new CriticalResult instance with all values set to defaults.
@@ -258,5 +260,8 @@ public class CriticalResult extends DatabaseObject {
 	}
 	public void setDeath(Short death) {
 		this.death = death;
+	}
+	public List<AdditionalEffect> getAdditionalEffects() {
+		return additionalEffects;
 	}
 }

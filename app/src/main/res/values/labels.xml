@@ -172,6 +172,9 @@
   <string name="label_new_talent">New Talent</string>
   <string name="label_delete_talent_category">Delete Talent Category</string>
   <string name="label_new_talent_category">New Talent Category</string>
+  <string name="label_additional_results">Additional Results</string>
+  <string name="label_applies_to">Applies To</string>
+  <string name="label_parameter">Parameter</string>
 
   <!-- ListView header labels -->
   <string name="label_attack_code">Attack Code</string>
@@ -461,6 +464,7 @@
   <string name="input_label_dev_points">Development Points</string>
   <string name="input_label_disease_name">Disease Name</string>
   <string name="input_label_duration">Duration</string>
+  <string name="input_label_effect">Effect</string>
   <string name="input_label_effects">Effects</string>
   <string name="input_label_empathy_bonus">Empathy Bonus</string>
   <string name="input_label_encumbrance">Encumbrance</string>
@@ -562,6 +566,7 @@
   <string name="input_label_talent_category_filter">Talent Category Filter</string>
   <string name="input_label_template_name">Template Name</string>
   <string name="input_label_trades_ranks">Trades &amp; Crafts Ranks</string>
+  <string name="input_label_units">Units</string>
   <string name="input_label_value">Value</string>
   <string name="input_label_value_per">Value per</string>
   <string name="input_label_weapon_template">Weapon Template</string>
@@ -598,6 +603,7 @@
 
   <!-- ViewPager and Dialog title strings -->
   <string name="title_action">Action</string>
+  <string name="title_additional_effects">Additional Effects</string>
   <string name="title_character_main_page">General Attributes</string>
   <string name="title_character_skills_page">Skills</string>
   <string name="title_character_profession_knacks_page">Profession Skills and Knacks</string>

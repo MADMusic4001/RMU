@@ -15,11 +15,13 @@
  */
 package com.madinnovations.rmu.view.activities.combat;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +44,7 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.CriticalResultListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -53,7 +56,7 @@ import rx.schedulers.Schedulers;
 /**
  * Handles interactions with the UI for critical results.
  */
-public class CriticalResultsFragment extends Fragment {
+public class CriticalResultsFragment extends Fragment implements AdditionalEffectsDialog.AdditionalEffectsDialogListener {
 	private static final String TAG = "CriticalResultsFragment";
 	@Inject
 	protected CriticalResultRxHandler   criticalResultRxHandler;
@@ -104,9 +107,52 @@ public class CriticalResultsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return super.onOptionsItemSelected(item);
 	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if(v.getId() != R.id.result_text_edit) {
+			getActivity().getMenuInflater().inflate(R.menu.critical_result_context_menu, menu);
+		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem menuItem) {
+		AdapterView.AdapterContextMenuInfo info =
+				(AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
+
+		switch (menuItem.getItemId()) {
+			case R.id.context_additional_results:
+				CriticalResult criticalResult = listAdapter.getItem(info.position);
+				showInitiativeDialog(criticalResult);
+				Log.d(TAG, "onContextItemSelected: criticalResult = " + criticalResult);
+				return true;
+		}
+		return super.onContextItemSelected(menuItem);
+	}
+
+	@Override
+	public void onInitiativeOk(DialogFragment dialog) {
+
+	}
+
+	@Override
+	public void onInitiativeCancel(DialogFragment dialog) {
+
+	}
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">
+	private void showInitiativeDialog(CriticalResult criticalResult) {
+		AdditionalEffectsDialog dialog = new AdditionalEffectsDialog();
+		Bundle bundle = new Bundle();
+		bundle.putSerializable(AdditionalEffectsDialog.ADDITIONAL_EFFECTS_ARG_KEY,
+							   (ArrayList)criticalResult.getAdditionalEffects());
+		dialog.setArguments(bundle);
+		dialog.setListener(CriticalResultsFragment.this);
+		dialog.show(getFragmentManager(), "AdditionalEffectsDialogFragment");
+	}
+
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		int position;

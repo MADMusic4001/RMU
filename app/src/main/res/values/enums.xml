@@ -216,6 +216,30 @@
   <string name="enum_dice_d12">d12</string>
   <string name="enum_dice_d20">d20</string>
 
+  <!-- Effect enum strings -->
+  <string name="enum_effect_attack">attack</string>
+  <string name="enum_effect_bleed">Bleed</string>
+  <string name="enum_effect_breakage">Breakage</string>
+  <string name="enum_effect_critical">Critical</string>
+  <string name="enum_effect_daze">Daze</string>
+  <string name="enum_effect_death">Death</string>
+  <string name="enum_effect_defensive_bonus">Defensive Bonus</string>
+  <string name="enum_effect_drop_item">Drop Item</string>
+  <string name="enum_effect_fatigue">Fatigue</string>
+  <string name="enum_effect_grapple">Grapple</string>
+  <string name="enum_effect_hit_points">Hit Points</string>
+  <string name="enum_effect_initiative_bonus">Initiative Bonus</string>
+  <string name="enum_effect_injury">Injury</string>
+  <string name="enum_effect_knock_back">Knock Back</string>
+  <string name="enum_effect_morale">Morale</string>
+  <string name="enum_effect_offensive_bonus">Offensive Bonus</string>
+  <string name="enum_effect_prone">Prone</string>
+  <string name="enum_effect_skill_bonus">Skill Bonus</string>
+  <string name="enum_effect_stagger">Stagger</string>
+  <string name="enum_effect_stun">Stun</string>
+  <string name="enum_effect_stun_no_parry">Stunned and Unable to Parry</string>
+  <string name="enum_effect_unconscious">Unconscious</string>
+
   <!-- Element enum strings -->
   <string name="enum_element_earth">Earth</string>
   <string name="enum_element_fire">Fire</string>
@@ -505,6 +529,17 @@
   <string name="enum_substance_type_semi_precious_stones">Semi-Precious Stones</string>
   <string name="enum_substance_type_stones">Stones</string>
 
+  <!-- Target enum strings -->
+  <string name="enum_target_combatant">Combatant</string>
+  <string name="enum_target_nearest_ally">Nearest Ally</string>
+  <string name="enum_target_all_allies">All Allies</string>
+  <string name="enum_target_allies_in_range">Allies in range</string>
+  <string name="enum_target_mount">Mount</string>
+  <string name="enum_target_foe">Foe</string>
+  <string name="enum_target_nearest_foe">Nearest Foe</string>
+  <string name="enum_target_all_foes">All Foes</string>
+  <string name="enum_target_foes_in_range">Foes in range</string>
+
   <!-- Terrain enum strings -->
   <string name="enum_terrain_easy">Easy</string>
   <string name="enum_terrain_light">Light</string>
@@ -524,6 +559,15 @@
   <string name="enum_terrain_sheer_folly_description">Numerous obstacles, steep, crowds</string>
   <string name="enum_terrain_absurd_description">Dense obstacles, packed crowd</string>
   <string name="enum_terrain_nigh_impossible_description">Sheer cliff, tightly packed crowd</string>
+
+  <!-- Time unit strings -->
+  <string name="enum_time_unit_days">Days</string>
+  <string name="enum_time_unit_hours">Hours</string>
+  <string name="enum_time_unit_minutes">Minutes</string>
+  <string name="enum_time_unit_months">Months</string>
+  <string name="enum_time_unit_rounds">Rounds</string>
+  <string name="enum_time_unit_weeks">Weeks</string>
+  <string name="enum_time_unit_years">Years</string>
 
   <!-- Unit enum strings -->
   <string name="enum_unit_always">Always</string>

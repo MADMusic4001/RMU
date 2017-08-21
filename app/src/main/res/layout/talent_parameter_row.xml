@@ -28,7 +28,7 @@
       android:background="@drawable/ic_remove_black"
       android:contentDescription="@string/label_remove_parameter"/>
   <TextView
-      android:id="@+id/parameter_label"
+      android:id="@+id/effect_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_toRightOf="@id/remove_parameter_button"
@@ -36,19 +36,19 @@
       android:layout_centerVertical="true"
       android:text="@string/input_label_parameter"/>
   <Spinner
-      android:id="@+id/parameter_spinner"
+      android:id="@+id/effect_spinner"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/parameter_label"
-      android:layout_toEndOf="@id/parameter_label"
+      android:layout_toRightOf="@id/effect_label"
+      android:layout_toEndOf="@id/effect_label"
       android:layout_centerVertical="true"/>
 
   <TextView
       android:id="@+id/initial_value_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/parameter_spinner"
-      android:layout_toEndOf="@id/parameter_spinner"
+      android:layout_toRightOf="@id/effect_spinner"
+      android:layout_toEndOf="@id/effect_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/input_label_initial_value"/>
@@ -152,8 +152,8 @@
       android:id="@+id/value_spinner_label"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/parameter_spinner"
-      android:layout_toEndOf="@id/parameter_spinner"
+      android:layout_toRightOf="@id/effect_spinner"
+      android:layout_toEndOf="@id/effect_spinner"
       android:layout_centerVertical="true"
       android:visibility="gone"
       android:text="@string/input_label_sense"/>

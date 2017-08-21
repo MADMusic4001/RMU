@@ -459,7 +459,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 		boolean changed = false;
 
 		for(Map.Entry<View, Integer> entry : indexMap.entrySet()) {
-			Spinner spinner = (Spinner) entry.getKey().findViewById(R.id.parameter_spinner);
+			Spinner spinner = (Spinner) entry.getKey().findViewById(R.id.effect_spinner);
 			Spinner valuesSpinner = (Spinner) entry.getKey().findViewById(R.id.value_spinner);
 			EditText initialValueEdit = (EditText)entry.getKey().findViewById(R.id.initial_value_edit);
 			EditText valuePer1Edit = (EditText)entry.getKey().findViewById(R.id.value_per1_edit);
@@ -838,7 +838,7 @@ public class TalentsFragment extends Fragment implements TwoFieldListAdapter.Get
 
 	// <editor-fold desc="talent_parameter_row layout views initialization and handling">
 	private void initParameterSpinner(final View layout) {
-		Spinner spinner = (Spinner)layout.findViewById(R.id.parameter_spinner);
+		Spinner spinner = (Spinner)layout.findViewById(R.id.effect_spinner);
 		final ArrayAdapter<Parameter> adapter = new ArrayAdapter<>(getActivity(), R.layout.single_field_row);
 		adapter.addAll(Parameter.values());
 		adapter.notifyDataSetChanged();

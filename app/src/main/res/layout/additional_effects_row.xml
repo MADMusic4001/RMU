@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /*
+  ~   Copyright (C) 2017 MadInnovations
+  ~   <p/>
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~   <p/>
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~   <p/>
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~  */
+  ~
+  -->
+
+<android.support.constraint.ConstraintLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+  <LinearLayout
+      android:id="@+id/applies_to_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/effect_layout"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/applies_to_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/label_applies_to"/>
+    <Spinner
+        android:id="@+id/applies_to_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
+  <LinearLayout
+      android:id="@id/effect_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/applies_to_layout"
+      app:layout_constraintRight_toLeftOf="@+id/value1_edit_label"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/effect_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/input_label_effect"/>
+    <Spinner
+        android:id="@+id/effect_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
+  <android.support.design.widget.TextInputLayout
+      android:id="@id/value1_edit_label"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/effect_layout"
+      app:layout_constraintRight_toLeftOf="@+id/value2_edit_label"
+      app:layout_constraintTop_toTopOf="parent">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/value1_edit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/input_label_value"/>
+  </android.support.design.widget.TextInputLayout>
+  <android.support.design.widget.TextInputLayout
+      android:id="@id/value2_edit_label"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/value1_edit_label"
+      app:layout_constraintRight_toLeftOf="@+id/value3_edit_label"
+      app:layout_constraintTop_toTopOf="parent">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/value2_edit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/input_label_value"/>
+  </android.support.design.widget.TextInputLayout>
+  <android.support.design.widget.TextInputLayout
+      android:id="@id/value3_edit_label"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/value2_edit_label"
+      app:layout_constraintRight_toLeftOf="@+id/value4_edit_label"
+      app:layout_constraintTop_toTopOf="parent">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/value3_edit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/input_label_value"/>
+  </android.support.design.widget.TextInputLayout>
+  <android.support.design.widget.TextInputLayout
+      android:id="@id/value4_edit_label"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/value3_edit_label"
+      app:layout_constraintRight_toLeftOf="@+id/units_layout"
+      app:layout_constraintTop_toTopOf="parent">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/value4_edit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/input_label_value"/>
+  </android.support.design.widget.TextInputLayout>
+  <LinearLayout
+      android:id="@id/units_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/value4_edit_label"
+      app:layout_constraintRight_toLeftOf="@+id/dice_layout"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/units_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/input_label_units"/>
+    <Spinner
+        android:id="@+id/units_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
+  <LinearLayout
+      android:id="@id/dice_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/units_layout"
+      app:layout_constraintRight_toLeftOf="@+id/critical_severity_layout"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/dice_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/hint_dice_type"/>
+    <Spinner
+        android:id="@+id/dice_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
+  <LinearLayout
+      android:id="@id/critical_severity_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/dice_layout"
+      app:layout_constraintRight_toLeftOf="@+id/critical_type_layout"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/critical_severity_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/hint_severity_code"/>
+    <Spinner
+        android:id="@+id/critical_severity_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
+  <LinearLayout
+      android:id="@id/critical_type_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/critical_severity_layout"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/critical_type_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/hint_critical_type_name"/>
+    <Spinner
+        android:id="@+id/critical_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
+</android.support.constraint.ConstraintLayout>
