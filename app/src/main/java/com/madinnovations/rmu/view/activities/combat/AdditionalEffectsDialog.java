@@ -92,6 +92,9 @@ public class AdditionalEffectsDialog extends DialogFragment {
 	public void setListener(AdditionalEffectsDialogListener listener) {
 		this.listener = listener;
 	}
+	public List<AdditionalEffect> getAdditionalEffects() {
+		return additionalEffects;
+	}
 
 	public interface AdditionalEffectsDialogListener {
 		/**

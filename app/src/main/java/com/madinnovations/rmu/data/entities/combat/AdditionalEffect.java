@@ -35,6 +35,50 @@ public class AdditionalEffect extends DatabaseObject implements Serializable {
 	private Object value3 = null;
 	private Object value4 = null;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+
+		AdditionalEffect that = (AdditionalEffect) o;
+
+		if (getTargetType() != that.getTargetType()) {
+			return false;
+		}
+		if (getEffect() != that.getEffect()) {
+			return false;
+		}
+		if (getValue1() != null ? !getValue1().equals(that.getValue1()) : that.getValue1() != null) {
+			return false;
+		}
+		if (getValue2() != null ? !getValue2().equals(that.getValue2()) : that.getValue2() != null) {
+			return false;
+		}
+		if (getValue3() != null ? !getValue3().equals(that.getValue3()) : that.getValue3() != null) {
+			return false;
+		}
+		return getValue4() != null ? getValue4().equals(that.getValue4()) : that.getValue4() == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + getTargetType().hashCode();
+		result = 31 * result + getEffect().hashCode();
+		result = 31 * result + (getValue1() != null ? getValue1().hashCode() : 0);
+		result = 31 * result + (getValue2() != null ? getValue2().hashCode() : 0);
+		result = 31 * result + (getValue3() != null ? getValue3().hashCode() : 0);
+		result = 31 * result + (getValue4() != null ? getValue4().hashCode() : 0);
+		return result;
+	}
+
 	// Getters and setters
 	public TargetType getTargetType() {
 		return targetType;

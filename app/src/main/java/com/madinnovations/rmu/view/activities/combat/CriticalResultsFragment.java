@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,7 +43,6 @@ import com.madinnovations.rmu.view.activities.campaign.CampaignActivity;
 import com.madinnovations.rmu.view.adapters.combat.CriticalResultListAdapter;
 import com.madinnovations.rmu.view.di.modules.CombatFragmentModule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -53,6 +51,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+
 /**
  * Handles interactions with the UI for critical results.
  */
@@ -60,8 +59,7 @@ public class CriticalResultsFragment extends Fragment implements AdditionalEffec
 	private static final String TAG = "CriticalResultsFragment";
 	@Inject
 	protected CriticalResultRxHandler   criticalResultRxHandler;
-	@Inject
-	protected CriticalResultListAdapter listAdapter;
+	private   CriticalResultListAdapter listAdapter;
 	private   ArrayAdapter<String>      criticalTypeFilterSpinnerAdapter;
 	private   ArrayAdapter<Character>   criticalSeverityFilterSpinnerAdapter;
 	private   Spinner                   criticalTypeFilterSpinner;
@@ -109,29 +107,6 @@ public class CriticalResultsFragment extends Fragment implements AdditionalEffec
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		if(v.getId() != R.id.result_text_edit) {
-			getActivity().getMenuInflater().inflate(R.menu.critical_result_context_menu, menu);
-		}
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem menuItem) {
-		AdapterView.AdapterContextMenuInfo info =
-				(AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
-
-		switch (menuItem.getItemId()) {
-			case R.id.context_additional_results:
-				CriticalResult criticalResult = listAdapter.getItem(info.position);
-				showInitiativeDialog(criticalResult);
-				Log.d(TAG, "onContextItemSelected: criticalResult = " + criticalResult);
-				return true;
-		}
-		return super.onContextItemSelected(menuItem);
-	}
-
-	@Override
 	public void onInitiativeOk(DialogFragment dialog) {
 
 	}
@@ -143,16 +118,6 @@ public class CriticalResultsFragment extends Fragment implements AdditionalEffec
 	// </editor-fold>
 
 	// <editor-fold desc="Copy to/from views/entity methods">
-	private void showInitiativeDialog(CriticalResult criticalResult) {
-		AdditionalEffectsDialog dialog = new AdditionalEffectsDialog();
-		Bundle bundle = new Bundle();
-		bundle.putSerializable(AdditionalEffectsDialog.ADDITIONAL_EFFECTS_ARG_KEY,
-							   (ArrayList)criticalResult.getAdditionalEffects());
-		dialog.setArguments(bundle);
-		dialog.setListener(CriticalResultsFragment.this);
-		dialog.show(getFragmentManager(), "AdditionalEffectsDialogFragment");
-	}
-
 	private boolean copyViewsToItem() {
 		boolean changed = false;
 		int position;
@@ -309,7 +274,7 @@ public class CriticalResultsFragment extends Fragment implements AdditionalEffec
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-
+		listAdapter = new CriticalResultListAdapter(getActivity(), criticalResultRxHandler);
 		listView.setAdapter(listAdapter);
 		loadCriticalResults();
 

@@ -153,15 +153,12 @@
           android:inputType="number"
           android:maxLength="3"
           android:background="@null"/>
-      <EditText
-          android:id="@+id/death_edit"
+      <ImageButton
+          android:id="@+id/additional_results_button"
           android:layout_width="0dp"
           android:layout_weight="1"
           android:layout_height="wrap_content"
-          android:gravity="center"
-          android:inputType="number"
-          android:maxLength="2"
-          android:background="@null"/>
+          android:src="@drawable/ic_add_black"/>
     </LinearLayout>
     <com.madinnovations.rmu.view.widgets.NoPasteBreakEditText
         android:id="@+id/result_text_edit"

@@ -15,7 +15,10 @@
  */
 package com.madinnovations.rmu.view.adapters.combat;
 
+import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -25,15 +28,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
+import com.madinnovations.rmu.data.entities.combat.AdditionalEffect;
 import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
+import com.madinnovations.rmu.view.activities.combat.AdditionalEffectsDialog;
 import com.madinnovations.rmu.view.utils.EditTextUtils;
 import com.madinnovations.rmu.view.widgets.NoPasteBreakEditText;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -47,20 +55,21 @@ import rx.schedulers.Schedulers;
 public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 	private static final String TAG = "CriticalResultListAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.critical_results_list_row;
-	@Inject
 	CriticalResultRxHandler          criticalResultRxHandler;
 	private ArrayAdapter<String>     bodyPartSpinnerAdapter;
 	private LayoutInflater           layoutInflater;
+	private Activity                 activity;
 
 	/**
 	 * Creates a new CriticalResultListAdapter instance.
 	 *
-	 * @param context the view {@link Context} the adapter will be attached to.
+	 * @param activity the {@link Activity} context the adapter will be attached to.
 	 */
-	@Inject
-	CriticalResultListAdapter(Context context) {
-		super(context, LAYOUT_RESOURCE_ID);
-		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	public CriticalResultListAdapter(Activity activity, CriticalResultRxHandler criticalResultRxHandler) {
+		super(activity, LAYOUT_RESOURCE_ID);
+		this.activity = activity;
+		this.criticalResultRxHandler = criticalResultRxHandler;
+		this.layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@NonNull
@@ -85,7 +94,7 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 									(EditText) rowView.findViewById(R.id.knock_back_edit),
 									(EditText) rowView.findViewById(R.id.prone_edit),
 									(EditText) rowView.findViewById(R.id.grappled_edit),
-									(EditText) rowView.findViewById(R.id.death_edit),
+									(ImageButton) rowView.findViewById(R.id.additional_results_button),
 									(NoPasteBreakEditText) rowView.findViewById(R.id.result_text_edit),
 									(EditText) rowView.findViewById(R.id.right_roll_view));
 			rowView.setTag(holder);
@@ -139,12 +148,6 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			holder.knockBackEdit.setText(String.valueOf(criticalResult.getKnockBack()));
 			holder.proneEdit.setText(String.valueOf(criticalResult.getProne()));
 			holder.grappledEdit.setText(String.valueOf(criticalResult.getGrappled()));
-			if(criticalResult.getDeath() == null) {
-				holder.deathEdit.setText(null);
-			}
-			else {
-				holder.deathEdit.setText(String.valueOf(criticalResult.getDeath()));
-			}
 			if(criticalResult.getResultText() == null || criticalResult.getResultText().isEmpty()) {
 				holder.resultTextEdit.setText(null);
 				holder.resultTextEdit.setError(getContext().getString(R.string.validation_critical_result_text_required));
@@ -158,7 +161,7 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 		return rowView;
 	}
 
-	private class ViewHolder implements EditTextUtils.ValuesCallback {
+	private class ViewHolder implements EditTextUtils.ValuesCallback, AdditionalEffectsDialog.AdditionalEffectsDialogListener {
 		private CriticalResult       currentInstance;
 		private EditText             leftRollView;
 		private Spinner              bodyPartSpinner;
@@ -174,15 +177,15 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 		private EditText             knockBackEdit;
 		private EditText             proneEdit;
 		private EditText             grappledEdit;
-		private EditText             deathEdit;
+		private ImageButton          additionalResultsButton;
 		private NoPasteBreakEditText resultTextEdit;
 		private EditText             rightRollView;
 
 		public ViewHolder(EditText leftRollView, Spinner bodyPartSpinner, EditText hitsEdit, EditText bleedingEdit,
 						  EditText fatigueEdit, EditText breakageEdit, EditText injuryEdit, EditText dazedEdit,
 						  EditText stunnedEdit, EditText noParryEdit, EditText staggeredEdit, EditText knockBackEdit,
-						  EditText proneEdit, EditText grappledEdit, EditText deathEdit, NoPasteBreakEditText resultTextEdit,
-						  EditText rightRollView) {
+						  EditText proneEdit, EditText grappledEdit, ImageButton additionalResultsButton,
+						  NoPasteBreakEditText resultTextEdit, EditText rightRollView) {
 			this.leftRollView = leftRollView;
 			this.bodyPartSpinner = bodyPartSpinner;
 			initBodyPartSpinner();
@@ -219,12 +222,13 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			this.grappledEdit = grappledEdit;
 			EditTextUtils.initEdit(grappledEdit, getContext(), this, R.id.grappled_edit,
 								   R.string.validation_grappled_required);
-			this.deathEdit = deathEdit;
-			EditTextUtils.initEdit(deathEdit, getContext(), this, R.id.death_edit, 0);
+			this.additionalResultsButton = additionalResultsButton;
 			this.resultTextEdit = resultTextEdit;
 			EditTextUtils.initEdit(resultTextEdit, getContext(), this, R.id.result_text_edit,
 								   R.string.validation_critical_result_text_required);
 			this.rightRollView = rightRollView;
+
+			initAdditionalResultsButton();
 		}
 
 		@Override
@@ -269,11 +273,6 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					break;
 				case R.id.prone_edit:
 					result = String.valueOf(currentInstance.getProne());
-					break;
-				case R.id.death_edit:
-					if(currentInstance.getDeath() != null) {
-						result = String.valueOf(currentInstance.getDazed());
-					}
 					break;
 				case R.id.result_text_edit:
 					result = currentInstance.getResultText();
@@ -343,15 +342,6 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 						saveItem();
 					}
 					break;
-				case R.id.death_edit:
-					if(newString != null && newString.length() > 0) {
-						currentInstance.setDeath(Short.valueOf(newString));
-					}
-					else {
-						currentInstance.setDeath(null);
-					}
-					saveItem();
-					break;
 				case R.id.result_text_edit:
 					currentInstance.setResultText(newString);
 					saveItem();
@@ -362,6 +352,50 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 		@Override
 		public boolean performLongClick(@IdRes int editTextId) {
 			return false;
+		}
+
+		@Override
+		public void onInitiativeOk(DialogFragment dialog) {
+			boolean changed = false;
+			AdditionalEffectsDialog additionalEffectsDialog = (AdditionalEffectsDialog)dialog;
+
+			if(currentInstance.getAdditionalEffects().size() != additionalEffectsDialog.getAdditionalEffects().size()) {
+				changed = true;
+				currentInstance.getAdditionalEffects().clear();
+				currentInstance.getAdditionalEffects().addAll(additionalEffectsDialog.getAdditionalEffects());
+			}
+			else {
+				for(AdditionalEffect additionalEffect : additionalEffectsDialog.getAdditionalEffects()) {
+					if(!currentInstance.getAdditionalEffects().contains(additionalEffect)) {
+						changed = true;
+					}
+				}
+				if(changed) {
+					currentInstance.getAdditionalEffects().clear();
+					currentInstance.getAdditionalEffects().addAll(additionalEffectsDialog.getAdditionalEffects());
+				}
+			}
+			if(changed) {
+				saveItem();
+			}
+		}
+
+		@Override
+		public void onInitiativeCancel(DialogFragment dialog) {}
+
+		private void initAdditionalResultsButton() {
+			additionalResultsButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					AdditionalEffectsDialog dialog = new AdditionalEffectsDialog();
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(AdditionalEffectsDialog.ADDITIONAL_EFFECTS_ARG_KEY,
+										   (ArrayList)currentInstance.getAdditionalEffects());
+					dialog.setArguments(bundle);
+					dialog.setListener(ViewHolder.this);
+					dialog.show(activity.getFragmentManager(), "AdditionalEffectsDialogFragment");
+				}
+			});
 		}
 
 		private void saveItem() {
