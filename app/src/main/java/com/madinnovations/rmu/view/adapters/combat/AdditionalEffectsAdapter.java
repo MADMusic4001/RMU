@@ -24,13 +24,10 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -399,11 +396,11 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 		private void setSingleIntegerInput(@StringRes int hintId) {
 			value1Layout.setVisibility(View.VISIBLE);
 			value1Layout.setHint(getContext().getString(hintId));
-			value1Edit.setHint(hintId);
 			if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
 				value1Edit.setText(currentInstance.getValue1().toString());
 			}
 			else {
+				value1Edit.setText(null);
 				currentInstance.setValue1(null);
 			}
 		}
@@ -411,7 +408,6 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 		private void setDiceInput() {
 			value2Layout.setVisibility(View.VISIBLE);
 			value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
-			value2Edit.setHint(R.string.hint_num_dice);
 			if(currentInstance.getValue2() != null && currentInstance.getValue2() instanceof Integer) {
 				value2Edit.setText(String.valueOf(currentInstance.getValue2()));
 			}
