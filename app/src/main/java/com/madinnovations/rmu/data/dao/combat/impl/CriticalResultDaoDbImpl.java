@@ -22,8 +22,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.madinnovations.rmu.data.dao.BaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.combat.AdditionalEffectDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
+import com.madinnovations.rmu.data.dao.combat.schemas.AdditionalEffectSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
+import com.madinnovations.rmu.data.entities.combat.AdditionalEffect;
 import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
@@ -42,15 +45,18 @@ import javax.inject.Singleton;
 public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> implements CriticalResultDao, CriticalResultSchema {
 	@SuppressWarnings("unused")
 	private static final String TAG = "CriticalResultDaoDbImpl";
+	private AdditionalEffectDao additionalEffectDao;
 
 	/**
      * Creates a new instance of CriticalResultDaoDbImpl
      *
      * @param helper  an SQLiteOpenHelper instance
+     * @param additionalEffectDao  an AdditionalEffectDao instance
      */
     @Inject
-    public CriticalResultDaoDbImpl(SQLiteOpenHelper helper) {
+    public CriticalResultDaoDbImpl(SQLiteOpenHelper helper, AdditionalEffectDao additionalEffectDao) {
         super(helper);
+        this.additionalEffectDao = additionalEffectDao;
     }
 
     @Override
@@ -214,7 +220,33 @@ public class CriticalResultDaoDbImpl extends BaseDaoDbImpl<CriticalResult> imple
         return list;
     }
 
-    private CriticalResult cursorToEntity(@NonNull Cursor cursor, CriticalType criticalType) {
+    @Override
+    protected boolean saveRelationships(SQLiteDatabase db, CriticalResult instance) {
+		boolean result = true;
+		final String selectionArgs[] = { String.valueOf(instance.getId()) };
+
+		String selection = AdditionalEffectSchema.COLUMN_CRITICAL_RESULT_ID + " = ?";
+		db.delete(AdditionalEffectSchema.TABLE_NAME, selection, selectionArgs);
+		for(AdditionalEffect additionalEffect : instance.getAdditionalEffects()) {
+			if(additionalEffect.isValid()) {
+				result &= additionalEffectDao.save(additionalEffect);
+			}
+		}
+		return result;
+    }
+
+	@Override
+	protected boolean deleteRelationships(SQLiteDatabase db, int id) {
+		boolean result;
+		final String selectionArgs[] = { String.valueOf(id) };
+
+		String selection = AdditionalEffectSchema.COLUMN_CRITICAL_RESULT_ID + " = ?";
+		result = (db.delete(AdditionalEffectSchema.TABLE_NAME, selection, selectionArgs) >= 0);
+
+		return result;
+	}
+
+	private CriticalResult cursorToEntity(@NonNull Cursor cursor, CriticalType criticalType) {
         return cursorToEntity(cursor, criticalType, cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SEVERITY_CODE)).charAt(0));
     }
 

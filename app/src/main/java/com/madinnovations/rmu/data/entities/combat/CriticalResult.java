@@ -60,7 +60,14 @@ public class CriticalResult extends DatabaseObject {
     public CriticalResult() {
     }
 
-	/**
+    /**
+     * Creates a new CriticalResult instance with the given id.
+     */
+    public CriticalResult(int id) {
+        super(id);
+    }
+
+    /**
      * Creates a new CriticalResult instance with the given criticalType, severityCode. minRoll, maxRoll, and bodyLocation values and all others
      * set to defaults.
      *
@@ -264,4 +271,7 @@ public class CriticalResult extends DatabaseObject {
 	public List<AdditionalEffect> getAdditionalEffects() {
 		return additionalEffects;
 	}
+    public void setAdditionalEffects(List<AdditionalEffect> additionalEffects) {
+        this.additionalEffects = additionalEffects;
+    }
 }

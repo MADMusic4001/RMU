@@ -291,7 +291,6 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						hideAll();
 						value1Layout.setVisibility(View.VISIBLE);
 						value1Layout.setHint(getContext().getString(R.string.hint_death));
-						value1Edit.setHint(R.string.hint_death);
 						unitsLayout.setVisibility(View.VISIBLE);
 						if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
 							value1Edit.setText(currentInstance.getValue1().toString());
@@ -314,7 +313,6 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						hideAll();
 						value1Layout.setVisibility(View.VISIBLE);
 						value1Layout.setHint(getContext().getString(R.string.hint_distance));
-						value1Edit.setHint(R.string.hint_distance);
 						if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
 							value1Edit.setText(String.valueOf(currentInstance.getValue1()));
 						}
@@ -328,7 +326,6 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						hideAll();
 						value1Layout.setVisibility(View.VISIBLE);
 						value1Layout.setHint(getContext().getString(R.string.hint_hits));
-						value1Edit.setHint(R.string.hint_hits);
 						if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
 							value1Edit.setText(String.valueOf(currentInstance.getValue1()));
 						}

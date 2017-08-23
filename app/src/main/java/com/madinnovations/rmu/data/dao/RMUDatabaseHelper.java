@@ -52,6 +52,7 @@ import com.madinnovations.rmu.data.dao.character.schemas.RaceSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceStatModSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentParametersSchema;
 import com.madinnovations.rmu.data.dao.character.schemas.RaceTalentsSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.AdditionalEffectSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.AttackSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalCodeSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.CriticalResultSchema;
@@ -59,6 +60,7 @@ import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultRowSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageResultSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DamageTableSchema;
 import com.madinnovations.rmu.data.dao.combat.schemas.DiseaseSchema;
+import com.madinnovations.rmu.data.dao.combat.schemas.FumbleSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.BiomeSchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategorySchema;
 import com.madinnovations.rmu.data.dao.common.schemas.SkillCategoryStatsSchema;
@@ -115,9 +117,6 @@ import com.madinnovations.rmu.data.entities.combat.BodyLocation;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.item.Weapon;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -129,7 +128,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("unused")
 	private static final String TAG              = "RMUDatabaseHelper";
 	private static final String DATABASE_NAME    = "rmu_db";
-	public static final  int    DATABASE_VERSION = 24;
+	public static final  int    DATABASE_VERSION = 25;
 
     /**
      * Creates a new RMUDatabaseHelper instance
@@ -203,6 +202,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 			sqLiteDatabase.execSQL(DamageResultSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(DamageResultRowSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(CriticalResultSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(FumbleSchema.TABLE_CREATE);
+			sqLiteDatabase.execSQL(AdditionalEffectSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(AttackSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(VarietyAttacksSchema.TABLE_CREATE);
 			sqLiteDatabase.execSQL(RaceTalentsSchema.TABLE_CREATE);
@@ -256,7 +257,7 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.beginTransaction();
             switch (oldVersion) {
-				case 23:
+				case 24:
 					upgrade(sqLiteDatabase);
 					break;
             }
@@ -312,6 +313,8 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.delete(RaceTalentsSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(VarietyAttacksSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(AttackSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(AdditionalEffectSchema.TABLE_NAME, null, null);
+		sqLiteDatabase.delete(FumbleSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(CriticalResultSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultSchema.TABLE_NAME, null, null);
 		sqLiteDatabase.delete(DamageResultRowSchema.TABLE_NAME, null, null);
@@ -443,28 +446,29 @@ public class RMUDatabaseHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.beginTransaction();
 		Cursor cursor = null;
 		try {
-			cursor = sqLiteDatabase.rawQuery(
-			"SELECT id, bonus, twoHanded"
-					+ " FROM " + WeaponSchema.TABLE_NAME, null);
-
-			if(cursor != null) {
-				cursor.moveToFirst();
-				List<Weapon> weapons = new ArrayList<>(cursor.getCount());
-				while (!cursor.isAfterLast()) {
-					Weapon weapon = cursorToEntity(cursor);
-					weapons.add(weapon);
-					cursor.moveToNext();
-				}
-				sqLiteDatabase.execSQL("DROP TABLE " + WeaponSchema.TABLE_NAME);
-				sqLiteDatabase.execSQL(WeaponSchema.TABLE_CREATE);
-				for (Weapon weapon : weapons) {
-					ContentValues values = getContentValues(weapon);
-					sqLiteDatabase.insert(WeaponSchema.TABLE_NAME, null, values);
-				}
-
-				Log.d(TAG, "upgrade: Upgrade completed successfully");
+//			cursor = sqLiteDatabase.rawQuery(
+//			"SELECT id, bonus, twoHanded"
+//					+ " FROM " + WeaponSchema.TABLE_NAME, null);
+//
+//			if(cursor != null) {
+//				cursor.moveToFirst();
+//				List<Weapon> weapons = new ArrayList<>(cursor.getCount());
+//				while (!cursor.isAfterLast()) {
+//					Weapon weapon = cursorToEntity(cursor);
+//					weapons.add(weapon);
+//					cursor.moveToNext();
+//				}
+//				sqLiteDatabase.execSQL("DROP TABLE " + WeaponSchema.TABLE_NAME);
+				sqLiteDatabase.execSQL(FumbleSchema.TABLE_CREATE);
+				sqLiteDatabase.execSQL(AdditionalEffectSchema.TABLE_CREATE);
+//				for (Weapon weapon : weapons) {
+//					ContentValues values = getContentValues(weapon);
+//					sqLiteDatabase.insert(WeaponSchema.TABLE_NAME, null, values);
+//				}
+//
+//				Log.d(TAG, "upgrade: Upgrade completed successfully");
 				sqLiteDatabase.setTransactionSuccessful();
-			}
+//			}
 		}
 		catch (Exception e) {
 			Log.e(TAG, "upgrade: Upgrade failed.", e);

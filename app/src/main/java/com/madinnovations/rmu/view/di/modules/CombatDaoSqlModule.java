@@ -16,18 +16,21 @@
 package com.madinnovations.rmu.view.di.modules;
 
 import com.madinnovations.rmu.data.dao.RMUDatabaseHelper;
+import com.madinnovations.rmu.data.dao.combat.AdditionalEffectDao;
 import com.madinnovations.rmu.data.dao.combat.AttackDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultDao;
 import com.madinnovations.rmu.data.dao.combat.DamageResultRowDao;
 import com.madinnovations.rmu.data.dao.combat.DamageTableDao;
 import com.madinnovations.rmu.data.dao.combat.DiseaseDao;
+import com.madinnovations.rmu.data.dao.combat.impl.AdditionalEffectDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.AttackDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.CriticalResultDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageResultRowDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DamageTableDaoDbImpl;
 import com.madinnovations.rmu.data.dao.combat.impl.DiseaseDaoDbImpl;
+import com.madinnovations.rmu.data.dao.common.SkillDao;
 import com.madinnovations.rmu.data.dao.common.SpecializationDao;
 
 import javax.inject.Singleton;
@@ -45,8 +48,13 @@ public class CombatDaoSqlModule {
 		return new AttackDaoDbImpl(helper, damageTableDao, specializationDao);
 	}
 	@Provides @Singleton
-	CriticalResultDao provideCriticalResultDao(RMUDatabaseHelper helper) {
-		return new CriticalResultDaoDbImpl(helper);
+	AdditionalEffectDao provideAdditionalEffectDao(RMUDatabaseHelper helper, SkillDao skillDao,
+												   SpecializationDao specializationDao) {
+		return new AdditionalEffectDaoDbImpl(helper, skillDao, specializationDao);
+	}
+	@Provides @Singleton
+	CriticalResultDao provideCriticalResultDao(RMUDatabaseHelper helper, AdditionalEffectDao additionalEffectDao) {
+		return new CriticalResultDaoDbImpl(helper, additionalEffectDao);
 	}
 	@Provides @Singleton
 	DamageResultDao provideDamageResultDao(RMUDatabaseHelper helper, DamageResultRowDao damageResultRowDao) {

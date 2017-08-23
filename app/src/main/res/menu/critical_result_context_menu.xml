@@ -20,5 +20,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
       android:id="@+id/context_additional_results"
-      android:title="@string/label_additional_results"/>
+      android:title="@string/label_additional_effects"/>
 </menu>

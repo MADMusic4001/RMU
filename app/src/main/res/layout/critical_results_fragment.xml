@@ -164,13 +164,13 @@
         style="@style/TextViewListHeader"
         android:text="@string/label_grapple"/>
     <TextView
-        android:id="@+id/death_view"
+        android:id="@+id/additional_effects_view"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
         android:gravity="center"
         style="@style/TextViewListHeader"
-        android:text="@string/label_death"/>
+        android:text="@string/label_additional_effects"/>
     <TextView
         android:id="@+id/right_range_view"
         android:layout_width="0dp"

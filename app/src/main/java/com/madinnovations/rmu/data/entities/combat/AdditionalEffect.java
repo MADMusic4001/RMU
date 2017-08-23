@@ -16,7 +16,6 @@
  *
  *
  */
-
 package com.madinnovations.rmu.data.entities.combat;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
@@ -28,6 +27,8 @@ import java.io.Serializable;
  */
 public class AdditionalEffect extends DatabaseObject implements Serializable {
 	private static final long serialVersionUID = -4717734800503159418L;
+	private CriticalResult criticalResult = null;
+	private Fumble fumble = null;
 	private TargetType targetType = TargetType.OPPONENT;
 	private Effect effect = Effect.SKILL_BONUS;
 	private Object value1 = null;
@@ -80,6 +81,28 @@ public class AdditionalEffect extends DatabaseObject implements Serializable {
 	}
 
 	// Getters and setters
+	/**
+	 * Checks the validity of the AdditionalEffect instance.
+	 *
+	 * @return true if the AdditionalEffect instance is valid, otherwise false.
+	 */
+	public boolean isValid() {
+		return (criticalResult != null || fumble != null) && (criticalResult == null || fumble == null) && targetType != null &&
+				effect != null;
+	}
+
+	public CriticalResult getCriticalResult() {
+		return criticalResult;
+	}
+	public void setCriticalResult(CriticalResult criticalResult) {
+		this.criticalResult = criticalResult;
+	}
+	public Fumble getFumble() {
+		return fumble;
+	}
+	public void setFumble(Fumble fumble) {
+		this.fumble = fumble;
+	}
 	public TargetType getTargetType() {
 		return targetType;
 	}

@@ -15,6 +15,7 @@
  */
 package com.madinnovations.rmu.controller.rxhandler.combat;
 
+import com.madinnovations.rmu.data.dao.combat.AdditionalEffectDao;
 import com.madinnovations.rmu.data.dao.combat.CriticalResultDao;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
@@ -35,15 +36,18 @@ import rx.schedulers.Schedulers;
 public class CriticalResultRxHandler implements Serializable{
 	private static final long serialVersionUID = 6654310690959624389L;
 	private CriticalResultDao dao;
+	private AdditionalEffectDao additionalEffectDao;
 
 	/**
 	 * Creates a new CriticalResultRxHandler
 	 *
 	 * @param dao  a CriticalResultDao instance
+	 * @param additionalEffectDao  an AdditionalEffectDao instance
 	 */
 	@Inject
-	public CriticalResultRxHandler(CriticalResultDao dao) {
+	public CriticalResultRxHandler(CriticalResultDao dao, AdditionalEffectDao additionalEffectDao) {
 		this.dao = dao;
+		this.additionalEffectDao = additionalEffectDao;
 	}
 
 	/**
@@ -58,7 +62,9 @@ public class CriticalResultRxHandler implements Serializable{
 					@Override
 					public void call(Subscriber<? super CriticalResult> subscriber) {
 						try {
-							subscriber.onNext(dao.getById(id));
+							CriticalResult criticalResult = dao.getById(id);
+							subscriber.onNext(criticalResult);
+							criticalResult.setAdditionalEffects(additionalEffectDao.getForCriticalResult(criticalResult));
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -82,7 +88,11 @@ public class CriticalResultRxHandler implements Serializable{
 					@Override
 					public void call(Subscriber<? super Collection<CriticalResult>> subscriber) {
 						try {
-							subscriber.onNext(dao.getAll());
+							Collection<CriticalResult> results = dao.getAll();
+							subscriber.onNext(results);
+							for(CriticalResult criticalResult : results) {
+								criticalResult.setAdditionalEffects(additionalEffectDao.getForCriticalResult(criticalResult));
+							}
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -179,7 +189,11 @@ public class CriticalResultRxHandler implements Serializable{
 					@Override
 					public void call(Subscriber<? super Collection<CriticalResult>> subscriber) {
 						try {
-							subscriber.onNext(dao.getCriticalResultsForCriticalType(filter));
+							Collection<CriticalResult> results = dao.getCriticalResultsForCriticalType(filter);
+							subscriber.onNext(results);
+							for(CriticalResult criticalResult : results) {
+								criticalResult.setAdditionalEffects(additionalEffectDao.getForCriticalResult(criticalResult));
+							}
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
@@ -198,7 +212,11 @@ public class CriticalResultRxHandler implements Serializable{
 					@Override
 					public void call(Subscriber<? super Collection<CriticalResult>> subscriber) {
 						try {
-							subscriber.onNext(dao.getCriticalResultTableRows(criticalType, severityCode));
+							Collection<CriticalResult> results = dao.getCriticalResultTableRows(criticalType, severityCode);
+							subscriber.onNext(results);
+							for(CriticalResult criticalResult : results) {
+								criticalResult.setAdditionalEffects(additionalEffectDao.getForCriticalResult(criticalResult));
+							}
 							subscriber.onCompleted();
 						}
 						catch (Exception e) {
