@@ -15,7 +15,6 @@
  */
 package com.madinnovations.rmu.view.activities.combat;
 
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -51,11 +50,10 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-
 /**
  * Handles interactions with the UI for critical results.
  */
-public class CriticalResultsFragment extends Fragment implements AdditionalEffectsDialog.AdditionalEffectsDialogListener {
+public class CriticalResultsFragment extends Fragment {
 	private static final String TAG = "CriticalResultsFragment";
 	@Inject
 	protected CriticalResultRxHandler   criticalResultRxHandler;
@@ -104,16 +102,6 @@ public class CriticalResultsFragment extends Fragment implements AdditionalEffec
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onInitiativeOk(DialogFragment dialog) {
-
-	}
-
-	@Override
-	public void onInitiativeCancel(DialogFragment dialog) {
-
 	}
 	// </editor-fold>
 

@@ -15,6 +15,13 @@
  * limitations under the License.
  * -->
 <resources>
+  <string name="toast_additional_effects_load_failed">Failed to load Additional Effects</string>
+  <string name="toast_additional_effects_loaded">%1$d Additional Effects loaded.</string>
+  <string name="toast_additional_effect_saved">Additional Effect saved.</string>
+  <string name="toast_additional_effect_save_failed">Additional Effect save failed.</string>
+  <string name="toast_additional_effect_deleted">Additional Effect deleted.</string>
+  <string name="toast_additional_effect_delete_failed">Additional Effect deletion failed.</string>
+
   <string name="toast_attacks_load_failed">Failed to load Attacks</string>
   <string name="toast_attacks_loaded">%1$d Attacks loaded.</string>
   <string name="toast_attack_saved">Attack saved.</string>

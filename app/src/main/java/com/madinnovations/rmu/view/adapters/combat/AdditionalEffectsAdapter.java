@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -48,15 +49,17 @@ import com.madinnovations.rmu.data.entities.common.TimeUnit;
  */
 @SuppressWarnings("unused")
 public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
-	private static final String TAG = "AdditionalCriticalResul";
+	private static final String TAG = "AdditionalEffectsAdapte";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.additional_effects_row;
 	private AdditionalEffect additionalEffect;
 	private LayoutInflater   layoutInflater;
+	private AdditionalEffectCallbacks additionalEffectCallbacks;
 
-	public AdditionalEffectsAdapter(@NonNull Context context,
-									@LayoutRes int resource) {
+	public AdditionalEffectsAdapter(@NonNull Context context, @LayoutRes int resource,
+									AdditionalEffectCallbacks additionalEffectCallbacks) {
 		super(context, resource);
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.additionalEffectCallbacks = additionalEffectCallbacks;
 	}
 
 	@NonNull
@@ -85,7 +88,8 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 									(LinearLayout) rowView.findViewById(R.id.critical_severity_layout),
 									(Spinner) rowView.findViewById(R.id.critical_severity_spinner),
 									(LinearLayout) rowView.findViewById(R.id.critical_type_layout),
-									(Spinner) rowView.findViewById(R.id.critical_type_spinner));
+									(Spinner) rowView.findViewById(R.id.critical_type_spinner),
+									(ImageButton) rowView.findViewById(R.id.remove_effect_button));
 			rowView.setTag(holder);
 		}
 		else {
@@ -129,12 +133,14 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 		LinearLayout                   criticalTypeLayout;
 		Spinner                        criticalTypeSpinner;
 		ArrayAdapter<CriticalType>     criticalTypeArrayAdapter;
+		ImageButton                    removeEffectButton;
 
 		public ViewHolder(Spinner targetSpinner, LinearLayout effectLayout, Spinner effectSpinner, TextInputLayout value1Layout,
 						  EditText value1Edit, TextInputLayout value2Layout, EditText value2Edit, TextInputLayout value3Layout,
 						  EditText value3Edit, TextInputLayout value4Layout, EditText value4Edit, LinearLayout unitsLayout,
 						  Spinner unitsSpinner, LinearLayout diceLayout, Spinner diceSpinner, LinearLayout criticalSeverityLayout,
-						  Spinner criticalSeveritySpinner, LinearLayout criticalTypeLayout, Spinner criticalTypeSpinner) {
+						  Spinner criticalSeveritySpinner, LinearLayout criticalTypeLayout, Spinner criticalTypeSpinner,
+						  ImageButton removeEffectButton) {
 			this.targetSpinner = targetSpinner;
 			this.effectLayout = effectLayout;
 			this.effectSpinner = effectSpinner;
@@ -154,6 +160,7 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			this.criticalSeveritySpinner = criticalSeveritySpinner;
 			this.criticalTypeLayout = criticalTypeLayout;
 			this.criticalTypeSpinner = criticalTypeSpinner;
+			this.removeEffectButton = removeEffectButton;
 
 			initTargetSpinner();
 			initEffectSpinner();
@@ -161,6 +168,7 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			initDiceSpinner();
 			initCriticalSeveritySpinner();
 			initCriticalTypeSpinner();
+			initRemoveEffectButton();
 		}
 
 		private void initTargetSpinner() {
@@ -169,6 +177,19 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			targetTypeArrayAdapter.clear();
 			targetTypeArrayAdapter.addAll(TargetType.values());
 			targetTypeArrayAdapter.notifyDataSetChanged();
+
+			targetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					TargetType targetType = (TargetType)targetSpinner.getItemAtPosition(position);
+					if(!targetType.equals(currentInstance.getTargetType())) {
+						currentInstance.setTargetType(targetType);
+						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
 		}
 
 		private void initEffectSpinner() {
@@ -182,6 +203,7 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					selectEffect();
+					additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
 				}
 				@Override
 				public void onNothingSelected(AdapterView<?> parent) {}
@@ -194,6 +216,20 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			unitTypeArrayAdapter.clear();
 			unitTypeArrayAdapter.addAll(TimeUnit.values());
 			unitTypeArrayAdapter.notifyDataSetChanged();
+
+			unitsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					TimeUnit timeUnit = (TimeUnit)unitsSpinner.getItemAtPosition(position);
+					if(currentInstance.getValue2() == null || !(currentInstance.getValue2() instanceof TimeUnit) ||
+							!timeUnit.equals(currentInstance.getValue2())) {
+						currentInstance.setValue2(timeUnit);
+						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
 		}
 
 		private void initDiceSpinner() {
@@ -202,6 +238,20 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			diceTypeArrayAdapter.clear();
 			diceTypeArrayAdapter.addAll(Dice.values());
 			diceTypeArrayAdapter.notifyDataSetChanged();
+
+			diceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					Dice dice = (Dice)diceSpinner.getItemAtPosition(position);
+					if(currentInstance.getValue3() == null || !(currentInstance.getValue3() instanceof Dice) ||
+							!dice.equals(currentInstance.getValue3())) {
+						currentInstance.setValue3(dice);
+						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
 		}
 
 		private void initCriticalSeveritySpinner() {
@@ -210,6 +260,20 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			criticalSeverityArrayAdapter.clear();
 			criticalSeverityArrayAdapter.addAll(CriticalSeverity.values());
 			criticalSeverityArrayAdapter.notifyDataSetChanged();
+
+			criticalSeveritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					CriticalSeverity criticalSeverity = (CriticalSeverity)criticalSeveritySpinner.getItemAtPosition(position);
+					if(currentInstance.getValue1() == null || !(currentInstance.getValue1() instanceof CriticalSeverity) ||
+							!criticalSeverity.equals(currentInstance.getValue1())) {
+						currentInstance.setValue1(criticalSeverity);
+						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
 		}
 
 		private void initCriticalTypeSpinner() {
@@ -218,6 +282,29 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			criticalTypeArrayAdapter.clear();
 			criticalTypeArrayAdapter.addAll(CriticalType.values());
 			criticalTypeArrayAdapter.notifyDataSetChanged();
+
+			criticalTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					CriticalType criticalType = (CriticalType)criticalTypeSpinner.getItemAtPosition(position);
+					if(currentInstance.getValue2() == null || !(currentInstance.getValue2() instanceof CriticalType) ||
+							!criticalType.equals(currentInstance.getValue2())) {
+						currentInstance.setValue2(criticalType);
+						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
+		}
+
+		private void initRemoveEffectButton() {
+			removeEffectButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					additionalEffectCallbacks.removeAdditionalEffect(currentInstance);
+				}
+			});
 		}
 
 		private void copyItemToViews() {
@@ -420,5 +507,28 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 				currentInstance.setValue3(null);
 			}
 		}
+	}
+
+	public interface AdditionalEffectCallbacks {
+		/**
+		 * Request to add a new AdditionalEffect instance to its parent.
+		 *
+		 * @param additionalEffect  the new AdditionalEffect instance
+		 */
+		void addAdditionalEffect(AdditionalEffect additionalEffect);
+
+		/**
+		 * Notification that an AdditionalEffect was changed.
+		 *
+		 * @param additionalEffect  the AdditionalEffect instance that was changed
+		 */
+		void updateAdditionalEffect(AdditionalEffect additionalEffect);
+
+		/**
+		 * Request to remove an AdditionalEffect instance from its parent.
+		 *
+		 * @param additionalEffect  the AdditionalEffect instance to remove
+		 */
+		void removeAdditionalEffect(AdditionalEffect additionalEffect);
 	}
 }
