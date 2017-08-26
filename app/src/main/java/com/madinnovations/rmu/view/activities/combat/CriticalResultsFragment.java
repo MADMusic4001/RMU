@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madinnovations.rmu.R;
+import com.madinnovations.rmu.controller.rxhandler.combat.AdditionalEffectRxHandler;
 import com.madinnovations.rmu.controller.rxhandler.combat.CriticalResultRxHandler;
 import com.madinnovations.rmu.data.entities.combat.CriticalResult;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
@@ -55,6 +56,8 @@ import rx.schedulers.Schedulers;
  */
 public class CriticalResultsFragment extends Fragment {
 	private static final String TAG = "CriticalResultsFragment";
+	@Inject
+	protected AdditionalEffectRxHandler additionalEffectRxHandler;
 	@Inject
 	protected CriticalResultRxHandler   criticalResultRxHandler;
 	private   CriticalResultListAdapter listAdapter;
@@ -262,7 +265,7 @@ public class CriticalResultsFragment extends Fragment {
 
 	private void initListView(View layout) {
 		listView = (ListView) layout.findViewById(R.id.list_view);
-		listAdapter = new CriticalResultListAdapter(getActivity(), criticalResultRxHandler);
+		listAdapter = new CriticalResultListAdapter(getActivity(), criticalResultRxHandler, additionalEffectRxHandler);
 		listView.setAdapter(listAdapter);
 		loadCriticalResults();
 

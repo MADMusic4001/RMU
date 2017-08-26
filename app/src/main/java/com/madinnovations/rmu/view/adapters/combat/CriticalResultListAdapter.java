@@ -55,21 +55,23 @@ import rx.schedulers.Schedulers;
 public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 	private static final String TAG = "CriticalResultListAdapt";
 	private static final int LAYOUT_RESOURCE_ID = R.layout.critical_results_list_row;
-	CriticalResultRxHandler      criticalResultRxHandler;
-	AdditionalEffectRxHandler    additionalEffectRxHandler;
-	private ArrayAdapter<String> bodyPartSpinnerAdapter;
-	private LayoutInflater       layoutInflater;
-	private Activity             activity;
+	private CriticalResultRxHandler   criticalResultRxHandler;
+	private AdditionalEffectRxHandler additionalEffectRxHandler;
+	private ArrayAdapter<String>      bodyPartSpinnerAdapter;
+	private LayoutInflater            layoutInflater;
+	private Activity                  activity;
 
 	/**
 	 * Creates a new CriticalResultListAdapter instance.
 	 *
 	 * @param activity the {@link Activity} context the adapter will be attached to.
 	 */
-	public CriticalResultListAdapter(Activity activity, CriticalResultRxHandler criticalResultRxHandler) {
+	public CriticalResultListAdapter(Activity activity, CriticalResultRxHandler criticalResultRxHandler,
+									 AdditionalEffectRxHandler additionalEffectRxHandler) {
 		super(activity, LAYOUT_RESOURCE_ID);
 		this.activity = activity;
 		this.criticalResultRxHandler = criticalResultRxHandler;
+		this.additionalEffectRxHandler = additionalEffectRxHandler;
 		this.layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
