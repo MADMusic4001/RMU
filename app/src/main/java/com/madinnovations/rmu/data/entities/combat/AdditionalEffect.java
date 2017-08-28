@@ -20,6 +20,9 @@ package com.madinnovations.rmu.data.entities.combat;
 
 import com.madinnovations.rmu.data.entities.DatabaseObject;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 
 /**
@@ -62,6 +65,7 @@ public class AdditionalEffect extends DatabaseObject implements Serializable {
 		if (getValue2() != null ? !getValue2().equals(that.getValue2()) : that.getValue2() != null) {
 			return false;
 		}
+		//noinspection SimplifiableIfStatement
 		if (getValue3() != null ? !getValue3().equals(that.getValue3()) : that.getValue3() != null) {
 			return false;
 		}
@@ -88,7 +92,26 @@ public class AdditionalEffect extends DatabaseObject implements Serializable {
 	 */
 	public boolean isValid() {
 		return (criticalResult != null || fumble != null) && (criticalResult == null || fumble == null) && targetType != null &&
-				effect != null;
+				effect != null && value1 != null;
+	}
+
+	/**
+	 * Generates a string containing the field values for this instance.
+	 *
+	 * @return a string containing the field values for this instance.
+	 */
+	public String print() {
+		return new ToStringBuilder(this,
+								   ToStringStyle.MULTI_LINE_STYLE)
+				.append("criticalResult", criticalResult)
+				.append("fumble", fumble)
+				.append("targetType", targetType)
+				.append("effect", effect)
+				.append("value1", value1)
+				.append("value2", value2)
+				.append("value3", value3)
+				.append("value4", value4)
+				.toString();
 	}
 
 	public CriticalResult getCriticalResult() {

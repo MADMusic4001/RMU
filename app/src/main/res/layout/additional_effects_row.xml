@@ -86,7 +86,7 @@
       android:layout_height="wrap_content"
       android:visibility="gone"
       app:layout_constraintLeft_toRightOf="@id/value1_edit_label"
-      app:layout_constraintRight_toLeftOf="@+id/value3_edit_label"
+      app:layout_constraintRight_toLeftOf="@+id/dice_layout"
       app:layout_constraintTop_toTopOf="parent">
     <android.support.design.widget.TextInputEditText
         android:id="@+id/value2_edit"
@@ -94,13 +94,34 @@
         android:layout_height="match_parent"
         android:hint="@string/input_label_value"/>
   </android.support.design.widget.TextInputLayout>
+  <LinearLayout
+      android:id="@id/dice_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/value2_edit_label"
+      app:layout_constraintRight_toLeftOf="@+id/value3_edit_label"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/dice_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/hint_dice_type"/>
+    <Spinner
+        android:id="@+id/dice_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
   <android.support.design.widget.TextInputLayout
       android:id="@id/value3_edit_label"
       android:layout_width="0dp"
       app:layout_constraintHorizontal_weight="1"
       android:layout_height="wrap_content"
       android:visibility="gone"
-      app:layout_constraintLeft_toRightOf="@id/value2_edit_label"
+      app:layout_constraintLeft_toRightOf="@id/dice_layout"
       app:layout_constraintRight_toLeftOf="@+id/value4_edit_label"
       app:layout_constraintTop_toTopOf="parent">
     <android.support.design.widget.TextInputEditText
@@ -132,7 +153,7 @@
       android:layout_height="wrap_content"
       android:visibility="gone"
       app:layout_constraintLeft_toRightOf="@id/value4_edit_label"
-      app:layout_constraintRight_toLeftOf="@+id/dice_layout"
+      app:layout_constraintRight_toLeftOf="@+id/critical_severity_layout"
       app:layout_constraintTop_toTopOf="parent">
     <TextView
         android:id="@+id/units_label"
@@ -146,34 +167,13 @@
         android:layout_height="wrap_content"/>
   </LinearLayout>
   <LinearLayout
-      android:id="@id/dice_layout"
-      android:orientation="vertical"
-      android:layout_width="0dp"
-      app:layout_constraintHorizontal_weight="1"
-      android:layout_height="wrap_content"
-      android:visibility="gone"
-      app:layout_constraintLeft_toRightOf="@id/units_layout"
-      app:layout_constraintRight_toLeftOf="@+id/critical_severity_layout"
-      app:layout_constraintTop_toTopOf="parent">
-    <TextView
-        android:id="@+id/dice_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/InputLabel"
-        android:text="@string/hint_dice_type"/>
-    <Spinner
-        android:id="@+id/dice_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-  </LinearLayout>
-  <LinearLayout
       android:id="@id/critical_severity_layout"
       android:orientation="vertical"
       android:layout_width="0dp"
       app:layout_constraintHorizontal_weight="1"
       android:layout_height="wrap_content"
       android:visibility="gone"
-      app:layout_constraintLeft_toRightOf="@id/dice_layout"
+      app:layout_constraintLeft_toRightOf="@id/units_layout"
       app:layout_constraintRight_toLeftOf="@+id/critical_type_layout"
       app:layout_constraintTop_toTopOf="parent">
     <TextView
@@ -195,7 +195,7 @@
       android:layout_height="wrap_content"
       android:visibility="gone"
       app:layout_constraintLeft_toRightOf="@id/critical_severity_layout"
-      app:layout_constraintRight_toLeftOf="@+id/remove_effect_button"
+      app:layout_constraintRight_toLeftOf="@+id/relative_to_layout"
       app:layout_constraintTop_toTopOf="parent">
     <TextView
         android:id="@+id/critical_type_label"
@@ -208,6 +208,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
   </LinearLayout>
+  <LinearLayout
+      android:id="@id/relative_to_layout"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      app:layout_constraintHorizontal_weight="1"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@id/critical_type_layout"
+      app:layout_constraintRight_toLeftOf="@+id/remove_effect_button"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/relative_to_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputLabel"
+        android:text="@string/hint_relative_to"/>
+    <Spinner
+        android:id="@+id/relative_to_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+  </LinearLayout>
   <ImageButton
       android:id="@id/remove_effect_button"
       android:layout_width="wrap_content"
@@ -215,5 +236,6 @@
       app:layout_constraintLeft_toRightOf="@id/critical_type_layout"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toBottomOf="parent"
-      android:src="@drawable/ic_remove_black"/>
+      android:src="@drawable/ic_remove_black"
+      android:contentDescription="@string/remove_effect_description"/>
 </android.support.constraint.ConstraintLayout>

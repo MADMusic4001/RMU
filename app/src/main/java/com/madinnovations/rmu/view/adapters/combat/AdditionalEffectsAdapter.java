@@ -40,9 +40,11 @@ import com.madinnovations.rmu.data.entities.combat.AdditionalEffect;
 import com.madinnovations.rmu.data.entities.combat.CriticalSeverity;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.Effect;
+import com.madinnovations.rmu.data.entities.combat.RelativeTo;
 import com.madinnovations.rmu.data.entities.combat.TargetType;
 import com.madinnovations.rmu.data.entities.common.Dice;
 import com.madinnovations.rmu.data.entities.common.TimeUnit;
+import com.madinnovations.rmu.view.utils.EditTextUtils;
 
 /**
  * Adapter for displaying additional critical results
@@ -89,6 +91,8 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 									(Spinner) rowView.findViewById(R.id.critical_severity_spinner),
 									(LinearLayout) rowView.findViewById(R.id.critical_type_layout),
 									(Spinner) rowView.findViewById(R.id.critical_type_spinner),
+									(LinearLayout) rowView.findViewById(R.id.relative_to_layout),
+									(Spinner) rowView.findViewById(R.id.relative_to_spinner),
 									(ImageButton) rowView.findViewById(R.id.remove_effect_button));
 			rowView.setTag(holder);
 		}
@@ -106,7 +110,7 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 		return rowView;
 	}
 
-	private class ViewHolder {
+	private class ViewHolder implements EditTextUtils.ValuesCallback {
 		AdditionalEffect               currentInstance;
 		Spinner                        targetSpinner;
 		ArrayAdapter<TargetType>       targetTypeArrayAdapter;
@@ -133,6 +137,9 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 		LinearLayout                   criticalTypeLayout;
 		Spinner                        criticalTypeSpinner;
 		ArrayAdapter<CriticalType>     criticalTypeArrayAdapter;
+		LinearLayout                   relativeToLayout;
+		Spinner                        relativeToSpinner;
+		ArrayAdapter<RelativeTo>       relativeToArrayAdapter;
 		ImageButton                    removeEffectButton;
 
 		public ViewHolder(Spinner targetSpinner, LinearLayout effectLayout, Spinner effectSpinner, TextInputLayout value1Layout,
@@ -140,18 +147,22 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						  EditText value3Edit, TextInputLayout value4Layout, EditText value4Edit, LinearLayout unitsLayout,
 						  Spinner unitsSpinner, LinearLayout diceLayout, Spinner diceSpinner, LinearLayout criticalSeverityLayout,
 						  Spinner criticalSeveritySpinner, LinearLayout criticalTypeLayout, Spinner criticalTypeSpinner,
-						  ImageButton removeEffectButton) {
+						  LinearLayout relativeToLayout, Spinner relativeToSpinner, ImageButton removeEffectButton) {
 			this.targetSpinner = targetSpinner;
 			this.effectLayout = effectLayout;
 			this.effectSpinner = effectSpinner;
 			this.value1Layout = value1Layout;
 			this.value1Edit = value1Edit;
+			EditTextUtils.initEdit(value1Edit, getContext(), this, R.id.value1_edit, 0);
 			this.value2Layout = value2Layout;
 			this.value2Edit = value2Edit;
+			EditTextUtils.initEdit(value2Edit, getContext(), this, R.id.value2_edit, 0);
 			this.value3Layout = value3Layout;
 			this.value3Edit = value3Edit;
+			EditTextUtils.initEdit(value3Edit, getContext(), this, R.id.value3_edit, 0);
 			this.value4Layout = value4Layout;
 			this.value4Edit = value4Edit;
+			EditTextUtils.initEdit(value4Edit, getContext(), this, R.id.value4_edit, 0);
 			this.unitsLayout = unitsLayout;
 			this.unitsSpinner = unitsSpinner;
 			this.diceLayout = diceLayout;
@@ -160,15 +171,117 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			this.criticalSeveritySpinner = criticalSeveritySpinner;
 			this.criticalTypeLayout = criticalTypeLayout;
 			this.criticalTypeSpinner = criticalTypeSpinner;
+			this.relativeToLayout = relativeToLayout;
+			this.relativeToSpinner = relativeToSpinner;
 			this.removeEffectButton = removeEffectButton;
 
 			initTargetSpinner();
 			initEffectSpinner();
 			initUnitSpinner();
 			initDiceSpinner();
+			initDice2Spinner();
 			initCriticalSeveritySpinner();
 			initCriticalTypeSpinner();
 			initRemoveEffectButton();
+		}
+
+		@Override
+		public String getValueForEditText(int editTextId) {
+			String result = null;
+
+			switch (editTextId) {
+				case R.id.value1_edit:
+					if(currentInstance.getValue1() != null) {
+						result = String.valueOf(currentInstance.getValue1());
+					}
+					break;
+				case R.id.value2_edit:
+					if(currentInstance.getValue2() != null) {
+						result = String.valueOf(currentInstance.getValue2());
+					}
+					break;
+				case R.id.value3_edit:
+					if(currentInstance.getValue3() != null) {
+						result = String.valueOf(currentInstance.getValue3());
+					}
+					break;
+				case R.id.value4_edit:
+					if(currentInstance.getValue4() != null) {
+						result = String.valueOf(currentInstance.getValue4());
+					}
+					break;
+			}
+			return result;
+		}
+
+		@Override
+		public void setValueFromEditText(int editTextId, String newString) {
+			switch (editTextId) {
+				case R.id.value1_edit:
+					if(newString.isEmpty()) {
+						currentInstance.setValue1(null);
+					}
+					else {
+						currentInstance.setValue1(Integer.valueOf(newString));
+					}
+					if(currentInstance.getEffect().equals(Effect.DROP_ITEM) ||
+							currentInstance.getEffect().equals(Effect.MOVE)) {
+						hideAll();
+						setDiceInput();
+					}
+					break;
+				case R.id.value2_edit:
+					if(newString.isEmpty()) {
+						currentInstance.setValue2(null);
+					}
+					else {
+						currentInstance.setValue2(Integer.valueOf(newString));
+					}
+					if(currentInstance.getEffect().equals(Effect.DROP_ITEM) ||
+							currentInstance.getEffect().equals(Effect.MOVE)) {
+						hideAll();
+						if(currentInstance.getValue2() == null) {
+							currentInstance.setValue1(null);
+						}
+						setDiceInput();
+					}
+					break;
+				case R.id.value3_edit:
+					if(newString.isEmpty()) {
+						currentInstance.setValue3(null);
+					}
+					else {
+						currentInstance.setValue3(Integer.valueOf(newString));
+					}
+					if(currentInstance.getEffect().equals(Effect.DROP_ITEM) ||
+							currentInstance.getEffect().equals(Effect.MOVE)) {
+						hideAll();
+						setDiceInput();
+					}
+					break;
+				case R.id.value4_edit:
+					if(newString.isEmpty()) {
+						currentInstance.setValue4(null);
+					}
+					else {
+						currentInstance.setValue4(Integer.valueOf(newString));
+					}
+					if(currentInstance.getEffect().equals(Effect.DROP_ITEM) ||
+							currentInstance.getEffect().equals(Effect.MOVE)) {
+						hideAll();
+						if(currentInstance.getValue4() == null) {
+							currentInstance.setValue3(null);
+						}
+						setDiceInput();
+					}
+					break;
+			}
+			additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+		}
+
+		@Override
+		public boolean performLongClick(int editTextId) {
+			return false;
 		}
 
 		private void initTargetSpinner() {
@@ -243,9 +356,31 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					Dice dice = (Dice)diceSpinner.getItemAtPosition(position);
-					if(currentInstance.getValue3() == null || !(currentInstance.getValue3() instanceof Dice) ||
-							!dice.equals(currentInstance.getValue3())) {
-						currentInstance.setValue3(dice);
+					if(currentInstance.getValue1() == null || !(currentInstance.getValue1() instanceof Dice) ||
+							!dice.equals(currentInstance.getValue1())) {
+						currentInstance.setValue1(dice);
+						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
+					}
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {}
+			});
+		}
+
+		private void initDice2Spinner() {
+			relativeToArrayAdapter = new ArrayAdapter<>(getContext(), R.layout.single_field_row);
+			relativeToSpinner.setAdapter(relativeToArrayAdapter);
+			relativeToArrayAdapter.clear();
+			relativeToArrayAdapter.addAll(RelativeTo.values());
+			relativeToArrayAdapter.notifyDataSetChanged();
+
+			relativeToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					RelativeTo relativeTo = (RelativeTo) relativeToSpinner.getItemAtPosition(position);
+					if(currentInstance.getValue3() == null || !(currentInstance.getValue3() instanceof RelativeTo) ||
+							!relativeTo.equals(currentInstance.getValue3())) {
+						currentInstance.setValue3(relativeTo);
 						additionalEffectCallbacks.updateAdditionalEffect(currentInstance);
 					}
 				}
@@ -318,22 +453,36 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			if(currentInstance.getValue1() != null) {
 				value1Edit.setText(currentInstance.getValue1().toString());
 			}
+			else {
+				value1Edit.setText(null);
+			}
 			if(currentInstance.getValue2() != null) {
-				value1Edit.setText(currentInstance.getValue2().toString());
+				value2Edit.setText(currentInstance.getValue2().toString());
+			}
+			else {
+				value2Edit.setText(null);
 			}
 			if(currentInstance.getValue3() != null) {
-				value1Edit.setText(currentInstance.getValue3().toString());
+				value3Edit.setText(currentInstance.getValue3().toString());
+			}
+			else {
+				value3Edit.setText(null);
 			}
 			if(currentInstance.getValue4() != null) {
-				value1Edit.setText(currentInstance.getValue4().toString());
+				value4Edit.setText(currentInstance.getValue4().toString());
+			}
+			else {
+				value4Edit.setText(null);
 			}
 		}
 
 		private void selectEffect() {
 			Effect effect = (Effect)effectSpinner.getSelectedItem();
 			if(effect != null) {
+				currentInstance.setEffect(effect);
 				switch (effect) {
 					case ATTACK:
+						hideAll();
 						break;
 					case BLEED:
 						hideAll();
@@ -375,9 +524,15 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						}
 						break;
 					case DEATH:
+					case UNCONSCIOUS:
 						hideAll();
 						value1Layout.setVisibility(View.VISIBLE);
-						value1Layout.setHint(getContext().getString(R.string.hint_death));
+						if(effect.equals(Effect.DEATH)) {
+							value1Layout.setHint(getContext().getString(R.string.hint_death));
+						}
+						else {
+							value1Layout.setHint(getContext().getString(R.string.hint_unconscious));
+						}
 						unitsLayout.setVisibility(View.VISIBLE);
 						if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
 							value1Edit.setText(currentInstance.getValue1().toString());
@@ -389,6 +544,7 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 							unitsSpinner.setSelection(unitTypeArrayAdapter.getPosition((TimeUnit)currentInstance.getValue2()));
 						}
 						else {
+							unitsSpinner.setSelection(unitTypeArrayAdapter.getPosition(TimeUnit.ROUNDS));
 							currentInstance.setValue2(null);
 						}
 						break;
@@ -411,15 +567,26 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						break;
 					case HIT_POINTS:
 						hideAll();
-						value1Layout.setVisibility(View.VISIBLE);
-						value1Layout.setHint(getContext().getString(R.string.hint_hits));
 						if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
+							value1Layout.setVisibility(View.VISIBLE);
+							value1Layout.setHint(getContext().getString(R.string.hint_hits));
 							value1Edit.setText(String.valueOf(currentInstance.getValue1()));
 						}
+						else if (currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Dice) {
+							value2Layout.setVisibility(View.VISIBLE);
+							value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
+							value2Edit.setText(String.valueOf(currentInstance.getValue2()));
+							diceLayout.setVisibility(View.VISIBLE);
+							diceSpinner.setSelection(diceTypeArrayAdapter.getPosition((Dice)currentInstance.getValue1()));
+						}
 						else {
-							currentInstance.setValue1(null);
+							value1Layout.setVisibility(View.VISIBLE);
+							value1Layout.setHint(getContext().getString(R.string.hint_hits));
 							value1Edit.setText(null);
-							setDiceInput();
+							value2Layout.setVisibility(View.VISIBLE);
+							value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
+							value2Edit.setText(null);
+							diceLayout.setVisibility(View.VISIBLE);
 						}
 						break;
 					case INITIATIVE_BONUS:
@@ -435,6 +602,20 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						break;
 					case MORALE:
 						hideAll();
+						setSingleIntegerInput(R.string.hint_morale);
+						break;
+					case MOVE:
+						hideAll();
+						value1Layout.setVisibility(View.VISIBLE);
+						value1Layout.setHint(getContext().getString(R.string.hint_distance));
+						if(currentInstance.getValue1() != null && currentInstance.getValue1() instanceof Integer) {
+							value1Edit.setText(String.valueOf(currentInstance.getValue1()));
+						}
+						else {
+							currentInstance.setValue1(null);
+							value1Edit.setText(null);
+							setDiceInput();
+						}
 						break;
 					case OFFENSIVE_BONUS:
 						hideAll();
@@ -459,9 +640,6 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 						hideAll();
 						setSingleIntegerInput(R.string.hint_stunned_no_parry);
 						break;
-					case UNCONSCIOUS:
-						hideAll();
-						break;
 				}
 			}
 		}
@@ -475,6 +653,7 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 			diceLayout.setVisibility(View.GONE);
 			criticalSeverityLayout.setVisibility(View.GONE);
 			criticalTypeLayout.setVisibility(View.GONE);
+			relativeToLayout.setVisibility(View.GONE);
 		}
 
 		private void setSingleIntegerInput(@StringRes int hintId) {
@@ -490,21 +669,74 @@ public class AdditionalEffectsAdapter extends ArrayAdapter<AdditionalEffect> {
 		}
 
 		private void setDiceInput() {
-			value2Layout.setVisibility(View.VISIBLE);
-			value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
-			if(currentInstance.getValue2() != null && currentInstance.getValue2() instanceof Integer) {
-				value2Edit.setText(String.valueOf(currentInstance.getValue2()));
+			if(currentInstance.getValue1() != null) {
+				if(currentInstance.getValue1() instanceof Integer) {
+					value1Layout.setVisibility(View.VISIBLE);
+					value1Layout.setHint(getContext().getString(R.string.hint_distance));
+					value1Edit.setText(String.valueOf(currentInstance.getValue1()));
+				}
+				else if(currentInstance.getValue1() instanceof Dice) {
+					value2Layout.setVisibility(View.VISIBLE);
+					value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
+					diceLayout.setVisibility(View.VISIBLE);
+					diceSpinner.setSelection(diceTypeArrayAdapter.getPosition((Dice)currentInstance.getValue1()));
+					if(currentInstance.getValue2() != null) {
+						value2Edit.setText(String.valueOf(currentInstance.getValue2()));
+					}
+				}
+			}
+			else if(currentInstance.getValue2() != null) {
+				value2Layout.setVisibility(View.VISIBLE);
+				value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
+				diceLayout.setVisibility(View.VISIBLE);
+				Dice dice = (Dice)diceSpinner.getSelectedItem();
+				currentInstance.setValue1(dice);
 			}
 			else {
-				currentInstance.setValue2(null);
+				value1Layout.setVisibility(View.VISIBLE);
+				value1Layout.setHint(getContext().getString(R.string.hint_distance));
+				value1Edit.setText(null);
+				value2Layout.setVisibility(View.VISIBLE);
+				value2Layout.setHint(getContext().getString(R.string.hint_num_dice));
 				value2Edit.setText(null);
+				diceLayout.setVisibility(View.VISIBLE);
 			}
-			diceLayout.setVisibility(View.VISIBLE);
-			if(currentInstance.getValue3() != null && currentInstance.getValue3() instanceof Dice) {
-				diceSpinner.setSelection(diceTypeArrayAdapter.getPosition((Dice)currentInstance.getValue3()));
-			}
-			else {
-				currentInstance.setValue3(null);
+
+			if(currentInstance.getValue1() == null || !(currentInstance.getValue1() instanceof Integer) ||
+					!currentInstance.getValue1().equals(0)) {
+				if (currentInstance.getValue3() != null) {
+					if (currentInstance.getValue3() instanceof Integer) {
+						value3Layout.setVisibility(View.VISIBLE);
+						value3Layout.setHint(getContext().getString(R.string.hint_direction));
+						value3Edit.setText(String.valueOf(currentInstance.getValue3()));
+					}
+					else if (currentInstance.getValue3() instanceof RelativeTo) {
+						value4Layout.setVisibility(View.VISIBLE);
+						value4Layout.setHint(getContext().getString(R.string.hint_relative_degrees));
+						relativeToLayout.setVisibility(View.VISIBLE);
+						relativeToSpinner.setSelection(relativeToArrayAdapter.getPosition(
+								(RelativeTo) currentInstance.getValue3()));
+						if (currentInstance.getValue4() != null) {
+							value4Edit.setText(String.valueOf(currentInstance.getValue4()));
+						}
+					}
+				}
+				else if (currentInstance.getValue4() != null) {
+					value4Layout.setVisibility(View.VISIBLE);
+					value4Layout.setHint(getContext().getString(R.string.hint_relative_degrees));
+					relativeToLayout.setVisibility(View.VISIBLE);
+					RelativeTo relativeTo = (RelativeTo) relativeToSpinner.getSelectedItem();
+					currentInstance.setValue3(relativeTo);
+				}
+				else {
+					value3Layout.setVisibility(View.VISIBLE);
+					value3Layout.setHint(getContext().getString(R.string.hint_direction));
+					value3Edit.setText(null);
+					value4Layout.setVisibility(View.VISIBLE);
+					value4Layout.setHint(getContext().getString(R.string.hint_relative_degrees));
+					value4Edit.setText(null);
+//					relativeToLayout.setVisibility(View.VISIBLE);
+				}
 			}
 		}
 	}

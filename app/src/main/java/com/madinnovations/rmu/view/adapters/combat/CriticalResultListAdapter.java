@@ -362,10 +362,6 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 			boolean changed = false;
 			AdditionalEffectsDialog additionalEffectsDialog = (AdditionalEffectsDialog)dialog;
 
-			Log.d(TAG, "onAdditionalEffectOk: currentInstance.getAdditionalEffects().size() = "
-					+ currentInstance.getAdditionalEffects().size());
-			Log.d(TAG, "onAdditionalEffectOk: additionalEffectsDialog.getAdditionalEffects().size() = " +
-					additionalEffectsDialog.getAdditionalEffects().size());
 			if(currentInstance.getAdditionalEffects().size() != additionalEffectsDialog.getAdditionalEffects().size()) {
 				changed = true;
 				currentInstance.getAdditionalEffects().clear();
@@ -382,13 +378,10 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					currentInstance.getAdditionalEffects().addAll(additionalEffectsDialog.getAdditionalEffects());
 				}
 			}
-			Log.d(TAG, "onAdditionalEffectOk: changed = " + changed);
 			if(changed) {
 				for(AdditionalEffect additionalEffect : currentInstance.getAdditionalEffects()) {
 					additionalEffect.setCriticalResult(currentInstance);
 				}
-				Log.d(TAG, "onAdditionalEffectOk: Saving criticalResult with " +
-						currentInstance.getAdditionalEffects().size() + " additionalEffect instances.");
 				saveItem();
 			}
 		}
@@ -402,14 +395,19 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 
 		@Override
 		public void updateAdditionalEffect(AdditionalEffect additionalEffect) {
+			if(additionalEffect.getCriticalResult() == null) {
+				additionalEffect.setCriticalResult(currentInstance);
+			}
+			if(!currentInstance.getAdditionalEffects().contains(additionalEffect)) {
+				currentInstance.getAdditionalEffects().add(additionalEffect);
+			}
 			saveEffect(additionalEffect);
 		}
 
 		@Override
 		public void removeAdditionalEffect(AdditionalEffect additionalEffect) {
-			if(currentInstance.getAdditionalEffects().remove(additionalEffect)) {
-				deleteEffect(additionalEffect);
-			}
+			currentInstance.getAdditionalEffects().remove(additionalEffect);
+			deleteEffect(additionalEffect);
 		}
 
 		private void initAdditionalEffectsButton() {
@@ -418,7 +416,6 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 				public void onClick(View v) {
 					AdditionalEffectsDialog dialog = new AdditionalEffectsDialog();
 					Bundle bundle = new Bundle();
-					Log.d(TAG, "onClick: additionalEffects size = " + currentInstance.getAdditionalEffects().size());
 					bundle.putSerializable(AdditionalEffectsDialog.ADDITIONAL_EFFECTS_ARG_KEY,
 										   (ArrayList)currentInstance.getAdditionalEffects());
 					dialog.setArguments(bundle);
@@ -442,9 +439,10 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 							}
 							@Override
 							public void onNext(CriticalResult savedCriticalResult) {
-								String toastString;
-								toastString = getContext().getString(R.string.toast_critical_result_saved);
-								Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+								if(!activity.isFinishing()) {
+									Toast.makeText(activity, getContext().getString(R.string.toast_critical_result_saved),
+												   Toast.LENGTH_SHORT).show();
+								}
 							}
 						});
 			}
@@ -461,7 +459,9 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					}
 					@Override
 					public void onNext(AdditionalEffect additionalEffect) {
-						Boast.makeText(getContext(), R.string.toast_additional_effect_saved, Toast.LENGTH_SHORT).show();
+						if(!activity.isFinishing()) {
+							Boast.makeText(activity, R.string.toast_additional_effect_saved, Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 			}
@@ -478,7 +478,9 @@ public class CriticalResultListAdapter extends ArrayAdapter<CriticalResult> {
 					}
 					@Override
 					public void onNext(Boolean aBoolean) {
-						Boast.makeText(getContext(), R.string.toast_additional_effect_deleted, Toast.LENGTH_SHORT).show();
+						if(!activity.isFinishing()) {
+							Boast.makeText(activity, R.string.toast_additional_effect_deleted, Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 			}

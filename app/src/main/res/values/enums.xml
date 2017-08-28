@@ -232,6 +232,7 @@
   <string name="enum_effect_injury">Injury</string>
   <string name="enum_effect_knock_back">Knock Back</string>
   <string name="enum_effect_morale">Morale</string>
+  <string name="enum_effect_move">Move</string>
   <string name="enum_effect_offensive_bonus">Offensive Bonus</string>
   <string name="enum_effect_prone">Prone</string>
   <string name="enum_effect_skill_bonus">Skill Bonus</string>
@@ -473,6 +474,13 @@
   <string name="enum_prep_liquid">Liquid</string>
   <string name="enum_prep_paste">Paste</string>
   <string name="enum_prep_powder">Powder</string>
+
+  <!-- RelativeTo enum strings -->
+  <string name="enum_relative_to_combatant">Combatant Facing</string>
+  <string name="enum_relative_to_foe">Foe Facing</string>
+  <string name="enum_relative_to_north">North</string>
+  <string name="enum_relative_to_random">Random</string>
+  <string name="enum_relative_to_choice">Choice</string>
 
   <!-- Resistance enum strings -->
   <string name="enum_resistance_all">All</string>

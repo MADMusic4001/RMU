@@ -43,6 +43,7 @@ public enum Effect {
   INJURY(R.string.enum_effect_injury),
   KNOCK_BACK(R.string.enum_effect_knock_back),
   MORALE(R.string.enum_effect_morale),
+  MOVE(R.string.enum_effect_move),
   OFFENSIVE_BONUS(R.string.enum_effect_offensive_bonus),
   PRONE(R.string.enum_effect_prone),
   SKILL_BONUS(R.string.enum_effect_skill_bonus),

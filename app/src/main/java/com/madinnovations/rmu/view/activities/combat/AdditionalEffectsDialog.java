@@ -69,6 +69,8 @@ public class AdditionalEffectsDialog extends DialogFragment implements Additiona
 	@Override
 	public void addAdditionalEffect(AdditionalEffect additionalEffect) {
 		additionalEffects.add(additionalEffect);
+		additionalEffectsAdapter.clear();
+		additionalEffectsAdapter.addAll(additionalEffects);
 		additionalEffectsAdapter.notifyDataSetChanged();
 		listener.addAdditionalEffect(additionalEffect);
 	}
@@ -81,6 +83,8 @@ public class AdditionalEffectsDialog extends DialogFragment implements Additiona
 	@Override
 	public void removeAdditionalEffect(AdditionalEffect additionalEffect) {
 		additionalEffects.remove(additionalEffect);
+		additionalEffectsAdapter.clear();
+		additionalEffectsAdapter.addAll(additionalEffects);
 		additionalEffectsAdapter.notifyDataSetChanged();
 		listener.removeAdditionalEffect(additionalEffect);
 	}

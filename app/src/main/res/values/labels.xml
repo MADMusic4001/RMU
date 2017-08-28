@@ -26,6 +26,8 @@
   <string name="manage_spell_data">Manage Spell Data</string>
   <string name="play">Play</string>
   <string name="about_rmu">About RMU</string>
+  <string name="add_effect_description">Add a new effect</string>
+  <string name="remove_effect_description">Remove this effect</string>
 
   <!-- About fragment labels -->
   <string name="copyright">&#169; 2016 MadInnovations. All rights reserved</string>

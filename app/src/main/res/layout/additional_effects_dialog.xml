@@ -28,7 +28,8 @@
       android:id="@+id/add_effect_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:src="@drawable/ic_add_black"/>
+      android:src="@drawable/ic_add_black"
+      android:contentDescription="@string/add_effect_description"/>
   <ListView
       android:id="@+id/additional_effects_list"
       android:layout_width="match_parent"

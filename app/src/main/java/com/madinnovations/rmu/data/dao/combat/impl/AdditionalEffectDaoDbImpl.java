@@ -35,6 +35,7 @@ import com.madinnovations.rmu.data.entities.combat.CriticalSeverity;
 import com.madinnovations.rmu.data.entities.combat.CriticalType;
 import com.madinnovations.rmu.data.entities.combat.Effect;
 import com.madinnovations.rmu.data.entities.combat.Fumble;
+import com.madinnovations.rmu.data.entities.combat.RelativeTo;
 import com.madinnovations.rmu.data.entities.combat.TargetType;
 import com.madinnovations.rmu.data.entities.common.Dice;
 import com.madinnovations.rmu.data.entities.common.TimeUnit;
@@ -202,12 +203,28 @@ public class AdditionalEffectDaoDbImpl extends BaseDaoDbImpl<AdditionalEffect> i
 				break;
 			case DROP_ITEM:
 			case HIT_POINTS:
-				if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_VALUE1))) {
-					instance.setValue1(Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE1))));
+			case MOVE:
+				String value1 = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE1));
+				try {
+					instance.setValue1(Integer.valueOf(value1));
 				}
-				else {
-					instance.setValue2(Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE2))));
-					instance.setValue3(Dice.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE3))));
+				catch (NumberFormatException e) {
+					instance.setValue1(Dice.valueOf(value1));
+					if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_VALUE2))) {
+						instance.setValue2(Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE2))));
+					}
+				}
+				if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_VALUE3))) {
+					String value3 = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE3));
+					try {
+						instance.setValue3(Integer.valueOf(value3));
+					}
+					catch (NumberFormatException e) {
+						instance.setValue3(RelativeTo.valueOf(value3));
+						if(!cursor.isNull(cursor.getColumnIndexOrThrow(COLUMN_VALUE4))) {
+							instance.setValue4(Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VALUE4))));
+						}
+					}
 				}
 				break;
 			case KNOCK_BACK:
@@ -267,25 +284,45 @@ public class AdditionalEffectDaoDbImpl extends BaseDaoDbImpl<AdditionalEffect> i
         values.put(COLUMN_TARGET_TYPE_NAME, instance.getTargetType().name());
         values.put(COLUMN_EFFECT_NAME, instance.getEffect().name());
         if(instance.getValue1() != null) {
-        	values.put(COLUMN_VALUE1, String.valueOf(instance.getValue1()));
+			if(instance.getValue1() instanceof Enum) {
+				values.put(COLUMN_VALUE1, ((Enum)instance.getValue1()).name());
+			}
+			else {
+				values.put(COLUMN_VALUE1, String.valueOf(instance.getValue1()));
+			}
 		}
 		else {
         	values.putNull(COLUMN_VALUE1);
 		}
 		if(instance.getValue2() != null) {
-			values.put(COLUMN_VALUE2, String.valueOf(instance.getValue2()));
+        	if(instance.getValue2() instanceof Enum) {
+        		values.put(COLUMN_VALUE2, ((Enum)instance.getValue2()).name());
+			}
+			else {
+				values.put(COLUMN_VALUE2, String.valueOf(instance.getValue2()));
+			}
 		}
 		else {
 			values.putNull(COLUMN_VALUE2);
 		}
 		if(instance.getValue3() != null) {
-			values.put(COLUMN_VALUE3, String.valueOf(instance.getValue3()));
+			if(instance.getValue3() instanceof Enum) {
+				values.put(COLUMN_VALUE3, ((Enum)instance.getValue3()).name());
+			}
+			else {
+				values.put(COLUMN_VALUE3, String.valueOf(instance.getValue3()));
+			}
 		}
 		else {
 			values.putNull(COLUMN_VALUE3);
 		}
 		if(instance.getValue4() != null) {
-			values.put(COLUMN_VALUE4, String.valueOf(instance.getValue4()));
+			if(instance.getValue4() instanceof Enum) {
+				values.put(COLUMN_VALUE4, ((Enum)instance.getValue4()).name());
+			}
+			else {
+				values.put(COLUMN_VALUE4, String.valueOf(instance.getValue4()));
+			}
 		}
 		else {
 			values.putNull(COLUMN_VALUE4);
